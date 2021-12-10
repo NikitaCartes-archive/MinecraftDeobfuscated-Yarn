@@ -242,7 +242,7 @@ implements BlockEntityProvider {
         if (BedBlock.isBedBelow(world, pos)) {
             return BedBlock.findWakeUpPosition(type, world, pos, direction, direction3);
         }
-        int[][] is = BedBlock.getAroundAndOnBedOffets(direction, direction3);
+        int[][] is = BedBlock.getAroundAndOnBedOffsets(direction, direction3);
         Optional<Vec3d> optional = BedBlock.findWakeUpPosition(type, world, pos, is, true);
         if (optional.isPresent()) {
             return optional;
@@ -334,7 +334,7 @@ implements BlockEntityProvider {
         return false;
     }
 
-    private static int[][] getAroundAndOnBedOffets(Direction bedDirection, Direction respawnDirection) {
+    private static int[][] getAroundAndOnBedOffsets(Direction bedDirection, Direction respawnDirection) {
         return (int[][])ArrayUtils.addAll(BedBlock.getAroundBedOffsets(bedDirection, respawnDirection), BedBlock.getOnBedOffsets(bedDirection));
     }
 

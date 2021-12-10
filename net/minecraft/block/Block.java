@@ -71,8 +71,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A block is a voxel in a {@linkplain World world}.
- * This class and its subclasses define all logics for those voxels.
+ * A block is a voxel in a {@linkplain World world}. {@link AbstractBlock},
+ * this class, and its subclasses define all logic for those voxels.
  * 
  * <p>There is exactly one instance for every type of block. Every stone
  * block for example in a world shares the same block instance. Each block
@@ -88,8 +88,9 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <p>In the world, the actual voxels are not stored as blocks, but as
  * {@linkplain BlockState block states}. The possible states of the block
- * is defined by {@link appendProperties}.
+ * are defined by {@link #appendProperties}.
  * 
+ * @see AbstractBlock
  * @see BlockState
  */
 public class Block

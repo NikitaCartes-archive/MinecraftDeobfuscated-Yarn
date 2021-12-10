@@ -42,8 +42,8 @@ ModifiableTestableWorld {
     }
 
     @Override
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-        return EntityView.super.intersectsEntities(except, shape);
+    default public boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
+        return EntityView.super.doesNotIntersectEntities(except, shape);
     }
 
     @Override

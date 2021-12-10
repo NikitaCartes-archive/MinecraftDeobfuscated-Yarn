@@ -43,7 +43,7 @@ extends SlimeEntity {
 
     @Override
     public boolean canSpawn(WorldView world) {
-        return world.intersectsEntities(this) && !world.containsFluid(this.getBoundingBox());
+        return world.doesNotIntersectEntities(this) && !world.containsFluid(this.getBoundingBox());
     }
 
     @Override

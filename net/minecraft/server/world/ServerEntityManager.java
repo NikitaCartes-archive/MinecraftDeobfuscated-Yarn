@@ -234,7 +234,7 @@ implements AutoCloseable {
         if (status == Status.PENDING) {
             return false;
         }
-        List<T> list = this.cache.getTrackingSections(chunkPos).flatMap(entityTrackingSection -> entityTrackingSection.stream().filter(EntityLike::shouldSave)).collect(Collectors.toList());
+        List<T> list = this.cache.getTrackingSections(chunkPos).flatMap(section -> section.stream().filter(EntityLike::shouldSave)).collect(Collectors.toList());
         if (list.isEmpty()) {
             if (status == Status.LOADED) {
                 this.dataAccess.writeChunkData(new ChunkDataList(new ChunkPos(chunkPos), ImmutableList.of()));
@@ -260,7 +260,7 @@ implements AutoCloseable {
     }
 
     private boolean unload(long chunkPos) {
-        boolean bl = this.trySave(chunkPos, entityLike -> entityLike.streamPassengersAndSelf().forEach(this::unload));
+        boolean bl = this.trySave(chunkPos, entity -> entity.streamPassengersAndSelf().forEach(this::unload));
         if (!bl) {
             return false;
         }
@@ -311,7 +311,7 @@ implements AutoCloseable {
             if (bl) {
                 this.unload(pos);
             } else {
-                this.trySave(pos, entityLike -> {});
+                this.trySave(pos, entity -> {});
             }
         });
     }
@@ -323,7 +323,7 @@ implements AutoCloseable {
             this.loadChunks();
             longSet.removeIf(pos -> {
                 boolean bl = this.trackingStatuses.get(pos) == EntityTrackingStatus.HIDDEN;
-                return bl ? this.unload(pos) : this.trySave(pos, entityLike -> {});
+                return bl ? this.unload(pos) : this.trySave(pos, entity -> {});
             });
         }
         this.dataAccess.awaitAll(true);

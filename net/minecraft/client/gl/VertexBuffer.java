@@ -22,12 +22,12 @@ public class VertexBuffer
 implements AutoCloseable {
     private int vertexBufferId;
     private int indexBufferId;
-    private VertexFormat.IntType vertexFormat;
+    private VertexFormat.IntType elementFormat;
     private int vertexArrayId;
     private int vertexCount;
     private VertexFormat.DrawMode drawMode;
     private boolean usesTexture;
-    private VertexFormat elementFormat;
+    private VertexFormat vertexFormat;
 
     public VertexBuffer() {
         RenderSystem.glGenBuffers(id -> {
@@ -46,7 +46,7 @@ implements AutoCloseable {
         if (this.usesTexture) {
             RenderSystem.glBindBuffer(34963, () -> {
                 RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(this.drawMode, this.vertexCount);
-                this.vertexFormat = indexBuffer.getElementFormat();
+                this.elementFormat = indexBuffer.getElementFormat();
                 return indexBuffer.getId();
             });
         } else {
@@ -80,8 +80,8 @@ implements AutoCloseable {
         ByteBuffer byteBuffer = pair.getSecond();
         int i = drawArrayParameters.getLimit();
         this.vertexCount = drawArrayParameters.getVertexCount();
-        this.vertexFormat = drawArrayParameters.getElementFormat();
-        this.elementFormat = drawArrayParameters.getVertexFormat();
+        this.elementFormat = drawArrayParameters.getElementFormat();
+        this.vertexFormat = drawArrayParameters.getVertexFormat();
         this.drawMode = drawArrayParameters.getMode();
         this.usesTexture = drawArrayParameters.isTextured();
         this.bindVertexArray();
@@ -115,7 +115,7 @@ implements AutoCloseable {
         if (this.vertexCount == 0) {
             return;
         }
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.vertexFormat.count);
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
     }
 
     public void setShader(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
@@ -175,7 +175,7 @@ implements AutoCloseable {
         this.bind();
         this.getElementFormat().startDrawing();
         shader.bind();
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.vertexFormat.count);
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
         shader.unbind();
         this.getElementFormat().endDrawing();
         VertexBuffer.unbind();
@@ -189,8 +189,8 @@ implements AutoCloseable {
         RenderSystem.assertOnRenderThread();
         this.bindVertexArray();
         this.bind();
-        this.elementFormat.startDrawing();
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.vertexFormat.count);
+        this.vertexFormat.startDrawing();
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
     }
 
     public static void unbind() {
@@ -215,7 +215,7 @@ implements AutoCloseable {
     }
 
     public VertexFormat getElementFormat() {
-        return this.elementFormat;
+        return this.vertexFormat;
     }
 }
 

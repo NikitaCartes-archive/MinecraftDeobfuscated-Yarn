@@ -343,7 +343,7 @@ public class ChunkHolder {
         boolean bl4 = levelType2.isAfter(LevelType.BORDER);
         this.accessible |= bl4;
         if (!bl3 && bl4) {
-            this.accessibleFuture = chunkStorage.method_31417(this);
+            this.accessibleFuture = chunkStorage.makeChunkAccessible(this);
             this.method_31409(chunkStorage, this.accessibleFuture, executor, LevelType.BORDER);
             this.combineSavingFuture(this.accessibleFuture, "full");
         }

@@ -342,8 +342,8 @@ public class MultiNoiseUtil {
         static abstract class TreeNode<T> {
             protected final ParameterRange[] parameters;
 
-            protected TreeNode(List<ParameterRange> subTree) {
-                this.parameters = subTree.toArray(new ParameterRange[0]);
+            protected TreeNode(List<ParameterRange> parameters) {
+                this.parameters = parameters.toArray(new ParameterRange[0]);
             }
 
             protected abstract TreeLeafNode<T> getResultingNode(long[] var1, @Nullable TreeLeafNode<T> var2, NodeDistanceFunction<T> var3);

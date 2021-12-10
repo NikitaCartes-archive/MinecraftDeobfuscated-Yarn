@@ -104,8 +104,8 @@ AutoCloseable {
     private final MapRenderer mapRenderer;
     private final BufferBuilderStorage buffers;
     private int ticks;
-    private float movementFovMultiplier;
-    private float lastMovementFovMultiplier;
+    private float fovMultiplier;
+    private float lastFovMultiplier;
     private float skyDarkness;
     private float lastSkyDarkness;
     private boolean renderHand = true;
@@ -579,7 +579,7 @@ AutoCloseable {
     }
 
     public void tick() {
-        this.updateMovementFovMultiplier();
+        this.updateFovMultiplier();
         this.lightmapTextureManager.tick();
         if (this.client.getCameraEntity() == null) {
             this.client.setCameraEntity(this.client.player);
@@ -666,19 +666,19 @@ AutoCloseable {
         this.client.getProfiler().pop();
     }
 
-    private void updateMovementFovMultiplier() {
+    private void updateFovMultiplier() {
         float f = 1.0f;
         if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity) {
             AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)this.client.getCameraEntity();
-            f = abstractClientPlayerEntity.getSpeed();
+            f = abstractClientPlayerEntity.getFovMultiplier();
         }
-        this.lastMovementFovMultiplier = this.movementFovMultiplier;
-        this.movementFovMultiplier += (f - this.movementFovMultiplier) * 0.5f;
-        if (this.movementFovMultiplier > 1.5f) {
-            this.movementFovMultiplier = 1.5f;
+        this.lastFovMultiplier = this.fovMultiplier;
+        this.fovMultiplier += (f - this.fovMultiplier) * 0.5f;
+        if (this.fovMultiplier > 1.5f) {
+            this.fovMultiplier = 1.5f;
         }
-        if (this.movementFovMultiplier < 0.1f) {
-            this.movementFovMultiplier = 0.1f;
+        if (this.fovMultiplier < 0.1f) {
+            this.fovMultiplier = 0.1f;
         }
     }
 
@@ -690,7 +690,7 @@ AutoCloseable {
         double d = 70.0;
         if (changingFov) {
             d = this.client.options.fov;
-            d *= (double)MathHelper.lerp(tickDelta, this.lastMovementFovMultiplier, this.movementFovMultiplier);
+            d *= (double)MathHelper.lerp(tickDelta, this.lastFovMultiplier, this.fovMultiplier);
         }
         if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isDead()) {
             float f = Math.min((float)((LivingEntity)camera.getFocusedEntity()).deathTime + tickDelta, 20.0f);

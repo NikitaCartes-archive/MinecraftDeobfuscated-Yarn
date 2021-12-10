@@ -55,7 +55,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     private static final double field_34679 = 1.5;
     private final GenerationShapeConfig config;
     private final boolean hasNoiseCaves;
-    private final ChunkNoiseSampler.ValueSamplerFactory intialNoiseSampler;
+    private final ChunkNoiseSampler.ValueSamplerFactory initialNoiseSampler;
     private final InterpolatedNoiseSampler terrainNoise;
     @Nullable
     private final SimplexNoiseSampler islandNoise;
@@ -103,7 +103,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     public NoiseColumnSampler(GenerationShapeConfig config, boolean hasNoiseCaves, long seed, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, ChunkRandom.RandomProvider randomProvider) {
         this.config = config;
         this.hasNoiseCaves = hasNoiseCaves;
-        this.intialNoiseSampler = chunkNoiseSampler -> chunkNoiseSampler.createNoiseInterpolator((x, y, z) -> this.sampleNoiseColumn(x, y, z, chunkNoiseSampler.createMultiNoisePoint(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(z)).terrainInfo(), chunkNoiseSampler.getBlender()));
+        this.initialNoiseSampler = chunkNoiseSampler -> chunkNoiseSampler.createNoiseInterpolator((x, y, z) -> this.sampleNoiseColumn(x, y, z, chunkNoiseSampler.createMultiNoisePoint(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(z)).terrainInfo(), chunkNoiseSampler.getBlender()));
         if (config.islandNoiseOverride()) {
             AbstractRandom abstractRandom = randomProvider.create(seed);
             abstractRandom.skip(17292);
@@ -266,7 +266,7 @@ implements MultiNoiseUtil.MultiNoiseSampler {
     }
 
     protected ChunkNoiseSampler.BlockStateSampler createInitialNoiseBlockStateSampler(ChunkNoiseSampler chunkNoiseSampler, ChunkNoiseSampler.ColumnSampler columnSampler, boolean hasNoodleCaves) {
-        ChunkNoiseSampler.ValueSampler valueSampler = this.intialNoiseSampler.create(chunkNoiseSampler);
+        ChunkNoiseSampler.ValueSampler valueSampler = this.initialNoiseSampler.create(chunkNoiseSampler);
         ChunkNoiseSampler.ValueSampler valueSampler2 = hasNoodleCaves ? this.noodleNoiseFactory.create(chunkNoiseSampler) : () -> -1.0;
         ChunkNoiseSampler.ValueSampler valueSampler3 = hasNoodleCaves ? this.noodleThicknessNoiseFactory.create(chunkNoiseSampler) : () -> 0.0;
         ChunkNoiseSampler.ValueSampler valueSampler4 = hasNoodleCaves ? this.noodleRidgeFirstNoiseFactory.create(chunkNoiseSampler) : () -> 0.0;

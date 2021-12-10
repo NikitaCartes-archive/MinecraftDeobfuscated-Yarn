@@ -19,7 +19,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtNull;
+import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
@@ -96,9 +96,9 @@ public class NbtIo {
 
     public static void read(DataInput input, NbtScanner visitor) throws IOException {
         NbtType<?> nbtType = NbtTypes.byId(input.readByte());
-        if (nbtType == NbtNull.TYPE) {
-            if (visitor.start(NbtNull.TYPE) == NbtScanner.Result.CONTINUE) {
-                visitor.visitNull();
+        if (nbtType == NbtEnd.TYPE) {
+            if (visitor.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
+                visitor.visitEnd();
             }
             return;
         }
@@ -130,7 +130,7 @@ public class NbtIo {
     private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
         byte b = input.readByte();
         if (b == 0) {
-            return NbtNull.INSTANCE;
+            return NbtEnd.INSTANCE;
         }
         NbtString.skip(input);
         try {

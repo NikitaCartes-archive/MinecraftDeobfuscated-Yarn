@@ -25,9 +25,9 @@ extends SpriteBillboardParticle {
         this.velocityY *= (double)0.01f;
         this.velocityZ *= (double)0.01f;
         this.velocityY += 0.2;
-        this.colorRed = Math.max(0.0f, MathHelper.sin(((float)d + 0.0f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
-        this.colorGreen = Math.max(0.0f, MathHelper.sin(((float)d + 0.33333334f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
-        this.colorBlue = Math.max(0.0f, MathHelper.sin(((float)d + 0.6666667f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.red = Math.max(0.0f, MathHelper.sin(((float)d + 0.0f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.green = Math.max(0.0f, MathHelper.sin(((float)d + 0.33333334f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
+        this.blue = Math.max(0.0f, MathHelper.sin(((float)d + 0.6666667f) * ((float)Math.PI * 2)) * 0.65f + 0.35f);
         this.scale *= 1.5f;
         this.maxAge = 6;
     }

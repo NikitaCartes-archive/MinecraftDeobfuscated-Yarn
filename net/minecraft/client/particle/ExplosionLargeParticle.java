@@ -22,9 +22,9 @@ extends SpriteBillboardParticle {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float f;
         this.maxAge = 6 + this.random.nextInt(4);
-        this.colorRed = f = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorGreen = f;
-        this.colorBlue = f;
+        this.red = f = this.random.nextFloat() * 0.6f + 0.4f;
+        this.green = f;
+        this.blue = f;
         this.scale = 2.0f * (1.0f - (float)d * 0.5f);
         this.spriteProvider = spriteProvider;
         this.setSpriteForAge(spriteProvider);

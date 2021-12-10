@@ -260,7 +260,7 @@ Waterloggable {
     }
 
     @Override
-    public float getMaxModelOffset() {
+    public float getMaxHorizontalModelOffset() {
         return 0.125f;
     }
 

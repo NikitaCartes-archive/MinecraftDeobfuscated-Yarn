@@ -67,19 +67,19 @@ extends ProjectileEntity {
     private final int luckOfTheSeaLevel;
     private final int lureLevel;
 
-    private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int lureLevel, int luckOfTheSeaLevel) {
+    private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int luckOfTheSeaLevel, int lureLevel) {
         super((EntityType<? extends ProjectileEntity>)type, world);
         this.ignoreCameraFrustum = true;
-        this.luckOfTheSeaLevel = Math.max(0, lureLevel);
-        this.lureLevel = Math.max(0, luckOfTheSeaLevel);
+        this.luckOfTheSeaLevel = Math.max(0, luckOfTheSeaLevel);
+        this.lureLevel = Math.max(0, lureLevel);
     }
 
     public FishingBobberEntity(EntityType<? extends FishingBobberEntity> entityType, World world) {
         this(entityType, world, 0, 0);
     }
 
-    public FishingBobberEntity(PlayerEntity thrower, World world, int lureLevel, int luckOfTheSeaLevel) {
-        this(EntityType.FISHING_BOBBER, world, lureLevel, luckOfTheSeaLevel);
+    public FishingBobberEntity(PlayerEntity thrower, World world, int luckOfTheSeaLevel, int lureLevel) {
+        this(EntityType.FISHING_BOBBER, world, luckOfTheSeaLevel, lureLevel);
         this.setOwner(thrower);
         float f = thrower.getPitch();
         float g = thrower.getYaw();

@@ -433,10 +433,10 @@ public class Util {
         }
     }
 
-    public static void method_39977(String string, Throwable throwable) {
-        LOGGER.error(string, throwable);
+    public static void error(String message, Throwable throwable) {
+        LOGGER.error(message, throwable);
         if (SharedConstants.isDevelopment) {
-            Util.pause(string);
+            Util.pause(message);
         }
     }
 

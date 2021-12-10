@@ -19,11 +19,11 @@ public interface NbtElement {
     public static final int field_33248 = 32;
     public static final int field_33249 = 224;
     /**
-     * The numeric ID of an NBT null value. Is {@value}.
+     * The numeric ID of an NBT end value. Is {@value}.
      * 
-     * @see NbtNull
+     * @see NbtEnd
      */
-    public static final byte NULL_TYPE = 0;
+    public static final byte END_TYPE = 0;
     /**
      * The numeric ID of an NBT byte value. Is {@value}.
      * 

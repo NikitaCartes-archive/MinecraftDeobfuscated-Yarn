@@ -56,7 +56,7 @@ public class LootContext {
     public <T> T requireParameter(LootContextParameter<T> parameter) {
         Object object = this.parameters.get(parameter);
         if (object == null) {
-            throw new NoSuchElementException(parameter.getIdentifier().toString());
+            throw new NoSuchElementException(parameter.getId().toString());
         }
         return (T)object;
     }

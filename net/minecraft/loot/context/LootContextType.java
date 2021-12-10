@@ -33,7 +33,7 @@ public class LootContextType {
     }
 
     public String toString() {
-        return "[" + Joiner.on(", ").join(this.allowed.stream().map(parameter -> (this.required.contains(parameter) ? "!" : "") + parameter.getIdentifier()).iterator()) + "]";
+        return "[" + Joiner.on(", ").join(this.allowed.stream().map(parameter -> (this.required.contains(parameter) ? "!" : "") + parameter.getId()).iterator()) + "]";
     }
 
     public void validate(LootTableReporter reporter, LootContextAware parameterConsumer) {
@@ -54,7 +54,7 @@ public class LootContextType {
 
         public Builder require(LootContextParameter<?> parameter) {
             if (this.allowed.contains(parameter)) {
-                throw new IllegalArgumentException("Parameter " + parameter.getIdentifier() + " is already optional");
+                throw new IllegalArgumentException("Parameter " + parameter.getId() + " is already optional");
             }
             this.required.add(parameter);
             return this;
@@ -62,7 +62,7 @@ public class LootContextType {
 
         public Builder allow(LootContextParameter<?> parameter) {
             if (this.required.contains(parameter)) {
-                throw new IllegalArgumentException("Parameter " + parameter.getIdentifier() + " is already required");
+                throw new IllegalArgumentException("Parameter " + parameter.getId() + " is already required");
             }
             this.allowed.add(parameter);
             return this;

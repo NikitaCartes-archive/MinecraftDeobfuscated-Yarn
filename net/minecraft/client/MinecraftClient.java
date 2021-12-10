@@ -1064,7 +1064,7 @@ implements WindowEventHandler {
         this.profiler.pop();
         this.window.setPhase("Post render");
         ++this.fpsCounter;
-        boolean bl2 = bl = this.isIntegratedServerRunning() && (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame()) && !this.server.isRemote();
+        boolean bl2 = bl = this.isIntegratedServerRunning() && (this.currentScreen != null && this.currentScreen.shouldPause() || this.overlay != null && this.overlay.pausesGame()) && !this.server.isRemote();
         if (this.paused != bl) {
             if (this.paused) {
                 this.pausedTickDelta = this.renderTickCounter.tickDelta;
@@ -1174,7 +1174,7 @@ implements WindowEventHandler {
         }
         Consumer<ProfileResult> consumer = result -> {
             int i = result.getTickSpan();
-            double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
+            double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
             this.execute(() -> chatMessageSender.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
         Consumer<Path> consumer2 = path -> {

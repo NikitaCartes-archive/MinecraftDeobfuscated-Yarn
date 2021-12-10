@@ -54,13 +54,13 @@ public final class ChunkGeneratorSettings {
     public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("caves"));
     public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, new Identifier("floating_islands"));
 
-    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, MaterialRules.MaterialRule surfaceRule, int bedrockCeilingY, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean oreVeins, boolean noodleCaves, boolean useLegacyRandom) {
+    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, MaterialRules.MaterialRule surfaceRule, int seaLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean oreVeins, boolean noodleCaves, boolean useLegacyRandom) {
         this.structuresConfig = structuresConfig;
         this.generationShapeConfig = generationShapeConfig;
         this.defaultBlock = defaultBlock;
         this.defaultFluid = defaultFluid;
         this.surfaceRule = surfaceRule;
-        this.seaLevel = bedrockCeilingY;
+        this.seaLevel = seaLevel;
         this.mobGenerationDisabled = mobGenerationDisabled;
         this.aquifers = aquifers;
         this.noiseCaves = noiseCaves;

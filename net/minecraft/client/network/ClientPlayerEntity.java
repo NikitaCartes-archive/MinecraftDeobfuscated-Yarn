@@ -802,7 +802,7 @@ extends AbstractClientPlayerEntity {
     private void updateNausea() {
         this.lastNauseaStrength = this.nextNauseaStrength;
         if (this.inNetherPortal) {
-            if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen() && !(this.client.currentScreen instanceof DeathScreen)) {
+            if (this.client.currentScreen != null && !this.client.currentScreen.shouldPause() && !(this.client.currentScreen instanceof DeathScreen)) {
                 if (this.client.currentScreen instanceof HandledScreen) {
                     this.closeHandledScreen();
                 }

@@ -18,7 +18,7 @@ extends NbtScanner {
     public static final SimpleNbtScanner NOOP = new SimpleNbtScanner(){};
 
     @Override
-    default public NbtScanner.Result visitNull() {
+    default public NbtScanner.Result visitEnd() {
         return NbtScanner.Result.CONTINUE;
     }
 

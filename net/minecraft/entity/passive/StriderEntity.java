@@ -92,7 +92,7 @@ Saddleable {
     public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
-        this.inanimate = true;
+        this.intersectionChecked = true;
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
         this.setPathfindingPenalty(PathNodeType.LAVA, 0.0f);
         this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0f);
@@ -203,7 +203,7 @@ Saddleable {
 
     @Override
     public boolean canSpawn(WorldView world) {
-        return world.intersectsEntities(this);
+        return world.doesNotIntersectEntities(this);
     }
 
     @Override

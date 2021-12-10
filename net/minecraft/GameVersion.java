@@ -7,7 +7,7 @@ import net.minecraft.SaveVersion;
 
 /**
  * The game version interface used by Minecraft, replacing the javabridge
- * one's occurences in Minecraft code.
+ * one's occurrences in Minecraft code.
  */
 public interface GameVersion
 extends com.mojang.bridge.game.GameVersion {

@@ -27,9 +27,9 @@ extends SpriteBillboardParticle {
         this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityZ = velocityZ + (Math.random() * 2.0 - 1.0) * (double)0.05f;
-        this.colorRed = f = this.random.nextFloat() * 0.3f + 0.7f;
-        this.colorGreen = f;
-        this.colorBlue = f;
+        this.red = f = this.random.nextFloat() * 0.3f + 0.7f;
+        this.green = f;
+        this.blue = f;
         this.scale = 0.1f * (this.random.nextFloat() * this.random.nextFloat() * 6.0f + 1.0f);
         this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
         this.setSpriteForAge(spriteProvider);

@@ -270,12 +270,12 @@ implements VillagerDataContainer {
         return ItemStack.EMPTY;
     }
 
-    public void setOfferData(NbtCompound offerTag) {
-        this.offerData = offerTag;
+    public void setOfferData(NbtCompound offerData) {
+        this.offerData = offerData;
     }
 
-    public void setGossipData(NbtElement gossipTag) {
-        this.gossipData = gossipTag;
+    public void setGossipData(NbtElement gossipData) {
+        this.gossipData = gossipData;
     }
 
     @Override

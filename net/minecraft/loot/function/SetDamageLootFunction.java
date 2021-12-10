@@ -26,8 +26,8 @@ extends ConditionalLootFunction {
     final LootNumberProvider durabilityRange;
     final boolean add;
 
-    SetDamageLootFunction(LootCondition[] conditons, LootNumberProvider durabilityRange, boolean add) {
-        super(conditons);
+    SetDamageLootFunction(LootCondition[] conditions, LootNumberProvider durabilityRange, boolean add) {
+        super(conditions);
         this.durabilityRange = durabilityRange;
         this.add = add;
     }

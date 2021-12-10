@@ -73,13 +73,13 @@ implements ChunkDataAccess<Entity> {
         }, this.taskExecutor::send);
     }
 
-    private static ChunkPos getChunkPos(NbtCompound chunkTag) {
-        int[] is = chunkTag.getIntArray(POSITION_KEY);
+    private static ChunkPos getChunkPos(NbtCompound chunkNbt) {
+        int[] is = chunkNbt.getIntArray(POSITION_KEY);
         return new ChunkPos(is[0], is[1]);
     }
 
-    private static void putChunkPos(NbtCompound chunkTag, ChunkPos pos) {
-        chunkTag.put(POSITION_KEY, new NbtIntArray(new int[]{pos.x, pos.z}));
+    private static void putChunkPos(NbtCompound chunkNbt, ChunkPos pos) {
+        chunkNbt.put(POSITION_KEY, new NbtIntArray(new int[]{pos.x, pos.z}));
     }
 
     private static ChunkDataList<Entity> emptyDataList(ChunkPos pos) {
@@ -119,13 +119,13 @@ implements ChunkDataAccess<Entity> {
         this.taskExecutor.awaitAll();
     }
 
-    private NbtCompound fixChunkData(NbtCompound chunkTag) {
-        int i = EntityChunkDataAccess.getChunkDataVersion(chunkTag);
-        return NbtHelper.update(this.dataFixer, DataFixTypes.ENTITY_CHUNK, chunkTag, i);
+    private NbtCompound fixChunkData(NbtCompound chunkNbt) {
+        int i = EntityChunkDataAccess.getChunkDataVersion(chunkNbt);
+        return NbtHelper.update(this.dataFixer, DataFixTypes.ENTITY_CHUNK, chunkNbt, i);
     }
 
-    public static int getChunkDataVersion(NbtCompound chunkTag) {
-        return chunkTag.contains("DataVersion", 99) ? chunkTag.getInt("DataVersion") : -1;
+    public static int getChunkDataVersion(NbtCompound chunkNbt) {
+        return chunkNbt.contains("DataVersion", 99) ? chunkNbt.getInt("DataVersion") : -1;
     }
 
     @Override

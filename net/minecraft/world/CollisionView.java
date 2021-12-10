@@ -28,17 +28,17 @@ extends BlockView {
     @Nullable
     public BlockView getChunkAsView(int var1, int var2);
 
-    default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+    default public boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
         return true;
     }
 
     default public boolean canPlace(BlockState state, BlockPos pos, ShapeContext context) {
         VoxelShape voxelShape = state.getCollisionShape(this, pos, context);
-        return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset(pos.getX(), pos.getY(), pos.getZ()));
+        return voxelShape.isEmpty() || this.doesNotIntersectEntities(null, voxelShape.offset(pos.getX(), pos.getY(), pos.getZ()));
     }
 
-    default public boolean intersectsEntities(Entity entity) {
-        return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
+    default public boolean doesNotIntersectEntities(Entity entity) {
+        return this.doesNotIntersectEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
     }
 
     default public boolean isSpaceEmpty(Box box) {

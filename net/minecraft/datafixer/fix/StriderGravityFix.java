@@ -16,7 +16,7 @@ extends ChoiceFix {
         super(outputSchema, changesType, "StriderGravityFix", TypeReferences.ENTITY, "minecraft:strider");
     }
 
-    public Dynamic<?> updateNoGravityTag(Dynamic<?> dynamic) {
+    public Dynamic<?> updateNoGravityNbt(Dynamic<?> dynamic) {
         if (dynamic.get("NoGravity").asBoolean(false)) {
             return dynamic.set("NoGravity", dynamic.createBoolean(false));
         }
@@ -25,7 +25,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), this::updateNoGravityTag);
+        return inputType.update(DSL.remainderFinder(), this::updateNoGravityNbt);
     }
 }
 

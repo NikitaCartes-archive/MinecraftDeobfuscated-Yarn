@@ -47,7 +47,7 @@ extends EntityNavigation {
     public void tick() {
         Vec3d vec3d;
         ++this.tickCount;
-        if (this.shouldRecalculate) {
+        if (this.inRecalculationCooldown) {
             this.recalculatePath();
         }
         if (this.isIdle()) {

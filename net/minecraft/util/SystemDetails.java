@@ -91,7 +91,7 @@ public class SystemDetails {
         }
     }
 
-    private void addVertualMemoryGroup(VirtualMemory virtualMemory) {
+    private void addVirtualMemoryGroup(VirtualMemory virtualMemory) {
         this.addSection("Virtual memory max (MB)", () -> String.format("%.2f", Float.valueOf((float)virtualMemory.getVirtualMax() / 1048576.0f)));
         this.addSection("Virtual memory used (MB)", () -> String.format("%.2f", Float.valueOf((float)virtualMemory.getVirtualInUse() / 1048576.0f)));
         this.addSection("Swap memory total (MB)", () -> String.format("%.2f", Float.valueOf((float)virtualMemory.getSwapTotal() / 1048576.0f)));
@@ -100,7 +100,7 @@ public class SystemDetails {
 
     private void addGlobalMemoryGroup(GlobalMemory globalMemory) {
         this.tryAddGroup("physical memory", () -> this.addPhysicalMemoryGroup(globalMemory.getPhysicalMemory()));
-        this.tryAddGroup("virtual memory", () -> this.addVertualMemoryGroup(globalMemory.getVirtualMemory()));
+        this.tryAddGroup("virtual memory", () -> this.addVirtualMemoryGroup(globalMemory.getVirtualMemory()));
     }
 
     private void addGraphicsCardGroup(List<GraphicsCard> graphicsCards) {

@@ -23,59 +23,59 @@ import net.minecraft.text.TranslatableText;
 public class RealmsGenericErrorScreen
 extends RealmsScreen {
     private final Screen parent;
-    private final Pair<Text, Text> field_36321;
-    private MultilineText field_36322 = MultilineText.EMPTY;
+    private final Pair<Text, Text> errorMessages;
+    private MultilineText description = MultilineText.EMPTY;
 
-    public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen screen) {
+    public RealmsGenericErrorScreen(RealmsServiceException realmsServiceException, Screen parent) {
         super(NarratorManager.EMPTY);
-        this.parent = screen;
-        this.field_36321 = RealmsGenericErrorScreen.method_39981(realmsServiceException);
+        this.parent = parent;
+        this.errorMessages = RealmsGenericErrorScreen.getErrorMessages(realmsServiceException);
     }
 
-    public RealmsGenericErrorScreen(Text line2, Screen screen) {
+    public RealmsGenericErrorScreen(Text description, Screen parent) {
         super(NarratorManager.EMPTY);
-        this.parent = screen;
-        this.field_36321 = RealmsGenericErrorScreen.errorMessage(line2);
+        this.parent = parent;
+        this.errorMessages = RealmsGenericErrorScreen.getErrorMessages(description);
     }
 
-    public RealmsGenericErrorScreen(Text line1, Text line2, Screen screen) {
+    public RealmsGenericErrorScreen(Text title, Text description, Screen parent) {
         super(NarratorManager.EMPTY);
-        this.parent = screen;
-        this.field_36321 = RealmsGenericErrorScreen.errorMessage(line1, line2);
+        this.parent = parent;
+        this.errorMessages = RealmsGenericErrorScreen.getErrorMessages(title, description);
     }
 
-    private static Pair<Text, Text> method_39981(RealmsServiceException realmsServiceException) {
-        if (realmsServiceException.field_36320 == null) {
-            return Pair.of(new LiteralText("An error occurred (" + realmsServiceException.httpResultCode + "):"), new LiteralText(realmsServiceException.field_36319));
+    private static Pair<Text, Text> getErrorMessages(RealmsServiceException exception) {
+        if (exception.error == null) {
+            return Pair.of(new LiteralText("An error occurred (" + exception.httpResultCode + "):"), new LiteralText(exception.httpResponseText));
         }
-        String string = "mco.errorMessage." + realmsServiceException.field_36320.getErrorCode();
-        return Pair.of(new LiteralText("Realms (" + realmsServiceException.field_36320 + "):"), I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(realmsServiceException.field_36320.getErrorMessage()));
+        String string = "mco.errorMessage." + exception.error.getErrorCode();
+        return Pair.of(new LiteralText("Realms (" + exception.error + "):"), I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(exception.error.getErrorMessage()));
     }
 
-    private static Pair<Text, Text> errorMessage(Text text) {
-        return Pair.of(new LiteralText("An error occurred: "), text);
+    private static Pair<Text, Text> getErrorMessages(Text description) {
+        return Pair.of(new LiteralText("An error occurred: "), description);
     }
 
-    private static Pair<Text, Text> errorMessage(Text text, Text text2) {
-        return Pair.of(text, text2);
+    private static Pair<Text, Text> getErrorMessages(Text title, Text description) {
+        return Pair.of(title, description);
     }
 
     @Override
     public void init() {
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.setScreen(this.parent)));
-        this.field_36322 = MultilineText.create(this.textRenderer, (StringVisitable)this.field_36321.getSecond(), this.width * 3 / 4);
+        this.description = MultilineText.create(this.textRenderer, (StringVisitable)this.errorMessages.getSecond(), this.width * 3 / 4);
     }
 
     @Override
     public Text getNarratedTitle() {
-        return new LiteralText("").append(this.field_36321.getFirst()).append(": ").append(this.field_36321.getSecond());
+        return new LiteralText("").append(this.errorMessages.getFirst()).append(": ").append(this.errorMessages.getSecond());
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsGenericErrorScreen.drawCenteredText(matrices, this.textRenderer, this.field_36321.getFirst(), this.width / 2, 80, 0xFFFFFF);
-        this.field_36322.drawCenterWithShadow(matrices, this.width / 2, 100, this.client.textRenderer.fontHeight, 0xFF0000);
+        RealmsGenericErrorScreen.drawCenteredText(matrices, this.textRenderer, this.errorMessages.getFirst(), this.width / 2, 80, 0xFFFFFF);
+        this.description.drawCenterWithShadow(matrices, this.width / 2, 100, this.client.textRenderer.fontHeight, 0xFF0000);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

@@ -14,9 +14,9 @@ import net.minecraft.client.world.ClientWorld;
 public class AnimatedParticle
 extends SpriteBillboardParticle {
     protected final SpriteProvider spriteProvider;
-    private float targetColorRed;
-    private float targetColorGreen;
-    private float targetColorBlue;
+    private float targetRed;
+    private float targetGreen;
+    private float targetBlue;
     private boolean changesColor;
 
     protected AnimatedParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
@@ -35,9 +35,9 @@ extends SpriteBillboardParticle {
     }
 
     public void setTargetColor(int rgbHex) {
-        this.targetColorRed = (float)((rgbHex & 0xFF0000) >> 16) / 255.0f;
-        this.targetColorGreen = (float)((rgbHex & 0xFF00) >> 8) / 255.0f;
-        this.targetColorBlue = (float)((rgbHex & 0xFF) >> 0) / 255.0f;
+        this.targetRed = (float)((rgbHex & 0xFF0000) >> 16) / 255.0f;
+        this.targetGreen = (float)((rgbHex & 0xFF00) >> 8) / 255.0f;
+        this.targetBlue = (float)((rgbHex & 0xFF) >> 0) / 255.0f;
         this.changesColor = true;
     }
 
@@ -51,11 +51,11 @@ extends SpriteBillboardParticle {
         super.tick();
         this.setSpriteForAge(this.spriteProvider);
         if (this.age > this.maxAge / 2) {
-            this.setColorAlpha(1.0f - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
+            this.setAlpha(1.0f - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
             if (this.changesColor) {
-                this.colorRed += (this.targetColorRed - this.colorRed) * 0.2f;
-                this.colorGreen += (this.targetColorGreen - this.colorGreen) * 0.2f;
-                this.colorBlue += (this.targetColorBlue - this.colorBlue) * 0.2f;
+                this.red += (this.targetRed - this.red) * 0.2f;
+                this.green += (this.targetGreen - this.green) * 0.2f;
+                this.blue += (this.targetBlue - this.blue) * 0.2f;
             }
         }
     }

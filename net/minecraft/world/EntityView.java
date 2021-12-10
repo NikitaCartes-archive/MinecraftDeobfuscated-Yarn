@@ -65,12 +65,12 @@ public interface EntityView {
         return this.getOtherEntities(except, box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 
-    default public boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+    default public boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
         if (shape.isEmpty()) {
             return true;
         }
-        for (Entity entity2 : this.getOtherEntities(entity, shape.getBoundingBox())) {
-            if (entity2.isRemoved() || !entity2.inanimate || entity != null && entity2.isConnectedThroughVehicle(entity) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity2.getBoundingBox()), BooleanBiFunction.AND)) continue;
+        for (Entity entity : this.getOtherEntities(except, shape.getBoundingBox())) {
+            if (entity.isRemoved() || !entity.intersectionChecked || except != null && entity.isConnectedThroughVehicle(except) || !VoxelShapes.matchesAnywhere(shape, VoxelShapes.cuboid(entity.getBoundingBox()), BooleanBiFunction.AND)) continue;
             return false;
         }
         return true;

@@ -32,9 +32,9 @@ extends SpriteBillboardParticle {
         this.velocityX += velocityX;
         this.velocityY += velocityY;
         this.velocityZ += velocityZ;
-        this.colorRed = g = 1.0f - (float)(Math.random() * (double)0.3f);
-        this.colorGreen = g;
-        this.colorBlue = g;
+        this.red = g = 1.0f - (float)(Math.random() * (double)0.3f);
+        this.green = g;
+        this.blue = g;
         this.scale *= 1.875f;
         int i = (int)(8.0 / (Math.random() * 0.8 + 0.3));
         this.maxAge = (int)Math.max((float)i * 2.5f, 1.0f);
@@ -80,7 +80,7 @@ extends SpriteBillboardParticle {
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             CloudParticle particle = new CloudParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
             particle.setColor(200.0f, 50.0f, 120.0f);
-            particle.setColorAlpha(0.4f);
+            particle.setAlpha(0.4f);
             return particle;
         }
     }

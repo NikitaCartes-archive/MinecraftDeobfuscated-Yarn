@@ -36,9 +36,9 @@ extends AbstractDustParticle<DustColorTransitionParticleEffect> {
         float f = ((float)this.age + tickDelta) / ((float)this.maxAge + 1.0f);
         Vec3f vec3f = this.startColor.copy();
         vec3f.lerp(this.endColor, f);
-        this.colorRed = vec3f.getX();
-        this.colorGreen = vec3f.getY();
-        this.colorBlue = vec3f.getZ();
+        this.red = vec3f.getX();
+        this.green = vec3f.getY();
+        this.blue = vec3f.getZ();
     }
 
     @Override

@@ -119,7 +119,7 @@ extends PlayerEntity {
         return playerListEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : playerListEntry.getModel();
     }
 
-    public float getSpeed() {
+    public float getFovMultiplier() {
         float f = 1.0f;
         if (this.getAbilities().flying) {
             f *= 1.1f;

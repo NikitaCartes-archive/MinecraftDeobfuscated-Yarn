@@ -70,6 +70,18 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An abstract class that defines some logic for {@link Block blocks}.
+ * 
+ * <p id="deprecated-methods">Deprecated methods in this class mean they
+ * should only be called from the corresponding method in {@link
+ * AbstractBlockState} or subclasses of this class. In vanilla subclasses,
+ * these methods are called either to do the default behavior (e.g.
+ * {@code super.onUse(...)}) or to delegate logic to other blocks (e.g.
+ * {@link net.minecraft.block.StairsBlock#randomTick
+ * StairsBlock#randomTick} calls {@code randomTick} of its base block).
+ * It's fine to override them, as they are overridden by vanilla blocks.
+ */
 public abstract class AbstractBlock {
     protected static final Direction[] DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     protected final Material material;
@@ -99,10 +111,16 @@ public abstract class AbstractBlock {
         this.settings = settings;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#prepare(WorldAccess, BlockPos, int, int)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void prepare(BlockState state, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#canPathfindThrough} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         switch (type) {
@@ -124,6 +142,8 @@ public abstract class AbstractBlock {
      * 
      * @return the new state of this block
      * 
+     * @deprecated Consider calling {@link AbstractBlockState#getStateForNeighborUpdate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     * 
      * @param neighborState the state of the updated neighbor block
      * @param direction the direction from this block to the neighbor
      * @param state the state of this block
@@ -136,22 +156,33 @@ public abstract class AbstractBlock {
         return state;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#isSideInvisible} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
         return false;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
         DebugInfoSender.sendNeighborUpdate(world, pos);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onBlockAdded} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
     }
 
     /**
      * Called in {@link net.minecraft.world.chunk.WorldChunk#setBlockState(BlockPos, BlockState, boolean)} if {@code newState} is different from {@code state}. Vanilla blocks perform removal cleanups here.
+     * 
+     * @deprecated Consider calling {@link AbstractBlockState#onStateReplaced} instead. See <a href="#deprecated-methods">the class javadoc</a>.
      */
     @Deprecated
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
@@ -170,42 +201,65 @@ public abstract class AbstractBlock {
      * <p>If the action result is successful on a logical client, then the action will be sent to the logical server for processing.
      * 
      * @return an action result that specifies if using the block was successful.
+     * 
+     * @deprecated Consider calling {@link AbstractBlockState#onUse} instead. See <a href="#deprecated-methods">the class javadoc</a>.
      */
     @Deprecated
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return ActionResult.PASS;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onSyncedBlockEvent} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
         return false;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getRenderType} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public BlockRenderType getRenderType(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#hasSidedTransparency} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean hasSidedTransparency(BlockState state) {
         return false;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#emitsRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean emitsRedstonePower(BlockState state) {
         return false;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getPistonBehavior} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public PistonBehavior getPistonBehavior(BlockState state) {
         return this.material.getPistonBehavior();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getFluidState} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public FluidState getFluidState(BlockState state) {
         return Fluids.EMPTY.getDefaultState();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#hasComparatorOutput} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean hasComparatorOutput(BlockState state) {
         return false;
@@ -215,7 +269,7 @@ public abstract class AbstractBlock {
         return OffsetType.NONE;
     }
 
-    public float getMaxModelOffset() {
+    public float getMaxHorizontalModelOffset() {
         return 0.25f;
     }
 
@@ -229,27 +283,41 @@ public abstract class AbstractBlock {
      * <p>By default, this returns the provided block state.
      * 
      * @return the rotated block state
+     * 
+     * @deprecated Consider calling {@link AbstractBlockState#rotate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
      */
     @Deprecated
     public BlockState rotate(BlockState state, BlockRotation rotation) {
         return state;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#mirror} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#canReplace} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
         return this.material.isReplaceable() && (context.getStack().isEmpty() || !context.getStack().isOf(this.asItem()));
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#canBucketPlace} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean canBucketPlace(BlockState state, Fluid fluid) {
         return this.material.isReplaceable() || !this.material.isSolid();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getDroppedStacks} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
         Identifier identifier = this.getLootTableId();
@@ -262,26 +330,41 @@ public abstract class AbstractBlock {
         return lootTable.generateLoot(lootContext);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getRenderingSeed} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public long getRenderingSeed(BlockState state, BlockPos pos) {
         return MathHelper.hashCode(pos);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getCullingShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return state.getOutlineShape(world, pos);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getSidesShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
         return this.getCollisionShape(state, world, pos, ShapeContext.absent());
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getRaycastShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
         return VoxelShapes.empty();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getOpacity} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public int getOpacity(BlockState state, BlockView world, BlockPos pos) {
         if (state.isOpaqueFullCube(world, pos)) {
@@ -290,56 +373,89 @@ public abstract class AbstractBlock {
         return state.isTranslucent(world, pos) ? 0 : 1;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#createScreenHandlerFactory} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Nullable
     @Deprecated
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
         return null;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#canPlaceAt} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return true;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getAmbientOcclusionLightLevel} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return state.isFullCube(world, pos) ? 0.2f : 1.0f;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getComparatorOutput} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return 0;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getOutlineShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return VoxelShapes.fullCube();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getCollisionShape(BlockView, BlockPos, ShapeContext)} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.collidable ? state.getOutlineShape(world, pos) : VoxelShapes.empty();
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#isFullCube} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public boolean isShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
         return Block.isShapeFullCube(state.getCollisionShape(world, pos));
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getCameraCollisionShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.getCollisionShape(state, world, pos, context);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#randomTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         this.scheduledTick(state, world, pos, random);
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#scheduledTick} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#calcBlockBreakingDelta} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         float f = state.getHardness(world, pos);
@@ -350,23 +466,38 @@ public abstract class AbstractBlock {
         return player.getBlockBreakingSpeed(state) / f / (float)i;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onBlockBreakStart} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getWeakRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return 0;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onEntityCollision} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#getStrongRedstonePower} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         return 0;
@@ -380,6 +511,9 @@ public abstract class AbstractBlock {
         return this.lootTableId;
     }
 
+    /**
+     * @deprecated Consider calling {@link AbstractBlockState#onProjectileHit} instead. See <a href="#deprecated-methods">the class javadoc</a>.
+     */
     @Deprecated
     public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
     }
@@ -824,7 +958,7 @@ public abstract class AbstractBlock {
                 return Vec3d.ZERO;
             }
             long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-            float f = block.getMaxModelOffset();
+            float f = block.getMaxHorizontalModelOffset();
             double d = MathHelper.clamp(((double)((float)(l & 0xFL) / 15.0f) - 0.5) * 0.5, (double)(-f), (double)f);
             double e = offsetType == OffsetType.XYZ ? ((double)((float)(l >> 4 & 0xFL) / 15.0f) - 1.0) * (double)block.getVerticalModelOffsetMultiplier() : 0.0;
             double g = MathHelper.clamp(((double)((float)(l >> 8 & 0xFL) / 15.0f) - 0.5) * 0.5, (double)(-f), (double)f);

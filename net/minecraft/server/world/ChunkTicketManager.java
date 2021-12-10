@@ -188,7 +188,7 @@ public abstract class ChunkTicketManager {
     }
 
     private SortedArraySet<ChunkTicket<?>> getTicketSet(long position) {
-        return this.ticketsByPosition.computeIfAbsent(position, l -> SortedArraySet.create(4));
+        return this.ticketsByPosition.computeIfAbsent(position, pos -> SortedArraySet.create(4));
     }
 
     protected void setChunkForced(ChunkPos pos, boolean forced) {
@@ -205,10 +205,10 @@ public abstract class ChunkTicketManager {
 
     public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity player) {
         ChunkPos chunkPos = pos.toChunkPos();
-        long l2 = chunkPos.toLong();
-        this.playersByChunkPos.computeIfAbsent(l2, l -> new ObjectOpenHashSet()).add(player);
-        this.distanceFromNearestPlayerTracker.updateLevel(l2, 0, true);
-        this.nearbyChunkTicketUpdater.updateLevel(l2, 0, true);
+        long l = chunkPos.toLong();
+        this.playersByChunkPos.computeIfAbsent(l, sectionPos -> new ObjectOpenHashSet()).add(player);
+        this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
+        this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
         this.simulationDistanceTracker.add(ChunkTicketType.PLAYER, chunkPos, this.getPlayerSimulationLevel(), chunkPos);
     }
 
@@ -440,16 +440,16 @@ public abstract class ChunkTicketManager {
                 while (longIterator.hasNext()) {
                     int j;
                     long l = longIterator.nextLong();
-                    int i2 = this.distances.get(l);
-                    if (i2 == (j = this.getLevel(l))) continue;
-                    ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, i -> {
-                        if (i >= this.distances.defaultReturnValue()) {
+                    int i = this.distances.get(l);
+                    if (i == (j = this.getLevel(l))) continue;
+                    ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, level -> {
+                        if (level >= this.distances.defaultReturnValue()) {
                             this.distances.remove(l);
                         } else {
-                            this.distances.put(l, i);
+                            this.distances.put(l, level);
                         }
                     });
-                    this.updateTicket(l, j, this.isWithinViewDistance(i2), this.isWithinViewDistance(j));
+                    this.updateTicket(l, j, this.isWithinViewDistance(i), this.isWithinViewDistance(j));
                 }
                 this.positionsAffected.clear();
             }

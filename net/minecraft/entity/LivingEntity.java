@@ -254,7 +254,7 @@ extends Entity {
         super(entityType, world);
         this.attributes = new AttributeContainer(DefaultAttributeRegistry.get(entityType));
         this.setHealth(this.getMaxHealth());
-        this.inanimate = true;
+        this.intersectionChecked = true;
         this.randomSmallSeed = (float)((Math.random() + 1.0) * (double)0.01f);
         this.refreshPosition();
         this.randomLargeSeed = (float)Math.random() * 12398.0f;

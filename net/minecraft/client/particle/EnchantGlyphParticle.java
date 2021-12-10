@@ -36,9 +36,9 @@ extends SpriteBillboardParticle {
         this.z = this.prevPosZ;
         this.scale = 0.1f * (this.random.nextFloat() * 0.5f + 0.2f);
         float j = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorRed = 0.9f * j;
-        this.colorGreen = 0.9f * j;
-        this.colorBlue = j;
+        this.red = 0.9f * j;
+        this.green = 0.9f * j;
+        this.blue = j;
         this.collidesWithWorld = false;
         this.maxAge = (int)(Math.random() * 10.0) + 30;
     }

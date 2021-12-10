@@ -186,7 +186,7 @@ extends Screen {
             OrderedText orderedText = this.cachedPage.get(m);
             this.textRenderer.draw(matrices, orderedText, (float)(i + 36), (float)(32 + m * this.textRenderer.fontHeight), 0);
         }
-        Style style = this.getTextAt(mouseX, mouseY);
+        Style style = this.getTextStyleAt(mouseX, mouseY);
         if (style != null) {
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
         }
@@ -196,7 +196,7 @@ extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         Style style;
-        if (button == 0 && (style = this.getTextAt(mouseX, mouseY)) != null && this.handleTextClick(style)) {
+        if (button == 0 && (style = this.getTextStyleAt(mouseX, mouseY)) != null && this.handleTextClick(style)) {
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -229,7 +229,7 @@ extends Screen {
     }
 
     @Nullable
-    public Style getTextAt(double x, double y) {
+    public Style getTextStyleAt(double x, double y) {
         if (this.cachedPage.isEmpty()) {
             return null;
         }

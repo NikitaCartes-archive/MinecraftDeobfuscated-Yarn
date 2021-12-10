@@ -201,7 +201,7 @@ implements RangedAttackMob {
 
     @Override
     public boolean canSpawn(WorldView world) {
-        return world.intersectsEntities(this);
+        return world.doesNotIntersectEntities(this);
     }
 
     public boolean canDrownedAttackTarget(@Nullable LivingEntity target) {

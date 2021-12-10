@@ -33,14 +33,14 @@ extends SpriteBillboardParticle {
         this.blockPos = blockPos;
         this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(state));
         this.gravityStrength = 1.0f;
-        this.colorRed = 0.6f;
-        this.colorGreen = 0.6f;
-        this.colorBlue = 0.6f;
+        this.red = 0.6f;
+        this.green = 0.6f;
+        this.blue = 0.6f;
         if (!state.isOf(Blocks.GRASS_BLOCK)) {
             int i = MinecraftClient.getInstance().getBlockColors().getColor(state, world, blockPos, 0);
-            this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0f;
-            this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0f;
-            this.colorBlue *= (float)(i & 0xFF) / 255.0f;
+            this.red *= (float)(i >> 16 & 0xFF) / 255.0f;
+            this.green *= (float)(i >> 8 & 0xFF) / 255.0f;
+            this.blue *= (float)(i & 0xFF) / 255.0f;
         }
         this.scale /= 2.0f;
         this.sampleU = this.random.nextFloat() * 3.0f;

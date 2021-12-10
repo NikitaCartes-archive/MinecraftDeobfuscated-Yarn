@@ -23,9 +23,9 @@ extends SpriteBillboardParticle {
         float f;
         this.spriteProvider = spriteProvider;
         this.maxAge = 4;
-        this.colorRed = f = this.random.nextFloat() * 0.6f + 0.4f;
-        this.colorGreen = f;
-        this.colorBlue = f;
+        this.red = f = this.random.nextFloat() * 0.6f + 0.4f;
+        this.green = f;
+        this.blue = f;
         this.scale = 1.0f - (float)d * 0.5f;
         this.setSpriteForAge(spriteProvider);
     }

@@ -6,7 +6,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.IOException;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtNull;
+import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.scanner.NbtScanner;
 
@@ -53,15 +53,15 @@ public interface NbtType<T extends NbtElement> {
 
     public String getCommandFeedbackName();
 
-    public static NbtType<NbtNull> createInvalid(final int type) {
-        return new NbtType<NbtNull>(){
+    public static NbtType<NbtEnd> createInvalid(final int type) {
+        return new NbtType<NbtEnd>(){
 
             private IOException createException() {
                 return new IOException("Invalid tag id: " + type);
             }
 
             @Override
-            public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+            public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
                 throw this.createException();
             }
 

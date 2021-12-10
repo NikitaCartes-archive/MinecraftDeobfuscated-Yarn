@@ -46,7 +46,7 @@ public abstract class EntityNavigation {
      * or equal to this value, the entity is considered "reached" the node.
      */
     protected float nodeReachProximity = 0.5f;
-    protected boolean shouldRecalculate;
+    protected boolean inRecalculationCooldown;
     protected long lastRecalculateTime;
     protected PathNodeMaker nodeMaker;
     @Nullable
@@ -88,10 +88,10 @@ public abstract class EntityNavigation {
                 this.currentPath = null;
                 this.currentPath = this.findPathTo(this.currentTarget, this.currentDistance);
                 this.lastRecalculateTime = this.world.getTime();
-                this.shouldRecalculate = false;
+                this.inRecalculationCooldown = false;
             }
         } else {
-            this.shouldRecalculate = true;
+            this.inRecalculationCooldown = true;
         }
     }
 
@@ -197,7 +197,7 @@ public abstract class EntityNavigation {
     public void tick() {
         Vec3d vec3d;
         ++this.tickCount;
-        if (this.shouldRecalculate) {
+        if (this.inRecalculationCooldown) {
             this.recalculatePath();
         }
         if (this.isIdle()) {
@@ -358,8 +358,8 @@ public abstract class EntityNavigation {
         return this.nodeMaker.canSwim();
     }
 
-    public boolean onBlockChanged(BlockPos pos) {
-        if (this.shouldRecalculate) {
+    public boolean shouldRecalculatePath(BlockPos pos) {
+        if (this.inRecalculationCooldown) {
             return false;
         }
         if (this.currentPath == null || this.currentPath.isFinished() || this.currentPath.getLength() == 0) {

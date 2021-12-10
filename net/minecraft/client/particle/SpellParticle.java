@@ -39,7 +39,7 @@ extends SpriteBillboardParticle {
         this.collidesWithWorld = false;
         this.setSpriteForAge(spriteProvider);
         if (this.isInvisible()) {
-            this.setColorAlpha(0.0f);
+            this.setAlpha(0.0f);
         }
     }
 
@@ -53,9 +53,9 @@ extends SpriteBillboardParticle {
         super.tick();
         this.setSpriteForAge(this.spriteProvider);
         if (this.isInvisible()) {
-            this.setColorAlpha(0.0f);
+            this.setAlpha(0.0f);
         } else {
-            this.setColorAlpha(MathHelper.lerp(0.05f, this.colorAlpha, 1.0f));
+            this.setAlpha(MathHelper.lerp(0.05f, this.alpha, 1.0f));
         }
     }
 
@@ -110,7 +110,7 @@ extends SpriteBillboardParticle {
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             SpellParticle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
-            particle.setColorAlpha(0.15f);
+            particle.setAlpha(0.15f);
             particle.setColor((float)g, (float)h, (float)i);
             return particle;
         }

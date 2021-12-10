@@ -78,10 +78,10 @@ extends SpriteBillboardParticle {
         float m = this.getMinV();
         float n = this.getMaxV();
         int o = this.getBrightness(tickDelta);
-        vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(l, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(l, m).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(k, m).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(o).next();
-        vertexConsumer.vertex(vec3fs[3].getX(), vec3fs[3].getY(), vec3fs[3].getZ()).texture(k, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(o).next();
+        vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(l, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(l, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(k, m).color(this.red, this.green, this.blue, this.alpha).light(o).next();
+        vertexConsumer.vertex(vec3fs[3].getX(), vec3fs[3].getY(), vec3fs[3].getZ()).texture(k, n).color(this.red, this.green, this.blue, this.alpha).light(o).next();
     }
 
     @Override
@@ -125,7 +125,7 @@ extends SpriteBillboardParticle {
         public Particle createParticle(VibrationParticleEffect vibrationParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             VibrationParticle vibrationParticle = new VibrationParticle(clientWorld, vibrationParticleEffect.getVibration(), vibrationParticleEffect.getVibration().getArrivalInTicks());
             vibrationParticle.setSprite(this.spriteProvider);
-            vibrationParticle.setColorAlpha(1.0f);
+            vibrationParticle.setAlpha(1.0f);
             return vibrationParticle;
         }
     }

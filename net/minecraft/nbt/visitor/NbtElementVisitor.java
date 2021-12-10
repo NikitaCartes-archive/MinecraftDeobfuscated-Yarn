@@ -7,13 +7,13 @@ import net.minecraft.nbt.NbtByte;
 import net.minecraft.nbt.NbtByteArray;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtNull;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.nbt.NbtString;
 
@@ -45,6 +45,6 @@ public interface NbtElementVisitor {
 
     public void visitCompound(NbtCompound var1);
 
-    public void visitNull(NbtNull var1);
+    public void visitEnd(NbtEnd var1);
 }
 

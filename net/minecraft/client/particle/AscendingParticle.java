@@ -29,9 +29,9 @@ extends SpriteBillboardParticle {
         this.velocityX += velocityX;
         this.velocityY += velocityY;
         this.velocityZ += velocityZ;
-        this.colorRed = f = world.random.nextFloat() * colorMultiplier;
-        this.colorGreen = f;
-        this.colorBlue = f;
+        this.red = f = world.random.nextFloat() * colorMultiplier;
+        this.green = f;
+        this.blue = f;
         this.scale *= 0.75f * scaleMultiplier;
         this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2));
         this.maxAge = (int)((float)this.maxAge * scaleMultiplier);

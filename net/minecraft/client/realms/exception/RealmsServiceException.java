@@ -13,36 +13,36 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsServiceException
 extends Exception {
     public final int httpResultCode;
-    public final String field_36319;
+    public final String httpResponseText;
     @Nullable
-    public final RealmsError field_36320;
+    public final RealmsError error;
 
     public RealmsServiceException(int httpResultCode, String httpResponseText, RealmsError error) {
         super(httpResponseText);
         this.httpResultCode = httpResultCode;
-        this.field_36319 = httpResponseText;
-        this.field_36320 = error;
+        this.httpResponseText = httpResponseText;
+        this.error = error;
     }
 
     public RealmsServiceException(int httpResultCode, String httpResponseText) {
         super(httpResponseText);
         this.httpResultCode = httpResultCode;
-        this.field_36319 = httpResponseText;
-        this.field_36320 = null;
+        this.httpResponseText = httpResponseText;
+        this.error = null;
     }
 
     @Override
     public String toString() {
-        if (this.field_36320 != null) {
-            String string = "mco.errorMessage." + this.field_36320.getErrorCode();
-            String string2 = I18n.hasTranslation(string) ? I18n.translate(string, new Object[0]) : this.field_36320.getErrorMessage();
-            return "Realms service error (%d/%d) %s".formatted(this.httpResultCode, this.field_36320.getErrorCode(), string2);
+        if (this.error != null) {
+            String string = "mco.errorMessage." + this.error.getErrorCode();
+            String string2 = I18n.hasTranslation(string) ? I18n.translate(string, new Object[0]) : this.error.getErrorMessage();
+            return "Realms service error (%d/%d) %s".formatted(this.httpResultCode, this.error.getErrorCode(), string2);
         }
-        return "Realms service error (%d) %s".formatted(this.httpResultCode, this.field_36319);
+        return "Realms service error (%d) %s".formatted(this.httpResultCode, this.httpResponseText);
     }
 
-    public int method_39980(int i) {
-        return this.field_36320 != null ? this.field_36320.getErrorCode() : i;
+    public int getErrorCode(int fallback) {
+        return this.error != null ? this.error.getErrorCode() : fallback;
     }
 }
 

@@ -751,7 +751,7 @@ extends LivingEntity {
     public void onTrackedDataSet(TrackedData<?> data) {
         if (ARMOR_STAND_FLAGS.equals(data)) {
             this.calculateDimensions();
-            this.inanimate = !this.isMarker();
+            this.intersectionChecked = !this.isMarker();
         }
         super.onTrackedDataSet(data);
     }

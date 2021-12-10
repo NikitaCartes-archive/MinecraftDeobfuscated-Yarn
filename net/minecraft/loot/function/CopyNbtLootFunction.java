@@ -128,11 +128,11 @@ extends ConditionalLootFunction {
             this.operator = operator;
         }
 
-        public void execute(Supplier<NbtElement> itemTagTagGetter, NbtElement sourceEntityTag) {
+        public void execute(Supplier<NbtElement> itemNbtGetter, NbtElement sourceEntityNbt) {
             try {
-                List<NbtElement> list = this.parsedSourcePath.get(sourceEntityTag);
+                List<NbtElement> list = this.parsedSourcePath.get(sourceEntityNbt);
                 if (!list.isEmpty()) {
-                    this.operator.merge(itemTagTagGetter.get(), this.parsedTargetPath, list);
+                    this.operator.merge(itemNbtGetter.get(), this.parsedTargetPath, list);
                 }
             } catch (CommandSyntaxException commandSyntaxException) {
                 // empty catch block
@@ -191,19 +191,19 @@ extends ConditionalLootFunction {
         REPLACE("replace"){
 
             @Override
-            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
-                targetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
+            public void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException {
+                targetPath.put(itemNbt, Iterables.getLast(sourceNbts)::copy);
             }
         }
         ,
         APPEND("append"){
 
             @Override
-            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
-                List<NbtElement> list = targetPath.getOrInit(itemTag, NbtList::new);
-                list.forEach(foundTag -> {
-                    if (foundTag instanceof NbtList) {
-                        sourceTags.forEach(listTag -> ((NbtList)foundTag).add(listTag.copy()));
+            public void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException {
+                List<NbtElement> list = targetPath.getOrInit(itemNbt, NbtList::new);
+                list.forEach(foundNbt -> {
+                    if (foundNbt instanceof NbtList) {
+                        sourceNbts.forEach(sourceNbt -> ((NbtList)foundNbt).add(sourceNbt.copy()));
                     }
                 });
             }
@@ -212,13 +212,13 @@ extends ConditionalLootFunction {
         MERGE("merge"){
 
             @Override
-            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
-                List<NbtElement> list = targetPath.getOrInit(itemTag, NbtCompound::new);
-                list.forEach(foundTag -> {
-                    if (foundTag instanceof NbtCompound) {
-                        sourceTags.forEach(compoundTag -> {
-                            if (compoundTag instanceof NbtCompound) {
-                                ((NbtCompound)foundTag).copyFrom((NbtCompound)compoundTag);
+            public void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException {
+                List<NbtElement> list = targetPath.getOrInit(itemNbt, NbtCompound::new);
+                list.forEach(foundNbt -> {
+                    if (foundNbt instanceof NbtCompound) {
+                        sourceNbts.forEach(sourceNbt -> {
+                            if (sourceNbt instanceof NbtCompound) {
+                                ((NbtCompound)foundNbt).copyFrom((NbtCompound)sourceNbt);
                             }
                         });
                     }

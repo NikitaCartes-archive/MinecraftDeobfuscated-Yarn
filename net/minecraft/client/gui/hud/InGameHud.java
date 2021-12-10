@@ -26,7 +26,6 @@ import net.minecraft.client.font.TextVisitFactory;
 import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.hud.BossBarHud;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudListener;
@@ -82,6 +81,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.GameMode;
@@ -366,7 +366,7 @@ extends DrawableHelper {
         int i = this.client.options.getTextBackgroundColor(0.0f);
         if (i != 0) {
             int j = -width / 2;
-            InGameHud.fill(matrices, j - 2, yOffset - 2, j + width + 2, yOffset + textRenderer.fontHeight + 2, BackgroundHelper.ColorMixer.mixColor(i, color));
+            InGameHud.fill(matrices, j - 2, yOffset - 2, j + width + 2, yOffset + textRenderer.fontHeight + 2, ColorHelper.Argb.mixColor(i, color));
         }
     }
 

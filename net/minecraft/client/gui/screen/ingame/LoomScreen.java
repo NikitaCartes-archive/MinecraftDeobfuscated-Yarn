@@ -170,7 +170,7 @@ extends HandledScreen<LoomScreenHandler> {
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         this.bannerField.pitch = 0.0f;
         this.bannerField.pivotY = -32.0f;
-        List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
+        List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListNbt(itemStack));
         BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
         matrixStack.pop();
         immediate.draw();
@@ -237,7 +237,7 @@ extends HandledScreen<LoomScreenHandler> {
 
     private void onInventoryChanged() {
         ItemStack itemStack = ((LoomScreenHandler)this.handler).getOutputSlot().getStack();
-        this.bannerPatterns = itemStack.isEmpty() ? null : BannerBlockEntity.getPatternsFromNbt(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
+        this.bannerPatterns = itemStack.isEmpty() ? null : BannerBlockEntity.getPatternsFromNbt(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListNbt(itemStack));
         ItemStack itemStack2 = ((LoomScreenHandler)this.handler).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();

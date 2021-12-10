@@ -86,7 +86,7 @@ extends Item {
         ItemStack itemStack = itemPlacementContext.getStack();
         BlockState blockState2 = world.getBlockState(blockPos);
         if (blockState2.isOf(blockState.getBlock())) {
-            blockState2 = this.placeFromTag(blockPos, world, itemStack, blockState2);
+            blockState2 = this.placeFromNbt(blockPos, world, itemStack, blockState2);
             this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
             blockState2.getBlock().onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
             if (playerEntity instanceof ServerPlayerEntity) {
@@ -112,7 +112,7 @@ extends Item {
     }
 
     protected boolean postPlacement(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
-        return BlockItem.writeTagToBlockEntity(world, player, pos, stack);
+        return BlockItem.writeNbtToBlockEntity(world, player, pos, stack);
     }
 
     @Nullable
@@ -121,7 +121,7 @@ extends Item {
         return blockState != null && this.canPlace(context, blockState) ? blockState : null;
     }
 
-    private BlockState placeFromTag(BlockPos pos, World world, ItemStack stack, BlockState state) {
+    private BlockState placeFromNbt(BlockPos pos, World world, ItemStack stack, BlockState state) {
         BlockState blockState = state;
         NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null) {
@@ -158,7 +158,7 @@ extends Item {
         return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
     }
 
-    public static boolean writeTagToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
+    public static boolean writeNbtToBlockEntity(World world, @Nullable PlayerEntity player, BlockPos pos, ItemStack stack) {
         BlockEntity blockEntity;
         MinecraftServer minecraftServer = world.getServer();
         if (minecraftServer == null) {

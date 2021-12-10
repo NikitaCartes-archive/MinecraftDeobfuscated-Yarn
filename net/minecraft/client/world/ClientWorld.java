@@ -104,7 +104,7 @@ extends World {
     private static final int field_34806 = 1000;
     final EntityList entityList = new EntityList();
     private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<Entity>(Entity.class, new ClientEntityHandler());
-    private final ClientPlayNetworkHandler netHandler;
+    private final ClientPlayNetworkHandler networkHandler;
     private final WorldRenderer worldRenderer;
     private final Properties clientWorldProperties;
     private final DimensionEffects dimensionEffects;
@@ -126,7 +126,7 @@ extends World {
 
     public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, int simulationDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
         super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
-        this.netHandler = netHandler;
+        this.networkHandler = netHandler;
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
@@ -293,7 +293,7 @@ extends World {
 
     @Override
     public void disconnect() {
-        this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
+        this.networkHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
     }
 
     public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
@@ -426,12 +426,12 @@ extends World {
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        this.netHandler.sendPacket(packet);
+        this.networkHandler.sendPacket(packet);
     }
 
     @Override
     public RecipeManager getRecipeManager() {
-        return this.netHandler.getRecipeManager();
+        return this.networkHandler.getRecipeManager();
     }
 
     public void setScoreboard(Scoreboard scoreboard) {
@@ -476,12 +476,12 @@ extends World {
 
     @Override
     public TagManager getTagManager() {
-        return this.netHandler.getTagManager();
+        return this.networkHandler.getTagManager();
     }
 
     @Override
     public DynamicRegistryManager getRegistryManager() {
-        return this.netHandler.getRegistryManager();
+        return this.networkHandler.getRegistryManager();
     }
 
     @Override
@@ -923,8 +923,8 @@ extends World {
             this.spawnAngle = angle;
         }
 
-        public void setTime(long difficulty) {
-            this.time = difficulty;
+        public void setTime(long time) {
+            this.time = time;
         }
 
         public void setTimeOfDay(long time) {

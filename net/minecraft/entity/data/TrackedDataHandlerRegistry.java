@@ -388,7 +388,7 @@ public class TrackedDataHandlerRegistry {
             return this.read(buf);
         }
     };
-    public static final TrackedDataHandler<NbtCompound> TAG_COMPOUND = new TrackedDataHandler<NbtCompound>(){
+    public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>(){
 
         @Override
         public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
@@ -511,7 +511,7 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(FACING);
         TrackedDataHandlerRegistry.register(OPTIONAL_UUID);
         TrackedDataHandlerRegistry.register(OPTIONAL_BLOCK_STATE);
-        TrackedDataHandlerRegistry.register(TAG_COMPOUND);
+        TrackedDataHandlerRegistry.register(NBT_COMPOUND);
         TrackedDataHandlerRegistry.register(PARTICLE);
         TrackedDataHandlerRegistry.register(VILLAGER_DATA);
         TrackedDataHandlerRegistry.register(FIREWORK_DATA);

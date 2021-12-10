@@ -34,9 +34,9 @@ extends SpriteBillboardParticle {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
-        this.colorRed = MathHelper.nextFloat(this.random, 0.7176471f, 0.8745098f);
-        this.colorGreen = MathHelper.nextFloat(this.random, 0.0f, 0.0f);
-        this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294f, 0.9764706f);
+        this.red = MathHelper.nextFloat(this.random, 0.7176471f, 0.8745098f);
+        this.green = MathHelper.nextFloat(this.random, 0.0f, 0.0f);
+        this.blue = MathHelper.nextFloat(this.random, 0.8235294f, 0.9764706f);
         this.scale *= 0.75f;
         this.maxAge = (int)(20.0 / ((double)this.random.nextFloat() * 0.8 + 0.2));
         this.reachedGround = false;

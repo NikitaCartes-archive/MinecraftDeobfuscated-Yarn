@@ -28,9 +28,9 @@ extends SpriteBillboardParticle {
         this.velocityX += g * 0.4;
         this.velocityY += h * 0.4;
         this.velocityZ += i * 0.4;
-        this.colorRed = j = (float)(Math.random() * (double)0.3f + (double)0.6f);
-        this.colorGreen = j;
-        this.colorBlue = j;
+        this.red = j = (float)(Math.random() * (double)0.3f + (double)0.6f);
+        this.green = j;
+        this.blue = j;
         this.scale *= 0.75f;
         this.maxAge = Math.max((int)(6.0 / (Math.random() * 0.8 + 0.6)), 1);
         this.collidesWithWorld = false;
@@ -45,8 +45,8 @@ extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        this.colorGreen = (float)((double)this.colorGreen * 0.96);
-        this.colorBlue = (float)((double)this.colorBlue * 0.9);
+        this.green = (float)((double)this.green * 0.96);
+        this.blue = (float)((double)this.blue * 0.9);
     }
 
     @Override
@@ -84,8 +84,8 @@ extends SpriteBillboardParticle {
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             DamageParticle damageParticle = new DamageParticle(clientWorld, d, e, f, g, h, i);
-            damageParticle.colorRed *= 0.3f;
-            damageParticle.colorGreen *= 0.8f;
+            damageParticle.red *= 0.3f;
+            damageParticle.green *= 0.8f;
             damageParticle.setSprite(this.spriteProvider);
             return damageParticle;
         }
