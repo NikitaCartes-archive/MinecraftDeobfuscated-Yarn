@@ -69,7 +69,7 @@ public final class ChunkGeneratorSettings {
 		BlockState defaultBlock,
 		BlockState defaultFluid,
 		MaterialRules.MaterialRule surfaceRule,
-		int bedrockCeilingY,
+		int seaLevel,
 		boolean mobGenerationDisabled,
 		boolean aquifers,
 		boolean noiseCaves,
@@ -82,7 +82,7 @@ public final class ChunkGeneratorSettings {
 		this.defaultBlock = defaultBlock;
 		this.defaultFluid = defaultFluid;
 		this.surfaceRule = surfaceRule;
-		this.seaLevel = bedrockCeilingY;
+		this.seaLevel = seaLevel;
 		this.mobGenerationDisabled = mobGenerationDisabled;
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;

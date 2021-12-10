@@ -47,7 +47,7 @@ import net.minecraft.world.World;
  * 
  * <div class="fabric">
  * <table border=1>
- * <caption>Activites associated to the {@linkplain AxolotlEntity axolotl entity} brain</caption>
+ * <caption>Activities associated to the {@linkplain AxolotlEntity axolotl entity} brain</caption>
  * <tr>
  *   <th>Activity</th><th>Tasks</th>
  * </tr>

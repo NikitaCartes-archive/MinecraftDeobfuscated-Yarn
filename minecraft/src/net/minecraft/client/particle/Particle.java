@@ -40,10 +40,10 @@ public abstract class Particle {
 	protected int age;
 	protected int maxAge;
 	protected float gravityStrength;
-	protected float colorRed = 1.0F;
-	protected float colorGreen = 1.0F;
-	protected float colorBlue = 1.0F;
-	protected float colorAlpha = 1.0F;
+	protected float red = 1.0F;
+	protected float green = 1.0F;
+	protected float blue = 1.0F;
+	protected float alpha = 1.0F;
 	protected float angle;
 	protected float prevAngle;
 	protected float velocityMultiplier = 0.98F;
@@ -90,13 +90,13 @@ public abstract class Particle {
 	}
 
 	public void setColor(float red, float green, float blue) {
-		this.colorRed = red;
-		this.colorGreen = green;
-		this.colorBlue = blue;
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
 	}
 
-	protected void setColorAlpha(float alpha) {
-		this.colorAlpha = alpha;
+	protected void setAlpha(float alpha) {
+		this.alpha = alpha;
 	}
 
 	public void setMaxAge(int maxAge) {
@@ -144,13 +144,13 @@ public abstract class Particle {
 			+ ","
 			+ this.z
 			+ "), RGBA ("
-			+ this.colorRed
+			+ this.red
 			+ ","
-			+ this.colorGreen
+			+ this.green
 			+ ","
-			+ this.colorBlue
+			+ this.blue
 			+ ","
-			+ this.colorAlpha
+			+ this.alpha
 			+ "), Age "
 			+ this.age;
 	}

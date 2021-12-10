@@ -14,7 +14,7 @@ public interface SimpleNbtScanner extends NbtScanner {
 	};
 
 	@Override
-	default NbtScanner.Result visitNull() {
+	default NbtScanner.Result visitEnd() {
 		return NbtScanner.Result.CONTINUE;
 	}
 

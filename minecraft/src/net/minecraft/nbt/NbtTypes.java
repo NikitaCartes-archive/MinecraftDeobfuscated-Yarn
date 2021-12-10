@@ -2,7 +2,7 @@ package net.minecraft.nbt;
 
 public class NbtTypes {
 	private static final NbtType<?>[] VALUES = new NbtType[]{
-		NbtNull.TYPE,
+		NbtEnd.TYPE,
 		NbtByte.TYPE,
 		NbtShort.TYPE,
 		NbtInt.TYPE,

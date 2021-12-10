@@ -121,7 +121,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return playerListEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : playerListEntry.getModel();
 	}
 
-	public float getSpeed() {
+	public float getFovMultiplier() {
 		float f = 1.0F;
 		if (this.getAbilities().flying) {
 			f *= 1.1F;

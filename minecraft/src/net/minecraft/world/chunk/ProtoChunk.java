@@ -199,8 +199,8 @@ public class ProtoChunk extends Chunk {
 		return this.blockEntities;
 	}
 
-	public void addEntity(NbtCompound entityTag) {
-		this.entities.add(entityTag);
+	public void addEntity(NbtCompound entityNbt) {
+		this.entities.add(entityNbt);
 	}
 
 	@Override

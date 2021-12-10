@@ -121,7 +121,7 @@ public final class ChunkNibbleArray {
 	}
 
 	/**
-	 * {@return a hexademical string representation of the {@code y=0} level of
+	 * {@return a hexadecimal string representation of the {@code y=0} level of
 	 * this array}
 	 * 
 	 * <p>It is useful for debugging the grid nibble array.

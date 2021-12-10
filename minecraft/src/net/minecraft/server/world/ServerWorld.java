@@ -914,7 +914,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public void updateListeners(BlockPos pos, BlockState oldState, BlockState newState, int flags) {
 		if (this.duringListenerUpdate) {
 			String string = "recursive call to sendBlockUpdated";
-			Util.method_39977("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
+			Util.error("recursive call to sendBlockUpdated", new IllegalStateException("recursive call to sendBlockUpdated"));
 		}
 
 		this.getChunkManager().markForUpdate(pos);
@@ -925,7 +925,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			for(MobEntity mobEntity : this.loadedMobs) {
 				EntityNavigation entityNavigation = mobEntity.getNavigation();
-				if (entityNavigation.onBlockChanged(pos)) {
+				if (entityNavigation.shouldRecalculatePath(pos)) {
 					list.add(entityNavigation);
 				}
 			}
@@ -1634,7 +1634,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					Util.method_39977("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.error("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.add(mobEntity);
@@ -1657,7 +1657,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (entity instanceof MobEntity mobEntity) {
 				if (ServerWorld.this.duringListenerUpdate) {
 					String string = "onTrackingStart called during navigation iteration";
-					Util.method_39977("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
+					Util.error("onTrackingStart called during navigation iteration", new IllegalStateException("onTrackingStart called during navigation iteration"));
 				}
 
 				ServerWorld.this.loadedMobs.remove(mobEntity);

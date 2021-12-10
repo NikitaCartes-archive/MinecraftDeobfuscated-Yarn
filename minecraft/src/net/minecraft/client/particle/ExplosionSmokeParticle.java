@@ -20,9 +20,9 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 		this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * 0.05F;
 		this.velocityZ = velocityZ + (Math.random() * 2.0 - 1.0) * 0.05F;
 		float f = this.random.nextFloat() * 0.3F + 0.7F;
-		this.colorRed = f;
-		this.colorGreen = f;
-		this.colorBlue = f;
+		this.red = f;
+		this.green = f;
+		this.blue = f;
 		this.scale = 0.1F * (this.random.nextFloat() * this.random.nextFloat() * 6.0F + 1.0F);
 		this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
 		this.setSpriteForAge(spriteProvider);

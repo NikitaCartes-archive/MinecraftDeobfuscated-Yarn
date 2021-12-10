@@ -13,7 +13,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
@@ -28,6 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
@@ -58,11 +58,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final int field_32422 = 20;
 	private static final int field_32416 = 0;
 	private static final int field_32417 = 38;
-	public static final int BLACK_COLOR = BackgroundHelper.ColorMixer.getArgb(190, 0, 0, 0);
-	public static final int GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 74, 74, 74);
-	public static final int DARK_GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 48, 48, 48);
-	public static final int WHITE_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 255);
-	public static final int LIGHT_GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(140, 255, 255, 255);
+	public static final int BLACK_COLOR = ColorHelper.Argb.getArgb(190, 0, 0, 0);
+	public static final int GRAY_COLOR = ColorHelper.Argb.getArgb(255, 74, 74, 74);
+	public static final int DARK_GRAY_COLOR = ColorHelper.Argb.getArgb(255, 48, 48, 48);
+	public static final int WHITE_COLOR = ColorHelper.Argb.getArgb(255, 255, 255, 255);
+	public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
 	public SocialInteractionsPlayerListEntry(MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture) {
 		this.client = client;

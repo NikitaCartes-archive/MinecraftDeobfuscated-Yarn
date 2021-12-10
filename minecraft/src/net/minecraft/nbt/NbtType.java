@@ -44,13 +44,13 @@ public interface NbtType<T extends NbtElement> {
 
 	String getCommandFeedbackName();
 
-	static NbtType<NbtNull> createInvalid(int type) {
-		return new NbtType<NbtNull>() {
+	static NbtType<NbtEnd> createInvalid(int type) {
+		return new NbtType<NbtEnd>() {
 			private IOException createException() {
 				return new IOException("Invalid tag id: " + type);
 			}
 
-			public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
 				throw this.createException();
 			}
 

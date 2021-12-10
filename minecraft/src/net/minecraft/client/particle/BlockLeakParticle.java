@@ -145,9 +145,9 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 		@Override
 		protected void updateAge() {
-			this.colorRed = 1.0F;
-			this.colorGreen = 16.0F / (float)(40 - this.maxAge + 16);
-			this.colorBlue = 4.0F / (float)(40 - this.maxAge + 8);
+			this.red = 1.0F;
+			this.green = 16.0F / (float)(40 - this.maxAge + 16);
+			this.blue = 4.0F / (float)(40 - this.maxAge + 8);
 			super.updateAge();
 		}
 	}

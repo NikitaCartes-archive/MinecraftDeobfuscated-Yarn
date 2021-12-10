@@ -101,7 +101,7 @@ public class Items {
 	public static final Item EXPOSED_CUT_COPPER_SLAB = register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WEATHERED_CUT_COPPER_SLAB = register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item OXIDIZED_CUT_COPPER_SLAB = register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_COPPER = register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_COPPER_BLOCK = register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_EXPOSED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_OXIDIZED_COPPER = register(Blocks.WAXED_OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
@@ -156,7 +156,7 @@ public class Items {
 	public static final Item ACACIA_LEAVES = register(Blocks.ACACIA_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item DARK_OAK_LEAVES = register(Blocks.DARK_OAK_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item AZALEA_LEAVES = register(Blocks.AZALEA_LEAVES, ItemGroup.DECORATIONS);
-	public static final Item AZALEA_LEAVES_FLOWERS = register(Blocks.FLOWERING_AZALEA_LEAVES, ItemGroup.DECORATIONS);
+	public static final Item FLOWERING_AZALEA_LEAVES = register(Blocks.FLOWERING_AZALEA_LEAVES, ItemGroup.DECORATIONS);
 	public static final Item SPONGE = register(Blocks.SPONGE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WET_SPONGE = register(Blocks.WET_SPONGE, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GLASS = register(Blocks.GLASS, ItemGroup.BUILDING_BLOCKS);
@@ -360,7 +360,7 @@ public class Items {
 	public static final Item BLACKSTONE_WALL = register(Blocks.BLACKSTONE_WALL, ItemGroup.DECORATIONS);
 	public static final Item POLISHED_BLACKSTONE_WALL = register(Blocks.POLISHED_BLACKSTONE_WALL, ItemGroup.DECORATIONS);
 	public static final Item POLISHED_BLACKSTONE_BRICK_WALL = register(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, ItemGroup.DECORATIONS);
-	public static final Item DEEPSLATE_WALL = register(Blocks.COBBLED_DEEPSLATE_WALL, ItemGroup.DECORATIONS);
+	public static final Item COBBLED_DEEPSLATE_WALL = register(Blocks.COBBLED_DEEPSLATE_WALL, ItemGroup.DECORATIONS);
 	public static final Item POLISHED_DEEPSLATE_WALL = register(Blocks.POLISHED_DEEPSLATE_WALL, ItemGroup.DECORATIONS);
 	public static final Item DEEPSLATE_BRICK_WALL = register(Blocks.DEEPSLATE_BRICK_WALL, ItemGroup.DECORATIONS);
 	public static final Item DEEPSLATE_TILE_WALL = register(Blocks.DEEPSLATE_TILE_WALL, ItemGroup.DECORATIONS);

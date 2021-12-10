@@ -80,7 +80,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final long SCREEN_INIT_NARRATION_DELAY = TimeUnit.SECONDS.toMillis(2L);
 	private static final long NARRATOR_MODE_CHANGE_DELAY = SCREEN_INIT_NARRATION_DELAY;
 	private static final long MOUSE_MOVE_NARRATION_DELAY = 750L;
-	private static final long MOUSE_PRESS_SCROLL_NARATION_DELAY = 200L;
+	private static final long MOUSE_PRESS_SCROLL_NARRATION_DELAY = 200L;
 	private static final long KEY_PRESS_NARRATION_DELAY = 200L;
 	private final ScreenNarrator narrator = new ScreenNarrator();
 	private long elementNarrationStartTime = Long.MIN_VALUE;
@@ -445,7 +445,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		tessellator.draw();
 	}
 
-	public boolean isPauseScreen() {
+	public boolean shouldPause() {
 		return true;
 	}
 

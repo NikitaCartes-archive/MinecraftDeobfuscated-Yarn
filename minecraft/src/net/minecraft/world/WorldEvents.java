@@ -367,7 +367,7 @@ public class WorldEvents {
 	 * Bone meal is used.
 	 * <br>Plays the bone meal item used sound event and spawns happy villager particles.
 	 * <p>Called by {@link net.minecraft.item.BoneMealItem#useOnBlock(net.minecraft.item.ItemUsageContext) BoneMealItem#useOnBlock},
-	 * an anonymus class in {@link net.minecraft.block.dispenser.DispenserBehavior#registerDefaults() DispenserBehavior#registerDefaults},
+	 * an anonymous class in {@link net.minecraft.block.dispenser.DispenserBehavior#registerDefaults() DispenserBehavior#registerDefaults},
 	 * and {@link net.minecraft.entity.ai.brain.task.BoneMealTask#keepRunning(net.minecraft.server.world.ServerWorld, net.minecraft.entity.passive.VillagerEntity, long) BoneMealTask#keepRunning}
 	 */
 	public static final int BONE_MEAL_USED = 1505;

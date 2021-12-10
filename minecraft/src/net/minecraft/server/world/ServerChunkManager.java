@@ -61,7 +61,7 @@ public class ServerChunkManager extends ChunkManager {
 	private long lastMobSpawningTime;
 	private boolean spawnMonsters = true;
 	private boolean spawnAnimals = true;
-	private static final int field_29766 = 4;
+	private static final int CACHE_SIZE = 4;
 	private final long[] chunkPosCache = new long[4];
 	private final ChunkStatus[] chunkStatusCache = new ChunkStatus[4];
 	private final Chunk[] chunkCache = new Chunk[4];
@@ -329,14 +329,14 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
 		this.tick();
 		this.world.getProfiler().swap("chunks");
 		this.tickChunks();
 		this.world.getProfiler().swap("unload");
-		this.threadedAnvilChunkStorage.tick(booleanSupplier);
+		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
 		this.world.getProfiler().pop();
 		this.initChunkCaches();
 	}

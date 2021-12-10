@@ -13,9 +13,9 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.maxAge = 6 + this.random.nextInt(4);
 		float f = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = f;
-		this.colorGreen = f;
-		this.colorBlue = f;
+		this.red = f;
+		this.green = f;
+		this.blue = f;
 		this.scale = 2.0F * (1.0F - (float)d * 0.5F);
 		this.spriteProvider = spriteProvider;
 		this.setSpriteForAge(spriteProvider);

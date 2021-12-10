@@ -243,7 +243,7 @@ public class CommandFunctionManager {
 		 * 
 		 * <p>This effectively swaps an entry with a command element with {@code /function}
 		 * command at the head of the deque with another entry with a function element
-		 * containing the actual command elemenets referenced in that function.
+		 * containing the actual command elements referenced in that function.
 		 * 
 		 * @param function the function
 		 * @param source the command source

@@ -188,7 +188,7 @@ public class BookScreen extends Screen {
 			this.textRenderer.draw(matrices, orderedText, (float)(i + 36), (float)(32 + m * 9), 0);
 		}
 
-		Style style = this.getTextAt((double)mouseX, (double)mouseY);
+		Style style = this.getTextStyleAt((double)mouseX, (double)mouseY);
 		if (style != null) {
 			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
 		}
@@ -199,7 +199,7 @@ public class BookScreen extends Screen {
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (button == 0) {
-			Style style = this.getTextAt(mouseX, mouseY);
+			Style style = this.getTextStyleAt(mouseX, mouseY);
 			if (style != null && this.handleTextClick(style)) {
 				return true;
 			}
@@ -237,7 +237,7 @@ public class BookScreen extends Screen {
 	}
 
 	@Nullable
-	public Style getTextAt(double x, double y) {
+	public Style getTextStyleAt(double x, double y) {
 		if (this.cachedPage.isEmpty()) {
 			return null;
 		} else {

@@ -9,7 +9,7 @@ public class LootContextParameter<T> {
 		this.id = id;
 	}
 
-	public Identifier getIdentifier() {
+	public Identifier getId() {
 		return this.id;
 	}
 

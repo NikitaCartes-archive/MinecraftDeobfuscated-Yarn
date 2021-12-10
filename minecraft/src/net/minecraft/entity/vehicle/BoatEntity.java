@@ -91,7 +91,7 @@ public class BoatEntity extends Entity {
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
-		this.inanimate = true;
+		this.intersectionChecked = true;
 	}
 
 	public BoatEntity(World world, double x, double y, double z) {

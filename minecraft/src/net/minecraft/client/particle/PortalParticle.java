@@ -24,9 +24,9 @@ public class PortalParticle extends SpriteBillboardParticle {
 		this.startZ = this.z;
 		this.scale = 0.1F * (this.random.nextFloat() * 0.2F + 0.5F);
 		float j = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = j * 0.9F;
-		this.colorGreen = j * 0.3F;
-		this.colorBlue = j;
+		this.red = j * 0.9F;
+		this.green = j * 0.3F;
+		this.blue = j;
 		this.maxAge = (int)(Math.random() * 10.0) + 40;
 	}
 

@@ -90,7 +90,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	}
 
 	@Override
-	public boolean isPauseScreen() {
+	public boolean shouldPause() {
 		return false;
 	}
 

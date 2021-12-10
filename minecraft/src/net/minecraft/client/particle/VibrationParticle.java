@@ -81,22 +81,22 @@ public class VibrationParticle extends SpriteBillboardParticle {
 		int o = this.getBrightness(tickDelta);
 		vertexConsumer.vertex((double)vec3fs[0].getX(), (double)vec3fs[0].getY(), (double)vec3fs[0].getZ())
 			.texture(l, n)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.color(this.red, this.green, this.blue, this.alpha)
 			.light(o)
 			.next();
 		vertexConsumer.vertex((double)vec3fs[1].getX(), (double)vec3fs[1].getY(), (double)vec3fs[1].getZ())
 			.texture(l, m)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.color(this.red, this.green, this.blue, this.alpha)
 			.light(o)
 			.next();
 		vertexConsumer.vertex((double)vec3fs[2].getX(), (double)vec3fs[2].getY(), (double)vec3fs[2].getZ())
 			.texture(k, m)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.color(this.red, this.green, this.blue, this.alpha)
 			.light(o)
 			.next();
 		vertexConsumer.vertex((double)vec3fs[3].getX(), (double)vec3fs[3].getY(), (double)vec3fs[3].getZ())
 			.texture(k, n)
-			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
+			.color(this.red, this.green, this.blue, this.alpha)
 			.light(o)
 			.next();
 	}
@@ -144,7 +144,7 @@ public class VibrationParticle extends SpriteBillboardParticle {
 				clientWorld, vibrationParticleEffect.getVibration(), vibrationParticleEffect.getVibration().getArrivalInTicks()
 			);
 			vibrationParticle.setSprite(this.spriteProvider);
-			vibrationParticle.setColorAlpha(1.0F);
+			vibrationParticle.setAlpha(1.0F);
 			return vibrationParticle;
 		}
 	}

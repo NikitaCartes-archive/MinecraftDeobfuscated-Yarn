@@ -105,7 +105,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier shouldKeepTicking) {
 	}
 
 	public void setChunkMapCenter(int x, int z) {

@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Direction;
 
 /**
- * A special inventory interface for inventories that expose different slots for different sides, such as hoppers.
+ * A special inventory interface for inventories that expose different slots for different sides, such as furnaces.
  */
 public interface SidedInventory extends Inventory {
 	/**
