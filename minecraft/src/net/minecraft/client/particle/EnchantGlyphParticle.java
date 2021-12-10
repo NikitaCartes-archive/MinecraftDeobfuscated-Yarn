@@ -27,9 +27,9 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 		this.z = this.prevPosZ;
 		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.2F);
 		float j = this.random.nextFloat() * 0.6F + 0.4F;
-		this.colorRed = 0.9F * j;
-		this.colorGreen = 0.9F * j;
-		this.colorBlue = j;
+		this.red = 0.9F * j;
+		this.green = 0.9F * j;
+		this.blue = j;
 		this.collidesWithWorld = false;
 		this.maxAge = (int)(Math.random() * 10.0) + 30;
 	}

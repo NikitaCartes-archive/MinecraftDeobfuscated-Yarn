@@ -190,7 +190,7 @@ public class ServerNetworkIo {
 	 * channel in-bound handler in the channel pipeline after a random delay between
 	 * {@link #baseDelay} and {@code baseDelay + }{@link #extraDelay} milliseconds.
 	 * 
-	 * @apiNote This may be used to simulate a laggy network enviroment.
+	 * @apiNote This may be used to simulate a laggy network environment.
 	 */
 	static class DelayingChannelInboundHandler extends ChannelInboundHandlerAdapter {
 		private static final Timer TIMER = new HashedWheelTimer();

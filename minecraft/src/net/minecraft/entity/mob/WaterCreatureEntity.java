@@ -32,7 +32,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return world.intersectsEntities(this);
+		return world.doesNotIntersectEntities(this);
 	}
 
 	@Override

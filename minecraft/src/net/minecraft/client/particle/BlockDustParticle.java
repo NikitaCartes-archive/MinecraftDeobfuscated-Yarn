@@ -27,14 +27,14 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 		this.blockPos = blockPos;
 		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getModelParticleSprite(state));
 		this.gravityStrength = 1.0F;
-		this.colorRed = 0.6F;
-		this.colorGreen = 0.6F;
-		this.colorBlue = 0.6F;
+		this.red = 0.6F;
+		this.green = 0.6F;
+		this.blue = 0.6F;
 		if (!state.isOf(Blocks.GRASS_BLOCK)) {
 			int i = MinecraftClient.getInstance().getBlockColors().getColor(state, world, blockPos, 0);
-			this.colorRed *= (float)(i >> 16 & 0xFF) / 255.0F;
-			this.colorGreen *= (float)(i >> 8 & 0xFF) / 255.0F;
-			this.colorBlue *= (float)(i & 0xFF) / 255.0F;
+			this.red *= (float)(i >> 16 & 0xFF) / 255.0F;
+			this.green *= (float)(i >> 8 & 0xFF) / 255.0F;
+			this.blue *= (float)(i & 0xFF) / 255.0F;
 		}
 
 		this.scale /= 2.0F;

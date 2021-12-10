@@ -25,9 +25,9 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
-		this.colorRed = MathHelper.nextFloat(this.random, 0.7176471F, 0.8745098F);
-		this.colorGreen = MathHelper.nextFloat(this.random, 0.0F, 0.0F);
-		this.colorBlue = MathHelper.nextFloat(this.random, 0.8235294F, 0.9764706F);
+		this.red = MathHelper.nextFloat(this.random, 0.7176471F, 0.8745098F);
+		this.green = MathHelper.nextFloat(this.random, 0.0F, 0.0F);
+		this.blue = MathHelper.nextFloat(this.random, 0.8235294F, 0.9764706F);
 		this.scale *= 0.75F;
 		this.maxAge = (int)(20.0 / ((double)this.random.nextFloat() * 0.8 + 0.2));
 		this.reachedGround = false;

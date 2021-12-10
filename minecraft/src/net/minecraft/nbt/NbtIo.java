@@ -187,9 +187,9 @@ public class NbtIo {
 
 	public static void read(DataInput input, NbtScanner visitor) throws IOException {
 		NbtType<?> nbtType = NbtTypes.byId(input.readByte());
-		if (nbtType == NbtNull.TYPE) {
-			if (visitor.start(NbtNull.TYPE) == NbtScanner.Result.CONTINUE) {
-				visitor.visitNull();
+		if (nbtType == NbtEnd.TYPE) {
+			if (visitor.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
+				visitor.visitEnd();
 			}
 		} else {
 			switch (visitor.start(nbtType)) {
@@ -218,7 +218,7 @@ public class NbtIo {
 	private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		if (b == 0) {
-			return NbtNull.INSTANCE;
+			return NbtEnd.INSTANCE;
 		} else {
 			NbtString.skip(input);
 

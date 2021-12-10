@@ -306,7 +306,7 @@ public class ZombieEntity extends HostileEntity {
 						&& SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
-							&& this.world.intersectsEntities(zombieEntity)
+							&& this.world.doesNotIntersectEntities(zombieEntity)
 							&& this.world.isSpaceEmpty(zombieEntity)
 							&& !this.world.containsFluid(zombieEntity.getBoundingBox())) {
 							zombieEntity.setTarget(livingEntity);
@@ -563,7 +563,7 @@ public class ZombieEntity extends HostileEntity {
 		}
 
 		@Override
-		public double getDesiredSquaredDistanceToTarget() {
+		public double getDesiredDistanceToTarget() {
 			return 1.14;
 		}
 	}

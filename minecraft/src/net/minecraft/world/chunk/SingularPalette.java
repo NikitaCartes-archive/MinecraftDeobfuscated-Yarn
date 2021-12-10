@@ -27,7 +27,7 @@ public class SingularPalette<T> implements Palette<T> {
 	}
 
 	/**
-	 * Creates a singular pallete. Used as method reference to create factory.
+	 * Creates a singular palette. Used as method reference to create factory.
 	 * 
 	 * @param bitSize {@code 0}, as this palette has only 2<sup>0</sup>=1 entry
 	 */

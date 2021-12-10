@@ -1079,7 +1079,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BlockPos blockPos = builtChunk.getOrigin();
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getX());
 		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ());
-		return !ThreadedAnvilChunkStorage.method_39975(k, l, i, j, this.viewDistance - 2);
+		return !ThreadedAnvilChunkStorage.isWithinDistance(k, l, i, j, this.viewDistance - 2);
 	}
 
 	private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {

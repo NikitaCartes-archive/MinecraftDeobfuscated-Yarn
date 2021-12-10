@@ -17,12 +17,12 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	private final float rotationSpeed;
 	private final SpriteProvider spriteProvider;
 
-	BlockFallingDustParticle(ClientWorld world, double x, double y, double z, float colorRed, float colorGreen, float colorBlue, SpriteProvider spriteProvider) {
+	BlockFallingDustParticle(ClientWorld world, double x, double y, double z, float red, float green, float blue, SpriteProvider spriteProvider) {
 		super(world, x, y, z);
 		this.spriteProvider = spriteProvider;
-		this.colorRed = colorRed;
-		this.colorGreen = colorGreen;
-		this.colorBlue = colorBlue;
+		this.red = red;
+		this.green = green;
+		this.blue = blue;
 		float f = 0.9F;
 		this.scale *= 0.67499995F;
 		int i = (int)(32.0 / (Math.random() * 0.8 + 0.2));

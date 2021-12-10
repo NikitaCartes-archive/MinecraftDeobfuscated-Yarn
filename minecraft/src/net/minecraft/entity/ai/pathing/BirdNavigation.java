@@ -38,7 +38,7 @@ public class BirdNavigation extends EntityNavigation {
 	@Override
 	public void tick() {
 		this.tickCount++;
-		if (this.shouldRecalculate) {
+		if (this.inRecalculationCooldown) {
 			this.recalculatePath();
 		}
 

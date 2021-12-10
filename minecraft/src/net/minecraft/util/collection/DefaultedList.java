@@ -48,9 +48,9 @@ public class DefaultedList<E> extends AbstractList<E> {
 		return (E)this.delegate.set(index, element);
 	}
 
-	public void add(int value, E element) {
+	public void add(int index, E element) {
 		Validate.notNull(element);
-		this.delegate.add(value, element);
+		this.delegate.add(index, element);
 	}
 
 	public E remove(int index) {

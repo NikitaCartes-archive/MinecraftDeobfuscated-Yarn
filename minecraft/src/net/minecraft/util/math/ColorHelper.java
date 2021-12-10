@@ -1,7 +1,7 @@
-package net.minecraft.client.gui.hud;
+package net.minecraft.util.math;
 
-public class BackgroundHelper {
-	public static class ColorMixer {
+public class ColorHelper {
+	public static class Argb {
 		public static int getAlpha(int argb) {
 			return argb >>> 24;
 		}

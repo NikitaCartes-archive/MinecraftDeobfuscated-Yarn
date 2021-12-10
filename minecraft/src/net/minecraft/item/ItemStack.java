@@ -197,7 +197,7 @@ public final class ItemStack {
 	@Deprecated
 	private final Item item;
 	/**
-	 * Repesents the item stack's custom NBT.
+	 * Represents the item stack's custom NBT.
 	 * <p>
 	 * Stored at the key {@code tag} in the serialized item stack NBT.
 	 * 

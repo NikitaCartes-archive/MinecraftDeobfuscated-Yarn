@@ -342,7 +342,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			}
 
 			return SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), Fluids.EMPTY.getDefaultState(), EntityType.IRON_GOLEM)
-				&& world.intersectsEntities(this);
+				&& world.doesNotIntersectEntities(this);
 		}
 	}
 

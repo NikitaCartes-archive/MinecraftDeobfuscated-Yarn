@@ -715,21 +715,43 @@ public class MathHelper {
 		return ds;
 	}
 
-	public static int binarySearch(int start, int end, IntPredicate leftPredicate) {
-		int i = end - start;
+	/**
+	 * Finds the minimum value in {@code [min, max)} that satisfies the
+	 * monotonic {@code predicate}.
+	 * 
+	 * <p>The {@code predicate} must be monotonic, i.e. if for any {@code a},
+	 * {@code predicate.test(a)} is {@code true}, then for all {@code b > a},
+	 * {@code predicate.test(b)} must also be {@code true}.
+	 * 
+	 * <p>Examples:
+	 * <ul>
+	 *   <li>{@code binarySearch(3, 7, x -> true)} returns {@code 3}.
+	 *   <li>{@code binarySearch(3, 7, x -> x >= 5)} returns {@code 5}.
+	 *   <li>{@code binarySearch(3, 7, x -> false)} returns {@code 7}.
+	 * </ul>
+	 * 
+	 * @return the minimum value if such value is found, otherwise {@code max}
+	 * 
+	 * @param min the minimum value (inclusive) to be tested
+	 * @param max the maximum value (exclusive) to be tested
+	 * @param predicate the predicate that returns {@code true} for integers greater than or
+	 * equal to the value to be searched for
+	 */
+	public static int binarySearch(int min, int max, IntPredicate predicate) {
+		int i = max - min;
 
 		while (i > 0) {
 			int j = i / 2;
-			int k = start + j;
-			if (leftPredicate.test(k)) {
+			int k = min + j;
+			if (predicate.test(k)) {
 				i = j;
 			} else {
-				start = k + 1;
+				min = k + 1;
 				i -= j + 1;
 			}
 		}
 
-		return start;
+		return min;
 	}
 
 	public static float lerp(float delta, float start, float end) {

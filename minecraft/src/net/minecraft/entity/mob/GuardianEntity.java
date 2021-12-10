@@ -314,7 +314,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return world.intersectsEntities(this);
+		return world.doesNotIntersectEntities(this);
 	}
 
 	public static boolean canSpawn(EntityType<? extends GuardianEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

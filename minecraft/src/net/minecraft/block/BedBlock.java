@@ -245,7 +245,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (isBedBelow(world, pos)) {
 			return findWakeUpPosition(type, world, pos, direction, direction3);
 		} else {
-			int[][] is = getAroundAndOnBedOffets(direction, direction3);
+			int[][] is = getAroundAndOnBedOffsets(direction, direction3);
 			Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
 			return optional.isPresent() ? optional : findWakeUpPosition(type, world, pos, is, false);
 		}
@@ -339,7 +339,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return false;
 	}
 
-	private static int[][] getAroundAndOnBedOffets(Direction bedDirection, Direction respawnDirection) {
+	private static int[][] getAroundAndOnBedOffsets(Direction bedDirection, Direction respawnDirection) {
 		return ArrayUtils.addAll((int[][])getAroundBedOffsets(bedDirection, respawnDirection), (int[][])getOnBedOffsets(bedDirection));
 	}
 

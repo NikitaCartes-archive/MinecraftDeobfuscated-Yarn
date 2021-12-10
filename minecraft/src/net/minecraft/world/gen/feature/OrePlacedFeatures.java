@@ -173,8 +173,8 @@ public class OrePlacedFeatures {
 		return List.of(countModifier, SquarePlacementModifier.of(), heightModifier, BiomePlacementModifier.of());
 	}
 
-	private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier heightModfier) {
-		return modifiers(CountPlacementModifier.of(count), heightModfier);
+	private static List<PlacementModifier> modifiersWithCount(int count, PlacementModifier heightModifier) {
+		return modifiers(CountPlacementModifier.of(count), heightModifier);
 	}
 
 	private static List<PlacementModifier> modifiersWithRarity(int chance, PlacementModifier heightModifier) {

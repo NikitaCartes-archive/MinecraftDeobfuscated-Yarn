@@ -95,7 +95,7 @@ public class ClientWorld extends World {
 	private static final int field_34806 = 1000;
 	final EntityList entityList = new EntityList();
 	private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<>(Entity.class, new ClientWorld.ClientEntityHandler());
-	private final ClientPlayNetworkHandler netHandler;
+	private final ClientPlayNetworkHandler networkHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
 	private final DimensionEffects dimensionEffects;
@@ -128,7 +128,7 @@ public class ClientWorld extends World {
 		long seed
 	) {
 		super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
-		this.netHandler = netHandler;
+		this.networkHandler = netHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
@@ -299,7 +299,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void disconnect() {
-		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
+		this.networkHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
@@ -459,12 +459,12 @@ public class ClientWorld extends World {
 
 	@Override
 	public void sendPacket(Packet<?> packet) {
-		this.netHandler.sendPacket(packet);
+		this.networkHandler.sendPacket(packet);
 	}
 
 	@Override
 	public RecipeManager getRecipeManager() {
-		return this.netHandler.getRecipeManager();
+		return this.networkHandler.getRecipeManager();
 	}
 
 	public void setScoreboard(Scoreboard scoreboard) {
@@ -508,12 +508,12 @@ public class ClientWorld extends World {
 
 	@Override
 	public TagManager getTagManager() {
-		return this.netHandler.getTagManager();
+		return this.networkHandler.getTagManager();
 	}
 
 	@Override
 	public DynamicRegistryManager getRegistryManager() {
-		return this.netHandler.getRegistryManager();
+		return this.networkHandler.getRegistryManager();
 	}
 
 	@Override
@@ -912,8 +912,8 @@ public class ClientWorld extends World {
 			this.spawnAngle = angle;
 		}
 
-		public void setTime(long difficulty) {
-			this.time = difficulty;
+		public void setTime(long time) {
+			this.time = time;
 		}
 
 		public void setTimeOfDay(long time) {

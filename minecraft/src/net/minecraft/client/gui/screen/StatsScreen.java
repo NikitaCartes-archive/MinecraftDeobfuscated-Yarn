@@ -132,7 +132,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Override
-	public boolean isPauseScreen() {
+	public boolean shouldPause() {
 		return !this.downloadingStats;
 	}
 

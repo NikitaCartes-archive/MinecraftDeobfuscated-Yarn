@@ -169,7 +169,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #getId()
 	 */
 	private int id = CURRENT_ID.incrementAndGet();
-	public boolean inanimate;
+	/**
+	 * Whether the entity should be included in intersection checks.
+	 * 
+	 * <p>An intersection check is used to prevent block placement or
+	 * mob spawning within the bounding box.
+	 * 
+	 * @implNote Intersection is always checked for
+	 * {@link net.minecraft.entity.vehicle.BoatEntity},
+	 * {@link net.minecraft.entity.vehicle.AbstractMinecartEntity}, {@link TntEntity},
+	 * {@link net.minecraft.entity.decoration.EndCrystalEntity},
+	 * {@link FallingBlockEntity}, and {@link LivingEntity}.
+	 * Intersection with {@link net.minecraft.entity.decoration.ArmorStandEntity} is checked if
+	 * it is not a {@link net.minecraft.entity.decoration.ArmorStandEntity#isMarker marker}.
+	 */
+	public boolean intersectionChecked;
 	private ImmutableList<Entity> passengerList = ImmutableList.of();
 	protected int ridingCooldown;
 	@Nullable

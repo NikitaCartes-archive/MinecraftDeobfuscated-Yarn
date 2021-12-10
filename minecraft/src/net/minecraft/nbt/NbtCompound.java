@@ -255,7 +255,7 @@ public class NbtCompound implements NbtElement {
 	 */
 	public byte getType(String key) {
 		NbtElement nbtElement = (NbtElement)this.entries.get(key);
-		return nbtElement == null ? NbtElement.NULL_TYPE : nbtElement.getType();
+		return nbtElement == null ? NbtElement.END_TYPE : nbtElement.getType();
 	}
 
 	/**

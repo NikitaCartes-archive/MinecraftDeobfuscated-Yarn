@@ -18,7 +18,7 @@ public interface Resource extends Closeable {
 	/**
 	 * Returns the location of this resource.
 	 * 
-	 * <p>Within each resource pack, this location is a unique identifer for a
+	 * <p>Within each resource pack, this location is a unique identifier for a
 	 * resource; however, in a resource manager, there may be multiple resources
 	 * with the same location available.
 	 */

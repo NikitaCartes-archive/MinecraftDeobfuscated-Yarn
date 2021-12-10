@@ -39,9 +39,9 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		this.velocityY += velocityY;
 		this.velocityZ += velocityZ;
 		float f = world.random.nextFloat() * colorMultiplier;
-		this.colorRed = f;
-		this.colorGreen = f;
-		this.colorBlue = f;
+		this.red = f;
+		this.green = f;
+		this.blue = f;
 		this.scale *= 0.75F * scaleMultiplier;
 		this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2));
 		this.maxAge = (int)((float)this.maxAge * scaleMultiplier);

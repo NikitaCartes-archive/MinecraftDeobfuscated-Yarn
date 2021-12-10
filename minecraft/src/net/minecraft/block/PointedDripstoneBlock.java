@@ -265,7 +265,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public float getMaxModelOffset() {
+	public float getMaxHorizontalModelOffset() {
 		return 0.125F;
 	}
 

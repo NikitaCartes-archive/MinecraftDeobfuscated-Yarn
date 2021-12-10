@@ -83,7 +83,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
 		super(entityType, world);
-		this.inanimate = true;
+		this.intersectionChecked = true;
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
 		this.setPathfindingPenalty(PathNodeType.LAVA, 0.0F);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
@@ -191,7 +191,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return world.intersectsEntities(this);
+		return world.doesNotIntersectEntities(this);
 	}
 
 	@Nullable

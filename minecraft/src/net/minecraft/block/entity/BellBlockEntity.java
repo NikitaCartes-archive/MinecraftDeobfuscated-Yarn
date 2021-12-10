@@ -2,7 +2,6 @@ package net.minecraft.block.entity;
 
 import java.util.List;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -13,6 +12,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -164,9 +164,9 @@ public class BellBlockEntity extends BlockEntity {
 
 					for (int k = 0; k < j; k++) {
 						int l = mutableInt.addAndGet(5);
-						double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
-						double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
-						double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
+						double h = (double)ColorHelper.Argb.getRed(l) / 255.0;
+						double m = (double)ColorHelper.Argb.getGreen(l) / 255.0;
+						double n = (double)ColorHelper.Argb.getBlue(l) / 255.0;
 						world.addParticle(ParticleTypes.ENTITY_EFFECT, e, (double)((float)pos.getY() + 0.5F), g, h, m, n);
 					}
 				}

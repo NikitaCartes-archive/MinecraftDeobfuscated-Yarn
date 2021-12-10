@@ -109,7 +109,7 @@ public class PerfCommand {
 
 	private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
 		int i = result.getTickSpan();
-		double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
+		double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 		source.sendFeedback(
 			new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
 		);

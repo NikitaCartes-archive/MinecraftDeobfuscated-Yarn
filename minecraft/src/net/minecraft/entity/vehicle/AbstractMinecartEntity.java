@@ -90,7 +90,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
-		this.inanimate = true;
+		this.intersectionChecked = true;
 	}
 
 	protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {

@@ -527,8 +527,8 @@ public class MultiNoiseUtil {
 		abstract static class TreeNode<T> {
 			protected final MultiNoiseUtil.ParameterRange[] parameters;
 
-			protected TreeNode(List<MultiNoiseUtil.ParameterRange> subTree) {
-				this.parameters = (MultiNoiseUtil.ParameterRange[])subTree.toArray(new MultiNoiseUtil.ParameterRange[0]);
+			protected TreeNode(List<MultiNoiseUtil.ParameterRange> parameters) {
+				this.parameters = (MultiNoiseUtil.ParameterRange[])parameters.toArray(new MultiNoiseUtil.ParameterRange[0]);
 			}
 
 			protected abstract MultiNoiseUtil.SearchTree.TreeLeafNode<T> getResultingNode(

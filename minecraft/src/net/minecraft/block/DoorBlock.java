@@ -117,11 +117,11 @@ public class DoorBlock extends Block {
 		}
 	}
 
-	private int getOpenSoundEventId() {
+	private int getCloseSoundEventId() {
 		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_CLOSES : WorldEvents.WOODEN_DOOR_CLOSES;
 	}
 
-	private int getCloseSoundEventId() {
+	private int getOpenSoundEventId() {
 		return this.material == Material.METAL ? WorldEvents.IRON_DOOR_OPENS : WorldEvents.WOODEN_DOOR_OPENS;
 	}
 
@@ -192,7 +192,7 @@ public class DoorBlock extends Block {
 		} else {
 			state = state.cycle(OPEN);
 			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
-			world.syncWorldEvent(player, state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+			world.syncWorldEvent(player, state.get(OPEN) ? this.getOpenSoundEventId() : this.getCloseSoundEventId(), pos, 0);
 			world.emitGameEvent(player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			return ActionResult.success(world.isClient);
 		}
@@ -232,7 +232,7 @@ public class DoorBlock extends Block {
 	}
 
 	private void playOpenCloseSound(World world, BlockPos pos, boolean open) {
-		world.syncWorldEvent(null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+		world.syncWorldEvent(null, open ? this.getOpenSoundEventId() : this.getCloseSoundEventId(), pos, 0);
 	}
 
 	@Override

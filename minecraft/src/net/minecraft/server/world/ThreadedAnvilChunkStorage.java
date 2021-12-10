@@ -179,7 +179,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	public void verifyChunkGenerator() {
 		DataResult<JsonElement> dataResult = ChunkGenerator.CODEC.encodeStart(JsonOps.INSTANCE, this.chunkGenerator);
-		DataResult<ChunkGenerator> dataResult2 = dataResult.flatMap(jsonElement -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement));
+		DataResult<ChunkGenerator> dataResult2 = dataResult.flatMap(json -> ChunkGenerator.CODEC.parse(JsonOps.INSTANCE, json));
 		dataResult2.result().ifPresent(chunkGenerator -> this.chunkGenerator = chunkGenerator);
 	}
 
@@ -191,26 +191,26 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return f * f + g * g;
 	}
 
-	public static boolean method_39975(int i, int j, int k, int l, int m) {
-		int n = Math.max(0, Math.abs(i - k) - 1);
-		int o = Math.max(0, Math.abs(j - l) - 1);
-		int p = Math.max(0, Math.max(n, o) - 1);
-		int q = Math.min(n, o);
-		int r = q * q + p * p;
-		int s = m - 1;
-		int t = s * s;
-		return r <= t;
+	public static boolean isWithinDistance(int x1, int z1, int x2, int z2, int distance) {
+		int i = Math.max(0, Math.abs(x1 - x2) - 1);
+		int j = Math.max(0, Math.abs(z1 - z2) - 1);
+		int k = Math.max(0, Math.max(i, j) - 1);
+		int l = Math.min(i, j);
+		int m = l * l + k * k;
+		int n = distance - 1;
+		int o = n * n;
+		return m <= o;
 	}
 
-	private static boolean method_39976(int i, int j, int k, int l, int m) {
-		if (!method_39975(i, j, k, l, m)) {
+	private static boolean isOnDistanceEdge(int x1, int z1, int x2, int z2, int distance) {
+		if (!isWithinDistance(x1, z1, x2, z2, distance)) {
 			return false;
-		} else if (!method_39975(i + 1, j, k, l, m)) {
+		} else if (!isWithinDistance(x1 + 1, z1, x2, z2, distance)) {
 			return true;
-		} else if (!method_39975(i, j + 1, k, l, m)) {
+		} else if (!isWithinDistance(x1, z1 + 1, x2, z2, distance)) {
 			return true;
 		} else {
-			return !method_39975(i - 1, j, k, l, m) ? true : !method_39975(i, j - 1, k, l, m);
+			return !isWithinDistance(x1 - 1, z1, x2, z2, distance) ? true : !isWithinDistance(x1, z1 - 1, x2, z2, distance);
 		}
 	}
 
@@ -315,8 +315,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {
-		return this.getRegion(pos, 2, i -> ChunkStatus.FULL)
-			.thenApplyAsync(either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)), this.mainThreadExecutor);
+		return this.getRegion(pos, 2, distance -> ChunkStatus.FULL)
+			.thenApplyAsync(either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)), this.mainThreadExecutor);
 	}
 
 	@Nullable
@@ -543,13 +543,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			chunkPos, requiredStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(requiredStatus, i)
 		);
 		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus.getId()));
-		Executor executor = runnable -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable));
+		Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
 		return completableFuture.thenComposeAsync(
 			either -> either.map(
-					list -> {
+					chunks -> {
 						try {
 							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
-								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), list, false
+								executor, this.world, this.chunkGenerator, this.structureManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), chunks, false
 							);
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
@@ -606,14 +606,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.FULL.getPrevious());
 		return completableFuture.thenApplyAsync(either -> {
 			ChunkStatus chunkStatus = ChunkHolder.getTargetStatusForLevel(chunkHolder.getLevel());
-			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(chunk -> {
+			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(protoChunk -> {
 				ChunkPos chunkPos = chunkHolder.getPos();
-				ProtoChunk protoChunk = (ProtoChunk)chunk;
+				ProtoChunk protoChunk2 = (ProtoChunk)protoChunk;
 				WorldChunk worldChunk;
-				if (protoChunk instanceof ReadOnlyChunk) {
-					worldChunk = ((ReadOnlyChunk)protoChunk).getWrappedChunk();
+				if (protoChunk2 instanceof ReadOnlyChunk) {
+					worldChunk = ((ReadOnlyChunk)protoChunk2).getWrappedChunk();
 				} else {
-					worldChunk = new WorldChunk(this.world, protoChunk, worldChunkx -> addEntitiesFromNbt(this.world, protoChunk.getEntities()));
+					worldChunk = new WorldChunk(this.world, protoChunk2, chunk -> addEntitiesFromNbt(this.world, protoChunk2.getEntities()));
 					chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk, false));
 				}
 
@@ -627,31 +627,31 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 				return worldChunk;
 			});
-		}, runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
+		}, task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(task, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
 		ChunkPos chunkPos = holder.getPos();
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.FULL);
-		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(list -> {
-				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
+		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(chunks -> {
+				WorldChunk worldChunk = (WorldChunk)chunks.get(chunks.size() / 2);
 				worldChunk.runPostProcessing();
 				this.world.disableTickSchedulers(worldChunk);
 				return Either.left(worldChunk);
-			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
-		completableFuture2.thenAcceptAsync(either -> either.ifLeft(worldChunk -> {
+			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
+		completableFuture2.thenAcceptAsync(either -> either.ifLeft(chunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, worldChunk));
-			}), runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, runnable)));
+				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, chunk));
+			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
 		return completableFuture2;
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> method_31417(ChunkHolder chunkHolder) {
-		return this.getRegion(chunkHolder.getPos(), 1, ChunkStatus::byDistanceFromFull)
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkAccessible(ChunkHolder holder) {
+		return this.getRegion(holder.getPos(), 1, ChunkStatus::byDistanceFromFull)
 			.thenApplyAsync(
-				either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)),
-				runnable -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, runnable))
+				either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)),
+				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
 			);
 	}
 
@@ -739,18 +739,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			for (ChunkHolder chunkHolder : this.currentChunkHolders.values()) {
 				ChunkPos chunkPos = chunkHolder.getPos();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> {
-					ChunkSectionPos chunkSectionPos = serverPlayerEntity.getWatchedSection();
-					boolean bl = method_39975(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), j);
-					boolean bl2 = method_39975(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance);
-					this.sendWatchPackets(serverPlayerEntity, chunkPos, mutableObject, bl, bl2);
+				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> {
+					ChunkSectionPos chunkSectionPos = player.getWatchedSection();
+					boolean bl = isWithinDistance(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), j);
+					boolean bl2 = isWithinDistance(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance);
+					this.sendWatchPackets(player, chunkPos, mutableObject, bl, bl2);
 				});
 			}
 		}
 	}
 
 	protected void sendWatchPackets(
-		ServerPlayerEntity player, ChunkPos pos, MutableObject<ChunkDataS2CPacket> mutableObject, boolean oldWithinViewDistance, boolean newWithinViewDistance
+		ServerPlayerEntity player, ChunkPos pos, MutableObject<ChunkDataS2CPacket> packet, boolean oldWithinViewDistance, boolean newWithinViewDistance
 	) {
 		if (player.world == this.world) {
 			if (newWithinViewDistance && !oldWithinViewDistance) {
@@ -758,7 +758,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				if (chunkHolder != null) {
 					WorldChunk worldChunk = chunkHolder.getWorldChunk();
 					if (worldChunk != null) {
-						this.sendChunkDataPackets(player, mutableObject, worldChunk);
+						this.sendChunkDataPackets(player, packet, worldChunk);
 					}
 
 					DebugInfoSender.sendChunkWatchingChange(this.world, pos);
@@ -831,10 +831,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private static String getFutureStatus(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture) {
+	private static String getFutureStatus(CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> future) {
 		try {
-			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
-			return either != null ? either.map(worldChunk -> "done", unloaded -> "unloaded") : "not completed";
+			Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)future.getNow(null);
+			return either != null ? either.map(chunk -> "done", unloaded -> "unloaded") : "not completed";
 		} catch (CompletionException var2) {
 			return "failed " + var2.getCause().getMessage();
 		} catch (CancellationException var3) {
@@ -924,7 +924,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		for (int k = i - this.watchDistance - 1; k <= i + this.watchDistance + 1; k++) {
 			for (int l = j - this.watchDistance - 1; l <= j + this.watchDistance + 1; l++) {
-				if (method_39975(k, l, i, j, this.watchDistance)) {
+				if (isWithinDistance(k, l, i, j, this.watchDistance)) {
 					ChunkPos chunkPos = new ChunkPos(k, l);
 					this.sendWatchPackets(player, chunkPos, new MutableObject<>(), !added, added);
 				}
@@ -1000,15 +1000,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			for (int s = o; s <= q; s++) {
 				for (int t = p; t <= r; t++) {
-					boolean bl4 = method_39975(s, t, k, n, this.watchDistance);
-					boolean bl5 = method_39975(s, t, i, j, this.watchDistance);
+					boolean bl4 = isWithinDistance(s, t, k, n, this.watchDistance);
+					boolean bl5 = isWithinDistance(s, t, i, j, this.watchDistance);
 					this.sendWatchPackets(player, new ChunkPos(s, t), new MutableObject<>(), bl4, bl5);
 				}
 			}
 		} else {
 			for (int o = k - this.watchDistance - 1; o <= k + this.watchDistance + 1; o++) {
 				for (int p = n - this.watchDistance - 1; p <= n + this.watchDistance + 1; p++) {
-					if (method_39975(o, p, k, n, this.watchDistance)) {
+					if (isWithinDistance(o, p, k, n, this.watchDistance)) {
 						boolean bl6 = true;
 						boolean bl7 = false;
 						this.sendWatchPackets(player, new ChunkPos(o, p), new MutableObject<>(), true, false);
@@ -1018,7 +1018,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			for (int o = i - this.watchDistance - 1; o <= i + this.watchDistance + 1; o++) {
 				for (int px = j - this.watchDistance - 1; px <= j + this.watchDistance + 1; px++) {
-					if (method_39975(o, px, i, j, this.watchDistance)) {
+					if (isWithinDistance(o, px, i, j, this.watchDistance)) {
 						boolean bl6 = false;
 						boolean bl7 = true;
 						this.sendWatchPackets(player, new ChunkPos(o, px), new MutableObject<>(), false, true);
@@ -1035,8 +1035,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		for (ServerPlayerEntity serverPlayerEntity : set) {
 			ChunkSectionPos chunkSectionPos = serverPlayerEntity.getWatchedSection();
-			if (onlyOnWatchDistanceEdge && method_39976(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance)
-				|| !onlyOnWatchDistanceEdge && method_39975(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance)) {
+			if (onlyOnWatchDistanceEdge && isOnDistanceEdge(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance)
+				|| !onlyOnWatchDistanceEdge && isWithinDistance(chunkPos.x, chunkPos.z, chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), this.watchDistance)) {
 				builder.add(serverPlayerEntity);
 			}
 		}
@@ -1301,8 +1301,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	class TicketManager extends ChunkTicketManager {
-		protected TicketManager(Executor mainThreadExecutor, Executor executor) {
-			super(mainThreadExecutor, executor);
+		protected TicketManager(Executor workerExecutor, Executor mainThreadExecutor) {
+			super(workerExecutor, mainThreadExecutor);
 		}
 
 		@Override

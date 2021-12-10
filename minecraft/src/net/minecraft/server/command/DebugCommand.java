@@ -70,7 +70,7 @@ public class DebugCommand {
 			throw NOT_RUNNING_EXCEPTION.create();
 		} else {
 			ProfileResult profileResult = minecraftServer.stopDebug();
-			double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_MILLIS;
+			double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 			double e = (double)profileResult.getTickSpan() / d;
 			source.sendFeedback(
 				new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true

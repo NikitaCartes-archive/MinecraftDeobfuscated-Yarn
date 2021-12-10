@@ -60,7 +60,7 @@ public class FallingBlockEntity extends Entity {
 	public FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
 		this(EntityType.FALLING_BLOCK, world);
 		this.block = block;
-		this.inanimate = true;
+		this.intersectionChecked = true;
 		this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
@@ -337,7 +337,7 @@ public class FallingBlockEntity extends Entity {
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);
 		this.block = Block.getStateFromRawId(packet.getEntityData());
-		this.inanimate = true;
+		this.intersectionChecked = true;
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();

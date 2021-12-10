@@ -28,13 +28,13 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 		this.prevPosX = this.x;
 		this.prevPosY = this.y;
 		this.prevPosZ = this.z;
-		if (this.age++ < this.maxAge && !(this.colorAlpha <= 0.0F)) {
+		if (this.age++ < this.maxAge && !(this.alpha <= 0.0F)) {
 			this.velocityX = this.velocityX + (double)(this.random.nextFloat() / 5000.0F * (float)(this.random.nextBoolean() ? 1 : -1));
 			this.velocityZ = this.velocityZ + (double)(this.random.nextFloat() / 5000.0F * (float)(this.random.nextBoolean() ? 1 : -1));
 			this.velocityY = this.velocityY - (double)this.gravityStrength;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.age >= this.maxAge - 60 && this.colorAlpha > 0.01F) {
-				this.colorAlpha -= 0.015F;
+			if (this.age >= this.maxAge - 60 && this.alpha > 0.01F) {
+				this.alpha -= 0.015F;
 			}
 		} else {
 			this.markDead();
@@ -56,7 +56,7 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(clientWorld, d, e, f, g, h, i, false);
-			campfireSmokeParticle.setColorAlpha(0.9F);
+			campfireSmokeParticle.setAlpha(0.9F);
 			campfireSmokeParticle.setSprite(this.spriteProvider);
 			return campfireSmokeParticle;
 		}
@@ -72,7 +72,7 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(clientWorld, d, e, f, g, h, i, true);
-			campfireSmokeParticle.setColorAlpha(0.95F);
+			campfireSmokeParticle.setAlpha(0.95F);
 			campfireSmokeParticle.setSprite(this.spriteProvider);
 			return campfireSmokeParticle;
 		}

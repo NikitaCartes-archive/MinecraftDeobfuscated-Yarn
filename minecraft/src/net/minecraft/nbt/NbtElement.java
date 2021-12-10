@@ -15,11 +15,11 @@ public interface NbtElement {
 	int field_33248 = 32;
 	int field_33249 = 224;
 	/**
-	 * The numeric ID of an NBT null value. Is {@value}.
+	 * The numeric ID of an NBT end value. Is {@value}.
 	 * 
-	 * @see NbtNull
+	 * @see NbtEnd
 	 */
-	byte NULL_TYPE = 0;
+	byte END_TYPE = 0;
 	/**
 	 * The numeric ID of an NBT byte value. Is {@value}.
 	 * 

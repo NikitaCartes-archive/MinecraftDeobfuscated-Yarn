@@ -28,7 +28,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	private Text customName;
 	private DyeColor baseColor;
 	@Nullable
-	private NbtList patternListTag;
+	private NbtList patternListNbt;
 	@Nullable
 	private List<Pair<BannerPattern, DyeColor>> patterns;
 
@@ -43,7 +43,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Nullable
-	public static NbtList getPatternListTag(ItemStack stack) {
+	public static NbtList getPatternListNbt(ItemStack stack) {
 		NbtList nbtList = null;
 		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
@@ -59,7 +59,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public void readFrom(ItemStack stack) {
-		this.patternListTag = getPatternListTag(stack);
+		this.patternListNbt = getPatternListNbt(stack);
 		this.patterns = null;
 		this.customName = stack.hasCustomName() ? stack.getName() : null;
 	}
@@ -82,8 +82,8 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		if (this.patternListTag != null) {
-			nbt.put("Patterns", this.patternListTag);
+		if (this.patternListNbt != null) {
+			nbt.put("Patterns", this.patternListNbt);
 		}
 
 		if (this.customName != null) {
@@ -98,7 +98,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
 		}
 
-		this.patternListTag = nbt.getList("Patterns", NbtElement.COMPOUND_TYPE);
+		this.patternListNbt = nbt.getList("Patterns", NbtElement.COMPOUND_TYPE);
 		this.patterns = null;
 	}
 
@@ -118,18 +118,18 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public List<Pair<BannerPattern, DyeColor>> getPatterns() {
 		if (this.patterns == null) {
-			this.patterns = getPatternsFromNbt(this.baseColor, this.patternListTag);
+			this.patterns = getPatternsFromNbt(this.baseColor, this.patternListNbt);
 		}
 
 		return this.patterns;
 	}
 
-	public static List<Pair<BannerPattern, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListTag) {
+	public static List<Pair<BannerPattern, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable NbtList patternListNbt) {
 		List<Pair<BannerPattern, DyeColor>> list = Lists.<Pair<BannerPattern, DyeColor>>newArrayList();
 		list.add(Pair.of(BannerPattern.BASE, baseColor));
-		if (patternListTag != null) {
-			for (int i = 0; i < patternListTag.size(); i++) {
-				NbtCompound nbtCompound = patternListTag.getCompound(i);
+		if (patternListNbt != null) {
+			for (int i = 0; i < patternListNbt.size(); i++) {
+				NbtCompound nbtCompound = patternListNbt.getCompound(i);
 				BannerPattern bannerPattern = BannerPattern.byId(nbtCompound.getString("Pattern"));
 				if (bannerPattern != null) {
 					int j = nbtCompound.getInt("Color");
@@ -158,9 +158,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	public ItemStack getPickStack() {
 		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.baseColor));
-		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
+		if (this.patternListNbt != null && !this.patternListNbt.isEmpty()) {
 			NbtCompound nbtCompound = new NbtCompound();
-			nbtCompound.put("Patterns", this.patternListTag.copy());
+			nbtCompound.put("Patterns", this.patternListNbt.copy());
 			BlockItem.setBlockEntityNbt(itemStack, this.getType(), nbtCompound);
 		}
 

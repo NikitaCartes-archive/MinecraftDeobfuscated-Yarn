@@ -299,8 +299,8 @@ public class CloneCommand {
 
 					for (CloneCommand.BlockInfo blockInfo2x : list2) {
 						BlockEntity blockEntity4 = serverWorld.getBlockEntity(blockInfo2x.pos);
-						if (blockInfo2x.blockEntityTag != null && blockEntity4 != null) {
-							blockEntity4.readNbt(blockInfo2x.blockEntityTag);
+						if (blockInfo2x.blockEntityNbt != null && blockEntity4 != null) {
+							blockEntity4.readNbt(blockInfo2x.blockEntityNbt);
 							blockEntity4.markDirty();
 						}
 
@@ -329,12 +329,12 @@ public class CloneCommand {
 		public final BlockPos pos;
 		public final BlockState state;
 		@Nullable
-		public final NbtCompound blockEntityTag;
+		public final NbtCompound blockEntityNbt;
 
-		public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityTag) {
+		public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityNbt) {
 			this.pos = pos;
 			this.state = state;
-			this.blockEntityTag = blockEntityTag;
+			this.blockEntityNbt = blockEntityNbt;
 		}
 	}
 

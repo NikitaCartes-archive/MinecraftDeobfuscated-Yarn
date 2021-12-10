@@ -395,7 +395,7 @@ public class RealmsClient {
 						throw new RealmsServiceException(i, string, realmsError);
 					} else {
 						LOGGER.error("Realms http code: {} - raw body (message failed to parse): {}", i, string);
-						String string3 = method_39979(i);
+						String string3 = getErrorMessage(i);
 						throw new RealmsServiceException(i, string3);
 					}
 				}
@@ -408,8 +408,8 @@ public class RealmsClient {
 		}
 	}
 
-	private static String method_39979(int i) {
-		return switch (i) {
+	private static String getErrorMessage(int httpResultCode) {
+		return switch (httpResultCode) {
 			case 429 -> I18n.translate("mco.errorMessage.serviceBusy");
 			default -> "Unknown error";
 		};

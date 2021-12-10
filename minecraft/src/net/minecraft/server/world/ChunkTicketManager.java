@@ -198,7 +198,7 @@ public abstract class ChunkTicketManager {
 
 	private SortedArraySet<ChunkTicket<?>> getTicketSet(long position) {
 		return this.ticketsByPosition
-			.computeIfAbsent(position, (Long2ObjectFunction<? extends SortedArraySet<ChunkTicket<?>>>)(l -> (SortedArraySet<ChunkTicket<?>>)SortedArraySet.create(4)));
+			.computeIfAbsent(position, (Long2ObjectFunction<? extends SortedArraySet<ChunkTicket<?>>>)(pos -> (SortedArraySet<ChunkTicket<?>>)SortedArraySet.create(4)));
 	}
 
 	protected void setChunkForced(ChunkPos pos, boolean forced) {
@@ -216,7 +216,9 @@ public abstract class ChunkTicketManager {
 	public void handleChunkEnter(ChunkSectionPos pos, ServerPlayerEntity player) {
 		ChunkPos chunkPos = pos.toChunkPos();
 		long l = chunkPos.toLong();
-		this.playersByChunkPos.computeIfAbsent(l, (Long2ObjectFunction<? extends ObjectSet<ServerPlayerEntity>>)(lx -> new ObjectOpenHashSet<>())).add(player);
+		this.playersByChunkPos
+			.computeIfAbsent(l, (Long2ObjectFunction<? extends ObjectSet<ServerPlayerEntity>>)(sectionPos -> new ObjectOpenHashSet<>()))
+			.add(player);
 		this.distanceFromNearestPlayerTracker.updateLevel(l, 0, true);
 		this.nearbyChunkTicketUpdater.updateLevel(l, 0, true);
 		this.simulationDistanceTracker.add(ChunkTicketType.PLAYER, chunkPos, this.getPlayerSimulationLevel(), chunkPos);
@@ -444,11 +446,11 @@ public abstract class ChunkTicketManager {
 					int i = this.distances.get(l);
 					int j = this.getLevel(l);
 					if (i != j) {
-						ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, ix -> {
-							if (ix >= this.distances.defaultReturnValue()) {
+						ChunkTicketManager.this.levelUpdateListener.updateLevel(new ChunkPos(l), () -> this.distances.get(l), j, level -> {
+							if (level >= this.distances.defaultReturnValue()) {
 								this.distances.remove(l);
 							} else {
-								this.distances.put(l, ix);
+								this.distances.put(l, level);
 							}
 						});
 						this.updateTicket(l, j, this.isWithinViewDistance(i), this.isWithinViewDistance(j));

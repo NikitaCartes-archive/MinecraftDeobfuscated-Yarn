@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -14,12 +13,13 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private static final int field_35557 = BackgroundHelper.ColorMixer.getArgb(255, 0, 155, 155);
-	private static final int field_35558 = BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 0);
+	private static final int field_35557 = ColorHelper.Argb.getArgb(255, 0, 155, 155);
+	private static final int field_35558 = ColorHelper.Argb.getArgb(255, 255, 255, 0);
 
 	public ChunkBorderDebugRenderer(MinecraftClient client) {
 		this.client = client;

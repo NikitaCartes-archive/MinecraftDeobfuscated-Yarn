@@ -17,10 +17,10 @@ public class HungerConstants {
 	public static final float INITIAL_SATURATION_LEVEL = 5.0F;
 	public static final float field_30707 = 2.5F;
 	/**
-	 * A value {@value} that when the exhausion reaches, the exhausion minuses itself
+	 * A value {@value} that when the exhaustion reaches, the exhaustion minuses itself
 	 * by to reduce the saturation or food level.
 	 */
-	public static final float EXHAUSION_UNIT = 4.0F;
+	public static final float EXHAUSTION_UNIT = 4.0F;
 	/**
 	 * When the food tick is a multiple of {@value}, the hunger manager may perform
 	 * slow healing or starving logic.
@@ -36,10 +36,10 @@ public class HungerConstants {
 	 */
 	public static final int SLOW_HEALING_FOOD_LEVEL = 18;
 	/**
-	 * The exhausion from healing each hitpoint ({@value}), used for both fast and
+	 * The exhaustion from healing each hitpoint ({@value}), used for both fast and
 	 * slow healing mechanisms.
 	 */
-	public static final int EXHAUSION_PER_HITPOINT = 6;
+	public static final int EXHAUSTION_PER_HITPOINT = 6;
 	/**
 	 * The maximum food level ({@value}) permitted for the starving mechanism to run.
 	 */

@@ -10,9 +10,9 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	SuspendParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 		super(clientWorld, d, e, f, g, h, i);
 		float j = this.random.nextFloat() * 0.1F + 0.2F;
-		this.colorRed = j;
-		this.colorGreen = j;
-		this.colorBlue = j;
+		this.red = j;
+		this.green = j;
+		this.blue = j;
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.5F);
 		this.velocityX *= 0.02F;
@@ -59,7 +59,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
 			suspendParticle.setColor(0.3F, 0.5F, 1.0F);
 			suspendParticle.setSprite(this.spriteProvider);
-			suspendParticle.setColorAlpha(1.0F - clientWorld.random.nextFloat() * 0.7F);
+			suspendParticle.setAlpha(1.0F - clientWorld.random.nextFloat() * 0.7F);
 			suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
 			return suspendParticle;
 		}

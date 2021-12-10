@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
  * <p>
  * This has two major advantages:
  * <ol>
- * <li>Positions that are geometrically close together are grouped together in memory. This localises adjacent reads and writes.</li>
+ * <li>Positions that are geometrically close together are grouped together in memory. This localizes adjacent reads and writes.</li>
  * <li>A larger number of positions can be comprised together into one long allowing for a smaller memory footprint.</li>
  * </ol>
  * @see net.minecraft.world.chunk.light.LevelPropagator

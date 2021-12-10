@@ -46,20 +46,20 @@ public class TextFilterer implements AutoCloseable {
 	private final String apiKey;
 	private final int ruleId;
 	private final String serverId;
-	private final String field_36318;
+	private final String roomId;
 	final TextFilterer.HashIgnorer ignorer;
 	final ExecutorService executor;
 
-	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, String string, TextFilterer.HashIgnorer hashIgnorer, int i) throws MalformedURLException {
+	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, String roomId, TextFilterer.HashIgnorer ignorer, int parallelism) throws MalformedURLException {
 		this.apiKey = apiKey;
 		this.ruleId = ruleId;
 		this.serverId = serverId;
-		this.field_36318 = string;
-		this.ignorer = hashIgnorer;
+		this.roomId = roomId;
+		this.ignorer = ignorer;
 		this.chatEndpoint = apiUrl.resolve("/v1/chat").toURL();
 		this.joinEndpoint = apiUrl.resolve("/v1/join").toURL();
 		this.leaveEndpoint = apiUrl.resolve("/v1/leave").toURL();
-		this.executor = Executors.newFixedThreadPool(i, THREAD_FACTORY);
+		this.executor = Executors.newFixedThreadPool(parallelism, THREAD_FACTORY);
 	}
 
 	@Nullable
@@ -92,7 +92,7 @@ public class TextFilterer implements AutoCloseable {
 	void sendJoinOrLeaveRequest(GameProfile gameProfile, URL endpoint, Executor executor) {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("server", this.serverId);
-		jsonObject.addProperty("room", this.field_36318);
+		jsonObject.addProperty("room", this.roomId);
 		jsonObject.addProperty("user_id", gameProfile.getId().toString());
 		jsonObject.addProperty("user_display_name", gameProfile.getName());
 		executor.execute(() -> {
@@ -111,7 +111,7 @@ public class TextFilterer implements AutoCloseable {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("rule", this.ruleId);
 			jsonObject.addProperty("server", this.serverId);
-			jsonObject.addProperty("room", this.field_36318);
+			jsonObject.addProperty("room", this.roomId);
 			jsonObject.addProperty("player", gameProfile.getId().toString());
 			jsonObject.addProperty("player_display_name", gameProfile.getName());
 			jsonObject.addProperty("text", message);

@@ -7,22 +7,21 @@ import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
- * Represents the NBT null value.
- * Defines the end of an NBT compound object,
- * represents nonexistent values in an NBT compound object,
- * and is the type of empty NBT lists.
+ * Represents the NBT end value.
+ * Defines the end of an {@link NbtCompound} object during serialization,
+ * and is the type of an empty {@link NbtList}.
  */
-public class NbtNull implements NbtElement {
+public class NbtEnd implements NbtElement {
 	private static final int SIZE = 64;
-	public static final NbtType<NbtNull> TYPE = new NbtType<NbtNull>() {
-		public NbtNull read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
+	public static final NbtType<NbtEnd> TYPE = new NbtType<NbtEnd>() {
+		public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
 			nbtTagSizeTracker.add(64L);
-			return NbtNull.INSTANCE;
+			return NbtEnd.INSTANCE;
 		}
 
 		@Override
 		public NbtScanner.Result doAccept(DataInput input, NbtScanner visitor) {
-			return visitor.visitNull();
+			return visitor.visitEnd();
 		}
 
 		@Override
@@ -48,9 +47,13 @@ public class NbtNull implements NbtElement {
 			return true;
 		}
 	};
-	public static final NbtNull INSTANCE = new NbtNull();
+	/**
+	 * A dummy instance of the NBT end. It will never appear nested in any parsed NBT
+	 * structure and should never be used as NBT compound values or list elements.
+	 */
+	public static final NbtEnd INSTANCE = new NbtEnd();
 
-	private NbtNull() {
+	private NbtEnd() {
 	}
 
 	@Override
@@ -59,11 +62,11 @@ public class NbtNull implements NbtElement {
 
 	@Override
 	public byte getType() {
-		return NbtElement.NULL_TYPE;
+		return NbtElement.END_TYPE;
 	}
 
 	@Override
-	public NbtType<NbtNull> getNbtType() {
+	public NbtType<NbtEnd> getNbtType() {
 		return TYPE;
 	}
 
@@ -72,17 +75,17 @@ public class NbtNull implements NbtElement {
 		return this.asString();
 	}
 
-	public NbtNull copy() {
+	public NbtEnd copy() {
 		return this;
 	}
 
 	@Override
 	public void accept(NbtElementVisitor visitor) {
-		visitor.visitNull(this);
+		visitor.visitEnd(this);
 	}
 
 	@Override
 	public NbtScanner.Result doAccept(NbtScanner visitor) {
-		return visitor.visitNull();
+		return visitor.visitEnd();
 	}
 }

@@ -119,7 +119,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	}
 
 	public NbtList() {
-		this(Lists.<NbtElement>newArrayList(), NbtElement.NULL_TYPE);
+		this(Lists.<NbtElement>newArrayList(), NbtElement.END_TYPE);
 	}
 
 	@Override

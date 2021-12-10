@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
@@ -68,12 +68,7 @@ public interface VertexConsumer {
 	}
 
 	default VertexConsumer color(int argb) {
-		return this.color(
-			BackgroundHelper.ColorMixer.getRed(argb),
-			BackgroundHelper.ColorMixer.getGreen(argb),
-			BackgroundHelper.ColorMixer.getBlue(argb),
-			BackgroundHelper.ColorMixer.getAlpha(argb)
-		);
+		return this.color(ColorHelper.Argb.getRed(argb), ColorHelper.Argb.getGreen(argb), ColorHelper.Argb.getBlue(argb), ColorHelper.Argb.getAlpha(argb));
 	}
 
 	default VertexConsumer light(int uv) {

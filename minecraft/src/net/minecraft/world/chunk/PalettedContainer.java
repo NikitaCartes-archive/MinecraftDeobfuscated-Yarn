@@ -319,14 +319,14 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	/**
-	 * A counter that receives a palette entry and its number of occurences
+	 * A counter that receives a palette entry and its number of occurrences
 	 * in the container.
 	 */
 	@FunctionalInterface
 	public interface Counter<T> {
 		/**
 		 * @param object the palette entry
-		 * @param count the entry's number of occurence
+		 * @param count the entry's number of occurrence
 		 */
 		void accept(T object, int count);
 	}

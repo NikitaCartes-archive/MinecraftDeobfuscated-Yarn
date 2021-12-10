@@ -9,7 +9,7 @@ import net.minecraft.nbt.NbtType;
  * <p>Call format: start -> VisitBody
  * <br>
  * VisitBody:<br>
- * { visitNull | visitString | visitByte | visitShort | visitInt<br>
+ * { visitEnd | visitString | visitByte | visitShort | visitInt<br>
  * | visitLong | visitFloat | visitDouble | visitByteArray<br>
  * | visitIntArray | visitLongArray<br>
  * | visitListMeta -> [startListItem -> VisitBody]* -> endNested<br>
@@ -19,7 +19,7 @@ import net.minecraft.nbt.NbtType;
  * <p>The visit order is depth-first.
  */
 public interface NbtScanner {
-	NbtScanner.Result visitNull();
+	NbtScanner.Result visitEnd();
 
 	NbtScanner.Result visitString(String value);
 

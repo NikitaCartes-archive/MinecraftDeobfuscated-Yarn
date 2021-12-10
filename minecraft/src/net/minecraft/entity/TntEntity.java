@@ -19,7 +19,7 @@ public class TntEntity extends Entity {
 
 	public TntEntity(EntityType<? extends TntEntity> entityType, World world) {
 		super(entityType, world);
-		this.inanimate = true;
+		this.intersectionChecked = true;
 	}
 
 	public TntEntity(World world, double x, double y, double z, @Nullable LivingEntity igniter) {

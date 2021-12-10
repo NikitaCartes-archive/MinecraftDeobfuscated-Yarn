@@ -9,7 +9,21 @@ import javax.annotation.concurrent.Immutable;
 import net.minecraft.util.Util;
 
 /**
- * A publicly read-only but mutable vector composed of 3 integers.
+ * A vector composed of 3 integers.
+ * 
+ * <p>This class is very often used to hold the coordinates. To hold a block position
+ * specifically, use {@link BlockPos} instead, which extends {@code Vec3i}. To hold
+ * positions for entities and other non-voxels, consider using {@link Vec3f} (that holds
+ * values using {@code float}) or {@link Vec3d} (that holds values using {@code double})
+ * instead.
+ * 
+ * <p>{@code Vec3i} is read-only, but subclasses like {@link BlockPos.Mutable}
+ * may be mutable. Make sure to sanitize inputs of {@code Vec3i} if needed,
+ * such as calling {@link BlockPos#toImmutable()} or making new copies.
+ * 
+ * @see Vec3f
+ * @see Vec3d
+ * @see BlockPos
  */
 @Immutable
 public class Vec3i implements Comparable<Vec3i> {
@@ -94,13 +108,19 @@ public class Vec3i implements Comparable<Vec3i> {
 		return this;
 	}
 
+	/**
+	 * {@return another Vec3i whose coordinates have the parameter x, y, and z
+	 * added to the coordinates of this vector}
+	 * 
+	 * <p>This method always returns an immutable object.
+	 */
 	public Vec3i add(double x, double y, double z) {
 		return x == 0.0 && y == 0.0 && z == 0.0 ? this : new Vec3i((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
 	}
 
 	/**
-	 * Returns another Vec3i whose coordinates have the parameter x, y, and z
-	 * added to the coordinates of this vector.
+	 * {@return another Vec3i whose coordinates have the parameter x, y, and z
+	 * added to the coordinates of this vector}
 	 * 
 	 * <p>This method always returns an immutable object.
 	 */
@@ -108,14 +128,31 @@ public class Vec3i implements Comparable<Vec3i> {
 		return x == 0 && y == 0 && z == 0 ? this : new Vec3i(this.getX() + x, this.getY() + y, this.getZ() + z);
 	}
 
+	/**
+	 * {@return another Vec3i whose coordinates have the coordinates of {@code vec}
+	 * added to the coordinates of this vector}
+	 * 
+	 * <p>This method always returns an immutable object.
+	 */
 	public Vec3i add(Vec3i vec) {
 		return this.add(vec.getX(), vec.getY(), vec.getZ());
 	}
 
+	/**
+	 * {@return another Vec3i whose coordinates have the coordinates of {@code vec}
+	 * subtracted from the coordinates of this vector}
+	 * 
+	 * <p>This method always returns an immutable object.
+	 */
 	public Vec3i subtract(Vec3i vec) {
 		return this.add(-vec.getX(), -vec.getY(), -vec.getZ());
 	}
 
+	/**
+	 * {@return a vector with all components multiplied by {@code scale}}
+	 * 
+	 * @implNote This can return the same vector if {@code scale} equals {@code 1}.
+	 */
 	public Vec3i multiply(int scale) {
 		if (scale == 1) {
 			return this;
@@ -124,58 +161,114 @@ public class Vec3i implements Comparable<Vec3i> {
 		}
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the upward direction}
+	 */
 	public Vec3i up() {
 		return this.up(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the upward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i up(int distance) {
 		return this.offset(Direction.UP, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the downward direction}
+	 */
 	public Vec3i down() {
 		return this.down(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the downward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i down(int distance) {
 		return this.offset(Direction.DOWN, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the northward direction}
+	 */
 	public Vec3i north() {
 		return this.north(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the northward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i north(int distance) {
 		return this.offset(Direction.NORTH, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the southward direction}
+	 */
 	public Vec3i south() {
 		return this.south(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the southward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i south(int distance) {
 		return this.offset(Direction.SOUTH, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the westward direction}
+	 */
 	public Vec3i west() {
 		return this.west(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the westward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i west(int distance) {
 		return this.offset(Direction.WEST, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in the eastward direction}
+	 */
 	public Vec3i east() {
 		return this.east(1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in the eastward direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i east(int distance) {
 		return this.offset(Direction.EAST, distance);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code 1} in {@code direction} direction}
+	 */
 	public Vec3i offset(Direction direction) {
 		return this.offset(direction, 1);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} in {@code direction} direction}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i offset(Direction direction, int distance) {
 		return distance == 0
 			? this
@@ -184,6 +277,11 @@ public class Vec3i implements Comparable<Vec3i> {
 			);
 	}
 
+	/**
+	 * {@return a vector which is offset by {@code distance} on {@code axis} axis}
+	 * 
+	 * @implNote This can return the same vector if {@code distance} equals {@code 0}.
+	 */
 	public Vec3i offset(Direction.Axis axis, int distance) {
 		if (distance == 0) {
 			return this;
@@ -203,34 +301,74 @@ public class Vec3i implements Comparable<Vec3i> {
 		);
 	}
 
+	/**
+	 * {@return whether the distance between here and {@code vec} is less than {@code distance}}
+	 */
 	public boolean isWithinDistance(Vec3i vec, double distance) {
 		return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ(), false) < distance * distance;
 	}
 
+	/**
+	 * {@return whether the distance between here and {@code pos} is less than {@code distance}}
+	 */
 	public boolean isWithinDistance(Position pos, double distance) {
 		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), true) < distance * distance;
 	}
 
+	/**
+	 * {@return the squared distance between here (center) and {@code vec}}
+	 * 
+	 * @see #getSquaredDistance(Vec3i, boolean)
+	 */
 	public double getSquaredDistance(Vec3i vec) {
 		return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ(), true);
 	}
 
-	public double getSquaredDistance(Position pos, boolean treatAsBlockPos) {
-		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), treatAsBlockPos);
+	/**
+	 * {@return the squared distance between here and {@code pos}}
+	 * 
+	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
+	 * to the given pos; or {@code false} to calculate without an offset
+	 */
+	public double getSquaredDistance(Position pos, boolean center) {
+		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), center);
 	}
 
-	public double getSquaredDistance(Vec3i vec, boolean treatAsBlockPos) {
-		return this.getSquaredDistance((double)vec.x, (double)vec.y, (double)vec.z, treatAsBlockPos);
+	/**
+	 * {@return the squared distance between here and {@code vec}}
+	 * 
+	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
+	 * to the given vec; or {@code false} to calculate without an offset
+	 */
+	public double getSquaredDistance(Vec3i vec, boolean center) {
+		return this.getSquaredDistance((double)vec.x, (double)vec.y, (double)vec.z, center);
 	}
 
-	public double getSquaredDistance(double x, double y, double z, boolean treatAsBlockPos) {
-		double d = treatAsBlockPos ? 0.5 : 0.0;
+	/**
+	 * {@return the squared distance between here (center or vertex) and {@code (x, y, z)}}
+	 * If {@code center} is {@code true}, this is equivalent to {@link Vec3d#ofCenter(Vec3i)
+	 * Vec3d.ofCenter(this).squaredDistanceTo(x, y, z)}; otherwise,
+	 * this is equivalent to {@code Vec3d.of(this).squaredDistanceTo(x, y, z)}.
+	 * 
+	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
+	 * to the given {@code (x, y, z)}; or {@code false} to calculate without an offset
+	 */
+	public double getSquaredDistance(double x, double y, double z, boolean center) {
+		double d = center ? 0.5 : 0.0;
 		double e = (double)this.getX() + d - x;
 		double f = (double)this.getY() + d - y;
 		double g = (double)this.getZ() + d - z;
 		return e * e + f * f + g * g;
 	}
 
+	/**
+	 * {@return the Manhattan distance between here and {@code vec}}
+	 * 
+	 * <p>Manhattan distance, also called taxicab distance or snake distance, is the
+	 * distance measured as the sum of the absolute differences of their coordinates.
+	 * For example, the Manhattan distance between {@code (0, 0, 0)} and {@code (1, 1, 1)}
+	 * is {@code 3}.
+	 */
 	public int getManhattanDistance(Vec3i vec) {
 		float f = (float)Math.abs(vec.getX() - this.getX());
 		float g = (float)Math.abs(vec.getY() - this.getY());
@@ -238,6 +376,9 @@ public class Vec3i implements Comparable<Vec3i> {
 		return (int)(f + g + h);
 	}
 
+	/**
+	 * {@return the component on the {@code axis} axis}
+	 */
 	public int getComponentAlongAxis(Direction.Axis axis) {
 		return axis.choose(this.x, this.y, this.z);
 	}
@@ -246,6 +387,9 @@ public class Vec3i implements Comparable<Vec3i> {
 		return MoreObjects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
 	}
 
+	/**
+	 * {@return the coordinates joined with a colon and a space}
+	 */
 	public String toShortString() {
 		return this.getX() + ", " + this.getY() + ", " + this.getZ();
 	}

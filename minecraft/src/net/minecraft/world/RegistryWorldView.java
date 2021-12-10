@@ -32,8 +32,8 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(except, shape);
+	default boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
+		return EntityView.super.doesNotIntersectEntities(except, shape);
 	}
 
 	@Override

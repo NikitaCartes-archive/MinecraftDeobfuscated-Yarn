@@ -66,7 +66,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
 	}
 
-	public double getDesiredSquaredDistanceToTarget() {
+	public double getDesiredDistanceToTarget() {
 		return 1.0;
 	}
 
@@ -82,7 +82,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	@Override
 	public void tick() {
 		BlockPos blockPos = this.getTargetPos();
-		if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+		if (!blockPos.isWithinDistance(this.mob.getPos(), this.getDesiredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {

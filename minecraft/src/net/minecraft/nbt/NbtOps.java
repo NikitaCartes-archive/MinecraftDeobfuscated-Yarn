@@ -52,7 +52,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public NbtElement empty() {
-		return NbtNull.INSTANCE;
+		return NbtEnd.INSTANCE;
 	}
 
 	public <U> U convertTo(DynamicOps<U> dynamicOps, NbtElement nbtElement) {
@@ -163,11 +163,11 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public DataResult<NbtElement> mergeToList(NbtElement nbtElement, NbtElement nbtElement2) {
-		if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
+		if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
 			return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
 		} else {
 			AbstractNbtList<?> abstractNbtList = createList(
-				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.NULL_TYPE, nbtElement2.getType()
+				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE, nbtElement2.getType()
 			);
 			addAll(abstractNbtList, nbtElement, nbtElement2);
 			return DataResult.success(abstractNbtList);
@@ -175,11 +175,11 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public DataResult<NbtElement> mergeToList(NbtElement nbtElement, List<NbtElement> list) {
-		if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtNull)) {
+		if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
 			return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
 		} else {
 			AbstractNbtList<?> abstractNbtList = createList(
-				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.NULL_TYPE,
+				nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE,
 				(Byte)list.stream().findFirst().map(NbtElement::getType).orElse((byte)0)
 			);
 			addAll(abstractNbtList, nbtElement, list);
@@ -188,7 +188,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, NbtElement nbtElement2, NbtElement nbtElement3) {
-		if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtNull)) {
+		if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtEnd)) {
 			return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
 		} else if (!(nbtElement2 instanceof NbtString)) {
 			return DataResult.error("key is not a string: " + nbtElement2, nbtElement);
@@ -204,7 +204,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 	}
 
 	public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, MapLike<NbtElement> mapLike) {
-		if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtNull)) {
+		if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtEnd)) {
 			return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
 		} else {
 			NbtCompound nbtCompound = new NbtCompound();
@@ -326,7 +326,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 
 				while (peekingIterator.hasNext()) {
 					NbtElement nbtElement2 = peekingIterator.next();
-					if (!(nbtElement2 instanceof NbtNull)) {
+					if (!(nbtElement2 instanceof NbtEnd)) {
 						nbtList.add(nbtElement2);
 					}
 				}
@@ -370,7 +370,7 @@ public class NbtOps implements DynamicOps<NbtElement> {
 		}
 
 		protected DataResult<NbtElement> build(NbtCompound nbtCompound, NbtElement nbtElement) {
-			if (nbtElement == null || nbtElement == NbtNull.INSTANCE) {
+			if (nbtElement == null || nbtElement == NbtEnd.INSTANCE) {
 				return DataResult.success(nbtCompound);
 			} else if (!(nbtElement instanceof NbtCompound)) {
 				return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);

@@ -255,7 +255,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return world.intersectsEntities(this);
+		return world.doesNotIntersectEntities(this);
 	}
 
 	@Override

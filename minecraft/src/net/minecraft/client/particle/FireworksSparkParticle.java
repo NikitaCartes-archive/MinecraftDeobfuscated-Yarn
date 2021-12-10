@@ -75,8 +75,8 @@ public class FireworksSparkParticle {
 				FireworksSparkParticle.Explosion explosion = new FireworksSparkParticle.Explosion(
 					this.world, this.x, this.y, this.z, 0.0, 0.0, 0.0, this.particleManager, this.spriteProvider
 				);
-				explosion.setColorAlpha(0.99F);
-				explosion.setColor(this.colorRed, this.colorGreen, this.colorBlue);
+				explosion.setAlpha(0.99F);
+				explosion.setColor(this.red, this.green, this.blue);
 				explosion.age = explosion.maxAge / 2;
 				if (this.field_3802) {
 					explosion.field_3802 = true;
@@ -103,7 +103,7 @@ public class FireworksSparkParticle {
 			FireworksSparkParticle.Explosion explosion = new FireworksSparkParticle.Explosion(
 				clientWorld, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.spriteProvider
 			);
-			explosion.setColorAlpha(0.99F);
+			explosion.setAlpha(0.99F);
 			return explosion;
 		}
 	}
@@ -265,7 +265,7 @@ public class FireworksSparkParticle {
 				.addParticle(ParticleTypes.FIREWORK, x, y, z, velocityX, velocityY, velocityZ);
 			explosion.setTrail(trail);
 			explosion.setFlicker(flicker);
-			explosion.setColorAlpha(0.99F);
+			explosion.setAlpha(0.99F);
 			int i = this.random.nextInt(colors.length);
 			explosion.setColor(colors[i]);
 			if (fadeColors.length > 0) {
@@ -327,7 +327,7 @@ public class FireworksSparkParticle {
 			}
 		}
 
-		private void explodeBurst(int[] colors, int[] fadeColors, boolean trail, boolean flocker) {
+		private void explodeBurst(int[] colors, int[] fadeColors, boolean trail, boolean flicker) {
 			double d = this.random.nextGaussian() * 0.05;
 			double e = this.random.nextGaussian() * 0.05;
 
@@ -335,7 +335,7 @@ public class FireworksSparkParticle {
 				double f = this.velocityX * 0.5 + this.random.nextGaussian() * 0.15 + d;
 				double g = this.velocityZ * 0.5 + this.random.nextGaussian() * 0.15 + e;
 				double h = this.velocityY * 0.5 + this.random.nextDouble() * 0.5;
-				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, colors, fadeColors, trail, flocker);
+				this.addExplosionParticle(this.x, this.y, this.z, f, h, g, colors, fadeColors, trail, flicker);
 			}
 		}
 	}
@@ -354,7 +354,7 @@ public class FireworksSparkParticle {
 
 		@Override
 		public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-			this.setColorAlpha(0.6F - ((float)this.age + tickDelta - 1.0F) * 0.25F * 0.5F);
+			this.setAlpha(0.6F - ((float)this.age + tickDelta - 1.0F) * 0.25F * 0.5F);
 			super.buildGeometry(vertexConsumer, camera, tickDelta);
 		}
 

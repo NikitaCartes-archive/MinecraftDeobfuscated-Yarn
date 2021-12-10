@@ -770,7 +770,7 @@ public abstract class MobEntity extends LivingEntity {
 	 * <p>This is used by the look control.
 	 * 
 	 * <p>It can return from {@code 1} for entities that can hardly raise their head,
-	 * like axolotols or dolphins, or {@code 180} for entities that can freely raise
+	 * like axolotls or dolphins, or {@code 180} for entities that can freely raise
 	 * and lower their head, like guardians. The default return value is {@code 40}.
 	 */
 	public int getMaxLookPitchChange() {
@@ -783,7 +783,7 @@ public abstract class MobEntity extends LivingEntity {
 	 * <p>This is used by the body control.
 	 * 
 	 * <p>It can return from {@code 1} for entities that can hardly rotate their head,
-	 * like axolotols or dolphins, or {@code 180} for entities that can freely rotate
+	 * like axolotls or dolphins, or {@code 180} for entities that can freely rotate
 	 * their head, like shulkers. The default return value is {@code 75}.
 	 */
 	public int getMaxHeadRotation() {
@@ -847,7 +847,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean canSpawn(WorldView world) {
-		return !world.containsFluid(this.getBoundingBox()) && world.intersectsEntities(this);
+		return !world.containsFluid(this.getBoundingBox()) && world.doesNotIntersectEntities(this);
 	}
 
 	public int getLimitPerChunk() {
