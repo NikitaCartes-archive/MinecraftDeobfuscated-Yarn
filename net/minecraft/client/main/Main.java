@@ -49,7 +49,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class Main {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER;
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
@@ -251,7 +251,9 @@ public class Main {
     }
 
     static {
+        Util.method_39982();
         System.setProperty("java.awt.headless", "true");
+        LOGGER = LogManager.getLogger();
     }
 }
 
