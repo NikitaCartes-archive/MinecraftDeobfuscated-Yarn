@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,13 +31,12 @@ import net.minecraft.client.realms.dto.ValueObject;
 import net.minecraft.client.realms.util.JsonUtils;
 import net.minecraft.client.realms.util.RealmsUtil;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsServer
 extends ValueObject {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public long id;
     public String remoteSubscriptionId;
     public String name;

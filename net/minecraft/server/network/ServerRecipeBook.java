@@ -4,6 +4,7 @@
 package net.minecraft.server.network;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,13 +23,12 @@ import net.minecraft.recipe.book.RecipeBookOptions;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ServerRecipeBook
 extends RecipeBook {
     public static final String RECIPE_BOOK_KEY = "recipeBook";
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public int unlockRecipes(Collection<Recipe<?>> recipes, ServerPlayerEntity player) {
         ArrayList<Identifier> list = Lists.newArrayList();

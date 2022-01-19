@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -12,9 +12,9 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class RandomOffsetPlacementModifier
 extends PlacementModifier {
@@ -40,7 +40,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
         int i = pos.getX() + this.spreadXz.get(random);
         int j = pos.getY() + this.spreadY.get(random);
         int k = pos.getZ() + this.spreadXz.get(random);

@@ -44,7 +44,7 @@ public class BuiltinNoiseParameters {
         BuiltinNoiseParameters.register(NoiseParametersKeys.NOODLE_RIDGE_B, -7, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.JAGGED, -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.SURFACE, -6, 1.0, 1.0, 1.0);
-        BuiltinNoiseParameters.register(NoiseParametersKeys.SURFACE_SECONDARY, -6, 1.0, 1.0, 1.0);
+        BuiltinNoiseParameters.register(NoiseParametersKeys.SURFACE_SECONDARY, -6, 1.0, 1.0, 0.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.CLAY_BANDS_OFFSET, -8, 1.0, new double[0]);
         BuiltinNoiseParameters.register(NoiseParametersKeys.BADLANDS_PILLAR, -2, 1.0, 1.0, 1.0, 1.0);
         BuiltinNoiseParameters.register(NoiseParametersKeys.BADLANDS_PILLAR_ROOF, -8, 1.0, new double[0]);

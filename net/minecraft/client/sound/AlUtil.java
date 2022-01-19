@@ -3,17 +3,17 @@
  */
 package net.minecraft.client.sound;
 
+import com.mojang.logging.LogUtils;
 import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC10;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class AlUtil {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static String getErrorMessage(int errorCode) {
         switch (errorCode) {
@@ -69,7 +69,7 @@ public class AlUtil {
     static boolean checkAlcErrors(long deviceHandle, String sectionName) {
         int i = ALC10.alcGetError(deviceHandle);
         if (i != 0) {
-            LOGGER.error("{}{}: {}", (Object)sectionName, (Object)deviceHandle, (Object)AlUtil.getAlcErrorMessage(i));
+            LOGGER.error("{}{}: {}", sectionName, deviceHandle, AlUtil.getAlcErrorMessage(i));
             return true;
         }
         return false;

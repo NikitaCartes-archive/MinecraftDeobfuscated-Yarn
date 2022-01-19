@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.CameraSubmersionType;
+import net.minecraft.client.render.FogShape;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -25,7 +26,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 
 @Environment(value=EnvType.CLIENT)
 public class BackgroundRenderer {
-    private static final int field_32685 = 192;
+    private static final int field_32685 = 96;
     public static final float field_32684 = 5000.0f;
     private static float red;
     private static float green;
@@ -128,9 +129,9 @@ public class BackgroundRenderer {
         double d = (camera.getPos().y - (double)world.getBottomY()) * world.getLevelProperties().getHorizonShadingRatio();
         if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
             j2 = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-            d = j2 < 20 ? (d *= (double)(1.0f - (float)j2 / 20.0f)) : 0.0;
+            d = j2 < 20 ? (double)(1.0f - (float)j2 / 20.0f) : 0.0;
         }
-        if (d < 1.0 && cameraSubmersionType != CameraSubmersionType.LAVA) {
+        if (d < 1.0 && cameraSubmersionType != CameraSubmersionType.LAVA && cameraSubmersionType != CameraSubmersionType.POWDER_SNOW) {
             if (d < 0.0) {
                 d = 0.0;
             }
@@ -159,66 +160,71 @@ public class BackgroundRenderer {
     }
 
     public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog) {
+        float g;
+        float f;
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
-        if (cameraSubmersionType == CameraSubmersionType.WATER) {
-            float f = 192.0f;
+        FogShape fogShape = FogShape.SPHERE;
+        if (cameraSubmersionType == CameraSubmersionType.LAVA) {
+            if (entity.isSpectator()) {
+                f = -8.0f;
+                g = viewDistance * 0.5f;
+            } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+                f = 0.0f;
+                g = 3.0f;
+            } else {
+                f = 0.25f;
+                g = 1.0f;
+            }
+        } else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
+            if (entity.isSpectator()) {
+                f = -8.0f;
+                g = viewDistance * 0.5f;
+            } else {
+                f = 0.0f;
+                g = 2.0f;
+            }
+        } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
+            int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
+            float h = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), viewDistance, 5.0f);
+            if (fogType == FogType.FOG_SKY) {
+                f = 0.0f;
+                g = h * 0.8f;
+            } else {
+                f = cameraSubmersionType == CameraSubmersionType.WATER ? -4.0f : h * 0.25f;
+                g = h;
+            }
+        } else if (cameraSubmersionType == CameraSubmersionType.WATER) {
+            f = -8.0f;
+            g = 96.0f;
             if (entity instanceof ClientPlayerEntity) {
                 ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-                f *= Math.max(0.25f, clientPlayerEntity.getUnderwaterVisibility());
+                g *= Math.max(0.25f, clientPlayerEntity.getUnderwaterVisibility());
                 Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
                 if (biome.getCategory() == Biome.Category.SWAMP) {
-                    f *= 0.85f;
+                    g *= 0.85f;
                 }
             }
-            RenderSystem.setShaderFogStart(-8.0f);
-            RenderSystem.setShaderFogEnd(f * 0.5f);
+            if (g > viewDistance) {
+                g = viewDistance;
+                fogShape = FogShape.CYLINDER;
+            }
+        } else if (thickFog) {
+            f = viewDistance * 0.05f;
+            g = Math.min(viewDistance, 192.0f) * 0.5f;
+        } else if (fogType == FogType.FOG_SKY) {
+            f = 0.0f;
+            g = viewDistance;
+            fogShape = FogShape.CYLINDER;
         } else {
-            float g;
-            float f;
-            if (cameraSubmersionType == CameraSubmersionType.LAVA) {
-                if (entity.isSpectator()) {
-                    f = -8.0f;
-                    g = viewDistance * 0.5f;
-                } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
-                    f = 0.0f;
-                    g = 3.0f;
-                } else {
-                    f = 0.25f;
-                    g = 1.0f;
-                }
-            } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.BLINDNESS)) {
-                int i = ((LivingEntity)entity).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-                float h = MathHelper.lerp(Math.min(1.0f, (float)i / 20.0f), viewDistance, 5.0f);
-                if (fogType == FogType.FOG_SKY) {
-                    f = 0.0f;
-                    g = h * 0.8f;
-                } else {
-                    f = h * 0.25f;
-                    g = h;
-                }
-            } else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
-                if (entity.isSpectator()) {
-                    f = -8.0f;
-                    g = viewDistance * 0.5f;
-                } else {
-                    f = 0.0f;
-                    g = 2.0f;
-                }
-            } else if (thickFog) {
-                f = viewDistance * 0.05f;
-                g = Math.min(viewDistance, 192.0f) * 0.5f;
-            } else if (fogType == FogType.FOG_SKY) {
-                f = 0.0f;
-                g = viewDistance;
-            } else {
-                float j = MathHelper.clamp(viewDistance / 10.0f, 4.0f, 64.0f);
-                f = viewDistance - j;
-                g = viewDistance;
-            }
-            RenderSystem.setShaderFogStart(f);
-            RenderSystem.setShaderFogEnd(g);
+            float j = MathHelper.clamp(viewDistance / 10.0f, 4.0f, 64.0f);
+            f = viewDistance - j;
+            g = viewDistance;
+            fogShape = FogShape.CYLINDER;
         }
+        RenderSystem.setShaderFogStart(f);
+        RenderSystem.setShaderFogEnd(g);
+        RenderSystem.setShaderFogShape(fogShape);
     }
 
     public static void setFogBlack() {

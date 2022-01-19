@@ -5,6 +5,7 @@ package net.minecraft.util.profiler;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -25,14 +26,13 @@ import net.minecraft.util.profiler.ProfileResultImpl;
 import net.minecraft.util.profiler.ReadableProfiler;
 import net.minecraft.util.profiler.SampleType;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ProfilerSystem
 implements ReadableProfiler {
     private static final long TIMEOUT_NANOSECONDS = Duration.ofMillis(100L).toNanos();
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final List<String> path = Lists.newArrayList();
     private final LongList timeList = new LongArrayList();
     private final Map<String, LocatedInfo> locationInfos = Maps.newHashMap();
@@ -76,7 +76,7 @@ implements ReadableProfiler {
         this.pop();
         this.tickStarted = false;
         if (!this.fullPath.isEmpty()) {
-            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", () -> ProfileResult.getHumanReadableName(this.fullPath));
+            LOGGER.error("Profiler tick ended before path was fully popped (remainder: '{}'). Mismatched push/pop?", LogUtils.defer(() -> ProfileResult.getHumanReadableName(this.fullPath)));
         }
     }
 
@@ -125,7 +125,7 @@ implements ReadableProfiler {
         locatedInfo.maxTime = Math.max(locatedInfo.maxTime, n);
         locatedInfo.minTime = Math.min(locatedInfo.minTime, n);
         if (this.checkTimeout && n > TIMEOUT_NANOSECONDS) {
-            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", () -> ProfileResult.getHumanReadableName(this.fullPath), () -> (double)n / 1000000.0);
+            LOGGER.warn("Something's taking too long! '{}' took aprox {} ms", LogUtils.defer(() -> ProfileResult.getHumanReadableName(this.fullPath)), LogUtils.defer(() -> (double)n / 1000000.0));
         }
         this.fullPath = this.path.isEmpty() ? "" : this.path.get(this.path.size() - 1);
         this.currentInfo = null;

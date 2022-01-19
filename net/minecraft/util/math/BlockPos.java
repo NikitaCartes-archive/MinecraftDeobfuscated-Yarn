@@ -4,6 +4,7 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.AbstractIterator;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
@@ -22,9 +23,8 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Unmodifiable;
+import org.slf4j.Logger;
 
 /**
  * Represents the position of a block in a three-dimensional volume.
@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Unmodifiable;
 public class BlockPos
 extends Vec3i {
     public static final Codec<BlockPos> CODEC = Codec.INT_STREAM.comapFlatMap(stream -> Util.toArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])), pos -> IntStream.of(pos.getX(), pos.getY(), pos.getZ())).stable();
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * The block position which x, y, and z values are all zero.
      */

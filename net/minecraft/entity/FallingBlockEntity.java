@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity;
 
+import com.mojang.logging.LogUtils;
 import java.util.function.Predicate;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
@@ -43,9 +44,11 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class FallingBlockEntity
 extends Entity {
+    private static final Logger field_36333 = LogUtils.getLogger();
     private static final int field_35672 = 50;
     private BlockState block = Blocks.SAND.getDefaultState();
     public int timeFalling;
@@ -63,16 +66,23 @@ extends Entity {
         super(entityType, world);
     }
 
-    public FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
+    private FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
         this((EntityType<? extends FallingBlockEntity>)EntityType.FALLING_BLOCK, world);
         this.block = block;
         this.intersectionChecked = true;
-        this.setPosition(x, y + (double)((1.0f - this.getHeight()) / 2.0f), z);
+        this.setPosition(x, y, z);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = x;
         this.prevY = y;
         this.prevZ = z;
         this.setFallingBlockPos(this.getBlockPos());
+    }
+
+    public static FallingBlockEntity method_40005(World world, BlockPos blockPos, BlockState blockState) {
+        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState.contains(Properties.WATERLOGGED) ? (BlockState)blockState.with(Properties.WATERLOGGED, false) : blockState);
+        world.setBlockState(blockPos, blockState.getFluidState().getBlockState(), Block.NOTIFY_ALL);
+        world.spawnEntity(fallingBlockEntity);
+        return fallingBlockEntity;
     }
 
     @Override
@@ -105,7 +115,6 @@ extends Entity {
 
     @Override
     public void tick() {
-        BlockPos blockPos;
         if (this.block.isAir()) {
             this.discard();
             return;
@@ -117,22 +126,14 @@ extends Entity {
             return;
         }
         Block block = this.block.getBlock();
-        if (this.timeFalling++ == 0) {
-            blockPos = this.getBlockPos();
-            if (this.world.getBlockState(blockPos).isOf(block)) {
-                this.world.removeBlock(blockPos, false);
-            } else if (!this.world.isClient) {
-                this.discard();
-                return;
-            }
-        }
+        ++this.timeFalling;
         if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
         }
         this.move(MovementType.SELF, this.getVelocity());
         if (!this.world.isClient) {
             BlockHitResult blockHitResult;
-            blockPos = this.getBlockPos();
+            BlockPos blockPos = this.getBlockPos();
             boolean bl = this.block.getBlock() instanceof ConcretePowderBlock;
             boolean bl2 = bl && this.world.getFluidState(blockPos).isIn(FluidTags.WATER);
             double d = this.getVelocity().lengthSquared();
@@ -168,7 +169,7 @@ extends Entity {
                                     try {
                                         blockEntity.readNbt(nbtCompound);
                                     } catch (Exception exception) {
-                                        LOGGER.error("Failed to load block entity from falling block", (Throwable)exception);
+                                        field_36333.error("Failed to load block entity from falling block", exception);
                                     }
                                     blockEntity.markDirty();
                                 }
@@ -321,7 +322,7 @@ extends Entity {
         double d = packet.getX();
         double e = packet.getY();
         double f = packet.getZ();
-        this.setPosition(d, e + (double)((1.0f - this.getHeight()) / 2.0f), f);
+        this.setPosition(d, e, f);
         this.setFallingBlockPos(this.getBlockPos());
     }
 }

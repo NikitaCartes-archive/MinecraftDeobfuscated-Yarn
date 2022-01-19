@@ -4,6 +4,7 @@
 package net.minecraft.server.world;
 
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import java.util.Iterator;
@@ -24,14 +25,13 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.light.LightingProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ServerLightingProvider
 extends LightingProvider
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final TaskExecutor<Runnable> processor;
     private final ObjectList<Pair<Stage, Runnable>> pendingTasks = new ObjectArrayList<Pair<Stage, Runnable>>();
     private final ThreadedAnvilChunkStorage chunkStorage;

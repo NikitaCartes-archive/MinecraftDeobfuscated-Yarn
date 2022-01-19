@@ -1,16 +1,16 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.decorator.AbstractConditionalPlacementModifier;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.placementmodifier.AbstractConditionalPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class BiomePlacementModifier
 extends AbstractConditionalPlacementModifier {
@@ -25,7 +25,7 @@ extends AbstractConditionalPlacementModifier {
     }
 
     @Override
-    protected boolean shouldPlace(DecoratorContext context, Random random, BlockPos pos) {
+    protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
         PlacedFeature placedFeature = context.getPlacedFeature().orElseThrow(() -> new IllegalStateException("Tried to biome check an unregistered feature"));
         Biome biome = context.getWorld().getBiome(pos);
         return biome.getGenerationSettings().isFeatureAllowed(placedFeature);

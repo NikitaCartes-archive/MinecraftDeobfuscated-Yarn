@@ -6,6 +6,7 @@ package net.minecraft.server.world;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -40,15 +41,14 @@ import net.minecraft.world.entity.SectionedEntityCache;
 import net.minecraft.world.entity.SimpleEntityLookup;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.ChunkDataList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * An entity manager for a server environment.
  */
 public class ServerEntityManager<T extends EntityLike>
 implements AutoCloseable {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     final Set<UUID> entityUuids = Sets.newHashSet();
     final EntityHandler<T> handler;
     private final ChunkDataAccess<T> dataAccess;
@@ -343,12 +343,12 @@ implements AutoCloseable {
         return this.lookup;
     }
 
-    public boolean shouldTick(BlockPos pos) {
-        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(ChunkPos.toLong(pos)))).shouldTick();
+    public boolean method_40022(BlockPos blockPos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(ChunkPos.toLong(blockPos)))).shouldTick();
     }
 
-    public boolean shouldTick(ChunkPos pos) {
-        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(pos.toLong()))).shouldTick();
+    public boolean method_40021(ChunkPos chunkPos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(chunkPos.toLong()))).shouldTick();
     }
 
     public boolean isLoaded(long chunkPos) {
@@ -410,7 +410,7 @@ implements AutoCloseable {
             if (l != this.sectionPos) {
                 EntityTrackingStatus entityTrackingStatus = this.section.getStatus();
                 if (!this.section.remove(this.entity)) {
-                    LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, (Object)ChunkSectionPos.from(this.sectionPos), (Object)l);
+                    LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, ChunkSectionPos.from(this.sectionPos), l);
                 }
                 this.manager.entityLeftSection(this.sectionPos, this.section);
                 EntityTrackingSection entityTrackingSection = this.manager.cache.getTrackingSection(l);
@@ -447,7 +447,7 @@ implements AutoCloseable {
         public void remove(Entity.RemovalReason reason) {
             EntityTrackingStatus entityTrackingStatus;
             if (!this.section.remove(this.entity)) {
-                LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", this.entity, (Object)ChunkSectionPos.from(this.sectionPos), (Object)reason);
+                LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", new Object[]{this.entity, ChunkSectionPos.from(this.sectionPos), reason});
             }
             if ((entityTrackingStatus = ServerEntityManager.getNeededLoadStatus(this.entity, this.section.getStatus())).shouldTick()) {
                 this.manager.stopTicking(this.entity);

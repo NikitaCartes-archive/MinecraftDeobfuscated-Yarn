@@ -3,6 +3,7 @@
  */
 package net.minecraft.village;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.HostileEntity;
@@ -15,13 +16,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Spawner;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ZombieSiegeManager
 implements Spawner {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private boolean spawned;
     private State state = State.SIEGE_DONE;
     private int remaining;

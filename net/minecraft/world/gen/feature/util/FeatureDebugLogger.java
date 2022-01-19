@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature.util;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -17,11 +18,10 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class FeatureDebugLogger {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final LoadingCache<ServerWorld, Features> FEATURES = CacheBuilder.newBuilder().weakKeys().expireAfterAccess(5L, TimeUnit.MINUTES).build(new CacheLoader<ServerWorld, Features>(){
 
         @Override
@@ -39,7 +39,7 @@ public class FeatureDebugLogger {
         try {
             FEATURES.get(world).chunksWithFeatures().increment();
         } catch (Exception exception) {
-            LOGGER.error(exception);
+            LOGGER.error("Failed to increment chunk count", exception);
         }
     }
 
@@ -47,7 +47,7 @@ public class FeatureDebugLogger {
         try {
             FEATURES.get(world).featureData().computeInt(new FeatureData(configuredFeature, placedFeature), (featureData, count) -> count == null ? 1 : count + 1);
         } catch (Exception exception) {
-            LOGGER.error(exception);
+            LOGGER.error("Failed to increment feature count", exception);
         }
     }
 

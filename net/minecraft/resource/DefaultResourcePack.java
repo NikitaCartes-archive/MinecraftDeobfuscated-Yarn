@@ -6,6 +6,7 @@ package net.minecraft.resource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,9 +43,8 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class DefaultResourcePack
 implements ResourcePack,
@@ -132,7 +132,7 @@ ResourceFactory {
             }
         } catch (FileNotFoundException | NoSuchFileException path) {
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)iOException);
+            LOGGER.error("Couldn't get a list of all vanilla resources", iOException);
         }
         return set;
     }
@@ -276,7 +276,7 @@ ResourceFactory {
     }
 
     static {
-        LOGGER = LogManager.getLogger();
+        LOGGER = LogUtils.getLogger();
         TYPE_TO_FILE_SYSTEM = Util.make(() -> {
             Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
             synchronized (DefaultResourcePack.class) {
@@ -297,7 +297,7 @@ ResourceFactory {
                         Path path = DefaultResourcePack.getPath(uRI);
                         builder.put(resourceType, path.getParent());
                     } catch (Exception exception) {
-                        LOGGER.error("Couldn't resolve path to vanilla assets", (Throwable)exception);
+                        LOGGER.error("Couldn't resolve path to vanilla assets", exception);
                     }
                 }
                 // ** MonitorExit[var0] (shouldn't be in output)

@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -66,14 +67,13 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class MinecraftDedicatedServer
 extends MinecraftServer
 implements DedicatedServer {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29662 = 5000;
     private static final int field_29663 = 2;
     private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
@@ -112,7 +112,7 @@ implements DedicatedServer {
                         MinecraftDedicatedServer.this.enqueueCommand(string, MinecraftDedicatedServer.this.getCommandSource());
                     }
                 } catch (IOException iOException) {
-                    LOGGER.error("Exception handling console input", (Throwable)iOException);
+                    LOGGER.error("Exception handling console input", iOException);
                 }
             }
         };

@@ -4,6 +4,7 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import java.util.Iterator;
 import java.util.Objects;
@@ -15,8 +16,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A mutable box with integer coordinates. The box is axis-aligned and the
@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  * @see Box
  */
 public class BlockBox {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * A codec that stores a block box as an int array. In the serialized array,
      * the ordered elements are {@link #minX}, {@link #minY}, {@link #minZ},

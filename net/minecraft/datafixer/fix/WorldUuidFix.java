@@ -6,12 +6,16 @@ package net.minecraft.datafixer.fix;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AbstractUuidFix;
+import org.slf4j.Logger;
 
 public class WorldUuidFix
 extends AbstractUuidFix {
+    private static final Logger field_36329 = LogUtils.getLogger();
+
     public WorldUuidFix(Schema outputSchema) {
         super(outputSchema, TypeReferences.LEVEL);
     }
@@ -36,7 +40,7 @@ extends AbstractUuidFix {
 
     private Dynamic<?> fixCustomBossEvents(Dynamic<?> dynamic2) {
         return dynamic2.update("CustomBossEvents", dynamic -> dynamic.updateMapValues(pair -> pair.mapSecond(dynamic -> dynamic.update("Players", dynamic22 -> dynamic.createList(dynamic22.asStream().map(dynamic -> WorldUuidFix.createArrayFromCompoundUuid(dynamic).orElseGet(() -> {
-            LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
+            field_36329.warn("CustomBossEvents contains invalid UUIDs.");
             return dynamic;
         })))))));
     }

@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -25,14 +26,13 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class SelectWorldScreen
 extends Screen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     protected final Screen parent;
     @Nullable
     private List<OrderedText> tooltipText;
@@ -138,7 +138,7 @@ extends Screen {
             String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
             this.client.createWorld(string2, levelInfo, impl, generatorOptions);
         } catch (IOException iOException) {
-            LOGGER.error("Failed to recreate the debug world", (Throwable)iOException);
+            LOGGER.error("Failed to recreate the debug world", iOException);
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -13,9 +13,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 @Deprecated
 public class CountMultilayerPlacementModifier
@@ -36,7 +36,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
         boolean bl;
         Stream.Builder<BlockPos> builder = Stream.builder();
         int i = 0;
@@ -61,7 +61,7 @@ extends PlacementModifier {
         return PlacementModifierType.COUNT_ON_EVERY_LAYER;
     }
 
-    private static int findPos(DecoratorContext context, int x, int y, int z, int targetY) {
+    private static int findPos(FeaturePlacementContext context, int x, int y, int z, int targetY) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
         int i = 0;
         BlockState blockState = context.getBlockState(mutable);

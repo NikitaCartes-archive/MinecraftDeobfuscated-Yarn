@@ -35,7 +35,7 @@ extends ElementListWidget<Entry> {
     public ControlsListWidget(KeybindsScreen parent, MinecraftClient client) {
         super(client, parent.width + 45, parent.height, 20, parent.height - 32, 20);
         this.parent = parent;
-        Object[] keyBindings = ArrayUtils.clone(client.options.keysAll);
+        Object[] keyBindings = ArrayUtils.clone(client.options.allKeys);
         Arrays.sort(keyBindings);
         String string = null;
         for (Object keyBinding : keyBindings) {
@@ -154,7 +154,7 @@ extends ElementListWidget<Entry> {
             this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
             boolean bl2 = false;
             if (!this.binding.isUnbound()) {
-                for (KeyBinding keyBinding : ((ControlsListWidget)ControlsListWidget.this).client.options.keysAll) {
+                for (KeyBinding keyBinding : ((ControlsListWidget)ControlsListWidget.this).client.options.allKeys) {
                     if (keyBinding == this.binding || !this.binding.equals(keyBinding)) continue;
                     bl2 = true;
                     break;

@@ -22,6 +22,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class IdentifierArgumentType
 implements ArgumentType<Identifier> {
@@ -31,13 +35,16 @@ implements ArgumentType<Identifier> {
     private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("predicate.unknown", id));
     private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("attribute.unknown", id));
     private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("item_modifier.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_BIOME_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locatebiome.invalid", id));
+    private static final DynamicCommandExceptionType UNKNOWN_FEATURE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.placefeature.invalid", id));
+    private static final DynamicCommandExceptionType UNKNOWN_STRUCTURE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.invalid", id));
 
     public static IdentifierArgumentType identifier() {
         return new IdentifierArgumentType();
     }
 
     public static Advancement getAdvancementArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-        Identifier identifier = context.getArgument(argumentName, Identifier.class);
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
         Advancement advancement = context.getSource().getServer().getAdvancementLoader().get(identifier);
         if (advancement == null) {
             throw UNKNOWN_ADVANCEMENT_EXCEPTION.create(identifier);
@@ -47,12 +54,12 @@ implements ArgumentType<Identifier> {
 
     public static Recipe<?> getRecipeArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
         RecipeManager recipeManager = context.getSource().getServer().getRecipeManager();
-        Identifier identifier = context.getArgument(argumentName, Identifier.class);
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
         return recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
     }
 
     public static LootCondition getPredicateArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-        Identifier identifier = context.getArgument(argumentName, Identifier.class);
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
         LootConditionManager lootConditionManager = context.getSource().getServer().getPredicateManager();
         LootCondition lootCondition = lootConditionManager.get(identifier);
         if (lootCondition == null) {
@@ -62,7 +69,7 @@ implements ArgumentType<Identifier> {
     }
 
     public static LootFunction getItemModifierArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-        Identifier identifier = context.getArgument(argumentName, Identifier.class);
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
         LootFunctionManager lootFunctionManager = context.getSource().getServer().getItemModifierManager();
         LootFunction lootFunction = lootFunctionManager.get(identifier);
         if (lootFunction == null) {
@@ -72,8 +79,26 @@ implements ArgumentType<Identifier> {
     }
 
     public static EntityAttribute getAttributeArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-        Identifier identifier = context.getArgument(argumentName, Identifier.class);
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
         return Registry.ATTRIBUTE.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ATTRIBUTE_EXCEPTION.create(identifier));
+    }
+
+    private static <T> RegistryEntry<T> getFromRegistry(CommandContext<ServerCommandSource> context, String argumentName, RegistryKey<Registry<T>> registryRef, DynamicCommandExceptionType exceptionType) throws CommandSyntaxException {
+        Identifier identifier = IdentifierArgumentType.getIdentifier(context, argumentName);
+        T object = context.getSource().getServer().getRegistryManager().get(registryRef).getOrEmpty(identifier).orElseThrow(() -> exceptionType.create(identifier));
+        return new RegistryEntry<T>(identifier, object);
+    }
+
+    public static RegistryEntry<Biome> getBiomeEntry(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
+        return IdentifierArgumentType.getFromRegistry(context, argumentName, Registry.BIOME_KEY, UNKNOWN_BIOME_EXCEPTION);
+    }
+
+    public static RegistryEntry<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
+        return IdentifierArgumentType.getFromRegistry(context, argumentName, Registry.CONFIGURED_FEATURE_KEY, UNKNOWN_FEATURE_EXCEPTION);
+    }
+
+    public static RegistryEntry<StructureFeature<?>> getStructureFeatureEntry(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
+        return IdentifierArgumentType.getFromRegistry(context, argumentName, Registry.STRUCTURE_FEATURE_KEY, UNKNOWN_STRUCTURE_EXCEPTION);
     }
 
     public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {
@@ -93,6 +118,9 @@ implements ArgumentType<Identifier> {
     @Override
     public /* synthetic */ Object parse(StringReader reader) throws CommandSyntaxException {
         return this.parse(reader);
+    }
+
+    public record RegistryEntry<T>(Identifier id, T resource) {
     }
 }
 

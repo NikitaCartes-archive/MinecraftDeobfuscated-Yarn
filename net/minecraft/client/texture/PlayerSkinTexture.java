@@ -5,6 +5,7 @@ package net.minecraft.client.texture;
 
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,14 +22,13 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerSkinTexture
 extends ResourceTexture {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int WIDTH = 64;
     private static final int HEIGHT = 64;
     private static final int OLD_HEIGHT = 32;
@@ -121,7 +121,7 @@ extends ResourceTexture {
                     }
                 });
             } catch (Exception exception) {
-                LOGGER.error("Couldn't download http texture", (Throwable)exception);
+                LOGGER.error("Couldn't download http texture", exception);
             } finally {
                 if (httpURLConnection != null) {
                     httpURLConnection.disconnect();
@@ -139,7 +139,7 @@ extends ResourceTexture {
                 nativeImage = this.remapTexture(nativeImage);
             }
         } catch (Exception exception) {
-            LOGGER.warn("Error while loading the skin texture", (Throwable)exception);
+            LOGGER.warn("Error while loading the skin texture", exception);
         }
         return nativeImage;
     }
@@ -151,7 +151,7 @@ extends ResourceTexture {
         int j = image.getWidth();
         if (j != 64 || i != 32 && i != 64) {
             image.close();
-            LOGGER.warn("Discarding incorrectly sized ({}x{}) skin texture from {}", (Object)j, (Object)i, (Object)this.url);
+            LOGGER.warn("Discarding incorrectly sized ({}x{}) skin texture from {}", j, i, this.url);
             return null;
         }
         boolean bl2 = bl = i == 32;

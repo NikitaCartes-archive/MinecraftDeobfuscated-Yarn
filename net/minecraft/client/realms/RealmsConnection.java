@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms;
 
+import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,13 +20,12 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.TranslatableText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsConnection {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     final Screen onlineScreen;
     volatile boolean aborted;
     @Nullable
@@ -71,7 +71,7 @@ public class RealmsConnection {
                     if (RealmsConnection.this.aborted) {
                         return;
                     }
-                    LOGGER.error("Couldn't connect to world", (Throwable)exception);
+                    LOGGER.error("Couldn't connect to world", exception);
                     String string3 = exception.toString();
                     if (inetSocketAddress != null) {
                         String string2 = inetSocketAddress + ":" + i;

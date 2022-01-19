@@ -4,6 +4,7 @@
 package net.minecraft.server.rcon;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -14,13 +15,12 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.server.rcon.RconBase;
 import net.minecraft.server.rcon.RconClient;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class RconListener
 extends RconBase {
-    private static final Logger SERVER_LOGGER = LogManager.getLogger();
+    private static final Logger SERVER_LOGGER = LogUtils.getLogger();
     private final ServerSocket listener;
     private final String password;
     private final List<RconClient> clients = Lists.newArrayList();
@@ -51,7 +51,7 @@ extends RconBase {
                     this.removeStoppedClients();
                 } catch (IOException iOException) {
                     if (!this.running) continue;
-                    SERVER_LOGGER.info("IO exception: ", (Throwable)iOException);
+                    SERVER_LOGGER.info("IO exception: ", iOException);
                 }
             }
         } finally {
@@ -86,7 +86,7 @@ extends RconBase {
             SERVER_LOGGER.info("RCON running on {}:{}", (Object)string, (Object)i);
             return rconListener;
         } catch (IOException iOException) {
-            SERVER_LOGGER.warn("Unable to initialise RCON on {}:{}", (Object)string, (Object)i, (Object)iOException);
+            SERVER_LOGGER.warn("Unable to initialise RCON on {}:{}", string, i, iOException);
             return null;
         }
     }
@@ -108,7 +108,7 @@ extends RconBase {
         try {
             socket.close();
         } catch (IOException iOException) {
-            SERVER_LOGGER.warn("Failed to close socket", (Throwable)iOException);
+            SERVER_LOGGER.warn("Failed to close socket", iOException);
         }
     }
 }

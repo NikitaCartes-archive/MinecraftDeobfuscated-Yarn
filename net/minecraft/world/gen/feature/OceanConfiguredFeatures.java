@@ -7,7 +7,6 @@ import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.decorator.PlacementModifier;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
@@ -15,6 +14,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class OceanConfiguredFeatures {

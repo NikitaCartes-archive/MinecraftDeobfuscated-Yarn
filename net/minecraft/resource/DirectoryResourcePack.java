@@ -6,6 +6,7 @@ package net.minecraft.resource;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,13 +25,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Util;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class DirectoryResourcePack
 extends AbstractFileResourcePack {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final boolean IS_WINDOWS = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
     private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
 

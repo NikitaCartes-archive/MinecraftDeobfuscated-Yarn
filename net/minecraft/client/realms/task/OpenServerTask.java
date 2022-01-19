@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -14,10 +15,12 @@ import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class OpenServerTask
 extends LongRunningTask {
+    private static final Logger field_36357 = LogUtils.getLogger();
     private final RealmsServer serverData;
     private final Screen returnScreen;
     private final boolean join;
@@ -65,7 +68,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                LOGGER.error("Failed to open server", (Throwable)exception);
+                field_36357.error("Failed to open server", exception);
                 this.error("Failed to open the server");
             }
         }

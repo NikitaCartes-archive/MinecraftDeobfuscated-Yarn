@@ -3,18 +3,18 @@
  */
 package net.minecraft.entity.boss.dragon.phase;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.util.math.Vec3d;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ChargingPlayerPhase
 extends AbstractPhase {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final int field_30431 = 10;
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private static final int DURATION = 10;
     @Nullable
     private Vec3d pathTarget;
     private int chargingTicks;

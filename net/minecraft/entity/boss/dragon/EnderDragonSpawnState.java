@@ -23,7 +23,7 @@ public enum EnderDragonSpawnState {
     START{
 
         @Override
-        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
+        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int tick, BlockPos pos) {
             BlockPos blockPos = new BlockPos(0, 128, 0);
             for (EndCrystalEntity endCrystalEntity : crystals) {
                 endCrystalEntity.setBeamTarget(blockPos);
@@ -35,9 +35,9 @@ public enum EnderDragonSpawnState {
     PREPARING_TO_SUMMON_PILLARS{
 
         @Override
-        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
-            if (i < 100) {
-                if (i == 0 || i == 50 || i == 51 || i == 52 || i >= 95) {
+        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int tick, BlockPos pos) {
+            if (tick < 100) {
+                if (tick == 0 || tick == 50 || tick == 51 || tick == 52 || tick >= 95) {
                     world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
                 }
             } else {
@@ -49,22 +49,22 @@ public enum EnderDragonSpawnState {
     SUMMONING_PILLARS{
 
         @Override
-        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
+        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int tick, BlockPos pos) {
             boolean bl2;
-            int j = 40;
-            boolean bl = i % 40 == 0;
-            boolean bl3 = bl2 = i % 40 == 39;
+            int i = 40;
+            boolean bl = tick % 40 == 0;
+            boolean bl3 = bl2 = tick % 40 == 39;
             if (bl || bl2) {
-                int k = i / 40;
+                int j = tick / 40;
                 List<EndSpikeFeature.Spike> list = EndSpikeFeature.getSpikes(world);
-                if (k < list.size()) {
-                    EndSpikeFeature.Spike spike = list.get(k);
+                if (j < list.size()) {
+                    EndSpikeFeature.Spike spike = list.get(j);
                     if (bl) {
                         for (EndCrystalEntity endCrystalEntity : crystals) {
                             endCrystalEntity.setBeamTarget(new BlockPos(spike.getCenterX(), spike.getHeight() + 1, spike.getCenterZ()));
                         }
                     } else {
-                        int l = 10;
+                        int k = 10;
                         for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10), new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10))) {
                             world.removeBlock(blockPos, false);
                         }
@@ -82,8 +82,8 @@ public enum EnderDragonSpawnState {
     SUMMONING_DRAGON{
 
         @Override
-        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
-            if (i >= 100) {
+        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int tick, BlockPos pos) {
+            if (tick >= 100) {
                 fight.setSpawnState(END);
                 fight.resetEndCrystals();
                 for (EndCrystalEntity endCrystalEntity : crystals) {
@@ -91,13 +91,13 @@ public enum EnderDragonSpawnState {
                     world.createExplosion(endCrystalEntity, endCrystalEntity.getX(), endCrystalEntity.getY(), endCrystalEntity.getZ(), 6.0f, Explosion.DestructionType.NONE);
                     endCrystalEntity.discard();
                 }
-            } else if (i >= 80) {
+            } else if (tick >= 80) {
                 world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
-            } else if (i == 0) {
+            } else if (tick == 0) {
                 for (EndCrystalEntity endCrystalEntity : crystals) {
                     endCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
                 }
-            } else if (i < 5) {
+            } else if (tick < 5) {
                 world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
             }
         }
@@ -106,7 +106,7 @@ public enum EnderDragonSpawnState {
     END{
 
         @Override
-        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
+        public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int tick, BlockPos pos) {
         }
     };
 

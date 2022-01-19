@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.dispenser;
 
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -78,11 +79,10 @@ import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public interface DispenserBehavior {
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
     public static final DispenserBehavior NOOP = (pointer, stack) -> stack;
 
     public ItemStack dispense(BlockPointer var1, ItemStack var2);
@@ -539,7 +539,7 @@ public interface DispenserBehavior {
                 ServerWorld serverWorld = pointer.getWorld();
                 BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 BlockState blockState = serverWorld.getBlockState(blockPos);
-                if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL)) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+                if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL) && state.getBlock() instanceof BeehiveBlock) && blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
                     ((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
                     this.setSuccess(true);
                     return this.tryPutFilledBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));

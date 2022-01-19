@@ -6,6 +6,7 @@ package net.minecraft.client.texture;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,14 +26,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Sprite
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final SpriteAtlasTexture atlas;
     private final Identifier id;
     final int width;
@@ -110,11 +110,11 @@ implements AutoCloseable {
                 AnimationFrame animationFrame = (AnimationFrame)iterator.next();
                 boolean bl = true;
                 if (animationFrame.time <= 0) {
-                    LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", (Object)this.id, (Object)l, (Object)animationFrame.time);
+                    LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", this.id, l, animationFrame.time);
                     bl = false;
                 }
                 if (animationFrame.index < 0 || animationFrame.index >= k) {
-                    LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", (Object)this.id, (Object)l, (Object)animationFrame.index);
+                    LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", this.id, l, animationFrame.index);
                     bl = false;
                 }
                 if (bl) {

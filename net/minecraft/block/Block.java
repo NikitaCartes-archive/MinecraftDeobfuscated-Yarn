@@ -7,6 +7,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.List;
 import java.util.Random;
@@ -66,9 +67,8 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * A block is a voxel in a {@linkplain World world}. {@link AbstractBlock},
@@ -96,7 +96,7 @@ import org.jetbrains.annotations.Nullable;
 public class Block
 extends AbstractBlock
 implements ItemConvertible {
-    protected static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final IdList<BlockState> STATE_IDS = new IdList();
     private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder().maximumSize(512L).weakKeys().build(new CacheLoader<VoxelShape, Boolean>(){
 

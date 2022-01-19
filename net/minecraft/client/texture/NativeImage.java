@@ -7,6 +7,7 @@ import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +29,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.Untracker;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
@@ -39,11 +38,12 @@ import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public final class NativeImage
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     /**
      * The bit offset of the alpha data in the {@linkplain Format#RGBA RGBA} format.
      * Is {@value}. Notice the alpha data in {@linkplain Format#LUMINANCE_ALPHA

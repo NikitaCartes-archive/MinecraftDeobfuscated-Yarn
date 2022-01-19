@@ -5,6 +5,7 @@ package net.minecraft.structure.pool;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
@@ -45,11 +46,10 @@ import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class StructurePoolBasedGenerator {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
 
     public static Optional<StructurePiecesGenerator<StructurePoolFeatureConfig>> generate(StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context2, PieceFactory pieceFactory, BlockPos pos, boolean bl, boolean bl2) {
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));

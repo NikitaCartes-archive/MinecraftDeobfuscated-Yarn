@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,15 +60,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsMainScreen
 extends RealmsScreen {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier ON_ICON = new Identifier("realms", "textures/gui/realms/on_icon.png");
     private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
     private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
@@ -149,7 +149,6 @@ extends RealmsScreen {
     private MultilineText popupText = MultilineText.EMPTY;
     HoverState hoverState;
     private ButtonWidget showPopupButton;
-    @Nullable
     private PendingInvitesButton pendingInvitesButton;
     private ButtonWidget newsButton;
     private ButtonWidget createTrialButton;
@@ -220,9 +219,7 @@ extends RealmsScreen {
             REALMS_DATA_FETCHER.forceUpdate();
         }
         this.showingPopup = false;
-        if (RealmsMainScreen.hasParentalConsent() && this.hasFetchedServers) {
-            this.addButtons();
-        }
+        this.addButtons();
         this.realmSelectionList = new RealmSelectionList();
         if (lastScrollYPosition != -1) {
             this.realmSelectionList.setScrollAmount(lastScrollYPosition);
@@ -262,12 +259,18 @@ extends RealmsScreen {
         this.updateButtonStates(null);
     }
 
-    void updateButtonStates(@Nullable RealmsServer server) {
+    void updateButtonStates(@Nullable RealmsServer realmsServer) {
         boolean bl;
-        this.playButton.active = this.shouldPlayButtonBeActive(server) && !this.shouldShowPopup();
-        this.renewButton.visible = this.shouldRenewButtonBeActive(server);
-        this.configureButton.visible = this.shouldConfigureButtonBeVisible(server);
-        this.leaveButton.visible = this.shouldLeaveButtonBeVisible(server);
+        this.backButton.active = true;
+        if (!RealmsMainScreen.hasParentalConsent() || !this.hasFetchedServers) {
+            RealmsMainScreen.method_40041(this.playButton, this.renewButton, this.configureButton, this.createTrialButton, this.buyARealmButton, this.closeButton, this.newsButton, this.pendingInvitesButton, this.showPopupButton, this.leaveButton);
+            return;
+        }
+        this.playButton.visible = true;
+        this.playButton.active = this.shouldPlayButtonBeActive(realmsServer) && !this.shouldShowPopup();
+        this.renewButton.visible = this.shouldRenewButtonBeActive(realmsServer);
+        this.configureButton.visible = this.shouldConfigureButtonBeVisible(realmsServer);
+        this.leaveButton.visible = this.shouldLeaveButtonBeVisible(realmsServer);
         this.createTrialButton.visible = bl = this.shouldShowPopup() && this.trialsAvailable && !this.createdTrial;
         this.createTrialButton.active = bl;
         this.buyARealmButton.visible = this.shouldShowPopup();
@@ -277,7 +280,6 @@ extends RealmsScreen {
         this.leaveButton.active = !this.shouldShowPopup();
         this.newsButton.active = true;
         this.pendingInvitesButton.active = true;
-        this.backButton.active = true;
         this.showPopupButton.active = !this.shouldShowPopup();
     }
 
@@ -349,7 +351,7 @@ extends RealmsScreen {
                 }
             }
             if (bl) {
-                this.addButtons();
+                this.updateButtonStates(null);
             } else {
                 this.realmSelectionList.setSelected(entry);
             }
@@ -388,7 +390,7 @@ extends RealmsScreen {
             ++this.carouselTick;
         }
         if (this.showPopupButton != null) {
-            this.showPopupButton.visible = this.shouldShowPopupButton();
+            this.showPopupButton.active = this.showPopupButton.visible = this.shouldShowPopupButton();
         }
     }
 
@@ -457,7 +459,7 @@ extends RealmsScreen {
                         RealmsMainScreen.this.checkParentalConsent();
                     } catch (RealmsServiceException realmsServiceException) {
                         checkedClientCompatibility = false;
-                        LOGGER.error("Couldn't connect to realms", (Throwable)realmsServiceException);
+                        LOGGER.error("Couldn't connect to realms", realmsServiceException);
                         if (realmsServiceException.httpResultCode == 401) {
                             realmsGenericErrorScreen = new RealmsGenericErrorScreen(new TranslatableText("mco.error.invalid.session.title"), new TranslatableText("mco.error.invalid.session.message"), RealmsMainScreen.this.lastScreen);
                             RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(realmsGenericErrorScreen));
@@ -487,7 +489,7 @@ extends RealmsScreen {
                     }
                     checkedParentalConsent = true;
                 } catch (RealmsServiceException realmsServiceException) {
-                    LOGGER.error("Couldn't connect to realms", (Throwable)realmsServiceException);
+                    LOGGER.error("Couldn't connect to realms", realmsServiceException);
                     RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(new RealmsGenericErrorScreen(realmsServiceException, RealmsMainScreen.this.lastScreen)));
                 }
             }
@@ -652,7 +654,7 @@ extends RealmsScreen {
             this.renderLocal(matrices);
         }
         if (this.shouldShowPopup()) {
-            this.drawPopup(matrices, mouseX, mouseY);
+            this.drawPopup(matrices);
         } else {
             if (this.showingPopup) {
                 this.updateButtonStates(null);
@@ -707,7 +709,7 @@ extends RealmsScreen {
         return xm < (double)(i - 5) || xm > (double)(i + 315) || ym < (double)(j - 5) || ym > (double)(j + 171);
     }
 
-    private void drawPopup(MatrixStack matrices, int mouseX, int mouseY) {
+    private void drawPopup(MatrixStack matrices) {
         int i = this.popupX0();
         int j = this.popupY0();
         if (!this.showingPopup) {
@@ -1010,7 +1012,7 @@ extends RealmsScreen {
 
     public static void loadImages(ResourceManager manager) {
         Collection<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.endsWith(".png"));
-        IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).collect(ImmutableList.toImmutableList());
+        IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).toList();
     }
 
     void setTooltips(Text ... tooltips) {

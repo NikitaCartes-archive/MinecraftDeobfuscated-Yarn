@@ -31,7 +31,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * <p>
  * An NBT list holds values of the same {@linkplain NbtElement#getType NBT type}.
  * The {@linkplain AbstractNbtList#getHeldType NBT type} of an NBT list is determined
- * once its first element is inserted; empty NBT lists return {@link NbtElement#NULL_TYPE NULL_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
+ * once its first element is inserted; empty NBT lists return {@link NbtElement#END_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
  */
 public class NbtList
 extends AbstractNbtList<NbtElement> {
@@ -66,7 +66,7 @@ extends AbstractNbtList<NbtElement> {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
              * 
-             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [8[CASE], 4[SWITCH]], but top level block is 9[SWITCH]
+             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [4[SWITCH], 8[CASE]], but top level block is 9[SWITCH]
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.processEndingBlocks(Op04StructuredStatement.java:435)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:484)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)

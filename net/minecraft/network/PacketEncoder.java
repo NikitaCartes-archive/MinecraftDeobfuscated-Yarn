@@ -3,6 +3,7 @@
  */
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
@@ -14,15 +15,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.PacketEncoderException;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
+import org.slf4j.Logger;
 
 public class PacketEncoder
 extends MessageToByteEncoder<Packet<?>> {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.NETWORK_PACKETS_MARKER);
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final NetworkSide side;
 
     public PacketEncoder(NetworkSide side) {
@@ -37,7 +34,7 @@ extends MessageToByteEncoder<Packet<?>> {
         }
         Integer integer = networkState.getPacketId(this.side, packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(MARKER, "OUT: [{}:{}] {}", (Object)channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)integer, (Object)packet.getClass().getName());
+            LOGGER.debug(ClientConnection.field_36380, "OUT: [{}:{}] {}", new Object[]{channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), integer, packet.getClass().getName()});
         }
         if (integer == null) {
             throw new IOException("Can't serialize unregistered packet");
@@ -54,7 +51,7 @@ extends MessageToByteEncoder<Packet<?>> {
             int k = channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
             FlightProfiler.INSTANCE.onPacketSent(k, integer, channelHandlerContext.channel().remoteAddress(), j);
         } catch (Throwable throwable) {
-            LOGGER.error(throwable);
+            LOGGER.error("Error receiving packet {}", (Object)integer, (Object)throwable);
             if (packet.isWritingErrorSkippable()) {
                 throw new PacketEncoderException(throwable);
             }

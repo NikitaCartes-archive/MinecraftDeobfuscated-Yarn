@@ -11,6 +11,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -100,9 +101,8 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ThreadedAnvilChunkStorage
 extends VersionedChunkStorage
@@ -110,7 +110,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private static final byte PROTO_CHUNK = -1;
     private static final byte UNMARKED_CHUNK = 0;
     private static final byte LEVEL_CHUNK = 1;
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29674 = 200;
     private static final int field_36291 = 20;
     private static final int field_29675 = 3;
@@ -191,14 +191,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     public static boolean isWithinDistance(int x1, int z1, int x2, int z2, int distance) {
-        int n;
+        int k;
         int o;
         int i = Math.max(0, Math.abs(x1 - x2) - 1);
         int j = Math.max(0, Math.abs(z1 - z2) - 1);
-        int k = Math.max(0, Math.max(i, j) - 1);
-        int l = Math.min(i, j);
-        int m = l * l + k * k;
-        return m <= (o = (n = distance - 1) * n);
+        long l = Math.max(0, Math.max(i, j) - 1);
+        long m = Math.min(i, j);
+        long n = m * m + l * l;
+        return n <= (long)(o = (k = distance - 1) * k);
     }
 
     private static boolean isOnDistanceEdge(int x1, int z1, int x2, int z2, int distance) {
@@ -384,6 +384,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.unloadChunks(shouldKeepTicking);
         }
         profiler.pop();
+    }
+
+    public boolean method_39992() {
+        return this.lightingProvider.hasUpdates() || !this.chunksToUnload.isEmpty() || !this.currentChunkHolders.isEmpty() || this.pointOfInterestStorage.method_40020() || !this.unloadedChunks.isEmpty() || !this.unloadTaskQueue.isEmpty() || this.chunkTaskPrioritySystem.method_39994() || this.ticketManager.method_39996();
     }
 
     private void unloadChunks(BooleanSupplier shouldKeepTicking) {
@@ -639,7 +643,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.mark(chunkPos, chunkStatus.getChunkType());
             return true;
         } catch (Exception exception) {
-            LOGGER.error("Failed to save chunk {},{}", (Object)chunkPos.x, (Object)chunkPos.z, (Object)exception);
+            LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, exception);
             return false;
         }
     }

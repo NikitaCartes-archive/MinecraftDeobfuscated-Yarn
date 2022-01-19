@@ -279,7 +279,7 @@ implements ScreenHandlerProvider<T> {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        boolean bl = this.client.options.keyPickItem.matchesMouse(button) && this.client.interactionManager.hasCreativeInventory();
+        boolean bl = this.client.options.pickItemKey.matchesMouse(button) && this.client.interactionManager.hasCreativeInventory();
         Slot slot = this.getSlotAt(mouseX, mouseY);
         long l = Util.getMeasuringTimeMs();
         this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
@@ -349,12 +349,12 @@ implements ScreenHandlerProvider<T> {
 
     private void onMouseClick(int button) {
         if (this.focusedSlot != null && ((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
-            if (this.client.options.keySwapHands.matchesMouse(button)) {
+            if (this.client.options.swapHandsKey.matchesMouse(button)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
                 return;
             }
             for (int i = 0; i < 9; ++i) {
-                if (!this.client.options.keysHotbar[i].matchesMouse(button)) continue;
+                if (!this.client.options.hotbarKeys[i].matchesMouse(button)) continue;
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
             }
         }
@@ -470,7 +470,7 @@ implements ScreenHandlerProvider<T> {
                 }
                 this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
             } else if (!((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
-                if (this.client.options.keyPickItem.matchesMouse(button)) {
+                if (this.client.options.pickItemKey.matchesMouse(button)) {
                     this.onMouseClick(slot, k, button, SlotActionType.CLONE);
                 } else {
                     boolean bl2;
@@ -514,15 +514,15 @@ implements ScreenHandlerProvider<T> {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
+        if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
             this.onClose();
             return true;
         }
         this.handleHotbarKeyPressed(keyCode, scanCode);
         if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-            if (this.client.options.keyPickItem.matchesKey(keyCode, scanCode)) {
+            if (this.client.options.pickItemKey.matchesKey(keyCode, scanCode)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.CLONE);
-            } else if (this.client.options.keyDrop.matchesKey(keyCode, scanCode)) {
+            } else if (this.client.options.dropKey.matchesKey(keyCode, scanCode)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, HandledScreen.hasControlDown() ? 1 : 0, SlotActionType.THROW);
             }
         }
@@ -531,12 +531,12 @@ implements ScreenHandlerProvider<T> {
 
     protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {
         if (((ScreenHandler)this.handler).getCursorStack().isEmpty() && this.focusedSlot != null) {
-            if (this.client.options.keySwapHands.matchesKey(keyCode, scanCode)) {
+            if (this.client.options.swapHandsKey.matchesKey(keyCode, scanCode)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
                 return true;
             }
             for (int i = 0; i < 9; ++i) {
-                if (!this.client.options.keysHotbar[i].matchesKey(keyCode, scanCode)) continue;
+                if (!this.client.options.hotbarKeys[i].matchesKey(keyCode, scanCode)) continue;
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
                 return true;
             }

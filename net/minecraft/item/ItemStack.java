@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -80,9 +81,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Represents a stack of items.
@@ -155,7 +155,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class ItemStack {
     public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.ITEM.getCodec().fieldOf("id")).forGetter(stack -> stack.item), ((MapCodec)Codec.INT.fieldOf("Count")).forGetter(stack -> stack.count), NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.nbt))).apply((Applicative<ItemStack, ?>)instance, ItemStack::new));
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final ItemStack EMPTY = new ItemStack((ItemConvertible)null);
     public static final DecimalFormat MODIFIER_FORMAT = Util.make(new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     /**

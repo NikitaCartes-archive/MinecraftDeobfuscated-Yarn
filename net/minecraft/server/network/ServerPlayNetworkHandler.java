@@ -8,6 +8,7 @@ import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.logging.LogUtils;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -157,14 +158,13 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ServerPlayNetworkHandler
 implements EntityTrackingListener,
 ServerPlayPacketListener {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final int KEEP_ALIVE_INTERVAL = 15000;
     public final ClientConnection connection;
     private final MinecraftServer server;
@@ -219,7 +219,7 @@ ServerPlayPacketListener {
         this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.getYaw(), this.player.getPitch());
         ++this.ticks;
         this.lastTickMovePacketsCount = this.movePacketsCount;
-        if (this.floating && !this.player.isSleeping()) {
+        if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle()) {
             if (++this.floatingTicks > 80) {
                 LOGGER.warn("{} was kicked for floating too long!", (Object)this.player.getName().getString());
                 this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
@@ -302,9 +302,13 @@ ServerPlayPacketListener {
 
     private <T, R> void filterText(T text, Consumer<R> consumer, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer) {
         MinecraftServer threadExecutor = this.player.getWorld().getServer();
-        Consumer<Object> consumer2 = object -> {
+        Consumer<Object> consumer2 = object2 -> {
             if (this.getConnection().isOpen()) {
-                consumer.accept(object);
+                try {
+                    consumer.accept(object2);
+                } catch (Exception exception) {
+                    LOGGER.error("Failed to handle chat packet {}, suppressing error", text, (Object)exception);
+                }
             } else {
                 LOGGER.debug("Ignoring packet due to disconnection");
             }
@@ -370,7 +374,7 @@ ServerPlayPacketListener {
             double p = l * l + m * m + n * n;
             double o = entity.getVelocity().lengthSquared();
             if (p - o > 100.0 && !this.isHost()) {
-                LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", (Object)entity.getName().getString(), (Object)this.player.getName().getString(), (Object)l, (Object)m, (Object)n);
+                LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
                 this.connection.send(new VehicleMoveS2CPacket(entity));
                 return;
             }
@@ -378,6 +382,7 @@ ServerPlayPacketListener {
             l = g - this.updatedRiddenX;
             m = h - this.updatedRiddenY - 1.0E-6;
             n = i - this.updatedRiddenZ;
+            boolean bl2 = entity.field_36331;
             entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
             double q = m;
             l = g - entity.getX();
@@ -387,21 +392,21 @@ ServerPlayPacketListener {
             }
             n = i - entity.getZ();
             p = l * l + m * m + n * n;
-            boolean bl2 = false;
+            boolean bl3 = false;
             if (p > 0.0625) {
-                bl2 = true;
-                LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", (Object)entity.getName().getString(), (Object)this.player.getName().getString(), (Object)Math.sqrt(p));
+                bl3 = true;
+                LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", entity.getName().getString(), this.player.getName().getString(), Math.sqrt(p));
             }
             entity.updatePositionAndAngles(g, h, i, j, k);
-            boolean bl3 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
-            if (bl && (bl2 || !bl3)) {
+            boolean bl4 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
+            if (bl && (bl3 || !bl4)) {
                 entity.updatePositionAndAngles(d, e, f, j, k);
                 this.connection.send(new VehicleMoveS2CPacket(entity));
                 return;
             }
             this.player.getWorld().getChunkManager().updatePosition(this.player);
             this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-            this.vehicleFloating = q >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
+            this.vehicleFloating = q >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
             this.updatedRiddenX = entity.getX();
             this.updatedRiddenY = entity.getY();
             this.updatedRiddenZ = entity.getZ();
@@ -812,7 +817,7 @@ ServerPlayPacketListener {
             float s;
             float f2 = s = this.player.isFallFlying() ? 300.0f : 100.0f;
             if (q - p > (double)(s * (float)r) && !this.isHost()) {
-                LOGGER.warn("{} moved too quickly! {},{},{}", (Object)this.player.getName().getString(), (Object)m, (Object)n, (Object)o);
+                LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
                 this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
                 return;
             }
@@ -825,6 +830,7 @@ ServerPlayPacketListener {
         if (this.player.isOnGround() && !packet.isOnGround() && bl) {
             this.player.jump();
         }
+        boolean bl22 = this.player.field_36331;
         this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
         double t = n;
         m = d - this.player.getX();
@@ -834,17 +840,17 @@ ServerPlayPacketListener {
         }
         o = f - this.player.getZ();
         q = m * m + n * n + o * o;
-        boolean bl22 = false;
+        boolean bl3 = false;
         if (!this.player.isInTeleportationState() && q > 0.0625 && !this.player.isSleeping() && !this.player.interactionManager.isCreative() && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
-            bl22 = true;
+            bl3 = true;
             LOGGER.warn("{} moved wrongly!", (Object)this.player.getName().getString());
         }
         this.player.updatePositionAndAngles(d, e, f, g, h);
-        if (!this.player.noClip && !this.player.isSleeping() && (bl22 && serverWorld.isSpaceEmpty(this.player, box) || this.isPlayerNotCollidingWithBlocks(serverWorld, box))) {
+        if (!this.player.noClip && !this.player.isSleeping() && (bl3 && serverWorld.isSpaceEmpty(this.player, box) || this.isPlayerNotCollidingWithBlocks(serverWorld, box))) {
             this.requestTeleport(i, j, k, g, h);
             return;
         }
-        this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.getAbilities().allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && this.isEntityOnAir(this.player);
+        this.floating = t >= -0.03125 && !bl22 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.getAbilities().allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && !this.player.isUsingRiptide() && this.isEntityOnAir(this.player);
         this.player.getWorld().getChunkManager().updatePosition(this.player);
         this.player.handleFall(this.player.getY() - l, packet.isOnGround());
         this.player.setOnGround(packet.isOnGround());

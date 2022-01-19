@@ -280,7 +280,7 @@ implements NbtElement {
     /**
      * Gets the {@linkplain NbtElement#getType NBT type} of the element stored at the specified key.
      * 
-     * @return the element NBT type, or {@link NbtElement#NULL_TYPE NULL_TYPE} if it does not exist
+     * @return the element NBT type, or {@link NbtElement#END_TYPE} if it does not exist
      */
     public byte getType(String key) {
         NbtElement nbtElement = this.entries.get(key);

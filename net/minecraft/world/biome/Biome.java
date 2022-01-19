@@ -44,12 +44,9 @@ import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public final class Biome {
-    public static final Logger LOGGER = LogManager.getLogger();
     public static final Codec<Biome> CODEC = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects), GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings), SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)).apply((Applicative<Biome, ?>)instance, Biome::new));
     public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, category, biomeEffects) -> new Biome((Weather)weather, (Category)category, (BiomeEffects)biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
     public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);

@@ -140,6 +140,9 @@ extends Feature<DripstoneClusterFeatureConfig> {
         if (blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.DRIPSTONE_BLOCK) || blockState.isOf(Blocks.POINTED_DRIPSTONE)) {
             return false;
         }
+        if (world.getBlockState(pos.up()).getFluidState().isIn(FluidTags.WATER)) {
+            return false;
+        }
         for (Direction direction : Direction.Type.HORIZONTAL) {
             if (this.isStoneOrWater(world, pos.offset(direction))) continue;
             return false;

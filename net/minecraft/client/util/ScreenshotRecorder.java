@@ -4,6 +4,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,9 +25,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * A screenshot recorder takes screenshots and saves them into tga file format. It also
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Environment(value=EnvType.CLIENT)
 public class ScreenshotRecorder {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
     private int unitHeight;
     private final DataOutputStream stream;
@@ -66,7 +66,7 @@ public class ScreenshotRecorder {
                 MutableText text = new LiteralText(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
                 messageReceiver.accept(new TranslatableText("screenshot.success", text));
             } catch (Exception exception) {
-                LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
+                LOGGER.warn("Couldn't save screenshot", exception);
                 messageReceiver.accept(new TranslatableText("screenshot.failure", exception.getMessage()));
             } finally {
                 nativeImage.close();

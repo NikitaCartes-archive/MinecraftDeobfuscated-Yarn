@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.profiling.jfr;
 
+import com.mojang.logging.LogUtils;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import net.minecraft.util.math.ChunkPos;
@@ -11,9 +12,8 @@ import net.minecraft.util.profiling.jfr.InstanceType;
 import net.minecraft.util.profiling.jfr.JfrProfiler;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public interface FlightProfiler {
     public static final FlightProfiler INSTANCE = Runtime.class.getModule().getLayer().findModule("jdk.jfr").isPresent() ? JfrProfiler.getInstance() : new NoopProfiler();
@@ -40,7 +40,7 @@ public interface FlightProfiler {
 
     public static class NoopProfiler
     implements FlightProfiler {
-        static final Logger LOGGER = LogManager.getLogger();
+        private static final Logger LOGGER = LogUtils.getLogger();
         static final Finishable NOOP = () -> {};
 
         @Override

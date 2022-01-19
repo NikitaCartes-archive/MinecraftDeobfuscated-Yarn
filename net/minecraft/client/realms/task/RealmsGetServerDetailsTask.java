@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -28,10 +29,12 @@ import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.realms.task.RealmsConnectTask;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsGetServerDetailsTask
 extends LongRunningTask {
+    private static final Logger field_36356 = LogUtils.getLogger();
     private final RealmsServer server;
     private final Screen lastScreen;
     private final RealmsMainScreen mainScreen;
@@ -51,7 +54,7 @@ extends LongRunningTask {
         try {
             realmsServerAddress = this.join();
         } catch (CancellationException cancellationException) {
-            LOGGER.info("User aborted connecting to realms");
+            field_36356.info("User aborted connecting to realms");
             return;
         } catch (RealmsServiceException realmsServiceException) {
             switch (realmsServiceException.getErrorCode(-1)) {
@@ -66,13 +69,13 @@ extends LongRunningTask {
                 }
             }
             this.error(realmsServiceException.toString());
-            LOGGER.error("Couldn't connect to world", (Throwable)realmsServiceException);
+            field_36356.error("Couldn't connect to world", realmsServiceException);
             return;
         } catch (TimeoutException timeoutException) {
             this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
             return;
         } catch (Exception exception) {
-            LOGGER.error("Couldn't connect to world", (Throwable)exception);
+            field_36356.error("Couldn't connect to world", exception);
             this.error(exception.getLocalizedMessage());
             return;
         }
@@ -110,7 +113,7 @@ extends LongRunningTask {
                 }
                 ((CompletableFuture)this.downloadResourcePack(address).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)connectingScreenCreator.apply(address)))).exceptionally(throwable -> {
                     MinecraftClient.getInstance().getResourcePackProvider().clear();
-                    LOGGER.error(throwable);
+                    field_36356.error("Failed to download resource pack from {}", (Object)address, throwable);
                     RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
                     return null;
                 });

@@ -50,7 +50,7 @@ implements Clearable {
             campfire.cookingTimes[n] = campfire.cookingTimes[n] + 1;
             if (campfire.cookingTimes[i] < campfire.cookingTotalTimes[i]) continue;
             SimpleInventory inventory = new SimpleInventory(itemStack);
-            ItemStack itemStack2 = world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world).map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory)).orElse(itemStack);
+            ItemStack itemStack2 = world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
@@ -140,11 +140,11 @@ implements Clearable {
         return this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
     }
 
-    public boolean addItem(ItemStack item, int integer) {
+    public boolean addItem(ItemStack item, int cookTime) {
         for (int i = 0; i < this.itemsBeingCooked.size(); ++i) {
             ItemStack itemStack = this.itemsBeingCooked.get(i);
             if (!itemStack.isEmpty()) continue;
-            this.cookingTotalTimes[i] = integer;
+            this.cookingTotalTimes[i] = cookTime;
             this.cookingTimes[i] = 0;
             this.itemsBeingCooked.set(i, item.split(1));
             this.updateListeners();

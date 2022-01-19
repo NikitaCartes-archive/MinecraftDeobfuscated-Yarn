@@ -10,6 +10,7 @@ import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,12 +39,11 @@ import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.WorldSavePath;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ServerConfigHandler {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     public static final File BANNED_IPS_FILE = new File("banned-ips.txt");
     public static final File BANNED_PLAYERS_FILE = new File("banned-players.txt");
     public static final File OPERATORS_FILE = new File("ops.txt");
@@ -114,10 +114,10 @@ public class ServerConfigHandler {
                 bannedPlayerList.save();
                 ServerConfigHandler.markFileConverted(BANNED_PLAYERS_FILE);
             } catch (IOException iOException) {
-                LOGGER.warn("Could not read old user banlist to convert it!", (Throwable)iOException);
+                LOGGER.warn("Could not read old user banlist to convert it!", iOException);
                 return false;
             } catch (ServerConfigException serverConfigException) {
-                LOGGER.error("Conversion failed, please try again later", (Throwable)serverConfigException);
+                LOGGER.error("Conversion failed, please try again later", serverConfigException);
                 return false;
             }
             return true;
@@ -149,7 +149,7 @@ public class ServerConfigHandler {
                 bannedIpList.save();
                 ServerConfigHandler.markFileConverted(BANNED_IPS_FILE);
             } catch (IOException iOException) {
-                LOGGER.warn("Could not parse old ip banlist to convert it!", (Throwable)iOException);
+                LOGGER.warn("Could not parse old ip banlist to convert it!", iOException);
                 return false;
             }
             return true;
@@ -189,10 +189,10 @@ public class ServerConfigHandler {
                 operatorList.save();
                 ServerConfigHandler.markFileConverted(OPERATORS_FILE);
             } catch (IOException iOException) {
-                LOGGER.warn("Could not read old oplist to convert it!", (Throwable)iOException);
+                LOGGER.warn("Could not read old oplist to convert it!", iOException);
                 return false;
             } catch (ServerConfigException serverConfigException) {
-                LOGGER.error("Conversion failed, please try again later", (Throwable)serverConfigException);
+                LOGGER.error("Conversion failed, please try again later", serverConfigException);
                 return false;
             }
             return true;
@@ -232,10 +232,10 @@ public class ServerConfigHandler {
                 whitelist.save();
                 ServerConfigHandler.markFileConverted(WHITE_LIST_FILE);
             } catch (IOException iOException) {
-                LOGGER.warn("Could not read old whitelist to convert it!", (Throwable)iOException);
+                LOGGER.warn("Could not read old whitelist to convert it!", iOException);
                 return false;
             } catch (ServerConfigException serverConfigException) {
-                LOGGER.error("Conversion failed, please try again later", (Throwable)serverConfigException);
+                LOGGER.error("Conversion failed, please try again later", serverConfigException);
                 return false;
             }
             return true;
@@ -343,7 +343,7 @@ public class ServerConfigHandler {
             };
             ServerConfigHandler.lookupProfile(minecraftServer, Lists.newArrayList(strings), profileLookupCallback);
         } catch (ServerConfigException serverConfigException) {
-            LOGGER.error("Conversion failed, please try again later", (Throwable)serverConfigException);
+            LOGGER.error("Conversion failed, please try again later", serverConfigException);
             return false;
         }
         return true;

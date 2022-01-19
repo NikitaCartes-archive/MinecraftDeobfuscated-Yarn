@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
@@ -10,10 +11,12 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class ResettingWorldTask
 extends LongRunningTask {
+    private static final Logger field_36358 = LogUtils.getLogger();
     private final long serverId;
     private final Text title;
     private final Runnable callback;
@@ -51,7 +54,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                LOGGER.error("Couldn't reset world");
+                field_36358.error("Couldn't reset world");
                 this.error(exception.toString());
                 return;
             }

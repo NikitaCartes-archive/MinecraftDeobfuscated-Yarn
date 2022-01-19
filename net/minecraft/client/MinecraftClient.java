@@ -18,6 +18,7 @@ import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Function4;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
@@ -267,10 +268,9 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import org.slf4j.Logger;
 
 /**
  * Represents a logical Minecraft client.
@@ -430,7 +430,7 @@ implements WindowEventHandler {
     @Nullable
     public HitResult crosshairTarget;
     /**
-     * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#keyUse the item use button} is held down.
+     * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#useKey the item use button} is held down.
      */
     private int itemUseCooldown;
     protected int attackCooldown;
@@ -528,7 +528,7 @@ implements WindowEventHandler {
                 InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
                 this.window.setIcon(inputStream, inputStream2);
             } catch (IOException iOException) {
-                LOGGER.error("Couldn't set icon", (Throwable)iOException);
+                LOGGER.error("Couldn't set icon", iOException);
             }
         }
         this.window.setFramerateLimit(this.options.maxFps);
@@ -662,7 +662,7 @@ implements WindowEventHandler {
         try {
             return authService.createUserApiService(runArgs.network.session.getAccessToken());
         } catch (AuthenticationException authenticationException) {
-            LOGGER.error("Failed to verify authentication", (Throwable)authenticationException);
+            LOGGER.error("Failed to verify authentication", authenticationException);
             return UserApiService.OFFLINE;
         }
     }
@@ -722,18 +722,18 @@ implements WindowEventHandler {
                     this.cleanUpAfterCrash();
                     this.setScreen(new OutOfMemoryScreen());
                     System.gc();
-                    LOGGER.fatal("Out of memory", (Throwable)outOfMemoryError);
+                    LOGGER.error(LogUtils.FATAL_MARKER, "Out of memory", outOfMemoryError);
                     bl = true;
                 }
             }
         } catch (CrashException crashException) {
             this.addDetailsToCrashReport(crashException.getReport());
             this.cleanUpAfterCrash();
-            LOGGER.fatal("Reported exception thrown!", (Throwable)crashException);
+            LOGGER.error(LogUtils.FATAL_MARKER, "Reported exception thrown!", crashException);
             MinecraftClient.printCrashReport(crashException.getReport());
         } catch (Throwable throwable) {
             CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", throwable));
-            LOGGER.fatal("Unreported exception thrown!", throwable);
+            LOGGER.error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", throwable);
             this.cleanUpAfterCrash();
             MinecraftClient.printCrashReport(crashReport);
         }
@@ -866,7 +866,7 @@ implements WindowEventHandler {
                 String string = itemStack.getTranslationKey();
                 String string2 = new TranslatableText(string).getString();
                 if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
-                LOGGER.debug("Missing translation for: {} {} {}", (Object)itemStack, (Object)string, (Object)itemStack.getItem());
+                LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
             }
         }
         bl |= HandledScreens.isMissingScreens();
@@ -1392,20 +1392,21 @@ implements WindowEventHandler {
         this.interactionManager.cancelBlockBreaking();
     }
 
-    private void doAttack() {
+    private boolean doAttack() {
         if (this.attackCooldown > 0) {
-            return;
+            return false;
         }
         if (this.crosshairTarget == null) {
             LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
             if (this.interactionManager.hasLimitedAttackSpeed()) {
                 this.attackCooldown = 10;
             }
-            return;
+            return false;
         }
         if (this.player.isRiding()) {
-            return;
+            return false;
         }
+        boolean bl = false;
         switch (this.crosshairTarget.getType()) {
             case ENTITY: {
                 this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
@@ -1416,6 +1417,8 @@ implements WindowEventHandler {
                 BlockPos blockPos = blockHitResult.getBlockPos();
                 if (!this.world.getBlockState(blockPos).isAir()) {
                     this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
+                    if (!this.world.getBlockState(blockPos).isAir()) break;
+                    bl = true;
                     break;
                 }
             }
@@ -1427,6 +1430,7 @@ implements WindowEventHandler {
             }
         }
         this.player.swingHand(Hand.MAIN_HAND);
+        return bl;
     }
 
     private void doItemUse() {
@@ -1609,7 +1613,7 @@ implements WindowEventHandler {
     }
 
     private void handleInputEvents() {
-        while (this.options.keyTogglePerspective.wasPressed()) {
+        while (this.options.togglePerspectiveKey.wasPressed()) {
             Perspective perspective = this.options.getPerspective();
             this.options.setPerspective(this.options.getPerspective().next());
             if (perspective.isFirstPerson() != this.options.getPerspective().isFirstPerson()) {
@@ -1617,13 +1621,13 @@ implements WindowEventHandler {
             }
             this.worldRenderer.scheduleTerrainUpdate();
         }
-        while (this.options.keySmoothCamera.wasPressed()) {
+        while (this.options.smoothCameraKey.wasPressed()) {
             this.options.smoothCameraEnabled = !this.options.smoothCameraEnabled;
         }
         for (int i = 0; i < 9; ++i) {
-            boolean bl = this.options.keySaveToolbarActivator.isPressed();
-            boolean bl2 = this.options.keyLoadToolbarActivator.isPressed();
-            if (!this.options.keysHotbar[i].wasPressed()) continue;
+            boolean bl = this.options.saveToolbarActivatorKey.isPressed();
+            boolean bl2 = this.options.loadToolbarActivatorKey.isPressed();
+            if (!this.options.hotbarKeys[i].wasPressed()) continue;
             if (this.player.isSpectator()) {
                 this.inGameHud.getSpectatorHud().selectSlot(i);
                 continue;
@@ -1634,7 +1638,7 @@ implements WindowEventHandler {
             }
             this.player.getInventory().selectedSlot = i;
         }
-        while (this.options.keySocialInteractions.wasPressed()) {
+        while (this.options.socialInteractionsKey.wasPressed()) {
             if (!this.isConnectedToServer()) {
                 this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
                 NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
@@ -1646,7 +1650,7 @@ implements WindowEventHandler {
             }
             this.setScreen(new SocialInteractionsScreen());
         }
-        while (this.options.keyInventory.wasPressed()) {
+        while (this.options.inventoryKey.wasPressed()) {
             if (this.interactionManager.hasRidingInventory()) {
                 this.player.openRidingInventory();
                 continue;
@@ -1654,48 +1658,49 @@ implements WindowEventHandler {
             this.tutorialManager.onInventoryOpened();
             this.setScreen(new InventoryScreen(this.player));
         }
-        while (this.options.keyAdvancements.wasPressed()) {
+        while (this.options.advancementsKey.wasPressed()) {
             this.setScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
         }
-        while (this.options.keySwapHands.wasPressed()) {
+        while (this.options.swapHandsKey.wasPressed()) {
             if (this.player.isSpectator()) continue;
             this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ORIGIN, Direction.DOWN));
         }
-        while (this.options.keyDrop.wasPressed()) {
+        while (this.options.dropKey.wasPressed()) {
             if (this.player.isSpectator() || !this.player.dropSelectedItem(Screen.hasControlDown())) continue;
             this.player.swingHand(Hand.MAIN_HAND);
         }
-        while (this.options.keyChat.wasPressed()) {
+        while (this.options.chatKey.wasPressed()) {
             this.openChatScreen("");
         }
-        if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
+        if (this.currentScreen == null && this.overlay == null && this.options.commandKey.wasPressed()) {
             this.openChatScreen("/");
         }
+        boolean bl3 = false;
         if (this.player.isUsingItem()) {
-            if (!this.options.keyUse.isPressed()) {
+            if (!this.options.useKey.isPressed()) {
                 this.interactionManager.stopUsingItem(this.player);
             }
-            while (this.options.keyAttack.wasPressed()) {
+            while (this.options.attackKey.wasPressed()) {
             }
-            while (this.options.keyUse.wasPressed()) {
+            while (this.options.useKey.wasPressed()) {
             }
-            while (this.options.keyPickItem.wasPressed()) {
+            while (this.options.pickItemKey.wasPressed()) {
             }
         } else {
-            while (this.options.keyAttack.wasPressed()) {
-                this.doAttack();
+            while (this.options.attackKey.wasPressed()) {
+                bl3 |= this.doAttack();
             }
-            while (this.options.keyUse.wasPressed()) {
+            while (this.options.useKey.wasPressed()) {
                 this.doItemUse();
             }
-            while (this.options.keyPickItem.wasPressed()) {
+            while (this.options.pickItemKey.wasPressed()) {
                 this.doItemPick();
             }
         }
-        if (this.options.keyUse.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
+        if (this.options.useKey.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
             this.doItemUse();
         }
-        this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
+        this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
     }
 
     public static DataPackSettings loadDataPackSettings(LevelStorage.Session storageSession) {
@@ -1748,7 +1753,7 @@ implements WindowEventHandler {
         try {
             integratedResourceManager = this.createIntegratedResourceManager(registryTracker, dataPackSettingsGetter, savePropertiesGetter, safeMode, session);
         } catch (Exception exception) {
-            LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)exception);
+            LOGGER.warn("Failed to load datapacks, can't proceed with server load", exception);
             this.setScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, worldLoadAction)));
             try {
                 session.close();
@@ -2277,7 +2282,7 @@ implements WindowEventHandler {
      * Checks if the provided {@code entity} should display an outline around its model.
      */
     public boolean hasOutline(Entity entity) {
-        return entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER;
+        return entity.isGlowing() || this.player != null && this.player.isSpectator() && this.options.spectatorOutlinesKey.isPressed() && entity.getType() == EntityType.PLAYER;
     }
 
     @Override
@@ -2454,7 +2459,7 @@ implements WindowEventHandler {
             TranslatableText translatableText = new TranslatableText("screenshot.success", text2);
             return translatableText;
         } catch (Exception exception) {
-            LOGGER.error("Couldn't save image", (Throwable)exception);
+            LOGGER.error("Couldn't save image", exception);
             TranslatableText translatableText = new TranslatableText("screenshot.failure", exception.getMessage());
             return translatableText;
         } finally {
@@ -2507,7 +2512,7 @@ implements WindowEventHandler {
             MutableText text = new LiteralText(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
             return new TranslatableText("screenshot.success", text);
         } catch (Exception exception) {
-            LOGGER.warn("Couldn't save screenshot", (Throwable)exception);
+            LOGGER.warn("Couldn't save screenshot", exception);
             return new TranslatableText("screenshot.failure", exception.getMessage());
         }
     }
@@ -2587,7 +2592,7 @@ implements WindowEventHandler {
     }
 
     static {
-        LOGGER = LogManager.getLogger();
+        LOGGER = LogUtils.getLogger();
         IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
         DEFAULT_FONT_ID = new Identifier("default");
         UNICODE_FONT_ID = new Identifier("uniform");

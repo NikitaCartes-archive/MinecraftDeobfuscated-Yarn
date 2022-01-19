@@ -11,6 +11,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -31,9 +32,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.BlockStateFlattening;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.math.WordPackedArray;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ChunkPalettedStorageFix
 extends DataFix {
@@ -45,7 +45,7 @@ extends DataFix {
     private static final int field_29876 = 4;
     private static final int field_29877 = 2;
     private static final int field_29878 = 1;
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     static final BitSet BLOCKS_NEEDING_SIDE_UPDATE = new BitSet(256);
     static final BitSet BLOCKS_NEEDING_IN_PLACE_UPDATE = new BitSet(256);
     static final Dynamic<?> PUMPKIN = BlockStateFlattening.parseState("{Name:'minecraft:pumpkin'}");
@@ -371,7 +371,7 @@ extends DataFix {
                 int j = dynamic.get("y").asInt(0);
                 int l = j << 8 | (k = dynamic.get("z").asInt(0) - this.z & 0xF) << 4 | i;
                 if (this.blockEntities.put(l, (Dynamic<?>)dynamic) != null) {
-                    LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", (Object)this.x, (Object)this.z, (Object)i, (Object)j, (Object)k);
+                    LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", this.x, this.z, i, j, k);
                 }
             }));
             boolean bl = dynamic.get("convertedFromAlphaFormat").asBoolean(false);

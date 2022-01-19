@@ -351,7 +351,7 @@ extends DrawableHelper {
             this.client.getProfiler().pop();
             matrices.pop();
             scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
-            if (this.client.options.keyPlayerList.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
+            if (this.client.options.playerListKey.isPressed() && (!this.client.isInSingleplayer() || this.client.player.networkHandler.getPlayerList().size() > 1 || scoreboardObjective2 != null)) {
                 this.playerListHud.setVisible(true);
                 this.playerListHud.render(matrices, this.scaledWidth, scoreboard, scoreboardObjective2);
             } else {

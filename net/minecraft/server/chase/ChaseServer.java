@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.chase;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -19,12 +20,11 @@ import net.minecraft.server.command.ChaseCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ChaseServer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String ip;
     private final int port;
     private final PlayerManager playerManager;
@@ -72,7 +72,7 @@ public class ChaseServer {
                                 outputStream.write(bs);
                                 outputStream.flush();
                             } catch (IOException iOException) {
-                                LOGGER.info("Remote control client socket got an IO exception and will be closed", (Throwable)iOException);
+                                LOGGER.info("Remote control client socket got an IO exception and will be closed", iOException);
                                 IOUtils.closeQuietly(socket);
                             }
                         });
@@ -109,7 +109,7 @@ public class ChaseServer {
             }
         } catch (IOException iOException) {
             if (this.running) {
-                LOGGER.error("Remote control server closed because of an IO exception", (Throwable)iOException);
+                LOGGER.error("Remote control server closed because of an IO exception", iOException);
             }
         } finally {
             IOUtils.closeQuietly(this.socket);

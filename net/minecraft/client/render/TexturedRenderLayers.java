@@ -151,14 +151,14 @@ public class TexturedRenderLayers {
     }
 
     public static SpriteIdentifier getChestTexture(BlockEntity blockEntity, ChestType type, boolean christmas) {
+        if (blockEntity instanceof EnderChestBlockEntity) {
+            return ENDER;
+        }
         if (christmas) {
             return TexturedRenderLayers.getChestTexture(type, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
         }
         if (blockEntity instanceof TrappedChestBlockEntity) {
             return TexturedRenderLayers.getChestTexture(type, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT);
-        }
-        if (blockEntity instanceof EnderChestBlockEntity) {
-            return ENDER;
         }
         return TexturedRenderLayers.getChestTexture(type, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
     }

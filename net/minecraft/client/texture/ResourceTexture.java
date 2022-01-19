@@ -5,6 +5,7 @@ package net.minecraft.client.texture;
 
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
@@ -15,14 +16,13 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ResourceTexture
 extends AbstractTexture {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     protected final Identifier location;
 
     public ResourceTexture(Identifier location) {

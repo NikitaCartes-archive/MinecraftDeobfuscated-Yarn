@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,13 +38,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class FontManager
 implements AutoCloseable {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final String FONTS_JSON = "fonts.json";
     public static final Identifier MISSING_STORAGE_ID = new Identifier("minecraft", "missing");
     private final FontStorage missingStorage;
@@ -83,17 +83,17 @@ implements AutoCloseable {
                                     profiler.pop();
                                     continue;
                                 } catch (RuntimeException runtimeException) {
-                                    LOGGER.warn("Unable to read definition '{}' in {} in resourcepack: '{}': {}", (Object)identifier2, (Object)FontManager.FONTS_JSON, (Object)resource.getResourcePackName(), (Object)runtimeException.getMessage());
+                                    LOGGER.warn("Unable to read definition '{}' in {} in resourcepack: '{}': {}", identifier2, FontManager.FONTS_JSON, resource.getResourcePackName(), runtimeException.getMessage());
                                 }
                             }
                             profiler.pop();
                         } catch (RuntimeException runtimeException2) {
-                            LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", (Object)identifier2, (Object)FontManager.FONTS_JSON, (Object)resource.getResourcePackName(), (Object)runtimeException2.getMessage());
+                            LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}': {}", identifier2, FontManager.FONTS_JSON, resource.getResourcePackName(), runtimeException2.getMessage());
                         }
                         profiler.pop();
                     }
                 } catch (IOException iOException) {
-                    LOGGER.warn("Unable to load font '{}' in {}: {}", (Object)identifier2, (Object)FontManager.FONTS_JSON, (Object)iOException.getMessage());
+                    LOGGER.warn("Unable to load font '{}' in {}: {}", identifier2, FontManager.FONTS_JSON, iOException.getMessage());
                 }
                 profiler.push("caching");
                 IntOpenHashSet intSet = new IntOpenHashSet();

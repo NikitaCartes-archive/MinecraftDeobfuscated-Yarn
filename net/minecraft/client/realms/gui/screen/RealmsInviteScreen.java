@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.gui.screen;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -18,15 +19,14 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsInviteScreen
 extends RealmsScreen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text INVITE_PROFILE_NAME_TEXT = new TranslatableText("mco.configure.world.invite.profile.name");
     private static final Text PLAYER_ERROR_TEXT = new TranslatableText("mco.configure.world.players.error");
     private TextFieldWidget nameWidget;

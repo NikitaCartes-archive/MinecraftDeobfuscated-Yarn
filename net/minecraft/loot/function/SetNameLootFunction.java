@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import net.minecraft.entity.Entity;
@@ -23,13 +24,12 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.JsonHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SetNameLootFunction
 extends ConditionalLootFunction {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     final Text name;
     @Nullable
     final LootContext.EntityTarget entity;
@@ -58,7 +58,7 @@ extends ConditionalLootFunction {
                 try {
                     return Texts.parse(serverCommandSource, textComponent, entity, 0);
                 } catch (CommandSyntaxException commandSyntaxException) {
-                    LOGGER.warn("Failed to resolve text component", (Throwable)commandSyntaxException);
+                    LOGGER.warn("Failed to resolve text component", commandSyntaxException);
                     return textComponent;
                 }
             };

@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.world;
 
-import java.io.File;
+import com.mojang.logging.LogUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -27,14 +27,13 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientChunkManager
 extends ChunkManager {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private final WorldChunk emptyChunk;
     private final LightingProvider lightingProvider;
     volatile ClientChunkMap chunks;
@@ -110,7 +109,7 @@ extends ChunkManager {
     }
 
     @Override
-    public void tick(BooleanSupplier shouldKeepTicking) {
+    public void tick(BooleanSupplier shouldKeepTicking, boolean bl) {
     }
 
     public void setChunkMapCenter(int x, int z) {
@@ -209,7 +208,7 @@ extends ChunkManager {
         }
 
         private void writePositions(String fileName) {
-            try (FileOutputStream fileOutputStream = new FileOutputStream(new File(fileName));){
+            try (FileOutputStream fileOutputStream = new FileOutputStream(fileName);){
                 int i = ClientChunkManager.this.chunks.radius;
                 for (int j = this.centerChunkZ - i; j <= this.centerChunkZ + i; ++j) {
                     for (int k = this.centerChunkX - i; k <= this.centerChunkX + i; ++k) {
@@ -220,7 +219,7 @@ extends ChunkManager {
                     }
                 }
             } catch (IOException iOException) {
-                LOGGER.error(iOException);
+                LOGGER.error("Failed to dump chunks to file {}", (Object)fileName, (Object)iOException);
             }
         }
     }

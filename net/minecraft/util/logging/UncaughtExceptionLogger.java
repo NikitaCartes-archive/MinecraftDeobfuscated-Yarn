@@ -3,7 +3,7 @@
  */
 package net.minecraft.util.logging;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class UncaughtExceptionLogger
 implements Thread.UncaughtExceptionHandler {

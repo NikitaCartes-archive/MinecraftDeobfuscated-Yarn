@@ -20,14 +20,14 @@ extends Input {
 
     @Override
     public void tick(boolean slowDown) {
-        this.pressingForward = this.settings.keyForward.isPressed();
-        this.pressingBack = this.settings.keyBack.isPressed();
-        this.pressingLeft = this.settings.keyLeft.isPressed();
-        this.pressingRight = this.settings.keyRight.isPressed();
+        this.pressingForward = this.settings.forwardKey.isPressed();
+        this.pressingBack = this.settings.backKey.isPressed();
+        this.pressingLeft = this.settings.leftKey.isPressed();
+        this.pressingRight = this.settings.rightKey.isPressed();
         float f = this.pressingForward == this.pressingBack ? 0.0f : (this.movementForward = this.pressingForward ? 1.0f : -1.0f);
         this.movementSideways = this.pressingLeft == this.pressingRight ? 0.0f : (this.pressingLeft ? 1.0f : -1.0f);
-        this.jumping = this.settings.keyJump.isPressed();
-        this.sneaking = this.settings.keySneak.isPressed();
+        this.jumping = this.settings.jumpKey.isPressed();
+        this.sneaking = this.settings.sneakKey.isPressed();
         if (slowDown) {
             this.movementSideways = (float)((double)this.movementSideways * 0.3);
             this.movementForward = (float)((double)this.movementForward * 0.3);

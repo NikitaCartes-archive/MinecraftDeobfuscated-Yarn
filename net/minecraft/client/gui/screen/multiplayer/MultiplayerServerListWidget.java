@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
@@ -40,15 +41,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class MultiplayerServerListWidget
 extends AlwaysSelectedEntryListWidget<Entry> {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
     static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
     static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
@@ -328,7 +328,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     }
                     this.client.getTextureManager().registerTexture(this.iconTextureId, this.icon);
                 } catch (Throwable throwable) {
-                    LOGGER.error("Invalid icon for server {} ({})", (Object)this.server.name, (Object)this.server.address, (Object)throwable);
+                    LOGGER.error("Invalid icon for server {} ({})", this.server.name, this.server.address, throwable);
                     return false;
                 }
             }

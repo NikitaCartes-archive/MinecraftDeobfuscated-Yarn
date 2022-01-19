@@ -10,6 +10,7 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,13 +33,12 @@ import net.minecraft.server.filter.TextStream;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.thread.TaskExecutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class TextFilterer
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
     private static final ThreadFactory THREAD_FACTORY = runnable -> {
         Thread thread = new Thread(runnable);
@@ -102,7 +102,7 @@ implements AutoCloseable {
             try {
                 this.sendRequest(jsonObject, endpoint);
             } catch (Exception exception) {
-                LOGGER.warn("Failed to send join/leave packet to {} for player {}", (Object)endpoint, (Object)gameProfile, (Object)exception);
+                LOGGER.warn("Failed to send join/leave packet to {} for player {}", endpoint, gameProfile, exception);
             }
         });
     }

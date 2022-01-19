@@ -4,6 +4,7 @@
 package net.minecraft.client.option;
 
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,12 +14,11 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class HotbarStorage {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final int field_32135 = 9;
     private final File file;
     private final DataFixer dataFixer;
@@ -47,7 +47,7 @@ public class HotbarStorage {
                 this.entries[i].readNbtList(nbtCompound.getList(String.valueOf(i), 10));
             }
         } catch (Exception exception) {
-            LOGGER.error("Failed to load creative mode options", (Throwable)exception);
+            LOGGER.error("Failed to load creative mode options", exception);
         }
     }
 
@@ -60,7 +60,7 @@ public class HotbarStorage {
             }
             NbtIo.write(nbtCompound, this.file);
         } catch (Exception exception) {
-            LOGGER.error("Failed to save creative mode options", (Throwable)exception);
+            LOGGER.error("Failed to save creative mode options", exception);
         }
     }
 

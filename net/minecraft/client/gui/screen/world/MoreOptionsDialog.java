@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
@@ -52,15 +53,13 @@ import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class MoreOptionsDialog
 implements Drawable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
     private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
     private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
@@ -93,7 +92,7 @@ implements Drawable {
         this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
         this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
         this.seedTextField.setChangedListener(seedText -> {
-            this.seed = this.getSeed();
+            this.seed = GeneratorOptions.method_40024(this.seedTextField.getText());
         });
         parent.addSelectableChild(this.seedTextField);
         int i = this.parentWidth / 2 - 155;
@@ -143,7 +142,7 @@ implements Drawable {
                 client.runTasks(completableFuture::isDone);
                 serverResourceManager = completableFuture.get();
             } catch (InterruptedException | ExecutionException exception) {
-                LOGGER.error("Error loading data packs when importing world settings", (Throwable)exception);
+                LOGGER.error("Error loading data packs when importing world settings", exception);
                 TranslatableText text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
                 LiteralText text2 = new LiteralText(exception.getMessage());
                 client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
@@ -222,24 +221,9 @@ implements Drawable {
         return "";
     }
 
-    private static OptionalLong tryParseLong(String string) {
-        try {
-            return OptionalLong.of(Long.parseLong(string));
-        } catch (NumberFormatException numberFormatException) {
-            return OptionalLong.empty();
-        }
-    }
-
     public GeneratorOptions getGeneratorOptions(boolean hardcore) {
-        OptionalLong optionalLong = this.getSeed();
+        OptionalLong optionalLong = GeneratorOptions.method_40024(this.seedTextField.getText());
         return this.generatorOptions.withHardcore(hardcore, optionalLong);
-    }
-
-    private OptionalLong getSeed() {
-        OptionalLong optionalLong2;
-        String string = this.seedTextField.getText();
-        OptionalLong optionalLong = StringUtils.isEmpty(string) ? OptionalLong.empty() : ((optionalLong2 = MoreOptionsDialog.tryParseLong(string)).isPresent() && optionalLong2.getAsLong() != 0L ? optionalLong2 : OptionalLong.of(string.hashCode()));
-        return optionalLong;
     }
 
     public boolean isDebugWorld() {

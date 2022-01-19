@@ -8,6 +8,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.stream.JsonWriter;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -42,13 +43,12 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class EditWorldScreen
 extends Screen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
     private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
     private ButtonWidget saveButton;
@@ -111,7 +111,7 @@ extends Screen {
                     return DataResult.success(path.toString());
                 });
             } catch (Exception exception) {
-                LOGGER.warn("Could not parse level data", (Throwable)exception);
+                LOGGER.warn("Could not parse level data", exception);
                 dataResult2 = DataResult.error("Could not parse level data: " + exception.getMessage());
             }
             LiteralText text = new LiteralText(dataResult2.get().map(Function.identity(), DataResult.PartialResult::message));

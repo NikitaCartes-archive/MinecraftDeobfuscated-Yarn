@@ -5,6 +5,7 @@ package net.minecraft.block.entity;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.types.Type;
+import com.mojang.logging.LogUtils;
 import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -50,12 +51,11 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class BlockEntityType<T extends BlockEntity> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final BlockEntityType<FurnaceBlockEntity> FURNACE = BlockEntityType.create("furnace", Builder.create(FurnaceBlockEntity::new, Blocks.FURNACE));
     public static final BlockEntityType<ChestBlockEntity> CHEST = BlockEntityType.create("chest", Builder.create(ChestBlockEntity::new, Blocks.CHEST));
     public static final BlockEntityType<TrappedChestBlockEntity> TRAPPED_CHEST = BlockEntityType.create("trapped_chest", Builder.create(TrappedChestBlockEntity::new, Blocks.TRAPPED_CHEST));

@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.mob;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import java.util.UUID;
@@ -49,10 +50,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ZombieVillagerEntity
 extends ZombieEntity
 implements VillagerDataContainer {
+    private static final Logger field_36334 = LogUtils.getLogger();
     private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
     private static final int field_30523 = 3600;
@@ -83,7 +86,7 @@ implements VillagerDataContainer {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(field_36334::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
         if (this.offerData != null) {
             nbt.put("Offers", this.offerData);
         }
@@ -102,7 +105,7 @@ implements VillagerDataContainer {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("VillagerData", 10)) {
             DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
-            dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
+            dataResult.resultOrPartial(field_36334::error).ifPresent(this::setVillagerData);
         }
         if (nbt.contains("Offers", 10)) {
             this.offerData = nbt.getCompound("Offers");

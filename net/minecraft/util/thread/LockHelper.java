@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.thread;
 
+import com.mojang.logging.LogUtils;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.concurrent.Semaphore;
@@ -13,12 +14,11 @@ import java.util.stream.Stream;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class LockHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String name;
     private final Semaphore semaphore = new Semaphore(1);
     private final Lock lock = new ReentrantLock();

@@ -4,6 +4,7 @@
 package net.minecraft.server.rcon;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -21,13 +22,12 @@ import net.minecraft.server.rcon.BufferHelper;
 import net.minecraft.server.rcon.DataStreamHelper;
 import net.minecraft.server.rcon.RconBase;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class QueryResponseHandler
 extends RconBase {
-    private static final Logger field_23963 = LogManager.getLogger();
+    private static final Logger field_23963 = LogUtils.getLogger();
     private static final String GAME_TYPE = "SMP";
     private static final String GAME_ID = "MINECRAFT";
     private static final long CLEAN_UP_THRESHOLD = 30000L;
@@ -64,7 +64,7 @@ extends RconBase {
                 InetAddress inetAddress = InetAddress.getLocalHost();
                 this.ip = inetAddress.getHostAddress();
             } catch (UnknownHostException unknownHostException) {
-                field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", (Throwable)unknownHostException);
+                field_23963.warn("Unable to determine local host IP, please set server-ip in server.properties", unknownHostException);
             }
         } else {
             this.ip = this.hostname;
@@ -254,7 +254,7 @@ extends RconBase {
         if (!this.running) {
             return;
         }
-        field_23963.warn("Unexpected exception", (Throwable)e);
+        field_23963.warn("Unexpected exception", e);
         if (!this.initialize()) {
             field_23963.error("Failed to recover from exception, shutting down!");
             this.running = false;
@@ -267,7 +267,7 @@ extends RconBase {
             this.socket.setSoTimeout(500);
             return true;
         } catch (Exception exception) {
-            field_23963.warn("Unable to initialise query system on {}:{}", (Object)this.hostname, (Object)this.queryPort, (Object)exception);
+            field_23963.warn("Unable to initialise query system on {}:{}", this.hostname, this.queryPort, exception);
             return false;
         }
     }

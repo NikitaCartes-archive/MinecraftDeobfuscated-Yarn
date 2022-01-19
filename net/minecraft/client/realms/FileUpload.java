@@ -5,6 +5,7 @@ package net.minecraft.client.realms;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,13 +34,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.Args;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class FileUpload {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_ATTEMPTS = 5;
     private static final String UPLOAD_ENDPOINT = "/upload";
     private final File file;
@@ -104,7 +104,7 @@ public class FileUpload {
             this.handleResponse(httpResponse, builder);
         } catch (Exception exception) {
             if (!this.cancelled.get()) {
-                LOGGER.error("Caught exception while uploading: ", (Throwable)exception);
+                LOGGER.error("Caught exception while uploading: ", exception);
             }
         } finally {
             this.cleanup(httpPost, closeableHttpClient);

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -22,12 +23,11 @@ import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SpawnSettings {
-    public static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final float field_30983 = 0.1f;
     public static final Pool<SpawnEntry> EMPTY_ENTRY_POOL = Pool.empty();
     public static final SpawnSettings INSTANCE = new Builder().build();

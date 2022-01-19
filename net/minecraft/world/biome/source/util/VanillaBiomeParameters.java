@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -46,7 +47,7 @@ public final class VanillaBiomeParameters {
     private final RegistryKey<Biome>[][] UNCOMMON_BIOMES = new RegistryKey[][]{{BiomeKeys.ICE_SPIKES, null, BiomeKeys.SNOWY_TAIGA, null, null}, {null, null, null, null, BiomeKeys.OLD_GROWTH_PINE_TAIGA}, {BiomeKeys.SUNFLOWER_PLAINS, null, null, BiomeKeys.OLD_GROWTH_BIRCH_FOREST, null}, {null, null, BiomeKeys.PLAINS, BiomeKeys.SPARSE_JUNGLE, BiomeKeys.BAMBOO_JUNGLE}, {null, null, null, null, null}};
     private final RegistryKey<Biome>[][] NEAR_MOUNTAIN_BIOMES = new RegistryKey[][]{{BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_PLAINS, BiomeKeys.SNOWY_TAIGA, BiomeKeys.SNOWY_TAIGA}, {BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.FOREST, BiomeKeys.TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA}, {BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.DARK_FOREST}, {BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.SAVANNA_PLATEAU, BiomeKeys.FOREST, BiomeKeys.FOREST, BiomeKeys.JUNGLE}, {BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.BADLANDS, BiomeKeys.WOODED_BADLANDS, BiomeKeys.WOODED_BADLANDS}};
     private final RegistryKey<Biome>[][] SPECIAL_NEAR_MOUNTAIN_BIOMES = new RegistryKey[][]{{BiomeKeys.ICE_SPIKES, null, null, null, null}, {null, null, BiomeKeys.MEADOW, BiomeKeys.MEADOW, BiomeKeys.OLD_GROWTH_PINE_TAIGA}, {null, null, BiomeKeys.FOREST, BiomeKeys.BIRCH_FOREST, null}, {null, null, null, null, null}, {BiomeKeys.ERODED_BADLANDS, BiomeKeys.ERODED_BADLANDS, null, null, null}};
-    private final RegistryKey<Biome>[][] HILL_BIOMES = new RegistryKey[][]{{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {null, null, null, null, null}, {null, null, null, null, null}};
+    private final RegistryKey<Biome>[][] field_36339 = new RegistryKey[][]{{BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_FOREST, BiomeKeys.WINDSWEPT_FOREST}, {null, null, null, null, null}, {null, null, null, null, null}};
 
     public List<MultiNoiseUtil.NoiseHypercube> getSpawnSuitabilityNoises() {
         MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(0.0f);
@@ -98,8 +99,8 @@ public final class VanillaBiomeParameters {
                 RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey4 = this.getNearMountainBiome(i, j, weirdness);
-                RegistryKey<Biome> registryKey5 = this.getHillBiome(i, j, weirdness);
-                RegistryKey<Biome> registryKey6 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey5);
+                RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
+                RegistryKey<Biome> registryKey6 = this.method_40009(i, j, weirdness, registryKey5);
                 RegistryKey<Biome> registryKey7 = this.getPeakBiome(i, j, weirdness);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, MultiNoiseUtil.ParameterRange.combine(this.SHORE_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS), this.EROSION_PARAMETERS[0], weirdness, 0.0f, registryKey7);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, MultiNoiseUtil.ParameterRange.combine(this.SHORE_CONTINENTALNESS, this.NEAR_INLAND_CONTINENTALNESS), this.EROSION_PARAMETERS[1], weirdness, 0.0f, registryKey3);
@@ -125,8 +126,8 @@ public final class VanillaBiomeParameters {
                 RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey4 = this.getNearMountainBiome(i, j, weirdness);
-                RegistryKey<Biome> registryKey5 = this.getHillBiome(i, j, weirdness);
-                RegistryKey<Biome> registryKey6 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
+                RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
+                RegistryKey<Biome> registryKey6 = this.method_40009(i, j, weirdness, registryKey);
                 RegistryKey<Biome> registryKey7 = this.getMountainSlopeBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey8 = this.getPeakBiome(i, j, weirdness);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.SHORE_CONTINENTALNESS, MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[1]), weirdness, 0.0f, registryKey);
@@ -156,10 +157,10 @@ public final class VanillaBiomeParameters {
                 RegistryKey<Biome> registryKey = this.getRegularBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
-                RegistryKey<Biome> registryKey4 = this.getHillBiome(i, j, weirdness);
+                RegistryKey<Biome> registryKey4 = this.getBiomeOrWindsweptSavanna(i, j, weirdness);
                 RegistryKey<Biome> registryKey5 = this.getNearMountainBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey6 = this.getShoreBiome(i, j);
-                RegistryKey<Biome> registryKey7 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
+                RegistryKey<Biome> registryKey7 = this.method_40009(i, j, weirdness, registryKey);
                 RegistryKey<Biome> registryKey8 = this.getFlatShoreBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey9 = this.getMountainSlopeBiome(i, j, weirdness);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, MultiNoiseUtil.ParameterRange.combine(this.NEAR_INLAND_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS), this.EROSION_PARAMETERS[0], weirdness, 0.0f, registryKey9);
@@ -201,7 +202,7 @@ public final class VanillaBiomeParameters {
                 RegistryKey<Biome> registryKey2 = this.getBadlandsOrRegularBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey3 = this.getMountainStartBiome(i, j, weirdness);
                 RegistryKey<Biome> registryKey4 = this.getShoreBiome(i, j);
-                RegistryKey<Biome> registryKey5 = this.getBiomeOrWindsweptSavanna(i, j, weirdness, registryKey);
+                RegistryKey<Biome> registryKey5 = this.method_40009(i, j, weirdness, registryKey);
                 RegistryKey<Biome> registryKey6 = this.getFlatShoreBiome(i, j, weirdness);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.NEAR_INLAND_CONTINENTALNESS, MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[1]), weirdness, 0.0f, registryKey2);
                 this.writeBiomeParameters(parameters, parameterRange, parameterRange2, MultiNoiseUtil.ParameterRange.combine(this.MID_INLAND_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS), MultiNoiseUtil.ParameterRange.combine(this.EROSION_PARAMETERS[0], this.EROSION_PARAMETERS[1]), weirdness, 0.0f, registryKey3);
@@ -261,16 +262,16 @@ public final class VanillaBiomeParameters {
         return temperature == 0 ? this.getMountainSlopeBiome(temperature, humidity, weirdness) : this.getBadlandsOrRegularBiome(temperature, humidity, weirdness);
     }
 
-    private RegistryKey<Biome> getBiomeOrWindsweptSavanna(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness, RegistryKey<Biome> biome) {
-        if (temperature > 1 && humidity < 4 && weirdness.max() >= 0L) {
+    private RegistryKey<Biome> method_40009(int i, int j, MultiNoiseUtil.ParameterRange parameterRange, RegistryKey<Biome> registryKey) {
+        if (i > 1 && j < 4 && parameterRange.max() >= 0L) {
             return BiomeKeys.WINDSWEPT_SAVANNA;
         }
-        return biome;
+        return registryKey;
     }
 
     private RegistryKey<Biome> getFlatShoreBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
         RegistryKey<Biome> registryKey = weirdness.max() >= 0L ? this.getRegularBiome(temperature, humidity, weirdness) : this.getShoreBiome(temperature, humidity);
-        return this.getBiomeOrWindsweptSavanna(temperature, humidity, weirdness, registryKey);
+        return this.method_40009(temperature, humidity, weirdness, registryKey);
     }
 
     private RegistryKey<Biome> getShoreBiome(int temperature, int humidity) {
@@ -285,7 +286,7 @@ public final class VanillaBiomeParameters {
 
     private RegistryKey<Biome> getBadlandsBiome(int humidity, MultiNoiseUtil.ParameterRange weirdness) {
         if (humidity < 2) {
-            return weirdness.max() < 0L ? BiomeKeys.ERODED_BADLANDS : BiomeKeys.BADLANDS;
+            return weirdness.max() < 0L ? BiomeKeys.BADLANDS : BiomeKeys.ERODED_BADLANDS;
         }
         if (humidity < 3) {
             return BiomeKeys.BADLANDS;
@@ -321,8 +322,8 @@ public final class VanillaBiomeParameters {
         return BiomeKeys.GROVE;
     }
 
-    private RegistryKey<Biome> getHillBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
-        RegistryKey<Biome> registryKey = this.HILL_BIOMES[temperature][humidity];
+    private RegistryKey<Biome> getBiomeOrWindsweptSavanna(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
+        RegistryKey<Biome> registryKey = this.field_36339[temperature][humidity];
         return registryKey == null ? this.getRegularBiome(temperature, humidity, weirdness) : registryKey;
     }
 
@@ -393,6 +394,36 @@ public final class VanillaBiomeParameters {
             return "" + i;
         }
         return "?";
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40010() {
+        return this.TEMPERATURE_PARAMETERS;
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40011() {
+        return this.HUMIDITY_PARAMETERS;
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40012() {
+        return this.EROSION_PARAMETERS;
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40013() {
+        return new MultiNoiseUtil.ParameterRange[]{this.MUSHROOM_FIELDS_CONTINENTALNESS, this.DEEP_OCEAN_CONTINENTALNESS, this.OCEAN_CONTINENTALNESS, this.SHORE_CONTINENTALNESS, this.NEAR_INLAND_CONTINENTALNESS, this.MID_INLAND_CONTINENTALNESS, this.FAR_INLAND_CONTINENTALNESS};
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40014() {
+        return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0f, VanillaTerrainParameters.getNormalizedWeirdness(0.05f)), MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.05f), VanillaTerrainParameters.getNormalizedWeirdness(0.26666668f)), MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.26666668f), VanillaTerrainParameters.getNormalizedWeirdness(0.4f)), MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.4f), VanillaTerrainParameters.getNormalizedWeirdness(0.56666666f)), MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.56666666f), 2.0f)};
+    }
+
+    @Debug
+    public MultiNoiseUtil.ParameterRange[] method_40015() {
+        return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0f, 0.0f), MultiNoiseUtil.ParameterRange.of(0.0f, 2.0f)};
     }
 }
 

@@ -6,6 +6,7 @@ package net.minecraft.world.level;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import java.util.Set;
@@ -39,14 +40,14 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class LevelProperties
 implements ServerWorldProperties,
 SaveProperties {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
+    protected static final String field_36349 = "Player";
     protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
     private LevelInfo levelInfo;
     private final GeneratorOptions generatorOptions;
@@ -174,7 +175,7 @@ SaveProperties {
         levelNbt.put("GameRules", this.levelInfo.getGameRules().toNbt());
         levelNbt.put("DragonFight", this.dragonFight);
         if (playerNbt != null) {
-            levelNbt.put("Player", playerNbt);
+            levelNbt.put(field_36349, playerNbt);
         }
         DataPackSettings.CODEC.encodeStart(NbtOps.INSTANCE, this.levelInfo.getDataPackSettings()).result().ifPresent(nbtElement -> levelNbt.put("DataPacks", (NbtElement)nbtElement));
         if (this.customBossEvents != null) {

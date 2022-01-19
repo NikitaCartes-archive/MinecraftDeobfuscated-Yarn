@@ -683,7 +683,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
     }
 
-    private void registerCauldron() {
+    private void registerCauldrons() {
         this.registerItemModel(Items.CAULDRON);
         this.registerSimpleState(Blocks.CAULDRON);
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(Blocks.LAVA_CAULDRON, Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.cauldron(Texture.getSubId(Blocks.LAVA, "_still")), this.modelCollector)));
@@ -1361,7 +1361,7 @@ public class BlockStateModelGenerator {
         this.registerCake();
         this.registerCampfire(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
         this.registerCartographyTable();
-        this.registerCauldron();
+        this.registerCauldrons();
         this.registerChorusFlower();
         this.registerChorusPlant();
         this.registerComposter();

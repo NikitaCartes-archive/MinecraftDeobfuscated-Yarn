@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -9,8 +9,8 @@ import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
-import net.minecraft.world.gen.decorator.AbstractCountPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class CountPlacementModifier
 extends AbstractCountPlacementModifier {

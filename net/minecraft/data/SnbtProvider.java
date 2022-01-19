@@ -4,6 +4,7 @@
 package net.minecraft.data;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,15 +28,14 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SnbtProvider
 implements DataProvider {
     @Nullable
     private static final Path DEBUG_OUTPUT_DIRECTORY = null;
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final DataGenerator root;
     private final List<Tweaker> write = Lists.newArrayList();
 
@@ -68,7 +68,7 @@ implements DataProvider {
             try {
                 this.write(cache, (CompressedData)completableFuture.get(), path3);
             } catch (Exception exception) {
-                LOGGER.error("Failed to process structure", (Throwable)exception);
+                LOGGER.error("Failed to process structure", exception);
                 bl = true;
             }
         }
@@ -127,7 +127,7 @@ implements DataProvider {
             try {
                 NbtProvider.writeTo(path, data.snbtContent);
             } catch (IOException iOException) {
-                LOGGER.error("Couldn't write structure SNBT {} at {}", (Object)data.name, (Object)path, (Object)iOException);
+                LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, iOException);
             }
         }
         path = root.resolve(data.name + ".nbt");
@@ -140,7 +140,7 @@ implements DataProvider {
             }
             cache.updateSha1(path, data.sha1);
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't write structure {} at {}", (Object)data.name, (Object)path, (Object)iOException);
+            LOGGER.error("Couldn't write structure {} at {}", data.name, path, iOException);
         }
     }
 

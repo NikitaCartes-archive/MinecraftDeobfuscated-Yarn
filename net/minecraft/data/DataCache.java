@@ -6,6 +6,7 @@ package net.minecraft.data;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -22,12 +23,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class DataCache {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Path root;
     private final Path recordFile;
     private int unchanged;
@@ -60,7 +60,7 @@ public class DataCache {
         }
         IOUtils.writeLines((Collection)this.newSha1.entrySet().stream().map(entry -> (String)entry.getValue() + " " + this.root.relativize((Path)entry.getKey())).collect(Collectors.toList()), System.lineSeparator(), writer);
         ((Writer)writer).close();
-        LOGGER.debug("Caching: cache hits: {}, created: {} removed: {}", (Object)this.unchanged, (Object)(this.newSha1.size() - this.unchanged), (Object)this.oldSha1.size());
+        LOGGER.debug("Caching: cache hits: {}, created: {} removed: {}", this.unchanged, this.newSha1.size() - this.unchanged, this.oldSha1.size());
     }
 
     @Nullable

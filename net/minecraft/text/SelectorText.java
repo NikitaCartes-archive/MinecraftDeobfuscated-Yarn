@@ -5,6 +5,7 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.Optional;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
@@ -16,14 +17,13 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.ParsableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SelectorText
 extends BaseText
 implements ParsableText {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String pattern;
     @Nullable
     private final EntitySelector selector;

@@ -3,22 +3,20 @@
  */
 package net.minecraft.util.profiling.jfr;
 
+import com.mojang.logging.LogUtils;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.function.Supplier;
 import net.minecraft.Bootstrap;
 import net.minecraft.util.profiling.jfr.JfrProfile;
 import net.minecraft.util.profiling.jfr.JfrProfileRecorder;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LifeCycle;
-import org.apache.logging.log4j.spi.LoggerContext;
-import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class JfrListener {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Runnable stopCallback;
 
     protected JfrListener(Runnable stopCallback) {
@@ -48,30 +46,21 @@ public class JfrListener {
         }
     }
 
-    private static void log(Supplier<String> messageSupplier) {
-        if (JfrListener.shouldUseLogger()) {
-            LOGGER.info(messageSupplier);
+    private static void log(Supplier<String> supplier) {
+        if (LogUtils.isLoggerActive()) {
+            LOGGER.info(supplier.get());
         } else {
-            Bootstrap.println(messageSupplier.get());
+            Bootstrap.println(supplier.get());
         }
     }
 
-    private static void warn(Supplier<String> messageSupplier, Throwable throwable) {
-        if (JfrListener.shouldUseLogger()) {
-            LOGGER.warn(messageSupplier, throwable);
+    private static void warn(Supplier<String> supplier, Throwable throwable) {
+        if (LogUtils.isLoggerActive()) {
+            LOGGER.warn(supplier.get(), throwable);
         } else {
-            Bootstrap.println(messageSupplier.get());
+            Bootstrap.println(supplier.get());
             throwable.printStackTrace(Bootstrap.SYSOUT);
         }
-    }
-
-    private static boolean shouldUseLogger() {
-        LoggerContext loggerContext = LogManager.getContext();
-        if (loggerContext instanceof LifeCycle) {
-            LifeCycle lifeCycle = (LifeCycle)((Object)loggerContext);
-            return !lifeCycle.isStopped();
-        }
-        return true;
     }
 }
 

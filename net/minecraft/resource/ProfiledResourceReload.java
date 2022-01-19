@@ -4,6 +4,7 @@
 package net.minecraft.resource;
 
 import com.google.common.base.Stopwatch;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -16,8 +17,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * An implementation of resource reload that includes an additional profiling
@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ProfiledResourceReload
 extends SimpleResourceReload<Summary> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Stopwatch reloadTimer = Stopwatch.createUnstarted();
 
     public ProfiledResourceReload(ResourceManager manager, List<ResourceReloader> reloaders, Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage) {
@@ -63,7 +63,7 @@ extends SimpleResourceReload<Summary> {
             int k = (int)((double)summary.applyTimeMs.get() / 1000000.0);
             int l = j + k;
             String string = summary.name;
-            LOGGER.info("{} took approximately {} ms ({} ms preparing, {} ms applying)", (Object)string, (Object)l, (Object)j, (Object)k);
+            LOGGER.info("{} took approximately {} ms ({} ms preparing, {} ms applying)", string, l, j, k);
             i += k;
         }
         LOGGER.info("Total blocking time: {} ms", (Object)i);

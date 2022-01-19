@@ -6,6 +6,7 @@ package net.minecraft.client.resource;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -48,15 +49,14 @@ import net.minecraft.util.Util;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientBuiltinResourcePackProvider
 implements ResourcePackProvider {
     private static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(new TranslatableText("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion()));
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
     private static final int MAX_FILE_SIZE = 0xFA00000;
     private static final int MAX_SAVED_PACKS = 10;
@@ -200,7 +200,7 @@ implements ResourcePackProvider {
                 LOGGER.info("Found file {} matching requested hash {}", (Object)file, (Object)expectedSha1);
                 return true;
             }
-            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", (Object)file, (Object)expectedSha1, (Object)string);
+            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", file, expectedSha1, string);
         } catch (IOException iOException) {
             LOGGER.warn("File {} couldn't be hashed.", (Object)file, (Object)iOException);
         }

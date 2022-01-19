@@ -4,6 +4,7 @@
 package net.minecraft.util;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.logging.LogUtils;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
@@ -22,11 +23,10 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import net.minecraft.util.crash.CrashReportSection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class WinNativeModuleUtil {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int CODE_PAGE_MASK = 65535;
     private static final int EN_US_CODE_PAGE = 1033;
     private static final int LANGUAGE_ID_MASK = -65536;
@@ -52,7 +52,11 @@ public class WinNativeModuleUtil {
             IntByReference intByReference = new IntByReference();
             int i = Version.INSTANCE.GetFileVersionInfoSize(path, intByReference);
             if (i == 0) {
-                throw new Win32Exception(Native.getLastError());
+                int j = Native.getLastError();
+                if (j == 1813 || j == 1812) {
+                    return Optional.empty();
+                }
+                throw new Win32Exception(j);
             }
             Memory pointer = new Memory(i);
             if (!Version.INSTANCE.GetFileVersionInfo(path, 0, i, pointer)) {
@@ -65,12 +69,12 @@ public class WinNativeModuleUtil {
             if (!optionalInt.isPresent()) {
                 return Optional.empty();
             }
-            int j = optionalInt.getAsInt();
-            int k = j & 0xFFFF;
-            int l = (j & 0xFFFF0000) >> 16;
-            String string = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("FileDescription", k, l), intByReference2);
-            String string2 = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("CompanyName", k, l), intByReference2);
-            String string3 = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("FileVersion", k, l), intByReference2);
+            int k = optionalInt.getAsInt();
+            int l = k & 0xFFFF;
+            int m = (k & 0xFFFF0000) >> 16;
+            String string = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("FileDescription", l, m), intByReference2);
+            String string2 = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("CompanyName", l, m), intByReference2);
+            String string3 = WinNativeModuleUtil.queryString(pointer, WinNativeModuleUtil.getStringFileInfoPath("FileVersion", l, m), intByReference2);
             return Optional.of(new NativeModuleInfo(string, string3, string2));
         } catch (Exception exception) {
             LOGGER.info("Failed to find module info for {}", (Object)path, (Object)exception);

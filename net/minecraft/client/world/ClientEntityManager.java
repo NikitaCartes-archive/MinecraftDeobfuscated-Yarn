@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.world;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.entity.Entity;
@@ -19,11 +20,10 @@ import net.minecraft.world.entity.EntityTrackingSection;
 import net.minecraft.world.entity.EntityTrackingStatus;
 import net.minecraft.world.entity.SectionedEntityCache;
 import net.minecraft.world.entity.SimpleEntityLookup;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ClientEntityManager<T extends EntityLike> {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     final EntityHandler<T> handler;
     final EntityIndex<T> index;
     final SectionedEntityCache<T> cache;
@@ -118,7 +118,7 @@ public class ClientEntityManager<T extends EntityLike> {
             if (l != this.lastSectionPos) {
                 EntityTrackingStatus entityTrackingStatus = this.section.getStatus();
                 if (!this.section.remove(this.entity)) {
-                    LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, (Object)ChunkSectionPos.from(this.lastSectionPos), (Object)l);
+                    LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, ChunkSectionPos.from(this.lastSectionPos), l);
                 }
                 this.manager.removeIfEmpty(this.lastSectionPos, this.section);
                 EntityTrackingSection entityTrackingSection = this.manager.cache.getTrackingSection(l);
@@ -141,7 +141,7 @@ public class ClientEntityManager<T extends EntityLike> {
         public void remove(Entity.RemovalReason reason) {
             EntityTrackingStatus entityTrackingStatus;
             if (!this.section.remove(this.entity)) {
-                LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", this.entity, (Object)ChunkSectionPos.from(this.lastSectionPos), (Object)reason);
+                LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", new Object[]{this.entity, ChunkSectionPos.from(this.lastSectionPos), reason});
             }
             if ((entityTrackingStatus = this.section.getStatus()).shouldTick() || this.entity.isPlayer()) {
                 this.manager.handler.stopTicking(this.entity);

@@ -3,15 +3,15 @@
  */
 package net.minecraft.entity.boss.dragon.phase;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.Phase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class PhaseManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final EnderDragonEntity dragon;
     private final Phase[] phases = new Phase[PhaseType.count()];
     @Nullable

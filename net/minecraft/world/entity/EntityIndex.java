@@ -5,6 +5,7 @@ package net.minecraft.world.entity;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.Map;
@@ -12,15 +13,14 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.world.entity.EntityLike;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * An index of entities by both their network IDs and UUIDs.
  */
 public class EntityIndex<T extends EntityLike> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Int2ObjectMap<T> idToEntity = new Int2ObjectLinkedOpenHashMap<T>();
     private final Map<UUID, T> uuidToEntity = Maps.newHashMap();
 

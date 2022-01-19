@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,6 +32,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
@@ -56,16 +58,15 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Matrix4f;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class Screen
 extends AbstractParentElement
 implements Drawable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
     private static final int field_32270 = 2;
     private static final Text SCREEN_USAGE_TEXT = new TranslatableText("narrator.screen.usage");
@@ -615,6 +616,12 @@ implements Drawable {
 
     public void applyNarratorModeChangeDelay() {
         this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+    }
+
+    protected static void method_40041(ClickableWidget ... clickableWidgets) {
+        for (ClickableWidget clickableWidget : clickableWidgets) {
+            clickableWidget.visible = false;
+        }
     }
 
     static {

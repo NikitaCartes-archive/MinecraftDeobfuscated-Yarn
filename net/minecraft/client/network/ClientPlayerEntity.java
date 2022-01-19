@@ -19,6 +19,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -168,11 +169,6 @@ extends AbstractClientPlayerEntity {
         if (entity instanceof AbstractMinecartEntity) {
             this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, true));
             this.client.getSoundManager().play(new MinecartInsideSoundInstance(this, (AbstractMinecartEntity)entity, false));
-        }
-        if (entity instanceof BoatEntity) {
-            this.prevYaw = entity.getYaw();
-            this.setYaw(entity.getYaw());
-            this.setHeadYaw(entity.getYaw());
         }
         return true;
     }
@@ -696,13 +692,13 @@ extends AbstractClientPlayerEntity {
         }
         boolean bl7 = bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0f || this.getAbilities().allowFlying;
         if (!(!this.onGround && !this.isSubmergedInWater() || bl2 || bl3 || !this.isWalking() || this.isSprinting() || !bl5 || this.isUsingItem() || this.hasStatusEffect(StatusEffects.BLINDNESS))) {
-            if (this.ticksLeftToDoubleTapSprint > 0 || this.client.options.keySprint.isPressed()) {
+            if (this.ticksLeftToDoubleTapSprint > 0 || this.client.options.sprintKey.isPressed()) {
                 this.setSprinting(true);
             } else {
                 this.ticksLeftToDoubleTapSprint = 7;
             }
         }
-        if (!this.isSprinting() && (!this.isTouchingWater() || this.isSubmergedInWater()) && this.isWalking() && bl5 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.keySprint.isPressed()) {
+        if (!this.isSprinting() && (!this.isTouchingWater() || this.isSubmergedInWater()) && this.isWalking() && bl5 && !this.isUsingItem() && !this.hasStatusEffect(StatusEffects.BLINDNESS) && this.client.options.sprintKey.isPressed()) {
             this.setSprinting(true);
         }
         if (this.isSprinting()) {
@@ -802,7 +798,7 @@ extends AbstractClientPlayerEntity {
     private void updateNausea() {
         this.lastNauseaStrength = this.nextNauseaStrength;
         if (this.inNetherPortal) {
-            if (this.client.currentScreen != null && !this.client.currentScreen.shouldPause() && !(this.client.currentScreen instanceof DeathScreen)) {
+            if (!(this.client.currentScreen == null || this.client.currentScreen.shouldPause() || this.client.currentScreen instanceof DeathScreen || this.client.currentScreen instanceof DownloadingTerrainScreen)) {
                 if (this.client.currentScreen instanceof HandledScreen) {
                     this.closeHandledScreen();
                 }

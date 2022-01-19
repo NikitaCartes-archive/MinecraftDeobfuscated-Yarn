@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -112,6 +113,7 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemGroup;
@@ -288,14 +290,13 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text DISCONNECT_LOST_TEXT = new TranslatableText("disconnect.lost");
     private final ClientConnection connection;
     private final GameProfile profile;
@@ -303,7 +304,6 @@ implements ClientPlayPacketListener {
     private final MinecraftClient client;
     private ClientWorld world;
     private ClientWorld.Properties worldProperties;
-    private boolean positionLookSetup;
     private final Map<UUID, PlayerListEntry> playerListEntries = Maps.newHashMap();
     private final ClientAdvancementManager advancementHandler;
     private final ClientCommandSource commandSource;
@@ -594,10 +594,6 @@ implements ClientPlayPacketListener {
         playerEntity.updatePositionAndAngles(e, g, i, j, k);
         this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
         this.connection.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
-        if (!this.positionLookSetup) {
-            this.positionLookSetup = true;
-            this.client.setScreen(null);
-        }
     }
 
     @Override
@@ -656,7 +652,6 @@ implements ClientPlayPacketListener {
         this.world.enqueueChunkUpdate(() -> {
             LightingProvider lightingProvider = this.world.getLightingProvider();
             for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
-                this.world.scheduleBlockRenders(packet.getX(), i, packet.getZ());
                 lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
             }
             lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
@@ -786,6 +781,11 @@ implements ClientPlayPacketListener {
     public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
+        Screen screen = this.client.currentScreen;
+        if (screen instanceof DownloadingTerrainScreen) {
+            DownloadingTerrainScreen downloadingTerrainScreen = (DownloadingTerrainScreen)screen;
+            downloadingTerrainScreen.method_40040();
+        }
     }
 
     @Override
@@ -803,7 +803,12 @@ implements ClientPlayPacketListener {
             if (entity2 == null) continue;
             entity2.startRiding(entity, true);
             if (entity2 != this.client.player || bl) continue;
-            this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.keySneak.getBoundKeyLocalizedText()), false);
+            if (entity instanceof BoatEntity) {
+                this.client.player.prevYaw = entity.getYaw();
+                this.client.player.setYaw(entity.getYaw());
+                this.client.player.setHeadYaw(entity.getYaw());
+            }
+            this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
         }
     }
 
@@ -866,7 +871,6 @@ implements ClientPlayPacketListener {
         DimensionType dimensionType = packet.getDimensionType();
         ClientPlayerEntity clientPlayerEntity = this.client.player;
         int i = clientPlayerEntity.getId();
-        this.positionLookSetup = false;
         if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
             ClientWorld.Properties properties;
             Scoreboard scoreboard = this.world.getScoreboard();
@@ -1070,13 +1074,13 @@ implements ClientPlayPacketListener {
             if (f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN) {
                 this.client.setScreen(new DemoScreen());
             } else if (f == GameStateChangeS2CPacket.DEMO_MOVEMENT_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.movement", gameOptions.keyForward.getBoundKeyLocalizedText(), gameOptions.keyLeft.getBoundKeyLocalizedText(), gameOptions.keyBack.getBoundKeyLocalizedText(), gameOptions.keyRight.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.movement", gameOptions.forwardKey.getBoundKeyLocalizedText(), gameOptions.leftKey.getBoundKeyLocalizedText(), gameOptions.backKey.getBoundKeyLocalizedText(), gameOptions.rightKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_JUMP_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_INVENTORY_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
             }
         } else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
             this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
@@ -1868,7 +1872,7 @@ implements ClientPlayPacketListener {
         } else {
             team2 = scoreboard.getTeam(packet.getTeamName());
             if (team2 == null) {
-                LOGGER.warn("Received packet for unknown team {}: team action: {}, player action: {}", (Object)packet.getTeamName(), (Object)packet.getTeamOperation(), (Object)packet.getPlayerListOperation());
+                LOGGER.warn("Received packet for unknown team {}: team action: {}, player action: {}", new Object[]{packet.getTeamName(), packet.getTeamOperation(), packet.getPlayerListOperation()});
                 return;
             }
         }

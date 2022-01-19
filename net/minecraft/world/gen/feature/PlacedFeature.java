@@ -18,10 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifier;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class PlacedFeature {
@@ -37,7 +37,7 @@ public class PlacedFeature {
     }
 
     public boolean generateUnregistered(StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos pos) {
-        return this.generate(new DecoratorContext(world, generator, Optional.empty()), random, pos);
+        return this.generate(new FeaturePlacementContext(world, generator, Optional.empty()), random, pos);
     }
 
     /**
@@ -49,10 +49,10 @@ public class PlacedFeature {
      * Stream#flatMap flatMap} in order they appear in the list.
      */
     public boolean generate(StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos pos) {
-        return this.generate(new DecoratorContext(world, generator, Optional.of(this)), random, pos);
+        return this.generate(new FeaturePlacementContext(world, generator, Optional.of(this)), random, pos);
     }
 
-    private boolean generate(DecoratorContext context, Random random, BlockPos pos2) {
+    private boolean generate(FeaturePlacementContext context, Random random, BlockPos pos2) {
         Stream<BlockPos> stream = Stream.of(pos2);
         for (PlacementModifier placementModifier : this.placementModifiers) {
             stream = stream.flatMap(pos -> placementModifier.getPositions(context, random, (BlockPos)pos));

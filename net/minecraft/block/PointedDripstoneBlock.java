@@ -6,6 +6,7 @@ package net.minecraft.block;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractCauldronBlock;
@@ -37,6 +38,7 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -83,6 +85,7 @@ Waterloggable {
     private static final VoxelShape FRUSTUM_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
     private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
     private static final float field_31204 = 0.125f;
+    private static final VoxelShape field_36340 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
 
     public PointedDripstoneBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -310,14 +313,12 @@ Waterloggable {
     }
 
     private static void spawnFallingBlock(BlockState state, ServerWorld world, BlockPos pos) {
-        Vec3d vec3d = Vec3d.ofBottomCenter(pos);
-        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, vec3d.x, vec3d.y, vec3d.z, state);
+        FallingBlockEntity fallingBlockEntity = FallingBlockEntity.method_40005(world, pos, state);
         if (PointedDripstoneBlock.isTip(state, true)) {
             int i = PointedDripstoneBlock.getStalactiteSize(world, pos, 6);
             float f = 1.0f * (float)i;
             fallingBlockEntity.setHurtEntities(f, 40);
         }
-        world.spawnEntity(fallingBlockEntity);
     }
 
     @VisibleForTesting
@@ -354,8 +355,11 @@ Waterloggable {
                 PointedDripstoneBlock.tryGrow(world, mutable, Direction.UP);
                 return;
             }
-            if (!PointedDripstoneBlock.canPlaceAtWithDirection(world, mutable, Direction.UP) || world.isWater((BlockPos)mutable.down())) continue;
-            PointedDripstoneBlock.tryGrow(world, (BlockPos)mutable.down(), Direction.UP);
+            if (PointedDripstoneBlock.canPlaceAtWithDirection(world, mutable, Direction.UP) && !world.isWater((BlockPos)mutable.down())) {
+                PointedDripstoneBlock.tryGrow(world, (BlockPos)mutable.down(), Direction.UP);
+                return;
+            }
+            if (PointedDripstoneBlock.method_40016(world, mutable, blockState)) continue;
             return;
         }
     }
@@ -410,8 +414,8 @@ Waterloggable {
             return pos;
         }
         Direction direction = state2.get(VERTICAL_DIRECTION);
-        Predicate<BlockState> predicate = state -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getDirection(), predicate, state -> PointedDripstoneBlock.isTip(state, allowMerged), range).orElse(null);
+        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getDirection(), biPredicate, state -> PointedDripstoneBlock.isTip(state, allowMerged), range).orElse(null);
     }
 
     @Nullable
@@ -469,8 +473,8 @@ Waterloggable {
 
     private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos, BlockState state2, int range) {
         Direction direction = state2.get(VERTICAL_DIRECTION);
-        Predicate<BlockState> predicate = state -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getOpposite().getDirection(), predicate, state -> !state.isOf(Blocks.POINTED_DRIPSTONE), range);
+        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getOpposite().getDirection(), biPredicate, state -> !state.isOf(Blocks.POINTED_DRIPSTONE), range);
     }
 
     private static boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
@@ -515,12 +519,14 @@ Waterloggable {
     @Nullable
     private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
         Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock && ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 11).orElse(null);
+        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> PointedDripstoneBlock.method_40016(world, blockPos, blockState);
+        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.DOWN.getDirection(), biPredicate, predicate, 11).orElse(null);
     }
 
     @Nullable
     public static BlockPos getDripPos(World world, BlockPos pos) {
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.UP.getDirection(), AbstractBlock.AbstractBlockState::isAir, PointedDripstoneBlock::canDrip, 11).orElse(null);
+        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> PointedDripstoneBlock.method_40016(world, blockPos, blockState);
+        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.UP.getDirection(), biPredicate, PointedDripstoneBlock::canDrip, 11).orElse(null);
     }
 
     public static Fluid getDripFluid(World world, BlockPos pos) {
@@ -552,7 +558,7 @@ Waterloggable {
         return fluid;
     }
 
-    private static Optional<BlockPos> searchInDirection(WorldAccess world, BlockPos pos, Direction.AxisDirection direction, Predicate<BlockState> continuePredicate, Predicate<BlockState> stopPredicate, int range) {
+    private static Optional<BlockPos> searchInDirection(WorldAccess world, BlockPos pos, Direction.AxisDirection direction, BiPredicate<BlockPos, BlockState> biPredicate, Predicate<BlockState> stopPredicate, int range) {
         Direction direction2 = Direction.get(direction, Direction.Axis.Y);
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (int i = 1; i < range; ++i) {
@@ -561,10 +567,24 @@ Waterloggable {
             if (stopPredicate.test(blockState)) {
                 return Optional.of(mutable.toImmutable());
             }
-            if (!world.isOutOfHeightLimit(mutable.getY()) && continuePredicate.test(blockState)) continue;
+            if (!world.isOutOfHeightLimit(mutable.getY()) && biPredicate.test(mutable, blockState)) continue;
             return Optional.empty();
         }
         return Optional.empty();
+    }
+
+    private static boolean method_40016(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+        if (blockState.isAir()) {
+            return true;
+        }
+        if (blockState.isOpaqueFullCube(blockView, blockPos)) {
+            return false;
+        }
+        if (!blockState.getFluidState().isEmpty()) {
+            return false;
+        }
+        VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
+        return !VoxelShapes.matchesAnywhere(field_36340, voxelShape, BooleanBiFunction.AND);
     }
 }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.sound;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,14 +14,13 @@ import net.minecraft.client.sound.AlUtil;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.StaticSound;
 import net.minecraft.util.math.Vec3d;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL10;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Source {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_31895 = 4;
     public static final int field_31894 = 1;
     private final int pointer;
@@ -51,7 +51,7 @@ public class Source {
                 try {
                     this.stream.close();
                 } catch (IOException iOException) {
-                    LOGGER.error("Failed to close audio stream", (Throwable)iOException);
+                    LOGGER.error("Failed to close audio stream", iOException);
                 }
                 this.removeProcessedBuffers();
                 this.stream = null;
@@ -154,7 +154,7 @@ public class Source {
                     new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(pointer -> AL10.alSourceQueueBuffers(this.pointer, new int[]{pointer}));
                 }
             } catch (IOException iOException) {
-                LOGGER.error("Failed to read from audio stream", (Throwable)iOException);
+                LOGGER.error("Failed to read from audio stream", iOException);
             }
         }
     }

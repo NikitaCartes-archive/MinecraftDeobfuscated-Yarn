@@ -3,10 +3,10 @@
  */
 package net.minecraft.util.thread;
 
+import com.mojang.logging.LogUtils;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A custom thread factory that assigns each created thread to the group of the
@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class GroupAssigningThreadFactory
 implements ThreadFactory {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final ThreadGroup group;
     private final AtomicInteger nextIndex = new AtomicInteger(1);
     private final String prefix;

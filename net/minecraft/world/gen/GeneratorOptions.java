@@ -7,6 +7,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -40,12 +41,12 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 public class GeneratorOptions {
     public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(GeneratorOptions::getSeed), ((MapCodec)Codec.BOOL.fieldOf("generate_features")).orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures), ((MapCodec)Codec.BOOL.fieldOf("bonus_chest")).orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest), ((MapCodec)SimpleRegistry.createRegistryCodec(Registry.DIMENSION_KEY, Lifecycle.stable(), DimensionOptions.CODEC).xmap(DimensionOptions::method_29569, Function.identity()).fieldOf("dimensions")).forGetter(GeneratorOptions::getDimensions), Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)).apply((Applicative<GeneratorOptions, ?>)instance, instance.stable(GeneratorOptions::new))).comapFlatMap(GeneratorOptions::validate, Function.identity());
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final long seed;
     private final boolean generateStructures;
     private final boolean bonusChest;
@@ -197,17 +198,7 @@ public class GeneratorOptions {
         String string4 = (String)properties.get("level-type");
         String string5 = Optional.ofNullable(string4).map(string -> string.toLowerCase(Locale.ROOT)).orElse("default");
         properties.put("level-type", string5);
-        long l = new Random().nextLong();
-        if (!string22.isEmpty()) {
-            try {
-                long m = Long.parseLong(string22);
-                if (m != 0L) {
-                    l = m;
-                }
-            } catch (NumberFormatException numberFormatException) {
-                l = string22.hashCode();
-            }
-        }
+        long l = GeneratorOptions.method_40024(string22).orElse(new Random().nextLong());
         Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
         Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
         SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registryManager, l);
@@ -245,6 +236,17 @@ public class GeneratorOptions {
         }
         GeneratorOptions generatorOptions = this.isDebugWorld() ? new GeneratorOptions(l, false, false, simpleRegistry) : new GeneratorOptions(l, this.shouldGenerateStructures(), this.hasBonusChest() && !hardcore, simpleRegistry);
         return generatorOptions;
+    }
+
+    public static OptionalLong method_40024(String string) {
+        if (StringUtils.isEmpty(string = string.trim())) {
+            return OptionalLong.empty();
+        }
+        try {
+            return OptionalLong.of(Long.parseLong(string));
+        } catch (NumberFormatException numberFormatException) {
+            return OptionalLong.of(string.hashCode());
+        }
     }
 }
 

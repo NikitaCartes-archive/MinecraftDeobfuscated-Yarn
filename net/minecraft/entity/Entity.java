@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -93,6 +93,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -123,15 +124,14 @@ import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public abstract class Entity
 implements Nameable,
 EntityLike,
 CommandOutput {
-    protected static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ID_KEY = "id";
     public static final String PASSENGERS_KEY = "Passengers";
     /**
@@ -218,6 +218,7 @@ CommandOutput {
     protected boolean onGround;
     public boolean horizontalCollision;
     public boolean verticalCollision;
+    public boolean field_36331;
     public boolean collidedSoftly;
     public boolean velocityModified;
     protected Vec3d movementMultiplier = Vec3d.ZERO;
@@ -631,6 +632,7 @@ CommandOutput {
     public void move(MovementType movementType, Vec3d movement) {
         MoveEffect moveEffect;
         Vec3d vec3d;
+        double d;
         if (this.noClip) {
             this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
             return;
@@ -645,13 +647,18 @@ CommandOutput {
             this.movementMultiplier = Vec3d.ZERO;
             this.setVelocity(Vec3d.ZERO);
         }
-        if ((vec3d = this.adjustMovementForCollisions(movement = this.adjustMovementForSneaking(movement, movementType))).lengthSquared() > 1.0E-7) {
+        if ((d = (vec3d = this.adjustMovementForCollisions(movement = this.adjustMovementForSneaking(movement, movementType))).lengthSquared()) > 1.0E-7) {
+            BlockHitResult blockHitResult;
+            if (this.fallDistance != 0.0f && d >= 1.0 && (blockHitResult = this.world.raycast(new RaycastContext(this.getPos(), this.getPos().add(vec3d), RaycastContext.ShapeType.FALLDAMAGE_RESETTING, RaycastContext.FluidHandling.WATER, this))).getType() != HitResult.Type.MISS) {
+                this.onLanding();
+            }
             this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("rest");
         this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
         this.verticalCollision = movement.y != vec3d.y;
+        this.field_36331 = this.verticalCollision && movement.y < 0.0;
         this.collidedSoftly = this.horizontalCollision ? this.hasCollidedSoftly(vec3d) : false;
         this.onGround = this.verticalCollision && movement.y < 0.0;
         BlockPos blockPos = this.getLandingPos();
@@ -676,24 +683,24 @@ CommandOutput {
             block.onSteppedOn(this.world, blockPos, blockState, this);
         }
         if ((moveEffect = this.getMoveEffect()).hasAny() && !this.hasVehicle()) {
-            double d = vec3d.x;
-            double e = vec3d.y;
-            double f = vec3d.z;
+            double e = vec3d.x;
+            double f = vec3d.y;
+            double g = vec3d.z;
             this.speed = (float)((double)this.speed + vec3d.length() * 0.6);
             if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
-                e = 0.0;
+                f = 0.0;
             }
             this.horizontalSpeed += (float)vec3d.horizontalLength() * 0.6f;
-            this.distanceTraveled += (float)Math.sqrt(d * d + e * e + f * f) * 0.6f;
+            this.distanceTraveled += (float)Math.sqrt(e * e + f * f + g * g) * 0.6f;
             if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
                     if (moveEffect.playsSounds()) {
                         Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
-                        float g = entity == this ? 0.35f : 0.4f;
+                        float h = entity == this ? 0.35f : 0.4f;
                         Vec3d vec3d3 = entity.getVelocity();
-                        float h = Math.min(1.0f, (float)Math.sqrt(vec3d3.x * vec3d3.x * (double)0.2f + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * (double)0.2f) * g);
-                        this.playSwimSound(h);
+                        float i = Math.min(1.0f, (float)Math.sqrt(vec3d3.x * vec3d3.x * (double)0.2f + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * (double)0.2f) * h);
+                        this.playSwimSound(i);
                     }
                     if (moveEffect.emitsGameEvents()) {
                         this.emitGameEvent(GameEvent.SWIM);
@@ -712,8 +719,8 @@ CommandOutput {
             }
         }
         this.tryCheckBlockCollision();
-        float i = this.getVelocityMultiplier();
-        this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
+        float j = this.getVelocityMultiplier();
+        this.setVelocity(this.getVelocity().multiply(j, 1.0, j));
         if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
             if (this.fireTicks <= 0) {
                 this.setFireTicks(-this.getBurningDuration());
@@ -1439,9 +1446,9 @@ CommandOutput {
         return false;
     }
 
-    public void updateKilledAdvancementCriterion(Entity killer, int score, DamageSource damageSource) {
-        if (killer instanceof ServerPlayerEntity) {
-            Criteria.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)killer, this, damageSource);
+    public void updateKilledAdvancementCriterion(Entity entityKilled, int score, DamageSource damageSource) {
+        if (entityKilled instanceof ServerPlayerEntity) {
+            Criteria.ENTITY_KILLED_PLAYER.trigger((ServerPlayerEntity)entityKilled, this, damageSource);
         }
     }
 
@@ -1687,12 +1694,11 @@ CommandOutput {
         if (this.noClip) {
             return false;
         }
-        Vec3d vec3d = this.getEyePos();
         float f = this.dimensions.width * 0.8f;
-        Box box = Box.of(vec3d, f, 1.0E-6, f);
-        return this.world.getStatesInBox(box).filter(Predicate.not(AbstractBlock.AbstractBlockState::isAir)).anyMatch(state -> {
-            BlockPos blockPos = new BlockPos(vec3d);
-            return state.shouldSuffocate(this.world, blockPos) && VoxelShapes.matchesAnywhere(state.getCollisionShape(this.world, blockPos).offset(vec3d.x, vec3d.y, vec3d.z), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
+        Box box = Box.of(this.getEyePos(), f, 1.0E-6, f);
+        return BlockPos.stream(box).anyMatch(blockPos -> {
+            BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
+            return !blockState.isAir() && blockState.shouldSuffocate(this.world, (BlockPos)blockPos) && VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, (BlockPos)blockPos).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
         });
     }
 

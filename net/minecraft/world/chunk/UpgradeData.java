@@ -5,6 +5,7 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import java.util.EnumSet;
@@ -37,11 +38,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.WorldChunk;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class UpgradeData {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final UpgradeData NO_UPGRADE_DATA = new UpgradeData(EmptyBlockView.INSTANCE);
     private static final String INDICES_KEY = "Indices";
     private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
@@ -145,7 +145,7 @@ public class UpgradeData {
         }
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             if (this.centerIndicesToUpgrade[i] != null) {
-                LOGGER.warn("Discarding update data for section {} for chunk ({} {})", (Object)worldAccess.sectionIndexToCoord(i), (Object)chunkPos.x, (Object)chunkPos.z);
+                LOGGER.warn("Discarding update data for section {} for chunk ({} {})", worldAccess.sectionIndexToCoord(i), chunkPos.x, chunkPos.z);
             }
             this.centerIndicesToUpgrade[i] = null;
         }

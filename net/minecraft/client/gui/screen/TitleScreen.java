@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.lang.invoke.LambdaMetafactory;
 import java.util.Random;
@@ -50,14 +51,13 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class TitleScreen
 extends Screen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String DEMO_WORLD_NAME = "Demo_World";
     public static final String COPYRIGHT = "Copyright Mojang AB. Do not distribute!";
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
@@ -179,7 +179,7 @@ extends Screen {
                 }
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, DEMO_WORLD_NAME);
-                LOGGER.warn("Failed to access demo world", (Throwable)iOException);
+                LOGGER.warn("Failed to access demo world", iOException);
             }
         }));
         this.buttonResetDemo.active = bl;
@@ -204,7 +204,7 @@ extends Screen {
                     throw throwable;
                 } catch (IOException iOException) {
                     SystemToast.addWorldAccessFailureToast(this.client, DEMO_WORLD_NAME);
-                    LOGGER.warn("Failed to read demo world data", (Throwable)iOException);
+                    LOGGER.warn("Failed to read demo world data", iOException);
                     return false;
                 }
             }
@@ -314,7 +314,7 @@ extends Screen {
                 session.deleteSessionLock();
             } catch (IOException iOException) {
                 SystemToast.addWorldDeleteFailureToast(this.client, DEMO_WORLD_NAME);
-                LOGGER.warn("Failed to delete demo world", (Throwable)iOException);
+                LOGGER.warn("Failed to delete demo world", iOException);
             }
         }
         this.client.setScreen(this);

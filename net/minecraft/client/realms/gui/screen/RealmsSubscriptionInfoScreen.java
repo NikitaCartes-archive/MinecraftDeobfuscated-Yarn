@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.gui.screen;
 
+import com.mojang.logging.LogUtils;
 import java.text.DateFormat;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -24,15 +25,14 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsSubscriptionInfoScreen
 extends RealmsScreen {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final Text SUBSCRIPTION_TITLE = new TranslatableText("mco.configure.world.subscription.title");
     private static final Text SUBSCRIPTION_START_LABEL_TEXT = new TranslatableText("mco.configure.world.subscription.start");
     private static final Text TIME_LEFT_LABEL_TEXT = new TranslatableText("mco.configure.world.subscription.timeleft");
@@ -94,8 +94,7 @@ extends RealmsScreen {
                         RealmsClient realmsClient = RealmsClient.createRealmsClient();
                         realmsClient.deleteWorld(RealmsSubscriptionInfoScreen.this.serverData.id);
                     } catch (RealmsServiceException realmsServiceException) {
-                        LOGGER.error("Couldn't delete world");
-                        LOGGER.error(realmsServiceException);
+                        LOGGER.error("Couldn't delete world", realmsServiceException);
                     }
                     RealmsSubscriptionInfoScreen.this.client.execute(() -> RealmsSubscriptionInfoScreen.this.client.setScreen(RealmsSubscriptionInfoScreen.this.mainScreen));
                 }

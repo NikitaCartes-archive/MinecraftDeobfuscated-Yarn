@@ -5,6 +5,7 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.io.IOException;
@@ -27,12 +28,11 @@ import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.ChunkDataList;
 import net.minecraft.world.storage.StorageIoWorker;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EntityChunkDataAccess
 implements ChunkDataAccess<Entity> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String ENTITIES_KEY = "Entities";
     private static final String POSITION_KEY = "Position";
     private final ServerWorld world;
@@ -61,7 +61,7 @@ implements ChunkDataAccess<Entity> {
             try {
                 ChunkPos chunkPos2 = EntityChunkDataAccess.getChunkPos(compound);
                 if (!Objects.equals(pos, chunkPos2)) {
-                    LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", (Object)pos, (Object)pos, (Object)chunkPos2);
+                    LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", pos, pos, chunkPos2);
                 }
             } catch (Exception exception) {
                 LOGGER.warn("Failed to parse chunk {} position info", (Object)pos, (Object)exception);

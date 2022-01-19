@@ -6,6 +6,7 @@ package net.minecraft.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.logging.LogUtils;
 import java.util.Set;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -17,12 +18,11 @@ import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class SetDamageLootFunction
 extends ConditionalLootFunction {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     final LootNumberProvider durabilityRange;
     final boolean add;
 

@@ -5,6 +5,7 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
@@ -54,13 +55,12 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.WorldTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class WorldChunk
 extends Chunk {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final BlockEntityTickInvoker EMPTY_BLOCK_ENTITY_TICKER = new BlockEntityTickInvoker(){
 
         @Override
@@ -640,7 +640,7 @@ extends Chunk {
                         this.hasWarned = false;
                     } else if (!this.hasWarned) {
                         this.hasWarned = true;
-                        LOGGER.warn("Block entity {} @ {} state {} invalid for ticking:", this::getName, this::getPos, () -> blockState);
+                        LOGGER.warn("Block entity {} @ {} state {} invalid for ticking:", LogUtils.defer(this::getName), LogUtils.defer(this::getPos), blockState);
                     }
                     profiler.pop();
                 } catch (Throwable throwable) {

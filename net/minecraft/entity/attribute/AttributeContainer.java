@@ -6,6 +6,7 @@ package net.minecraft.entity.attribute;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -20,12 +21,11 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class AttributeContainer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Map<EntityAttribute, EntityAttributeInstance> custom = Maps.newHashMap();
     private final Set<EntityAttributeInstance> tracked = Sets.newHashSet();
     private final DefaultAttributeContainer fallback;

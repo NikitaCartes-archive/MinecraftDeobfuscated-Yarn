@@ -176,7 +176,7 @@ extends BlockEntity {
                 if (beeState == BeeState.HONEY_DELIVERED) {
                     int i;
                     beeEntity.onHoneyDelivered();
-                    if (state.isIn(BlockTags.BEEHIVES) && (i = BeehiveBlockEntity.getHoneyLevel(state)) < 5) {
+                    if (state.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL)) && (i = BeehiveBlockEntity.getHoneyLevel(state)) < 5) {
                         int j;
                         int n = j = world.random.nextInt(100) == 0 ? 2 : 1;
                         if (i + j > 5) {

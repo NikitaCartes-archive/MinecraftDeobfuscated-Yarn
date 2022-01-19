@@ -3,6 +3,7 @@
  */
 package net.minecraft.util.profiling.jfr;
 
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,13 +45,12 @@ import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.util.profiling.jfr.event.WorldLoadFinishedEvent;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class JfrProfiler
 implements FlightProfiler {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final String MINECRAFT = "Minecraft";
     public static final String WORLD_GENERATION = "World Generation";
     public static final String TICKING = "Ticking";
@@ -151,10 +151,10 @@ implements FlightProfiler {
             this.currentRecording.start();
             this.addListener();
         } catch (IOException | ParseException exception) {
-            LOGGER.warn("Failed to start jfr profiling", (Throwable)exception);
+            LOGGER.warn("Failed to start jfr profiling", exception);
             return false;
         }
-        LOGGER.info("Started flight recorder profiling id({}):name({}) - will dump to {} on exit or stop command", (Object)this.currentRecording.getId(), (Object)this.currentRecording.getName(), (Object)this.currentRecording.getDestination());
+        LOGGER.info("Started flight recorder profiling id({}):name({}) - will dump to {} on exit or stop command", this.currentRecording.getId(), this.currentRecording.getName(), this.currentRecording.getDestination());
         return true;
     }
 

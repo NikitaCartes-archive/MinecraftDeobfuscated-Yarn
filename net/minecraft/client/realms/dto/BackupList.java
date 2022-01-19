@@ -6,19 +6,19 @@ package net.minecraft.client.realms.dto;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.mojang.logging.LogUtils;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.client.realms.dto.ValueObject;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class BackupList
 extends ValueObject {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public List<Backup> backups;
 
     public static BackupList parse(String json) {

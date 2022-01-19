@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -11,12 +11,12 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.heightprovider.TrapezoidHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class HeightRangePlacementModifier
 extends PlacementModifier {
@@ -40,7 +40,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
         return Stream.of(pos.withY(this.height.get(random, context)));
     }
 

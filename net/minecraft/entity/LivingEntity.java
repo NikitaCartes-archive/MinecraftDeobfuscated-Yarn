@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import java.util.ArrayList;
@@ -133,12 +134,14 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Represents an entity which has a health value and can receive damage.
  */
 public abstract class LivingEntity
 extends Entity {
+    private static final Logger field_36332 = LogUtils.getLogger();
     private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
     private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
@@ -674,7 +677,7 @@ extends Entity {
             nbt.putInt("SleepingZ", pos.getZ());
         });
         DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
-        dataResult.resultOrPartial(LOGGER::error).ifPresent(brain -> nbt.put("Brain", (NbtElement)brain));
+        dataResult.resultOrPartial(field_36332::error).ifPresent(brain -> nbt.put("Brain", (NbtElement)brain));
     }
 
     @Override
@@ -704,7 +707,7 @@ extends Entity {
             Team team = this.world.getScoreboard().getTeam(string);
             boolean bl2 = bl = team != null && this.world.getScoreboard().addPlayerToTeam(this.getUuidAsString(), team);
             if (!bl) {
-                LOGGER.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", (Object)string);
+                field_36332.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", (Object)string);
             }
         }
         if (nbt.getBoolean("FallFlying")) {
@@ -1239,7 +1242,7 @@ extends Entity {
             this.wakeUp();
         }
         if (!this.world.isClient && this.hasCustomName()) {
-            LOGGER.info("Named entity {} died: {}", (Object)this, (Object)this.getDamageTracker().getDeathMessage().getString());
+            field_36332.info("Named entity {} died: {}", (Object)this, (Object)this.getDamageTracker().getDeathMessage().getString());
         }
         this.dead = true;
         this.getDamageTracker().update();
@@ -2611,11 +2614,6 @@ extends Entity {
     @Override
     public boolean isPushable() {
         return this.isAlive() && !this.isSpectator() && !this.isClimbing();
-    }
-
-    @Override
-    protected void scheduleVelocityUpdate() {
-        this.velocityModified = this.random.nextDouble() >= this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
     }
 
     @Override

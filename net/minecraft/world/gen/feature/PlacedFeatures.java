@@ -13,10 +13,6 @@ import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.decorator.CountPlacementModifier;
-import net.minecraft.world.gen.decorator.HeightRangePlacementModifier;
-import net.minecraft.world.gen.decorator.HeightmapPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
 import net.minecraft.world.gen.feature.EndPlacedFeatures;
 import net.minecraft.world.gen.feature.MiscPlacedFeatures;
 import net.minecraft.world.gen.feature.NetherPlacedFeatures;
@@ -27,6 +23,10 @@ import net.minecraft.world.gen.feature.TreePlacedFeatures;
 import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
+import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.HeightmapPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 
 public class PlacedFeatures {
     public static final PlacementModifier MOTION_BLOCKING_HEIGHTMAP = HeightmapPlacementModifier.of(Heightmap.Type.MOTION_BLOCKING);

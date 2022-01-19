@@ -26,12 +26,15 @@ import net.minecraft.client.font.WhiteRectangleGlyph;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class FontStorage
 implements AutoCloseable {
     private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
     private static final Glyph SPACE = () -> 4.0f;
+    private static final Glyph field_36363 = () -> 0.0f;
+    private static final int field_36364 = 8204;
     private static final Random RANDOM = new Random();
     private final TextureManager textureManager;
     private final Identifier id;
@@ -63,7 +66,10 @@ implements AutoCloseable {
         HashSet set = Sets.newHashSet();
         intSet.forEach(codePoint -> {
             for (Font font : fonts) {
-                Glyph glyph = codePoint == 32 ? SPACE : font.getGlyph(codePoint);
+                Glyph glyph = this.method_40038(codePoint);
+                if (glyph == null) {
+                    glyph = font.getGlyph(codePoint);
+                }
                 if (glyph == null) continue;
                 set.add(font);
                 if (glyph == BlankGlyph.INSTANCE) break;
@@ -94,8 +100,20 @@ implements AutoCloseable {
         this.glyphAtlases.clear();
     }
 
+    @Nullable
+    private Glyph method_40038(int i) {
+        return switch (i) {
+            case 32 -> SPACE;
+            case 8204 -> field_36363;
+            default -> null;
+        };
+    }
+
     public Glyph getGlyph(int codePoint2) {
-        return this.glyphCache.computeIfAbsent(codePoint2, codePoint -> codePoint == 32 ? SPACE : this.getRenderableGlyph(codePoint));
+        return this.glyphCache.computeIfAbsent(codePoint2, codePoint -> {
+            Glyph glyph = this.method_40038(codePoint);
+            return glyph == null ? this.getRenderableGlyph(codePoint) : glyph;
+        });
     }
 
     private RenderableGlyph getRenderableGlyph(int codePoint) {
@@ -108,7 +126,10 @@ implements AutoCloseable {
     }
 
     public GlyphRenderer getGlyphRenderer(int i2) {
-        return this.glyphRendererCache.computeIfAbsent(i2, i -> i == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph(i)));
+        return this.glyphRendererCache.computeIfAbsent(i2, i -> switch (i) {
+            case 32, 8204 -> EMPTY_GLYPH_RENDERER;
+            default -> this.getGlyphRenderer(this.getRenderableGlyph(i));
+        });
     }
 
     private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

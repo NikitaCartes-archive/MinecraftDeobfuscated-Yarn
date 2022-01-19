@@ -6,6 +6,7 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,13 +26,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.TaskQueue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ChunkTaskPrioritySystem
 implements ChunkHolder.LevelUpdateListener,
 AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Map<MessageListener<?>, LevelPrioritizedQueue<? extends Function<MessageListener<Unit>, ?>>> queues;
     private final Set<MessageListener<?>> idleActors;
     private final TaskExecutor<TaskQueue.PrioritizedTask> controlActor;
@@ -40,6 +40,10 @@ AutoCloseable {
         this.queues = actors.stream().collect(Collectors.toMap(Function.identity(), actor -> new LevelPrioritizedQueue(actor.getName() + "_queue", maxQueues)));
         this.idleActors = Sets.newHashSet(actors);
         this.controlActor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(4), executor, "sorter");
+    }
+
+    public boolean method_39994() {
+        return this.controlActor.method_40001() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::method_39993);
     }
 
     public static <T> Task<T> createTask(Function<MessageListener<Unit>, T> taskFunction, long pos, IntSupplier lastLevelUpdatedToProvider) {

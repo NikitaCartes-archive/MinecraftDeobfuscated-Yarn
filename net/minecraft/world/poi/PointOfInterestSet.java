@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -27,12 +28,10 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.util.Supplier;
+import org.slf4j.Logger;
 
 public class PointOfInterestSet {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Short2ObjectMap<PointOfInterest> pointsOfInterestByPos = new Short2ObjectOpenHashMap<PointOfInterest>();
     private final Map<PointOfInterestType, Set<PointOfInterest>> pointsOfInterestByType = Maps.newHashMap();
     private final Runnable updateListener;
@@ -58,7 +57,7 @@ public class PointOfInterestSet {
 
     public void add(BlockPos pos, PointOfInterestType type) {
         if (this.add(new PointOfInterest(pos, type, this.updateListener))) {
-            LOGGER.debug("Added POI of type {} @ {}", () -> type, () -> pos);
+            LOGGER.debug("Added POI of type {} @ {}", (Object)type, (Object)pos);
             this.updateListener.run();
         }
     }
@@ -86,10 +85,7 @@ public class PointOfInterestSet {
             return;
         }
         this.pointsOfInterestByType.get(pointOfInterest.getType()).remove(pointOfInterest);
-        Supplier[] supplierArray = new Supplier[2];
-        supplierArray[0] = pointOfInterest::getType;
-        supplierArray[1] = pointOfInterest::getPos;
-        LOGGER.debug("Removed POI of type {} @ {}", supplierArray);
+        LOGGER.debug("Removed POI of type {} @ {}", LogUtils.defer(pointOfInterest::getType), LogUtils.defer(pointOfInterest::getPos));
         this.updateListener.run();
     }
 

@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.gui.screen;
 
+import com.mojang.logging.LogUtils;
 import java.time.Duration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,17 +19,16 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsLongRunningMcoTaskScreen
 extends RealmsScreen
 implements Errable {
     private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Screen parent;
     private volatile Text title = LiteralText.EMPTY;
     @Nullable

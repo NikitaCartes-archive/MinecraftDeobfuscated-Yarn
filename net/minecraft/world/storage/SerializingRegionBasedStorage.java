@@ -6,6 +6,7 @@ package net.minecraft.world.storage;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -30,13 +31,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.storage.StorageIoWorker;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SerializingRegionBasedStorage<R>
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String SECTIONS_KEY = "Sections";
     private final StorageIoWorker worker;
     private final Long2ObjectMap<Optional<R>> loadedElements = new Long2ObjectOpenHashMap<Optional<R>>();
@@ -57,10 +57,14 @@ implements AutoCloseable {
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {
-        while (!this.unsavedElements.isEmpty() && shouldKeepTicking.getAsBoolean()) {
+        while (this.method_40020() && shouldKeepTicking.getAsBoolean()) {
             ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
             this.save(chunkPos);
         }
+    }
+
+    public boolean method_40020() {
+        return !this.unsavedElements.isEmpty();
     }
 
     @Nullable
@@ -187,7 +191,7 @@ implements AutoCloseable {
     }
 
     public void saveChunk(ChunkPos pos) {
-        if (!this.unsavedElements.isEmpty()) {
+        if (this.method_40020()) {
             for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 long l = SerializingRegionBasedStorage.chunkSectionPosAsLong(pos, i);
                 if (!this.unsavedElements.contains(l)) continue;

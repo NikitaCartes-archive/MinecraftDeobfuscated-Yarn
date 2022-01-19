@@ -14,6 +14,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import com.mojang.logging.LogUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,7 @@ import net.minecraft.server.command.LootCommand;
 import net.minecraft.server.command.MeCommand;
 import net.minecraft.server.command.MessageCommand;
 import net.minecraft.server.command.ParticleCommand;
+import net.minecraft.server.command.PlaceFeatureCommand;
 import net.minecraft.server.command.PlaySoundCommand;
 import net.minecraft.server.command.PublishCommand;
 import net.minecraft.server.command.RecipeCommand;
@@ -108,12 +110,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class CommandManager {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final int field_31837 = 0;
     public static final int field_31838 = 1;
     public static final int field_31839 = 2;
@@ -153,6 +154,7 @@ public class CommandManager {
         LootCommand.register(this.dispatcher);
         MessageCommand.register(this.dispatcher);
         ParticleCommand.register(this.dispatcher);
+        PlaceFeatureCommand.register(this.dispatcher);
         PlaySoundCommand.register(this.dispatcher);
         ReloadCommand.register(this.dispatcher);
         RecipeCommand.register(this.dispatcher);
@@ -202,7 +204,7 @@ public class CommandManager {
         if (environment.integrated) {
             PublishCommand.register(this.dispatcher);
         }
-        this.dispatcher.findAmbiguities((parent, child, sibling, inputs) -> LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", (Object)this.dispatcher.getPath(child), (Object)this.dispatcher.getPath(sibling), (Object)inputs));
+        this.dispatcher.findAmbiguities((parent, child, sibling, inputs) -> LOGGER.warn("Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(child), this.dispatcher.getPath(sibling), inputs));
         this.dispatcher.setConsumer((context, success, result) -> ((ServerCommandSource)context.getSource()).onCommandComplete(context, success, result));
     }
 

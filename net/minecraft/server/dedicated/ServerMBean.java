@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.dedicated;
 
+import com.mojang.logging.LogUtils;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.List;
@@ -24,9 +25,8 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * A dynamic management object for a Minecraft Server.
@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class ServerMBean
 implements DynamicMBean {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final MinecraftServer server;
     private final MBeanInfo mBeanInfo;
     private final Map<String, Entry> entries = Stream.of(new Entry("tickTimes", this::getTickTimes, "Historical tick times (ms)", long[].class), new Entry("averageTickTime", this::getAverageTickTime, "Current average tick time (ms)", Long.TYPE)).collect(Collectors.toMap(entry -> entry.name, Function.identity()));
@@ -58,7 +58,7 @@ implements DynamicMBean {
         try {
             ManagementFactory.getPlatformMBeanServer().registerMBean(new ServerMBean(server), new ObjectName("net.minecraft.server:type=Server"));
         } catch (InstanceAlreadyExistsException | MBeanRegistrationException | MalformedObjectNameException | NotCompliantMBeanException jMException) {
-            LOGGER.warn("Failed to initialise server as JMX bean", (Throwable)jMException);
+            LOGGER.warn("Failed to initialise server as JMX bean", jMException);
         }
     }
 

@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.net.Authenticator;
@@ -43,13 +44,12 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Main {
-    static final Logger LOGGER;
+    static final Logger LOGGER = LogUtils.getLogger();
 
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
@@ -176,7 +176,7 @@ public class Main {
             minecraftClient = new MinecraftClient(runArgs);
             RenderSystem.finishInitialization();
         } catch (GlException glException) {
-            LOGGER.warn("Failed to create window: ", (Throwable)glException);
+            LOGGER.warn("Failed to create window: ", glException);
             return;
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Initializing game");
@@ -218,7 +218,7 @@ public class Main {
                 thread2.join();
             }
         } catch (InterruptedException interruptedException) {
-            LOGGER.error("Exception during client thread shutdown", (Throwable)interruptedException);
+            LOGGER.error("Exception during client thread shutdown", interruptedException);
         } finally {
             minecraftClient.stop();
         }
@@ -251,9 +251,7 @@ public class Main {
     }
 
     static {
-        Util.method_39982();
         System.setProperty("java.awt.headless", "true");
-        LOGGER = LogManager.getLogger();
     }
 }
 

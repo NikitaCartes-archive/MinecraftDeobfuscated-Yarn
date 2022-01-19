@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.datafixers.kinds.Applicative;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,13 +14,12 @@ import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.heightprovider.HeightProviderType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class VeryBiasedToBottomHeightProvider
 extends HeightProvider {
     public static final Codec<VeryBiasedToBottomHeightProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("min_inclusive")).forGetter(provider -> provider.minOffset), ((MapCodec)YOffset.OFFSET_CODEC.fieldOf("max_inclusive")).forGetter(provider -> provider.maxOffset), Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("inner", 1).forGetter(provider -> provider.inner)).apply((Applicative<VeryBiasedToBottomHeightProvider, ?>)instance, VeryBiasedToBottomHeightProvider::new));
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final YOffset minOffset;
     private final YOffset maxOffset;
     private final int inner;

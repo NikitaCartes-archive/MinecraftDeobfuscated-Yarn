@@ -6,6 +6,7 @@ package net.minecraft.util.profiler;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongMaps;
 import java.io.BufferedWriter;
@@ -29,12 +30,11 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerTiming;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ProfileResultImpl
 implements ProfileResult {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final ProfileLocationInfo EMPTY_INFO = new ProfileLocationInfo(){
 
         @Override

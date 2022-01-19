@@ -3,6 +3,7 @@
  */
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -13,15 +14,11 @@ import net.minecraft.network.NetworkSide;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
+import org.slf4j.Logger;
 
 public class DecoderHandler
 extends ByteToMessageDecoder {
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.NETWORK_PACKETS_MARKER);
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final NetworkSide side;
 
     public DecoderHandler(NetworkSide side) {
@@ -47,7 +44,7 @@ extends ByteToMessageDecoder {
         }
         objects.add(packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(MARKER, " IN: [{}:{}] {}", (Object)ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), (Object)j, (Object)packet.getClass().getName());
+            LOGGER.debug(ClientConnection.field_36379, " IN: [{}:{}] {}", new Object[]{ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()});
         }
     }
 }

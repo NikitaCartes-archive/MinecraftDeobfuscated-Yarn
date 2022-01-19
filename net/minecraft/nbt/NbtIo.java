@@ -3,7 +3,6 @@
  */
 package net.minecraft.nbt;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -25,6 +24,7 @@ import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.NbtTypes;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.util.FixedBufferInputStream;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -38,10 +38,26 @@ public class NbtIo {
         }
     }
 
+    private static DataInputStream method_40059(InputStream inputStream) throws IOException {
+        return new DataInputStream(new FixedBufferInputStream(new GZIPInputStream(inputStream)));
+    }
+
     public static NbtCompound readCompressed(InputStream stream) throws IOException {
-        try (DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));){
+        try (DataInputStream dataInputStream = NbtIo.method_40059(stream);){
             NbtCompound nbtCompound = NbtIo.read((DataInput)dataInputStream, NbtTagSizeTracker.EMPTY);
             return nbtCompound;
+        }
+    }
+
+    public static void method_40057(File file, NbtScanner nbtScanner) throws IOException {
+        try (FileInputStream inputStream = new FileInputStream(file);){
+            NbtIo.method_40058(inputStream, nbtScanner);
+        }
+    }
+
+    public static void method_40058(InputStream inputStream, NbtScanner nbtScanner) throws IOException {
+        try (DataInputStream dataInputStream = NbtIo.method_40059(inputStream);){
+            NbtIo.read((DataInput)dataInputStream, nbtScanner);
         }
     }
 

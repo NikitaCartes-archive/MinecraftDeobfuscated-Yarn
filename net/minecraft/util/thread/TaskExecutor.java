@@ -4,6 +4,7 @@
 package net.minecraft.util.thread;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2BooleanFunction;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,15 +18,14 @@ import net.minecraft.util.thread.ExecutorSampling;
 import net.minecraft.util.thread.MessageListener;
 import net.minecraft.util.thread.SampleableExecutor;
 import net.minecraft.util.thread.TaskQueue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TaskExecutor<T>
 implements SampleableExecutor,
 MessageListener<T>,
 AutoCloseable,
 Runnable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29940 = 1;
     private static final int field_29941 = 2;
     private final AtomicInteger stateFlags = new AtomicInteger(0);
@@ -122,7 +122,7 @@ Runnable {
                 try {
                     this.executor.execute(this);
                 } catch (RejectedExecutionException rejectedExecutionException2) {
-                    LOGGER.error("Cound not schedule mailbox", (Throwable)rejectedExecutionException2);
+                    LOGGER.error("Cound not schedule mailbox", rejectedExecutionException2);
                 }
             }
         }
@@ -141,6 +141,10 @@ Runnable {
 
     public int getQueueSize() {
         return this.queue.getSize();
+    }
+
+    public boolean method_40001() {
+        return this.isUnpaused() && !this.queue.isEmpty();
     }
 
     public String toString() {

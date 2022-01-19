@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms;
 
+import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -37,9 +38,8 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.ResetWorldInfo;
 import net.minecraft.client.resource.language.I18n;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @net.fabricmc.api.Environment(value=EnvType.CLIENT)
 public class RealmsClient {
@@ -394,7 +394,7 @@ public class RealmsClient {
                 }
                 RealmsError realmsError = RealmsError.create(string);
                 if (realmsError != null) {
-                    LOGGER.error("Realms http code: {} -  error code: {} -  message: {} - raw body: {}", (Object)i, (Object)realmsError.getErrorCode(), (Object)realmsError.getErrorMessage(), (Object)string);
+                    LOGGER.error("Realms http code: {} -  error code: {} -  message: {} - raw body: {}", i, realmsError.getErrorCode(), realmsError.getErrorMessage(), string);
                     throw new RealmsServiceException(i, string, realmsError);
                 }
                 LOGGER.error("Realms http code: {} - raw body (message failed to parse): {}", (Object)i, (Object)string);
@@ -415,7 +415,7 @@ public class RealmsClient {
     }
 
     static {
-        LOGGER = LogManager.getLogger();
+        LOGGER = LogUtils.getLogger();
         JSON = new CheckedGson();
     }
 

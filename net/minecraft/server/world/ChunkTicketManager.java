@@ -5,8 +5,10 @@ package net.minecraft.server.world;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
@@ -42,12 +44,11 @@ import net.minecraft.world.ChunkPosDistanceLevelPropagator;
 import net.minecraft.world.SimulationDistanceLevelPropagator;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public abstract class ChunkTicketManager {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29764 = 2;
     static final int NEARBY_PLAYER_TICKET_LEVEL = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL) - 2;
     private static final int field_29765 = 4;
@@ -279,13 +280,39 @@ public abstract class ChunkTicketManager {
                 }
             }
         } catch (IOException iOException) {
-            LOGGER.error(iOException);
+            LOGGER.error("Failed to dump tickets to {}", (Object)path, (Object)iOException);
         }
     }
 
     @VisibleForTesting
     SimulationDistanceLevelPropagator getSimulationDistanceTracker() {
         return this.simulationDistanceTracker;
+    }
+
+    public void method_39995() {
+        ImmutableSet<ChunkTicketType<ChunkPos>> immutableSet = ImmutableSet.of(ChunkTicketType.UNKNOWN, ChunkTicketType.POST_TELEPORT, ChunkTicketType.LIGHT);
+        ObjectIterator objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
+        while (objectIterator.hasNext()) {
+            Long2ObjectMap.Entry entry = (Long2ObjectMap.Entry)objectIterator.next();
+            Iterator iterator = ((SortedArraySet)entry.getValue()).iterator();
+            boolean bl = false;
+            while (iterator.hasNext()) {
+                ChunkTicket chunkTicket = (ChunkTicket)iterator.next();
+                if (immutableSet.contains(chunkTicket.getType())) continue;
+                iterator.remove();
+                bl = true;
+                this.simulationDistanceTracker.remove(entry.getLongKey(), chunkTicket);
+            }
+            if (bl) {
+                this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), ChunkTicketManager.getLevel((SortedArraySet)entry.getValue()), false);
+            }
+            if (!((SortedArraySet)entry.getValue()).isEmpty()) continue;
+            objectIterator.remove();
+        }
+    }
+
+    public boolean method_39996() {
+        return !this.ticketsByPosition.isEmpty();
     }
 
     class TicketDistanceLevelPropagator
@@ -381,7 +408,7 @@ public abstract class ChunkTicketManager {
                     fileOutputStream.write((chunkPos.x + "\t" + chunkPos.z + "\t" + string + "\n").getBytes(StandardCharsets.UTF_8));
                 }
             } catch (IOException iOException) {
-                LOGGER.error(iOException);
+                LOGGER.error("Failed to dump chunks to {}", (Object)path, (Object)iOException);
             }
         }
     }

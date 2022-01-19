@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.mojang.logging.LogUtils;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,12 +31,11 @@ import net.minecraft.data.client.model.SimpleModelSupplier;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class BlockStateDefinitionProvider
 implements DataProvider {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
     private final DataGenerator generator;
 

@@ -6,6 +6,7 @@ package net.minecraft.loot.function;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -24,13 +25,12 @@ import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class LootFunctionManager
 extends JsonDataLoader {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = LootGsons.getFunctionGsonBuilder().create();
     private final LootConditionManager lootConditionManager;
     private final LootManager lootManager;

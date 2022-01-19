@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -21,12 +22,11 @@ import net.minecraft.data.server.EndTabAdvancementGenerator;
 import net.minecraft.data.server.HusbandryTabAdvancementGenerator;
 import net.minecraft.data.server.NetherTabAdvancementGenerator;
 import net.minecraft.data.server.StoryTabAdvancementGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AdvancementsProvider
 implements DataProvider {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private final DataGenerator root;
     private final List<Consumer<Consumer<Advancement>>> tabGenerators = ImmutableList.of(new EndTabAdvancementGenerator(), new HusbandryTabAdvancementGenerator(), new AdventureTabAdvancementGenerator(), new NetherTabAdvancementGenerator(), new StoryTabAdvancementGenerator());

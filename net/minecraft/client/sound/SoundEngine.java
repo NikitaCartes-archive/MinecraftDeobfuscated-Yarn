@@ -4,6 +4,7 @@
 package net.minecraft.client.sound;
 
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +18,6 @@ import net.minecraft.client.sound.AlUtil;
 import net.minecraft.client.sound.SoundListener;
 import net.minecraft.client.sound.Source;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
@@ -29,10 +28,11 @@ import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALUtil;
 import org.lwjgl.system.MemoryStack;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundEngine {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_34945 = 0;
     private static final int field_31897 = 30;
     private long devicePointer;

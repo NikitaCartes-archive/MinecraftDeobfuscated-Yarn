@@ -6,6 +6,7 @@ package net.minecraft.server.command;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,11 +16,10 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.world.SaveProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ReloadCommand {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void tryReloadDataPacks(Collection<String> dataPacks, ServerCommandSource source) {
         source.getServer().reloadResources(dataPacks).exceptionally(throwable -> {

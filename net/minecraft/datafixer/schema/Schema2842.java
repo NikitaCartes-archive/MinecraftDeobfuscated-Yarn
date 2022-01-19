@@ -20,7 +20,7 @@ extends IdentifierNormalizingSchema {
     @Override
     public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
         super.registerTypes(schema, map, map2);
-        schema.registerType(false, TypeReferences.CHUNK, () -> DSL.optionalFields("entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema)), "block_entities", DSL.list(TypeReferences.BLOCK_ENTITY.in(schema)), "block_ticks", DSL.list(DSL.fields("i", TypeReferences.BLOCK_NAME.in(schema))), "sections", DSL.list(DSL.optionalFields("biomes", DSL.optionalFields("palette", DSL.list(TypeReferences.BIOME.in(schema))), "block_states", DSL.optionalFields("palette", DSL.list(TypeReferences.BLOCK_STATE.in(schema))))), "structures", DSL.optionalFields("starts", DSL.compoundList(TypeReferences.STRUCTURE_FEATURE.in(schema)))));
+        schema.registerType(false, TypeReferences.CHUNK, () -> DSL.optionalFields("entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema)), "block_entities", DSL.list(DSL.or(TypeReferences.BLOCK_ENTITY.in(schema), DSL.remainder())), "block_ticks", DSL.list(DSL.fields("i", TypeReferences.BLOCK_NAME.in(schema))), "sections", DSL.list(DSL.optionalFields("biomes", DSL.optionalFields("palette", DSL.list(TypeReferences.BIOME.in(schema))), "block_states", DSL.optionalFields("palette", DSL.list(TypeReferences.BLOCK_STATE.in(schema))))), "structures", DSL.optionalFields("starts", DSL.compoundList(TypeReferences.STRUCTURE_FEATURE.in(schema)))));
     }
 }
 

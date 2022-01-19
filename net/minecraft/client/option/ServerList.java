@@ -4,6 +4,7 @@
 package net.minecraft.client.option;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -14,12 +15,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class ServerList {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final MinecraftClient client;
     private final List<ServerInfo> servers = Lists.newArrayList();
 
@@ -40,7 +40,7 @@ public class ServerList {
                 this.servers.add(ServerInfo.fromNbt(nbtList.getCompound(i)));
             }
         } catch (Exception exception) {
-            LOGGER.error("Couldn't load server list", (Throwable)exception);
+            LOGGER.error("Couldn't load server list", exception);
         }
     }
 
@@ -58,7 +58,7 @@ public class ServerList {
             File file3 = new File(this.client.runDirectory, "servers.dat");
             Util.backupAndReplace(file3, file, file2);
         } catch (Exception exception) {
-            LOGGER.error("Couldn't save server list", (Throwable)exception);
+            LOGGER.error("Couldn't save server list", exception);
         }
     }
 

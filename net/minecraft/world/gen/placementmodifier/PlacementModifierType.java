@@ -1,26 +1,26 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
-import net.minecraft.world.gen.decorator.BlockFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.CarvingMaskPlacementModifier;
-import net.minecraft.world.gen.decorator.CountMultilayerPlacementModifier;
-import net.minecraft.world.gen.decorator.CountPlacementModifier;
-import net.minecraft.world.gen.decorator.EnvironmentScanPlacementModifier;
-import net.minecraft.world.gen.decorator.HeightRangePlacementModifier;
-import net.minecraft.world.gen.decorator.HeightmapPlacementModifier;
-import net.minecraft.world.gen.decorator.NoiseBasedCountPlacementModifier;
-import net.minecraft.world.gen.decorator.NoiseThresholdCountPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.RandomOffsetPlacementModifier;
-import net.minecraft.world.gen.decorator.RarityFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.SquarePlacementModifier;
-import net.minecraft.world.gen.decorator.SurfaceThresholdFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.SurfaceWaterDepthFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CarvingMaskPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.HeightmapPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.NoiseBasedCountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.NoiseThresholdCountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RandomOffsetPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RarityFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SurfaceThresholdFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SurfaceWaterDepthFilterPlacementModifier;
 
 public interface PlacementModifierType<P extends PlacementModifier> {
     public static final PlacementModifierType<BlockFilterPlacementModifier> BLOCK_PREDICATE_FILTER = PlacementModifierType.register("block_predicate_filter", BlockFilterPlacementModifier.MODIFIER_CODEC);

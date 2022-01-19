@@ -4,16 +4,16 @@
 package net.minecraft.entity.effect;
 
 import com.google.common.collect.ComparisonChain;
+import com.mojang.logging.LogUtils;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.nbt.NbtCompound;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class StatusEffectInstance
 implements Comparable<StatusEffectInstance> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final StatusEffect type;
     private int duration;
     private int amplifier;

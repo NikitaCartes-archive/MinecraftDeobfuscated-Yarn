@@ -31,5 +31,9 @@ public interface PacketListener {
      * @see ClientConnection#getPacketListener()
      */
     public ClientConnection getConnection();
+
+    default public boolean method_40065() {
+        return true;
+    }
 }
 

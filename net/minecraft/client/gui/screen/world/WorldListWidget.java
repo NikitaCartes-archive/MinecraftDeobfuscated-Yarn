@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen.world;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,14 +62,13 @@ import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldListWidget
 extends AlwaysSelectedEntryListWidget<Entry> {
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
     static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
@@ -98,7 +98,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             try {
                 this.levels = levelStorage.getLevelList();
             } catch (LevelStorageException levelStorageException) {
-                LOGGER.error("Couldn't load level list", (Throwable)levelStorageException);
+                LOGGER.error("Couldn't load level list", levelStorageException);
                 this.client.setScreen(new FatalErrorScreen(new TranslatableText("selectWorld.unable_to_load"), new LiteralText(levelStorageException.getMessage())));
                 return;
             }
@@ -296,7 +296,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         try {
                             this.start();
                         } catch (Exception exception) {
-                            LOGGER.error("Failure to open 'future world'", (Throwable)exception);
+                            LOGGER.error("Failure to open 'future world'", exception);
                             this.client.setScreen(new NoticeScreen(() -> this.client.setScreen(this.screen), new TranslatableText("selectWorld.futureworld.error.title"), new TranslatableText("selectWorld.futureworld.error.text")));
                         }
                     } else {
@@ -367,7 +367,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     this.client.setScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
                 }
             } catch (Exception exception) {
-                LOGGER.error("Unable to recreate world", (Throwable)exception);
+                LOGGER.error("Unable to recreate world", exception);
                 this.client.setScreen(new NoticeScreen(() -> this.client.setScreen(this.screen), new TranslatableText("selectWorld.recreate.error.title"), new TranslatableText("selectWorld.recreate.error.text")));
             }
         }

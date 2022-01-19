@@ -49,7 +49,6 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -64,7 +63,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class BeehiveBlock
 extends BlockWithEntity {
-    private static final Direction[] GENERATE_DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.SOUTH};
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     public static final IntProperty HONEY_LEVEL = Properties.HONEY_LEVEL;
     public static final int FULL_HONEY_LEVEL = 5;
@@ -291,10 +289,6 @@ extends BlockWithEntity {
             beehiveBlockEntity.angerBees(null, state, BeehiveBlockEntity.BeeState.EMERGENCY);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
-    }
-
-    public static Direction getRandomGenerationDirection(Random random) {
-        return Util.getRandom(GENERATE_DIRECTIONS, random);
     }
 }
 

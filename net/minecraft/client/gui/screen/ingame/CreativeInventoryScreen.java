@@ -292,7 +292,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         this.ignoreTypedCharacter = false;
         if (selectedTab != ItemGroup.SEARCH.getIndex()) {
-            if (this.client.options.keyChat.matchesKey(keyCode, scanCode)) {
+            if (this.client.options.chatKey.matchesKey(keyCode, scanCode)) {
                 this.ignoreTypedCharacter = true;
                 this.setSelectedTab(ItemGroup.SEARCH);
                 return true;
@@ -422,8 +422,8 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                         if (k == j) {
                             ItemStack itemStack = new ItemStack(Items.PAPER);
                             itemStack.getOrCreateSubNbt(CUSTOM_CREATIVE_LOCK_KEY);
-                            Text text = this.client.options.keysHotbar[j].getBoundKeyLocalizedText();
-                            Text text2 = this.client.options.keySaveToolbarActivator.getBoundKeyLocalizedText();
+                            Text text = this.client.options.hotbarKeys[j].getBoundKeyLocalizedText();
+                            Text text2 = this.client.options.saveToolbarActivatorKey.getBoundKeyLocalizedText();
                             itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
                             ((CreativeScreenHandler)this.handler).itemList.add(itemStack);
                             continue;
@@ -690,8 +690,8 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             for (int i = 0; i < PlayerInventory.getHotbarSize(); ++i) {
                 hotbarStorageEntry.set(i, clientPlayerEntity.getInventory().getStack(i).copy());
             }
-            Text text = client.options.keysHotbar[index].getBoundKeyLocalizedText();
-            Text text2 = client.options.keyLoadToolbarActivator.getBoundKeyLocalizedText();
+            Text text = client.options.hotbarKeys[index].getBoundKeyLocalizedText();
+            Text text2 = client.options.loadToolbarActivatorKey.getBoundKeyLocalizedText();
             client.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", text2, text), false);
             hotbarStorage.save();
         }

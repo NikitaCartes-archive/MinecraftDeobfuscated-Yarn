@@ -38,7 +38,7 @@ public class LevelPrioritizedQueue<T> {
         Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap = this.levelToPosToElements.get(fromLevel);
         List<Optional<T>> list = long2ObjectLinkedOpenHashMap.remove(pos.toLong());
         if (fromLevel == this.firstNonEmptyLevel) {
-            while (this.firstNonEmptyLevel < LEVEL_COUNT && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
+            while (this.method_39993() && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
                 ++this.firstNonEmptyLevel;
             }
         }
@@ -65,7 +65,7 @@ public class LevelPrioritizedQueue<T> {
             if (!list.isEmpty()) continue;
             long2ObjectLinkedOpenHashMap.remove(pos);
         }
-        while (this.firstNonEmptyLevel < LEVEL_COUNT && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
+        while (this.method_39993() && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
             ++this.firstNonEmptyLevel;
         }
         this.blockingChunks.remove(pos);
@@ -80,17 +80,21 @@ public class LevelPrioritizedQueue<T> {
         if (this.blockingChunks.size() >= this.maxBlocking) {
             return null;
         }
-        if (this.firstNonEmptyLevel < LEVEL_COUNT) {
+        if (this.method_39993()) {
             int i = this.firstNonEmptyLevel;
             Long2ObjectLinkedOpenHashMap<List<Optional<T>>> long2ObjectLinkedOpenHashMap = this.levelToPosToElements.get(i);
             long l = long2ObjectLinkedOpenHashMap.firstLongKey();
             List<Optional<T>> list = long2ObjectLinkedOpenHashMap.removeFirst();
-            while (this.firstNonEmptyLevel < LEVEL_COUNT && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
+            while (this.method_39993() && this.levelToPosToElements.get(this.firstNonEmptyLevel).isEmpty()) {
                 ++this.firstNonEmptyLevel;
             }
             return list.stream().map(optional -> optional.map(Either::left).orElseGet(() -> Either.right(this.createBlockingAdder(l))));
         }
         return null;
+    }
+
+    public boolean method_39993() {
+        return this.firstNonEmptyLevel < LEVEL_COUNT;
     }
 
     public String toString() {

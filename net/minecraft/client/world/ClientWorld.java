@@ -162,7 +162,7 @@ extends World {
         this.getWorldBorder().tick();
         this.tickTime();
         this.getProfiler().push("blocks");
-        this.chunkManager.tick(shouldKeepTicking);
+        this.chunkManager.tick(shouldKeepTicking, true);
         this.getProfiler().pop();
     }
 

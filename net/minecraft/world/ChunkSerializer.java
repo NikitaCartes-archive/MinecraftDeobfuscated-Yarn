@@ -4,6 +4,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -61,13 +62,12 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.SimpleTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class ChunkSerializer {
     private static final Codec<PalettedContainer<BlockState>> CODEC = PalettedContainer.createCodec(Block.STATE_IDS, BlockState.CODEC, PalettedContainer.PaletteProvider.BLOCK_STATE, Blocks.AIR.getDefaultState());
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String UPGRADE_DATA_KEY = "UpgradeData";
     private static final String BLOCK_TICKS = "block_ticks";
     private static final String FLUID_TICKS = "fluid_ticks";
@@ -76,7 +76,7 @@ public class ChunkSerializer {
         Chunk chunk;
         ChunkPos chunkPos2 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos"));
         if (!Objects.equals(chunkPos, chunkPos2)) {
-            LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", (Object)chunkPos, (Object)chunkPos, (Object)chunkPos2);
+            LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
         }
         UpgradeData upgradeData = nbt.contains(UPGRADE_DATA_KEY, 10) ? new UpgradeData(nbt.getCompound(UPGRADE_DATA_KEY), world) : UpgradeData.NO_UPGRADE_DATA;
         boolean bl = nbt.getBoolean("isLightOn");
@@ -381,7 +381,7 @@ public class ChunkSerializer {
             map.put(structureFeature, new LongOpenHashSet(Arrays.stream(nbtCompound.getLongArray(string)).filter(packedPos -> {
                 ChunkPos chunkPos2 = new ChunkPos(packedPos);
                 if (chunkPos2.getChebyshevDistance(pos) > 8) {
-                    LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", (Object)string2, (Object)chunkPos2, (Object)pos);
+                    LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string2, chunkPos2, pos);
                     return false;
                 }
                 return true;

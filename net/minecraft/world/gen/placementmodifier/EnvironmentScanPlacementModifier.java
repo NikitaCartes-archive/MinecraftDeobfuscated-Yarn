@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -13,9 +13,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class EnvironmentScanPlacementModifier
 extends PlacementModifier {
@@ -41,7 +41,7 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         if (!this.allowedSearchPredicate.test(structureWorldAccess, mutable)) {

@@ -37,7 +37,7 @@ extends GameOptionsScreen {
         this.controlsList = new ControlsListWidget(this, this.client);
         this.addSelectableChild(this.controlsList);
         this.resetAllButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, new TranslatableText("controls.resetAll"), button -> {
-            for (KeyBinding keyBinding : this.gameOptions.keysAll) {
+            for (KeyBinding keyBinding : this.gameOptions.allKeys) {
                 keyBinding.setBoundKey(keyBinding.getDefaultKey());
             }
             KeyBinding.updateKeysByCode();
@@ -78,7 +78,7 @@ extends GameOptionsScreen {
         this.controlsList.render(matrices, mouseX, mouseY, delta);
         KeybindsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         boolean bl = false;
-        for (KeyBinding keyBinding : this.gameOptions.keysAll) {
+        for (KeyBinding keyBinding : this.gameOptions.allKeys) {
             if (keyBinding.isDefault()) continue;
             bl = true;
             break;

@@ -5,7 +5,7 @@ package net.minecraft.client.realms.exception;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsDefaultUncaughtExceptionHandler
@@ -18,8 +18,7 @@ implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        this.logger.error("Caught previously unhandled exception :");
-        this.logger.error(e);
+        this.logger.error("Caught previously unhandled exception", e);
     }
 }
 

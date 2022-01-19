@@ -4,6 +4,7 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,15 +27,14 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.level.storage.LevelSummary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsSelectFileToUploadScreen
 extends RealmsScreen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     static final Text WORLD_LANG = new TranslatableText("selectWorld.world");
     static final Text HARDCORE_TEXT = new TranslatableText("mco.upload.hardcore").formatted(Formatting.DARK_RED);
     static final Text CHEATS_TEXT = new TranslatableText("selectWorld.cheats");
@@ -78,7 +78,7 @@ extends RealmsScreen {
         try {
             this.loadLevelList();
         } catch (Exception exception) {
-            LOGGER.error("Couldn't load level list", (Throwable)exception);
+            LOGGER.error("Couldn't load level list", exception);
             this.client.setScreen(new RealmsGenericErrorScreen(new LiteralText("Unable to load worlds"), Text.of(exception.getMessage()), this.parent));
             return;
         }

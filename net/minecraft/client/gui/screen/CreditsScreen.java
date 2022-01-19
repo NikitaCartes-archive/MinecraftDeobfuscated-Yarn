@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
@@ -37,14 +38,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class CreditsScreen
 extends Screen {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
@@ -150,7 +150,7 @@ extends Screen {
             reader.read(inputStreamReader);
         } catch (Exception exception) {
             try {
-                LOGGER.error("Couldn't load credits", (Throwable)exception);
+                LOGGER.error("Couldn't load credits", exception);
             } catch (Throwable throwable) {
                 IOUtils.closeQuietly(resource);
                 throw throwable;

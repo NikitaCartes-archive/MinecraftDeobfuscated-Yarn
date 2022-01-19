@@ -4,6 +4,7 @@
 package net.minecraft.world.storage;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.logging.LogUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -24,13 +25,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.ChunkStreamVersion;
 import net.minecraft.world.storage.SectorMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class RegionFile
 implements AutoCloseable {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_31418 = 4096;
     @VisibleForTesting
     protected static final int field_31417 = 1024;
@@ -79,7 +79,7 @@ implements AutoCloseable {
                 int m = RegionFile.getOffset(k);
                 int n = RegionFile.getSize(k);
                 if (m < 2) {
-                    LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", (Object)file, (Object)j, (Object)m);
+                    LOGGER.warn("Region file {} has invalid sector at index: {}; sector {} overlaps with header", file, j, m);
                     this.sectorData.put(j, 0);
                     continue;
                 }
@@ -89,7 +89,7 @@ implements AutoCloseable {
                     continue;
                 }
                 if ((long)m * 4096L > l) {
-                    LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", (Object)file, (Object)j, (Object)m);
+                    LOGGER.warn("Region file {} has an invalid sector at index: {}; sector {} is out of bounds", file, j, m);
                     this.sectorData.put(j, 0);
                     continue;
                 }
@@ -116,7 +116,7 @@ implements AutoCloseable {
         this.channel.read(byteBuffer, j * 4096);
         byteBuffer.flip();
         if (byteBuffer.remaining() < 5) {
-            LOGGER.error("Chunk {} header is truncated: expected {} but read {}", (Object)pos, (Object)l, (Object)byteBuffer.remaining());
+            LOGGER.error("Chunk {} header is truncated: expected {} but read {}", pos, l, byteBuffer.remaining());
             return null;
         }
         int m = byteBuffer.getInt();
@@ -133,7 +133,7 @@ implements AutoCloseable {
             return this.method_22408(pos, RegionFile.getChunkStreamVersionId(b));
         }
         if (n > byteBuffer.remaining()) {
-            LOGGER.error("Chunk {} stream is truncated: expected {} but read {}", (Object)pos, (Object)n, (Object)byteBuffer.remaining());
+            LOGGER.error("Chunk {} stream is truncated: expected {} but read {}", pos, n, byteBuffer.remaining());
             return null;
         }
         if (n < 0) {
@@ -268,7 +268,7 @@ implements AutoCloseable {
         int n = RegionFile.getSectorCount(m);
         if (n >= 256) {
             Path path = this.getExternalChunkPath(pos);
-            LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", (Object)pos, (Object)m, (Object)path);
+            LOGGER.warn("Saving oversized chunk {} ({} bytes} to external file {}", pos, m, path);
             n = 1;
             o = this.sectors.allocate(n);
             outputAction = this.writeSafely(path, byteBuffer);

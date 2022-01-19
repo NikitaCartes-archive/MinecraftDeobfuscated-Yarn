@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -32,8 +33,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * The function loader holds the functions and function tags for a {@link
@@ -53,7 +53,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class FunctionLoader
 implements ResourceReloader {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String EXTENSION = ".mcfunction";
     private static final int PATH_PREFIX_LENGTH = "functions/".length();
     private static final int EXTENSION_LENGTH = ".mcfunction".length();

@@ -11,9 +11,9 @@ import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -70,28 +70,21 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.lookup.StrSubstitutor;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class Util {
-    static final Logger LOGGER;
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_PARALLELISM = 255;
     private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
-    private static final AtomicInteger NEXT_WORKER_ID;
-    private static final ExecutorService BOOTSTRAP_EXECUTOR;
-    private static final ExecutorService MAIN_WORKER_EXECUTOR;
-    private static final ExecutorService IO_WORKER_EXECUTOR;
-    public static LongSupplier nanoTimeSupplier;
-    public static final UUID NIL_UUID;
-    public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER;
-    private static Consumer<String> missingBreakpointHandler;
-
-    public static void method_39982() {
-    }
+    private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
+    private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
+    private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
+    private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
+    public static LongSupplier nanoTimeSupplier = System::nanoTime;
+    public static final UUID NIL_UUID = new UUID(0L, 0L);
+    public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
+    private static Consumer<String> missingBreakpointHandler = string -> {};
 
     public static <K, V> Collector<Map.Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
@@ -149,9 +142,9 @@ public class Util {
                 if (i >= 1 && i <= 255) {
                     return i;
                 }
-                LOGGER.error("Wrong {} property value '{}'. Should be an integer value between 1 and {}.", (Object)MAX_BG_THREADS_PROPERTY, (Object)string, (Object)255);
+                LOGGER.error("Wrong {} property value '{}'. Should be an integer value between 1 and {}.", MAX_BG_THREADS_PROPERTY, string, 255);
             } catch (NumberFormatException numberFormatException) {
-                LOGGER.error("Could not parse {} property value '{}'. Should be an integer value between 1 and {}.", (Object)MAX_BG_THREADS_PROPERTY, (Object)string, (Object)255);
+                LOGGER.error("Could not parse {} property value '{}'. Should be an integer value between 1 and {}.", MAX_BG_THREADS_PROPERTY, string, 255);
             }
         }
         return 255;
@@ -493,7 +486,7 @@ public class Util {
                     Files.move(src, dest, new CopyOption[0]);
                     return true;
                 } catch (IOException iOException) {
-                    LOGGER.error("Failed to rename", (Throwable)iOException);
+                    LOGGER.error("Failed to rename", iOException);
                     return false;
                 }
             }
@@ -513,7 +506,7 @@ public class Util {
                     Files.deleteIfExists(path);
                     return true;
                 } catch (IOException iOException) {
-                    LOGGER.warn("Failed to delete", (Throwable)iOException);
+                    LOGGER.warn("Failed to delete", iOException);
                     return false;
                 }
             }
@@ -566,7 +559,7 @@ public class Util {
             if (Util.attemptTasks(tasks)) {
                 return true;
             }
-            LOGGER.error("Failed to {}, retrying {}/{}", (Object)taskName, (Object)i, (Object)retries);
+            LOGGER.error("Failed to {}, retrying {}/{}", taskName, i, retries);
         }
         LOGGER.error("Failed to {}, aborting, progress might be lost", (Object)taskName);
         return false;
@@ -701,29 +694,6 @@ public class Util {
                 return "memoize/2[function=" + biFunction + ", size=" + this.cache.size() + "]";
             }
         };
-    }
-
-    static {
-        System.setProperty("log4j2.formatMsgNoLookups", "true");
-        LoggerContext loggerContext = LoggerContext.getContext(false);
-        PropertyChangeListener propertyChangeListener = propertyChangeEvent -> {
-            StrSubstitutor strSubstitutor;
-            Configuration configuration = loggerContext.getConfiguration();
-            if (configuration != null && (strSubstitutor = configuration.getStrSubstitutor()) != null) {
-                strSubstitutor.setVariableResolver(null);
-            }
-        };
-        propertyChangeListener.propertyChange(null);
-        loggerContext.addPropertyChangeListener(propertyChangeListener);
-        LOGGER = LogManager.getLogger();
-        NEXT_WORKER_ID = new AtomicInteger(1);
-        BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
-        MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
-        IO_WORKER_EXECUTOR = Util.createIoWorker();
-        nanoTimeSupplier = System::nanoTime;
-        NIL_UUID = new UUID(0L, 0L);
-        JAR_FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
-        missingBreakpointHandler = string -> {};
     }
 
     /*

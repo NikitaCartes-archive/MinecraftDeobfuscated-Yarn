@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SittingFlamingPhase
 extends AbstractSittingPhase {
-    private static final int field_30433 = 200;
+    private static final int DURATION = 200;
     private static final int field_30434 = 4;
     private static final int field_30435 = 10;
     private int ticks;

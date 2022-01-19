@@ -6,14 +6,13 @@ package net.minecraft.nbt.scanner;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtType;
 import net.minecraft.nbt.scanner.NbtCollector;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.nbt.scanner.Query;
+import net.minecraft.nbt.scanner.Tree;
 
 /**
  * A selective NBT collector builds an NBT object including only the
@@ -28,10 +27,10 @@ extends NbtCollector {
     public SelectiveNbtCollector(Query ... queries) {
         this.queriesLeft = queries.length;
         ImmutableSet.Builder builder = ImmutableSet.builder();
-        Tree tree = new Tree(1);
+        Tree tree = Tree.method_40060();
         for (Query query : queries) {
             tree.add(query);
-            builder.add(query.type);
+            builder.add(query.type());
         }
         this.selectionStack.push(tree);
         builder.add(NbtCompound.TYPE);
@@ -68,11 +67,11 @@ extends NbtCollector {
         if (this.getDepth() > tree.depth()) {
             return super.startSubNbt(type, key);
         }
-        if (tree.fieldsToGet.remove(key, type)) {
+        if (tree.selectedFields().remove(key, type)) {
             --this.queriesLeft;
             return super.startSubNbt(type, key);
         }
-        if (type == NbtCompound.TYPE && (tree2 = tree.fieldsToRecurse.get(key)) != null) {
+        if (type == NbtCompound.TYPE && (tree2 = tree.fieldsToRecurse().get(key)) != null) {
             this.selectionStack.push(tree2);
             return super.startSubNbt(type, key);
         }
@@ -89,34 +88,6 @@ extends NbtCollector {
 
     public int getQueriesLeft() {
         return this.queriesLeft;
-    }
-
-    record Tree(int depth, Map<String, NbtType<?>> fieldsToGet, Map<String, Tree> fieldsToRecurse) {
-        public Tree(int depth) {
-            this(depth, new HashMap(), new HashMap<String, Tree>());
-        }
-
-        public void add(Query query) {
-            if (this.depth <= query.path.size()) {
-                this.fieldsToRecurse.computeIfAbsent(query.path.get(this.depth - 1), path -> new Tree(this.depth + 1)).add(query);
-            } else {
-                this.fieldsToGet.put(query.key, query.type);
-            }
-        }
-    }
-
-    public record Query(List<String> path, NbtType<?> type, String key) {
-        public Query(NbtType<?> type, String key) {
-            this(List.of(), type, key);
-        }
-
-        public Query(String path, NbtType<?> type, String key) {
-            this(List.of(path), type, key);
-        }
-
-        public Query(String path1, String path2, NbtType<?> type, String key) {
-            this(List.of(path1, path2), type, key);
-        }
     }
 }
 

@@ -4,6 +4,7 @@
 package net.minecraft.entity.data;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -24,12 +25,11 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class DataTracker {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<Class<? extends Entity>>();
     private static final int field_33377 = 255;
     private static final int field_33378 = 254;
@@ -49,7 +49,7 @@ public class DataTracker {
             try {
                 Class<?> class_ = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
                 if (!class_.equals(entityClass)) {
-                    LOGGER.debug("defineId called for: {} from {}", (Object)entityClass, (Object)class_, (Object)new RuntimeException());
+                    LOGGER.debug("defineId called for: {} from {}", entityClass, class_, new RuntimeException());
                 }
             } catch (ClassNotFoundException class_) {
                 // empty catch block

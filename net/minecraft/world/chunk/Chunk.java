@@ -5,6 +5,7 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortArrayList;
@@ -56,9 +57,8 @@ import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.SerializableTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 /**
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
@@ -67,7 +67,7 @@ public abstract class Chunk
 implements BlockView,
 BiomeAccess.Storage,
 StructureHolder {
-    private static final Logger field_34548 = LogManager.getLogger();
+    private static final Logger field_34548 = LogUtils.getLogger();
     protected final ShortList[] postProcessingLists;
     protected volatile boolean needsSaving;
     private volatile boolean lightOn;
@@ -259,7 +259,7 @@ StructureHolder {
     public abstract void removeBlockEntity(BlockPos var1);
 
     public void markBlockForPostProcessing(BlockPos pos) {
-        LogManager.getLogger().warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", (Object)pos);
+        field_34548.warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", (Object)pos);
     }
 
     public ShortList[] getPostProcessingLists() {

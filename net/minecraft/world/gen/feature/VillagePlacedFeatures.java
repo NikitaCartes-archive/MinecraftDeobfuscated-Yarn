@@ -4,12 +4,12 @@
 package net.minecraft.world.gen.feature;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.world.gen.decorator.PlacementModifier;
 import net.minecraft.world.gen.feature.PileConfiguredFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
 import net.minecraft.world.gen.feature.VegetationConfiguredFeatures;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 
 public class VillagePlacedFeatures {
     public static final PlacedFeature PILE_HAY = PlacedFeatures.register("pile_hay", PileConfiguredFeatures.PILE_HAY.withPlacement(new PlacementModifier[0]));

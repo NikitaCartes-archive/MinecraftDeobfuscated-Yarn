@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -10,9 +10,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.decorator.AbstractConditionalPlacementModifier;
-import net.minecraft.world.gen.decorator.DecoratorContext;
-import net.minecraft.world.gen.decorator.PlacementModifierType;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
+import net.minecraft.world.gen.placementmodifier.AbstractConditionalPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
 public class SurfaceThresholdFilterPlacementModifier
 extends AbstractConditionalPlacementModifier {
@@ -32,7 +32,7 @@ extends AbstractConditionalPlacementModifier {
     }
 
     @Override
-    protected boolean shouldPlace(DecoratorContext context, Random random, BlockPos pos) {
+    protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
         long l = context.getTopY(this.heightmap, pos.getX(), pos.getZ());
         long m = l + (long)this.min;
         long n = l + (long)this.max;

@@ -19,6 +19,8 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class ControlsOptionsScreen
 extends GameOptionsScreen {
+    private static final int field_36369 = 24;
+
     public ControlsOptionsScreen(Screen parent, GameOptions options) {
         super(parent, options, new TranslatableText("controls.title"));
     }
@@ -34,8 +36,7 @@ extends GameOptionsScreen {
         this.addDrawableChild(Option.SNEAK_TOGGLED.createButton(this.gameOptions, i, k += 24, 150));
         this.addDrawableChild(Option.SPRINT_TOGGLED.createButton(this.gameOptions, j, k, 150));
         this.addDrawableChild(Option.AUTO_JUMP.createButton(this.gameOptions, i, k += 24, 150));
-        k += 24;
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 29, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, k += 24, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
     }
 
     @Override

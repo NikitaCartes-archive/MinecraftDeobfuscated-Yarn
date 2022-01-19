@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.datafixers.util.Unit;
+import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -31,11 +32,10 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.WorldChunk;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ResetChunksCommand {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("resetchunks").requires(source -> source.hasPermissionLevel(2))).executes(context -> ResetChunksCommand.executeResetChunks((ServerCommandSource)context.getSource(), 0, true))).then(((RequiredArgumentBuilder)CommandManager.argument("range", IntegerArgumentType.integer(0, 5)).executes(context -> ResetChunksCommand.executeResetChunks((ServerCommandSource)context.getSource(), IntegerArgumentType.getInteger(context, "range"), true))).then(CommandManager.argument("skipOldChunks", BoolArgumentType.bool()).executes(commandContext -> ResetChunksCommand.executeResetChunks((ServerCommandSource)commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "range"), BoolArgumentType.getBool(commandContext, "skipOldChunks"))))));

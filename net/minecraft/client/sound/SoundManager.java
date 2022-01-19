@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,15 +42,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundManager
 extends SinglePreparationResourceReloader<SoundList> {
     public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16);
-    static final Logger LOGGER = LogManager.getLogger();
+    static final Logger LOGGER = LogUtils.getLogger();
     private static final String SOUNDS_JSON = "sounds.json";
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();
     private static final TypeToken<Map<String, SoundEntry>> TYPE = new TypeToken<Map<String, SoundEntry>>(){};
@@ -80,7 +80,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
                         profiler.pop();
                     } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Invalid {} in resourcepack: '{}'", (Object)SOUNDS_JSON, (Object)resource.getResourcePackName(), (Object)runtimeException);
+                        LOGGER.warn("Invalid {} in resourcepack: '{}'", SOUNDS_JSON, resource.getResourcePackName(), runtimeException);
                     }
                     profiler.pop();
                 }

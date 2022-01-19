@@ -5,6 +5,7 @@ package net.minecraft.network;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mojang.logging.LogUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelException;
@@ -32,6 +33,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
+import java.util.concurrent.RejectedExecutionException;
 import javax.crypto.Cipher;
 import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.NetworkSide;
@@ -55,13 +57,13 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 /**
  * A connection backed by a netty channel. It can be one to a client on the
@@ -78,9 +80,11 @@ extends SimpleChannelInboundHandler<Packet<?>> {
      * {@code averagePacketsSent}.
      */
     private static final float CURRENT_PACKET_COUNTER_WEIGHT = 0.75f;
-    private static final Logger LOGGER = LogManager.getLogger();
-    public static final Marker NETWORK_MARKER = MarkerManager.getMarker("NETWORK");
-    public static final Marker NETWORK_PACKETS_MARKER = MarkerManager.getMarker("NETWORK_PACKETS", NETWORK_MARKER);
+    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Marker NETWORK_MARKER = MarkerFactory.getMarker("NETWORK");
+    public static final Marker NETWORK_PACKETS_MARKER = Util.make(MarkerFactory.getMarker("NETWORK_PACKETS"), marker -> marker.add(NETWORK_MARKER));
+    public static final Marker field_36379 = Util.make(MarkerFactory.getMarker("PACKET_RECEIVED"), marker -> marker.add(NETWORK_PACKETS_MARKER));
+    public static final Marker field_36380 = Util.make(MarkerFactory.getMarker("PACKET_SENT"), marker -> marker.add(NETWORK_PACKETS_MARKER));
     /**
      * The attribute key for the current network state of the backing netty
      * channel.
@@ -119,7 +123,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         try {
             this.setState(NetworkState.HANDSHAKING);
         } catch (Throwable throwable) {
-            LOGGER.fatal(throwable);
+            LOGGER.error(LogUtils.FATAL_MARKER, "Failed to change protocol to handshake", throwable);
         }
     }
 
@@ -169,6 +173,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             try {
                 ClientConnection.handlePacket(packet, this.packetListener);
             } catch (OffThreadException offThreadException) {
+            } catch (RejectedExecutionException rejectedExecutionException) {
+                this.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
             } catch (ClassCastException classCastException) {
                 LOGGER.error("Received {} that couldn't be processed", (Object)packet.getClass(), (Object)classCastException);
                 this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_packet"));

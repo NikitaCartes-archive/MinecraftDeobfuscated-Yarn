@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,10 +11,12 @@ import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldCreationTask
 extends LongRunningTask {
+    private static final Logger field_36362 = LogUtils.getLogger();
     private final String name;
     private final String motd;
     private final long worldId;
@@ -34,10 +37,10 @@ extends LongRunningTask {
             realmsClient.initializeWorld(this.worldId, this.name, this.motd);
             WorldCreationTask.setScreen(this.lastScreen);
         } catch (RealmsServiceException realmsServiceException) {
-            LOGGER.error("Couldn't create world");
+            field_36362.error("Couldn't create world");
             this.error(realmsServiceException.toString());
         } catch (Exception exception) {
-            LOGGER.error("Could not create world");
+            field_36362.error("Could not create world");
             this.error(exception.getLocalizedMessage());
         }
     }

@@ -4,6 +4,7 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -157,13 +158,12 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class EntityType<T extends Entity>
 implements TypeFilter<Entity, T> {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ENTITY_TAG_KEY = "EntityTag";
     private static final float field_30054 = 1.3964844f;
     public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = EntityType.register("area_effect_cloud", Builder.create(AreaEffectCloudEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(6.0f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
@@ -547,7 +547,7 @@ implements TypeFilter<Entity, T> {
         try {
             return EntityType.getEntityFromNbt(nbt, world);
         } catch (RuntimeException runtimeException) {
-            LOGGER.warn("Exception loading entity: ", (Throwable)runtimeException);
+            LOGGER.warn("Exception loading entity: ", runtimeException);
             return Optional.empty();
         }
     }

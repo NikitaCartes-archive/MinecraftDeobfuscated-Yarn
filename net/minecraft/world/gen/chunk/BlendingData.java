@@ -29,6 +29,7 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
@@ -63,6 +64,7 @@ public class BlendingData {
     private final boolean oldNoise;
     private boolean field_35690;
     private final double[] heights;
+    private final Biome[] field_36345;
     private final transient double[][] field_35693;
     private final transient double[] field_35694;
     private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
@@ -80,6 +82,7 @@ public class BlendingData {
         this.heights = optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
         this.field_35693 = new double[field_35518][];
         this.field_35694 = new double[field_35688 * field_35688];
+        this.field_36345 = new Biome[field_35518];
     }
 
     public boolean usesOldNoise() {
@@ -155,6 +158,7 @@ public class BlendingData {
             this.heights[index] = BlendingData.getSurfaceHeight(chunk, x, z);
         }
         this.field_35693[index] = BlendingData.method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
+        this.field_36345[index] = chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(MathHelper.floor(this.heights[index])), BiomeCoords.fromBlock(z));
     }
 
     private static int getSurfaceHeight(Chunk chunk, int x, int z) {
@@ -257,8 +261,16 @@ public class BlendingData {
         return Double.MAX_VALUE;
     }
 
+    protected void method_40028(int i, int j, class_6853 arg) {
+        for (int k = 0; k < this.field_36345.length; ++k) {
+            Biome biome = this.field_36345[k];
+            if (biome == null) continue;
+            arg.consume(i + BlendingData.method_39343(k), j + BlendingData.method_39352(k), biome);
+        }
+    }
+
     protected void method_39351(int i, int j, class_6751 arg) {
-        for (int k = 0; k < this.field_35693.length; ++k) {
+        for (int k = 0; k < this.heights.length; ++k) {
             double d = this.heights[k];
             if (d == Double.MAX_VALUE) continue;
             arg.consume(i + BlendingData.method_39343(k), j + BlendingData.method_39352(k), d);
@@ -266,39 +278,22 @@ public class BlendingData {
     }
 
     protected void method_39346(int i, int j, int k, int l, class_6750 arg) {
-        int q;
-        int p;
         int m = BlendingData.method_39581();
         int n = Math.max(0, k - m);
         int o = Math.min(BlendingData.method_39576(), l - m);
-        for (p = 0; p < this.field_35693.length; ++p) {
+        for (int p = 0; p < this.field_35693.length; ++p) {
             double[] ds = this.field_35693[p];
             if (ds == null) continue;
-            q = i + BlendingData.method_39343(p);
+            int q = i + BlendingData.method_39343(p);
             int r = j + BlendingData.method_39352(p);
             for (int s = n; s < o; ++s) {
                 arg.consume(q, s + m, r, ds[s] * 0.1);
-            }
-        }
-        if (m >= k && m <= l) {
-            for (p = 0; p < this.field_35694.length; ++p) {
-                int t = this.method_39568(p);
-                q = this.method_39577(p);
-                arg.consume(t, m, q, this.field_35694[p] * 0.1);
             }
         }
     }
 
     private int method_39569(int i, int j) {
         return i * field_35688 + j;
-    }
-
-    private int method_39568(int i) {
-        return i / field_35688;
-    }
-
-    private int method_39577(int i) {
-        return i % field_35688;
     }
 
     private static int method_39576() {
@@ -339,6 +334,10 @@ public class BlendingData {
 
     private static int method_39355(int i) {
         return i & ~(i >> 31);
+    }
+
+    protected static interface class_6853 {
+        public void consume(int var1, int var2, Biome var3);
     }
 
     protected static interface class_6751 {

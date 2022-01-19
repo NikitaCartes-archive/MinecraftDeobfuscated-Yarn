@@ -3,6 +3,7 @@
  */
 package net.minecraft.world;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -51,12 +52,11 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public final class SpawnHelper {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MIN_SPAWN_DISTANCE = 24;
     public static final int field_30972 = 8;
     public static final int field_30973 = 128;
@@ -171,7 +171,7 @@ public final class SpawnHelper {
         if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
             return false;
         }
-        return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.shouldTickEntity(pos);
+        return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_39999(pos);
     }
 
     private static boolean canSpawn(ServerWorld world, SpawnGroup group, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable pos, double squaredDistance) {
@@ -205,7 +205,7 @@ public final class SpawnHelper {
             }
             mobEntity = (MobEntity)entity;
         } catch (Exception exception) {
-            LOGGER.warn("Failed to create mob", (Throwable)exception);
+            LOGGER.warn("Failed to create mob", exception);
             return null;
         }
         return mobEntity;
@@ -324,7 +324,7 @@ public final class SpawnHelper {
                         try {
                             entity = spawnEntry.type.create(world.toServerWorld());
                         } catch (Exception exception) {
-                            LOGGER.warn("Failed to create mob", (Throwable)exception);
+                            LOGGER.warn("Failed to create mob", exception);
                             continue;
                         }
                         ((Entity)entity).refreshPositionAndAngles(d, blockPos.getY(), e, random.nextFloat() * 360.0f, 0.0f);
