@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -55,14 +56,13 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.SimpleTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ChunkSerializer {
 	private static final Codec<PalettedContainer<BlockState>> CODEC = PalettedContainer.createCodec(
 		Block.STATE_IDS, BlockState.CODEC, PalettedContainer.PaletteProvider.BLOCK_STATE, Blocks.AIR.getDefaultState()
 	);
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String UPGRADE_DATA_KEY = "UpgradeData";
 	private static final String BLOCK_TICKS = "block_ticks";
 	private static final String FLUID_TICKS = "fluid_ticks";

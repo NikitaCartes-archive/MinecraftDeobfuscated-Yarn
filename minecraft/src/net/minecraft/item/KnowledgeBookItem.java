@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,12 +15,11 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class KnowledgeBookItem extends Item {
 	private static final String RECIPES_KEY = "Recipes";
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public KnowledgeBookItem(Item.Settings settings) {
 		super(settings);

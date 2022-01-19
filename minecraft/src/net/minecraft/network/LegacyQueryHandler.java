@@ -1,5 +1,6 @@
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -9,11 +10,10 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerNetworkIo;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class LegacyQueryHandler extends ChannelInboundHandlerAdapter {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_29771 = 127;
 	private final ServerNetworkIo networkIo;
 

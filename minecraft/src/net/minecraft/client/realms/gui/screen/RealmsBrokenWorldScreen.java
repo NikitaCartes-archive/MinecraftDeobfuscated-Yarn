@@ -2,6 +2,7 @@ package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
@@ -29,13 +30,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBrokenWorldScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32120 = 80;
 	private final Screen parent;
 	private final RealmsMainScreen mainScreen;

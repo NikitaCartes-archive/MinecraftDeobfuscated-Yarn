@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +23,11 @@ import net.minecraft.client.realms.dto.RealmsNews;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerPlayerLists;
 import net.minecraft.client.realms.util.RealmsPersistence;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsDataFetcher {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
 	private final RealmsClient realms;
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);

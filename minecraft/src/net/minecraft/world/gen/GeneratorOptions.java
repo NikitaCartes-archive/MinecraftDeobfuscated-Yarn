@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
@@ -35,8 +36,8 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 public class GeneratorOptions {
 	public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(
@@ -53,7 +54,7 @@ public class GeneratorOptions {
 					.apply(instance, instance.stable(GeneratorOptions::new))
 		)
 		.comapFlatMap(GeneratorOptions::validate, Function.identity());
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final long seed;
 	private final boolean generateStructures;
 	private final boolean bonusChest;
@@ -243,18 +244,7 @@ public class GeneratorOptions {
 		String string4 = (String)properties.get("level-type");
 		String string5 = (String)Optional.ofNullable(string4).map(stringx -> stringx.toLowerCase(Locale.ROOT)).orElse("default");
 		properties.put("level-type", string5);
-		long l = new Random().nextLong();
-		if (!string2.isEmpty()) {
-			try {
-				long m = Long.parseLong(string2);
-				if (m != 0L) {
-					l = m;
-				}
-			} catch (NumberFormatException var17) {
-				l = (long)string2.hashCode();
-			}
-		}
-
+		long l = method_40024(string2).orElse(new Random().nextLong());
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
 		SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registryManager, l);
@@ -322,5 +312,18 @@ public class GeneratorOptions {
 		}
 
 		return generatorOptions;
+	}
+
+	public static OptionalLong method_40024(String string) {
+		string = string.trim();
+		if (StringUtils.isEmpty(string)) {
+			return OptionalLong.empty();
+		} else {
+			try {
+				return OptionalLong.of(Long.parseLong(string));
+			} catch (NumberFormatException var2) {
+				return OptionalLong.of((long)string.hashCode());
+			}
+		}
 	}
 }

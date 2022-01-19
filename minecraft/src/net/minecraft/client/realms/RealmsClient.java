@@ -1,5 +1,6 @@
 package net.minecraft.client.realms;
 
+import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -31,14 +32,13 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.ResetWorldInfo;
 import net.minecraft.client.resource.language.I18n;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @net.fabricmc.api.Environment(EnvType.CLIENT)
 public class RealmsClient {
 	public static RealmsClient.Environment currentEnvironment = RealmsClient.Environment.PRODUCTION;
 	private static boolean initialized;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String sessionId;
 	private final String username;
 	private final MinecraftClient client;

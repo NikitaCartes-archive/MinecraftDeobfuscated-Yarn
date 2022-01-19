@@ -1,5 +1,6 @@
 package net.minecraft.client.sound;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -8,13 +9,12 @@ import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Vec3d;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL10;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Source {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_31895 = 4;
 	public static final int field_31894 = 1;
 	private final int pointer;

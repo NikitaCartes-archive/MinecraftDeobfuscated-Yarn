@@ -2,17 +2,17 @@ package net.minecraft.predicate.entity;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.mojang.logging.LogUtils;
 import net.minecraft.loot.LootGsons;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AdvancementEntityPredicateDeserializer {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier advancementId;
 	private final LootConditionManager conditionManager;
 	private final Gson gson = LootGsons.getConditionGsonBuilder().create();

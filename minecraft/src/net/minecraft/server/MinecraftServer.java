@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -43,6 +44,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -150,8 +152,7 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Represents a logical Minecraft server.
@@ -172,7 +173,7 @@ import org.apache.logging.log4j.Logger;
  * @see net.minecraft.server.integrated.IntegratedServer
  */
 public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements CommandOutput, AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
 	private static final int field_33213 = 100;
@@ -268,7 +269,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
 		Thread thread = new Thread(() -> ((MinecraftServer)atomicReference.get()).runServer(), "Server thread");
-		thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable));
+		thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error("Uncaught exception in server thread", throwable));
 		if (Runtime.getRuntime().availableProcessors() > 4) {
 			thread.setPriority(8);
 		}
@@ -650,6 +651,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (serverWorld != null) {
 				serverWorld.savingDisabled = false;
 			}
+		}
+
+		while (this.worlds.values().stream().anyMatch(serverWorldx -> serverWorldx.getChunkManager().threadedAnvilChunkStorage.method_39992())) {
+			this.timeReference = Util.getMeasuringTimeMs() + 1L;
+
+			for (ServerWorld serverWorldx : this.getWorlds()) {
+				serverWorldx.getChunkManager().method_39997();
+				serverWorldx.getChunkManager().tick(() -> true, false);
+			}
+
+			this.runTasksTillTickEnd();
 		}
 
 		this.save(false, true, false);
@@ -1363,6 +1375,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public boolean shouldExecuteAsync() {
 		return super.shouldExecuteAsync() && !this.isStopped();
+	}
+
+	@Override
+	public void method_40000(Runnable runnable) {
+		if (this.isStopped()) {
+			throw new RejectedExecutionException("Server already shutting down");
+		} else {
+			super.method_40000(runnable);
+		}
 	}
 
 	@Override

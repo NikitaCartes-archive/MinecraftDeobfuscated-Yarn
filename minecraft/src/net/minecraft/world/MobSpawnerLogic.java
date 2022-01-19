@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import com.mojang.logging.LogUtils;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
@@ -19,11 +20,10 @@ import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class MobSpawnerLogic {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_30951 = 1;
 	private int spawnDelay = 20;
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.empty();

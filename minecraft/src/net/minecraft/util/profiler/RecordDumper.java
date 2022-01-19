@@ -1,5 +1,6 @@
 package net.minecraft.util.profiler;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -19,15 +20,14 @@ import net.minecraft.util.CsvWriter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class RecordDumper {
 	public static final Path DEBUG_PROFILING_DIRECTORY = Paths.get("debug/profiling");
 	public static final String METRICS_DIRECTORY = "metrics";
 	public static final String DEVIATIONS_DIRECTORY = "deviations";
 	public static final String FILE_NAME = "profiling.txt";
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String type;
 
 	public RecordDumper(String type) {

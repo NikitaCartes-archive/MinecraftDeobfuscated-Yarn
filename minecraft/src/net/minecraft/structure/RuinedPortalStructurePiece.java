@@ -1,6 +1,7 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -41,11 +42,10 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class RuinedPortalStructurePiece extends SimpleStructurePiece {
-	private static final Logger field_24992 = LogManager.getLogger();
+	private static final Logger field_24992 = LogUtils.getLogger();
 	private static final float field_31620 = 0.3F;
 	private static final float field_31621 = 0.07F;
 	private static final float field_31622 = 0.2F;

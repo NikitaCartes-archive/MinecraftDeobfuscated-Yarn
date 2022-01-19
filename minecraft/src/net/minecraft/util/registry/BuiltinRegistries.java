@@ -1,6 +1,7 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -22,8 +23,7 @@ import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Stores a few hardcoded registries with builtin values for datapack-loadable registries,
@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  * @see net.minecraft.util.registry.DynamicRegistryManager#get(RegistryKey)
  */
 public class BuiltinRegistries {
-	protected static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Identifier, Supplier<?>> DEFAULT_VALUE_SUPPLIERS = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
 	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental());
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;

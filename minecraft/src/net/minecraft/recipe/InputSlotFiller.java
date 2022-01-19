@@ -1,6 +1,7 @@
 package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Iterator;
@@ -13,11 +14,10 @@ import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<Integer> {
-	protected static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final RecipeMatcher matcher = new RecipeMatcher();
 	protected PlayerInventory inventory;
 	protected AbstractRecipeScreenHandler<C> handler;

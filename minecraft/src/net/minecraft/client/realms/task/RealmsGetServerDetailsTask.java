@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -23,9 +24,11 @@ import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGetServerDetailsTask extends LongRunningTask {
+	private static final Logger field_36356 = LogUtils.getLogger();
 	private final RealmsServer server;
 	private final Screen lastScreen;
 	private final RealmsMainScreen mainScreen;
@@ -45,7 +48,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		try {
 			realmsServerAddress = this.join();
 		} catch (CancellationException var4) {
-			LOGGER.info("User aborted connecting to realms");
+			field_36356.info("User aborted connecting to realms");
 			return;
 		} catch (RealmsServiceException var5) {
 			switch (var5.getErrorCode(-1)) {
@@ -64,14 +67,14 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					return;
 				default:
 					this.error(var5.toString());
-					LOGGER.error("Couldn't connect to world", (Throwable)var5);
+					field_36356.error("Couldn't connect to world", (Throwable)var5);
 					return;
 			}
 		} catch (TimeoutException var6) {
 			this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
 			return;
 		} catch (Exception var7) {
-			LOGGER.error("Couldn't connect to world", (Throwable)var7);
+			field_36356.error("Couldn't connect to world", (Throwable)var7);
 			this.error(var7.getLocalizedMessage());
 			return;
 		}
@@ -113,7 +116,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 				if (confirmed) {
 					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getResourcePackProvider().clear();
-						LOGGER.error(throwable);
+						field_36356.error("Failed to download resource pack from {}", address, throwable);
 						setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
 						return null;
 					});

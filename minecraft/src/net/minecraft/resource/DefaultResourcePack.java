@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableMap.Builder;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,13 +34,12 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	@Nullable
 	public static Path resourcePath;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static Class<?> resourceClass;
 	private static final Map<ResourceType, Path> TYPE_TO_FILE_SYSTEM = Util.make(() -> {
 		synchronized (DefaultResourcePack.class) {

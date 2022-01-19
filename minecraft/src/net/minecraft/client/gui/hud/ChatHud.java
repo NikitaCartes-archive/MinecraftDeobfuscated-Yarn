@@ -3,6 +3,7 @@ package net.minecraft.client.gui.hud;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.Deque;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -19,8 +20,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Responsible for rendering various game messages such as chat messages or
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class ChatHud extends DrawableHelper {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_MESSAGES = 100;
 	private final MinecraftClient client;
 	private final List<String> messageHistory = Lists.<String>newArrayList();

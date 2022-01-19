@@ -158,13 +158,17 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 	private boolean canWaterSpawn(StructureWorldAccess world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		if (!blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.DRIPSTONE_BLOCK) && !blockState.isOf(Blocks.POINTED_DRIPSTONE)) {
-			for (Direction direction : Direction.Type.HORIZONTAL) {
-				if (!this.isStoneOrWater(world, pos.offset(direction))) {
-					return false;
+			if (world.getBlockState(pos.up()).getFluidState().isIn(FluidTags.WATER)) {
+				return false;
+			} else {
+				for (Direction direction : Direction.Type.HORIZONTAL) {
+					if (!this.isStoneOrWater(world, pos.offset(direction))) {
+						return false;
+					}
 				}
-			}
 
-			return this.isStoneOrWater(world, pos.down());
+				return this.isStoneOrWater(world, pos.down());
+			}
 		} else {
 			return false;
 		}

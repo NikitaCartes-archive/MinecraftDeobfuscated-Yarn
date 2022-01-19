@@ -17,6 +17,7 @@ import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Function4;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
@@ -258,9 +259,8 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import org.slf4j.Logger;
 
 /**
  * Represents a logical Minecraft client.
@@ -307,7 +307,7 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 @Environment(EnvType.CLIENT)
 public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implements WindowEventHandler {
 	private static MinecraftClient instance;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final boolean IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
 	private static final int field_32145 = 10;
 	public static final Identifier DEFAULT_FONT_ID = new Identifier("default");
@@ -418,7 +418,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	public HitResult crosshairTarget;
 	/**
-	 * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#keyUse the item use button} is held down.
+	 * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#useKey the item use button} is held down.
 	 */
 	private int itemUseCooldown;
 	protected int attackCooldown;
@@ -756,18 +756,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					this.cleanUpAfterCrash();
 					this.setScreen(new OutOfMemoryScreen());
 					System.gc();
-					LOGGER.fatal("Out of memory", (Throwable)var4);
+					LOGGER.error(LogUtils.FATAL_MARKER, "Out of memory", (Throwable)var4);
 					bl = true;
 				}
 			}
 		} catch (CrashException var5) {
 			this.addDetailsToCrashReport(var5.getReport());
 			this.cleanUpAfterCrash();
-			LOGGER.fatal("Reported exception thrown!", (Throwable)var5);
+			LOGGER.error(LogUtils.FATAL_MARKER, "Reported exception thrown!", (Throwable)var5);
 			printCrashReport(var5.getReport());
 		} catch (Throwable var6) {
 			CrashReport crashReport = this.addDetailsToCrashReport(new CrashReport("Unexpected error", var6));
-			LOGGER.fatal("Unreported exception thrown!", var6);
+			LOGGER.error(LogUtils.FATAL_MARKER, "Unreported exception thrown!", var6);
 			this.cleanUpAfterCrash();
 			printCrashReport(crashReport);
 		}
@@ -1560,35 +1560,44 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private void doAttack() {
-		if (this.attackCooldown <= 0) {
-			if (this.crosshairTarget == null) {
-				LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
-				if (this.interactionManager.hasLimitedAttackSpeed()) {
-					this.attackCooldown = 10;
-				}
-			} else if (!this.player.isRiding()) {
-				switch (this.crosshairTarget.getType()) {
-					case ENTITY:
-						this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
-						break;
-					case BLOCK:
-						BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
-						BlockPos blockPos = blockHitResult.getBlockPos();
-						if (!this.world.getBlockState(blockPos).isAir()) {
-							this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
-							break;
-						}
-					case MISS:
-						if (this.interactionManager.hasLimitedAttackSpeed()) {
-							this.attackCooldown = 10;
-						}
-
-						this.player.resetLastAttackedTicks();
-				}
-
-				this.player.swingHand(Hand.MAIN_HAND);
+	private boolean doAttack() {
+		if (this.attackCooldown > 0) {
+			return false;
+		} else if (this.crosshairTarget == null) {
+			LOGGER.error("Null returned as 'hitResult', this shouldn't happen!");
+			if (this.interactionManager.hasLimitedAttackSpeed()) {
+				this.attackCooldown = 10;
 			}
+
+			return false;
+		} else if (this.player.isRiding()) {
+			return false;
+		} else {
+			boolean bl = false;
+			switch (this.crosshairTarget.getType()) {
+				case ENTITY:
+					this.interactionManager.attackEntity(this.player, ((EntityHitResult)this.crosshairTarget).getEntity());
+					break;
+				case BLOCK:
+					BlockHitResult blockHitResult = (BlockHitResult)this.crosshairTarget;
+					BlockPos blockPos = blockHitResult.getBlockPos();
+					if (!this.world.getBlockState(blockPos).isAir()) {
+						this.interactionManager.attackBlock(blockPos, blockHitResult.getSide());
+						if (this.world.getBlockState(blockPos).isAir()) {
+							bl = true;
+						}
+						break;
+					}
+				case MISS:
+					if (this.interactionManager.hasLimitedAttackSpeed()) {
+						this.attackCooldown = 10;
+					}
+
+					this.player.resetLastAttackedTicks();
+			}
+
+			this.player.swingHand(Hand.MAIN_HAND);
+			return bl;
 		}
 	}
 
@@ -1795,7 +1804,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void handleInputEvents() {
-		while (this.options.keyTogglePerspective.wasPressed()) {
+		while (this.options.togglePerspectiveKey.wasPressed()) {
 			Perspective perspective = this.options.getPerspective();
 			this.options.setPerspective(this.options.getPerspective().next());
 			if (perspective.isFirstPerson() != this.options.getPerspective().isFirstPerson()) {
@@ -1805,14 +1814,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.worldRenderer.scheduleTerrainUpdate();
 		}
 
-		while (this.options.keySmoothCamera.wasPressed()) {
+		while (this.options.smoothCameraKey.wasPressed()) {
 			this.options.smoothCameraEnabled = !this.options.smoothCameraEnabled;
 		}
 
 		for (int i = 0; i < 9; i++) {
-			boolean bl = this.options.keySaveToolbarActivator.isPressed();
-			boolean bl2 = this.options.keyLoadToolbarActivator.isPressed();
-			if (this.options.keysHotbar[i].wasPressed()) {
+			boolean bl = this.options.saveToolbarActivatorKey.isPressed();
+			boolean bl2 = this.options.loadToolbarActivatorKey.isPressed();
+			if (this.options.hotbarKeys[i].wasPressed()) {
 				if (this.player.isSpectator()) {
 					this.inGameHud.getSpectatorHud().selectSlot(i);
 				} else if (!this.player.isCreative() || this.currentScreen != null || !bl2 && !bl) {
@@ -1823,7 +1832,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		while (this.options.keySocialInteractions.wasPressed()) {
+		while (this.options.socialInteractionsKey.wasPressed()) {
 			if (!this.isConnectedToServer()) {
 				this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
 				NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE);
@@ -1837,7 +1846,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		while (this.options.keyInventory.wasPressed()) {
+		while (this.options.inventoryKey.wasPressed()) {
 			if (this.interactionManager.hasRidingInventory()) {
 				this.player.openRidingInventory();
 			} else {
@@ -1846,62 +1855,63 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		while (this.options.keyAdvancements.wasPressed()) {
+		while (this.options.advancementsKey.wasPressed()) {
 			this.setScreen(new AdvancementsScreen(this.player.networkHandler.getAdvancementHandler()));
 		}
 
-		while (this.options.keySwapHands.wasPressed()) {
+		while (this.options.swapHandsKey.wasPressed()) {
 			if (!this.player.isSpectator()) {
 				this.getNetworkHandler().sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.SWAP_ITEM_WITH_OFFHAND, BlockPos.ORIGIN, Direction.DOWN));
 			}
 		}
 
-		while (this.options.keyDrop.wasPressed()) {
+		while (this.options.dropKey.wasPressed()) {
 			if (!this.player.isSpectator() && this.player.dropSelectedItem(Screen.hasControlDown())) {
 				this.player.swingHand(Hand.MAIN_HAND);
 			}
 		}
 
-		while (this.options.keyChat.wasPressed()) {
+		while (this.options.chatKey.wasPressed()) {
 			this.openChatScreen("");
 		}
 
-		if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
+		if (this.currentScreen == null && this.overlay == null && this.options.commandKey.wasPressed()) {
 			this.openChatScreen("/");
 		}
 
+		boolean bl3 = false;
 		if (this.player.isUsingItem()) {
-			if (!this.options.keyUse.isPressed()) {
+			if (!this.options.useKey.isPressed()) {
 				this.interactionManager.stopUsingItem(this.player);
 			}
 
-			while (this.options.keyAttack.wasPressed()) {
+			while (this.options.attackKey.wasPressed()) {
 			}
 
-			while (this.options.keyUse.wasPressed()) {
+			while (this.options.useKey.wasPressed()) {
 			}
 
-			while (this.options.keyPickItem.wasPressed()) {
+			while (this.options.pickItemKey.wasPressed()) {
 			}
 		} else {
-			while (this.options.keyAttack.wasPressed()) {
-				this.doAttack();
+			while (this.options.attackKey.wasPressed()) {
+				bl3 |= this.doAttack();
 			}
 
-			while (this.options.keyUse.wasPressed()) {
+			while (this.options.useKey.wasPressed()) {
 				this.doItemUse();
 			}
 
-			while (this.options.keyPickItem.wasPressed()) {
+			while (this.options.pickItemKey.wasPressed()) {
 				this.doItemPick();
 			}
 		}
 
-		if (this.options.keyUse.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
+		if (this.options.useKey.isPressed() && this.itemUseCooldown == 0 && !this.player.isUsingItem()) {
 			this.doItemUse();
 		}
 
-		this.handleBlockBreaking(this.currentScreen == null && this.options.keyAttack.isPressed() && this.mouse.isCursorLocked());
+		this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
 	}
 
 	public static DataPackSettings loadDataPackSettings(LevelStorage.Session storageSession) {
@@ -2602,7 +2612,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	public boolean hasOutline(Entity entity) {
 		return entity.isGlowing()
-			|| this.player != null && this.player.isSpectator() && this.options.keySpectatorOutlines.isPressed() && entity.getType() == EntityType.PLAYER;
+			|| this.player != null && this.player.isSpectator() && this.options.spectatorOutlinesKey.isPressed() && entity.getType() == EntityType.PLAYER;
 	}
 
 	@Override

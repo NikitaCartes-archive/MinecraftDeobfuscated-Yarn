@@ -2,6 +2,7 @@ package net.minecraft.tag;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -15,11 +16,10 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TagManagerLoader implements ResourceReloader {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DynamicRegistryManager registryManager;
 	private TagManager tagManager = TagManager.EMPTY;
 

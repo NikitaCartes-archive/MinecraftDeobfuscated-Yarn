@@ -1,10 +1,11 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class SurfaceThresholdFilterPlacementModifier extends AbstractConditionalPlacementModifier {
 	public static final Codec<SurfaceThresholdFilterPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
@@ -34,7 +35,7 @@ public class SurfaceThresholdFilterPlacementModifier extends AbstractConditional
 	}
 
 	@Override
-	protected boolean shouldPlace(DecoratorContext context, Random random, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
 		long l = (long)context.getTopY(this.heightmap, pos.getX(), pos.getZ());
 		long m = l + (long)this.min;
 		long n = l + (long)this.max;

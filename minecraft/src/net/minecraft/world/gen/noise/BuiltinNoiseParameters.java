@@ -46,7 +46,7 @@ public class BuiltinNoiseParameters {
 		register(NoiseParametersKeys.NOODLE_RIDGE_B, -7, 1.0);
 		register(NoiseParametersKeys.JAGGED, -16, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
 		register(NoiseParametersKeys.SURFACE, -6, 1.0, 1.0, 1.0);
-		register(NoiseParametersKeys.SURFACE_SECONDARY, -6, 1.0, 1.0, 1.0);
+		register(NoiseParametersKeys.SURFACE_SECONDARY, -6, 1.0, 1.0, 0.0, 1.0);
 		register(NoiseParametersKeys.CLAY_BANDS_OFFSET, -8, 1.0);
 		register(NoiseParametersKeys.BADLANDS_PILLAR, -2, 1.0, 1.0, 1.0, 1.0);
 		register(NoiseParametersKeys.BADLANDS_PILLAR_ROOF, -8, 1.0);

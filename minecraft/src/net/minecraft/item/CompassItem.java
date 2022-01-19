@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import com.mojang.logging.LogUtils;
 import java.util.Optional;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -15,11 +16,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class CompassItem extends Item implements Vanishable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String LODESTONE_POS_KEY = "LodestonePos";
 	public static final String LODESTONE_DIMENSION_KEY = "LodestoneDimension";
 	public static final String LODESTONE_TRACKED_KEY = "LodestoneTracked";

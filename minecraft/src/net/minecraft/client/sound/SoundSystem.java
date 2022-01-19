@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +28,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
+import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 @Environment(EnvType.CLIENT)
 public class SoundSystem {
-	private static final Marker MARKER = MarkerManager.getMarker("SOUNDS");
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Marker MARKER = MarkerFactory.getMarker("SOUNDS");
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final float field_33021 = 0.5F;
 	private static final float field_33022 = 2.0F;
 	private static final float field_33023 = 0.0F;

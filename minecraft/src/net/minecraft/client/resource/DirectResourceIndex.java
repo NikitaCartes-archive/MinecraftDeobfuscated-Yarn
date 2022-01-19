@@ -1,5 +1,6 @@
 package net.minecraft.client.resource;
 
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitOption;
@@ -15,9 +16,11 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class DirectResourceIndex extends ResourceIndex {
+	private static final Logger field_36375 = LogUtils.getLogger();
 	private final File assetDir;
 
 	public DirectResourceIndex(File assetDir) {
@@ -67,7 +70,7 @@ public class DirectResourceIndex extends ResourceIndex {
 			return var7;
 		} catch (NoSuchFileException var11) {
 		} catch (IOException var12) {
-			LOGGER.warn("Unable to getFiles on {}", prefix, var12);
+			field_36375.warn("Unable to getFiles on {}", prefix, var12);
 		}
 
 		return Collections.emptyList();

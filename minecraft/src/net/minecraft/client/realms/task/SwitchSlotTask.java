@@ -1,13 +1,16 @@
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SwitchSlotTask extends LongRunningTask {
+	private static final Logger field_36361 = LogUtils.getLogger();
 	private final long worldId;
 	private final int slot;
 	private final Runnable callback;
@@ -43,7 +46,7 @@ public class SwitchSlotTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't switch world!");
+				field_36361.error("Couldn't switch world!");
 				this.error(var5.toString());
 			}
 		}

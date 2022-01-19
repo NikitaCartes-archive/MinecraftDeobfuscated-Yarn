@@ -3,6 +3,7 @@ package net.minecraft.network;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -175,7 +176,7 @@ import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
 
 public enum NetworkState {
 	HANDSHAKING(
@@ -461,6 +462,7 @@ public enum NetworkState {
 	}
 
 	static class PacketHandler<T extends PacketListener> {
+		private static final Logger field_36381 = LogUtils.getLogger();
 		final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
 		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
 
@@ -469,7 +471,7 @@ public enum NetworkState {
 			int j = this.packetIds.put(type, i);
 			if (j != -1) {
 				String string = "Packet " + type + " is already registered to ID " + j;
-				LogManager.getLogger().fatal(string);
+				field_36381.error(LogUtils.FATAL_MARKER, string);
 				throw new IllegalArgumentException(string);
 			} else {
 				this.packetFactories.add(packetFactory);

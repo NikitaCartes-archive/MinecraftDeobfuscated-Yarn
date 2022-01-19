@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -89,8 +90,10 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import org.slf4j.Logger;
 
 public class VillagerEntity extends MerchantEntity implements InteractionObserver, VillagerDataContainer {
+	private static final Logger field_36335 = LogUtils.getLogger();
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	public static final int field_30602 = 12;
 	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
@@ -489,7 +492,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		super.writeCustomDataToNbt(nbt);
 		VillagerData.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
-			.resultOrPartial(LOGGER::error)
+			.resultOrPartial(field_36335::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		nbt.putByte("FoodLevel", this.foodLevel);
 		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
@@ -507,7 +510,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		super.readCustomDataFromNbt(nbt);
 		if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
 			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("VillagerData")));
-			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
+			dataResult.resultOrPartial(field_36335::error).ifPresent(this::setVillagerData);
 		}
 
 		if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
@@ -622,7 +625,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	public void onDeath(DamageSource source) {
-		LOGGER.info("Villager {} died, message: '{}'", this, source.getDeathMessage(this).getString());
+		field_36335.info("Villager {} died, message: '{}'", this, source.getDeathMessage(this).getString());
 		Entity entity = source.getAttacker();
 		if (entity != null) {
 			this.notifyDeath(entity);
@@ -785,7 +788,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			LOGGER.info("Villager {} was struck by lightning {}.", this, lightning);
+			field_36335.info("Villager {} was struck by lightning {}.", this, lightning);
 			WitchEntity witchEntity = EntityType.WITCH.create(world);
 			witchEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 			witchEntity.initialize(world, world.getLocalDifficulty(witchEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);

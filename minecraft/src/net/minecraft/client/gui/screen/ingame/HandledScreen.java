@@ -289,7 +289,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		if (super.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		} else {
-			boolean bl = this.client.options.keyPickItem.matchesMouse(button) && this.client.interactionManager.hasCreativeInventory();
+			boolean bl = this.client.options.pickItemKey.matchesMouse(button) && this.client.interactionManager.hasCreativeInventory();
 			Slot slot = this.getSlotAt(mouseX, mouseY);
 			long l = Util.getMeasuringTimeMs();
 			this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
@@ -370,13 +370,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	private void onMouseClick(int button) {
 		if (this.focusedSlot != null && this.handler.getCursorStack().isEmpty()) {
-			if (this.client.options.keySwapHands.matchesMouse(button)) {
+			if (this.client.options.swapHandsKey.matchesMouse(button)) {
 				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
 				return;
 			}
 
 			for (int i = 0; i < 9; i++) {
-				if (this.client.options.keysHotbar[i].matchesMouse(button)) {
+				if (this.client.options.hotbarKeys[i].matchesMouse(button)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
 				}
 			}
@@ -514,7 +514,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 				this.onMouseClick(null, -999, ScreenHandler.packQuickCraftData(2, this.heldButtonType), SlotActionType.QUICK_CRAFT);
 			} else if (!this.handler.getCursorStack().isEmpty()) {
-				if (this.client.options.keyPickItem.matchesMouse(button)) {
+				if (this.client.options.pickItemKey.matchesMouse(button)) {
 					this.onMouseClick(slot, k, button, SlotActionType.CLONE);
 				} else {
 					boolean bl2 = k != -999
@@ -566,15 +566,15 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
-		} else if (this.client.options.keyInventory.matchesKey(keyCode, scanCode)) {
+		} else if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
 			this.onClose();
 			return true;
 		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
 			if (this.focusedSlot != null && this.focusedSlot.hasStack()) {
-				if (this.client.options.keyPickItem.matchesKey(keyCode, scanCode)) {
+				if (this.client.options.pickItemKey.matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 0, SlotActionType.CLONE);
-				} else if (this.client.options.keyDrop.matchesKey(keyCode, scanCode)) {
+				} else if (this.client.options.dropKey.matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, hasControlDown() ? 1 : 0, SlotActionType.THROW);
 				}
 			}
@@ -585,13 +585,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	protected boolean handleHotbarKeyPressed(int keyCode, int scanCode) {
 		if (this.handler.getCursorStack().isEmpty() && this.focusedSlot != null) {
-			if (this.client.options.keySwapHands.matchesKey(keyCode, scanCode)) {
+			if (this.client.options.swapHandsKey.matchesKey(keyCode, scanCode)) {
 				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
 				return true;
 			}
 
 			for (int i = 0; i < 9; i++) {
-				if (this.client.options.keysHotbar[i].matchesKey(keyCode, scanCode)) {
+				if (this.client.options.hotbarKeys[i].matchesKey(keyCode, scanCode)) {
 					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
 					return true;
 				}

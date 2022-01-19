@@ -8,6 +8,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -27,8 +28,7 @@ import javax.annotation.Nullable;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.math.WordPackedArray;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ChunkPalettedStorageFix extends DataFix {
 	private static final int field_29871 = 128;
@@ -39,7 +39,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 	private static final int field_29876 = 4;
 	private static final int field_29877 = 2;
 	private static final int field_29878 = 1;
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	static final BitSet BLOCKS_NEEDING_SIDE_UPDATE = new BitSet(256);
 	static final BitSet BLOCKS_NEEDING_IN_PLACE_UPDATE = new BitSet(256);
 	static final Dynamic<?> PUMPKIN = BlockStateFlattening.parseState("{Name:'minecraft:pumpkin'}");

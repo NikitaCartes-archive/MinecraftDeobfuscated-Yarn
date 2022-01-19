@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -103,6 +104,7 @@ import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemGroup;
@@ -279,12 +281,11 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
 import net.minecraft.world.explosion.Explosion;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text DISCONNECT_LOST_TEXT = new TranslatableText("disconnect.lost");
 	private final ClientConnection connection;
 	private final GameProfile profile;
@@ -292,7 +293,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final MinecraftClient client;
 	private ClientWorld world;
 	private ClientWorld.Properties worldProperties;
-	private boolean positionLookSetup;
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.<UUID, PlayerListEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
@@ -607,10 +607,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
 			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
-		if (!this.positionLookSetup) {
-			this.positionLookSetup = true;
-			this.client.setScreen(null);
-		}
 	}
 
 	@Override
@@ -672,7 +668,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			LightingProvider lightingProvider = this.world.getLightingProvider();
 
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				this.world.scheduleBlockRenders(packet.getX(), i, packet.getZ());
 				lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
 			}
 
@@ -831,6 +826,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
+		if (this.client.currentScreen instanceof DownloadingTerrainScreen downloadingTerrainScreen) {
+			downloadingTerrainScreen.method_40040();
+		}
 	}
 
 	@Override
@@ -848,7 +846,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				if (entity2 != null) {
 					entity2.startRiding(entity, true);
 					if (entity2 == this.client.player && !bl) {
-						this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.keySneak.getBoundKeyLocalizedText()), false);
+						if (entity instanceof BoatEntity) {
+							this.client.player.prevYaw = entity.getYaw();
+							this.client.player.setYaw(entity.getYaw());
+							this.client.player.setHeadYaw(entity.getYaw());
+						}
+
+						this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
 					}
 				}
 			}
@@ -916,7 +920,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		DimensionType dimensionType = packet.getDimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
-		this.positionLookSetup = false;
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			Map<String, MapState> map = this.world.getMapStates();
@@ -1157,18 +1160,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					.addMessage(
 						new TranslatableText(
 							"demo.help.movement",
-							gameOptions.keyForward.getBoundKeyLocalizedText(),
-							gameOptions.keyLeft.getBoundKeyLocalizedText(),
-							gameOptions.keyBack.getBoundKeyLocalizedText(),
-							gameOptions.keyRight.getBoundKeyLocalizedText()
+							gameOptions.forwardKey.getBoundKeyLocalizedText(),
+							gameOptions.leftKey.getBoundKeyLocalizedText(),
+							gameOptions.backKey.getBoundKeyLocalizedText(),
+							gameOptions.rightKey.getBoundKeyLocalizedText()
 						)
 					);
 			} else if (f == GameStateChangeS2CPacket.DEMO_JUMP_HELP) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
 			} else if (f == GameStateChangeS2CPacket.DEMO_INVENTORY_HELP) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
 			} else if (f == GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE) {
-				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.keyScreenshot.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
 			}
 		} else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
 			this.world

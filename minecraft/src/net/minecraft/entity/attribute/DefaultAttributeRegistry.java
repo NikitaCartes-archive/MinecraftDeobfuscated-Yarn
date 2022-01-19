@@ -1,6 +1,7 @@
 package net.minecraft.entity.attribute;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -69,11 +70,10 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class DefaultAttributeRegistry {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder()
 		.put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build())
 		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())

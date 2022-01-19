@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -25,15 +26,18 @@ public class BuiltChunkStorage {
 	}
 
 	protected void createChunks(ChunkBuilder chunkBuilder) {
-		int i = this.sizeX * this.sizeY * this.sizeZ;
-		this.chunks = new ChunkBuilder.BuiltChunk[i];
+		if (!MinecraftClient.getInstance().isOnThread()) {
+			throw new IllegalStateException("createChunks called from wrong thread: " + Thread.currentThread().getName());
+		} else {
+			int i = this.sizeX * this.sizeY * this.sizeZ;
+			this.chunks = new ChunkBuilder.BuiltChunk[i];
 
-		for (int j = 0; j < this.sizeX; j++) {
-			for (int k = 0; k < this.sizeY; k++) {
-				for (int l = 0; l < this.sizeZ; l++) {
-					int m = this.getChunkIndex(j, k, l);
-					this.chunks[m] = chunkBuilder.new BuiltChunk(m);
-					this.chunks[m].setOrigin(j * 16, k * 16, l * 16);
+			for (int j = 0; j < this.sizeX; j++) {
+				for (int k = 0; k < this.sizeY; k++) {
+					for (int l = 0; l < this.sizeZ; l++) {
+						int m = this.getChunkIndex(j, k, l);
+						this.chunks[m] = chunkBuilder.new BuiltChunk(m, j * 16, k * 16, l * 16);
+					}
 				}
 			}
 		}
@@ -57,8 +61,8 @@ public class BuiltChunkStorage {
 	}
 
 	public void updateCameraPosition(double x, double z) {
-		int i = MathHelper.floor(x);
-		int j = MathHelper.floor(z);
+		int i = MathHelper.ceil(x);
+		int j = MathHelper.ceil(z);
 
 		for (int k = 0; k < this.sizeX; k++) {
 			int l = this.sizeX * 16;
@@ -73,7 +77,10 @@ public class BuiltChunkStorage {
 				for (int s = 0; s < this.sizeY; s++) {
 					int t = this.world.getBottomY() + s * 16;
 					ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(k, s, o)];
-					builtChunk.setOrigin(n, t, r);
+					BlockPos blockPos = builtChunk.getOrigin();
+					if (n != blockPos.getX() || t != blockPos.getY() || r != blockPos.getZ()) {
+						builtChunk.setOrigin(n, t, r);
+					}
 				}
 			}
 		}

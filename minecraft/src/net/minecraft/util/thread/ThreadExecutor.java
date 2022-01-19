@@ -2,6 +2,7 @@ package net.minecraft.util.thread;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -11,12 +12,11 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.minecraft.util.profiler.SampleType;
 import net.minecraft.util.profiler.Sampler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class ThreadExecutor<R extends Runnable> implements SampleableExecutor, MessageListener<R>, Executor {
 	private final String name;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Queue<R> tasks = Queues.<R>newConcurrentLinkedQueue();
 	private int executionsInProgress;
 
@@ -89,6 +89,10 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
+	public void method_40000(Runnable runnable) {
+		this.execute(runnable);
+	}
+
 	protected void cancelTasks() {
 		this.tasks.clear();
 	}
@@ -133,7 +137,8 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		try {
 			task.run();
 		} catch (Exception var3) {
-			LOGGER.fatal("Error executing task on {}", this.getName(), var3);
+			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var3);
+			throw var3;
 		}
 	}
 

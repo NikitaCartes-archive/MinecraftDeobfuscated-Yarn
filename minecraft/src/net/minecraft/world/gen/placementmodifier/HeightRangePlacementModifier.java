@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.heightprovider.TrapezoidHeightProvider;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
@@ -34,7 +35,7 @@ public class HeightRangePlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
 		return Stream.of(pos.withY(this.height.get(random, context)));
 	}
 

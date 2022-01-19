@@ -48,7 +48,7 @@ import net.minecraft.util.math.Vec2f;
 
 @Environment(EnvType.CLIENT)
 public class CommandSuggestor {
-	private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("(\\s+)");
 	private static final Style ERROR_STYLE = Style.EMPTY.withColor(Formatting.RED);
 	private static final Style INFO_STYLE = Style.EMPTY.withColor(Formatting.GRAY);
 	private static final List<Style> HIGHLIGHT_STYLES = (List<Style>)Stream.of(
@@ -150,7 +150,7 @@ public class CommandSuggestor {
 
 	private List<Suggestion> sortSuggestions(Suggestions suggestions) {
 		String string = this.textField.getText().substring(0, this.textField.getCursor());
-		int i = getLastPlayerNameStart(string);
+		int i = getStartOfCurrentWord(string);
 		String string2 = string.substring(i).toLowerCase(Locale.ROOT);
 		List<Suggestion> list = Lists.<Suggestion>newArrayList();
 		List<Suggestion> list2 = Lists.<Suggestion>newArrayList();
@@ -204,18 +204,18 @@ public class CommandSuggestor {
 			}
 		} else {
 			String string2 = string.substring(0, i);
-			int j = getLastPlayerNameStart(string2);
+			int j = getStartOfCurrentWord(string2);
 			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getPlayerNames();
 			this.pendingSuggestions = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string2, j));
 		}
 	}
 
-	private static int getLastPlayerNameStart(String input) {
+	private static int getStartOfCurrentWord(String input) {
 		if (Strings.isNullOrEmpty(input)) {
 			return 0;
 		} else {
 			int i = 0;
-			Matcher matcher = BACKSLASH_S_PATTERN.matcher(input);
+			Matcher matcher = WHITESPACE_PATTERN.matcher(input);
 
 			while (matcher.find()) {
 				i = matcher.end();

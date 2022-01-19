@@ -1,5 +1,6 @@
 package net.minecraft.client.gl;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Locale;
@@ -11,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.StringHelper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 
 /**
  * Handles the flattening of "moj_" import strings in the loaded GLSL shader file.
@@ -63,7 +63,7 @@ public abstract class GLImportProcessor {
 					String string3 = source.substring(j, matcher.start(1));
 					String string4 = path + string2;
 					String string5 = this.loadImport(bl, string4);
-					if (!Strings.isEmpty(string5)) {
+					if (!Strings.isNullOrEmpty(string5)) {
 						if (!StringHelper.endsWithLineBreak(string5)) {
 							string5 = string5 + System.lineSeparator();
 						}

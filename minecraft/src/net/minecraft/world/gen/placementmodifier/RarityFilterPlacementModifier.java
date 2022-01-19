@@ -1,9 +1,10 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class RarityFilterPlacementModifier extends AbstractConditionalPlacementModifier {
 	public static final Codec<RarityFilterPlacementModifier> MODIFIER_CODEC = Codecs.POSITIVE_INT
@@ -21,7 +22,7 @@ public class RarityFilterPlacementModifier extends AbstractConditionalPlacementM
 	}
 
 	@Override
-	protected boolean shouldPlace(DecoratorContext context, Random random, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
 		return random.nextFloat() < 1.0F / (float)this.chance;
 	}
 

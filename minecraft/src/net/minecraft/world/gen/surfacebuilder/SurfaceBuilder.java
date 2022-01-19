@@ -188,15 +188,12 @@ public class SurfaceBuilder {
 	}
 
 	protected int method_39552(int i, int j) {
-		return this.method_39554(this.surfaceNoise, i, j);
+		double d = this.surfaceNoise.sample((double)i, 0.0, (double)j);
+		return (int)(d * 2.75 + 3.0 + this.randomDeriver.createRandom(i, 0, j).nextDouble() * 0.25);
 	}
 
-	protected int method_39555(int i, int j) {
-		return this.method_39554(this.surfaceSecondaryNoise, i, j);
-	}
-
-	private int method_39554(DoublePerlinNoiseSampler doublePerlinNoiseSampler, int i, int j) {
-		return (int)(doublePerlinNoiseSampler.sample((double)i, 0.0, (double)j) * 2.75 + 3.0 + this.randomDeriver.createRandom(i, 0, j).nextDouble() * 0.25);
+	protected double method_39555(int i, int j) {
+		return this.surfaceSecondaryNoise.sample((double)i, 0.0, (double)j);
 	}
 
 	private boolean isDefaultBlock(BlockState state) {

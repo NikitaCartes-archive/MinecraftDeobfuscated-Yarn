@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.mojang.logging.LogUtils;
 import java.util.Random;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -24,11 +25,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class CommandBlock extends BlockWithEntity implements OperatorBlock {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
 	private final boolean auto;

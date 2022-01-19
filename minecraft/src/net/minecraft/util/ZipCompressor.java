@@ -1,6 +1,7 @@
 package net.minecraft.util;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +16,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A ZIP compressor builds up a ZIP file. It completes the ZIP file when it is
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * closed.
  */
 public class ZipCompressor implements Closeable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Path file;
 	private final Path temp;
 	private final FileSystem zip;

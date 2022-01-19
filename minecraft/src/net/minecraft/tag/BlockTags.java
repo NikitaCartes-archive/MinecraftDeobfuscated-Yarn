@@ -86,6 +86,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> SOUL_SPEED_BLOCKS = register("soul_speed_blocks");
 	public static final Tag.Identified<Block> WALL_POST_OVERRIDE = register("wall_post_override");
 	public static final Tag.Identified<Block> CLIMBABLE = register("climbable");
+	public static final Tag.Identified<Block> FALL_DAMAGE_RESETTING = register("fall_damage_resetting");
 	public static final Tag.Identified<Block> SHULKER_BOXES = register("shulker_boxes");
 	public static final Tag.Identified<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
 	public static final Tag.Identified<Block> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");

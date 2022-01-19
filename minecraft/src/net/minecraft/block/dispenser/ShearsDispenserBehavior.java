@@ -35,7 +35,9 @@ public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 
 	private static boolean tryShearBlock(ServerWorld world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.isIn(BlockTags.BEEHIVES)) {
+		if (blockState.isIn(
+			BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL) && abstractBlockState.getBlock() instanceof BeehiveBlock
+		)) {
 			int i = (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL);
 			if (i >= 5) {
 				world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);

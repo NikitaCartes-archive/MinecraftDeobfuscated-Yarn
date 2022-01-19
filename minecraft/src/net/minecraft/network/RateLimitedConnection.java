@@ -1,17 +1,17 @@
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A connection that disconnects from the backing netty channel if too
  * many packets are received.
  */
 public class RateLimitedConnection extends ClientConnection {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text RATE_LIMIT_EXCEEDED_MESSAGE = new TranslatableText("disconnect.exceeded_packet_rate");
 	private final int rateLimit;
 

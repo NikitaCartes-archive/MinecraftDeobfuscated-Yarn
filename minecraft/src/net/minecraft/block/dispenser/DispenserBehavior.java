@@ -1,5 +1,6 @@
 package net.minecraft.block.dispenser;
 
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -70,11 +71,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public interface DispenserBehavior {
-	Logger LOGGER = LogManager.getLogger();
+	Logger LOGGER = LogUtils.getLogger();
 	DispenserBehavior NOOP = (pointer, stack) -> stack;
 
 	ItemStack dispense(BlockPointer pointer, ItemStack stack);
@@ -522,41 +522,45 @@ public interface DispenserBehavior {
 			DispenserBlock.registerBehavior(ShulkerBoxBlock.get(dyeColor).asItem(), new BlockPlacementDispenserBehavior());
 		}
 
-		DispenserBlock.registerBehavior(Items.GLASS_BOTTLE.asItem(), new FallibleItemDispenserBehavior() {
-			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
+		DispenserBlock.registerBehavior(
+			Items.GLASS_BOTTLE.asItem(),
+			new FallibleItemDispenserBehavior() {
+				private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 
-			private ItemStack tryPutFilledBottle(BlockPointer pointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
-				emptyBottleStack.decrement(1);
-				if (emptyBottleStack.isEmpty()) {
-					pointer.getWorld().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.getPos());
-					return filledBottleStack.copy();
-				} else {
-					if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
-						this.fallbackBehavior.dispense(pointer, filledBottleStack.copy());
+				private ItemStack tryPutFilledBottle(BlockPointer pointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
+					emptyBottleStack.decrement(1);
+					if (emptyBottleStack.isEmpty()) {
+						pointer.getWorld().emitGameEvent(null, GameEvent.FLUID_PICKUP, pointer.getPos());
+						return filledBottleStack.copy();
+					} else {
+						if (pointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {
+							this.fallbackBehavior.dispense(pointer, filledBottleStack.copy());
+						}
+
+						return emptyBottleStack;
 					}
+				}
 
-					return emptyBottleStack;
+				@Override
+				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+					this.setSuccess(false);
+					ServerWorld serverWorld = pointer.getWorld();
+					BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+					BlockState blockState = serverWorld.getBlockState(blockPos);
+					if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL) && state.getBlock() instanceof BeehiveBlock)
+						&& (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
+						((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+						this.setSuccess(true);
+						return this.tryPutFilledBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
+					} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
+						this.setSuccess(true);
+						return this.tryPutFilledBottle(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
+					} else {
+						return super.dispenseSilently(pointer, stack);
+					}
 				}
 			}
-
-			@Override
-			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-				this.setSuccess(false);
-				ServerWorld serverWorld = pointer.getWorld();
-				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-				BlockState blockState = serverWorld.getBlockState(blockPos);
-				if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL)) && (Integer)blockState.get(BeehiveBlock.HONEY_LEVEL) >= 5) {
-					((BeehiveBlock)blockState.getBlock()).takeHoney(serverWorld, blockState, blockPos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
-					this.setSuccess(true);
-					return this.tryPutFilledBottle(pointer, stack, new ItemStack(Items.HONEY_BOTTLE));
-				} else if (serverWorld.getFluidState(blockPos).isIn(FluidTags.WATER)) {
-					this.setSuccess(true);
-					return this.tryPutFilledBottle(pointer, stack, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER));
-				} else {
-					return super.dispenseSilently(pointer, stack);
-				}
-			}
-		});
+		);
 		DispenserBlock.registerBehavior(Items.GLOWSTONE, new FallibleItemDispenserBehavior() {
 			@Override
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {

@@ -7,9 +7,9 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.types.Type;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash.Strategy;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -63,14 +63,10 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.lookup.StrSubstitutor;
+import org.slf4j.Logger;
 
 public class Util {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_PARALLELISM = 255;
 	private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
 	private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
@@ -86,9 +82,6 @@ public class Util {
 		.orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
 	private static Consumer<String> missingBreakpointHandler = string -> {
 	};
-
-	public static void method_39982() {
-	}
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
@@ -700,22 +693,6 @@ public class Util {
 				return "memoize/2[function=" + biFunction + ", size=" + this.cache.size() + "]";
 			}
 		};
-	}
-
-	static {
-		System.setProperty("log4j2.formatMsgNoLookups", "true");
-		LoggerContext loggerContext = LoggerContext.getContext(false);
-		PropertyChangeListener propertyChangeListener = propertyChangeEvent -> {
-			Configuration configuration = loggerContext.getConfiguration();
-			if (configuration != null) {
-				StrSubstitutor strSubstitutor = configuration.getStrSubstitutor();
-				if (strSubstitutor != null) {
-					strSubstitutor.setVariableResolver(null);
-				}
-			}
-		};
-		propertyChangeListener.propertyChange(null);
-		loggerContext.addPropertyChangeListener(propertyChangeListener);
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,8 +30,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A recipe manager allows easier use of recipes, such as finding matches and
@@ -39,7 +39,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class RecipeManager extends JsonDataLoader {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipes = ImmutableMap.of();
 	private Map<Identifier, Recipe<?>> recipesById = ImmutableMap.of();
 	/**

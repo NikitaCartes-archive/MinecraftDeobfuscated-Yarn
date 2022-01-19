@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
@@ -22,6 +23,8 @@ import net.minecraft.util.math.MathHelper;
 public class FontStorage implements AutoCloseable {
 	private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
 	private static final Glyph SPACE = () -> 4.0F;
+	private static final Glyph field_36363 = () -> 0.0F;
+	private static final int field_36364 = 8204;
 	private static final Random RANDOM = new Random();
 	private final TextureManager textureManager;
 	private final Identifier id;
@@ -56,7 +59,11 @@ public class FontStorage implements AutoCloseable {
 		intSet.forEach(
 			codePoint -> {
 				for (Font fontx : fonts) {
-					Glyph glyph = (Glyph)(codePoint == 32 ? SPACE : fontx.getGlyph(codePoint));
+					Glyph glyph = this.method_40038(codePoint);
+					if (glyph == null) {
+						glyph = fontx.getGlyph(codePoint);
+					}
+
 					if (glyph != null) {
 						set.add(fontx);
 						if (glyph != BlankGlyph.INSTANCE) {
@@ -93,9 +100,20 @@ public class FontStorage implements AutoCloseable {
 		this.glyphAtlases.clear();
 	}
 
+	@Nullable
+	private Glyph method_40038(int i) {
+		return switch (i) {
+			case 32 -> SPACE;
+			case 8204 -> field_36363;
+			default -> null;
+		};
+	}
+
 	public Glyph getGlyph(int codePoint) {
-		return this.glyphCache
-			.computeIfAbsent(codePoint, (Int2ObjectFunction<? extends Glyph>)(codePointx -> (Glyph)(codePointx == 32 ? SPACE : this.getRenderableGlyph(codePointx))));
+		return this.glyphCache.computeIfAbsent(codePoint, (Int2ObjectFunction<? extends Glyph>)(codePointx -> {
+			Glyph glyph = this.method_40038(codePointx);
+			return (Glyph)(glyph == null ? this.getRenderableGlyph(codePointx) : glyph);
+		}));
 	}
 
 	private RenderableGlyph getRenderableGlyph(int codePoint) {
@@ -110,11 +128,12 @@ public class FontStorage implements AutoCloseable {
 	}
 
 	public GlyphRenderer getGlyphRenderer(int i) {
-		return this.glyphRendererCache
-			.computeIfAbsent(
-				i,
-				(Int2ObjectFunction<? extends GlyphRenderer>)(ix -> (GlyphRenderer)(ix == 32 ? EMPTY_GLYPH_RENDERER : this.getGlyphRenderer(this.getRenderableGlyph(ix))))
-			);
+		return this.glyphRendererCache.computeIfAbsent(i, (Int2ObjectFunction<? extends GlyphRenderer>)(ix -> {
+			return (GlyphRenderer)(switch (ix) {
+				case 32, 8204 -> EMPTY_GLYPH_RENDERER;
+				default -> this.getGlyphRenderer(this.getRenderableGlyph(ix));
+			});
+		}));
 	}
 
 	private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

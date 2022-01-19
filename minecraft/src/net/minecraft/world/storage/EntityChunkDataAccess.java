@@ -2,6 +2,7 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.io.IOException;
@@ -22,11 +23,10 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.TaskExecutor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EntityChunkDataAccess implements ChunkDataAccess<Entity> {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String ENTITIES_KEY = "Entities";
 	private static final String POSITION_KEY = "Position";
 	private final ServerWorld world;

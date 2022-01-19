@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class HeightmapPlacementModifier extends PlacementModifier {
 	public static final Codec<HeightmapPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
@@ -23,7 +24,7 @@ public class HeightmapPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
 		int i = pos.getX();
 		int j = pos.getZ();
 		int k = context.getTopY(this.heightmap, i, j);

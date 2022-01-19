@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.logging.LogUtils;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
@@ -150,11 +151,10 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int KEEP_ALIVE_INTERVAL = 15000;
 	public final ClientConnection connection;
 	private final MinecraftServer server;
@@ -209,7 +209,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.getYaw(), this.player.getPitch());
 		this.ticks++;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
-		if (this.floating && !this.player.isSleeping()) {
+		if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle()) {
 			if (++this.floatingTicks > 80) {
 				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
 				this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
@@ -299,9 +299,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private <T, R> void filterText(T text, Consumer<R> consumer, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer) {
 		ThreadExecutor<?> threadExecutor = this.player.getWorld().getServer();
-		Consumer<R> consumer2 = object -> {
+		Consumer<R> consumer2 = object2 -> {
 			if (this.getConnection().isOpen()) {
-				consumer.accept(object);
+				try {
+					consumer.accept(object2);
+				} catch (Exception var5x) {
+					LOGGER.error("Failed to handle chat packet {}, suppressing error", text, var5x);
+				}
 			} else {
 				LOGGER.debug("Ignoring packet due to disconnection");
 			}
@@ -375,6 +379,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
+				boolean bl2 = entity.field_36331;
 				entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
 				l = g - entity.getX();
 				m = h - entity.getY();
@@ -384,15 +389,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				n = i - entity.getZ();
 				p = l * l + m * m + n * n;
-				boolean bl2 = false;
+				boolean bl3 = false;
 				if (p > 0.0625) {
-					bl2 = true;
+					bl3 = true;
 					LOGGER.warn("{} (vehicle of {}) moved wrongly! {}", entity.getName().getString(), this.player.getName().getString(), Math.sqrt(p));
 				}
 
 				entity.updatePositionAndAngles(g, h, i, j, k);
-				boolean bl3 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
-				if (bl && (bl2 || !bl3)) {
+				boolean bl4 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
+				if (bl && (bl3 || !bl4)) {
 					entity.updatePositionAndAngles(d, e, f, j, k);
 					this.connection.send(new VehicleMoveS2CPacket(entity));
 					return;
@@ -400,7 +405,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				this.player.getWorld().getChunkManager().updatePosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-				this.vehicleFloating = m >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
+				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
@@ -834,6 +839,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 								this.player.jump();
 							}
 
+							boolean bl2 = this.player.field_36331;
 							this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
 							m = d - this.player.getX();
 							n = e - this.player.getY();
@@ -843,26 +849,28 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 							o = f - this.player.getZ();
 							q = m * m + n * n + o * o;
-							boolean bl2 = false;
+							boolean bl3 = false;
 							if (!this.player.isInTeleportationState()
 								&& q > 0.0625
 								&& !this.player.isSleeping()
 								&& !this.player.interactionManager.isCreative()
 								&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
-								bl2 = true;
+								bl3 = true;
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
 							this.player.updatePositionAndAngles(d, e, f, g, h);
 							if (this.player.noClip
 								|| this.player.isSleeping()
-								|| (!bl2 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
+								|| (!bl3 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
 								this.floating = n >= -0.03125
+									&& !bl2
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
 									&& !this.server.isFlightEnabled()
 									&& !this.player.getAbilities().allowFlying
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 									&& !this.player.isFallFlying()
+									&& !this.player.isUsingRiptide()
 									&& this.isEntityOnAir(this.player);
 								this.player.getWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getY() - l, packet.isOnGround());

@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,11 +11,10 @@ import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.util.profiler.ReadableProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TickDurationMonitor {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final LongSupplier timeGetter;
 	private final long overtime;
 	private int tickCount;

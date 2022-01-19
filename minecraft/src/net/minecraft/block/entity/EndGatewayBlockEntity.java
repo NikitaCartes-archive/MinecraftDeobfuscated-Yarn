@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -28,11 +29,10 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.feature.EndConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EndGatewayBlockEntity extends EndPortalBlockEntity {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_31368 = 200;
 	private static final int field_31369 = 40;
 	private static final int field_31370 = 2400;

@@ -2,6 +2,7 @@ package net.minecraft.world.storage;
 
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
@@ -20,11 +21,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.util.thread.TaskQueue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class StorageIoWorker implements NbtScannable, AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final AtomicBoolean closed = new AtomicBoolean();
 	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
 	private final RegionBasedStorage storage;

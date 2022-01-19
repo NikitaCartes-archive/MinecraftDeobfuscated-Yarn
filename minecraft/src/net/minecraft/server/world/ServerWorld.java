@@ -3,6 +3,7 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -141,8 +142,7 @@ import net.minecraft.world.poi.PointOfInterestType;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.tick.WorldTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
@@ -154,7 +154,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private static final int field_35657 = 180000;
 	private static final int field_35658 = 3600;
 	private static final int field_35659 = 15600;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * The number of ticks ({@value}) the world will continue to tick entities after
 	 * all players have left and the world does not contain any forced chunks.
@@ -308,7 +308,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.swap("raid");
 		this.raidManager.tick();
 		profiler.swap("chunkSource");
-		this.getChunkManager().tick(shouldKeepTicking);
+		this.getChunkManager().tick(shouldKeepTicking, true);
 		profiler.swap("blockEvents");
 		this.processSyncedBlockEvents();
 		this.inBlockTick = false;
@@ -1594,11 +1594,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public boolean shouldTickEntity(BlockPos pos) {
-		return this.entityManager.shouldTick(pos);
+		return this.entityManager.method_40022(pos) && this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
 	}
 
-	public boolean shouldTickEntity(ChunkPos pos) {
-		return this.entityManager.shouldTick(pos);
+	public boolean method_39999(BlockPos blockPos) {
+		return this.entityManager.method_40022(blockPos);
+	}
+
+	public boolean method_39998(ChunkPos chunkPos) {
+		return this.entityManager.method_40021(chunkPos);
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {

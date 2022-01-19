@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -46,11 +47,10 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.MultiTickScheduler;
 import net.minecraft.world.tick.QueryableTickScheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ChunkRegion implements StructureWorldAccess {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final List<Chunk> chunks;
 	private final Chunk centerPos;
 	private final int width;

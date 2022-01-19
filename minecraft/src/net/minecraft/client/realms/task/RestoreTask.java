@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
@@ -9,9 +10,11 @@ import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RestoreTask extends LongRunningTask {
+	private static final Logger field_36359 = LogUtils.getLogger();
 	private final Backup backup;
 	private final long worldId;
 	private final RealmsConfigureWorldScreen lastScreen;
@@ -53,7 +56,7 @@ public class RestoreTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't restore backup", (Throwable)var5);
+				field_36359.error("Couldn't restore backup", (Throwable)var5);
 				setScreen(new RealmsGenericErrorScreen(var5, this.lastScreen));
 				return;
 			} catch (Exception var6) {
@@ -61,7 +64,7 @@ public class RestoreTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't restore backup", (Throwable)var6);
+				field_36359.error("Couldn't restore backup", (Throwable)var6);
 				this.error(var6.getLocalizedMessage());
 				return;
 			}

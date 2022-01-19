@@ -13,16 +13,15 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
-import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
-public class NetherFossilFeature extends MarginedStructureFeature<RangeDecoratorConfig> {
-	public NetherFossilFeature(Codec<RangeDecoratorConfig> configCodec) {
+public class NetherFossilFeature extends MarginedStructureFeature<RangeFeatureConfig> {
+	public NetherFossilFeature(Codec<RangeFeatureConfig> configCodec) {
 		super(configCodec, NetherFossilFeature::addPieces);
 	}
 
-	private static Optional<StructurePiecesGenerator<RangeDecoratorConfig>> addPieces(StructureGeneratorFactory.Context<RangeDecoratorConfig> context) {
+	private static Optional<StructurePiecesGenerator<RangeFeatureConfig>> addPieces(StructureGeneratorFactory.Context<RangeFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
 		int i = context.chunkPos().getStartX() + chunkRandom.nextInt(16);

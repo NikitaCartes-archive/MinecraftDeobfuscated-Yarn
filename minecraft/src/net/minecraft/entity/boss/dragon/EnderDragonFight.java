@@ -5,6 +5,7 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -53,19 +54,18 @@ import net.minecraft.world.gen.feature.EndConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EnderDragonFight {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int CHECK_DRAGON_SEEN_INTERVAL = 1200;
 	private static final int CRYSTAL_COUNTING_INTERVAL = 100;
 	private static final int field_31445 = 20;
-	private static final int field_31446 = 8;
+	private static final int ISLAND_SIZE = 8;
 	public static final int field_31441 = 9;
-	private static final int field_31447 = 20;
+	private static final int PLAYER_COUNTING_INTERVAL = 20;
 	private static final int field_31448 = 96;
-	public static final int field_31442 = 128;
+	public static final int SPAWN_Y = 128;
 	private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maxDistance(0.0, 128.0, 0.0, 192.0));
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(
 			new TranslatableText("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS

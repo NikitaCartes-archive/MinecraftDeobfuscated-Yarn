@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class RandomOffsetPlacementModifier extends PlacementModifier {
 	public static final Codec<RandomOffsetPlacementModifier> MODIFIER_CODEC = RecordCodecBuilder.create(
@@ -37,7 +38,7 @@ public class RandomOffsetPlacementModifier extends PlacementModifier {
 	}
 
 	@Override
-	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, BlockPos pos) {
+	public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
 		int i = pos.getX() + this.spreadXz.get(random);
 		int j = pos.getY() + this.spreadY.get(random);
 		int k = pos.getZ() + this.spreadXz.get(random);

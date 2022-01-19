@@ -3,6 +3,7 @@ package net.minecraft.resource;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
@@ -17,11 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ReloadableResourceManagerImpl implements ReloadableResourceManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
 	private final List<ResourceReloader> reloaders = Lists.<ResourceReloader>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
@@ -110,7 +110,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Override
 	public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
-		LOGGER.info("Reloading ResourceManager: {}", () -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+		LOGGER.info("Reloading ResourceManager: {}", LogUtils.defer(() -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", "))));
 		this.clear();
 
 		for (ResourcePack resourcePack : packs) {

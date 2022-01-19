@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -134,11 +135,10 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ServerPlayerEntity extends PlayerEntity {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29769 = 32;
 	private static final int field_29770 = 10;
 	public ServerPlayNetworkHandler networkHandler;
@@ -629,14 +629,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void updateKilledAdvancementCriterion(Entity killer, int score, DamageSource damageSource) {
-		if (killer != this) {
-			super.updateKilledAdvancementCriterion(killer, score, damageSource);
+	public void updateKilledAdvancementCriterion(Entity entityKilled, int score, DamageSource damageSource) {
+		if (entityKilled != this) {
+			super.updateKilledAdvancementCriterion(entityKilled, score, damageSource);
 			this.addScore(score);
 			String string = this.getEntityName();
-			String string2 = killer.getEntityName();
+			String string2 = entityKilled.getEntityName();
 			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
-			if (killer instanceof PlayerEntity) {
+			if (entityKilled instanceof PlayerEntity) {
 				this.incrementStat(Stats.PLAYER_KILLS);
 				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			} else {
@@ -645,7 +645,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 			this.updateScoreboardScore(string, string2, ScoreboardCriterion.TEAM_KILLS);
 			this.updateScoreboardScore(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			Criteria.PLAYER_KILLED_ENTITY.trigger(this, killer, damageSource);
+			Criteria.PLAYER_KILLED_ENTITY.trigger(this, entityKilled, damageSource);
 		}
 	}
 

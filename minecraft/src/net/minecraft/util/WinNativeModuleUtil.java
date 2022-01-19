@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.logging.LogUtils;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
@@ -21,11 +22,10 @@ import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class WinNativeModuleUtil {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int CODE_PAGE_MASK = 65535;
 	private static final int EN_US_CODE_PAGE = 1033;
 	private static final int LANGUAGE_ID_MASK = -65536;
@@ -53,7 +53,12 @@ public class WinNativeModuleUtil {
 			IntByReference intByReference = new IntByReference();
 			int i = Version.INSTANCE.GetFileVersionInfoSize(path, intByReference);
 			if (i == 0) {
-				throw new Win32Exception(Native.getLastError());
+				int j = Native.getLastError();
+				if (j != 1813 && j != 1812) {
+					throw new Win32Exception(j);
+				} else {
+					return Optional.empty();
+				}
 			} else {
 				Pointer pointer = new Memory((long)i);
 				if (!Version.INSTANCE.GetFileVersionInfo(path, 0, i, pointer)) {
@@ -66,12 +71,12 @@ public class WinNativeModuleUtil {
 					if (!optionalInt.isPresent()) {
 						return Optional.empty();
 					} else {
-						int j = optionalInt.getAsInt();
-						int k = j & 65535;
-						int l = (j & -65536) >> 16;
-						String string = queryString(pointer, getStringFileInfoPath("FileDescription", k, l), intByReference2);
-						String string2 = queryString(pointer, getStringFileInfoPath("CompanyName", k, l), intByReference2);
-						String string3 = queryString(pointer, getStringFileInfoPath("FileVersion", k, l), intByReference2);
+						int k = optionalInt.getAsInt();
+						int l = k & 65535;
+						int m = (k & -65536) >> 16;
+						String string = queryString(pointer, getStringFileInfoPath("FileDescription", l, m), intByReference2);
+						String string2 = queryString(pointer, getStringFileInfoPath("CompanyName", l, m), intByReference2);
+						String string3 = queryString(pointer, getStringFileInfoPath("FileVersion", l, m), intByReference2);
 						return Optional.of(new WinNativeModuleUtil.NativeModuleInfo(string, string3, string2));
 					}
 				}

@@ -1,5 +1,6 @@
 package net.minecraft.client.realms;
 
+import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -17,12 +18,11 @@ import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.TranslatableText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConnection {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	final Screen onlineScreen;
 	volatile boolean aborted;
 	@Nullable

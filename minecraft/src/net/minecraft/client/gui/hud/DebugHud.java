@@ -239,16 +239,21 @@ public class DebugHud extends DrawableHelper {
 					Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().getX(), this.client.getCameraEntity().getY(), this.client.getCameraEntity().getZ()
 				)
 			);
-			list.add(String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 			list.add(
 				String.format(
-					"Chunk: %d %d %d in %d %d %d",
-					blockPos.getX() & 15,
-					blockPos.getY() & 15,
-					blockPos.getZ() & 15,
-					ChunkSectionPos.getSectionCoord(blockPos.getX()),
+					"Block: %d %d %d [%d %d %d]", blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15
+				)
+			);
+			list.add(
+				String.format(
+					"Chunk: %d %d %d [%d %d in r.%d.%d.mca]",
+					chunkPos.x,
 					ChunkSectionPos.getSectionCoord(blockPos.getY()),
-					ChunkSectionPos.getSectionCoord(blockPos.getZ())
+					chunkPos.z,
+					chunkPos.getRegionRelativeX(),
+					chunkPos.getRegionRelativeZ(),
+					chunkPos.getRegionX(),
+					chunkPos.getRegionZ()
 				)
 			);
 			list.add(

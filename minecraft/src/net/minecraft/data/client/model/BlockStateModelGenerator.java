@@ -2014,7 +2014,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registerCauldron() {
+	private void registerCauldrons() {
 		this.registerItemModel(Items.CAULDRON);
 		this.registerSimpleState(Blocks.CAULDRON);
 		this.blockStateCollector
@@ -3573,7 +3573,7 @@ public class BlockStateModelGenerator {
 		this.registerCake();
 		this.registerCampfire(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
 		this.registerCartographyTable();
-		this.registerCauldron();
+		this.registerCauldrons();
 		this.registerChorusFlower();
 		this.registerChorusPlant();
 		this.registerComposter();

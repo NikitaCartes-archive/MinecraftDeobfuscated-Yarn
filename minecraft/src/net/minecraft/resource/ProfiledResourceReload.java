@@ -1,6 +1,7 @@
 package net.minecraft.resource;
 
 import com.google.common.base.Stopwatch;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -10,15 +11,14 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.ProfilerSystem;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * An implementation of resource reload that includes an additional profiling
  * summary for each reloader.
  */
 public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourceReload.Summary> {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Stopwatch reloadTimer = Stopwatch.createUnstarted();
 
 	public ProfiledResourceReload(

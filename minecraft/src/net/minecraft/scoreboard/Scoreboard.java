@@ -2,6 +2,7 @@ package net.minecraft.scoreboard;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -14,11 +15,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class Scoreboard {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int LIST_DISPLAY_SLOT_ID = 0;
 	public static final int SIDEBAR_DISPLAY_SLOT_ID = 1;
 	public static final int BELOW_NAME_DISPLAY_SLOT_ID = 2;

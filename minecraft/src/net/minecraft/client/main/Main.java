@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.properties.PropertyMap.Serializer;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -40,12 +41,11 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.profiling.jfr.InstanceType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Main {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 
 	@DontObfuscate
 	public static void main(String[] args) {
@@ -255,7 +255,6 @@ public class Main {
 	}
 
 	static {
-		Util.method_39982();
 		System.setProperty("java.awt.headless", "true");
 	}
 }

@@ -11,6 +11,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -47,11 +48,10 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class CommandManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_31837 = 0;
 	public static final int field_31838 = 1;
 	public static final int field_31839 = 2;
@@ -91,6 +91,7 @@ public class CommandManager {
 		LootCommand.register(this.dispatcher);
 		MessageCommand.register(this.dispatcher);
 		ParticleCommand.register(this.dispatcher);
+		PlaceFeatureCommand.register(this.dispatcher);
 		PlaySoundCommand.register(this.dispatcher);
 		ReloadCommand.register(this.dispatcher);
 		RecipeCommand.register(this.dispatcher);

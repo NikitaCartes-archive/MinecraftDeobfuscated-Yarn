@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -41,13 +42,12 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListPinger {
 	static final Splitter ZERO_SPLITTER = Splitter.on('\u0000').limit(6);
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
@@ -159,7 +159,7 @@ public class MultiplayerServerListPinger {
 				clientConnection.send(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.STATUS));
 				clientConnection.send(new QueryRequestC2SPacket());
 			} catch (Throwable var8) {
-				LOGGER.error(var8);
+				LOGGER.error("Failed to ping server {}", serverAddress, var8);
 			}
 		}
 	}

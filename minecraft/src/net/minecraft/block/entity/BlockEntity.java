@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -13,11 +14,10 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class BlockEntity {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final BlockEntityType<?> type;
 	@Nullable
 	protected World world;

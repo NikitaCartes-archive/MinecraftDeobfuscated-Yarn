@@ -1,18 +1,15 @@
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.io.IOException;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
+import org.slf4j.Logger;
 
 public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.NETWORK_PACKETS_MARKER);
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final NetworkSide side;
 
 	public PacketEncoder(NetworkSide side) {
@@ -27,7 +24,11 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 			Integer integer = networkState.getPacketId(this.side, packet);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(
-					MARKER, "OUT: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), integer, packet.getClass().getName()
+					ClientConnection.field_36380,
+					"OUT: [{}:{}] {}",
+					channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(),
+					integer,
+					packet.getClass().getName()
 				);
 			}
 
@@ -48,7 +49,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 						FlightProfiler.INSTANCE.onPacketSent(k, integer, channelHandlerContext.channel().remoteAddress(), j);
 					}
 				} catch (Throwable var10) {
-					LOGGER.error(var10);
+					LOGGER.error("Error receiving packet {}", integer, var10);
 					if (packet.isWritingErrorSkippable()) {
 						throw new PacketEncoderException(var10);
 					} else {

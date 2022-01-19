@@ -6,15 +6,10 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
-	public static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locatebiome.invalid", id)
-	);
 	private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("commands.locatebiome.notFound", id)
 	);
@@ -27,17 +22,17 @@ public class LocateBiomeCommand {
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("biome", IdentifierArgumentType.identifier())
-						.suggests(SuggestionProviders.ALL_BIOMES)
-						.executes(context -> execute(context.getSource(), context.getArgument("biome", Identifier.class)))
+						.suggests(SuggestionProviders.AVAILABLE_BIOMES)
+						.executes(context -> execute(context.getSource(), IdentifierArgumentType.getBiomeEntry(context, "biome")))
 				)
 		);
 	}
 
-	private static int execute(ServerCommandSource source, Identifier id) throws CommandSyntaxException {
-		Biome biome = (Biome)source.getServer().getRegistryManager().get(Registry.BIOME_KEY).getOrEmpty(id).orElseThrow(() -> INVALID_EXCEPTION.create(id));
+	private static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<Biome> biomeEntry) throws CommandSyntaxException {
+		Biome biome = biomeEntry.resource();
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
-		String string = id.toString();
+		String string = biomeEntry.id().toString();
 		if (blockPos2 == null) {
 			throw NOT_FOUND_EXCEPTION.create(string);
 		} else {

@@ -155,6 +155,10 @@ public class VertexBuffer implements AutoCloseable {
 				shader.fogColor.set(RenderSystem.getShaderFogColor());
 			}
 
+			if (shader.fogShape != null) {
+				shader.fogShape.set(RenderSystem.getShaderFogShape().getId());
+			}
+
 			if (shader.textureMat != null) {
 				shader.textureMat.set(RenderSystem.getTextureMatrix());
 			}

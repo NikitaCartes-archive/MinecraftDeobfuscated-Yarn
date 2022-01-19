@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.feature;
 
 import java.util.Optional;
 import net.minecraft.block.BlockState;
@@ -11,14 +11,13 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.PlacedFeature;
 
-public class DecoratorContext extends HeightContext {
+public class FeaturePlacementContext extends HeightContext {
 	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
 	private final Optional<PlacedFeature> placedFeature;
 
-	public DecoratorContext(StructureWorldAccess world, ChunkGenerator generator, Optional<PlacedFeature> placedFeature) {
+	public FeaturePlacementContext(StructureWorldAccess world, ChunkGenerator generator, Optional<PlacedFeature> placedFeature) {
 		super(generator, world);
 		this.world = world;
 		this.generator = generator;

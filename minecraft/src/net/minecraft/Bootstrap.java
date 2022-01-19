@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import com.mojang.logging.LogUtils;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
@@ -30,15 +31,14 @@ import net.minecraft.util.logging.LoggerPrintStream;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import org.slf4j.Logger;
 
 public class Bootstrap {
 	public static final PrintStream SYSOUT = System.out;
 	private static volatile boolean initialized;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public static void initialize() {
 		if (!initialized) {

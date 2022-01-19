@@ -2,6 +2,7 @@ package net.minecraft.world;
 
 import com.google.common.collect.Multimap;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2BooleanFunction;
 import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
 import it.unimi.dsi.fastutil.longs.Long2BooleanOpenHashMap;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.scanner.Query;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -37,11 +39,10 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.storage.NbtScannable;
 import net.minecraft.world.storage.VersionedChunkStorage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class StructureLocator {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int START_NOT_PRESENT_REFERENCE = -1;
 	private final NbtScannable chunkIoWorker;
 	private final DynamicRegistryManager registryManager;
@@ -129,9 +130,7 @@ public class StructureLocator {
 	@Nullable
 	private StructurePresence getStructurePresence(ChunkPos pos, StructureFeature<?> feature, boolean skipExistingChunk, long posLong) {
 		SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
-			new SelectiveNbtCollector.Query(NbtInt.TYPE, "DataVersion"),
-			new SelectiveNbtCollector.Query("Level", "Structures", NbtCompound.TYPE, "Starts"),
-			new SelectiveNbtCollector.Query("structures", NbtCompound.TYPE, "starts")
+			new Query(NbtInt.TYPE, "DataVersion"), new Query("Level", "Structures", NbtCompound.TYPE, "Starts"), new Query("structures", NbtCompound.TYPE, "starts")
 		);
 
 		try {

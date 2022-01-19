@@ -37,14 +37,14 @@ public class DemoScreen extends Screen {
 			this.textRenderer,
 			new TranslatableText(
 				"demo.help.movementShort",
-				gameOptions.keyForward.getBoundKeyLocalizedText(),
-				gameOptions.keyLeft.getBoundKeyLocalizedText(),
-				gameOptions.keyBack.getBoundKeyLocalizedText(),
-				gameOptions.keyRight.getBoundKeyLocalizedText()
+				gameOptions.forwardKey.getBoundKeyLocalizedText(),
+				gameOptions.leftKey.getBoundKeyLocalizedText(),
+				gameOptions.backKey.getBoundKeyLocalizedText(),
+				gameOptions.rightKey.getBoundKeyLocalizedText()
 			),
 			new TranslatableText("demo.help.movementMouse"),
-			new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()),
-			new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText())
+			new TranslatableText("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()),
+			new TranslatableText("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText())
 		);
 		this.fullWrappedText = MultilineText.create(this.textRenderer, new TranslatableText("demo.help.fullWrapped"), 218);
 	}

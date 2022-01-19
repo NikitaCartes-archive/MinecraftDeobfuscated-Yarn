@@ -4,17 +4,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -47,17 +49,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ChunkBuilder {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32831 = 4;
 	private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
 	private static final int field_35300 = 2;
-	private final PriorityQueue<ChunkBuilder.BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityQueue();
-	private final Queue<ChunkBuilder.BuiltChunk.Task> taskQueue = Queues.<ChunkBuilder.BuiltChunk.Task>newArrayDeque();
+	private final PriorityBlockingQueue<ChunkBuilder.BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityBlockingQueue();
+	private final Queue<ChunkBuilder.BuiltChunk.Task> taskQueue = Queues.<ChunkBuilder.BuiltChunk.Task>newLinkedBlockingDeque();
 	/**
 	 * The number of tasks it can poll from {@link #prioritizedTaskQueue}
 	 * before polling from {@link #taskQueue} first instead.
@@ -258,6 +259,7 @@ public class ChunkBuilder {
 		public static final int field_32832 = 16;
 		public final int index;
 		public final AtomicReference<ChunkBuilder.ChunkData> data = new AtomicReference(ChunkBuilder.ChunkData.EMPTY);
+		final AtomicInteger field_36374 = new AtomicInteger(0);
 		@Nullable
 		private ChunkBuilder.BuiltChunk.RebuildTask rebuildTask;
 		@Nullable
@@ -266,18 +268,19 @@ public class ChunkBuilder {
 		private final Map<RenderLayer, VertexBuffer> buffers = (Map<RenderLayer, VertexBuffer>)RenderLayer.getBlockLayers()
 			.stream()
 			.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new VertexBuffer()));
-		public Box boundingBox;
+		private Box boundingBox;
 		private boolean needsRebuild = true;
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
-			for (int i = 0; i < mutables.length; i++) {
-				mutables[i] = new BlockPos.Mutable();
+			for (int ix = 0; ix < mutables.length; ix++) {
+				mutables[ix] = new BlockPos.Mutable();
 			}
 		});
 		private boolean needsImportantRebuild;
 
-		public BuiltChunk(int index) {
+		public BuiltChunk(int index, int i, int j, int k) {
 			this.index = index;
+			this.setOrigin(i, j, k);
 		}
 
 		private boolean isChunkNonEmpty(BlockPos pos) {
@@ -295,19 +298,21 @@ public class ChunkBuilder {
 					&& this.isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()]);
 		}
 
+		public Box method_40051() {
+			return this.boundingBox;
+		}
+
 		public VertexBuffer getBuffer(RenderLayer layer) {
 			return (VertexBuffer)this.buffers.get(layer);
 		}
 
 		public void setOrigin(int x, int y, int z) {
-			if (x != this.origin.getX() || y != this.origin.getY() || z != this.origin.getZ()) {
-				this.clear();
-				this.origin.set(x, y, z);
-				this.boundingBox = new Box((double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16));
+			this.clear();
+			this.origin.set(x, y, z);
+			this.boundingBox = new Box((double)x, (double)y, (double)z, (double)(x + 16), (double)(y + 16), (double)(z + 16));
 
-				for (Direction direction : Direction.values()) {
-					this.neighborPositions[direction.ordinal()].set(this.origin).move(direction, 16);
-				}
+			for (Direction direction : Direction.values()) {
+				this.neighborPositions[direction.ordinal()].set(this.origin).move(direction, 16);
 			}
 		}
 
@@ -391,7 +396,6 @@ public class ChunkBuilder {
 			if (this.sortTask != null) {
 				this.sortTask.cancel();
 				this.sortTask = null;
-				bl = true;
 			}
 
 			return bl;
@@ -402,9 +406,12 @@ public class ChunkBuilder {
 			BlockPos blockPos = this.origin.toImmutable();
 			int i = 1;
 			ChunkRendererRegion chunkRendererRegion = builder.build(ChunkBuilder.this.world, blockPos.add(-1, -1, -1), blockPos.add(16, 16, 16), 1);
-			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(
-				this.getSquaredCameraDistance(), chunkRendererRegion, bl || this.data.get() != ChunkBuilder.ChunkData.EMPTY
-			);
+			boolean bl2 = this.data.get() == ChunkBuilder.ChunkData.EMPTY;
+			if (bl2 && bl) {
+				this.field_36374.incrementAndGet();
+			}
+
+			this.rebuildTask = new ChunkBuilder.BuiltChunk.RebuildTask(this.getSquaredCameraDistance(), chunkRendererRegion, !bl2 || this.field_36374.get() > 2);
 			return this.rebuildTask;
 		}
 
@@ -482,6 +489,7 @@ public class ChunkBuilder {
 								return ChunkBuilder.Result.CANCELLED;
 							} else {
 								BuiltChunk.this.data.set(chunkData);
+								BuiltChunk.this.field_36374.set(0);
 								ChunkBuilder.this.worldRenderer.addBuiltChunk(BuiltChunk.this);
 								return ChunkBuilder.Result.SUCCESSFUL;
 							}

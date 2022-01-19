@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
@@ -29,8 +30,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public interface EntryLoader {
 	/**
@@ -136,7 +136,7 @@ public interface EntryLoader {
 	}
 
 	public static final class Impl implements EntryLoader {
-		private static final Logger LOGGER = LogManager.getLogger();
+		private static final Logger LOGGER = LogUtils.getLogger();
 		private final Map<RegistryKey<?>, EntryLoader.Impl.Element> values = Maps.<RegistryKey<?>, EntryLoader.Impl.Element>newIdentityHashMap();
 
 		public <E> void add(DynamicRegistryManager.Impl registryManager, RegistryKey<E> key, Encoder<E> encoder, int rawId, E entry, Lifecycle lifecycle) {

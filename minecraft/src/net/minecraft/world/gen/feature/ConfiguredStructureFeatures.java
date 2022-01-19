@@ -16,7 +16,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class ConfiguredStructureFeatures {
@@ -65,8 +64,8 @@ public class ConfiguredStructureFeatures {
 	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> FORTRESS = register(
 		"fortress", StructureFeature.FORTRESS.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<RangeDecoratorConfig, ? extends StructureFeature<RangeDecoratorConfig>> NETHER_FOSSIL = register(
-		"nether_fossil", StructureFeature.NETHER_FOSSIL.configure(new RangeDecoratorConfig(UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2))))
+	private static final ConfiguredStructureFeature<RangeFeatureConfig, ? extends StructureFeature<RangeFeatureConfig>> NETHER_FOSSIL = register(
+		"nether_fossil", StructureFeature.NETHER_FOSSIL.configure(new RangeFeatureConfig(UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2))))
 	);
 	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> END_CITY = register(
 		"end_city", StructureFeature.END_CITY.configure(DefaultFeatureConfig.INSTANCE)

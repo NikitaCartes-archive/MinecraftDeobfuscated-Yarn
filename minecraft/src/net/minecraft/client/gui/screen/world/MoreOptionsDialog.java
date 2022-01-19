@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
@@ -49,14 +50,12 @@ import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MoreOptionsDialog implements Drawable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
 	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
 	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
@@ -90,7 +89,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.parentWidth = parent.width;
 		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
 		this.seedTextField.setText(seedToString(this.seed));
-		this.seedTextField.setChangedListener(seedText -> this.seed = this.getSeed());
+		this.seedTextField.setChangedListener(seedText -> this.seed = GeneratorOptions.method_40024(this.seedTextField.getText()));
 		parent.addSelectableChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
 		int j = this.parentWidth / 2 + 5;
@@ -296,34 +295,9 @@ public class MoreOptionsDialog implements Drawable {
 		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 	}
 
-	private static OptionalLong tryParseLong(String string) {
-		try {
-			return OptionalLong.of(Long.parseLong(string));
-		} catch (NumberFormatException var2) {
-			return OptionalLong.empty();
-		}
-	}
-
 	public GeneratorOptions getGeneratorOptions(boolean hardcore) {
-		OptionalLong optionalLong = this.getSeed();
+		OptionalLong optionalLong = GeneratorOptions.method_40024(this.seedTextField.getText());
 		return this.generatorOptions.withHardcore(hardcore, optionalLong);
-	}
-
-	private OptionalLong getSeed() {
-		String string = this.seedTextField.getText();
-		OptionalLong optionalLong;
-		if (StringUtils.isEmpty(string)) {
-			optionalLong = OptionalLong.empty();
-		} else {
-			OptionalLong optionalLong2 = tryParseLong(string);
-			if (optionalLong2.isPresent() && optionalLong2.getAsLong() != 0L) {
-				optionalLong = optionalLong2;
-			} else {
-				optionalLong = OptionalLong.of((long)string.hashCode());
-			}
-		}
-
-		return optionalLong;
 	}
 
 	public boolean isDebugWorld() {

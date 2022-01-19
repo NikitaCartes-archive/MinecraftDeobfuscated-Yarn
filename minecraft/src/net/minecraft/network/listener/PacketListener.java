@@ -28,4 +28,8 @@ public interface PacketListener {
 	 * @see ClientConnection#getPacketListener()
 	 */
 	ClientConnection getConnection();
+
+	default boolean method_40065() {
+		return true;
+	}
 }

@@ -11,7 +11,7 @@ public class FoodComponents {
 	public static final FoodComponent BAKED_POTATO = new FoodComponent.Builder().hunger(5).saturationModifier(0.6F).build();
 	public static final FoodComponent BEEF = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).meat().build();
 	public static final FoodComponent BEETROOT = new FoodComponent.Builder().hunger(1).saturationModifier(0.6F).build();
-	public static final FoodComponent BEETROOT_SOUP = create(6).build();
+	public static final FoodComponent BEETROOT_SOUP = createStew(6).build();
 	public static final FoodComponent BREAD = new FoodComponent.Builder().hunger(5).saturationModifier(0.6F).build();
 	public static final FoodComponent CARROT = new FoodComponent.Builder().hunger(3).saturationModifier(0.6F).build();
 	public static final FoodComponent CHICKEN = new FoodComponent.Builder()
@@ -50,7 +50,7 @@ public class FoodComponents {
 	public static final FoodComponent GOLDEN_CARROT = new FoodComponent.Builder().hunger(6).saturationModifier(1.2F).build();
 	public static final FoodComponent HONEY_BOTTLE = new FoodComponent.Builder().hunger(6).saturationModifier(0.1F).build();
 	public static final FoodComponent MELON_SLICE = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).build();
-	public static final FoodComponent MUSHROOM_STEW = create(6).build();
+	public static final FoodComponent MUSHROOM_STEW = createStew(6).build();
 	public static final FoodComponent MUTTON = new FoodComponent.Builder().hunger(2).saturationModifier(0.3F).meat().build();
 	public static final FoodComponent POISONOUS_POTATO = new FoodComponent.Builder()
 		.hunger(2)
@@ -68,7 +68,7 @@ public class FoodComponents {
 		.build();
 	public static final FoodComponent PUMPKIN_PIE = new FoodComponent.Builder().hunger(8).saturationModifier(0.3F).build();
 	public static final FoodComponent RABBIT = new FoodComponent.Builder().hunger(3).saturationModifier(0.3F).meat().build();
-	public static final FoodComponent RABBIT_STEW = create(10).build();
+	public static final FoodComponent RABBIT_STEW = createStew(10).build();
 	public static final FoodComponent ROTTEN_FLESH = new FoodComponent.Builder()
 		.hunger(4)
 		.saturationModifier(0.1F)
@@ -81,12 +81,12 @@ public class FoodComponents {
 		.saturationModifier(0.8F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 1.0F)
 		.build();
-	public static final FoodComponent SUSPICIOUS_STEW = create(6).alwaysEdible().build();
+	public static final FoodComponent SUSPICIOUS_STEW = createStew(6).alwaysEdible().build();
 	public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent GLOW_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
 
-	private static FoodComponent.Builder create(int hunger) {
+	private static FoodComponent.Builder createStew(int hunger) {
 		return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6F);
 	}
 }

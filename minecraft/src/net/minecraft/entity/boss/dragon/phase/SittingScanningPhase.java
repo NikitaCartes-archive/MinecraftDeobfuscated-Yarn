@@ -7,7 +7,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class SittingScanningPhase extends AbstractSittingPhase {
-	private static final int field_30436 = 100;
+	private static final int DURATION = 100;
 	private static final int field_30437 = 10;
 	private static final int field_30438 = 20;
 	private static final int field_30439 = 150;
@@ -19,7 +19,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 		super(enderDragonEntity);
 		this.CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable()
 			.setBaseMaxDistance(20.0)
-			.setPredicate(livingEntity -> Math.abs(livingEntity.getY() - enderDragonEntity.getY()) <= 10.0);
+			.setPredicate(player -> Math.abs(player.getY() - enderDragonEntity.getY()) <= 10.0);
 	}
 
 	@Override

@@ -12,14 +12,10 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.Vector4f;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.system.MemoryStack;
 
 @Environment(EnvType.CLIENT)
 public interface VertexConsumer {
-	Logger LOGGER = LogManager.getLogger();
-
 	VertexConsumer vertex(double x, double y, double z);
 
 	VertexConsumer color(int red, int green, int blue, int alpha);

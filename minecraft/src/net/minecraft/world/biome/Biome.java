@@ -36,11 +36,8 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public final class Biome {
-	public static final Logger LOGGER = LogManager.getLogger();
 	public static final Codec<Biome> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Biome.Weather.CODEC.forGetter(biome -> biome.weather),

@@ -1,10 +1,13 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +25,11 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 		.fieldOf("probability")
 		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, decorator -> decorator.probability)
 		.codec();
+	private static final Direction field_36346 = Direction.SOUTH;
+	private static final Direction[] field_36347 = (Direction[])Direction.Type.HORIZONTAL
+		.stream()
+		.filter(direction -> direction != field_36346.getOpposite())
+		.toArray(Direction[]::new);
 	private final float probability;
 
 	public BeehiveTreeDecorator(float probability) {
@@ -38,17 +46,21 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
 	) {
 		if (!(random.nextFloat() >= this.probability)) {
-			Direction direction = BeehiveBlock.getRandomGenerationDirection(random);
 			int i = !leavesPositions.isEmpty()
-				? Math.max(((BlockPos)leavesPositions.get(0)).getY() - 1, ((BlockPos)logPositions.get(0)).getY())
+				? Math.max(((BlockPos)leavesPositions.get(0)).getY() - 1, ((BlockPos)logPositions.get(0)).getY() + 1)
 				: Math.min(((BlockPos)logPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)logPositions.get(logPositions.size() - 1)).getY());
-			List<BlockPos> list = (List<BlockPos>)logPositions.stream().filter(pos -> pos.getY() == i).collect(Collectors.toList());
+			List<BlockPos> list = (List<BlockPos>)logPositions.stream()
+				.filter(pos -> pos.getY() == i)
+				.flatMap(blockPos -> Stream.of(field_36347).map(blockPos::offset))
+				.collect(Collectors.toList());
 			if (!list.isEmpty()) {
-				BlockPos blockPos = (BlockPos)list.get(random.nextInt(list.size()));
-				BlockPos blockPos2 = blockPos.offset(direction);
-				if (Feature.isAir(world, blockPos2) && Feature.isAir(world, blockPos2.offset(Direction.SOUTH))) {
-					replacer.accept(blockPos2, Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, Direction.SOUTH));
-					world.getBlockEntity(blockPos2, BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
+				Collections.shuffle(list);
+				Optional<BlockPos> optional = list.stream()
+					.filter(blockPos -> Feature.isAir(world, blockPos) && Feature.isAir(world, blockPos.offset(field_36346)))
+					.findFirst();
+				if (!optional.isEmpty()) {
+					replacer.accept((BlockPos)optional.get(), Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, field_36346));
+					world.getBlockEntity((BlockPos)optional.get(), BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
 						int ix = 2 + random.nextInt(2);
 
 						for (int j = 0; j < ix; j++) {

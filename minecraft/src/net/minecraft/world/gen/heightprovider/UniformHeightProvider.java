@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.heightprovider;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -8,8 +9,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class UniformHeightProvider extends HeightProvider {
 	public static final Codec<UniformHeightProvider> UNIFORM_CODEC = RecordCodecBuilder.create(
@@ -19,7 +19,7 @@ public class UniformHeightProvider extends HeightProvider {
 				)
 				.apply(instance, UniformHeightProvider::new)
 	);
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final YOffset minOffset;
 	private final YOffset maxOffset;
 	private final LongSet field_36290 = new LongOpenHashSet();

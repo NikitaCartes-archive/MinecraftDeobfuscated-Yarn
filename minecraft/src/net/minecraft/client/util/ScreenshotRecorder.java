@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,8 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A screenshot recorder takes screenshots and saves them into tga file format. It also
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Environment(EnvType.CLIENT)
 public class ScreenshotRecorder {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 	private int unitHeight;
 	private final DataOutputStream stream;

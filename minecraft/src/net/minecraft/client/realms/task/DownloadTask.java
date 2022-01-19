@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,9 +11,11 @@ import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class DownloadTask extends LongRunningTask {
+	private static final Logger field_36355 = LogUtils.getLogger();
 	private final long worldId;
 	private final int slot;
 	private final Screen lastScreen;
@@ -57,7 +60,7 @@ public class DownloadTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't download world data");
+				field_36355.error("Couldn't download world data");
 				setScreen(new RealmsGenericErrorScreen(var5, this.lastScreen));
 				return;
 			} catch (Exception var6) {
@@ -65,7 +68,7 @@ public class DownloadTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't download world data", (Throwable)var6);
+				field_36355.error("Couldn't download world data", (Throwable)var6);
 				this.error(var6.getLocalizedMessage());
 				return;
 			}

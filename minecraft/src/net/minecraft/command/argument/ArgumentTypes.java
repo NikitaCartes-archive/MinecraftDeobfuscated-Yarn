@@ -10,6 +10,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -19,11 +20,10 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ArgumentTypes {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<Class<?>, ArgumentTypes.Entry<?>> CLASS_MAP = Maps.<Class<?>, ArgumentTypes.Entry<?>>newHashMap();
 	private static final Map<Identifier, ArgumentTypes.Entry<?>> ID_MAP = Maps.<Identifier, ArgumentTypes.Entry<?>>newHashMap();
 

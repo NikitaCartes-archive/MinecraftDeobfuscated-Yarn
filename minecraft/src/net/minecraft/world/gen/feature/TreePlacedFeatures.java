@@ -5,11 +5,11 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
-import net.minecraft.world.gen.decorator.BlockFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.CountMultilayerPlacementModifier;
-import net.minecraft.world.gen.decorator.EnvironmentScanPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.EnvironmentScanPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 
 public class TreePlacedFeatures {
 	public static final PlacedFeature CRIMSON_FUNGI = PlacedFeatures.register(

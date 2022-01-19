@@ -3,6 +3,7 @@ package net.minecraft.server.world;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -36,14 +37,13 @@ import net.minecraft.world.entity.SectionedEntityCache;
 import net.minecraft.world.entity.SimpleEntityLookup;
 import net.minecraft.world.storage.ChunkDataAccess;
 import net.minecraft.world.storage.ChunkDataList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * An entity manager for a server environment.
  */
 public class ServerEntityManager<T extends EntityLike> implements AutoCloseable {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	final Set<UUID> entityUuids = Sets.<UUID>newHashSet();
 	final EntityHandler<T> handler;
 	private final ChunkDataAccess<T> dataAccess;
@@ -352,12 +352,12 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		return this.lookup;
 	}
 
-	public boolean shouldTick(BlockPos pos) {
-		return this.trackingStatuses.get(ChunkPos.toLong(pos)).shouldTick();
+	public boolean method_40022(BlockPos blockPos) {
+		return this.trackingStatuses.get(ChunkPos.toLong(blockPos)).shouldTick();
 	}
 
-	public boolean shouldTick(ChunkPos pos) {
-		return this.trackingStatuses.get(pos.toLong()).shouldTick();
+	public boolean method_40021(ChunkPos chunkPos) {
+		return this.trackingStatuses.get(chunkPos.toLong()).shouldTick();
 	}
 
 	public boolean isLoaded(long chunkPos) {

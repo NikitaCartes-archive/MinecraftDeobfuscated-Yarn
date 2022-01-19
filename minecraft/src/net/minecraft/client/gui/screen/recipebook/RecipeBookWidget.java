@@ -405,7 +405,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			return true;
 		} else if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
 			return true;
-		} else if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
+		} else if (this.client.options.chatKey.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
 			this.searching = true;
 			this.searchField.setTextFieldFocused(true);
 			return true;

@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.heightprovider;
 
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Random;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class BiasedToBottomHeightProvider extends HeightProvider {
 	public static final Codec<BiasedToBottomHeightProvider> BIASED_TO_BOTTOM_CODEC = RecordCodecBuilder.create(
@@ -17,7 +17,7 @@ public class BiasedToBottomHeightProvider extends HeightProvider {
 				)
 				.apply(instance, BiasedToBottomHeightProvider::new)
 	);
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final YOffset minOffset;
 	private final YOffset maxOffset;
 	private final int inner;

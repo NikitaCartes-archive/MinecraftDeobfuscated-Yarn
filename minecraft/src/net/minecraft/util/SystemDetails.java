@@ -1,13 +1,13 @@
 package net.minecraft.util;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.SharedConstants;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
@@ -20,7 +20,7 @@ import oshi.hardware.CentralProcessor.ProcessorIdentifier;
 public class SystemDetails {
 	public static final long MEBI = 1048576L;
 	private static final long GIGA = 1000000000L;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String OPERATING_SYSTEM = System.getProperty("os.name")
 		+ " ("
 		+ System.getProperty("os.arch")

@@ -32,7 +32,7 @@ import net.minecraft.world.GameMode;
 
 /**
  * Responsible for rendering the player list while the {@linkplain
- * net.minecraft.client.option.GameOptions#keyPlayerList player list
+ * net.minecraft.client.option.GameOptions#playerListKey player list
  * key} is pressed.
  * 
  * <p>The current instance used by the client can be obtained by {@code

@@ -3,6 +3,7 @@ package net.minecraft.world.poi;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectFunction;
@@ -20,11 +21,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class PointOfInterestSet {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Short2ObjectMap<PointOfInterest> pointsOfInterestByPos = new Short2ObjectOpenHashMap<>();
 	private final Map<PointOfInterestType, Set<PointOfInterest>> pointsOfInterestByType = Maps.<PointOfInterestType, Set<PointOfInterest>>newHashMap();
 	private final Runnable updateListener;
@@ -63,7 +63,7 @@ public class PointOfInterestSet {
 
 	public void add(BlockPos pos, PointOfInterestType type) {
 		if (this.add(new PointOfInterest(pos, type, this.updateListener))) {
-			LOGGER.debug("Added POI of type {} @ {}", () -> type, () -> pos);
+			LOGGER.debug("Added POI of type {} @ {}", type, pos);
 			this.updateListener.run();
 		}
 	}
@@ -92,7 +92,7 @@ public class PointOfInterestSet {
 			LOGGER.error("POI data mismatch: never registered at {}", pos);
 		} else {
 			((Set)this.pointsOfInterestByType.get(pointOfInterest.getType())).remove(pointOfInterest);
-			LOGGER.debug("Removed POI of type {} @ {}", pointOfInterest::getType, pointOfInterest::getPos);
+			LOGGER.debug("Removed POI of type {} @ {}", LogUtils.defer(pointOfInterest::getType), LogUtils.defer(pointOfInterest::getPos));
 			this.updateListener.run();
 		}
 	}

@@ -2,6 +2,7 @@ package net.minecraft.nbt.visitor;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.bytes.ByteCollection;
 import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import java.util.Arrays;
@@ -28,15 +29,14 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Formats an NBT element into a colored, multiline {@link Text} representation suitable for human-readable
  * displays.
  */
 public class NbtTextFormatter implements NbtElementVisitor {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33271 = 8;
 	private static final ByteCollection SINGLE_LINE_ELEMENT_TYPES = new ByteOpenHashSet(Arrays.asList((byte)1, (byte)2, (byte)3, (byte)4, (byte)5, (byte)6));
 	private static final Formatting NAME_COLOR = Formatting.AQUA;

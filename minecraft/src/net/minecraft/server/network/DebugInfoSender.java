@@ -1,6 +1,7 @@
 package net.minecraft.server.network;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Collection;
@@ -53,11 +54,10 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class DebugInfoSender {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public static void addGameTestMarker(ServerWorld world, BlockPos pos, String message, int color, int duration) {
 		PacketByteBuf packetByteBuf = new PacketByteBuf(Unpooled.buffer());

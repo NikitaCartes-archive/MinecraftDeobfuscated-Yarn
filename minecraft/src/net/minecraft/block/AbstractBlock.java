@@ -720,10 +720,10 @@ public abstract class AbstractBlock {
 		}
 
 		public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity) {
-			return this.hasSolidTopSurface(world, pos, entity, Direction.UP);
+			return this.isSolidSurface(world, pos, entity, Direction.UP);
 		}
 
-		public final boolean hasSolidTopSurface(BlockView world, BlockPos pos, Entity entity, Direction direction) {
+		public final boolean isSolidSurface(BlockView world, BlockPos pos, Entity entity, Direction direction) {
 			return Block.isFaceFullSquare(this.getCollisionShape(world, pos, ShapeContext.of(entity)), direction);
 		}
 

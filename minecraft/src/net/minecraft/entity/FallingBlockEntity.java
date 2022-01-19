@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import com.mojang.logging.LogUtils;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.AnvilBlock;
@@ -38,8 +39,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
 
 public class FallingBlockEntity extends Entity {
+	private static final Logger field_36333 = LogUtils.getLogger();
 	private static final int field_35672 = 50;
 	private BlockState block = Blocks.SAND.getDefaultState();
 	public int timeFalling;
@@ -57,16 +60,29 @@ public class FallingBlockEntity extends Entity {
 		super(entityType, world);
 	}
 
-	public FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
+	private FallingBlockEntity(World world, double x, double y, double z, BlockState block) {
 		this(EntityType.FALLING_BLOCK, world);
 		this.block = block;
 		this.intersectionChecked = true;
-		this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
+		this.setPosition(x, y, z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
 		this.prevY = y;
 		this.prevZ = z;
 		this.setFallingBlockPos(this.getBlockPos());
+	}
+
+	public static FallingBlockEntity method_40005(World world, BlockPos blockPos, BlockState blockState) {
+		FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
+			world,
+			(double)blockPos.getX() + 0.5,
+			(double)blockPos.getY(),
+			(double)blockPos.getZ() + 0.5,
+			blockState.contains(Properties.WATERLOGGED) ? blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false)) : blockState
+		);
+		world.setBlockState(blockPos, blockState.getFluidState().getBlockState(), Block.NOTIFY_ALL);
+		world.spawnEntity(fallingBlockEntity);
+		return fallingBlockEntity;
 	}
 
 	@Override
@@ -107,16 +123,7 @@ public class FallingBlockEntity extends Entity {
 			}
 		} else {
 			Block block = this.block.getBlock();
-			if (this.timeFalling++ == 0) {
-				BlockPos blockPos = this.getBlockPos();
-				if (this.world.getBlockState(blockPos).isOf(block)) {
-					this.world.removeBlock(blockPos, false);
-				} else if (!this.world.isClient) {
-					this.discard();
-					return;
-				}
-			}
-
+			this.timeFalling++;
 			if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
@@ -175,7 +182,7 @@ public class FallingBlockEntity extends Entity {
 											try {
 												blockEntity.readNbt(nbtCompound);
 											} catch (Exception var15) {
-												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
+												field_36333.error("Failed to load block entity from falling block", (Throwable)var15);
 											}
 
 											blockEntity.markDirty();
@@ -341,7 +348,7 @@ public class FallingBlockEntity extends Entity {
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();
-		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
+		this.setPosition(d, e, f);
 		this.setFallingBlockPos(this.getBlockPos());
 	}
 }

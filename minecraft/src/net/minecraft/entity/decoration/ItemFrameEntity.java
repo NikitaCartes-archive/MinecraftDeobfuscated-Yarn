@@ -1,5 +1,6 @@
 package net.minecraft.entity.decoration;
 
+import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -34,11 +35,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ItemFrameEntity extends AbstractDecorationEntity {
-	private static final Logger ITEM_FRAME_LOGGER = LogManager.getLogger();
+	private static final Logger ITEM_FRAME_LOGGER = LogUtils.getLogger();
 	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final int field_30454 = 8;
