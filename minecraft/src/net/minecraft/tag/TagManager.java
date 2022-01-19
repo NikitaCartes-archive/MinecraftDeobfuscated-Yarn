@@ -2,6 +2,7 @@ package net.minecraft.tag;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -12,11 +13,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TagManager {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	public static final TagManager EMPTY = new TagManager(ImmutableMap.of());
 	private final Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups;
 

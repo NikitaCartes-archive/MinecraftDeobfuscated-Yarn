@@ -339,14 +339,14 @@ public class Keyboard {
 			Screen screen = this.client.currentScreen;
 			if (action == 1
 				&& (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).lastKeyCodeUpdateTime <= Util.getMeasuringTimeMs() - 20L)) {
-				if (this.client.options.keyFullscreen.matchesKey(key, scancode)) {
+				if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
 					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
 					this.client.options.write();
 					return;
 				}
 
-				if (this.client.options.keyScreenshot.matchesKey(key, scancode)) {
+				if (this.client.options.screenshotKey.matchesKey(key, scancode)) {
 					if (Screen.hasControlDown()) {
 					}
 
@@ -488,7 +488,8 @@ public class Keyboard {
 					GlfwUtil.makeJvmCrash();
 				}
 
-				CrashReport crashReport = new CrashReport("Manually triggered debug crash", new Throwable());
+				String string = "Manually triggered debug crash";
+				CrashReport crashReport = new CrashReport("Manually triggered debug crash", new Throwable("Manually triggered debug crash"));
 				CrashReportSection crashReportSection = crashReport.addElement("Manual crash details");
 				WinNativeModuleUtil.addDetailTo(crashReportSection);
 				throw new CrashException(crashReport);

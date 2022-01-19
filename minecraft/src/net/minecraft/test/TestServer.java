@@ -2,6 +2,7 @@ package net.minecraft.test;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
 import java.util.Collection;
@@ -34,11 +35,10 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TestServer extends MinecraftServer {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33157 = 20;
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.mojang.logging.LogUtils;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Iterator;
@@ -27,11 +28,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class LootTable {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
 	final LootContextType type;

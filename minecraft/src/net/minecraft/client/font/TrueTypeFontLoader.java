@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
@@ -14,15 +15,14 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class TrueTypeFontLoader implements FontLoader {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier filename;
 	private final float size;
 	private final float oversample;

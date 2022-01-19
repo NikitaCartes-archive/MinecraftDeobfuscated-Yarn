@@ -2,6 +2,7 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,15 +13,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * An immutable list of structure pieces, usually belonging to a structure
  * start.
  */
 public record StructurePiecesList(List<StructurePiece> pieces) {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Identifier JIGSAW = new Identifier("jigsaw");
 	private static final Map<Identifier, Identifier> ID_UPDATES = ImmutableMap.<Identifier, Identifier>builder()
 		.put(new Identifier("nvi"), JIGSAW)

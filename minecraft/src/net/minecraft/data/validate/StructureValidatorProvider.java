@@ -1,5 +1,6 @@
 package net.minecraft.data.validate;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
@@ -7,11 +8,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.Structure;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class StructureValidatorProvider implements SnbtProvider.Tweaker {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	@Override
 	public NbtCompound write(String name, NbtCompound nbt) {
@@ -33,9 +33,9 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	private static NbtCompound internalUpdate(String name, NbtCompound nbt) {
 		Structure structure = new Structure();
 		int i = nbt.getInt("DataVersion");
-		int j = 2830;
-		if (i < 2830) {
-			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 2830, name);
+		int j = 2965;
+		if (i < 2965) {
+			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 2965, name);
 		}
 
 		NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);

@@ -1,6 +1,7 @@
 package net.minecraft.server.rcon;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -10,11 +11,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class RconListener extends RconBase {
-	private static final Logger SERVER_LOGGER = LogManager.getLogger();
+	private static final Logger SERVER_LOGGER = LogUtils.getLogger();
 	private final ServerSocket listener;
 	private final String password;
 	private final List<RconClient> clients = Lists.<RconClient>newArrayList();

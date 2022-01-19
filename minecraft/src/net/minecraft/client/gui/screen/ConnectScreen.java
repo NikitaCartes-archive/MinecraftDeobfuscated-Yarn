@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen;
 
+import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,8 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * The connection screen is used to initiate a connection to a remote server.
@@ -33,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final long NARRATOR_INTERVAL = 2000L;
 	public static final Text BLOCKED_HOST_TEXT = new TranslatableText("disconnect.genericReason", new TranslatableText("disconnect.unknownHost"));
 	/**

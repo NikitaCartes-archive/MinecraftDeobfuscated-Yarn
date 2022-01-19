@@ -1,6 +1,7 @@
 package net.minecraft.resource;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
@@ -13,8 +14,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Represents a resource pack in a {@link ResourcePackManager}.
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * <p>Closing the profile doesn't have any effect.
  */
 public class ResourcePackProfile implements AutoCloseable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String name;
 	private final Supplier<ResourcePack> packFactory;
 	private final Text displayName;

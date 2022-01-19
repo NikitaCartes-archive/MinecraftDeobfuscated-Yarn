@@ -3,6 +3,7 @@ package net.minecraft.test;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -11,11 +12,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class TestRunner {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final BlockPos pos;
 	final ServerWorld world;
 	private final TestManager testManager;

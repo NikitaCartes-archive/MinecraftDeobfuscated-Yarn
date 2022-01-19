@@ -1,6 +1,7 @@
 package net.minecraft.server.rcon;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -16,11 +17,10 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class QueryResponseHandler extends RconBase {
-	private static final Logger field_23963 = LogManager.getLogger();
+	private static final Logger field_23963 = LogUtils.getLogger();
 	private static final String GAME_TYPE = "SMP";
 	private static final String GAME_ID = "MINECRAFT";
 	private static final long CLEAN_UP_THRESHOLD = 30000L;

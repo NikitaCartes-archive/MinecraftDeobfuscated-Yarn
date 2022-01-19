@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -211,7 +212,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 
 							if (beeState == BeehiveBlockEntity.BeeState.HONEY_DELIVERED) {
 								beeEntity.onHoneyDelivered();
-								if (state.isIn(BlockTags.BEEHIVES)) {
+								if (state.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))) {
 									int i = getHoneyLevel(state);
 									if (i < 5) {
 										int j = world.random.nextInt(100) == 0 ? 2 : 1;

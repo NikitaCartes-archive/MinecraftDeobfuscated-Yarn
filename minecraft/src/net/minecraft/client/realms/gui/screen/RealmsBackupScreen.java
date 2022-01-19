@@ -1,6 +1,7 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -25,13 +26,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupScreen extends RealmsScreen {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
 	static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
 	static final Text RESTORE_TEXT = new TranslatableText("mco.backup.button.restore");

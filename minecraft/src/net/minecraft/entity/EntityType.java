@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -142,11 +143,10 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private static final float field_30054 = 1.3964844F;
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(

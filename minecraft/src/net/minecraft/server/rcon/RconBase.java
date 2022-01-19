@@ -1,13 +1,13 @@
 package net.minecraft.server.rcon;
 
+import com.mojang.logging.LogUtils;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 import net.minecraft.util.logging.UncaughtExceptionHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class RconBase implements Runnable {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final AtomicInteger THREAD_COUNTER = new AtomicInteger(0);
 	private static final int field_29794 = 5;
 	protected volatile boolean running;

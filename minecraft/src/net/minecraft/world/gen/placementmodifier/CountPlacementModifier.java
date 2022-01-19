@@ -1,4 +1,4 @@
-package net.minecraft.world.gen.decorator;
+package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;

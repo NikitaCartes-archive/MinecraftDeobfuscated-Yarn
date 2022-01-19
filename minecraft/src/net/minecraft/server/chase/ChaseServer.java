@@ -1,5 +1,6 @@
 package net.minecraft.server.chase;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetAddress;
@@ -17,11 +18,10 @@ import net.minecraft.server.command.ChaseCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ChaseServer {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String ip;
 	private final int port;
 	private final PlayerManager playerManager;

@@ -1,6 +1,6 @@
 package net.minecraft.client.world;
 
-import java.io.File;
+import com.mojang.logging.LogUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,12 +23,11 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientChunkManager extends ChunkManager {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private final WorldChunk emptyChunk;
 	private final LightingProvider lightingProvider;
 	volatile ClientChunkManager.ClientChunkMap chunks;
@@ -105,7 +104,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void tick(BooleanSupplier shouldKeepTicking) {
+	public void tick(BooleanSupplier shouldKeepTicking, boolean bl) {
 	}
 
 	public void setChunkMapCenter(int x, int z) {
@@ -205,7 +204,7 @@ public class ClientChunkManager extends ChunkManager {
 
 		private void writePositions(String fileName) {
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(new File(fileName));
+				FileOutputStream fileOutputStream = new FileOutputStream(fileName);
 
 				try {
 					int i = ClientChunkManager.this.chunks.radius;
@@ -231,7 +230,7 @@ public class ClientChunkManager extends ChunkManager {
 
 				fileOutputStream.close();
 			} catch (IOException var10) {
-				ClientChunkManager.LOGGER.error(var10);
+				ClientChunkManager.LOGGER.error("Failed to dump chunks to file {}", fileName, var10);
 			}
 		}
 	}

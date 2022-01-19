@@ -1,11 +1,11 @@
 package net.minecraft.test;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class FailureLoggingTestCompletionListener implements TestCompletionListener {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	@Override
 	public void onTestFailed(GameTestState test) {

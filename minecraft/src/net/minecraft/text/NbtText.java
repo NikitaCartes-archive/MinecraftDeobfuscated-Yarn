@@ -3,6 +3,7 @@ package net.minecraft.text;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixUtils;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,11 +24,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class NbtText extends BaseText implements ParsableText {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final boolean interpret;
 	protected final Optional<Text> separator;
 	protected final String rawPath;

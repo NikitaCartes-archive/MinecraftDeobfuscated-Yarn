@@ -3,6 +3,7 @@ package net.minecraft.client.realms.gui.screen;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +32,11 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	static final Identifier LINK_ICONS = new Identifier("realms", "textures/gui/realms/link_icons.png");
 	static final Identifier TRAILER_ICONS = new Identifier("realms", "textures/gui/realms/trailer_icons.png");
 	static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");

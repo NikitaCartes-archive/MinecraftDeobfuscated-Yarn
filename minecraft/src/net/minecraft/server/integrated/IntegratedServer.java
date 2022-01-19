@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -31,12 +32,11 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedServer extends MinecraftServer {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_34964 = 2;
 	private final MinecraftClient client;
 	private boolean paused = true;

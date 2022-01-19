@@ -1,5 +1,6 @@
 package net.minecraft.client.realms.task;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
@@ -7,9 +8,11 @@ import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.text.TranslatableText;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SwitchMinigameTask extends LongRunningTask {
+	private static final Logger field_36360 = LogUtils.getLogger();
 	private final long worldId;
 	private final WorldTemplate worldTemplate;
 	private final RealmsConfigureWorldScreen lastScreen;
@@ -45,7 +48,7 @@ public class SwitchMinigameTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't start mini game!");
+				field_36360.error("Couldn't start mini game!");
 				this.error(var5.toString());
 			}
 		}

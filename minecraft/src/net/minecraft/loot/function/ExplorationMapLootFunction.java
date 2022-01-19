@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.logging.LogUtils;
 import java.util.Locale;
 import java.util.Set;
 import net.minecraft.item.FilledMapItem;
@@ -21,11 +22,10 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	public static final StructureFeature<?> DEFAULT_DESTINATION = StructureFeature.BURIED_TREASURE;
 	public static final String MANSION = "mansion";
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;

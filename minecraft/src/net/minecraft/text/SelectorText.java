@@ -2,17 +2,17 @@ package net.minecraft.text;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class SelectorText extends BaseText implements ParsableText {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String pattern;
 	@Nullable
 	private final EntitySelector selector;

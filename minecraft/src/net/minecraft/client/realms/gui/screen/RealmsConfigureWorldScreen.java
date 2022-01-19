@@ -2,6 +2,7 @@ package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -24,13 +25,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConfigureWorldScreen extends RealmsScreen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Identifier ON_ICON = new Identifier("realms", "textures/gui/realms/on_icon.png");
 	private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
 	private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");

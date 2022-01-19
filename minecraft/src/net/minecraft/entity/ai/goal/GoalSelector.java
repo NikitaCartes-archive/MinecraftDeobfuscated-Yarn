@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
+import com.mojang.logging.LogUtils;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -11,8 +12,7 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Manages a set of goals, which are competing for certain controls on the mob.
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  * they were added.
  */
 public class GoalSelector {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final PrioritizedGoal REPLACEABLE_GOAL = new PrioritizedGoal(Integer.MAX_VALUE, new Goal() {
 		@Override
 		public boolean canStart() {

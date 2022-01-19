@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen;
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -43,12 +44,11 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String DEMO_WORLD_NAME = "Demo_World";
 	public static final String COPYRIGHT = "Copyright Mojang AB. Do not distribute!";
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));

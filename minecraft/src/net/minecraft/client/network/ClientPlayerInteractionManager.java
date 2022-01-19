@@ -2,6 +2,7 @@ package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
@@ -52,12 +53,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientPlayerInteractionManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
 	private final ClientPlayNetworkHandler networkHandler;
 	private BlockPos currentBreakingPos = new BlockPos(-1, -1, -1);

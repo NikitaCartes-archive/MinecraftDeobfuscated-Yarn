@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.LivingEntity;
@@ -59,7 +60,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		PathNode pathNode2 = path.getCurrentNode();
 		BlockPos blockPos = pathNode.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
+		if (blockState.isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock)) {
 			DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
 			if (!doorBlock.isOpen(blockState)) {
 				doorBlock.setOpen(entity, world, blockState, blockPos, true);
@@ -70,7 +71,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 
 		BlockPos blockPos2 = pathNode2.getBlockPos();
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (blockState2.isIn(BlockTags.WOODEN_DOORS)) {
+		if (blockState2.isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock)) {
 			DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
 			if (!doorBlock2.isOpen(blockState2)) {
 				doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
@@ -94,7 +95,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 						iterator.remove();
 					} else {
 						BlockState blockState = world.getBlockState(blockPos);
-						if (!blockState.isIn(BlockTags.WOODEN_DOORS)) {
+						if (!blockState.isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock)) {
 							iterator.remove();
 						} else {
 							DoorBlock doorBlock = (DoorBlock)blockState.getBlock();

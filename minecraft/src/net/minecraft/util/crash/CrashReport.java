@@ -1,6 +1,7 @@
 package net.minecraft.util.crash;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
@@ -16,11 +17,10 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class CrashReport {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String message;
 	private final Throwable cause;
 	private final List<CrashReportSection> otherSections = Lists.<CrashReportSection>newArrayList();

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import java.nio.ByteBuffer;
@@ -15,13 +16,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BufferBuilder extends FixedColorVertexConsumer implements BufferVertexConsumer {
 	private static final int MAX_BUFFER_SIZE = 2097152;
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private ByteBuffer buffer;
 	private final List<BufferBuilder.DrawArrayParameters> parameters = Lists.<BufferBuilder.DrawArrayParameters>newArrayList();
 	private int lastParameterIndex;

@@ -15,7 +15,7 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * <p>
  * An NBT list holds values of the same {@linkplain NbtElement#getType NBT type}.
  * The {@linkplain AbstractNbtList#getHeldType NBT type} of an NBT list is determined
- * once its first element is inserted; empty NBT lists return {@link NbtElement#NULL_TYPE NULL_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
+ * once its first element is inserted; empty NBT lists return {@link NbtElement#END_TYPE} as their held {@linkplain AbstractNbtList#getHeldType NBT type}.
  */
 public class NbtList extends AbstractNbtList<NbtElement> {
 	private static final int SIZE = 296;

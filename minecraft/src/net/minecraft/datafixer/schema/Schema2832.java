@@ -25,7 +25,7 @@ public class Schema2832 extends IdentifierNormalizingSchema {
 						"Entities",
 						DSL.list(TypeReferences.ENTITY_TREE.in(schema)),
 						"TileEntities",
-						DSL.list(TypeReferences.BLOCK_ENTITY.in(schema)),
+						DSL.list(DSL.or(TypeReferences.BLOCK_ENTITY.in(schema), DSL.remainder())),
 						"TileTicks",
 						DSL.list(DSL.fields("i", TypeReferences.BLOCK_NAME.in(schema))),
 						"Sections",

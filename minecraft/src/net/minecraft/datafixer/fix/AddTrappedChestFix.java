@@ -10,6 +10,7 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.datafixers.types.templates.List.ListType;
 import com.mojang.datafixers.types.templates.TaggedChoice.TaggedChoiceType;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -18,11 +19,10 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.TypeReferences;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AddTrappedChestFix extends DataFix {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29910 = 4096;
 	private static final short field_29911 = 12;
 

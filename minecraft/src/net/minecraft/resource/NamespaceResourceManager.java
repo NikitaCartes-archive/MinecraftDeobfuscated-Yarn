@@ -2,6 +2,7 @@ package net.minecraft.resource;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
@@ -15,11 +16,10 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class NamespaceResourceManager implements ResourceManager {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	protected final List<ResourcePack> packList = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
 	private final String namespace;

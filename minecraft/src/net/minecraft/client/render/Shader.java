@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
@@ -36,14 +37,13 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Shader implements GlShader, AutoCloseable {
 	private static final String CORE_DIRECTORY = "shaders/core/";
 	private static final String INCLUDE_DIRECTORY = "shaders/include/";
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final Uniform DEFAULT_UNIFORM = new Uniform();
 	private static final boolean field_32780 = true;
 	private static Shader activeShader;
@@ -85,6 +85,8 @@ public class Shader implements GlShader, AutoCloseable {
 	public final GlUniform fogEnd;
 	@Nullable
 	public final GlUniform fogColor;
+	@Nullable
+	public final GlUniform fogShape;
 	@Nullable
 	public final GlUniform lineWidth;
 	@Nullable
@@ -195,6 +197,7 @@ public class Shader implements GlShader, AutoCloseable {
 		this.fogStart = this.getUniform("FogStart");
 		this.fogEnd = this.getUniform("FogEnd");
 		this.fogColor = this.getUniform("FogColor");
+		this.fogShape = this.getUniform("FogShape");
 		this.lineWidth = this.getUniform("LineWidth");
 		this.gameTime = this.getUniform("GameTime");
 		this.chunkOffset = this.getUniform("ChunkOffset");

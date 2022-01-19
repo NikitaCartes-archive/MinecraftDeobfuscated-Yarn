@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import io.netty.buffer.Unpooled;
 import java.io.File;
@@ -90,15 +91,14 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public abstract class PlayerManager {
 	public static final File BANNED_PLAYERS_FILE = new File("banned-players.json");
 	public static final File BANNED_IPS_FILE = new File("banned-ips.json");
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int LATENCY_UPDATE_INTERVAL = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
 	private final MinecraftServer server;

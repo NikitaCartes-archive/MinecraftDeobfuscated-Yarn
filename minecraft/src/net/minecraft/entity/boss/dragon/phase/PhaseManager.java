@@ -1,12 +1,12 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class PhaseManager {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final EnderDragonEntity dragon;
 	private final Phase[] phases = new Phase[PhaseType.count()];
 	@Nullable

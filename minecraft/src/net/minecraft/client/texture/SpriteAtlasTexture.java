@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -31,12 +32,11 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SpriteAtlasTexture extends AbstractTexture implements TextureTickListener {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	@Deprecated
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated

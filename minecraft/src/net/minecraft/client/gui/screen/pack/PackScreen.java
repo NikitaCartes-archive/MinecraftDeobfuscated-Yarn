@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.pack;
 
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
+import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,12 +43,11 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PackScreen extends Screen {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32395 = 200;
 	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.GRAY);
 	static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");

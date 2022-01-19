@@ -5,14 +5,14 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
-import net.minecraft.world.gen.decorator.BlockFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.CarvingMaskPlacementModifier;
-import net.minecraft.world.gen.decorator.CountPlacementModifier;
-import net.minecraft.world.gen.decorator.NoiseBasedCountPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.RarityFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.SquarePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CarvingMaskPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.NoiseBasedCountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RarityFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 
 public class OceanPlacedFeatures {
 	public static final PlacedFeature SEAGRASS_WARM = PlacedFeatures.register(

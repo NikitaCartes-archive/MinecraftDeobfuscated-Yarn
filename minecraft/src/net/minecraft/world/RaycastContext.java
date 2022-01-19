@@ -6,6 +6,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -45,7 +47,8 @@ public class RaycastContext {
 	public static enum FluidHandling {
 		NONE(fluidState -> false),
 		SOURCE_ONLY(FluidState::isStill),
-		ANY(fluidState -> !fluidState.isEmpty());
+		ANY(fluidState -> !fluidState.isEmpty()),
+		WATER(fluidState -> FluidTags.WATER.contains(fluidState.getFluid()));
 
 		private final Predicate<FluidState> predicate;
 
@@ -65,7 +68,12 @@ public class RaycastContext {
 	public static enum ShapeType implements RaycastContext.ShapeProvider {
 		COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
 		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
-		VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape);
+		VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape),
+		FALLDAMAGE_RESETTING(
+			(blockState, blockView, blockPos, shapeContext) -> BlockTags.FALL_DAMAGE_RESETTING.contains(blockState.getBlock())
+					? VoxelShapes.fullCube()
+					: VoxelShapes.empty()
+		);
 
 		private final RaycastContext.ShapeProvider provider;
 

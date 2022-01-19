@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -14,11 +15,10 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AdvancementsProvider implements DataProvider {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
 	private final List<Consumer<Consumer<Advancement>>> tabGenerators = ImmutableList.of(

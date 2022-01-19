@@ -3,16 +3,16 @@ package net.minecraft.loot.condition;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.mojang.logging.LogUtils;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class ReferenceLootCondition implements LootCondition {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	final Identifier id;
 
 	ReferenceLootCondition(Identifier id) {

@@ -1,5 +1,6 @@
 package net.minecraft.block.dispenser;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.BlockItem;
@@ -8,11 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class BlockPlacementDispenserBehavior extends FallibleItemDispenserBehavior {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	@Override
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {

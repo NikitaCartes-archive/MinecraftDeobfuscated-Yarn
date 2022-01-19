@@ -3,6 +3,7 @@ package net.minecraft.world.level;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.Lifecycle;
 import java.util.Set;
@@ -35,11 +36,11 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.minecraft.world.timer.Timer;
 import net.minecraft.world.timer.TimerCallbackSerializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class LevelProperties implements ServerWorldProperties, SaveProperties {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
+	protected static final String field_36349 = "Player";
 	protected static final String WORLD_GEN_SETTINGS_KEY = "WorldGenSettings";
 	private LevelInfo levelInfo;
 	private final GeneratorOptions generatorOptions;

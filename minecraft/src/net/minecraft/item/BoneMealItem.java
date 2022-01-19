@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -81,7 +82,7 @@ public class BoneMealItem extends Item {
 			} else {
 				Random random = world.getRandom();
 
-				label76:
+				label78:
 				for(int i = 0; i < 128; ++i) {
 					BlockPos blockPos2 = blockPos;
 					BlockState blockState = Blocks.SEAGRASS.getDefaultState();
@@ -89,20 +90,23 @@ public class BoneMealItem extends Item {
 					for(int j = 0; j < i / 16; ++j) {
 						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 						if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
-							continue label76;
+							continue label78;
 						}
 					}
 
 					Optional<RegistryKey<Biome>> optional = world.getBiomeKey(blockPos2);
 					if (Objects.equals(optional, Optional.of(BiomeKeys.WARM_OCEAN))) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
-							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);
+							blockState = (BlockState)BlockTags.WALL_CORALS.getRandom(world.random).map(Block::getDefaultState).orElse(blockState);
+							if (blockState.contains(DeadCoralWallFanBlock.FACING)) {
+								blockState = blockState.with(DeadCoralWallFanBlock.FACING, facing);
+							}
 						} else if (random.nextInt(4) == 0) {
-							blockState = BlockTags.UNDERWATER_BONEMEALS.getRandom(random).getDefaultState();
+							blockState = (BlockState)BlockTags.UNDERWATER_BONEMEALS.getRandom(random).map(Block::getDefaultState).orElse(blockState);
 						}
 					}
 
-					if (blockState.isIn(BlockTags.WALL_CORALS)) {
+					if (blockState.isIn(BlockTags.WALL_CORALS, abstractBlockState -> abstractBlockState.contains(DeadCoralWallFanBlock.FACING))) {
 						for(int k = 0; !blockState.canPlaceAt(world, blockPos2) && k < 4; ++k) {
 							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
 						}

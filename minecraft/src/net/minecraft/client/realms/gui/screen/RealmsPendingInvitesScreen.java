@@ -1,6 +1,7 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,13 +24,12 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsPendingInvitesScreen extends RealmsScreen {
-	static final Logger LOGGER = LogManager.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
 	static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
 	private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");

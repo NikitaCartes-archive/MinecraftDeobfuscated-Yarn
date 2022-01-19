@@ -1,5 +1,6 @@
 package net.minecraft.world.entity;
 
+import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -7,14 +8,13 @@ import net.minecraft.util.TypeFilter;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.TypeFilterableList;
 import net.minecraft.util.math.Box;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * A collection of entities tracked within a chunk section.
  */
 public class EntityTrackingSection<T extends EntityLike> {
-	protected static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final TypeFilterableList<T> collection;
 	private EntityTrackingStatus status;
 

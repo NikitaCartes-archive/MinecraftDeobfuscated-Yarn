@@ -22,7 +22,7 @@ public class Schema2842 extends IdentifierNormalizingSchema {
 					"entities",
 					DSL.list(TypeReferences.ENTITY_TREE.in(schema)),
 					"block_entities",
-					DSL.list(TypeReferences.BLOCK_ENTITY.in(schema)),
+					DSL.list(DSL.or(TypeReferences.BLOCK_ENTITY.in(schema), DSL.remainder())),
 					"block_ticks",
 					DSL.list(DSL.fields("i", TypeReferences.BLOCK_NAME.in(schema))),
 					"sections",

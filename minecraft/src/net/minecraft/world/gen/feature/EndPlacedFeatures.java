@@ -2,12 +2,12 @@ package net.minecraft.world.gen.feature;
 
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.gen.YOffset;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
-import net.minecraft.world.gen.decorator.CountPlacementModifier;
-import net.minecraft.world.gen.decorator.HeightRangePlacementModifier;
-import net.minecraft.world.gen.decorator.RandomOffsetPlacementModifier;
-import net.minecraft.world.gen.decorator.RarityFilterPlacementModifier;
-import net.minecraft.world.gen.decorator.SquarePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RandomOffsetPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.RarityFilterPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 
 public class EndPlacedFeatures {
 	public static final PlacedFeature END_SPIKE = PlacedFeatures.register("end_spike", EndConfiguredFeatures.END_SPIKE.withPlacement(BiomePlacementModifier.of()));

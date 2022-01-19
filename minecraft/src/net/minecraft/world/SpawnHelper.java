@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -42,11 +43,10 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public final class SpawnHelper {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MIN_SPAWN_DISTANCE = 24;
 	public static final int field_30972 = 8;
 	public static final int field_30973 = 128;
@@ -197,7 +197,7 @@ public final class SpawnHelper {
 		} else if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
 			return false;
 		} else {
-			return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.shouldTickEntity(pos);
+			return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_39999(pos);
 		}
 	}
 

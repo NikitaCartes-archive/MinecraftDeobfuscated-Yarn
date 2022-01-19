@@ -1,6 +1,5 @@
 package net.minecraft.nbt;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -16,6 +15,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.scanner.NbtScanner;
+import net.minecraft.util.FixedBufferInputStream;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -41,24 +41,73 @@ public class NbtIo {
 		return var2;
 	}
 
+	private static DataInputStream method_40059(InputStream inputStream) throws IOException {
+		return new DataInputStream(new FixedBufferInputStream(new GZIPInputStream(inputStream)));
+	}
+
 	public static NbtCompound readCompressed(InputStream stream) throws IOException {
-		DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));
+		DataInputStream dataInputStream = method_40059(stream);
 
 		NbtCompound var2;
 		try {
 			var2 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
 		} catch (Throwable var5) {
-			try {
-				dataInputStream.close();
-			} catch (Throwable var4) {
-				var5.addSuppressed(var4);
+			if (dataInputStream != null) {
+				try {
+					dataInputStream.close();
+				} catch (Throwable var4) {
+					var5.addSuppressed(var4);
+				}
 			}
 
 			throw var5;
 		}
 
-		dataInputStream.close();
+		if (dataInputStream != null) {
+			dataInputStream.close();
+		}
+
 		return var2;
+	}
+
+	public static void method_40057(File file, NbtScanner nbtScanner) throws IOException {
+		InputStream inputStream = new FileInputStream(file);
+
+		try {
+			method_40058(inputStream, nbtScanner);
+		} catch (Throwable var6) {
+			try {
+				inputStream.close();
+			} catch (Throwable var5) {
+				var6.addSuppressed(var5);
+			}
+
+			throw var6;
+		}
+
+		inputStream.close();
+	}
+
+	public static void method_40058(InputStream inputStream, NbtScanner nbtScanner) throws IOException {
+		DataInputStream dataInputStream = method_40059(inputStream);
+
+		try {
+			read(dataInputStream, nbtScanner);
+		} catch (Throwable var6) {
+			if (dataInputStream != null) {
+				try {
+					dataInputStream.close();
+				} catch (Throwable var5) {
+					var6.addSuppressed(var5);
+				}
+			}
+
+			throw var6;
+		}
+
+		if (dataInputStream != null) {
+			dataInputStream.close();
+		}
 	}
 
 	public static void writeCompressed(NbtCompound compound, File file) throws IOException {

@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -21,13 +22,12 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MultiplayerServerListPinger serverListPinger = new MultiplayerServerListPinger();
 	private final Screen parent;
 	protected MultiplayerServerListWidget serverListWidget;

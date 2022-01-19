@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,8 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 /**
  * Used to send UDP multicasts to notify other clients of a local game on the same network.
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class LanServerPinger extends Thread {
 	private static final AtomicInteger THREAD_ID = new AtomicInteger(0);
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String PING_ADDRESS = "224.0.2.60";
 	public static final int PING_PORT = 4445;
 	private static final long PING_INTERVAL = 1500L;

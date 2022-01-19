@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.ImmutableList.Builder;
+import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +21,11 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientRecipeBook extends RecipeBook {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
 	private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
@@ -106,7 +106,7 @@ public class ClientRecipeBook extends RecipeBook {
 		} else if (recipeType == RecipeType.SMITHING) {
 			return RecipeBookGroup.SMITHING;
 		} else {
-			LOGGER.warn("Unknown recipe category: {}/{}", () -> Registry.RECIPE_TYPE.getId(recipe.getType()), recipe::getId);
+			LOGGER.warn("Unknown recipe category: {}/{}", LogUtils.defer(() -> Registry.RECIPE_TYPE.getId(recipe.getType())), LogUtils.defer(recipe::getId));
 			return RecipeBookGroup.UNKNOWN;
 		}
 	}

@@ -1,19 +1,16 @@
 package net.minecraft.network;
 
+import com.mojang.logging.LogUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import java.io.IOException;
 import java.util.List;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.Marker;
-import org.apache.logging.log4j.MarkerManager;
+import org.slf4j.Logger;
 
 public class DecoderHandler extends ByteToMessageDecoder {
-	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.NETWORK_PACKETS_MARKER);
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final NetworkSide side;
 
 	public DecoderHandler(NetworkSide side) {
@@ -48,7 +45,9 @@ public class DecoderHandler extends ByteToMessageDecoder {
 				} else {
 					objects.add(packet);
 					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(MARKER, " IN: [{}:{}] {}", ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName());
+						LOGGER.debug(
+							ClientConnection.field_36379, " IN: [{}:{}] {}", ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()
+						);
 					}
 				}
 			}

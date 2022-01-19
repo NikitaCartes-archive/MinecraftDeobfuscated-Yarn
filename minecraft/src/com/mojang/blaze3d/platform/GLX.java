@@ -3,6 +3,7 @@ package com.mojang.blaze3d.platform;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
@@ -17,20 +18,19 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.Window;
 import net.minecraft.util.annotation.DeobfuscateClass;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.slf4j.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 
 @Environment(EnvType.CLIENT)
 @DeobfuscateClass
 public class GLX {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static String cpuInfo;
 
 	public static String getOpenGLVersionString() {

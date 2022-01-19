@@ -5,6 +5,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.util.Set;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
@@ -17,11 +18,10 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.JsonHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	final Text name;
 	@Nullable
 	final LootContext.EntityTarget entity;

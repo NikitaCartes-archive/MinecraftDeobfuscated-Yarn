@@ -1,16 +1,16 @@
 package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DataFixUtils;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class BlockStateFlattening {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Dynamic<?>[] OLD_STATE_TO_DYNAMIC = new Dynamic[4096];
 	private static final Dynamic<?>[] OLD_BLOCK_TO_DYNAMIC = new Dynamic[256];
 	private static final Object2IntMap<Dynamic<?>> OLD_STATE_TO_ID = DataFixUtils.make(

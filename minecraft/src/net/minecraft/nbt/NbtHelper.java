@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -38,8 +39,7 @@ import net.minecraft.util.StringHelper;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public final class NbtHelper {
 	private static final Comparator<NbtList> BLOCK_POS_COMPARATOR = Comparator.comparingInt(nbt -> nbt.getInt(1))
@@ -55,7 +55,7 @@ public final class NbtHelper {
 	private static final char COLON = ':';
 	private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33229 = 2;
 	private static final int field_33230 = -1;
 

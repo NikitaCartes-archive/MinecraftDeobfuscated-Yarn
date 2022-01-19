@@ -1,6 +1,7 @@
 package net.minecraft.entity.boss.dragon;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -47,11 +48,10 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.gen.feature.EndPortalFeature;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class EnderDragonEntity extends MobEntity implements Monster {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final TrackedData<Integer> PHASE_TYPE = DataTracker.registerData(EnderDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(64.0);
 	private static final int MAX_HEALTH = 200;

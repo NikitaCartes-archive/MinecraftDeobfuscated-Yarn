@@ -1,15 +1,15 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.util.Util;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AffineTransformations {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
 		enumMap.put(Direction.SOUTH, AffineTransformation.identity());
 		enumMap.put(Direction.EAST, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F), null, null));

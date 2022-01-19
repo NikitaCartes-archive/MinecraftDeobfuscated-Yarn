@@ -3,11 +3,11 @@ package net.minecraft.world.gen.feature;
 import java.util.List;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.world.gen.decorator.BiomePlacementModifier;
-import net.minecraft.world.gen.decorator.CountMultilayerPlacementModifier;
-import net.minecraft.world.gen.decorator.CountPlacementModifier;
-import net.minecraft.world.gen.decorator.PlacementModifier;
-import net.minecraft.world.gen.decorator.SquarePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountMultilayerPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.PlacementModifier;
+import net.minecraft.world.gen.placementmodifier.SquarePlacementModifier;
 
 public class NetherPlacedFeatures {
 	public static final PlacedFeature DELTA = PlacedFeatures.register(

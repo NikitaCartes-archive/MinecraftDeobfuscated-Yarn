@@ -17,8 +17,8 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * A screen that allows player to input a chat message. It can be opened by
- * pressing {@linkplain net.minecraft.client.option.GameOptions#keyChat the
- * chat key} or {@linkplain net.minecraft.client.option.GameOptions#keyCommand
+ * pressing {@linkplain net.minecraft.client.option.GameOptions#chatKey the
+ * chat key} or {@linkplain net.minecraft.client.option.GameOptions#commandKey
  * the command key}.
  * 
  * @see net.minecraft.client.gui.hud.ChatHud

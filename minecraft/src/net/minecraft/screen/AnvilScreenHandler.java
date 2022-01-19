@@ -1,5 +1,6 @@
 package net.minecraft.screen;
 
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
@@ -17,11 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 public class AnvilScreenHandler extends ForgingScreenHandler {
-	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final boolean field_30752 = false;
 	public static final int field_30751 = 50;
 	private int repairItemUsage;
