@@ -259,18 +259,18 @@ extends RealmsScreen {
         this.updateButtonStates(null);
     }
 
-    void updateButtonStates(@Nullable RealmsServer realmsServer) {
+    void updateButtonStates(@Nullable RealmsServer server) {
         boolean bl;
         this.backButton.active = true;
         if (!RealmsMainScreen.hasParentalConsent() || !this.hasFetchedServers) {
-            RealmsMainScreen.method_40041(this.playButton, this.renewButton, this.configureButton, this.createTrialButton, this.buyARealmButton, this.closeButton, this.newsButton, this.pendingInvitesButton, this.showPopupButton, this.leaveButton);
+            RealmsMainScreen.hide(this.playButton, this.renewButton, this.configureButton, this.createTrialButton, this.buyARealmButton, this.closeButton, this.newsButton, this.pendingInvitesButton, this.showPopupButton, this.leaveButton);
             return;
         }
         this.playButton.visible = true;
-        this.playButton.active = this.shouldPlayButtonBeActive(realmsServer) && !this.shouldShowPopup();
-        this.renewButton.visible = this.shouldRenewButtonBeActive(realmsServer);
-        this.configureButton.visible = this.shouldConfigureButtonBeVisible(realmsServer);
-        this.leaveButton.visible = this.shouldLeaveButtonBeVisible(realmsServer);
+        this.playButton.active = this.shouldPlayButtonBeActive(server) && !this.shouldShowPopup();
+        this.renewButton.visible = this.shouldRenewButtonBeActive(server);
+        this.configureButton.visible = this.shouldConfigureButtonBeVisible(server);
+        this.leaveButton.visible = this.shouldLeaveButtonBeVisible(server);
         this.createTrialButton.visible = bl = this.shouldShowPopup() && this.trialsAvailable && !this.createdTrial;
         this.createTrialButton.active = bl;
         this.buyARealmButton.visible = this.shouldShowPopup();

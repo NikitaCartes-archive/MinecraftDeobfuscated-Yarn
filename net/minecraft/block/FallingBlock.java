@@ -43,7 +43,7 @@ implements LandingBlock {
         if (!FallingBlock.canFallThrough(world.getBlockState(pos.down())) || pos.getY() < world.getBottomY()) {
             return;
         }
-        FallingBlockEntity fallingBlockEntity = FallingBlockEntity.method_40005(world, pos, state);
+        FallingBlockEntity fallingBlockEntity = FallingBlockEntity.spawnFromBlock(world, pos, state);
         this.configureFallingBlockEntity(fallingBlockEntity);
     }
 

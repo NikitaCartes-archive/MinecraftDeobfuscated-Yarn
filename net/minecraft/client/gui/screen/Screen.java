@@ -116,7 +116,7 @@ implements Drawable {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
-            this.onClose();
+            this.close();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_TAB) {
@@ -137,7 +137,7 @@ implements Drawable {
         return true;
     }
 
-    public void onClose() {
+    public void close() {
         this.client.setScreen(null);
     }
 
@@ -618,8 +618,8 @@ implements Drawable {
         this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
     }
 
-    protected static void method_40041(ClickableWidget ... clickableWidgets) {
-        for (ClickableWidget clickableWidget : clickableWidgets) {
+    protected static void hide(ClickableWidget ... widgets) {
+        for (ClickableWidget clickableWidget : widgets) {
             clickableWidget.visible = false;
         }
     }

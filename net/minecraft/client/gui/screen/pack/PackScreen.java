@@ -80,7 +80,7 @@ extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.organizer.apply();
         this.client.setScreen(this.parent);
         this.closeDirectoryWatcher();
@@ -99,7 +99,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, button -> this.onClose()));
+        this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 48, 150, 20, ScreenTexts.DONE, button -> this.close()));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 48, 150, 20, new TranslatableText("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file), new ButtonWidget.TooltipSupplier(){
 
             @Override

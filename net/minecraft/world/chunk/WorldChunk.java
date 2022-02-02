@@ -410,8 +410,8 @@ extends Chunk {
         });
     }
 
-    public void setLoadedToWorld(boolean loaded) {
-        this.loadedToWorld = loaded;
+    public void setLoadedToWorld(boolean loadedToWorld) {
+        this.loadedToWorld = loadedToWorld;
     }
 
     public World getWorld() {

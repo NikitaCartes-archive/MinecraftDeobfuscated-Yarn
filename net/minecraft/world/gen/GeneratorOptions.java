@@ -198,7 +198,7 @@ public class GeneratorOptions {
         String string4 = (String)properties.get("level-type");
         String string5 = Optional.ofNullable(string4).map(string -> string.toLowerCase(Locale.ROOT)).orElse("default");
         properties.put("level-type", string5);
-        long l = GeneratorOptions.method_40024(string22).orElse(new Random().nextLong());
+        long l = GeneratorOptions.parseSeed(string22).orElse(new Random().nextLong());
         Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
         Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
         SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registryManager, l);
@@ -238,14 +238,14 @@ public class GeneratorOptions {
         return generatorOptions;
     }
 
-    public static OptionalLong method_40024(String string) {
-        if (StringUtils.isEmpty(string = string.trim())) {
+    public static OptionalLong parseSeed(String seed) {
+        if (StringUtils.isEmpty(seed = seed.trim())) {
             return OptionalLong.empty();
         }
         try {
-            return OptionalLong.of(Long.parseLong(string));
+            return OptionalLong.of(Long.parseLong(seed));
         } catch (NumberFormatException numberFormatException) {
-            return OptionalLong.of(string.hashCode());
+            return OptionalLong.of(seed.hashCode());
         }
     }
 }

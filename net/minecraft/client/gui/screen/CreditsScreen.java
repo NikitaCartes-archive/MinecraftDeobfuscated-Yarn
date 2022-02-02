@@ -86,7 +86,7 @@ extends Screen {
         this.client.getSoundManager().tick(false);
         float f = this.creditsHeight + this.height + this.height + 24;
         if (this.time > f) {
-            this.close();
+            this.closeScreen();
         }
     }
 
@@ -113,11 +113,11 @@ extends Screen {
     }
 
     @Override
-    public void onClose() {
-        this.close();
+    public void close() {
+        this.closeScreen();
     }
 
-    private void close() {
+    private void closeScreen() {
         this.finishAction.run();
         this.client.setScreen(null);
     }

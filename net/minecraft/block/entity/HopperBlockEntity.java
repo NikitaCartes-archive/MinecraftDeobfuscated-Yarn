@@ -100,7 +100,7 @@ implements Hopper {
         --blockEntity.transferCooldown;
         blockEntity.lastTickTime = world.getTime();
         if (!blockEntity.needsCooldown()) {
-            blockEntity.setCooldown(0);
+            blockEntity.setTransferCooldown(0);
             HopperBlockEntity.insertAndExtract(world, pos, state, blockEntity, () -> HopperBlockEntity.extract(world, blockEntity));
         }
     }
@@ -118,7 +118,7 @@ implements Hopper {
                 bl |= booleanSupplier.getAsBoolean();
             }
             if (bl) {
-                blockEntity.setCooldown(8);
+                blockEntity.setTransferCooldown(8);
                 HopperBlockEntity.markDirty(world, pos, state);
                 return true;
             }
@@ -271,7 +271,7 @@ implements Hopper {
                             j = 1;
                         }
                     }
-                    hopperBlockEntity.setCooldown(8 - j);
+                    hopperBlockEntity.setTransferCooldown(8 - j);
                 }
                 to.markDirty();
             }
@@ -346,8 +346,8 @@ implements Hopper {
         return (double)this.pos.getZ() + 0.5;
     }
 
-    private void setCooldown(int cooldown) {
-        this.transferCooldown = cooldown;
+    private void setTransferCooldown(int transferCooldown) {
+        this.transferCooldown = transferCooldown;
     }
 
     private boolean needsCooldown() {

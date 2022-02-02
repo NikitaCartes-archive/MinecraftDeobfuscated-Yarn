@@ -99,7 +99,7 @@ extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.finishEditing();
     }
 

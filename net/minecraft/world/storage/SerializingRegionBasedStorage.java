@@ -57,13 +57,13 @@ implements AutoCloseable {
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {
-        while (this.method_40020() && shouldKeepTicking.getAsBoolean()) {
+        while (this.hasUnsavedElements() && shouldKeepTicking.getAsBoolean()) {
             ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
             this.save(chunkPos);
         }
     }
 
-    public boolean method_40020() {
+    public boolean hasUnsavedElements() {
         return !this.unsavedElements.isEmpty();
     }
 
@@ -120,14 +120,14 @@ implements AutoCloseable {
         }
     }
 
-    private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
+    private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {
         if (data == null) {
             for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 this.loadedElements.put(SerializingRegionBasedStorage.chunkSectionPosAsLong(pos, i), (Optional<R>)Optional.empty());
             }
         } else {
             int k;
-            Dynamic<T> dynamic2 = new Dynamic<T>(dynamicOps, data);
+            Dynamic<T> dynamic2 = new Dynamic<T>(ops, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
@@ -136,7 +136,7 @@ implements AutoCloseable {
                 long m = SerializingRegionBasedStorage.chunkSectionPosAsLong(pos, l);
                 Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.codecFactory.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
                 this.loadedElements.put(m, (Optional<R>)optional);
-                optional.ifPresent(object -> {
+                optional.ifPresent(sections -> {
                     this.onLoad(m);
                     if (bl) {
                         this.onUpdate(m);
@@ -191,7 +191,7 @@ implements AutoCloseable {
     }
 
     public void saveChunk(ChunkPos pos) {
-        if (this.method_40020()) {
+        if (this.hasUnsavedElements()) {
             for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 long l = SerializingRegionBasedStorage.chunkSectionPosAsLong(pos, i);
                 if (!this.unsavedElements.contains(l)) continue;

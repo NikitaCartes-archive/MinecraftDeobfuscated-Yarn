@@ -41,7 +41,7 @@ extends FallibleItemDispenserBehavior {
     private static boolean tryShearBlock(ServerWorld world, BlockPos pos) {
         int i;
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL) && abstractBlockState.getBlock() instanceof BeehiveBlock) && (i = blockState.get(BeehiveBlock.HONEY_LEVEL).intValue()) >= 5) {
+        if (blockState.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL) && state.getBlock() instanceof BeehiveBlock) && (i = blockState.get(BeehiveBlock.HONEY_LEVEL).intValue()) >= 5) {
             world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0f, 1.0f);
             BeehiveBlock.dropHoneycomb(world, pos);
             ((BeehiveBlock)blockState.getBlock()).takeHoney(world, blockState, pos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);

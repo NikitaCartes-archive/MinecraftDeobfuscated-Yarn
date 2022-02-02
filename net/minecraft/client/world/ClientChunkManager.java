@@ -109,7 +109,7 @@ extends ChunkManager {
     }
 
     @Override
-    public void tick(BooleanSupplier shouldKeepTicking, boolean bl) {
+    public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
     }
 
     public void setChunkMapCenter(int x, int z) {

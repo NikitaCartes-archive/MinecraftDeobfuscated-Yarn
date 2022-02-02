@@ -503,7 +503,7 @@ ServerPlayPacketListener {
                 this.player.world.getWorldChunk(blockPos).setBlockEntity(blockEntity);
             }
             commandBlockExecutor.setCommand(string);
-            commandBlockExecutor.setTrackingOutput(bl);
+            commandBlockExecutor.setTrackOutput(bl);
             if (!bl) {
                 commandBlockExecutor.setLastOutput(null);
             }
@@ -532,7 +532,7 @@ ServerPlayPacketListener {
         CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
         if (commandBlockExecutor != null) {
             commandBlockExecutor.setCommand(packet.getCommand());
-            commandBlockExecutor.setTrackingOutput(packet.shouldTrackOutput());
+            commandBlockExecutor.setTrackOutput(packet.shouldTrackOutput());
             if (!packet.shouldTrackOutput()) {
                 commandBlockExecutor.setLastOutput(null);
             }
@@ -635,8 +635,8 @@ ServerPlayPacketListener {
         BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
         if (blockEntity instanceof JigsawBlockEntity) {
             JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
-            jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
-            jigsawBlockEntity.setTargetPool(packet.getTargetPool());
+            jigsawBlockEntity.setName(packet.getName());
+            jigsawBlockEntity.setTarget(packet.getTarget());
             jigsawBlockEntity.setPool(packet.getPool());
             jigsawBlockEntity.setFinalState(packet.getFinalState());
             jigsawBlockEntity.setJoint(packet.getJointType());

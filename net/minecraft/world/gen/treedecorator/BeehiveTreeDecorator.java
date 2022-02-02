@@ -29,8 +29,8 @@ import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 public class BeehiveTreeDecorator
 extends TreeDecorator {
     public static final Codec<BeehiveTreeDecorator> CODEC = ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("probability")).xmap(BeehiveTreeDecorator::new, decorator -> Float.valueOf(decorator.probability)).codec();
-    private static final Direction field_36346 = Direction.SOUTH;
-    private static final Direction[] field_36347 = (Direction[])Direction.Type.HORIZONTAL.stream().filter(direction -> direction != field_36346.getOpposite()).toArray(Direction[]::new);
+    private static final Direction BEE_NEST_FACE = Direction.SOUTH;
+    private static final Direction[] GENERATE_DIRECTIONS = (Direction[])Direction.Type.HORIZONTAL.stream().filter(direction -> direction != BEE_NEST_FACE.getOpposite()).toArray(Direction[]::new);
     private final float probability;
 
     public BeehiveTreeDecorator(float probability) {
@@ -48,16 +48,16 @@ extends TreeDecorator {
             return;
         }
         int i = !leavesPositions.isEmpty() ? Math.max(leavesPositions.get(0).getY() - 1, logPositions.get(0).getY() + 1) : Math.min(logPositions.get(0).getY() + 1 + random.nextInt(3), logPositions.get(logPositions.size() - 1).getY());
-        List list = logPositions.stream().filter(pos -> pos.getY() == i).flatMap(blockPos -> Stream.of(field_36347).map(blockPos::offset)).collect(Collectors.toList());
+        List list = logPositions.stream().filter(pos -> pos.getY() == i).flatMap(pos -> Stream.of(GENERATE_DIRECTIONS).map(pos::offset)).collect(Collectors.toList());
         if (list.isEmpty()) {
             return;
         }
         Collections.shuffle(list);
-        Optional<BlockPos> optional = list.stream().filter(blockPos -> Feature.isAir(world, blockPos) && Feature.isAir(world, blockPos.offset(field_36346))).findFirst();
+        Optional<BlockPos> optional = list.stream().filter(pos -> Feature.isAir(world, pos) && Feature.isAir(world, pos.offset(BEE_NEST_FACE))).findFirst();
         if (optional.isEmpty()) {
             return;
         }
-        replacer.accept(optional.get(), (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, field_36346));
+        replacer.accept(optional.get(), (BlockState)Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, BEE_NEST_FACE));
         world.getBlockEntity(optional.get(), BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
             int i = 2 + random.nextInt(2);
             for (int j = 0; j < i; ++j) {

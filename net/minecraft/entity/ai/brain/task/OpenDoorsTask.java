@@ -64,14 +64,14 @@ extends Task<LivingEntity> {
         PathNode pathNode2 = path.getCurrentNode();
         BlockPos blockPos = pathNode.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
-        if (blockState.isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock)) {
+        if (blockState.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
             DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
             if (!doorBlock.isOpen(blockState)) {
                 doorBlock.setOpen(entity, world, blockState, blockPos, true);
             }
             this.rememberToCloseDoor(world, entity, blockPos);
         }
-        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getBlockPos())).isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
+        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getBlockPos())).isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
             doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
             this.rememberToCloseDoor(world, entity, blockPos2);
         }
@@ -91,7 +91,7 @@ extends Task<LivingEntity> {
                     continue;
                 }
                 BlockState blockState = world.getBlockState(blockPos);
-                if (!blockState.isIn(BlockTags.WOODEN_DOORS, abstractBlockState -> abstractBlockState.getBlock() instanceof DoorBlock)) {
+                if (!blockState.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
                     iterator.remove();
                     continue;
                 }

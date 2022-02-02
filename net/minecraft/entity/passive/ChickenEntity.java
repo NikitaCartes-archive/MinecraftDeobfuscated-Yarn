@@ -47,7 +47,7 @@ extends AnimalEntity {
     public float flapSpeed = 1.0f;
     private float field_28639 = 1.0f;
     public int eggLayTime = this.random.nextInt(6000) + 6000;
-    public boolean jockey;
+    public boolean hasJockey;
 
     public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -154,7 +154,7 @@ extends AnimalEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.jockey = nbt.getBoolean("IsChickenJockey");
+        this.hasJockey = nbt.getBoolean("IsChickenJockey");
         if (nbt.contains("EggLayTime")) {
             this.eggLayTime = nbt.getInt("EggLayTime");
         }
@@ -163,7 +163,7 @@ extends AnimalEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("IsChickenJockey", this.jockey);
+        nbt.putBoolean("IsChickenJockey", this.hasJockey);
         nbt.putInt("EggLayTime", this.eggLayTime);
     }
 
@@ -186,11 +186,11 @@ extends AnimalEntity {
     }
 
     public boolean hasJockey() {
-        return this.jockey;
+        return this.hasJockey;
     }
 
     public void setHasJockey(boolean hasJockey) {
-        this.jockey = hasJockey;
+        this.hasJockey = hasJockey;
     }
 
     @Override

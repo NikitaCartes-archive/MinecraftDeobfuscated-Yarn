@@ -52,7 +52,7 @@ implements Angerable {
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
     private int angerTime;
     @Nullable
-    private UUID targetUuid;
+    private UUID angryAt;
     private static final int field_30524 = 10;
     private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
     private int angerPassingCooldown;
@@ -63,8 +63,8 @@ implements Angerable {
     }
 
     @Override
-    public void setAngryAt(@Nullable UUID uuid) {
-        this.targetUuid = uuid;
+    public void setAngryAt(@Nullable UUID angryAt) {
+        this.angryAt = angryAt;
     }
 
     @Override
@@ -180,8 +180,8 @@ implements Angerable {
     }
 
     @Override
-    public void setAngerTime(int ticks) {
-        this.angerTime = ticks;
+    public void setAngerTime(int angerTime) {
+        this.angerTime = angerTime;
     }
 
     @Override
@@ -222,7 +222,7 @@ implements Angerable {
     @Override
     @Nullable
     public UUID getAngryAt() {
-        return this.targetUuid;
+        return this.angryAt;
     }
 
     @Override

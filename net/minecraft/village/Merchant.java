@@ -15,10 +15,10 @@ import net.minecraft.village.TradeOfferList;
 import org.jetbrains.annotations.Nullable;
 
 public interface Merchant {
-    public void setCurrentCustomer(@Nullable PlayerEntity var1);
+    public void setCustomer(@Nullable PlayerEntity var1);
 
     @Nullable
-    public PlayerEntity getCurrentCustomer();
+    public PlayerEntity getCustomer();
 
     public TradeOfferList getOffers();
 

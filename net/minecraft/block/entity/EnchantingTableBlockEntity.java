@@ -109,8 +109,8 @@ implements Nameable {
         return new TranslatableText("container.enchant");
     }
 
-    public void setCustomName(@Nullable Text value) {
-        this.customName = value;
+    public void setCustomName(@Nullable Text customName) {
+        this.customName = customName;
     }
 
     @Override

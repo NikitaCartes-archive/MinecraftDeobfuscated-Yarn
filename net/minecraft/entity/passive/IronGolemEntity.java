@@ -170,8 +170,8 @@ implements Angerable {
     }
 
     @Override
-    public void setAngerTime(int ticks) {
-        this.angerTime = ticks;
+    public void setAngerTime(int angerTime) {
+        this.angerTime = angerTime;
     }
 
     @Override
@@ -180,8 +180,8 @@ implements Angerable {
     }
 
     @Override
-    public void setAngryAt(@Nullable UUID uuid) {
-        this.angryAt = uuid;
+    public void setAngryAt(@Nullable UUID angryAt) {
+        this.angryAt = angryAt;
     }
 
     @Override

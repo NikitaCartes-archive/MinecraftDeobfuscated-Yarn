@@ -37,6 +37,10 @@ BiomeAccess.Storage {
     @Deprecated
     public boolean isChunkLoaded(int var1, int var2);
 
+    /**
+     * {@return the Y coordinate of the topmost block at the coordinates
+     * {@code x} and {@code z} using {@code heightmap}}
+     */
     public int getTopY(Heightmap.Type var1, int var2, int var3);
 
     public int getAmbientDarkness();
@@ -98,6 +102,10 @@ BiomeAccess.Storage {
         return this.getDimension().getHeight();
     }
 
+    /**
+     * {@return the position of the topmost block in the column
+     * containing {@code pos} using {@code heightmap} heightmap}
+     */
     default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
         return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
     }
@@ -106,6 +114,15 @@ BiomeAccess.Storage {
         return this.getBlockState(pos).isAir();
     }
 
+    /**
+     * {@return whether the sky is visible at {@code pos}}
+     * 
+     * <p>In addition to the normal logic that checks the sky light level, this method
+     * also returns {@code true} if {@code pos} is below the sea level, and every block
+     * between the sea level and {@code pos} is either transparent or liquid.
+     * 
+     * @see BlockRenderView#isSkyVisible
+     */
     default public boolean isSkyVisibleAllowingSea(BlockPos pos) {
         if (pos.getY() >= this.getSeaLevel()) {
             return this.isSkyVisible(pos);
@@ -134,10 +151,16 @@ BiomeAccess.Storage {
         return this.getBlockState(pos).getStrongRedstonePower(this, pos, direction);
     }
 
+    /**
+     * {@return the chunk that contains {@code pos}}
+     */
     default public Chunk getChunk(BlockPos pos) {
         return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
+    /**
+     * {@return the chunk with position {@code chunkX} and {@code chunkZ}}
+     */
     default public Chunk getChunk(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, true);
     }
@@ -156,6 +179,9 @@ BiomeAccess.Storage {
         return this.getFluidState(pos).isIn(FluidTags.WATER);
     }
 
+    /**
+     * {@return {@code true} if any of the blocks inside {@code box} contain fluid}
+     */
     default public boolean containsFluid(Box box) {
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.ceil(box.maxX);

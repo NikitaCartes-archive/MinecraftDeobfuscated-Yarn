@@ -784,7 +784,7 @@ implements ClientPlayPacketListener {
         Screen screen = this.client.currentScreen;
         if (screen instanceof DownloadingTerrainScreen) {
             DownloadingTerrainScreen downloadingTerrainScreen = (DownloadingTerrainScreen)screen;
-            downloadingTerrainScreen.method_40040();
+            downloadingTerrainScreen.setReady();
         }
     }
 
@@ -2015,8 +2015,8 @@ implements ClientPlayPacketListener {
             merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
             merchantScreenHandler.setExperienceFromServer(packet.getExperience());
             merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
-            merchantScreenHandler.setCanLevel(packet.isLeveled());
-            merchantScreenHandler.setRefreshTrades(packet.isRefreshable());
+            merchantScreenHandler.setLeveled(packet.isLeveled());
+            merchantScreenHandler.setCanRefreshTrades(packet.isRefreshable());
         }
     }
 

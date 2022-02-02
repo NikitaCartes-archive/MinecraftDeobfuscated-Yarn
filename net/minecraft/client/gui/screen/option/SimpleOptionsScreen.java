@@ -22,14 +22,14 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public abstract class NarratorOptionsScreen
+public abstract class SimpleOptionsScreen
 extends GameOptionsScreen {
     private final Option[] options;
     @Nullable
     private ClickableWidget narratorButton;
     private ButtonListWidget buttonList;
 
-    public NarratorOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {
+    public SimpleOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {
         super(parent, gameOptions, title);
         this.options = options;
     }
@@ -54,9 +54,9 @@ extends GameOptionsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.buttonList.render(matrices, mouseX, mouseY, delta);
-        NarratorOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        SimpleOptionsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
-        List<OrderedText> list = NarratorOptionsScreen.getHoveredButtonTooltip(this.buttonList, mouseX, mouseY);
+        List<OrderedText> list = SimpleOptionsScreen.getHoveredButtonTooltip(this.buttonList, mouseX, mouseY);
         this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
     }
 

@@ -270,9 +270,9 @@ public class ChunkBuilder {
         });
         private boolean needsImportantRebuild;
 
-        public BuiltChunk(int index, int i, int j, int k) {
+        public BuiltChunk(int index, int originX, int originY, int originZ) {
             this.index = index;
-            this.setOrigin(i, j, k);
+            this.setOrigin(originX, originY, originZ);
         }
 
         private boolean isChunkNonEmpty(BlockPos pos) {
@@ -287,7 +287,7 @@ public class ChunkBuilder {
             return true;
         }
 
-        public Box method_40051() {
+        public Box getBoundingBox() {
             return this.boundingBox;
         }
 
@@ -588,6 +588,7 @@ public class ChunkBuilder {
                     for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
                         BufferBuilder bufferBuilder;
                         RenderLayer renderLayer;
+                        BlockState blockState2;
                         FluidState fluidState;
                         BlockEntity blockEntity;
                         BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
@@ -597,13 +598,13 @@ public class ChunkBuilder {
                         if (blockState.hasBlockEntity() && (blockEntity = chunkRendererRegion.getBlockEntity(blockPos3)) != null) {
                             this.addBlockEntity(data, set, blockEntity);
                         }
-                        if (!(fluidState = chunkRendererRegion.getFluidState(blockPos3)).isEmpty()) {
+                        if (!(fluidState = (blockState2 = chunkRendererRegion.getBlockState(blockPos3)).getFluidState()).isEmpty()) {
                             renderLayer = RenderLayers.getFluidLayer(fluidState);
                             bufferBuilder = buffers.get(renderLayer);
                             if (data.initializedLayers.add(renderLayer)) {
                                 BuiltChunk.this.beginBufferBuilding(bufferBuilder);
                             }
-                            if (blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
+                            if (blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState2, fluidState)) {
                                 data.empty = false;
                                 data.nonEmptyLayers.add(renderLayer);
                             }

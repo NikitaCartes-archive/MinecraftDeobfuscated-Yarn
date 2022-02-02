@@ -51,11 +51,11 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, button -> this.commitAndClose()));
-        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.onClose()));
+        this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.close()));
         boolean bl = this.getCommandExecutor().isTrackingOutput();
         this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-            commandBlockExecutor.setTrackingOutput((boolean)trackOutput);
+            commandBlockExecutor.setTrackOutput((boolean)trackOutput);
             this.setPreviousOutputText((boolean)trackOutput);
         }));
         this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, (Text)new TranslatableText("advMode.command")){

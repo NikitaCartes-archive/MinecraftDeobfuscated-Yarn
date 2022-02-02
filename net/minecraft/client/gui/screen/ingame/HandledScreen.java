@@ -515,7 +515,7 @@ implements ScreenHandlerProvider<T> {
             return true;
         }
         if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
-            this.onClose();
+            this.close();
             return true;
         }
         this.handleHotbarKeyPressed(keyCode, scanCode);
@@ -576,9 +576,9 @@ implements ScreenHandlerProvider<T> {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.client.player.closeHandledScreen();
-        super.onClose();
+        super.close();
     }
 }
 

@@ -98,13 +98,13 @@ Merchant {
     }
 
     @Override
-    public void setCurrentCustomer(@Nullable PlayerEntity customer) {
+    public void setCustomer(@Nullable PlayerEntity customer) {
         this.customer = customer;
     }
 
     @Override
     @Nullable
-    public PlayerEntity getCurrentCustomer() {
+    public PlayerEntity getCustomer() {
         return this.customer;
     }
 
@@ -194,7 +194,7 @@ Merchant {
     }
 
     protected void resetCustomer() {
-        this.setCurrentCustomer(null);
+        this.setCustomer(null);
     }
 
     @Override

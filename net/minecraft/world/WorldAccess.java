@@ -96,6 +96,14 @@ LunarWorldView {
         this.syncWorldEvent(null, eventId, pos, data);
     }
 
+    /**
+     * Emits an game event.
+     * 
+     * @param pos the position where the event occurred
+     * @param event the game event
+     * @param entity the entity that triggered the game event, or {@code null} for events
+     * not triggered by entities (such as dispensers)
+     */
     public void emitGameEvent(@Nullable Entity var1, GameEvent var2, BlockPos var3);
 
     default public void emitGameEvent(GameEvent event, BlockPos pos) {

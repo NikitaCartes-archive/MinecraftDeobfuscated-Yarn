@@ -186,7 +186,7 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setShouldSave(boolean shouldSave) {
+    public void setNeedsSaving(boolean needsSaving) {
     }
 
     @Override
@@ -256,8 +256,8 @@ extends ProtoChunk {
     }
 
     @Override
-    public void setBlender(BlendingData blender) {
-        this.wrapped.setBlender(blender);
+    public void setBlendingData(BlendingData blendingData) {
+        this.wrapped.setBlendingData(blendingData);
     }
 
     @Override

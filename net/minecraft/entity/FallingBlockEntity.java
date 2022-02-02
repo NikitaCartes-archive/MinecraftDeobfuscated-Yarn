@@ -78,9 +78,13 @@ extends Entity {
         this.setFallingBlockPos(this.getBlockPos());
     }
 
-    public static FallingBlockEntity method_40005(World world, BlockPos blockPos, BlockState blockState) {
-        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState.contains(Properties.WATERLOGGED) ? (BlockState)blockState.with(Properties.WATERLOGGED, false) : blockState);
-        world.setBlockState(blockPos, blockState.getFluidState().getBlockState(), Block.NOTIFY_ALL);
+    /**
+     * Spawns a falling block entity at {@code pos} from the block {@code state}.
+     * @return the spawned entity
+     */
+    public static FallingBlockEntity spawnFromBlock(World world, BlockPos pos, BlockState state) {
+        FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, state.contains(Properties.WATERLOGGED) ? (BlockState)state.with(Properties.WATERLOGGED, false) : state);
+        world.setBlockState(pos, state.getFluidState().getBlockState(), Block.NOTIFY_ALL);
         world.spawnEntity(fallingBlockEntity);
         return fallingBlockEntity;
     }

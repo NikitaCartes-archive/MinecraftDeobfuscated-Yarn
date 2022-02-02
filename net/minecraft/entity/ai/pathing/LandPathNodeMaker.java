@@ -386,6 +386,9 @@ extends PathNodeMaker {
             if (pathNodeType2 == PathNodeType.STICKY_HONEY) {
                 pathNodeType = PathNodeType.STICKY_HONEY;
             }
+            if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
+                pathNodeType = PathNodeType.POWDER_SNOW;
+            }
         }
         if (pathNodeType == PathNodeType.WALKABLE) {
             pathNodeType = LandPathNodeMaker.getNodeTypeFromNeighbors(world, pos.set(i, j, k), pathNodeType);

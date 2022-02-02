@@ -74,7 +74,7 @@ AutoCloseable {
     @Nullable
     public final GlUniform projectionMat;
     @Nullable
-    public final GlUniform field_36323;
+    public final GlUniform viewRotationMat;
     @Nullable
     public final GlUniform textureMat;
     @Nullable
@@ -181,7 +181,7 @@ AutoCloseable {
         this.markUniformsDirty();
         this.modelViewMat = this.getUniform("ModelViewMat");
         this.projectionMat = this.getUniform("ProjMat");
-        this.field_36323 = this.getUniform("IViewRotMat");
+        this.viewRotationMat = this.getUniform("IViewRotMat");
         this.textureMat = this.getUniform("TextureMat");
         this.screenSize = this.getUniform("ScreenSize");
         this.colorModulator = this.getUniform("ColorModulator");
@@ -397,7 +397,7 @@ AutoCloseable {
                 continue;
             }
             this.loadedUniformIds.add(l);
-            glUniform.setLoc(l);
+            glUniform.setLocation(l);
             this.loadedUniforms.put(string2, glUniform);
         }
     }

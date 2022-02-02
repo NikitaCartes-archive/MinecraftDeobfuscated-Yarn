@@ -29,6 +29,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface BlockView
 extends HeightLimitView {
+    /**
+     * {@return the block entity at {@code pos}, or {@code null} if there is none}
+     */
     @Nullable
     public BlockEntity getBlockEntity(BlockPos var1);
 
@@ -40,8 +43,20 @@ extends HeightLimitView {
         return Optional.of(blockEntity);
     }
 
+    /**
+     * {@return the block state at {@code pos}}
+     * 
+     * @implNote This returns the block state for {@link net.minecraft.block.Blocks#VOID_AIR}
+     * if the Y coordinate is outside the height limit.
+     */
     public BlockState getBlockState(BlockPos var1);
 
+    /**
+     * {@return the fluid state at {@code pos}}
+     * 
+     * @implNote This returns the fluid state for {@link net.minecraft.fluid.Fluids#EMPTY}
+     * if the Y coordinate is outside the height limit.
+     */
     public FluidState getFluidState(BlockPos var1);
 
     default public int getLuminance(BlockPos pos) {

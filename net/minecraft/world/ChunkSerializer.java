@@ -156,7 +156,7 @@ public class ChunkSerializer {
         chunk.setStructureStarts(ChunkSerializer.readStructureStarts(StructureContext.from(world), nbtCompound3, world.getSeed()));
         chunk.setStructureReferences(ChunkSerializer.readStructureReferences(chunkPos, nbtCompound3));
         if (nbt.getBoolean("shouldSave")) {
-            chunk.setShouldSave(true);
+            chunk.setNeedsSaving(true);
         }
         NbtList nbtList2 = nbt.getList("PostProcessing", 9);
         for (int n = 0; n < nbtList2.size(); ++n) {

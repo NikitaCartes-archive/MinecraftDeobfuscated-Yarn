@@ -108,7 +108,7 @@ implements ServerWorldProperties {
     }
 
     @Override
-    public void setSpawnAngle(float angle) {
+    public void setSpawnAngle(float spawnAngle) {
     }
 
     @Override
@@ -173,7 +173,7 @@ implements ServerWorldProperties {
     }
 
     @Override
-    public void setWorldBorder(WorldBorder.Properties properties) {
+    public void setWorldBorder(WorldBorder.Properties worldBorder) {
     }
 
     @Override
@@ -215,7 +215,7 @@ implements ServerWorldProperties {
     }
 
     @Override
-    public void setWanderingTraderId(UUID uuid) {
+    public void setWanderingTraderId(UUID wanderingTraderId) {
     }
 
     @Override

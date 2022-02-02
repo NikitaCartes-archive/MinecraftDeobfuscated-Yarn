@@ -272,7 +272,7 @@ extends EndPortalBlockEntity {
             BlockPos blockPos5 = blockPos4.up();
             BlockPos blockPos6 = blockPos4.up(2);
             if (!blockState.isOf(Blocks.END_STONE) || chunk.getBlockState(blockPos5).isFullCube(chunk, blockPos5) || chunk.getBlockState(blockPos6).isFullCube(chunk, blockPos6)) continue;
-            double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
+            double e = blockPos4.getSquaredDistanceFromCenter(0.0, 0.0, 0.0);
             if (blockPos3 != null && !(e < d)) continue;
             blockPos3 = blockPos4;
             d = e;

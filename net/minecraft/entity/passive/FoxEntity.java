@@ -744,8 +744,8 @@ extends AnimalEntity {
         }
 
         @Override
-        public boolean canStart() {
-            return !FoxEntity.this.isAggressive() && super.canStart();
+        public boolean isInDanger() {
+            return !FoxEntity.this.isAggressive() && super.isInDanger();
         }
     }
 

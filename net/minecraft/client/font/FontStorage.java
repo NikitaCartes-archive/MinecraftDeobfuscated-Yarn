@@ -33,8 +33,8 @@ public class FontStorage
 implements AutoCloseable {
     private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
     private static final Glyph SPACE = () -> 4.0f;
-    private static final Glyph field_36363 = () -> 0.0f;
-    private static final int field_36364 = 8204;
+    private static final Glyph ZERO_WIDTH_NON_JOINER = () -> 0.0f;
+    private static final int ZERO_WIDTH_NON_JOINER_CODE_POINT = 8204;
     private static final Random RANDOM = new Random();
     private final TextureManager textureManager;
     private final Identifier id;
@@ -66,7 +66,7 @@ implements AutoCloseable {
         HashSet set = Sets.newHashSet();
         intSet.forEach(codePoint -> {
             for (Font font : fonts) {
-                Glyph glyph = this.method_40038(codePoint);
+                Glyph glyph = this.getEmptyGlyph(codePoint);
                 if (glyph == null) {
                     glyph = font.getGlyph(codePoint);
                 }
@@ -100,18 +100,25 @@ implements AutoCloseable {
         this.glyphAtlases.clear();
     }
 
+    /**
+     * {@return the pre-defined empty glyph for the code point, or
+     * {@code null} if it is not defined}
+     * 
+     * @implNote Pre-defined empty glyphs include the space ({@code U+0020})
+     * and zero-width non joiner ({@code U+200C}).
+     */
     @Nullable
-    private Glyph method_40038(int i) {
-        return switch (i) {
+    private Glyph getEmptyGlyph(int codePoint) {
+        return switch (codePoint) {
             case 32 -> SPACE;
-            case 8204 -> field_36363;
+            case 8204 -> ZERO_WIDTH_NON_JOINER;
             default -> null;
         };
     }
 
     public Glyph getGlyph(int codePoint2) {
         return this.glyphCache.computeIfAbsent(codePoint2, codePoint -> {
-            Glyph glyph = this.method_40038(codePoint);
+            Glyph glyph = this.getEmptyGlyph(codePoint);
             return glyph == null ? this.getRenderableGlyph(codePoint) : glyph;
         });
     }
@@ -125,10 +132,10 @@ implements AutoCloseable {
         return BlankGlyph.INSTANCE;
     }
 
-    public GlyphRenderer getGlyphRenderer(int i2) {
-        return this.glyphRendererCache.computeIfAbsent(i2, i -> switch (i) {
+    public GlyphRenderer getGlyphRenderer(int codePoint2) {
+        return this.glyphRendererCache.computeIfAbsent(codePoint2, codePoint -> switch (codePoint) {
             case 32, 8204 -> EMPTY_GLYPH_RENDERER;
-            default -> this.getGlyphRenderer(this.getRenderableGlyph(i));
+            default -> this.getGlyphRenderer(this.getRenderableGlyph(codePoint));
         });
     }
 

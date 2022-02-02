@@ -4,8 +4,10 @@
 package net.minecraft.server.world;
 
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
@@ -175,7 +177,7 @@ public class ChunkHolder {
         if (worldChunk == null) {
             return;
         }
-        worldChunk.setShouldSave(true);
+        worldChunk.setNeedsSaving(true);
         int i = this.lightingProvider.getBottomY();
         int j = this.lightingProvider.getTopY();
         if (y < i || y > j) {
@@ -250,6 +252,9 @@ public class ChunkHolder {
         if (completableFuture != null) {
             boolean bl;
             Either either = completableFuture.getNow(null);
+            if (either == null && completableFuture.isDone()) {
+                throw new IllegalStateException("future for status: " + targetStatus + " was incorrectly set to null at chunk: " + this.pos);
+            }
             boolean bl2 = bl = either != null && either.right().isPresent();
             if (!bl) {
                 return completableFuture;
@@ -406,10 +411,18 @@ public class ChunkHolder {
         for (int i = 0; i < this.futuresByStatus.length(); ++i) {
             Optional<Chunk> optional;
             CompletableFuture<Either<Chunk, Unloaded>> completableFuture = this.futuresByStatus.get(i);
-            if (completableFuture == null || !(optional = completableFuture.getNow(UNLOADED_CHUNK).left()).isPresent() || !(optional.get() instanceof ProtoChunk)) continue;
+            if (completableFuture == null || (optional = completableFuture.getNow(UNLOADED_CHUNK).left()).isEmpty() || !(optional.get() instanceof ProtoChunk)) continue;
             this.futuresByStatus.set(i, CompletableFuture.completedFuture(Either.left(chunk)));
         }
         this.combineSavingFuture(CompletableFuture.completedFuture(Either.left(chunk.getWrappedChunk())), "replaceProto");
+    }
+
+    public List<Pair<ChunkStatus, CompletableFuture<Either<Chunk, Unloaded>>>> collectFuturesByStatus() {
+        ArrayList<Pair<ChunkStatus, CompletableFuture<Either<Chunk, Unloaded>>>> list = new ArrayList<Pair<ChunkStatus, CompletableFuture<Either<Chunk, Unloaded>>>>();
+        for (int i = 0; i < CHUNK_STATUSES.size(); ++i) {
+            list.add(Pair.of(CHUNK_STATUSES.get(i), this.futuresByStatus.get(i)));
+        }
+        return list;
     }
 
     @FunctionalInterface

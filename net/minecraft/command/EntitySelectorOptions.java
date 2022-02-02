@@ -199,7 +199,7 @@ public class EntitySelectorOptions {
                 return bl ? gameMode2 != gameMode : gameMode2 == gameMode;
             });
             if (bl) {
-                reader.setHasNegatedGameMode(true);
+                reader.setExcludesGameMode(true);
             } else {
                 reader.setSelectsGameMode(true);
             }

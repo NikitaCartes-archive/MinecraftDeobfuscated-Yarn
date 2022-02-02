@@ -214,7 +214,7 @@ CommandOutput {
     private float pitch;
     public float prevYaw;
     public float prevPitch;
-    private Box entityBounds = NULL_BOX;
+    private Box boundingBox = NULL_BOX;
     protected boolean onGround;
     public boolean horizontalCollision;
     public boolean verticalCollision;
@@ -268,7 +268,7 @@ CommandOutput {
     private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
     private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
-    private EntityChangeListener entityChangeListener = EntityChangeListener.NONE;
+    private EntityChangeListener changeListener = EntityChangeListener.NONE;
     private Vec3d trackedPosition;
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
@@ -592,8 +592,8 @@ CommandOutput {
         }
     }
 
-    public void setFireTicks(int ticks) {
-        this.fireTicks = ticks;
+    public void setFireTicks(int fireTicks) {
+        this.fireTicks = fireTicks;
     }
 
     public int getFireTicks() {
@@ -1696,9 +1696,9 @@ CommandOutput {
         }
         float f = this.dimensions.width * 0.8f;
         Box box = Box.of(this.getEyePos(), f, 1.0E-6, f);
-        return BlockPos.stream(box).anyMatch(blockPos -> {
-            BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
-            return !blockState.isAir() && blockState.shouldSuffocate(this.world, (BlockPos)blockPos) && VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, (BlockPos)blockPos).offset(blockPos.getX(), blockPos.getY(), blockPos.getZ()), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
+        return BlockPos.stream(box).anyMatch(pos -> {
+            BlockState blockState = this.world.getBlockState((BlockPos)pos);
+            return !blockState.isAir() && blockState.shouldSuffocate(this.world, (BlockPos)pos) && VoxelShapes.matchesAnywhere(blockState.getCollisionShape(this.world, (BlockPos)pos).offset(pos.getX(), pos.getY(), pos.getZ()), VoxelShapes.cuboid(box), BooleanBiFunction.AND);
         });
     }
 
@@ -2526,7 +2526,7 @@ CommandOutput {
 
     @Override
     public final Box getBoundingBox() {
-        return this.entityBounds;
+        return this.boundingBox;
     }
 
     public Box getVisibilityBoundingBox() {
@@ -2542,7 +2542,7 @@ CommandOutput {
     }
 
     public final void setBoundingBox(Box boundingBox) {
-        this.entityBounds = boundingBox;
+        this.boundingBox = boundingBox;
     }
 
     protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
@@ -3014,7 +3014,7 @@ CommandOutput {
                     this.chunkPos = new ChunkPos(this.blockPos);
                 }
             }
-            this.entityChangeListener.updateEntityPosition();
+            this.changeListener.updateEntityPosition();
             EntityGameEventHandler entityGameEventHandler = this.getGameEventHandler();
             if (entityGameEventHandler != null) {
                 entityGameEventHandler.onEntitySetPos(this.world);
@@ -3053,6 +3053,10 @@ CommandOutput {
 
     public boolean canFreeze() {
         return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
+    }
+
+    public boolean shouldEscapePowderSnow() {
+        return (this.inPowderSnow || this.wasInPowderSnow) && this.canFreeze();
     }
 
     public float getYaw() {
@@ -3097,7 +3101,7 @@ CommandOutput {
             this.stopRiding();
         }
         this.getPassengerList().forEach(Entity::stopRiding);
-        this.entityChangeListener.remove(reason);
+        this.changeListener.remove(reason);
     }
 
     protected void unsetRemoved() {
@@ -3105,8 +3109,8 @@ CommandOutput {
     }
 
     @Override
-    public void setListener(EntityChangeListener listener) {
-        this.entityChangeListener = listener;
+    public void setChangeListener(EntityChangeListener changeListener) {
+        this.changeListener = changeListener;
     }
 
     @Override

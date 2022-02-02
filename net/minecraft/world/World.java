@@ -148,10 +148,40 @@ AutoCloseable {
         return null;
     }
 
+    /**
+     * {@return whether the position is inside the build limit}
+     * 
+     * @implNote In addition to the height limit, the position's X and Z
+     * coordinates must be greater than or equal to {@code -30_000_000}
+     * and less than {@code 30_000_000}.
+     * 
+     * @apiNote This method should be used for block placement. If the
+     * action involves a player interaction, additionally check for
+     * {@link #canPlayerModifyAt} (which checks the spawn protection and world border).
+     * 
+     * @see #isValid
+     * @see #canPlayerModifyAt
+     */
     public boolean isInBuildLimit(BlockPos pos) {
         return !this.isOutOfHeightLimit(pos) && World.isValidHorizontally(pos);
     }
 
+    /**
+     * {@return whether the position is valid}
+     * 
+     * @implNote The position is considered valid if the X and Z
+     * coordinates are greater than or equal to {@code -30_000_000} and less than
+     * {@code 30_000_000}, and the Y coordinate is greater or equal to
+     * {@code -20_000_000} and less than {@code 20_000_000}.
+     * 
+     * @apiNote This method should be used for teleportation. To test for
+     * block positions, use {@link #isInBuildLimit} (which checks the height
+     * limit), and if the action involves a player interaction, additionally
+     * check for {@link #canPlayerModifyAt} (which checks the spawn protection and world border).
+     * 
+     * @see #isInBuildLimit
+     * @see #canPlayerModifyAt
+     */
     public static boolean isValid(BlockPos pos) {
         return !World.isInvalidVertically(pos.getY()) && World.isValidHorizontally(pos);
     }
@@ -164,6 +194,9 @@ AutoCloseable {
         return y < -20000000 || y >= 20000000;
     }
 
+    /**
+     * {@return the chunk that contains {@code pos}}
+     */
     public WorldChunk getWorldChunk(BlockPos pos) {
         return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
@@ -232,6 +265,12 @@ AutoCloseable {
         return false;
     }
 
+    /**
+     * Called when a block state changed.
+     * 
+     * @apiNote To implement logic for specific type of blocks, override
+     * {@link net.minecraft.block.AbstractBlock#onStateReplaced} instead.
+     */
     public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
     }
 
@@ -274,6 +313,11 @@ AutoCloseable {
     public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
     }
 
+    /**
+     * Emits a neighbor update to all 6 neighboring blocks of {@code pos}.
+     * 
+     * @see #updateNeighborsExcept(BlockPos, Block, Direction)
+     */
     public void updateNeighborsAlways(BlockPos pos, Block block) {
         this.updateNeighbor(pos.west(), block, pos);
         this.updateNeighbor(pos.east(), block, pos);
@@ -283,6 +327,12 @@ AutoCloseable {
         this.updateNeighbor(pos.south(), block, pos);
     }
 
+    /**
+     * Emits a neighbor update to neighboring blocks of {@code pos}, except
+     * for the one in {@code direction} direction.
+     * 
+     * @see #updateNeighborsAlways(BlockPos, Block)
+     */
     public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
         if (direction != Direction.WEST) {
             this.updateNeighbor(pos.west(), sourceBlock, pos);
@@ -304,6 +354,12 @@ AutoCloseable {
         }
     }
 
+    /**
+     * Triggers a neighbor update originating from {@code pos} at
+     * {@code neighborPos}.
+     * 
+     * @see #updateNeighborsAlways(BlockPos, Block)
+     */
     public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
         if (this.isClient) {
             return;
@@ -440,18 +496,41 @@ AutoCloseable {
         return true;
     }
 
+    /**
+     * {@return whether the blocks in the specified chunk should get ticked}
+     */
     public boolean shouldTickBlocksInChunk(long chunkPos) {
         return true;
     }
 
+    /**
+     * Creates an explosion without creating fire.
+     * 
+     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+     */
     public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
         return this.createExplosion(entity, null, null, x, y, z, power, false, destructionType);
     }
 
+    /**
+     * Creates an explosion.
+     * 
+     * @see #createExplosion(Entity, DamageSource, ExplosionBehavior, double, double, double, float, boolean, Explosion.DestructionType)
+     */
     public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
         return this.createExplosion(entity, null, null, x, y, z, power, createFire, destructionType);
     }
 
+    /**
+     * Creates an explosion.
+     * 
+     * @param behavior the explosion behavior, or {@code null} to use the default
+     * @param damageSource the custom damage source, or {@code null} to use the default
+     * ({@link DamageSource#explosion(Explosion)})
+     * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
+     * @param destructionType the destruction type of the explosion
+     * @param createFire whether the explosion should create fire
+     */
     public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
         Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
         explosion.collectBlocksAndDamageEntities();
@@ -517,6 +596,9 @@ AutoCloseable {
         this.ambientDarkness = (int)((1.0 - f * d * e) * 11.0);
     }
 
+    /**
+     * Sets whether monsters or animals can spawn.
+     */
     public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
         this.getChunkManager().setMobSpawnOptions(spawnMonsters, spawnAnimals);
     }
@@ -579,12 +661,20 @@ AutoCloseable {
         return list;
     }
 
+    /**
+     * {@return the entity using the entity ID, or {@code null} if none was found}
+     * 
+     * <p>Entity ID is ephemeral and changes after server restart. Use the UUID
+     * for persistent storage instead.
+     * 
+     * @see net.minecraft.server.world.ServerWorld#getEntity
+     */
     @Nullable
     public abstract Entity getEntityById(int var1);
 
     public void markDirty(BlockPos pos) {
         if (this.isChunkLoaded(pos)) {
-            this.getWorldChunk(pos).setShouldSave(true);
+            this.getWorldChunk(pos).setNeedsSaving(true);
         }
     }
 
@@ -664,18 +754,50 @@ AutoCloseable {
     public void disconnect() {
     }
 
+    /**
+     * {@return the time}
+     * 
+     * <p>Time is used to track scheduled ticks and cannot be modified or frozen.
+     * 
+     * @see WorldProperties#getTime
+     */
     public long getTime() {
         return this.properties.getTime();
     }
 
+    /**
+     * {@return the time of day}
+     * 
+     * <p>Time of day is different to "time", which is incremented on every tick and
+     * cannot be modified; Time of day affects the day-night cycle, can be changed using
+     * {@link net.minecraft.server.command.TimeCommand /time command}, and can be frozen
+     * if {@link GameRules#DO_DAYLIGHT_CYCLE doDaylightCycle} gamerule is turned off.
+     * Time is used to track scheduled ticks and cannot be modified or frozen.
+     * 
+     * @see WorldProperties#getTimeOfDay
+     * @see net.minecraft.server.world.ServerWorld#setTimeOfDay
+     */
     public long getTimeOfDay() {
         return this.properties.getTimeOfDay();
     }
 
+    /**
+     * {@return whether {@code player} can modify blocks at {@code pos}}
+     * 
+     * @implNote This checks the spawn protection and the world border.
+     * 
+     * @see #isInBuildLimit
+     * @see #isValid
+     */
     public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
         return true;
     }
 
+    /**
+     * Sends the entity status to nearby players.
+     * 
+     * @see net.minecraft.entity.EntityStatuses
+     */
     public void sendEntityStatus(Entity entity, byte status) {
     }
 
@@ -719,10 +841,23 @@ AutoCloseable {
         return (double)this.getThunderGradient(1.0f) > 0.9;
     }
 
+    /**
+     * {@return whether it is raining}
+     * 
+     * @see #hasRain
+     */
     public boolean isRaining() {
         return (double)this.getRainGradient(1.0f) > 0.2;
     }
 
+    /**
+     * {@return whether it can rain at {@code pos}}
+     * 
+     * @implNote This returns {@code true} if a rain is ongoing, the biome
+     * and the position allows it to rain, and there are no blocks above the position.
+     * 
+     * @see #isRaining
+     */
     public boolean hasRain(BlockPos pos) {
         if (!this.isRaining()) {
             return false;
@@ -737,6 +872,11 @@ AutoCloseable {
         return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
     }
 
+    /**
+     * {@return whether the biome at {@code pos} has high humidity}
+     * 
+     * <p>Humidity affects the chance of fire spreading.
+     */
     public boolean hasHighHumidity(BlockPos pos) {
         Biome biome = this.getBiome(pos);
         return biome.hasHighHumidity();

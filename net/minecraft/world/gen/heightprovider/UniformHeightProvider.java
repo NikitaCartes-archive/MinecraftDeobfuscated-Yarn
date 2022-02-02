@@ -24,7 +24,7 @@ extends HeightProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final YOffset minOffset;
     private final YOffset maxOffset;
-    private final LongSet field_36290 = new LongOpenHashSet();
+    private final LongSet warnedEmptyHeightRanges = new LongOpenHashSet();
 
     private UniformHeightProvider(YOffset minOffset, YOffset maxOffset) {
         this.minOffset = minOffset;
@@ -44,7 +44,7 @@ extends HeightProvider {
         int j;
         int i = this.minOffset.getY(context);
         if (i > (j = this.maxOffset.getY(context))) {
-            if (this.field_36290.add((long)i << 32 | (long)j)) {
+            if (this.warnedEmptyHeightRanges.add((long)i << 32 | (long)j)) {
                 LOGGER.warn("Empty height range: {}", (Object)this);
             }
             return i;

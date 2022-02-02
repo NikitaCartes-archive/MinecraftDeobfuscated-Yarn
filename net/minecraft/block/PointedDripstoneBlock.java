@@ -60,7 +60,6 @@ Waterloggable {
     public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private static final int field_31205 = 11;
-    private static final int field_31206 = Integer.MAX_VALUE;
     private static final int field_31207 = 2;
     private static final float field_31208 = 0.02f;
     private static final float field_31209 = 0.12f;
@@ -85,7 +84,7 @@ Waterloggable {
     private static final VoxelShape FRUSTUM_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
     private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
     private static final float field_31204 = 0.125f;
-    private static final VoxelShape field_36340 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+    private static final VoxelShape DRIP_COLLISION_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
 
     public PointedDripstoneBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -116,7 +115,7 @@ Waterloggable {
         }
         if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
             if (direction2 == Direction.DOWN) {
-                this.scheduleFall(state, world, pos);
+                world.createAndScheduleBlockTick(pos, this, 2);
             } else {
                 world.createAndScheduleBlockTick(pos, this, 1);
             }
@@ -284,40 +283,19 @@ Waterloggable {
         return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
     }
 
-    private void scheduleFall(BlockState state, WorldAccess world, BlockPos pos) {
-        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, Integer.MAX_VALUE, true);
-        if (blockPos == null) {
-            return;
-        }
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
-        mutable.move(Direction.DOWN);
-        BlockState blockState = world.getBlockState(mutable);
-        if (blockState.getCollisionShape(world, mutable, ShapeContext.absent()).getMax(Direction.Axis.Y) >= 1.0 || blockState.isOf(Blocks.POWDER_SNOW)) {
-            world.breakBlock(blockPos, true);
-            mutable.move(Direction.UP);
-        }
-        mutable.move(Direction.UP);
-        while (PointedDripstoneBlock.isPointingDown(world.getBlockState(mutable))) {
-            world.createAndScheduleBlockTick(mutable, this, 2);
-            mutable.move(Direction.UP);
-        }
-    }
-
-    private static int getStalactiteSize(ServerWorld world, BlockPos pos, int range) {
-        int i;
-        BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
-        for (i = 1; i < range && PointedDripstoneBlock.isPointingDown(world.getBlockState(mutable)); ++i) {
-            mutable.move(Direction.UP);
-        }
-        return i;
-    }
-
     private static void spawnFallingBlock(BlockState state, ServerWorld world, BlockPos pos) {
-        FallingBlockEntity fallingBlockEntity = FallingBlockEntity.method_40005(world, pos, state);
-        if (PointedDripstoneBlock.isTip(state, true)) {
-            int i = PointedDripstoneBlock.getStalactiteSize(world, pos, 6);
-            float f = 1.0f * (float)i;
-            fallingBlockEntity.setHurtEntities(f, 40);
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        BlockState blockState = state;
+        while (PointedDripstoneBlock.isPointingDown(blockState)) {
+            FallingBlockEntity fallingBlockEntity = FallingBlockEntity.spawnFromBlock(world, mutable, blockState);
+            if (PointedDripstoneBlock.isTip(blockState, true)) {
+                int i = Math.max(1 + pos.getY() - mutable.getY(), 6);
+                float f = 1.0f * (float)i;
+                fallingBlockEntity.setHurtEntities(f, 40);
+                break;
+            }
+            mutable.move(Direction.DOWN);
+            blockState = world.getBlockState(mutable);
         }
     }
 
@@ -359,7 +337,7 @@ Waterloggable {
                 PointedDripstoneBlock.tryGrow(world, (BlockPos)mutable.down(), Direction.UP);
                 return;
             }
-            if (PointedDripstoneBlock.method_40016(world, mutable, blockState)) continue;
+            if (PointedDripstoneBlock.canDripThrough(world, mutable, blockState)) continue;
             return;
         }
     }
@@ -409,13 +387,13 @@ Waterloggable {
     }
 
     @Nullable
-    private static BlockPos getTipPos(BlockState state2, WorldAccess world, BlockPos pos, int range, boolean allowMerged) {
+    private static BlockPos getTipPos(BlockState state2, WorldAccess world, BlockPos pos2, int range, boolean allowMerged) {
         if (PointedDripstoneBlock.isTip(state2, allowMerged)) {
-            return pos;
+            return pos2;
         }
         Direction direction = state2.get(VERTICAL_DIRECTION);
-        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getDirection(), biPredicate, state -> PointedDripstoneBlock.isTip(state, allowMerged), range).orElse(null);
+        BiPredicate<BlockPos, BlockState> biPredicate = (pos, state) -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos2, direction.getDirection(), biPredicate, state -> PointedDripstoneBlock.isTip(state, allowMerged), range).orElse(null);
     }
 
     @Nullable
@@ -471,10 +449,10 @@ Waterloggable {
         return PointedDripstoneBlock.isTip(blockState, direction.getOpposite());
     }
 
-    private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos, BlockState state2, int range) {
+    private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos2, BlockState state2, int range) {
         Direction direction = state2.get(VERTICAL_DIRECTION);
-        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.searchInDirection(world, pos, direction.getOpposite().getDirection(), biPredicate, state -> !state.isOf(Blocks.POINTED_DRIPSTONE), range);
+        BiPredicate<BlockPos, BlockState> biPredicate = (pos, state) -> state.isOf(Blocks.POINTED_DRIPSTONE) && state.get(VERTICAL_DIRECTION) == direction;
+        return PointedDripstoneBlock.searchInDirection(world, pos2, direction.getOpposite().getDirection(), biPredicate, state -> !state.isOf(Blocks.POINTED_DRIPSTONE), range);
     }
 
     private static boolean canPlaceAtWithDirection(WorldView world, BlockPos pos, Direction direction) {
@@ -517,16 +495,16 @@ Waterloggable {
     }
 
     @Nullable
-    private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
+    private static BlockPos getCauldronPos(World world, BlockPos pos2, Fluid fluid) {
         Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock && ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
-        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> PointedDripstoneBlock.method_40016(world, blockPos, blockState);
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.DOWN.getDirection(), biPredicate, predicate, 11).orElse(null);
+        BiPredicate<BlockPos, BlockState> biPredicate = (pos, state) -> PointedDripstoneBlock.canDripThrough(world, pos, state);
+        return PointedDripstoneBlock.searchInDirection(world, pos2, Direction.DOWN.getDirection(), biPredicate, predicate, 11).orElse(null);
     }
 
     @Nullable
-    public static BlockPos getDripPos(World world, BlockPos pos) {
-        BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> PointedDripstoneBlock.method_40016(world, blockPos, blockState);
-        return PointedDripstoneBlock.searchInDirection(world, pos, Direction.UP.getDirection(), biPredicate, PointedDripstoneBlock::canDrip, 11).orElse(null);
+    public static BlockPos getDripPos(World world, BlockPos pos2) {
+        BiPredicate<BlockPos, BlockState> biPredicate = (pos, state) -> PointedDripstoneBlock.canDripThrough(world, pos, state);
+        return PointedDripstoneBlock.searchInDirection(world, pos2, Direction.UP.getDirection(), biPredicate, PointedDripstoneBlock::canDrip, 11).orElse(null);
     }
 
     public static Fluid getDripFluid(World world, BlockPos pos) {
@@ -558,7 +536,7 @@ Waterloggable {
         return fluid;
     }
 
-    private static Optional<BlockPos> searchInDirection(WorldAccess world, BlockPos pos, Direction.AxisDirection direction, BiPredicate<BlockPos, BlockState> biPredicate, Predicate<BlockState> stopPredicate, int range) {
+    private static Optional<BlockPos> searchInDirection(WorldAccess world, BlockPos pos, Direction.AxisDirection direction, BiPredicate<BlockPos, BlockState> continuePredicate, Predicate<BlockState> stopPredicate, int range) {
         Direction direction2 = Direction.get(direction, Direction.Axis.Y);
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (int i = 1; i < range; ++i) {
@@ -567,24 +545,30 @@ Waterloggable {
             if (stopPredicate.test(blockState)) {
                 return Optional.of(mutable.toImmutable());
             }
-            if (!world.isOutOfHeightLimit(mutable.getY()) && biPredicate.test(mutable, blockState)) continue;
+            if (!world.isOutOfHeightLimit(mutable.getY()) && continuePredicate.test(mutable, blockState)) continue;
             return Optional.empty();
         }
         return Optional.empty();
     }
 
-    private static boolean method_40016(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        if (blockState.isAir()) {
+    /**
+     * {@return whether it can drip through the block {@code block} at {@code pos}}
+     * 
+     * @apiNote This is used for checking which block can obstruct the stalagmites
+     * growing or the cauldrons filling with liquids.
+     */
+    private static boolean canDripThrough(BlockView world, BlockPos pos, BlockState state) {
+        if (state.isAir()) {
             return true;
         }
-        if (blockState.isOpaqueFullCube(blockView, blockPos)) {
+        if (state.isOpaqueFullCube(world, pos)) {
             return false;
         }
-        if (!blockState.getFluidState().isEmpty()) {
+        if (!state.getFluidState().isEmpty()) {
             return false;
         }
-        VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
-        return !VoxelShapes.matchesAnywhere(field_36340, voxelShape, BooleanBiFunction.AND);
+        VoxelShape voxelShape = state.getCollisionShape(world, pos);
+        return !VoxelShapes.matchesAnywhere(DRIP_COLLISION_SHAPE, voxelShape, BooleanBiFunction.AND);
     }
 }
 

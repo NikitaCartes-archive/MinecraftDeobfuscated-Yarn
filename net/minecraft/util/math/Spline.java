@@ -28,30 +28,30 @@ extends ToFloatFunction<C> {
     @Debug
     public String getDebugString();
 
-    public static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
-        record class_6737<C>(float location, Spline<C> value, float derivative) {
+    public static <C> Codec<Spline<C>> createCodec(Codec<ToFloatFunction<C>> locationFunctionCodec) {
+        record Serialized<C>(float location, Spline<C> value, float derivative) {
         }
         MutableObject<Codec<Spline>> mutableObject = new MutableObject<Codec<Spline>>();
-        Codec codec2 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("location")).forGetter(class_6737::location), ((MapCodec)Codecs.createLazy(mutableObject::getValue).fieldOf("value")).forGetter(class_6737::value), ((MapCodec)Codec.FLOAT.fieldOf("derivative")).forGetter(class_6737::derivative)).apply((Applicative<class_6737, ?>)instance, (f, spline, g) -> new class_6737((float)f, spline, (float)g)));
-        Codec codec3 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("coordinate")).forGetter(class_6738::coordinate), ((MapCodec)Codecs.nonEmptyList(codec2.listOf()).fieldOf("points")).forGetter(arg -> IntStream.range(0, arg.locations.length).mapToObj(i -> new class_6737(arg.locations()[i], arg.values().get(i), arg.derivatives()[i])).toList())).apply((Applicative<class_6738, ?>)instance, (toFloatFunction, list) -> {
-            float[] fs = new float[list.size()];
+        Codec codec = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("location")).forGetter(Serialized::location), ((MapCodec)Codecs.createLazy(mutableObject::getValue).fieldOf("value")).forGetter(Serialized::value), ((MapCodec)Codec.FLOAT.fieldOf("derivative")).forGetter(Serialized::derivative)).apply((Applicative<Serialized, ?>)instance, (location, value, derivative) -> new Serialized((float)location, value, (float)derivative)));
+        Codec codec2 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)locationFunctionCodec.fieldOf("coordinate")).forGetter(Implementation::locationFunction), ((MapCodec)Codecs.nonEmptyList(codec.listOf()).fieldOf("points")).forGetter(spline -> IntStream.range(0, spline.locations.length).mapToObj(index -> new Serialized(spline.locations()[index], spline.values().get(index), spline.derivatives()[index])).toList())).apply((Applicative<Implementation, ?>)instance, (locationFunction, splines) -> {
+            float[] fs = new float[splines.size()];
             ImmutableList.Builder builder = ImmutableList.builder();
-            float[] gs = new float[list.size()];
-            for (int i = 0; i < list.size(); ++i) {
-                class_6737 lv = (class_6737)list.get(i);
-                fs[i] = lv.location();
-                builder.add(lv.value());
-                gs[i] = lv.derivative();
+            float[] gs = new float[splines.size()];
+            for (int i = 0; i < splines.size(); ++i) {
+                Serialized serialized = (Serialized)splines.get(i);
+                fs[i] = serialized.location();
+                builder.add(serialized.value());
+                gs[i] = serialized.derivative();
             }
-            return new class_6738(toFloatFunction, fs, builder.build(), gs);
+            return new Implementation(locationFunction, fs, builder.build(), gs);
         }));
-        mutableObject.setValue(Codec.either(Codec.FLOAT, codec3).xmap(either -> (Spline)((Object)either.map(FixedFloatFunction::new, arg -> arg)), spline -> {
-            Either<Object, class_6738<Object>> either;
+        mutableObject.setValue(Codec.either(Codec.FLOAT, codec2).xmap(either -> (Spline)((Object)either.map(FixedFloatFunction::new, spline -> spline)), spline -> {
+            Either<Object, Implementation<Object>> either;
             if (spline instanceof FixedFloatFunction) {
                 FixedFloatFunction fixedFloatFunction = (FixedFloatFunction)spline;
                 either = Either.left(Float.valueOf(fixedFloatFunction.value()));
             } else {
-                either = Either.right((class_6738)spline);
+                either = Either.right((Implementation)spline);
             }
             return either;
         }));
@@ -66,8 +66,8 @@ extends ToFloatFunction<C> {
         return new Builder<C>(locationFunction);
     }
 
-    public static <C> Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
-        return new Builder<C>(locationFunction, toFloatFunction);
+    public static <C> Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> amplifier) {
+        return new Builder<C>(locationFunction, amplifier);
     }
 
     @Debug
@@ -86,22 +86,22 @@ extends ToFloatFunction<C> {
 
     public static final class Builder<C> {
         private final ToFloatFunction<C> locationFunction;
-        private final ToFloatFunction<Float> field_35661;
+        private final ToFloatFunction<Float> amplifier;
         private final FloatList locations = new FloatArrayList();
         private final List<Spline<C>> values = Lists.newArrayList();
         private final FloatList derivatives = new FloatArrayList();
 
         protected Builder(ToFloatFunction<C> locationFunction) {
-            this(locationFunction, float_ -> float_.floatValue());
+            this(locationFunction, value -> value.floatValue());
         }
 
-        protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+        protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> amplifier) {
             this.locationFunction = locationFunction;
-            this.field_35661 = toFloatFunction;
+            this.amplifier = amplifier;
         }
 
         public Builder<C> add(float location, float value, float derivative) {
-            return this.add(location, new FixedFloatFunction(this.field_35661.apply(Float.valueOf(value))), derivative);
+            return this.add(location, new FixedFloatFunction(this.amplifier.apply(Float.valueOf(value))), derivative);
         }
 
         public Builder<C> add(float location, Spline<C> value, float derivative) {
@@ -118,14 +118,14 @@ extends ToFloatFunction<C> {
             if (this.locations.isEmpty()) {
                 throw new IllegalStateException("No elements added");
             }
-            return new class_6738<C>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
+            return new Implementation<C>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
         }
     }
 
     @Debug
-    public record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C>
+    public record Implementation<C>(ToFloatFunction<C> locationFunction, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C>
     {
-        public class_6738 {
+        public Implementation {
             if (fs.length != list.size() || fs.length != gs.length) {
                 throw new IllegalArgumentException("All lengths must be equal, got: " + fs.length + " " + list.size() + " " + gs.length);
             }
@@ -133,22 +133,22 @@ extends ToFloatFunction<C> {
 
         @Override
         public float apply(C object) {
-            float f = this.coordinate.apply(object);
-            int i2 = MathHelper.binarySearch(0, this.locations.length, i -> f < this.locations[i]) - 1;
+            float f = this.locationFunction.apply(object);
+            int i = MathHelper.binarySearch(0, this.locations.length, index -> f < this.locations[index]) - 1;
             int j = this.locations.length - 1;
-            if (i2 < 0) {
+            if (i < 0) {
                 return this.values.get(0).apply(object) + this.derivatives[0] * (f - this.locations[0]);
             }
-            if (i2 == j) {
+            if (i == j) {
                 return this.values.get(j).apply(object) + this.derivatives[j] * (f - this.locations[j]);
             }
-            float g = this.locations[i2];
-            float h = this.locations[i2 + 1];
+            float g = this.locations[i];
+            float h = this.locations[i + 1];
             float k = (f - g) / (h - g);
-            ToFloatFunction toFloatFunction = this.values.get(i2);
-            ToFloatFunction toFloatFunction2 = this.values.get(i2 + 1);
-            float l = this.derivatives[i2];
-            float m = this.derivatives[i2 + 1];
+            ToFloatFunction toFloatFunction = this.values.get(i);
+            ToFloatFunction toFloatFunction2 = this.values.get(i + 1);
+            float l = this.derivatives[i];
+            float m = this.derivatives[i + 1];
             float n = toFloatFunction.apply(object);
             float o = toFloatFunction2.apply(object);
             float p = l * (h - g) - (o - n);
@@ -160,11 +160,11 @@ extends ToFloatFunction<C> {
         @Override
         @VisibleForTesting
         public String getDebugString() {
-            return "Spline{coordinate=" + this.coordinate + ", locations=" + this.method_39238(this.locations) + ", derivatives=" + this.method_39238(this.derivatives) + ", values=" + this.values.stream().map(Spline::getDebugString).collect(Collectors.joining(", ", "[", "]")) + "}";
+            return "Spline{coordinate=" + this.locationFunction + ", locations=" + this.format(this.locations) + ", derivatives=" + this.format(this.derivatives) + ", values=" + this.values.stream().map(Spline::getDebugString).collect(Collectors.joining(", ", "[", "]")) + "}";
         }
 
-        private String method_39238(float[] fs) {
-            return "[" + IntStream.range(0, fs.length).mapToDouble(i -> fs[i]).mapToObj(d -> String.format(Locale.ROOT, "%.3f", d)).collect(Collectors.joining(", ")) + "]";
+        private String format(float[] values) {
+            return "[" + IntStream.range(0, values.length).mapToDouble(index -> values[index]).mapToObj(value -> String.format(Locale.ROOT, "%.3f", value)).collect(Collectors.joining(", ")) + "]";
         }
     }
 }

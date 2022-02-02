@@ -171,7 +171,7 @@ public final class SpawnHelper {
         if (world.getSpawnPos().isWithinDistance(new Vec3d((double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5), 24.0)) {
             return false;
         }
-        return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.method_39999(pos);
+        return Objects.equals(new ChunkPos(pos), chunk.getPos()) || world.shouldTick(pos);
     }
 
     private static boolean canSpawn(ServerWorld world, SpawnGroup group, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnSettings.SpawnEntry spawnEntry, BlockPos.Mutable pos, double squaredDistance) {

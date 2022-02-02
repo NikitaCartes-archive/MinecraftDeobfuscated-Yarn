@@ -141,8 +141,8 @@ extends HostileEntity {
         return this.bounds;
     }
 
-    public void setBounds(@Nullable BlockPos pos) {
-        this.bounds = pos;
+    public void setBounds(@Nullable BlockPos bounds) {
+        this.bounds = bounds;
     }
 
     private boolean areFlagsSet(int mask) {

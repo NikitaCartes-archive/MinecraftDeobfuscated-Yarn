@@ -112,8 +112,8 @@ implements AutoCloseable {
         return i;
     }
 
-    public void setLoc(int loc) {
-        this.location = loc;
+    public void setLocation(int location) {
+        this.location = location;
     }
 
     public String getName() {

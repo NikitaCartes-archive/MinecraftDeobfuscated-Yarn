@@ -61,8 +61,8 @@ extends ScreenHandler {
         }
     }
 
-    public void setCanLevel(boolean canLevel) {
-        this.leveled = canLevel;
+    public void setLeveled(boolean leveled) {
+        this.leveled = leveled;
     }
 
     @Override
@@ -77,7 +77,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.merchant.getCurrentCustomer() == player;
+        return this.merchant.getCustomer() == player;
     }
 
     public int getExperience() {
@@ -96,12 +96,12 @@ extends ScreenHandler {
         return this.levelProgress;
     }
 
-    public void setLevelProgress(int progress) {
-        this.levelProgress = progress;
+    public void setLevelProgress(int levelProgress) {
+        this.levelProgress = levelProgress;
     }
 
-    public void setRefreshTrades(boolean refreshable) {
-        this.canRefreshTrades = refreshable;
+    public void setCanRefreshTrades(boolean canRefreshTrades) {
+        this.canRefreshTrades = canRefreshTrades;
     }
 
     public boolean canRefreshTrades() {
@@ -152,7 +152,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.merchant.setCurrentCustomer(null);
+        this.merchant.setCustomer(null);
         if (this.merchant.isClient()) {
             return;
         }

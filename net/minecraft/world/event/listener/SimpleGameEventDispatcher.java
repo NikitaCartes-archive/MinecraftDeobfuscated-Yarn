@@ -64,7 +64,7 @@ implements GameEventDispatcher {
         if (!optional.isPresent()) {
             return false;
         }
-        double d = optional.get().getSquaredDistance(pos, false);
+        double d = optional.get().getSquaredDistance(pos);
         return d <= (double)(i = listener.getRange() * listener.getRange()) && listener.listen(world, event, entity, pos);
     }
 }

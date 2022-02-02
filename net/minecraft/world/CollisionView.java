@@ -28,6 +28,12 @@ extends BlockView {
     @Nullable
     public BlockView getChunkAsView(int var1, int var2);
 
+    /**
+     * {@return {@code true} if {@code shape} does not intersect
+     * with non-spectator entities except {@code except}}
+     * 
+     * @implNote This always returns {@code true} if {@code shape} is {@linkplain VoxelShape#isEmpty empty}.
+     */
     default public boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
         return true;
     }

@@ -6,8 +6,8 @@ package net.minecraft.client.gui.screen.option;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.option.NarratorOptionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
@@ -16,7 +16,7 @@ import net.minecraft.world.Difficulty;
 
 @Environment(value=EnvType.CLIENT)
 public class OnlineOptionsScreen
-extends NarratorOptionsScreen {
+extends SimpleOptionsScreen {
     private static final Option[] OPTIONS = new Option[]{Option.REALMS_NOTIFICATIONS, Option.ALLOW_SERVER_LISTING};
 
     public OnlineOptionsScreen(Screen parent, GameOptions gameOptions) {

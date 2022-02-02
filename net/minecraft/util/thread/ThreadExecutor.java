@@ -102,7 +102,7 @@ Executor {
         }
     }
 
-    public void method_40000(Runnable runnable) {
+    public void executeSync(Runnable runnable) {
         this.execute(runnable);
     }
 

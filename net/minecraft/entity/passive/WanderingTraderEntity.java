@@ -104,7 +104,7 @@ extends MerchantEntity {
                 return ActionResult.success(this.world.isClient);
             }
             if (!this.world.isClient) {
-                this.setCurrentCustomer(player);
+                this.setCustomer(player);
                 this.sendOffers(player, this.getDisplayName(), 1);
             }
             return ActionResult.success(this.world.isClient);
@@ -199,8 +199,8 @@ extends MerchantEntity {
         return SoundEvents.ENTITY_WANDERING_TRADER_YES;
     }
 
-    public void setDespawnDelay(int delay) {
-        this.despawnDelay = delay;
+    public void setDespawnDelay(int despawnDelay) {
+        this.despawnDelay = despawnDelay;
     }
 
     public int getDespawnDelay() {
@@ -221,8 +221,8 @@ extends MerchantEntity {
         }
     }
 
-    public void setWanderTarget(@Nullable BlockPos pos) {
-        this.wanderTarget = pos;
+    public void setWanderTarget(@Nullable BlockPos wanderTarget) {
+        this.wanderTarget = wanderTarget;
     }
 
     @Nullable

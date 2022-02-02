@@ -488,8 +488,8 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    public void setShowsDeathScreen(boolean shouldShow) {
-        this.showsDeathScreen = shouldShow;
+    public void setShowsDeathScreen(boolean showsDeathScreen) {
+        this.showsDeathScreen = showsDeathScreen;
     }
 
     public boolean showsDeathScreen() {

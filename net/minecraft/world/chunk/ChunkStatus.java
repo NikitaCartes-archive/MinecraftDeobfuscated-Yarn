@@ -296,7 +296,8 @@ public class ChunkStatus {
             if (bl || !chunk.getStatus().isAtLeast(chunkStatus)) {
                 this.doWork(chunkStatus, serverWorld, chunkGenerator, list, chunk);
                 if (chunk instanceof ProtoChunk) {
-                    ((ProtoChunk)chunk).setStatus(chunkStatus);
+                    ProtoChunk protoChunk = (ProtoChunk)chunk;
+                    protoChunk.setStatus(chunkStatus);
                 }
             }
             return CompletableFuture.completedFuture(Either.left(chunk));

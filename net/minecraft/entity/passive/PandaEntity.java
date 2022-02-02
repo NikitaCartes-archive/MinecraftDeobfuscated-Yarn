@@ -254,7 +254,7 @@ extends AnimalEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(2, new ExtinguishFireGoal(this, 2.0));
+        this.goalSelector.add(2, new PandaEscapeDangerGoal(this, 2.0));
         this.goalSelector.add(2, new PandaMateGoal(this, 1.0));
         this.goalSelector.add(3, new AttackGoal(this, (double)1.2f, true));
         this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
@@ -735,28 +735,18 @@ extends AnimalEntity {
         }
     }
 
-    static class ExtinguishFireGoal
+    static class PandaEscapeDangerGoal
     extends EscapeDangerGoal {
         private final PandaEntity panda;
 
-        public ExtinguishFireGoal(PandaEntity panda, double speed) {
+        public PandaEscapeDangerGoal(PandaEntity panda, double speed) {
             super(panda, speed);
             this.panda = panda;
         }
 
         @Override
-        public boolean canStart() {
-            if (!this.panda.isOnFire()) {
-                return false;
-            }
-            BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5);
-            if (blockPos != null) {
-                this.targetX = blockPos.getX();
-                this.targetY = blockPos.getY();
-                this.targetZ = blockPos.getZ();
-                return true;
-            }
-            return this.findTarget();
+        protected boolean isInDanger() {
+            return this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
         }
 
         @Override

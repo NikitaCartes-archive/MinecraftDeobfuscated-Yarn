@@ -514,7 +514,7 @@ public class MineshaftGenerator {
             while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
                 mutable.move(Direction.DOWN);
             }
-            if (!this.isNotRailOrLava(world.getBlockState(mutable))) {
+            if (!this.isNotRailOrLava(world, mutable, world.getBlockState(mutable))) {
                 return;
             }
             while (mutable.getY() < i) {
@@ -539,7 +539,7 @@ public class MineshaftGenerator {
                     mutable.setY(i - j);
                     blockState = world.getBlockState(mutable);
                     boolean bl4 = bl3 = this.canReplace(blockState) && !blockState.isOf(Blocks.LAVA);
-                    if (!bl3 && this.isNotRailOrLava(blockState)) {
+                    if (!bl3 && this.isNotRailOrLava(world, mutable, blockState)) {
                         MineshaftCorridor.fillColumn(world, state, mutable, i - j + 1, i);
                         return;
                     }
@@ -566,8 +566,8 @@ public class MineshaftGenerator {
             }
         }
 
-        private boolean isNotRailOrLava(BlockState state) {
-            return !state.isOf(Blocks.RAIL) && !state.isOf(Blocks.LAVA);
+        private boolean isNotRailOrLava(WorldView worldView, BlockPos blockPos, BlockState blockState) {
+            return blockState.isSideSolidFullSquare(worldView, blockPos, Direction.UP);
         }
 
         private boolean sideCoversSmallSquare(WorldView world, BlockPos pos, BlockState state) {
@@ -691,7 +691,7 @@ public class MineshaftGenerator {
             }
             BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
             BlockState blockState = world.getBlockState(blockPos);
-            if (blockState.isAir() || blockState.isOf(Blocks.CHAIN)) {
+            if (!blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
                 world.setBlockState(blockPos, state, Block.NOTIFY_LISTENERS);
             }
         }

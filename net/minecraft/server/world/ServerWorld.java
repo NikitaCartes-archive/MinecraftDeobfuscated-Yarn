@@ -142,7 +142,6 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
-import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -150,6 +149,7 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.spawner.Spawner;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.tick.QueryableTickScheduler;
 import net.minecraft.world.tick.WorldTickScheduler;
@@ -228,6 +228,20 @@ implements StructureWorldAccess {
         this.sleepManager = new SleepManager();
     }
 
+    /**
+     * Sets the current weather, as well as how long it should last.
+     * 
+     * @see ServerWorldProperties#setClearWeatherTime
+     * @see ServerWorldProperties#setRainTime
+     * @see ServerWorldProperties#setThunderTime
+     * @see ServerWorldProperties#setRaining
+     * @see ServerWorldProperties#setThundering
+     * 
+     * @param thundering whether a thunderstorm is ongoing
+     * @param clearDuration how long the clear weather should last, in seconds
+     * @param raining whether a rain is ongoing
+     * @param rainDuration how long the rain or the thunderstorm should last, in seconds
+     */
     public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
         this.worldProperties.setClearWeatherTime(clearDuration);
         this.worldProperties.setRainTime(rainDuration);
@@ -346,6 +360,17 @@ implements StructureWorldAccess {
         }
     }
 
+    /**
+     * Sets the time of day.
+     * 
+     * <p>Time of day is different to "time", which is incremented on every tick and
+     * cannot be modified; Time of day affects the day-night cycle, can be changed using
+     * {@link net.minecraft.server.command.TimeCommand /time command}, and can be frozen
+     * if {@link net.minecraft.world.GameRules#DO_DAYLIGHT_CYCLE doDaylightCycle} gamerule is turned off.
+     * Time is used to track scheduled ticks and cannot be modified or frozen.
+     * 
+     * @see net.minecraft.world.level.ServerWorldProperties#setTimeOfDay
+     */
     public void setTimeOfDay(long timeOfDay) {
         this.worldProperties.setTimeOfDay(timeOfDay);
     }
@@ -461,6 +486,9 @@ implements StructureWorldAccess {
         return this.inBlockTick;
     }
 
+    /**
+     * {@return whether sleeping can cause the night to skip}
+     */
     public boolean isSleepingEnabled() {
         return this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE) <= 100;
     }
@@ -617,6 +645,13 @@ implements StructureWorldAccess {
         return !this.server.isSpawnProtected(this, pos, player) && this.getWorldBorder().contains(pos);
     }
 
+    /**
+     * Saves the world.
+     * 
+     * @param flush if it should immediately write all data to storage device
+     * @param progressListener the listener for the saving process, or {@code null} to specify none
+     * @param savingDisabled whether to return early without doing anything
+     */
     public void save(@Nullable ProgressListener progressListener, boolean flush, boolean savingDisabled) {
         ServerChunkManager serverChunkManager = this.getChunkManager();
         if (savingDisabled) {
@@ -665,10 +700,16 @@ implements StructureWorldAccess {
         return list;
     }
 
+    /**
+     * {@return the list of alive ender dragons in the world}
+     */
     public List<? extends EnderDragonEntity> getAliveEnderDragons() {
         return this.getEntitiesByType(EntityType.ENDER_DRAGON, LivingEntity::isAlive);
     }
 
+    /**
+     * {@return the list of players filtered using {@code predicate}}
+     */
     public List<ServerPlayerEntity> getPlayers(Predicate<? super ServerPlayerEntity> predicate) {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
@@ -678,6 +719,9 @@ implements StructureWorldAccess {
         return list;
     }
 
+    /**
+     * {@return a randomly selected alive player, or {@code null} if there is none}
+     */
     @Nullable
     public ServerPlayerEntity getRandomAlivePlayer() {
         List<ServerPlayerEntity> list = this.getPlayers(LivingEntity::isAlive);
@@ -696,22 +740,54 @@ implements StructureWorldAccess {
         return this.addEntity(entity);
     }
 
+    /**
+     * Called on the destination world when an entity changed the dimension.
+     * 
+     * <p>This does not get called for players changing dimensions.
+     * Use {@link #onPlayerChangeDimension} (for portals) or
+     * {@link #onPlayerTeleport} (for teleportation) instead.
+     * 
+     * @see Entity#moveToWorld
+     * @see #onPlayerTeleport
+     * @see #onPlayerChangeDimension
+     */
     public void onDimensionChanged(Entity entity) {
         this.addEntity(entity);
     }
 
+    /**
+     * Called on the destination world when a player changed the dimension
+     * by teleportation.
+     * 
+     * @see ServerPlayerEntity#moveToWorld
+     * @see #onDimensionChanged
+     * @see #onPlayerChangeDimension
+     */
     public void onPlayerTeleport(ServerPlayerEntity player) {
         this.addPlayer(player);
     }
 
+    /**
+     * Called on the destination world when a player changed the dimension using portals.
+     * 
+     * @see ServerPlayerEntity#moveToWorld
+     * @see #onDimensionChanged
+     * @see #onPlayerTeleport
+     */
     public void onPlayerChangeDimension(ServerPlayerEntity player) {
         this.addPlayer(player);
     }
 
+    /**
+     * Called on the player's world when the player connected to the server and spawned.
+     */
     public void onPlayerConnected(ServerPlayerEntity player) {
         this.addPlayer(player);
     }
 
+    /**
+     * Called on the world that has the player's respawn point when the player respawned.
+     */
     public void onPlayerRespawned(ServerPlayerEntity player) {
         this.addPlayer(player);
     }
@@ -910,6 +986,13 @@ implements StructureWorldAccess {
         this.players.forEach(player -> this.sendToPlayerIfNearby((ServerPlayerEntity)player, false, blockPos.getX(), blockPos.getY(), blockPos.getZ(), vibrationS2CPacket));
     }
 
+    /**
+     * Spawns a particle visible to nearby players.
+     * 
+     * @return the number of players the particle packet was sent to
+     * 
+     * @see #spawnParticles(ServerPlayerEntity, ParticleEffect, boolean, double, double, double, int, double, double, double, double)
+     */
     public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
         ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(particle, false, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
         int i = 0;
@@ -921,11 +1004,28 @@ implements StructureWorldAccess {
         return i;
     }
 
+    /**
+     * Spawns a particle visible to {@code viewer}, if the viewer is near the provided
+     * coordinates.
+     * 
+     * @return whether the particle packet was sent
+     * 
+     * @see #spawnParticles(ParticleEffect, double, double, double, int, double, double, double, double)
+     */
     public <T extends ParticleEffect> boolean spawnParticles(ServerPlayerEntity viewer, T particle, boolean force, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
         ParticleS2CPacket packet = new ParticleS2CPacket(particle, force, x, y, z, (float)deltaX, (float)deltaY, (float)deltaZ, (float)speed, count);
         return this.sendToPlayerIfNearby(viewer, force, x, y, z, packet);
     }
 
+    /**
+     * Sends the {@code packet} to {@code player} if the player
+     * is near the provided coordinates.
+     * 
+     * @return whether the packet was sent
+     * 
+     * @implNote The threshold is 32 blocks if {@code force} is {@code false}, and
+     * 512 blocks if {@code force} is {@code true}.
+     */
     private boolean sendToPlayerIfNearby(ServerPlayerEntity player, boolean force, double x, double y, double z, Packet<?> packet) {
         if (player.getWorld() != this) {
             return false;
@@ -954,11 +1054,32 @@ implements StructureWorldAccess {
         return (Entity)this.dragonParts.get(id);
     }
 
+    /**
+     * {@return the entity using the UUID, or {@code null} if none was found}
+     * 
+     * @see World#getEntityById
+     */
     @Nullable
     public Entity getEntity(UUID uuid) {
         return this.getEntityLookup().get(uuid);
     }
 
+    /**
+     * Tries to find the closest structure of a given type near a given block.
+     * <p>
+     * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
+     * <p>
+     * The radius is ignored for strongholds.
+     * 
+     * @return the position of the structure, or {@code null} if no structure could be found within the given search radius
+     * 
+     * @see ChunkGenerator#locateStructure
+     * 
+     * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
+     * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
+     * @param feature the structure feature to search for
+     * @param pos the position to start the searching at
+     */
     @Nullable
     public BlockPos locateStructure(StructureFeature<?> feature, BlockPos pos, int radius, boolean skipExistingChunks) {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
@@ -1012,6 +1133,12 @@ implements StructureWorldAccess {
         return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState::fromNbt, IdCountsState::new, "idcounts").getNextMapId();
     }
 
+    /**
+     * Sets the world spawn point.
+     * 
+     * @param angle the angle of the spawned entity
+     * @param pos the position of the spawn point
+     */
     public void setSpawnPos(BlockPos pos, float angle) {
         ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
         this.properties.setSpawnPos(pos, angle);
@@ -1020,6 +1147,12 @@ implements StructureWorldAccess {
         this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
     }
 
+    /**
+     * {@return the world spawn point}
+     * 
+     * @implNote If it is outside the world border, this returns the position of the
+     * highest {@linkplain Heightmap.Type#MOTION_BLOCKING motion-blocking} block at the center of the world border.
+     */
     public BlockPos getSpawnPos() {
         BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
         if (!this.getWorldBorder().contains(blockPos)) {
@@ -1032,11 +1165,24 @@ implements StructureWorldAccess {
         return this.properties.getSpawnAngle();
     }
 
+    /**
+     * {@return the set that contains {@link ChunkPos} of forced chunks serialized as a long}
+     */
     public LongSet getForcedChunks() {
         ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::fromNbt, "chunks");
         return forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET;
     }
 
+    /**
+     * Sets the forced status of the chunk.
+     * 
+     * <p>Forced chunks are created in-game using the
+     * {@linkplain net.minecraft.server.command.ForceLoadCommand {@code /forceload} command}.
+     * 
+     * @param forced whether to mark the chunk as forced
+     * @param z the chunk's Z coordinate
+     * @param x the chunk's X coordinate
+     */
     public boolean setChunkForced(int x, int z, boolean forced) {
         boolean bl;
         ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::fromNbt, ForcedChunkState::new, "chunks");
@@ -1106,11 +1252,17 @@ implements StructureWorldAccess {
         return this.raidManager;
     }
 
+    /**
+     * {@return the raid occurring within 96 block radius, or {@code null} if there is none}
+     */
     @Nullable
     public Raid getRaidAt(BlockPos pos) {
         return this.raidManager.getRaidAt(pos, 9216);
     }
 
+    /**
+     * {@return {@code true} if a raid exists within 96 block radius of {@code pos}}
+     */
     public boolean hasRaidAt(BlockPos pos) {
         return this.getRaidAt(pos) != null;
     }
@@ -1291,6 +1443,9 @@ implements StructureWorldAccess {
         return "Chunks[S] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
     }
 
+    /**
+     * {@return {@code true} if the chunk {@code chunkPos} is loaded}
+     */
     public boolean isChunkLoaded(long chunkPos) {
         return this.entityManager.isLoaded(chunkPos);
     }
@@ -1299,16 +1454,19 @@ implements StructureWorldAccess {
         return this.isChunkLoaded(chunkPos) && this.chunkManager.isTickingFutureReady(chunkPos);
     }
 
+    /**
+     * {@return whether to tick entities at {@code pos}}
+     */
     public boolean shouldTickEntity(BlockPos pos) {
-        return this.entityManager.method_40022(pos) && this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
+        return this.entityManager.shouldTick(pos) && this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
     }
 
-    public boolean method_39999(BlockPos blockPos) {
-        return this.entityManager.method_40022(blockPos);
+    public boolean shouldTick(BlockPos pos) {
+        return this.entityManager.shouldTick(pos);
     }
 
-    public boolean method_39998(ChunkPos chunkPos) {
-        return this.entityManager.method_40021(chunkPos);
+    public boolean shouldTick(ChunkPos pos) {
+        return this.entityManager.shouldTick(pos);
     }
 
     @Override

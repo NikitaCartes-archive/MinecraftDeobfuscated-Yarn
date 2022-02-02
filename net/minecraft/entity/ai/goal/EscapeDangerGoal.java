@@ -33,7 +33,7 @@ extends Goal {
     @Override
     public boolean canStart() {
         BlockPos blockPos;
-        if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
+        if (!this.isInDanger()) {
             return false;
         }
         if (this.mob.isOnFire() && (blockPos = this.locateClosestWater(this.mob.world, this.mob, 5)) != null) {
@@ -43,6 +43,10 @@ extends Goal {
             return true;
         }
         return this.findTarget();
+    }
+
+    protected boolean isInDanger() {
+        return this.mob.getAttacker() != null || this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
     }
 
     protected boolean findTarget() {
@@ -77,12 +81,12 @@ extends Goal {
     }
 
     @Nullable
-    protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int rangeX) {
-        BlockPos blockPos2 = entity.getBlockPos();
-        if (!blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).isEmpty()) {
+    protected BlockPos locateClosestWater(BlockView world, Entity entity, int rangeX) {
+        BlockPos blockPos = entity.getBlockPos();
+        if (!world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()) {
             return null;
         }
-        return BlockPos.findClosest(entity.getBlockPos(), rangeX, 1, blockPos -> blockView.getFluidState((BlockPos)blockPos).isIn(FluidTags.WATER)).orElse(null);
+        return BlockPos.findClosest(entity.getBlockPos(), rangeX, 1, pos -> world.getFluidState((BlockPos)pos).isIn(FluidTags.WATER)).orElse(null);
     }
 }
 

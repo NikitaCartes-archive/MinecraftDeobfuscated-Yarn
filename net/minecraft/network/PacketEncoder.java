@@ -34,7 +34,7 @@ extends MessageToByteEncoder<Packet<?>> {
         }
         Integer integer = networkState.getPacketId(this.side, packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(ClientConnection.field_36380, "OUT: [{}:{}] {}", new Object[]{channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), integer, packet.getClass().getName()});
+            LOGGER.debug(ClientConnection.PACKET_SENT_MARKER, "OUT: [{}:{}] {}", new Object[]{channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), integer, packet.getClass().getName()});
         }
         if (integer == null) {
             throw new IOException("Can't serialize unregistered packet");

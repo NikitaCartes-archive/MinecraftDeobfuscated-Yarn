@@ -65,7 +65,7 @@ extends Feature<DripstoneClusterFeatureConfig> {
         boolean bl2;
         CaveSurface caveSurface;
         boolean bl;
-        Optional<CaveSurface> optional = CaveSurface.create(world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
+        Optional<CaveSurface> optional = CaveSurface.create(world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::cannotGenerate);
         if (!optional.isPresent()) {
             return;
         }

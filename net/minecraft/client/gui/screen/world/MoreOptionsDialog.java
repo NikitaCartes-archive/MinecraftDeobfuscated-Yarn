@@ -92,7 +92,7 @@ implements Drawable {
         this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
         this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
         this.seedTextField.setChangedListener(seedText -> {
-            this.seed = GeneratorOptions.method_40024(this.seedTextField.getText());
+            this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText());
         });
         parent.addSelectableChild(this.seedTextField);
         int i = this.parentWidth / 2 - 155;
@@ -222,7 +222,7 @@ implements Drawable {
     }
 
     public GeneratorOptions getGeneratorOptions(boolean hardcore) {
-        OptionalLong optionalLong = GeneratorOptions.method_40024(this.seedTextField.getText());
+        OptionalLong optionalLong = GeneratorOptions.parseSeed(this.seedTextField.getText());
         return this.generatorOptions.withHardcore(hardcore, optionalLong);
     }
 

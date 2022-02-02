@@ -27,9 +27,9 @@ extends BossBar {
     }
 
     @Override
-    public void setPercent(float percentage) {
-        if (percentage != this.percent) {
-            super.setPercent(percentage);
+    public void setPercent(float percent) {
+        if (percent != this.percent) {
+            super.setPercent(percent);
             this.sendPacket(BossBarS2CPacket::updateProgress);
         }
     }

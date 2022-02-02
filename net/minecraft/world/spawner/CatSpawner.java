@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen;
+package net.minecraft.world.spawner;
 
 import java.util.List;
 import java.util.Random;
@@ -15,26 +15,32 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
-import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.spawner.Spawner;
 
+/**
+ * A spawner for cats in villages and swamp huts.
+ * 
+ * @implNote Cats in swamp huts are also spawned in
+ * {@link net.minecraft.world.gen.chunk.ChunkGeneratorSettings#getEntitySpawnList}.
+ */
 public class CatSpawner
 implements Spawner {
-    private static final int SPAWN_COOLDOWN = 1200;
-    private int ticksUntilNextSpawn;
+    private static final int SPAWN_INTERVAL = 1200;
+    private int cooldown;
 
     @Override
     public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
         if (!spawnAnimals || !world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
             return 0;
         }
-        --this.ticksUntilNextSpawn;
-        if (this.ticksUntilNextSpawn > 0) {
+        --this.cooldown;
+        if (this.cooldown > 0) {
             return 0;
         }
-        this.ticksUntilNextSpawn = 1200;
+        this.cooldown = 1200;
         ServerPlayerEntity playerEntity = world.getRandomAlivePlayer();
         if (playerEntity == null) {
             return 0;
@@ -58,6 +64,13 @@ implements Spawner {
         return 0;
     }
 
+    /**
+     * Tries to spawn cats in villages.
+     * 
+     * @return the number of cats spawned
+     * 
+     * @implNote Cats spawn when there are more than 5 occupied beds and less than 5 existing cats.
+     */
     private int spawnInHouse(ServerWorld world, BlockPos pos) {
         List<CatEntity> list;
         int i = 48;
@@ -67,6 +80,11 @@ implements Spawner {
         return 0;
     }
 
+    /**
+     * Tries to spawn cats in swamp huts.
+     * 
+     * @return the number of cats spawned
+     */
     private int spawnInSwampHut(ServerWorld world, BlockPos pos) {
         int i = 16;
         List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos).expand(16.0, 8.0, 16.0));
@@ -76,6 +94,11 @@ implements Spawner {
         return 0;
     }
 
+    /**
+     * Spawns a cat.
+     * 
+     * @return the number of cats spawned
+     */
     private int spawn(BlockPos pos, ServerWorld world) {
         CatEntity catEntity = EntityType.CAT.create(world);
         if (catEntity == null) {

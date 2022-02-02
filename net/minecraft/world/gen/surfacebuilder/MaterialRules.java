@@ -37,8 +37,8 @@ import org.jetbrains.annotations.Nullable;
 public class MaterialRules {
     public static final MaterialCondition STONE_DEPTH_FLOOR = MaterialRules.stoneDepth(0, false, VerticalSurfaceType.FLOOR);
     public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH = MaterialRules.stoneDepth(0, true, VerticalSurfaceType.FLOOR);
-    public static final MaterialCondition field_36341 = MaterialRules.method_40023(0, true, 6, VerticalSurfaceType.FLOOR);
-    public static final MaterialCondition field_36342 = MaterialRules.method_40023(0, true, 30, VerticalSurfaceType.FLOOR);
+    public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6 = MaterialRules.stoneDepth(0, true, 6, VerticalSurfaceType.FLOOR);
+    public static final MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30 = MaterialRules.stoneDepth(0, true, 30, VerticalSurfaceType.FLOOR);
     public static final MaterialCondition STONE_DEPTH_CEILING = MaterialRules.stoneDepth(0, false, VerticalSurfaceType.CEILING);
     public static final MaterialCondition STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH = MaterialRules.stoneDepth(0, true, VerticalSurfaceType.CEILING);
 
@@ -46,8 +46,8 @@ public class MaterialRules {
         return new StoneDepthMaterialCondition(offset, addSurfaceDepth, 0, verticalSurfaceType);
     }
 
-    public static MaterialCondition method_40023(int i, boolean bl, int j, VerticalSurfaceType verticalSurfaceType) {
-        return new StoneDepthMaterialCondition(i, bl, j, verticalSurfaceType);
+    public static MaterialCondition stoneDepth(int offset, boolean addSurfaceDepth, int secondaryDepthRange, VerticalSurfaceType verticalSurfaceType) {
+        return new StoneDepthMaterialCondition(offset, addSurfaceDepth, secondaryDepthRange, verticalSurfaceType);
     }
 
     public static MaterialCondition not(MaterialCondition target) {

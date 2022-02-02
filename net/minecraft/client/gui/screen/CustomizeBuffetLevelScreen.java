@@ -3,7 +3,9 @@
  */
 package net.minecraft.client.gui.screen;
 
+import com.ibm.icu.text.Collator;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
@@ -21,7 +23,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +46,7 @@ extends Screen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.client.setScreen(this.parent);
     }
 
@@ -80,7 +81,8 @@ extends Screen {
     extends AlwaysSelectedEntryListWidget<BuffetBiomeItem> {
         BuffetBiomesListWidget() {
             super(CustomizeBuffetLevelScreen.this.client, CustomizeBuffetLevelScreen.this.width, CustomizeBuffetLevelScreen.this.height, 40, CustomizeBuffetLevelScreen.this.height - 37, 16);
-            CustomizeBuffetLevelScreen.this.biomeRegistry.getEntries().stream().sorted(Comparator.comparing(entry -> ((RegistryKey)entry.getKey()).getValue().toString())).forEach(entry -> this.addEntry(new BuffetBiomeItem((Biome)entry.getValue())));
+            Collator collator = Collator.getInstance(Locale.getDefault());
+            CustomizeBuffetLevelScreen.this.biomeRegistry.getEntries().stream().map(entry -> new BuffetBiomeItem((Biome)entry.getValue())).sorted(Comparator.comparing(biome -> biome.text.getString(), collator)).forEach(entry -> this.addEntry(entry));
         }
 
         @Override
@@ -101,7 +103,7 @@ extends Screen {
         class BuffetBiomeItem
         extends AlwaysSelectedEntryListWidget.Entry<BuffetBiomeItem> {
             final Biome biome;
-            private final Text text;
+            final Text text;
 
             public BuffetBiomeItem(Biome biome) {
                 this.biome = biome;

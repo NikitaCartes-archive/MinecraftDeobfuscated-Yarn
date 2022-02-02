@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen;
+package net.minecraft.world.spawner;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
@@ -20,11 +20,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
-import net.minecraft.world.gen.Spawner;
+import net.minecraft.world.spawner.Spawner;
 
 public class PhantomSpawner
 implements Spawner {
-    private int ticksUntilNextSpawn;
+    private int cooldown;
 
     @Override
     public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
@@ -35,11 +35,11 @@ implements Spawner {
             return 0;
         }
         Random random = world.random;
-        --this.ticksUntilNextSpawn;
-        if (this.ticksUntilNextSpawn > 0) {
+        --this.cooldown;
+        if (this.cooldown > 0) {
             return 0;
         }
-        this.ticksUntilNextSpawn += (60 + random.nextInt(60)) * 20;
+        this.cooldown += (60 + random.nextInt(60)) * 20;
         if (world.getAmbientDarkness() < 5 && world.getDimension().hasSkyLight()) {
             return 0;
         }

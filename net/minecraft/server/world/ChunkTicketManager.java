@@ -289,7 +289,7 @@ public abstract class ChunkTicketManager {
         return this.simulationDistanceTracker;
     }
 
-    public void method_39995() {
+    public void removePersistentTickets() {
         ImmutableSet<ChunkTicketType<ChunkPos>> immutableSet = ImmutableSet.of(ChunkTicketType.UNKNOWN, ChunkTicketType.POST_TELEPORT, ChunkTicketType.LIGHT);
         ObjectIterator objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
         while (objectIterator.hasNext()) {
@@ -311,7 +311,7 @@ public abstract class ChunkTicketManager {
         }
     }
 
-    public boolean method_39996() {
+    public boolean shouldDelayShutdown() {
         return !this.ticketsByPosition.isEmpty();
     }
 

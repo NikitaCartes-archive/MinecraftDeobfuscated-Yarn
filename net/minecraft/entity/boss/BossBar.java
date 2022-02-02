@@ -41,8 +41,8 @@ public abstract class BossBar {
         return this.percent;
     }
 
-    public void setPercent(float percentage) {
-        this.percent = percentage;
+    public void setPercent(float percent) {
+        this.percent = percent;
     }
 
     public Color getColor() {

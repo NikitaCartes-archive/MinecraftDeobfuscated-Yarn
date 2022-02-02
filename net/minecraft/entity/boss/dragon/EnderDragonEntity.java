@@ -718,7 +718,7 @@ implements Monster {
         PhaseType<? extends Phase> phaseType = phase.getType();
         if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
             BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-            double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0, 1.0);
+            double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0, 1.0);
             e = (double)segmentOffset / d;
         } else {
             e = phase.isSittingOrHovering() ? (double)segmentOffset : (segmentOffset == 6 ? 0.0 : segment2[1] - segment1[1]);
@@ -732,7 +732,7 @@ implements Monster {
         PhaseType<? extends Phase> phaseType = phase.getType();
         if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
             BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-            float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0f, 1.0f);
+            float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0f, 1.0f);
             float g = 6.0f / f;
             float h = this.getPitch();
             float i = 1.5f;

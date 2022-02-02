@@ -53,9 +53,9 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.client.player.closeHandledScreen();
-        super.onClose();
+        super.close();
     }
 
     @Override
@@ -67,7 +67,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     @Override
     protected void addCloseButton() {
         if (this.client.player.canModifyBlocks()) {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, ScreenTexts.DONE, button -> this.onClose()));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, ScreenTexts.DONE, button -> this.close()));
             this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, new TranslatableText("lectern.take_book"), button -> this.sendButtonPressPacket(3)));
         } else {
             super.addCloseButton();

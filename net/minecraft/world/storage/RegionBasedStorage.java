@@ -4,7 +4,6 @@
 package net.minecraft.world.storage;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -66,7 +65,7 @@ implements AutoCloseable {
         RegionFile regionFile = this.getRegionFile(chunkPos);
         try (DataInputStream dataInputStream = regionFile.getChunkInputStream(chunkPos);){
             if (dataInputStream != null) {
-                NbtIo.read((DataInput)dataInputStream, nbtScanner);
+                NbtIo.scan(dataInputStream, nbtScanner);
             }
         }
     }

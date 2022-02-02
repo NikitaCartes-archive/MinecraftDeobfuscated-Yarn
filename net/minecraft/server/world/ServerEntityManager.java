@@ -111,7 +111,7 @@ implements AutoCloseable {
         long l = ChunkSectionPos.toLong(entity.getBlockPos());
         EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
         entityTrackingSection.add(entity);
-        entity.setListener(new Listener(this, entity, l, entityTrackingSection));
+        entity.setChangeListener(new Listener(this, entity, l, entityTrackingSection));
         if (!existing) {
             this.handler.create(entity);
         }
@@ -270,7 +270,7 @@ implements AutoCloseable {
 
     private void unload(EntityLike entity) {
         entity.setRemoved(Entity.RemovalReason.UNLOADED_TO_CHUNK);
-        entity.setListener(EntityChangeListener.NONE);
+        entity.setChangeListener(EntityChangeListener.NONE);
     }
 
     private void unloadChunks() {
@@ -343,12 +343,12 @@ implements AutoCloseable {
         return this.lookup;
     }
 
-    public boolean method_40022(BlockPos blockPos) {
-        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(ChunkPos.toLong(blockPos)))).shouldTick();
+    public boolean shouldTick(BlockPos pos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(ChunkPos.toLong(pos)))).shouldTick();
     }
 
-    public boolean method_40021(ChunkPos chunkPos) {
-        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(chunkPos.toLong()))).shouldTick();
+    public boolean shouldTick(ChunkPos pos) {
+        return ((EntityTrackingStatus)((Object)this.trackingStatuses.get(pos.toLong()))).shouldTick();
     }
 
     public boolean isLoaded(long chunkPos) {
@@ -395,7 +395,7 @@ implements AutoCloseable {
          * WARNING - Possible parameter corruption
          * WARNING - void declaration
          */
-        Listener(T entity, long l, EntityTrackingSection<T> section) {
+        Listener(T entity, long sectionPos, EntityTrackingSection<T> section) {
             void var3_3;
             this.manager = serverEntityManager;
             this.entity = entity;
@@ -459,7 +459,7 @@ implements AutoCloseable {
                 this.manager.handler.destroy(this.entity);
             }
             this.manager.entityUuids.remove(this.entity.getUuid());
-            this.entity.setListener(NONE);
+            this.entity.setChangeListener(NONE);
             this.manager.entityLeftSection(this.sectionPos, this.section);
         }
     }

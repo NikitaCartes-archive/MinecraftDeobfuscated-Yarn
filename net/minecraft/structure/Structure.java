@@ -77,8 +77,8 @@ public class Structure {
         return this.size;
     }
 
-    public void setAuthor(String name) {
-        this.author = name;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getAuthor() {
@@ -358,7 +358,7 @@ public class Structure {
             nbtCompound.remove("UUID");
             Structure.getEntity(world, nbtCompound).ifPresent(entity -> {
                 float f = entity.applyMirror(mirror);
-                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.getYaw() - entity.applyRotation(rotation), entity.getPitch());
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.getYaw() + entity.applyRotation(rotation), entity.getPitch());
                 if (initializeMobs && entity instanceof MobEntity) {
                     ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
                 }

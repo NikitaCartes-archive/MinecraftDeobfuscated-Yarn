@@ -31,7 +31,7 @@ extends Goal {
         if (this.merchant.velocityModified) {
             return false;
         }
-        PlayerEntity playerEntity = this.merchant.getCurrentCustomer();
+        PlayerEntity playerEntity = this.merchant.getCustomer();
         if (playerEntity == null) {
             return false;
         }
@@ -48,7 +48,7 @@ extends Goal {
 
     @Override
     public void stop() {
-        this.merchant.setCurrentCustomer(null);
+        this.merchant.setCustomer(null);
     }
 }
 

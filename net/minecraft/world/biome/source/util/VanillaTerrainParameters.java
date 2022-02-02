@@ -25,7 +25,7 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public final class VanillaTerrainParameters {
-    private static final Codec<Spline<NoisePoint>> field_35457 = Spline.method_39232(LocationFunction.field_35464);
+    private static final Codec<Spline<NoisePoint>> field_35457 = Spline.createCodec(LocationFunction.field_35464);
     public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)field_35457.fieldOf("offset")).forGetter(VanillaTerrainParameters::getOffsetSpline), ((MapCodec)field_35457.fieldOf("factor")).forGetter(VanillaTerrainParameters::getFactorSpline), ((MapCodec)field_35457.fieldOf("jaggedness")).forGetter(vanillaTerrainParameters -> vanillaTerrainParameters.peakSpline)).apply((Applicative<VanillaTerrainParameters, ?>)instance, VanillaTerrainParameters::new));
     private static final float OFFSET_VALUE_OFFSET = -0.50375f;
     private static final ToFloatFunction<Float> field_35673 = float_ -> float_.floatValue();
@@ -210,16 +210,16 @@ public final class VanillaTerrainParameters {
         int n;
         MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(-1.0f, 1.0f);
         parameters.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(parameterRange, parameterRange, parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.of(0.0f), parameterRange, 0.01f), BiomeKeys.PLAINS));
-        Spline.class_6738 lv = (Spline.class_6738)VanillaTerrainParameters.createLandSpline(-0.15f, 0.0f, 0.0f, 0.1f, 0.0f, -0.03f, false, false, field_35673);
+        Spline.Implementation implementation = (Spline.Implementation)VanillaTerrainParameters.createLandSpline(-0.15f, 0.0f, 0.0f, 0.1f, 0.0f, -0.03f, false, false, field_35673);
         RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
-        float[] fArray = lv.locations();
+        float[] fArray = implementation.locations();
         int n2 = fArray.length;
         for (n = 0; n < n2; ++n) {
             float_ = Float.valueOf(fArray[n]);
             parameters.accept(Pair.of(MultiNoiseUtil.createNoiseHypercube(parameterRange, parameterRange, parameterRange, MultiNoiseUtil.ParameterRange.of(float_.floatValue()), MultiNoiseUtil.ParameterRange.of(0.0f), parameterRange, 0.0f), registryKey));
             registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
         }
-        fArray = ((Spline.class_6738)this.offsetSpline).locations();
+        fArray = ((Spline.Implementation)this.offsetSpline).locations();
         n2 = fArray.length;
         for (n = 0; n < n2; ++n) {
             float_ = Float.valueOf(fArray[n]);

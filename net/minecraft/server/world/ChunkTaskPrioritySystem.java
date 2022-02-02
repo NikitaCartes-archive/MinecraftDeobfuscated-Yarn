@@ -42,8 +42,8 @@ AutoCloseable {
         this.controlActor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(4), executor, "sorter");
     }
 
-    public boolean method_39994() {
-        return this.controlActor.method_40001() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::method_39993);
+    public boolean shouldDelayShutdown() {
+        return this.controlActor.hasQueuedTasks() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::hasQueuedElement);
     }
 
     public static <T> Task<T> createTask(Function<MessageListener<Unit>, T> taskFunction, long pos, IntSupplier lastLevelUpdatedToProvider) {
@@ -77,7 +77,7 @@ AutoCloseable {
     }
 
     public MessageListener<UnblockingMessage> createUnblockingExecutor(MessageListener<Runnable> executor) {
-        return (MessageListener)this.controlActor.ask(yield -> new TaskQueue.PrioritizedTask(0, () -> yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), unblockingMessage -> this.removeChunk(executor, unblockingMessage.pos, unblockingMessage.callback, unblockingMessage.removeTask))))).join();
+        return (MessageListener)this.controlActor.ask(yield -> new TaskQueue.PrioritizedTask(0, () -> yield.send(MessageListener.create("chunk priority sorter around " + executor.getName(), message -> this.removeChunk(executor, message.pos, message.callback, message.removeTask))))).join();
     }
 
     @Override
@@ -138,7 +138,7 @@ AutoCloseable {
 
     @VisibleForTesting
     public String getDebugString() {
-        return this.queues.entrySet().stream().map(entry -> ((MessageListener)entry.getKey()).getName() + "=[" + ((LevelPrioritizedQueue)entry.getValue()).getBlockingChunks().stream().map(long_ -> long_ + ":" + new ChunkPos((long)long_)).collect(Collectors.joining(",")) + "]").collect(Collectors.joining(",")) + ", s=" + this.idleActors.size();
+        return this.queues.entrySet().stream().map(entry -> ((MessageListener)entry.getKey()).getName() + "=[" + ((LevelPrioritizedQueue)entry.getValue()).getBlockingChunks().stream().map(pos -> pos + ":" + new ChunkPos((long)pos)).collect(Collectors.joining(",")) + "]").collect(Collectors.joining(",")) + ", s=" + this.idleActors.size();
     }
 
     @Override

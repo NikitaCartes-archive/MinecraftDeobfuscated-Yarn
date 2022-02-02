@@ -49,7 +49,7 @@ extends RealmsScreen {
     private static final Text REMOVE_TOOLTIP = new TranslatableText("mco.configure.world.invites.remove.tooltip");
     private static final Text INVITED_TEXT = new TranslatableText("mco.configure.world.invited");
     @Nullable
-    private Text tooltipText;
+    private Text tooltip;
     private final RealmsConfigureWorldScreen parent;
     final RealmsServer serverData;
     private InvitedObjectSelectionList invitedObjectSelectionList;
@@ -185,7 +185,7 @@ extends RealmsScreen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.tooltipText = null;
+        this.tooltip = null;
         this.operation = PlayerOperation.NONE;
         this.renderBackground(matrices);
         if (this.invitedObjectSelectionList != null) {
@@ -214,7 +214,7 @@ extends RealmsScreen {
         if (this.serverData == null) {
             return;
         }
-        this.renderMousehoverTooltip(matrices, this.tooltipText, mouseX, mouseY);
+        this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
     }
 
     protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text tooltip, int mouseX, int mouseY) {
@@ -235,7 +235,7 @@ extends RealmsScreen {
         float f = bl ? 7.0f : 0.0f;
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, f, 8, 7, 8, 14);
         if (bl) {
-            this.tooltipText = REMOVE_TOOLTIP;
+            this.tooltip = REMOVE_TOOLTIP;
             this.operation = PlayerOperation.REMOVE;
         }
     }
@@ -247,7 +247,7 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = OPERATOR_TOOLTIP;
+            this.tooltip = OPERATOR_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;
         }
     }
@@ -259,7 +259,7 @@ extends RealmsScreen {
         float f = bl ? 8.0f : 0.0f;
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
-            this.tooltipText = NORMAL_TOOLTIP;
+            this.tooltip = NORMAL_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;
         }
     }

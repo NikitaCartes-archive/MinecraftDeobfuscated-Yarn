@@ -154,11 +154,7 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.PhantomSpawner;
-import net.minecraft.world.gen.PillagerSpawner;
-import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
@@ -166,6 +162,10 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.spawner.CatSpawner;
+import net.minecraft.world.spawner.PatrolSpawner;
+import net.minecraft.world.spawner.PhantomSpawner;
+import net.minecraft.world.spawner.Spawner;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -366,7 +366,7 @@ AutoCloseable {
         boolean bl = generatorOptions.isDebugWorld();
         long l = generatorOptions.getSeed();
         long m = BiomeAccess.hashSeed(l);
-        ImmutableList<Spawner> list = ImmutableList.of(new PhantomSpawner(), new PillagerSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties));
+        ImmutableList<Spawner> list = ImmutableList.of(new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties));
         SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
         DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
@@ -589,23 +589,23 @@ AutoCloseable {
             this.playerManager.disconnectAllPlayers();
         }
         LOGGER.info("Saving worlds");
-        for (ServerWorld serverWorld2 : this.getWorlds()) {
-            if (serverWorld2 == null) continue;
-            serverWorld2.savingDisabled = false;
+        for (ServerWorld serverWorld : this.getWorlds()) {
+            if (serverWorld == null) continue;
+            serverWorld.savingDisabled = false;
         }
-        while (this.worlds.values().stream().anyMatch(serverWorld -> serverWorld.getChunkManager().threadedAnvilChunkStorage.method_39992())) {
+        while (this.worlds.values().stream().anyMatch(world -> world.getChunkManager().threadedAnvilChunkStorage.shouldDelayShutdown())) {
             this.timeReference = Util.getMeasuringTimeMs() + 1L;
-            for (ServerWorld serverWorld2 : this.getWorlds()) {
-                serverWorld2.getChunkManager().method_39997();
-                serverWorld2.getChunkManager().tick(() -> true, false);
+            for (ServerWorld serverWorld : this.getWorlds()) {
+                serverWorld.getChunkManager().removePersistentTickets();
+                serverWorld.getChunkManager().tick(() -> true, false);
             }
             this.runTasksTillTickEnd();
         }
         this.save(false, true, false);
-        for (ServerWorld serverWorld2 : this.getWorlds()) {
-            if (serverWorld2 == null) continue;
+        for (ServerWorld serverWorld : this.getWorlds()) {
+            if (serverWorld == null) continue;
             try {
-                serverWorld2.close();
+                serverWorld.close();
             } catch (IOException iOException) {
                 LOGGER.error("Exception closing the level", iOException);
             }
@@ -1269,11 +1269,11 @@ AutoCloseable {
     }
 
     @Override
-    public void method_40000(Runnable runnable) {
+    public void executeSync(Runnable runnable) {
         if (this.isStopped()) {
             throw new RejectedExecutionException("Server already shutting down");
         }
-        super.method_40000(runnable);
+        super.executeSync(runnable);
     }
 
     @Override
@@ -1459,8 +1459,8 @@ AutoCloseable {
         return this.enforceWhitelist;
     }
 
-    public void setEnforceWhitelist(boolean whitelistEnabled) {
-        this.enforceWhitelist = whitelistEnabled;
+    public void setEnforceWhitelist(boolean enforceWhitelist) {
+        this.enforceWhitelist = enforceWhitelist;
     }
 
     public float getTickTime() {

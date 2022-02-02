@@ -44,7 +44,7 @@ extends ByteToMessageDecoder {
         }
         objects.add(packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(ClientConnection.field_36379, " IN: [{}:{}] {}", new Object[]{ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()});
+            LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", new Object[]{ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()});
         }
     }
 }

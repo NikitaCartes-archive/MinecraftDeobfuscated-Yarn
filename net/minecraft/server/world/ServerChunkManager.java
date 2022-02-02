@@ -294,12 +294,12 @@ extends ChunkManager {
     }
 
     @Override
-    public void tick(BooleanSupplier shouldKeepTicking, boolean bl) {
+    public void tick(BooleanSupplier shouldKeepTicking, boolean tickChunks) {
         this.world.getProfiler().push("purge");
         this.ticketManager.purge();
         this.tick();
         this.world.getProfiler().swap("chunks");
-        if (bl) {
+        if (tickChunks) {
             this.tickChunks();
         }
         this.world.getProfiler().swap("unload");
@@ -339,7 +339,7 @@ extends ChunkManager {
         for (ChunkWithHolder chunkWithHolder : list) {
             WorldChunk worldChunk2 = chunkWithHolder.chunk;
             ChunkPos chunkPos = worldChunk2.getPos();
-            if (!this.world.method_39998(chunkPos) || !this.threadedAnvilChunkStorage.shouldTick(chunkPos)) continue;
+            if (!this.world.shouldTick(chunkPos) || !this.threadedAnvilChunkStorage.shouldTick(chunkPos)) continue;
             worldChunk2.increaseInhabitedTime(m);
             if (bl3 && (this.spawnMonsters || this.spawnAnimals) && this.world.getWorldBorder().contains(chunkPos)) {
                 SpawnHelper.spawn(this.world, worldChunk2, info, this.spawnAnimals, this.spawnMonsters, bl2);
@@ -433,9 +433,9 @@ extends ChunkManager {
      * <p>This updates the section position player's client is currently watching and
      * the player's position in its entity tracker.
      */
-    public void updatePosition(ServerPlayerEntity serverPlayerEntity) {
-        if (!serverPlayerEntity.isRemoved()) {
-            this.threadedAnvilChunkStorage.updatePosition(serverPlayerEntity);
+    public void updatePosition(ServerPlayerEntity player) {
+        if (!player.isRemoved()) {
+            this.threadedAnvilChunkStorage.updatePosition(player);
         }
     }
 
@@ -491,8 +491,8 @@ extends ChunkManager {
         return this.spawnInfo;
     }
 
-    public void method_39997() {
-        this.ticketManager.method_39995();
+    public void removePersistentTickets() {
+        this.ticketManager.removePersistentTickets();
     }
 
     @Override

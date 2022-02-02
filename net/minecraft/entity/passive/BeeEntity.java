@@ -137,7 +137,7 @@ Flutterer {
     public static final String HIVE_POS_KEY = "HivePos";
     private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
     @Nullable
-    private UUID targetUuid;
+    private UUID angryAt;
     private float currentPitch;
     private float lastPitch;
     private int ticksSinceSting;
@@ -315,8 +315,8 @@ Flutterer {
         return this.flowerPos != null;
     }
 
-    public void setFlowerPos(BlockPos pos) {
-        this.flowerPos = pos;
+    public void setFlowerPos(BlockPos flowerPos) {
+        this.flowerPos = flowerPos;
     }
 
     @Debug
@@ -341,8 +341,8 @@ Flutterer {
         return bl && !this.isHiveNearFire();
     }
 
-    public void setCannotEnterHiveTicks(int ticks) {
-        this.cannotEnterHiveTicks = ticks;
+    public void setCannotEnterHiveTicks(int cannotEnterHiveTicks) {
+        this.cannotEnterHiveTicks = cannotEnterHiveTicks;
     }
 
     public float getBodyPitch(float tickDelta) {
@@ -393,19 +393,19 @@ Flutterer {
     }
 
     @Override
-    public void setAngerTime(int ticks) {
-        this.dataTracker.set(ANGER, ticks);
+    public void setAngerTime(int angerTime) {
+        this.dataTracker.set(ANGER, angerTime);
     }
 
     @Override
     @Nullable
     public UUID getAngryAt() {
-        return this.targetUuid;
+        return this.angryAt;
     }
 
     @Override
-    public void setAngryAt(@Nullable UUID uuid) {
-        this.targetUuid = uuid;
+    public void setAngryAt(@Nullable UUID angryAt) {
+        this.angryAt = angryAt;
     }
 
     @Override

@@ -103,7 +103,7 @@ implements Waterloggable {
         BlockState blockState = (BlockState)((BlockState)state.with(DISTANCE, i)).with(BOTTOM, this.shouldBeBottom(world, pos, i));
         if (blockState.get(DISTANCE) == 7) {
             if (state.get(DISTANCE) == 7) {
-                FallingBlockEntity.method_40005(world, pos, blockState);
+                FallingBlockEntity.spawnFromBlock(world, pos, blockState);
             } else {
                 world.breakBlock(pos, true);
             }

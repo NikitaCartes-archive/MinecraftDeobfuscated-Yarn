@@ -19,7 +19,7 @@ implements Errable,
 Runnable {
     protected static final int MAX_RETRIES = 25;
     private static final Logger LOGGER = LogUtils.getLogger();
-    protected RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen;
+    protected RealmsLongRunningMcoTaskScreen screen;
 
     /**
      * Moved from RealmsTasks in 20w10a.
@@ -41,21 +41,21 @@ Runnable {
         minecraftClient.execute(() -> minecraftClient.setScreen(screen));
     }
 
-    public void setScreen(RealmsLongRunningMcoTaskScreen longRunningMcoTaskScreen) {
-        this.longRunningMcoTaskScreen = longRunningMcoTaskScreen;
+    public void setScreen(RealmsLongRunningMcoTaskScreen screen) {
+        this.screen = screen;
     }
 
     @Override
     public void error(Text errorMessage) {
-        this.longRunningMcoTaskScreen.error(errorMessage);
+        this.screen.error(errorMessage);
     }
 
     public void setTitle(Text title) {
-        this.longRunningMcoTaskScreen.setTitle(title);
+        this.screen.setTitle(title);
     }
 
     public boolean aborted() {
-        return this.longRunningMcoTaskScreen.aborted();
+        return this.screen.aborted();
     }
 
     public void tick() {

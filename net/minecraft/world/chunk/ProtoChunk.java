@@ -225,7 +225,7 @@ extends Chunk {
         if (this.belowZeroRetrogen != null && status.isAtLeast(this.belowZeroRetrogen.getTargetStatus())) {
             this.setBelowZeroRetrogen(null);
         }
-        this.setShouldSave(true);
+        this.setNeedsSaving(true);
     }
 
     @Override

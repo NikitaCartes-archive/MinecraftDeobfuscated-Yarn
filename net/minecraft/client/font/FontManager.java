@@ -148,8 +148,8 @@ implements AutoCloseable {
         this.missingStorage = Util.make(new FontStorage(manager, MISSING_STORAGE_ID), fontStorage -> fontStorage.setFonts(Lists.newArrayList(new BlankFont())));
     }
 
-    public void setIdOverrides(Map<Identifier, Identifier> overrides) {
-        this.idOverrides = overrides;
+    public void setIdOverrides(Map<Identifier, Identifier> idOverrides) {
+        this.idOverrides = idOverrides;
     }
 
     public TextRenderer createTextRenderer() {

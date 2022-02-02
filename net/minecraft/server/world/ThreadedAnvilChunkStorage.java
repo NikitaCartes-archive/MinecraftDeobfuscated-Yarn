@@ -18,6 +18,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2LongMap;
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
@@ -40,6 +42,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -113,6 +116,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29674 = 200;
     private static final int field_36291 = 20;
+    private static final int field_36384 = 10000;
     private static final int field_29675 = 3;
     public static final int field_29669 = 33;
     /**
@@ -144,6 +148,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     private final PlayerChunkWatchingManager playerChunkWatchingManager = new PlayerChunkWatchingManager();
     private final Int2ObjectMap<EntityTracker> entityTrackers = new Int2ObjectOpenHashMap<EntityTracker>();
     private final Long2ByteMap chunkToType = new Long2ByteOpenHashMap();
+    private final Long2LongMap chunkToNextSaveTimeMs = new Long2LongOpenHashMap();
     private final Queue<Runnable> unloadTaskQueue = Queues.newConcurrentLinkedQueue();
     int watchDistance;
 
@@ -290,8 +295,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             ArrayList<Chunk> list2 = Lists.newArrayList();
             int l = 0;
             for (final Either either : list) {
-                Optional optional = either.left();
-                if (!optional.isPresent()) {
+                Optional optional;
+                if (either == null) {
+                    this.crash(new IllegalStateException("At least one of the chunk futures were null"));
+                }
+                if (!(optional = either.left()).isPresent()) {
                     final int m = l;
                     return Either.right(new ChunkHolder.Unloaded(){
 
@@ -309,6 +317,25 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             chunkHolder2.combineSavingFuture("getChunkRangeFuture " + centerChunk + " " + margin, (CompletableFuture<?>)completableFuture3);
         }
         return completableFuture3;
+    }
+
+    public void crash(IllegalStateException exception) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Consumer<ChunkHolder> consumer = chunkHolder -> chunkHolder.collectFuturesByStatus().forEach(pair -> {
+            ChunkStatus chunkStatus = (ChunkStatus)pair.getFirst();
+            CompletableFuture completableFuture = (CompletableFuture)pair.getSecond();
+            if (completableFuture != null && completableFuture.isDone() && completableFuture.join() == null) {
+                stringBuilder.append(chunkHolder.getPos()).append(" - status: ").append(chunkStatus).append(" future: ").append(completableFuture).append(System.lineSeparator());
+            }
+        });
+        stringBuilder.append("Updating:").append(System.lineSeparator());
+        this.currentChunkHolders.values().forEach(consumer);
+        stringBuilder.append("Visible:").append(System.lineSeparator());
+        this.chunkHolders.values().forEach(consumer);
+        CrashReport crashReport = CrashReport.create(exception, "Chunk loading");
+        CrashReportSection crashReportSection = crashReport.addElement("Chunk loading");
+        crashReportSection.add("Futures", stringBuilder);
+        throw new CrashException(crashReport);
     }
 
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {
@@ -386,8 +413,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         profiler.pop();
     }
 
-    public boolean method_39992() {
-        return this.lightingProvider.hasUpdates() || !this.chunksToUnload.isEmpty() || !this.currentChunkHolders.isEmpty() || this.pointOfInterestStorage.method_40020() || !this.unloadedChunks.isEmpty() || !this.unloadTaskQueue.isEmpty() || this.chunkTaskPrioritySystem.method_39994() || this.ticketManager.method_39996();
+    /**
+     * {@return whether the server shutdown should be delayed to process some tasks}
+     */
+    public boolean shouldDelayShutdown() {
+        return this.lightingProvider.hasUpdates() || !this.chunksToUnload.isEmpty() || !this.currentChunkHolders.isEmpty() || this.pointOfInterestStorage.hasUnsavedElements() || !this.unloadedChunks.isEmpty() || !this.unloadTaskQueue.isEmpty() || this.chunkTaskPrioritySystem.shouldDelayShutdown() || this.ticketManager.shouldDelayShutdown();
     }
 
     private void unloadChunks(BooleanSupplier shouldKeepTicking) {
@@ -436,6 +466,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.lightingProvider.updateChunkStatus(chunk.getPos());
                 this.lightingProvider.tick();
                 this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
+                this.chunkToNextSaveTimeMs.remove(chunk.getPos().toLong());
             }
         }, this.unloadTaskQueue::add)).whenComplete((void_, throwable) -> {
             if (throwable != null) {
@@ -613,8 +644,17 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         Chunk chunk = chunkHolder.getSavingFuture().getNow(null);
         if (chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk) {
+            long l = chunk.getPos().toLong();
+            long m = this.chunkToNextSaveTimeMs.getOrDefault(l, -1L);
+            long n = System.currentTimeMillis();
+            if (n < m) {
+                return false;
+            }
             boolean bl = this.save(chunk);
             chunkHolder.updateAccessibleStatus();
+            if (bl) {
+                this.chunkToNextSaveTimeMs.put(l, n + 10000L);
+            }
             return bl;
         }
         return false;
@@ -625,7 +665,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         if (!chunk.needsSaving()) {
             return false;
         }
-        chunk.setShouldSave(false);
+        chunk.setNeedsSaving(false);
         ChunkPos chunkPos = chunk.getPos();
         try {
             ChunkStatus chunkStatus = chunk.getStatus();

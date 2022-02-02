@@ -284,14 +284,14 @@ VillagerDataContainer {
 
     private void beginTradeWith(PlayerEntity customer) {
         this.prepareOffersFor(customer);
-        this.setCurrentCustomer(customer);
+        this.setCustomer(customer);
         this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
     }
 
     @Override
-    public void setCurrentCustomer(@Nullable PlayerEntity customer) {
-        boolean bl = this.getCurrentCustomer() != null && customer == null;
-        super.setCurrentCustomer(customer);
+    public void setCustomer(@Nullable PlayerEntity customer) {
+        boolean bl = this.getCustomer() != null && customer == null;
+        super.setCustomer(customer);
         if (bl) {
             this.resetCustomer();
         }
@@ -508,7 +508,7 @@ VillagerDataContainer {
     protected void afterUsing(TradeOffer offer) {
         int i = 3 + this.random.nextInt(4);
         this.experience += offer.getMerchantExperience();
-        this.lastCustomer = this.getCurrentCustomer();
+        this.lastCustomer = this.getCustomer();
         if (this.canLevelUp()) {
             this.levelUpTimer = 40;
             this.levelingUp = true;
@@ -866,8 +866,8 @@ VillagerDataContainer {
         return this.experience;
     }
 
-    public void setExperience(int amount) {
-        this.experience = amount;
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
     private void clearDailyRestockCount() {

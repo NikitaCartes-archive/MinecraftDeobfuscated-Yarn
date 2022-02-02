@@ -148,7 +148,7 @@ extends BlockEntity {
         this.bees.add(new Bee(nbtCompound, ticksInHive, hasNectar ? 2400 : 600));
     }
 
-    private static boolean releaseBee(World world, BlockPos pos, BlockState state, Bee bee, @Nullable List<Entity> entities, BeeState beeState, @Nullable BlockPos flowerPos) {
+    private static boolean releaseBee(World world, BlockPos pos, BlockState state2, Bee bee, @Nullable List<Entity> entities, BeeState beeState, @Nullable BlockPos flowerPos) {
         boolean bl;
         if ((world.isNight() || world.isRaining()) && beeState != BeeState.EMERGENCY) {
             return false;
@@ -157,7 +157,7 @@ extends BlockEntity {
         BeehiveBlockEntity.removeIrrelevantNbtKeys(nbtCompound);
         nbtCompound.put("HivePos", NbtHelper.fromBlockPos(pos));
         nbtCompound.putBoolean("NoGravity", true);
-        Direction direction = state.get(BeehiveBlock.FACING);
+        Direction direction = state2.get(BeehiveBlock.FACING);
         BlockPos blockPos = pos.offset(direction);
         boolean bl2 = bl = !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty();
         if (bl && beeState != BeeState.EMERGENCY) {
@@ -176,13 +176,13 @@ extends BlockEntity {
                 if (beeState == BeeState.HONEY_DELIVERED) {
                     int i;
                     beeEntity.onHoneyDelivered();
-                    if (state.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL)) && (i = BeehiveBlockEntity.getHoneyLevel(state)) < 5) {
+                    if (state2.isIn(BlockTags.BEEHIVES, state -> state.contains(BeehiveBlock.HONEY_LEVEL)) && (i = BeehiveBlockEntity.getHoneyLevel(state2)) < 5) {
                         int j;
                         int n = j = world.random.nextInt(100) == 0 ? 2 : 1;
                         if (i + j > 5) {
                             --j;
                         }
-                        world.setBlockState(pos, (BlockState)state.with(BeehiveBlock.HONEY_LEVEL, i + j));
+                        world.setBlockState(pos, (BlockState)state2.with(BeehiveBlock.HONEY_LEVEL, i + j));
                     }
                 }
                 BeehiveBlockEntity.ageBee(bee.ticksInHive, beeEntity);

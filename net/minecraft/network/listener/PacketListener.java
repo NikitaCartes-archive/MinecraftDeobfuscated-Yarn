@@ -32,7 +32,20 @@ public interface PacketListener {
      */
     public ClientConnection getConnection();
 
-    default public boolean method_40065() {
+    /**
+     * {@return whether uncaught exceptions in main thread should crash the game
+     * instead of logging and ignoring them}
+     * 
+     * @implNote This is {@code true} by default.
+     * 
+     * @apiNote This only affects the processing on the main thread done by calling
+     * methods in {@link net.minecraft.network.NetworkThreadUtils}. Uncaught exceptions
+     * in other threads or processing in the main thread using the {@code client.execute(() -> {})}
+     * code will be unaffected, and always gets logged without crashing.
+     * 
+     * @see ServerPacketListener
+     */
+    default public boolean shouldCrashOnException() {
         return true;
     }
 }

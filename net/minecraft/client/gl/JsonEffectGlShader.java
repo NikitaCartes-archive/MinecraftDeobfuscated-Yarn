@@ -297,7 +297,7 @@ AutoCloseable {
                 continue;
             }
             this.uniformLocs.add(k);
-            glUniform.setLoc(k);
+            glUniform.setLocation(k);
             this.uniformByName.put(string2, glUniform);
         }
     }

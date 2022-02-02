@@ -53,7 +53,7 @@ extends RealmsScreen {
             this.mapFeatures = mapFeatures;
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20, this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20, ScreenTexts.BACK, button -> this.onClose()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20, ScreenTexts.BACK, button -> this.close()));
     }
 
     @Override
@@ -62,7 +62,7 @@ extends RealmsScreen {
     }
 
     @Override
-    public void onClose() {
+    public void close() {
         this.callback.accept(null);
     }
 

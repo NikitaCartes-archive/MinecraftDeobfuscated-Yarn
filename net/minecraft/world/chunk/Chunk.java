@@ -246,8 +246,8 @@ StructureHolder {
         return true;
     }
 
-    public void setShouldSave(boolean shouldSave) {
-        this.needsSaving = shouldSave;
+    public void setNeedsSaving(boolean needsSaving) {
+        this.needsSaving = needsSaving;
     }
 
     public boolean needsSaving() {
@@ -303,8 +303,8 @@ StructureHolder {
         return this.blendingData;
     }
 
-    public void setBlender(BlendingData blender) {
-        this.blendingData = blender;
+    public void setBlendingData(BlendingData blendingData) {
+        this.blendingData = blendingData;
     }
 
     public long getInhabitedTime() {
@@ -332,7 +332,7 @@ StructureHolder {
 
     public void setLightOn(boolean lightOn) {
         this.lightOn = lightOn;
-        this.setShouldSave(true);
+        this.setNeedsSaving(true);
     }
 
     @Override

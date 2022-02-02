@@ -30,7 +30,7 @@ public interface EntityLike {
 
     public Box getBoundingBox();
 
-    public void setListener(EntityChangeListener var1);
+    public void setChangeListener(EntityChangeListener var1);
 
     /**
      * Returns a stream consisting of this entity and its passengers recursively.
