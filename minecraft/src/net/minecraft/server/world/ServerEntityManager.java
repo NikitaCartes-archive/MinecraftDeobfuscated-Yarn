@@ -106,7 +106,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			long l = ChunkSectionPos.toLong(entity.getBlockPos());
 			EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
 			entityTrackingSection.add(entity);
-			entity.setListener(new ServerEntityManager.Listener(entity, l, entityTrackingSection));
+			entity.setChangeListener(new ServerEntityManager.Listener(entity, l, entityTrackingSection));
 			if (!existing) {
 				this.handler.create(entity);
 			}
@@ -279,7 +279,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 
 	private void unload(EntityLike entity) {
 		entity.setRemoved(Entity.RemovalReason.UNLOADED_TO_CHUNK);
-		entity.setListener(EntityChangeListener.NONE);
+		entity.setChangeListener(EntityChangeListener.NONE);
 	}
 
 	private void unloadChunks() {
@@ -352,12 +352,12 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		return this.lookup;
 	}
 
-	public boolean method_40022(BlockPos blockPos) {
-		return this.trackingStatuses.get(ChunkPos.toLong(blockPos)).shouldTick();
+	public boolean shouldTick(BlockPos pos) {
+		return this.trackingStatuses.get(ChunkPos.toLong(pos)).shouldTick();
 	}
 
-	public boolean method_40021(ChunkPos chunkPos) {
-		return this.trackingStatuses.get(chunkPos.toLong()).shouldTick();
+	public boolean shouldTick(ChunkPos pos) {
+		return this.trackingStatuses.get(pos.toLong()).shouldTick();
 	}
 
 	public boolean isLoaded(long chunkPos) {
@@ -425,9 +425,9 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		private long sectionPos;
 		private EntityTrackingSection<T> section;
 
-		Listener(T entity, long l, EntityTrackingSection<T> section) {
+		Listener(T entity, long sectionPos, EntityTrackingSection<T> section) {
 			this.entity = entity;
-			this.sectionPos = l;
+			this.sectionPos = sectionPos;
 			this.section = section;
 		}
 
@@ -492,7 +492,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			}
 
 			ServerEntityManager.this.entityUuids.remove(this.entity.getUuid());
-			this.entity.setListener(NONE);
+			this.entity.setChangeListener(NONE);
 			ServerEntityManager.this.entityLeftSection(this.sectionPos, this.section);
 		}
 	}

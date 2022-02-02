@@ -480,8 +480,8 @@ public class ChunkStatus {
 		) {
 			if (bl || !chunk.getStatus().isAtLeast(chunkStatus)) {
 				this.doWork(chunkStatus, serverWorld, chunkGenerator, list, chunk);
-				if (chunk instanceof ProtoChunk) {
-					((ProtoChunk)chunk).setStatus(chunkStatus);
+				if (chunk instanceof ProtoChunk protoChunk) {
+					protoChunk.setStatus(chunkStatus);
 				}
 			}
 

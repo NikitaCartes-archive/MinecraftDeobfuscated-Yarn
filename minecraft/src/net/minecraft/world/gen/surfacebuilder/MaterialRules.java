@@ -32,8 +32,8 @@ import net.minecraft.world.gen.random.RandomDeriver;
 public class MaterialRules {
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR = stoneDepth(0, false, VerticalSurfaceType.FLOOR);
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH = stoneDepth(0, true, VerticalSurfaceType.FLOOR);
-	public static final MaterialRules.MaterialCondition field_36341 = method_40023(0, true, 6, VerticalSurfaceType.FLOOR);
-	public static final MaterialRules.MaterialCondition field_36342 = method_40023(0, true, 30, VerticalSurfaceType.FLOOR);
+	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6 = stoneDepth(0, true, 6, VerticalSurfaceType.FLOOR);
+	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30 = stoneDepth(0, true, 30, VerticalSurfaceType.FLOOR);
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_CEILING = stoneDepth(0, false, VerticalSurfaceType.CEILING);
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_CEILING_WITH_SURFACE_DEPTH = stoneDepth(0, true, VerticalSurfaceType.CEILING);
 
@@ -41,8 +41,8 @@ public class MaterialRules {
 		return new MaterialRules.StoneDepthMaterialCondition(offset, addSurfaceDepth, 0, verticalSurfaceType);
 	}
 
-	public static MaterialRules.MaterialCondition method_40023(int i, boolean bl, int j, VerticalSurfaceType verticalSurfaceType) {
-		return new MaterialRules.StoneDepthMaterialCondition(i, bl, j, verticalSurfaceType);
+	public static MaterialRules.MaterialCondition stoneDepth(int offset, boolean addSurfaceDepth, int secondaryDepthRange, VerticalSurfaceType verticalSurfaceType) {
+		return new MaterialRules.StoneDepthMaterialCondition(offset, addSurfaceDepth, secondaryDepthRange, verticalSurfaceType);
 	}
 
 	public static MaterialRules.MaterialCondition not(MaterialRules.MaterialCondition target) {

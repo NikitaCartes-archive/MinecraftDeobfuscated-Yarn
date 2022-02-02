@@ -265,8 +265,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 		return this.outOfRaidCounter;
 	}
 
-	public void setOutOfRaidCounter(int counter) {
-		this.outOfRaidCounter = counter;
+	public void setOutOfRaidCounter(int outOfRaidCounter) {
+		this.outOfRaidCounter = outOfRaidCounter;
 	}
 
 	@Override

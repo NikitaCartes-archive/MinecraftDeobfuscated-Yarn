@@ -18,12 +18,12 @@ public interface Angerable {
 
 	int getAngerTime();
 
-	void setAngerTime(int ticks);
+	void setAngerTime(int angerTime);
 
 	@Nullable
 	UUID getAngryAt();
 
-	void setAngryAt(@Nullable UUID uuid);
+	void setAngryAt(@Nullable UUID angryAt);
 
 	void chooseRandomAngerTime();
 

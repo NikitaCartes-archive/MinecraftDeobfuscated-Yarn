@@ -30,7 +30,6 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -85,7 +84,7 @@ public class Brain<E extends LivingEntity> {
 					@Override
 					public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
 						return memoryModules.stream()
-							.flatMap(memoryModuleType -> Util.stream(memoryModuleType.getCodec().map(codec -> Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType))))
+							.flatMap(memoryModuleType -> memoryModuleType.getCodec().map(codec -> Registry.MEMORY_MODULE_TYPE.getId(memoryModuleType)).stream())
 							.map(identifier -> dynamicOps.createString(identifier.toString()));
 					}
 

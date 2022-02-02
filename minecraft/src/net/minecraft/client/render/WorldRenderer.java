@@ -910,7 +910,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.chunkInfos.clear();
 
 			for (WorldRenderer.ChunkInfo chunkInfo : ((WorldRenderer.class_6600)this.field_34817.get()).field_34819) {
-				if (frustum.isVisible(chunkInfo.chunk.method_40051())) {
+				if (frustum.isVisible(chunkInfo.chunk.getBoundingBox())) {
 					this.chunkInfos.add(chunkInfo);
 				}
 			}
@@ -1183,37 +1183,39 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
 
 		for (Entity entity : this.world.getEntities()) {
-			if ((this.entityRenderDispatcher.shouldRender(entity, frustum, d, e, f) || entity.hasPassengerDeep(this.client.player))
-				&& this.method_40050(entity.getBlockPos())
-				&& (
-					entity != camera.getFocusedEntity()
-						|| camera.isThirdPerson()
-						|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
-				)
-				&& (!(entity instanceof ClientPlayerEntity) || camera.getFocusedEntity() == entity)) {
-				this.regularEntityCount++;
-				if (entity.age == 0) {
-					entity.lastRenderX = entity.getX();
-					entity.lastRenderY = entity.getY();
-					entity.lastRenderZ = entity.getZ();
-				}
+			if (this.entityRenderDispatcher.shouldRender(entity, frustum, d, e, f) || entity.hasPassengerDeep(this.client.player)) {
+				BlockPos blockPos = entity.getBlockPos();
+				if ((this.world.isOutOfHeightLimit(blockPos.getY()) || this.isRenderingReady(blockPos))
+					&& (
+						entity != camera.getFocusedEntity()
+							|| camera.isThirdPerson()
+							|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
+					)
+					&& (!(entity instanceof ClientPlayerEntity) || camera.getFocusedEntity() == entity)) {
+					this.regularEntityCount++;
+					if (entity.age == 0) {
+						entity.lastRenderX = entity.getX();
+						entity.lastRenderY = entity.getY();
+						entity.lastRenderZ = entity.getZ();
+					}
 
-				VertexConsumerProvider vertexConsumerProvider;
-				if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
-					bl4 = true;
-					OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
-					vertexConsumerProvider = outlineVertexConsumerProvider;
-					int i = entity.getTeamColorValue();
-					int j = 255;
-					int k = i >> 16 & 0xFF;
-					int l = i >> 8 & 0xFF;
-					int m = i & 0xFF;
-					outlineVertexConsumerProvider.setColor(k, l, m, 255);
-				} else {
-					vertexConsumerProvider = immediate;
-				}
+					VertexConsumerProvider vertexConsumerProvider;
+					if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
+						bl4 = true;
+						OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
+						vertexConsumerProvider = outlineVertexConsumerProvider;
+						int i = entity.getTeamColorValue();
+						int j = 255;
+						int k = i >> 16 & 0xFF;
+						int l = i >> 8 & 0xFF;
+						int m = i & 0xFF;
+						outlineVertexConsumerProvider.setColor(k, l, m, 255);
+					} else {
+						vertexConsumerProvider = immediate;
+					}
 
-				this.renderEntity(entity, d, e, f, tickDelta, matrices, vertexConsumerProvider);
+					this.renderEntity(entity, d, e, f, tickDelta, matrices, vertexConsumerProvider);
+				}
 			}
 		}
 
@@ -1229,17 +1231,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			List<BlockEntity> list = chunkInfo.chunk.getData().getBlockEntities();
 			if (!list.isEmpty()) {
 				for (BlockEntity blockEntity : list) {
-					BlockPos blockPos = blockEntity.getPos();
+					BlockPos blockPos2 = blockEntity.getPos();
 					VertexConsumerProvider vertexConsumerProvider2 = immediate;
 					matrices.push();
-					matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
-					SortedSet<BlockBreakingInfo> sortedSet = this.blockBreakingProgressions.get(blockPos.asLong());
+					matrices.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - f);
+					SortedSet<BlockBreakingInfo> sortedSet = this.blockBreakingProgressions.get(blockPos2.asLong());
 					if (sortedSet != null && !sortedSet.isEmpty()) {
-						int m = ((BlockBreakingInfo)sortedSet.last()).getStage();
-						if (m >= 0) {
+						int l = ((BlockBreakingInfo)sortedSet.last()).getStage();
+						if (l >= 0) {
 							MatrixStack.Entry entry = matrices.peek();
 							VertexConsumer vertexConsumer = new OverlayVertexConsumer(
-								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(m)),
+								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(l)),
 								entry.getPositionMatrix(),
 								entry.getNormalMatrix()
 							);
@@ -1258,9 +1260,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		synchronized (this.noCullingBlockEntities) {
 			for (BlockEntity blockEntity2 : this.noCullingBlockEntities) {
-				BlockPos blockPos2 = blockEntity2.getPos();
+				BlockPos blockPos3 = blockEntity2.getPos();
 				matrices.push();
-				matrices.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - f);
+				matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
 				this.blockEntityRenderDispatcher.render(blockEntity2, tickDelta, matrices, immediate);
 				matrices.pop();
 			}
@@ -1285,23 +1287,23 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		profiler.swap("destroyProgress");
 
 		for (Entry<SortedSet<BlockBreakingInfo>> entry2 : this.blockBreakingProgressions.long2ObjectEntrySet()) {
-			BlockPos blockPos3 = BlockPos.fromLong(entry2.getLongKey());
-			double h = (double)blockPos3.getX() - d;
-			double n = (double)blockPos3.getY() - e;
-			double o = (double)blockPos3.getZ() - f;
+			BlockPos blockPos = BlockPos.fromLong(entry2.getLongKey());
+			double h = (double)blockPos.getX() - d;
+			double n = (double)blockPos.getY() - e;
+			double o = (double)blockPos.getZ() - f;
 			if (!(h * h + n * n + o * o > 1024.0)) {
 				SortedSet<BlockBreakingInfo> sortedSet2 = (SortedSet<BlockBreakingInfo>)entry2.getValue();
 				if (sortedSet2 != null && !sortedSet2.isEmpty()) {
 					int p = ((BlockBreakingInfo)sortedSet2.last()).getStage();
 					matrices.push();
-					matrices.translate((double)blockPos3.getX() - d, (double)blockPos3.getY() - e, (double)blockPos3.getZ() - f);
+					matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 					MatrixStack.Entry entry3 = matrices.peek();
 					VertexConsumer vertexConsumer2 = new OverlayVertexConsumer(
 						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)),
 						entry3.getPositionMatrix(),
 						entry3.getNormalMatrix()
 					);
-					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos3), blockPos3, this.world, matrices, vertexConsumer2);
+					this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos), blockPos, this.world, matrices, vertexConsumer2);
 					matrices.pop();
 				}
 			}
@@ -3196,8 +3198,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	public boolean method_40050(BlockPos blockPos) {
-		ChunkBuilder.BuiltChunk builtChunk = this.chunks.getRenderedChunk(blockPos);
+	public boolean isRenderingReady(BlockPos pos) {
+		ChunkBuilder.BuiltChunk builtChunk = this.chunks.getRenderedChunk(pos);
 		return builtChunk != null && builtChunk.data.get() != ChunkBuilder.ChunkData.EMPTY;
 	}
 

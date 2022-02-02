@@ -367,7 +367,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		if (this.moreOptionsOpen) {
 			this.setMoreOptionsOpen(false);
 		} else {

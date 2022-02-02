@@ -1,4 +1,4 @@
-package net.minecraft.world.gen;
+package net.minecraft.world.spawner;
 
 import java.util.Random;
 import net.minecraft.block.BlockState;
@@ -13,8 +13,14 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.biome.Biome;
 
-public class PillagerSpawner implements Spawner {
-	private int ticksUntilNextSpawn;
+/**
+ * A spawner for pillager patrols.
+ * 
+ * <p>Pillager spawns in pillager outposts are controlled at
+ * {@link net.minecraft.world.gen.chunk.ChunkGeneratorSettings#getEntitySpawnList}.
+ */
+public class PatrolSpawner implements Spawner {
+	private int cooldown;
 
 	@Override
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
@@ -24,11 +30,11 @@ public class PillagerSpawner implements Spawner {
 			return 0;
 		} else {
 			Random random = world.random;
-			this.ticksUntilNextSpawn--;
-			if (this.ticksUntilNextSpawn > 0) {
+			this.cooldown--;
+			if (this.cooldown > 0) {
 				return 0;
 			} else {
-				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + 12000 + random.nextInt(1200);
+				this.cooldown = this.cooldown + 12000 + random.nextInt(1200);
 				long l = world.getTimeOfDay() / 24000L;
 				if (l < 5L || !world.isDay()) {
 					return 0;

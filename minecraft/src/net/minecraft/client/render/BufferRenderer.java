@@ -124,8 +124,8 @@ public class BufferRenderer {
 				shader.projectionMat.set(RenderSystem.getProjectionMatrix());
 			}
 
-			if (shader.field_36323 != null) {
-				shader.field_36323.method_39978(RenderSystem.getInverseViewRotationMatrix());
+			if (shader.viewRotationMat != null) {
+				shader.viewRotationMat.method_39978(RenderSystem.getInverseViewRotationMatrix());
 			}
 
 			if (shader.colorModulator != null) {

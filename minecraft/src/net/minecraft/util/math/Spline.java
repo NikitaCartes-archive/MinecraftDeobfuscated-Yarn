@@ -21,53 +21,53 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	@Debug
 	String getDebugString();
 
-	static <C> Codec<Spline<C>> method_39232(Codec<ToFloatFunction<C>> codec) {
+	static <C> Codec<Spline<C>> createCodec(Codec<ToFloatFunction<C>> locationFunctionCodec) {
 		MutableObject<Codec<Spline<C>>> mutableObject = new MutableObject<>();
 
-		record class_6737<C>(float location, Spline<C> value, float derivative) {
+		record Serialized<C>(float location, Spline<C> value, float derivative) {
 		}
 
-		Codec<class_6737<C>> codec2 = RecordCodecBuilder.create(
+		Codec<Serialized<C>> codec = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.FLOAT.fieldOf("location").forGetter(class_6737::location),
-						Codecs.createLazy(mutableObject::getValue).fieldOf("value").forGetter(class_6737::value),
-						Codec.FLOAT.fieldOf("derivative").forGetter(class_6737::derivative)
+						Codec.FLOAT.fieldOf("location").forGetter(Serialized::location),
+						Codecs.createLazy(mutableObject::getValue).fieldOf("value").forGetter(Serialized::value),
+						Codec.FLOAT.fieldOf("derivative").forGetter(Serialized::derivative)
 					)
-					.apply(instance, (f, spline, g) -> new class_6737(f, spline, g))
+					.apply(instance, (location, value, derivative) -> new Serialized(location, value, derivative))
 		);
-		Codec<Spline.class_6738<C>> codec3 = RecordCodecBuilder.create(
+		Codec<Spline.Implementation<C>> codec2 = RecordCodecBuilder.create(
 			instance -> instance.group(
-						codec.fieldOf("coordinate").forGetter(Spline.class_6738::coordinate),
-						Codecs.nonEmptyList(codec2.listOf())
+						locationFunctionCodec.fieldOf("coordinate").forGetter(Spline.Implementation::locationFunction),
+						Codecs.nonEmptyList(codec.listOf())
 							.fieldOf("points")
 							.forGetter(
-								arg -> IntStream.range(0, arg.locations.length)
-										.mapToObj(i -> new class_6737(arg.locations()[i], (Spline<C>)arg.values().get(i), arg.derivatives()[i]))
+								spline -> IntStream.range(0, spline.locations.length)
+										.mapToObj(index -> new Serialized(spline.locations()[index], (Spline<C>)spline.values().get(index), spline.derivatives()[index]))
 										.toList()
 							)
 					)
-					.apply(instance, (toFloatFunction, list) -> {
-						float[] fs = new float[list.size()];
+					.apply(instance, (locationFunction, splines) -> {
+						float[] fs = new float[splines.size()];
 						ImmutableList.Builder<Spline<C>> builder = ImmutableList.builder();
-						float[] gs = new float[list.size()];
+						float[] gs = new float[splines.size()];
 
-						for (int i = 0; i < list.size(); i++) {
-							class_6737<C> lv = (class_6737<C>)list.get(i);
-							fs[i] = lv.location();
-							builder.add(lv.value());
-							gs[i] = lv.derivative();
+						for (int i = 0; i < splines.size(); i++) {
+							Serialized<C> serialized = (Serialized<C>)splines.get(i);
+							fs[i] = serialized.location();
+							builder.add(serialized.value());
+							gs[i] = serialized.derivative();
 						}
 
-						return new Spline.class_6738(toFloatFunction, fs, builder.build(), gs);
+						return new Spline.Implementation(locationFunction, fs, builder.build(), gs);
 					})
 		);
 		mutableObject.setValue(
-			Codec.either(Codec.FLOAT, codec3)
+			Codec.either(Codec.FLOAT, codec2)
 				.xmap(
-					either -> either.map(Spline.FixedFloatFunction::new, arg -> arg),
+					either -> either.map(Spline.FixedFloatFunction::new, spline -> spline),
 					spline -> spline instanceof Spline.FixedFloatFunction<C> fixedFloatFunction
 							? Either.left(fixedFloatFunction.value())
-							: Either.right((Spline.class_6738)spline)
+							: Either.right((Spline.Implementation)spline)
 				)
 		);
 		return mutableObject.getValue();
@@ -81,28 +81,28 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		return new Spline.Builder<>(locationFunction);
 	}
 
-	static <C> Spline.Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
-		return new Spline.Builder<>(locationFunction, toFloatFunction);
+	static <C> Spline.Builder<C> builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> amplifier) {
+		return new Spline.Builder<>(locationFunction, amplifier);
 	}
 
 	public static final class Builder<C> {
 		private final ToFloatFunction<C> locationFunction;
-		private final ToFloatFunction<Float> field_35661;
+		private final ToFloatFunction<Float> amplifier;
 		private final FloatList locations = new FloatArrayList();
 		private final List<Spline<C>> values = Lists.<Spline<C>>newArrayList();
 		private final FloatList derivatives = new FloatArrayList();
 
 		protected Builder(ToFloatFunction<C> locationFunction) {
-			this(locationFunction, float_ -> float_);
+			this(locationFunction, value -> value);
 		}
 
-		protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> toFloatFunction) {
+		protected Builder(ToFloatFunction<C> locationFunction, ToFloatFunction<Float> amplifier) {
 			this.locationFunction = locationFunction;
-			this.field_35661 = toFloatFunction;
+			this.amplifier = amplifier;
 		}
 
 		public Spline.Builder<C> add(float location, float value, float derivative) {
-			return this.add(location, new Spline.FixedFloatFunction<>(this.field_35661.apply(value)), derivative);
+			return this.add(location, new Spline.FixedFloatFunction<>(this.amplifier.apply(value)), derivative);
 		}
 
 		public Spline.Builder<C> add(float location, Spline<C> value, float derivative) {
@@ -120,7 +120,7 @@ public interface Spline<C> extends ToFloatFunction<C> {
 			if (this.locations.isEmpty()) {
 				throw new IllegalStateException("No elements added");
 			} else {
-				return new Spline.class_6738<>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
+				return new Spline.Implementation<>(this.locationFunction, this.locations.toFloatArray(), ImmutableList.copyOf(this.values), this.derivatives.toFloatArray());
 			}
 		}
 	}
@@ -139,11 +139,12 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	}
 
 	@Debug
-	public static record class_6738<C>(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) implements Spline<C> {
+	public static record Implementation<C>(ToFloatFunction<C> locationFunction, float[] locations, List<Spline<C>> values, float[] derivatives)
+		implements Spline<C> {
 
-		public class_6738(ToFloatFunction<C> coordinate, float[] locations, List<Spline<C>> values, float[] derivatives) {
+		public Implementation(ToFloatFunction<C> locationFunction, float[] locations, List<Spline<C>> values, float[] derivatives) {
 			if (locations.length == values.size() && locations.length == derivatives.length) {
-				this.coordinate = coordinate;
+				this.locationFunction = locationFunction;
 				this.locations = locations;
 				this.values = values;
 				this.derivatives = derivatives;
@@ -154,8 +155,8 @@ public interface Spline<C> extends ToFloatFunction<C> {
 
 		@Override
 		public float apply(C object) {
-			float f = this.coordinate.apply(object);
-			int i = MathHelper.binarySearch(0, this.locations.length, ix -> f < this.locations[ix]) - 1;
+			float f = this.locationFunction.apply(object);
+			int i = MathHelper.binarySearch(0, this.locations.length, index -> f < this.locations[index]) - 1;
 			int j = this.locations.length - 1;
 			if (i < 0) {
 				return ((Spline)this.values.get(0)).apply(object) + this.derivatives[0] * (f - this.locations[0]);
@@ -181,21 +182,21 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		@Override
 		public String getDebugString() {
 			return "Spline{coordinate="
-				+ this.coordinate
+				+ this.locationFunction
 				+ ", locations="
-				+ this.method_39238(this.locations)
+				+ this.format(this.locations)
 				+ ", derivatives="
-				+ this.method_39238(this.derivatives)
+				+ this.format(this.derivatives)
 				+ ", values="
 				+ (String)this.values.stream().map(Spline::getDebugString).collect(Collectors.joining(", ", "[", "]"))
 				+ "}";
 		}
 
-		private String method_39238(float[] fs) {
+		private String format(float[] values) {
 			return "["
-				+ (String)IntStream.range(0, fs.length)
-					.mapToDouble(i -> (double)fs[i])
-					.mapToObj(d -> String.format(Locale.ROOT, "%.3f", d))
+				+ (String)IntStream.range(0, values.length)
+					.mapToDouble(index -> (double)values[index])
+					.mapToObj(value -> String.format(Locale.ROOT, "%.3f", value))
 					.collect(Collectors.joining(", "))
 				+ "]";
 		}

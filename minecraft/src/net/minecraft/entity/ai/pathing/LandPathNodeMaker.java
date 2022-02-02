@@ -479,6 +479,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			if (pathNodeType2 == PathNodeType.STICKY_HONEY) {
 				pathNodeType = PathNodeType.STICKY_HONEY;
 			}
+
+			if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
+				pathNodeType = PathNodeType.POWDER_SNOW;
+			}
 		}
 
 		if (pathNodeType == PathNodeType.WALKABLE) {

@@ -46,7 +46,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	public static final EnumProperty<Thickness> THICKNESS = Properties.THICKNESS;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private static final int field_31205 = 11;
-	private static final int field_31206 = Integer.MAX_VALUE;
 	private static final int field_31207 = 2;
 	private static final float field_31208 = 0.02F;
 	private static final float field_31209 = 0.12F;
@@ -71,7 +70,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static final VoxelShape FRUSTUM_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
 	private static final VoxelShape MIDDLE_SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0);
 	private static final float field_31204 = 0.125F;
-	private static final VoxelShape field_36340 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
+	private static final VoxelShape DRIP_COLLISION_SHAPE = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 16.0, 10.0);
 
 	public PointedDripstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -106,7 +105,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				return state;
 			} else if (direction == direction2.getOpposite() && !this.canPlaceAt(state, world, pos)) {
 				if (direction2 == Direction.DOWN) {
-					this.scheduleFall(state, world, pos);
+					world.createAndScheduleBlockTick(pos, this, 2);
 				} else {
 					world.createAndScheduleBlockTick(pos, this, 1);
 				}
@@ -289,44 +288,21 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
 	}
 
-	private void scheduleFall(BlockState state, WorldAccess world, BlockPos pos) {
-		BlockPos blockPos = getTipPos(state, world, pos, Integer.MAX_VALUE, true);
-		if (blockPos != null) {
-			BlockPos.Mutable mutable = blockPos.mutableCopy();
-			mutable.move(Direction.DOWN);
-			BlockState blockState = world.getBlockState(mutable);
-			if (blockState.getCollisionShape(world, mutable, ShapeContext.absent()).getMax(Direction.Axis.Y) >= 1.0 || blockState.isOf(Blocks.POWDER_SNOW)) {
-				world.breakBlock(blockPos, true);
-				mutable.move(Direction.UP);
-			}
-
-			mutable.move(Direction.UP);
-
-			while (isPointingDown(world.getBlockState(mutable))) {
-				world.createAndScheduleBlockTick(mutable, this, 2);
-				mutable.move(Direction.UP);
-			}
-		}
-	}
-
-	private static int getStalactiteSize(ServerWorld world, BlockPos pos, int range) {
-		int i = 1;
-		BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
-
-		while (i < range && isPointingDown(world.getBlockState(mutable))) {
-			i++;
-			mutable.move(Direction.UP);
-		}
-
-		return i;
-	}
-
 	private static void spawnFallingBlock(BlockState state, ServerWorld world, BlockPos pos) {
-		FallingBlockEntity fallingBlockEntity = FallingBlockEntity.method_40005(world, pos, state);
-		if (isTip(state, true)) {
-			int i = getStalactiteSize(world, pos, 6);
-			float f = 1.0F * (float)i;
-			fallingBlockEntity.setHurtEntities(f, 40);
+		BlockPos.Mutable mutable = pos.mutableCopy();
+		BlockState blockState = state;
+
+		while (isPointingDown(blockState)) {
+			FallingBlockEntity fallingBlockEntity = FallingBlockEntity.spawnFromBlock(world, mutable, blockState);
+			if (isTip(blockState, true)) {
+				int i = Math.max(1 + pos.getY() - mutable.getY(), 6);
+				float f = 1.0F * (float)i;
+				fallingBlockEntity.setHurtEntities(f, 40);
+				break;
+			}
+
+			mutable.move(Direction.DOWN);
+			blockState = world.getBlockState(mutable);
 		}
 	}
 
@@ -369,7 +345,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				return;
 			}
 
-			if (!method_40016(world, mutable, blockState)) {
+			if (!canDripThrough(world, mutable, blockState)) {
 				return;
 			}
 		}
@@ -430,8 +406,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 			return pos;
 		} else {
 			Direction direction = state.get(VERTICAL_DIRECTION);
-			BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE)
-					&& blockState.get(VERTICAL_DIRECTION) == direction;
+			BiPredicate<BlockPos, BlockState> biPredicate = (posx, statex) -> statex.isOf(Blocks.POINTED_DRIPSTONE) && statex.get(VERTICAL_DIRECTION) == direction;
 			return (BlockPos)searchInDirection(world, pos, direction.getDirection(), biPredicate, statex -> isTip(statex, allowMerged), range).orElse(null);
 		}
 	}
@@ -487,8 +462,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	private static Optional<BlockPos> getSupportingPos(World world, BlockPos pos, BlockState state, int range) {
 		Direction direction = state.get(VERTICAL_DIRECTION);
-		BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> blockState.isOf(Blocks.POINTED_DRIPSTONE)
-				&& blockState.get(VERTICAL_DIRECTION) == direction;
+		BiPredicate<BlockPos, BlockState> biPredicate = (posx, statex) -> statex.isOf(Blocks.POINTED_DRIPSTONE) && statex.get(VERTICAL_DIRECTION) == direction;
 		return searchInDirection(world, pos, direction.getOpposite().getDirection(), biPredicate, statex -> !statex.isOf(Blocks.POINTED_DRIPSTONE), range);
 	}
 
@@ -536,13 +510,13 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
 		Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock
 				&& ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
-		BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> method_40016(world, blockPos, blockState);
+		BiPredicate<BlockPos, BlockState> biPredicate = (posx, state) -> canDripThrough(world, posx, state);
 		return (BlockPos)searchInDirection(world, pos, Direction.DOWN.getDirection(), biPredicate, predicate, 11).orElse(null);
 	}
 
 	@Nullable
 	public static BlockPos getDripPos(World world, BlockPos pos) {
-		BiPredicate<BlockPos, BlockState> biPredicate = (blockPos, blockState) -> method_40016(world, blockPos, blockState);
+		BiPredicate<BlockPos, BlockState> biPredicate = (posx, state) -> canDripThrough(world, posx, state);
 		return (BlockPos)searchInDirection(world, pos, Direction.UP.getDirection(), biPredicate, PointedDripstoneBlock::canDrip, 11).orElse(null);
 	}
 
@@ -577,7 +551,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		WorldAccess world,
 		BlockPos pos,
 		Direction.AxisDirection direction,
-		BiPredicate<BlockPos, BlockState> biPredicate,
+		BiPredicate<BlockPos, BlockState> continuePredicate,
 		Predicate<BlockState> stopPredicate,
 		int range
 	) {
@@ -591,7 +565,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				return Optional.of(mutable.toImmutable());
 			}
 
-			if (world.isOutOfHeightLimit(mutable.getY()) || !biPredicate.test(mutable, blockState)) {
+			if (world.isOutOfHeightLimit(mutable.getY()) || !continuePredicate.test(mutable, blockState)) {
 				return Optional.empty();
 			}
 		}
@@ -599,16 +573,22 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return Optional.empty();
 	}
 
-	private static boolean method_40016(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		if (blockState.isAir()) {
+	/**
+	 * {@return whether it can drip through the block {@code block} at {@code pos}}
+	 * 
+	 * @apiNote This is used for checking which block can obstruct the stalagmites
+	 * growing or the cauldrons filling with liquids.
+	 */
+	private static boolean canDripThrough(BlockView world, BlockPos pos, BlockState state) {
+		if (state.isAir()) {
 			return true;
-		} else if (blockState.isOpaqueFullCube(blockView, blockPos)) {
+		} else if (state.isOpaqueFullCube(world, pos)) {
 			return false;
-		} else if (!blockState.getFluidState().isEmpty()) {
+		} else if (!state.getFluidState().isEmpty()) {
 			return false;
 		} else {
-			VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
-			return !VoxelShapes.matchesAnywhere(field_36340, voxelShape, BooleanBiFunction.AND);
+			VoxelShape voxelShape = state.getCollisionShape(world, pos);
+			return !VoxelShapes.matchesAnywhere(DRIP_COLLISION_SHAPE, voxelShape, BooleanBiFunction.AND);
 		}
 	}
 }

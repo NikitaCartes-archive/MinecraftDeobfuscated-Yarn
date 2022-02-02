@@ -213,7 +213,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			(UUID)dynamic.get("WanderingTraderId").read(DynamicSerializableUuid.CODEC).result().orElse(null),
 			(Set<String>)dynamic.get("ServerBrands")
 				.asStream()
-				.flatMap(dynamicx -> Util.stream(dynamicx.asString().result()))
+				.flatMap(dynamicx -> dynamicx.asString().result().stream())
 				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(NbtCompound)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
@@ -362,8 +362,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setSpawnAngle(float angle) {
-		this.spawnAngle = angle;
+	public void setSpawnAngle(float spawnAngle) {
+		this.spawnAngle = spawnAngle;
 	}
 
 	@Override
@@ -485,8 +485,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setWorldBorder(WorldBorder.Properties properties) {
-		this.worldBorder = properties;
+	public void setWorldBorder(WorldBorder.Properties worldBorder) {
+		this.worldBorder = worldBorder;
 	}
 
 	@Override
@@ -505,8 +505,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setDifficultyLocked(boolean locked) {
-		this.difficultyLocked = locked;
+	public void setDifficultyLocked(boolean difficultyLocked) {
+		this.difficultyLocked = difficultyLocked;
 	}
 
 	@Override
@@ -536,8 +536,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setDragonFight(NbtCompound nbt) {
-		this.dragonFight = nbt;
+	public void setDragonFight(NbtCompound dragonFight) {
+		this.dragonFight = dragonFight;
 	}
 
 	@Override
@@ -557,8 +557,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setCustomBossEvents(@Nullable NbtCompound nbt) {
-		this.customBossEvents = nbt;
+	public void setCustomBossEvents(@Nullable NbtCompound customBossEvents) {
+		this.customBossEvents = customBossEvents;
 	}
 
 	@Override
@@ -588,8 +588,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void setWanderingTraderId(UUID uuid) {
-		this.wanderingTraderId = uuid;
+	public void setWanderingTraderId(UUID wanderingTraderId) {
+		this.wanderingTraderId = wanderingTraderId;
 	}
 
 	@Override

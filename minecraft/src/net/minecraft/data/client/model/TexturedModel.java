@@ -12,32 +12,32 @@ import net.minecraft.util.Identifier;
  * Represents a model with texture variables defined.
  */
 public class TexturedModel {
-	public static final TexturedModel.Factory CUBE_ALL = makeFactory(Texture::all, Models.CUBE_ALL);
-	public static final TexturedModel.Factory CUBE_MIRRORED_ALL = makeFactory(Texture::all, Models.CUBE_MIRRORED_ALL);
-	public static final TexturedModel.Factory CUBE_COLUMN = makeFactory(Texture::sideEnd, Models.CUBE_COLUMN);
-	public static final TexturedModel.Factory CUBE_COLUMN_HORIZONTAL = makeFactory(Texture::sideEnd, Models.CUBE_COLUMN_HORIZONTAL);
-	public static final TexturedModel.Factory CUBE_BOTTOM_TOP = makeFactory(Texture::sideTopBottom, Models.CUBE_BOTTOM_TOP);
-	public static final TexturedModel.Factory CUBE_TOP = makeFactory(Texture::sideAndTop, Models.CUBE_TOP);
-	public static final TexturedModel.Factory ORIENTABLE = makeFactory(Texture::sideFrontTop, Models.ORIENTABLE);
-	public static final TexturedModel.Factory ORIENTABLE_WITH_BOTTOM = makeFactory(Texture::sideFrontTopBottom, Models.ORIENTABLE_WITH_BOTTOM);
-	public static final TexturedModel.Factory CARPET = makeFactory(Texture::wool, Models.CARPET);
-	public static final TexturedModel.Factory TEMPLATE_GLAZED_TERRACOTTA = makeFactory(Texture::pattern, Models.TEMPLATE_GLAZED_TERRACOTTA);
-	public static final TexturedModel.Factory CORAL_FAN = makeFactory(Texture::fan, Models.CORAL_FAN);
-	public static final TexturedModel.Factory PARTICLE = makeFactory(Texture::particle, Models.PARTICLE);
-	public static final TexturedModel.Factory TEMPLATE_ANVIL = makeFactory(Texture::top, Models.TEMPLATE_ANVIL);
-	public static final TexturedModel.Factory LEAVES = makeFactory(Texture::all, Models.LEAVES);
-	public static final TexturedModel.Factory TEMPLATE_LANTERN = makeFactory(Texture::lantern, Models.TEMPLATE_LANTERN);
-	public static final TexturedModel.Factory TEMPLATE_HANGING_LANTERN = makeFactory(Texture::lantern, Models.TEMPLATE_HANGING_LANTERN);
-	public static final TexturedModel.Factory TEMPLATE_SEAGRASS = makeFactory(Texture::texture, Models.TEMPLATE_SEAGRASS);
-	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN);
-	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN_HORIZONTAL = makeFactory(Texture::sideAndEndForTop, Models.CUBE_COLUMN_HORIZONTAL);
-	public static final TexturedModel.Factory SIDE_TOP_BOTTOM_WALL = makeFactory(Texture::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
-	public static final TexturedModel.Factory SIDE_END_WALL = makeFactory(Texture::wallSideEnd, Models.CUBE_COLUMN);
-	private final Texture texture;
+	public static final TexturedModel.Factory CUBE_ALL = makeFactory(TextureMap::all, Models.CUBE_ALL);
+	public static final TexturedModel.Factory CUBE_MIRRORED_ALL = makeFactory(TextureMap::all, Models.CUBE_MIRRORED_ALL);
+	public static final TexturedModel.Factory CUBE_COLUMN = makeFactory(TextureMap::sideEnd, Models.CUBE_COLUMN);
+	public static final TexturedModel.Factory CUBE_COLUMN_HORIZONTAL = makeFactory(TextureMap::sideEnd, Models.CUBE_COLUMN_HORIZONTAL);
+	public static final TexturedModel.Factory CUBE_BOTTOM_TOP = makeFactory(TextureMap::sideTopBottom, Models.CUBE_BOTTOM_TOP);
+	public static final TexturedModel.Factory CUBE_TOP = makeFactory(TextureMap::sideAndTop, Models.CUBE_TOP);
+	public static final TexturedModel.Factory ORIENTABLE = makeFactory(TextureMap::sideFrontTop, Models.ORIENTABLE);
+	public static final TexturedModel.Factory ORIENTABLE_WITH_BOTTOM = makeFactory(TextureMap::sideFrontTopBottom, Models.ORIENTABLE_WITH_BOTTOM);
+	public static final TexturedModel.Factory CARPET = makeFactory(TextureMap::wool, Models.CARPET);
+	public static final TexturedModel.Factory TEMPLATE_GLAZED_TERRACOTTA = makeFactory(TextureMap::pattern, Models.TEMPLATE_GLAZED_TERRACOTTA);
+	public static final TexturedModel.Factory CORAL_FAN = makeFactory(TextureMap::fan, Models.CORAL_FAN);
+	public static final TexturedModel.Factory PARTICLE = makeFactory(TextureMap::particle, Models.PARTICLE);
+	public static final TexturedModel.Factory TEMPLATE_ANVIL = makeFactory(TextureMap::top, Models.TEMPLATE_ANVIL);
+	public static final TexturedModel.Factory LEAVES = makeFactory(TextureMap::all, Models.LEAVES);
+	public static final TexturedModel.Factory TEMPLATE_LANTERN = makeFactory(TextureMap::lantern, Models.TEMPLATE_LANTERN);
+	public static final TexturedModel.Factory TEMPLATE_HANGING_LANTERN = makeFactory(TextureMap::lantern, Models.TEMPLATE_HANGING_LANTERN);
+	public static final TexturedModel.Factory TEMPLATE_SEAGRASS = makeFactory(TextureMap::texture, Models.TEMPLATE_SEAGRASS);
+	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN = makeFactory(TextureMap::sideAndEndForTop, Models.CUBE_COLUMN);
+	public static final TexturedModel.Factory END_FOR_TOP_CUBE_COLUMN_HORIZONTAL = makeFactory(TextureMap::sideAndEndForTop, Models.CUBE_COLUMN_HORIZONTAL);
+	public static final TexturedModel.Factory SIDE_TOP_BOTTOM_WALL = makeFactory(TextureMap::wallSideTopBottom, Models.CUBE_BOTTOM_TOP);
+	public static final TexturedModel.Factory SIDE_END_WALL = makeFactory(TextureMap::wallSideEnd, Models.CUBE_COLUMN);
+	private final TextureMap textures;
 	private final Model model;
 
-	private TexturedModel(Texture texture, Model model) {
-		this.texture = texture;
+	private TexturedModel(TextureMap textures, Model model) {
+		this.textures = textures;
 		this.model = model;
 	}
 
@@ -45,29 +45,29 @@ public class TexturedModel {
 		return this.model;
 	}
 
-	public Texture getTexture() {
-		return this.texture;
+	public TextureMap getTextures() {
+		return this.textures;
 	}
 
-	public TexturedModel texture(Consumer<Texture> textureConsumer) {
-		textureConsumer.accept(this.texture);
+	public TexturedModel textures(Consumer<TextureMap> texturesConsumer) {
+		texturesConsumer.accept(this.textures);
 		return this;
 	}
 
 	public Identifier upload(Block block, BiConsumer<Identifier, Supplier<JsonElement>> writer) {
-		return this.model.upload(block, this.texture, writer);
+		return this.model.upload(block, this.textures, writer);
 	}
 
 	public Identifier upload(Block block, String suffix, BiConsumer<Identifier, Supplier<JsonElement>> writer) {
-		return this.model.upload(block, suffix, this.texture, writer);
+		return this.model.upload(block, suffix, this.textures, writer);
 	}
 
-	private static TexturedModel.Factory makeFactory(Function<Block, Texture> textureGetter, Model model) {
-		return block -> new TexturedModel((Texture)textureGetter.apply(block), model);
+	private static TexturedModel.Factory makeFactory(Function<Block, TextureMap> texturesGetter, Model model) {
+		return block -> new TexturedModel((TextureMap)texturesGetter.apply(block), model);
 	}
 
 	public static TexturedModel getCubeAll(Identifier id) {
-		return new TexturedModel(Texture.all(id), Models.CUBE_ALL);
+		return new TexturedModel(TextureMap.all(id), Models.CUBE_ALL);
 	}
 
 	@FunctionalInterface
@@ -82,8 +82,8 @@ public class TexturedModel {
 			return this.get(block).upload(block, suffix, writer);
 		}
 
-		default TexturedModel.Factory andThen(Consumer<Texture> consumer) {
-			return block -> this.get(block).texture(consumer);
+		default TexturedModel.Factory andThen(Consumer<TextureMap> consumer) {
+			return block -> this.get(block).textures(consumer);
 		}
 	}
 }

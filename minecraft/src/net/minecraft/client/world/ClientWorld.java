@@ -908,16 +908,16 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void setSpawnAngle(float angle) {
-			this.spawnAngle = angle;
+		public void setSpawnAngle(float spawnAngle) {
+			this.spawnAngle = spawnAngle;
 		}
 
 		public void setTime(long time) {
 			this.time = time;
 		}
 
-		public void setTimeOfDay(long time) {
-			this.timeOfDay = time;
+		public void setTimeOfDay(long timeOfDay) {
+			this.timeOfDay = timeOfDay;
 		}
 
 		@Override

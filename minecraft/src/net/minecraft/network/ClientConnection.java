@@ -67,8 +67,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Marker NETWORK_MARKER = MarkerFactory.getMarker("NETWORK");
 	public static final Marker NETWORK_PACKETS_MARKER = Util.make(MarkerFactory.getMarker("NETWORK_PACKETS"), marker -> marker.add(NETWORK_MARKER));
-	public static final Marker field_36379 = Util.make(MarkerFactory.getMarker("PACKET_RECEIVED"), marker -> marker.add(NETWORK_PACKETS_MARKER));
-	public static final Marker field_36380 = Util.make(MarkerFactory.getMarker("PACKET_SENT"), marker -> marker.add(NETWORK_PACKETS_MARKER));
+	public static final Marker PACKET_RECEIVED_MARKER = Util.make(MarkerFactory.getMarker("PACKET_RECEIVED"), marker -> marker.add(NETWORK_PACKETS_MARKER));
+	public static final Marker PACKET_SENT_MARKER = Util.make(MarkerFactory.getMarker("PACKET_SENT"), marker -> marker.add(NETWORK_PACKETS_MARKER));
 	/**
 	 * The attribute key for the current network state of the backing netty
 	 * channel.

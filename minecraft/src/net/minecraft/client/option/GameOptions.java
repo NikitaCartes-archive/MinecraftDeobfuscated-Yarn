@@ -916,8 +916,8 @@ public class GameOptions {
 			.collect(Collectors.joining(System.lineSeparator()));
 	}
 
-	public void setServerViewDistance(int viewDistance) {
-		this.serverViewDistance = viewDistance;
+	public void setServerViewDistance(int serverViewDistance) {
+		this.serverViewDistance = serverViewDistance;
 	}
 
 	public int getViewDistance() {

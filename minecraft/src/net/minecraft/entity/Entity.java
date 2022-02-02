@@ -200,7 +200,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private float pitch;
 	public float prevYaw;
 	public float prevPitch;
-	private Box entityBounds = NULL_BOX;
+	private Box boundingBox = NULL_BOX;
 	protected boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
@@ -254,7 +254,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
 	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
-	private EntityChangeListener entityChangeListener = EntityChangeListener.NONE;
+	private EntityChangeListener changeListener = EntityChangeListener.NONE;
 	private Vec3d trackedPosition;
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
@@ -578,8 +578,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void setFireTicks(int ticks) {
-		this.fireTicks = ticks;
+	public void setFireTicks(int fireTicks) {
+		this.fireTicks = fireTicks;
 	}
 
 	public int getFireTicks() {
@@ -1771,12 +1771,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			Box box = Box.of(this.getEyePos(), (double)f, 1.0E-6, (double)f);
 			return BlockPos.stream(box)
 				.anyMatch(
-					blockPos -> {
-						BlockState blockState = this.world.getBlockState(blockPos);
+					pos -> {
+						BlockState blockState = this.world.getBlockState(pos);
 						return !blockState.isAir()
-							&& blockState.shouldSuffocate(this.world, blockPos)
+							&& blockState.shouldSuffocate(this.world, pos)
 							&& VoxelShapes.matchesAnywhere(
-								blockState.getCollisionShape(this.world, blockPos).offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()),
+								blockState.getCollisionShape(this.world, pos).offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()),
 								VoxelShapes.cuboid(box),
 								BooleanBiFunction.AND
 							);
@@ -2677,7 +2677,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Override
 	public final Box getBoundingBox() {
-		return this.entityBounds;
+		return this.boundingBox;
 	}
 
 	public Box getVisibilityBoundingBox() {
@@ -2693,7 +2693,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public final void setBoundingBox(Box boundingBox) {
-		this.entityBounds = boundingBox;
+		this.boundingBox = boundingBox;
 	}
 
 	protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
@@ -3190,7 +3190,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			}
 
-			this.entityChangeListener.updateEntityPosition();
+			this.changeListener.updateEntityPosition();
 			EntityGameEventHandler entityGameEventHandler = this.getGameEventHandler();
 			if (entityGameEventHandler != null) {
 				entityGameEventHandler.onEntitySetPos(this.world);
@@ -3229,6 +3229,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public boolean canFreeze() {
 		return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
+	}
+
+	public boolean shouldEscapePowderSnow() {
+		return (this.inPowderSnow || this.wasInPowderSnow) && this.canFreeze();
 	}
 
 	public float getYaw() {
@@ -3275,7 +3279,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		this.getPassengerList().forEach(Entity::stopRiding);
-		this.entityChangeListener.remove(reason);
+		this.changeListener.remove(reason);
 	}
 
 	protected void unsetRemoved() {
@@ -3283,8 +3287,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public void setListener(EntityChangeListener listener) {
-		this.entityChangeListener = listener;
+	public void setChangeListener(EntityChangeListener changeListener) {
+		this.changeListener = changeListener;
 	}
 
 	@Override

@@ -25,10 +25,10 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 		.fieldOf("probability")
 		.<BeehiveTreeDecorator>xmap(BeehiveTreeDecorator::new, decorator -> decorator.probability)
 		.codec();
-	private static final Direction field_36346 = Direction.SOUTH;
-	private static final Direction[] field_36347 = (Direction[])Direction.Type.HORIZONTAL
+	private static final Direction BEE_NEST_FACE = Direction.SOUTH;
+	private static final Direction[] GENERATE_DIRECTIONS = (Direction[])Direction.Type.HORIZONTAL
 		.stream()
-		.filter(direction -> direction != field_36346.getOpposite())
+		.filter(direction -> direction != BEE_NEST_FACE.getOpposite())
 		.toArray(Direction[]::new);
 	private final float probability;
 
@@ -51,15 +51,13 @@ public class BeehiveTreeDecorator extends TreeDecorator {
 				: Math.min(((BlockPos)logPositions.get(0)).getY() + 1 + random.nextInt(3), ((BlockPos)logPositions.get(logPositions.size() - 1)).getY());
 			List<BlockPos> list = (List<BlockPos>)logPositions.stream()
 				.filter(pos -> pos.getY() == i)
-				.flatMap(blockPos -> Stream.of(field_36347).map(blockPos::offset))
+				.flatMap(pos -> Stream.of(GENERATE_DIRECTIONS).map(pos::offset))
 				.collect(Collectors.toList());
 			if (!list.isEmpty()) {
 				Collections.shuffle(list);
-				Optional<BlockPos> optional = list.stream()
-					.filter(blockPos -> Feature.isAir(world, blockPos) && Feature.isAir(world, blockPos.offset(field_36346)))
-					.findFirst();
+				Optional<BlockPos> optional = list.stream().filter(pos -> Feature.isAir(world, pos) && Feature.isAir(world, pos.offset(BEE_NEST_FACE))).findFirst();
 				if (!optional.isEmpty()) {
-					replacer.accept((BlockPos)optional.get(), Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, field_36346));
+					replacer.accept((BlockPos)optional.get(), Blocks.BEE_NEST.getDefaultState().with(BeehiveBlock.FACING, BEE_NEST_FACE));
 					world.getBlockEntity((BlockPos)optional.get(), BlockEntityType.BEEHIVE).ifPresent(blockEntity -> {
 						int ix = 2 + random.nextInt(2);
 

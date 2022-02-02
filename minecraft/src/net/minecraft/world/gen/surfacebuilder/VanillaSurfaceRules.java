@@ -243,8 +243,8 @@ public class VanillaSurfaceRules {
 				MaterialRules.sequence(
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER))),
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, materialRule7),
-					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.field_36341, SANDSTONE)),
-					MaterialRules.condition(materialCondition14, MaterialRules.condition(MaterialRules.field_36342, SANDSTONE))
+					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6, SANDSTONE)),
+					MaterialRules.condition(materialCondition14, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30, SANDSTONE))
 				)
 			),
 			MaterialRules.condition(

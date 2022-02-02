@@ -92,7 +92,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		blockEntity.transferCooldown--;
 		blockEntity.lastTickTime = world.getTime();
 		if (!blockEntity.needsCooldown()) {
-			blockEntity.setCooldown(0);
+			blockEntity.setTransferCooldown(0);
 			insertAndExtract(world, pos, state, blockEntity, () -> extract(world, blockEntity));
 		}
 	}
@@ -112,7 +112,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 				}
 
 				if (bl) {
-					blockEntity.setCooldown(8);
+					blockEntity.setTransferCooldown(8);
 					markDirty(world, pos, state);
 					return true;
 				}
@@ -273,7 +273,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 						j = 1;
 					}
 
-					hopperBlockEntity.setCooldown(8 - j);
+					hopperBlockEntity.setTransferCooldown(8 - j);
 				}
 
 				to.markDirty();
@@ -365,8 +365,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return (double)this.pos.getZ() + 0.5;
 	}
 
-	private void setCooldown(int cooldown) {
-		this.transferCooldown = cooldown;
+	private void setTransferCooldown(int transferCooldown) {
+		this.transferCooldown = transferCooldown;
 	}
 
 	private boolean needsCooldown() {

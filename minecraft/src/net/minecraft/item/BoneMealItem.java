@@ -108,7 +108,7 @@ public class BoneMealItem extends Item {
 						}
 					}
 
-					if (blockState.isIn(BlockTags.WALL_CORALS, abstractBlockState -> abstractBlockState.contains(DeadCoralWallFanBlock.FACING))) {
+					if (blockState.isIn(BlockTags.WALL_CORALS, state -> state.contains(DeadCoralWallFanBlock.FACING))) {
 						for (int k = 0; !blockState.canPlaceAt(world, blockPos2) && k < 4; k++) {
 							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
 						}

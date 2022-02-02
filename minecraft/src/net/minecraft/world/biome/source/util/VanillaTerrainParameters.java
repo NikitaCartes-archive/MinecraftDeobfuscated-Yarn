@@ -19,9 +19,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public final class VanillaTerrainParameters {
-	private static final Codec<Spline<VanillaTerrainParameters.NoisePoint>> field_35457 = Spline.method_39232(
-		VanillaTerrainParameters.LocationFunction.field_35464
-	);
+	private static final Codec<Spline<VanillaTerrainParameters.NoisePoint>> field_35457 = Spline.createCodec(VanillaTerrainParameters.LocationFunction.field_35464);
 	public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					field_35457.fieldOf("offset").forGetter(VanillaTerrainParameters::getOffsetSpline),
@@ -298,11 +296,11 @@ public final class VanillaTerrainParameters {
 				BiomeKeys.PLAINS
 			)
 		);
-		Spline.class_6738<VanillaTerrainParameters.NoisePoint> lv = (Spline.class_6738<VanillaTerrainParameters.NoisePoint>)createLandSpline(
+		Spline.Implementation<VanillaTerrainParameters.NoisePoint> implementation = (Spline.Implementation<VanillaTerrainParameters.NoisePoint>)createLandSpline(
 			-0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, field_35673
 		);
 		RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
-		float[] var5 = lv.locations();
+		float[] var5 = implementation.locations();
 		int var6 = var5.length;
 
 		for (int var7 = 0; var7 < var6; var7++) {
@@ -318,7 +316,7 @@ public final class VanillaTerrainParameters {
 			registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
 		}
 
-		var5 = ((Spline.class_6738)this.offsetSpline).locations();
+		var5 = ((Spline.Implementation)this.offsetSpline).locations();
 		var6 = var5.length;
 
 		for (int var11 = 0; var11 < var6; var11++) {

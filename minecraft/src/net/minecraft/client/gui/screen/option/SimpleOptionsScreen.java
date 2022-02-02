@@ -18,13 +18,13 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public abstract class NarratorOptionsScreen extends GameOptionsScreen {
+public abstract class SimpleOptionsScreen extends GameOptionsScreen {
 	private final Option[] options;
 	@Nullable
 	private ClickableWidget narratorButton;
 	private ButtonListWidget buttonList;
 
-	public NarratorOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {
+	public SimpleOptionsScreen(Screen parent, GameOptions gameOptions, Text title, Option[] options) {
 		super(parent, gameOptions, title);
 		this.options = options;
 	}

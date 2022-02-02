@@ -22,6 +22,12 @@ public interface CollisionView extends BlockView {
 	@Nullable
 	BlockView getChunkAsView(int chunkX, int chunkZ);
 
+	/**
+	 * {@return {@code true} if {@code shape} does not intersect
+	 * with non-spectator entities except {@code except}}
+	 * 
+	 * @implNote This always returns {@code true} if {@code shape} is {@linkplain VoxelShape#isEmpty empty}.
+	 */
 	default boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
 		return true;
 	}

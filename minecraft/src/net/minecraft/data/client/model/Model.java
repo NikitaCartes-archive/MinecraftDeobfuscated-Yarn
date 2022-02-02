@@ -19,26 +19,26 @@ public class Model {
 	private final Set<TextureKey> requiredTextures;
 	private final Optional<String> variant;
 
-	public Model(Optional<Identifier> parent, Optional<String> variant, TextureKey... requiredTextures) {
+	public Model(Optional<Identifier> parent, Optional<String> variant, TextureKey... requiredTextureKeys) {
 		this.parent = parent;
 		this.variant = variant;
-		this.requiredTextures = ImmutableSet.copyOf(requiredTextures);
+		this.requiredTextures = ImmutableSet.copyOf(requiredTextureKeys);
 	}
 
-	public Identifier upload(Block block, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
-		return this.upload(ModelIds.getBlockSubModelId(block, (String)this.variant.orElse("")), texture, modelCollector);
+	public Identifier upload(Block block, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, (String)this.variant.orElse("")), textures, modelCollector);
 	}
 
-	public Identifier upload(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
-		return this.upload(ModelIds.getBlockSubModelId(block, suffix + (String)this.variant.orElse("")), texture, modelCollector);
+	public Identifier upload(Block block, String suffix, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, suffix + (String)this.variant.orElse("")), textures, modelCollector);
 	}
 
-	public Identifier uploadWithoutVariant(Block block, String suffix, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
-		return this.upload(ModelIds.getBlockSubModelId(block, suffix), texture, modelCollector);
+	public Identifier uploadWithoutVariant(Block block, String suffix, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		return this.upload(ModelIds.getBlockSubModelId(block, suffix), textures, modelCollector);
 	}
 
-	public Identifier upload(Identifier id, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
-		Map<TextureKey, Identifier> map = this.createTextureMap(texture);
+	public Identifier upload(Identifier id, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+		Map<TextureKey, Identifier> map = this.createTextureMap(textures);
 		modelCollector.accept(id, (Supplier)() -> {
 			JsonObject jsonObject = new JsonObject();
 			this.parent.ifPresent(parentId -> jsonObject.addProperty("parent", parentId.toString()));
@@ -53,8 +53,8 @@ public class Model {
 		return id;
 	}
 
-	private Map<TextureKey, Identifier> createTextureMap(Texture texture) {
-		return (Map<TextureKey, Identifier>)Streams.concat(this.requiredTextures.stream(), texture.getInherited())
-			.collect(ImmutableMap.toImmutableMap(Function.identity(), texture::getTexture));
+	private Map<TextureKey, Identifier> createTextureMap(TextureMap textures) {
+		return (Map<TextureKey, Identifier>)Streams.concat(this.requiredTextures.stream(), textures.getInherited())
+			.collect(ImmutableMap.toImmutableMap(Function.identity(), textures::getTexture));
 	}
 }

@@ -68,7 +68,7 @@ public class Shader implements GlShader, AutoCloseable {
 	@Nullable
 	public final GlUniform projectionMat;
 	@Nullable
-	public final GlUniform field_36323;
+	public final GlUniform viewRotationMat;
 	@Nullable
 	public final GlUniform textureMat;
 	@Nullable
@@ -188,7 +188,7 @@ public class Shader implements GlShader, AutoCloseable {
 		this.markUniformsDirty();
 		this.modelViewMat = this.getUniform("ModelViewMat");
 		this.projectionMat = this.getUniform("ProjMat");
-		this.field_36323 = this.getUniform("IViewRotMat");
+		this.viewRotationMat = this.getUniform("IViewRotMat");
 		this.textureMat = this.getUniform("TextureMat");
 		this.screenSize = this.getUniform("ScreenSize");
 		this.colorModulator = this.getUniform("ColorModulator");
@@ -434,7 +434,7 @@ public class Shader implements GlShader, AutoCloseable {
 				LOGGER.warn("Shader {} could not find uniform named {} in the specified shader program.", this.name, string2);
 			} else {
 				this.loadedUniformIds.add(l);
-				glUniform.setLoc(l);
+				glUniform.setLocation(l);
 				this.loadedUniforms.put(string2, glUniform);
 			}
 		}

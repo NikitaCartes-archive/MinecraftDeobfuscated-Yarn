@@ -63,11 +63,11 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.joint;
 	}
 
-	public void setAttachmentType(Identifier value) {
-		this.name = value;
+	public void setName(Identifier name) {
+		this.name = name;
 	}
 
-	public void setTargetPool(Identifier target) {
+	public void setTarget(Identifier target) {
 		this.target = target;
 	}
 

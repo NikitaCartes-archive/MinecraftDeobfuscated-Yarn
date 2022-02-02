@@ -89,7 +89,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 
 		try {
 			if (dataInputStream != null) {
-				NbtIo.read(dataInputStream, nbtScanner);
+				NbtIo.scan(dataInputStream, nbtScanner);
 			}
 		} catch (Throwable var8) {
 			if (dataInputStream != null) {

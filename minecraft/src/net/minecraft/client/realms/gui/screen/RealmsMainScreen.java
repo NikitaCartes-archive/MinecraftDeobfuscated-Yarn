@@ -279,14 +279,14 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.updateButtonStates(null);
 	}
 
-	void updateButtonStates(@Nullable RealmsServer realmsServer) {
+	void updateButtonStates(@Nullable RealmsServer server) {
 		this.backButton.active = true;
 		if (hasParentalConsent() && this.hasFetchedServers) {
 			this.playButton.visible = true;
-			this.playButton.active = this.shouldPlayButtonBeActive(realmsServer) && !this.shouldShowPopup();
-			this.renewButton.visible = this.shouldRenewButtonBeActive(realmsServer);
-			this.configureButton.visible = this.shouldConfigureButtonBeVisible(realmsServer);
-			this.leaveButton.visible = this.shouldLeaveButtonBeVisible(realmsServer);
+			this.playButton.active = this.shouldPlayButtonBeActive(server) && !this.shouldShowPopup();
+			this.renewButton.visible = this.shouldRenewButtonBeActive(server);
+			this.configureButton.visible = this.shouldConfigureButtonBeVisible(server);
+			this.leaveButton.visible = this.shouldLeaveButtonBeVisible(server);
 			boolean bl = this.shouldShowPopup() && this.trialsAvailable && !this.createdTrial;
 			this.createTrialButton.visible = bl;
 			this.createTrialButton.active = bl;
@@ -299,7 +299,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.pendingInvitesButton.active = true;
 			this.showPopupButton.active = !this.shouldShowPopup();
 		} else {
-			method_40041(
+			hide(
 				new ClickableWidget[]{
 					this.playButton,
 					this.renewButton,

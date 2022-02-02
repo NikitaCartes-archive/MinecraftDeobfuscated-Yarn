@@ -352,8 +352,8 @@ public class EntitySelectorReader {
 		return this.levelRange;
 	}
 
-	public void setLevelRange(NumberRange.IntRange experienceRange) {
-		this.levelRange = experienceRange;
+	public void setLevelRange(NumberRange.IntRange levelRange) {
+		this.levelRange = levelRange;
 	}
 
 	public FloatRangeArgument getPitchRange() {
@@ -573,8 +573,8 @@ public class EntitySelectorReader {
 		return this.excludesGameMode;
 	}
 
-	public void setHasNegatedGameMode(boolean hasNegatedGameMode) {
-		this.excludesGameMode = hasNegatedGameMode;
+	public void setExcludesGameMode(boolean excludesGameMode) {
+		this.excludesGameMode = excludesGameMode;
 	}
 
 	public boolean selectsTeam() {

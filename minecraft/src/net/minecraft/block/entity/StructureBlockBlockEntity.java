@@ -185,8 +185,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.offset;
 	}
 
-	public void setOffset(BlockPos pos) {
-		this.offset = pos;
+	public void setOffset(BlockPos offset) {
+		this.offset = offset;
 	}
 
 	public Vec3i getSize() {

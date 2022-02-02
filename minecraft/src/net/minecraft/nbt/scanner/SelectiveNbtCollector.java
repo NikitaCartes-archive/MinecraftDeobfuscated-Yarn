@@ -11,23 +11,25 @@ import net.minecraft.nbt.NbtType;
 /**
  * A selective NBT collector builds an NBT object including only the
  * prescribed queries.
+ * 
+ * @see ExclusiveNbtCollector
  */
 public class SelectiveNbtCollector extends NbtCollector {
 	private int queriesLeft;
 	private final Set<NbtType<?>> allPossibleTypes;
-	private final Deque<Tree> selectionStack = new ArrayDeque();
+	private final Deque<NbtTreeNode> selectionStack = new ArrayDeque();
 
-	public SelectiveNbtCollector(Query... queries) {
+	public SelectiveNbtCollector(NbtScanQuery... queries) {
 		this.queriesLeft = queries.length;
 		Builder<NbtType<?>> builder = ImmutableSet.builder();
-		Tree tree = Tree.method_40060();
+		NbtTreeNode nbtTreeNode = NbtTreeNode.createRoot();
 
-		for (Query query : queries) {
-			tree.add(query);
-			builder.add(query.type());
+		for (NbtScanQuery nbtScanQuery : queries) {
+			nbtTreeNode.add(nbtScanQuery);
+			builder.add(nbtScanQuery.type());
 		}
 
-		this.selectionStack.push(tree);
+		this.selectionStack.push(nbtTreeNode);
 		builder.add(NbtCompound.TYPE);
 		this.allPossibleTypes = builder.build();
 	}
@@ -39,8 +41,8 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.NestedResult visitSubNbtType(NbtType<?> type) {
-		Tree tree = (Tree)this.selectionStack.element();
-		if (this.getDepth() > tree.depth()) {
+		NbtTreeNode nbtTreeNode = (NbtTreeNode)this.selectionStack.element();
+		if (this.getDepth() > nbtTreeNode.depth()) {
 			return super.visitSubNbtType(type);
 		} else if (this.queriesLeft <= 0) {
 			return NbtScanner.NestedResult.HALT;
@@ -51,17 +53,17 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.NestedResult startSubNbt(NbtType<?> type, String key) {
-		Tree tree = (Tree)this.selectionStack.element();
-		if (this.getDepth() > tree.depth()) {
+		NbtTreeNode nbtTreeNode = (NbtTreeNode)this.selectionStack.element();
+		if (this.getDepth() > nbtTreeNode.depth()) {
 			return super.startSubNbt(type, key);
-		} else if (tree.selectedFields().remove(key, type)) {
+		} else if (nbtTreeNode.selectedFields().remove(key, type)) {
 			this.queriesLeft--;
 			return super.startSubNbt(type, key);
 		} else {
 			if (type == NbtCompound.TYPE) {
-				Tree tree2 = (Tree)tree.fieldsToRecurse().get(key);
-				if (tree2 != null) {
-					this.selectionStack.push(tree2);
+				NbtTreeNode nbtTreeNode2 = (NbtTreeNode)nbtTreeNode.fieldsToRecurse().get(key);
+				if (nbtTreeNode2 != null) {
+					this.selectionStack.push(nbtTreeNode2);
 					return super.startSubNbt(type, key);
 				}
 			}
@@ -72,7 +74,7 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.Result endNested() {
-		if (this.getDepth() == ((Tree)this.selectionStack.element()).depth()) {
+		if (this.getDepth() == ((NbtTreeNode)this.selectionStack.element()).depth()) {
 			this.selectionStack.pop();
 		}
 

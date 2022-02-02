@@ -25,9 +25,9 @@ public class ClientBossBar extends BossBar {
 	}
 
 	@Override
-	public void setPercent(float percentage) {
+	public void setPercent(float percent) {
 		this.percent = this.getPercent();
-		this.healthLatest = percentage;
+		this.healthLatest = percent;
 		this.timeHealthSet = Util.getMeasuringTimeMs();
 	}
 

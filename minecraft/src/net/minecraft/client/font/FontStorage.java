@@ -23,8 +23,8 @@ import net.minecraft.util.math.MathHelper;
 public class FontStorage implements AutoCloseable {
 	private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
 	private static final Glyph SPACE = () -> 4.0F;
-	private static final Glyph field_36363 = () -> 0.0F;
-	private static final int field_36364 = 8204;
+	private static final Glyph ZERO_WIDTH_NON_JOINER = () -> 0.0F;
+	private static final int ZERO_WIDTH_NON_JOINER_CODE_POINT = 8204;
 	private static final Random RANDOM = new Random();
 	private final TextureManager textureManager;
 	private final Identifier id;
@@ -59,7 +59,7 @@ public class FontStorage implements AutoCloseable {
 		intSet.forEach(
 			codePoint -> {
 				for (Font fontx : fonts) {
-					Glyph glyph = this.method_40038(codePoint);
+					Glyph glyph = this.getEmptyGlyph(codePoint);
 					if (glyph == null) {
 						glyph = fontx.getGlyph(codePoint);
 					}
@@ -100,18 +100,25 @@ public class FontStorage implements AutoCloseable {
 		this.glyphAtlases.clear();
 	}
 
+	/**
+	 * {@return the pre-defined empty glyph for the code point, or
+	 * {@code null} if it is not defined}
+	 * 
+	 * @implNote Pre-defined empty glyphs include the space ({@code U+0020})
+	 * and zero-width non joiner ({@code U+200C}).
+	 */
 	@Nullable
-	private Glyph method_40038(int i) {
-		return switch (i) {
+	private Glyph getEmptyGlyph(int codePoint) {
+		return switch (codePoint) {
 			case 32 -> SPACE;
-			case 8204 -> field_36363;
+			case 8204 -> ZERO_WIDTH_NON_JOINER;
 			default -> null;
 		};
 	}
 
 	public Glyph getGlyph(int codePoint) {
 		return this.glyphCache.computeIfAbsent(codePoint, (Int2ObjectFunction<? extends Glyph>)(codePointx -> {
-			Glyph glyph = this.method_40038(codePointx);
+			Glyph glyph = this.getEmptyGlyph(codePointx);
 			return (Glyph)(glyph == null ? this.getRenderableGlyph(codePointx) : glyph);
 		}));
 	}
@@ -127,11 +134,11 @@ public class FontStorage implements AutoCloseable {
 		return BlankGlyph.INSTANCE;
 	}
 
-	public GlyphRenderer getGlyphRenderer(int i) {
-		return this.glyphRendererCache.computeIfAbsent(i, (Int2ObjectFunction<? extends GlyphRenderer>)(ix -> {
-			return (GlyphRenderer)(switch (ix) {
+	public GlyphRenderer getGlyphRenderer(int codePoint) {
+		return this.glyphRendererCache.computeIfAbsent(codePoint, (Int2ObjectFunction<? extends GlyphRenderer>)(codePointx -> {
+			return (GlyphRenderer)(switch (codePointx) {
 				case 32, 8204 -> EMPTY_GLYPH_RENDERER;
-				default -> this.getGlyphRenderer(this.getRenderableGlyph(ix));
+				default -> this.getGlyphRenderer(this.getRenderableGlyph(codePointx));
 			});
 		}));
 	}

@@ -43,7 +43,6 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.StringHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -159,7 +158,7 @@ public class DebugInfoSender {
 		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.JOB_SITE, MemoryModuleType.HOME, MemoryModuleType.MEETING_POINT)
 				.map(brain::getOptionalMemory)
-				.flatMap(Util::stream)
+				.flatMap(Optional::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
 			buf.writeCollection(set2, PacketByteBuf::writeBlockPos);
@@ -170,7 +169,7 @@ public class DebugInfoSender {
 		if (entity instanceof VillagerEntity) {
 			Set<BlockPos> set2 = (Set<BlockPos>)Stream.of(MemoryModuleType.POTENTIAL_JOB_SITE)
 				.map(brain::getOptionalMemory)
-				.flatMap(Util::stream)
+				.flatMap(Optional::stream)
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
 			buf.writeCollection(set2, PacketByteBuf::writeBlockPos);

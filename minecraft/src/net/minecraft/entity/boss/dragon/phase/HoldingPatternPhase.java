@@ -65,7 +65,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 				.world
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			if (playerEntity != null) {
-				d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
+				d = blockPos.getSquaredDistance(playerEntity.getPos()) / 512.0;
 			}
 
 			if (playerEntity != null && (this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRandom().nextInt(i + 2) == 0)) {

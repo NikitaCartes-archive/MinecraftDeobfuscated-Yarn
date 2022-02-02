@@ -1,8 +1,10 @@
 package net.minecraft.server.world;
 
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
@@ -179,7 +181,7 @@ public class ChunkHolder {
 	public void markForLightUpdate(LightType lightType, int y) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
-			worldChunk.setShouldSave(true);
+			worldChunk.setNeedsSaving(true);
 			int i = this.lightingProvider.getBottomY();
 			int j = this.lightingProvider.getTopY();
 			if (y >= i && y <= j) {
@@ -264,6 +266,10 @@ public class ChunkHolder {
 			.get(i);
 		if (completableFuture != null) {
 			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
+			if (either == null && completableFuture.isDone()) {
+				throw new IllegalStateException("future for status: " + targetStatus + " was incorrectly set to null at chunk: " + this.pos);
+			}
+
 			boolean bl = either != null && either.right().isPresent();
 			if (!bl) {
 				return completableFuture;
@@ -435,13 +441,23 @@ public class ChunkHolder {
 				.get(i);
 			if (completableFuture != null) {
 				Optional<Chunk> optional = ((Either)completableFuture.getNow(UNLOADED_CHUNK)).left();
-				if (optional.isPresent() && optional.get() instanceof ProtoChunk) {
+				if (!optional.isEmpty() && optional.get() instanceof ProtoChunk) {
 					this.futuresByStatus.set(i, CompletableFuture.completedFuture(Either.left(chunk)));
 				}
 			}
 		}
 
 		this.combineSavingFuture(CompletableFuture.completedFuture(Either.left(chunk.getWrappedChunk())), "replaceProto");
+	}
+
+	public List<Pair<ChunkStatus, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>>> collectFuturesByStatus() {
+		List<Pair<ChunkStatus, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>>> list = new ArrayList();
+
+		for (int i = 0; i < CHUNK_STATUSES.size(); i++) {
+			list.add(Pair.of((ChunkStatus)CHUNK_STATUSES.get(i), (CompletableFuture)this.futuresByStatus.get(i)));
+		}
+
+		return list;
 	}
 
 	public static enum LevelType {

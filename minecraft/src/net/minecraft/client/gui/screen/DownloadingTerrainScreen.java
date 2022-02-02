@@ -6,14 +6,15 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
 	private static final Text TEXT = new TranslatableText("multiplayer.downloadingTerrain");
-	private static final long field_36365 = 2000L;
-	private boolean field_36366 = false;
-	private boolean field_36367 = false;
-	private final long field_36368 = System.currentTimeMillis();
+	private static final long MIN_LOAD_TIME_MS = 2000L;
+	private boolean ready = false;
+	private boolean closeOnNextTick = false;
+	private final long loadStartTime = System.currentTimeMillis();
 
 	public DownloadingTerrainScreen() {
 		super(NarratorManager.EMPTY);
@@ -33,17 +34,22 @@ public class DownloadingTerrainScreen extends Screen {
 
 	@Override
 	public void tick() {
-		if ((this.field_36367 || System.currentTimeMillis() > this.field_36368 + 2000L) && this.client.worldRenderer.method_40050(this.client.player.getBlockPos())) {
-			this.onClose();
-		}
+		boolean bl = this.closeOnNextTick || System.currentTimeMillis() > this.loadStartTime + 2000L;
+		if (bl && this.client != null && this.client.player != null) {
+			BlockPos blockPos = this.client.player.getBlockPos();
+			boolean bl2 = this.client.world != null && this.client.world.isOutOfHeightLimit(blockPos.getY());
+			if (bl2 || this.client.worldRenderer.isRenderingReady(blockPos)) {
+				this.close();
+			}
 
-		if (this.field_36366) {
-			this.field_36367 = true;
+			if (this.ready) {
+				this.closeOnNextTick = true;
+			}
 		}
 	}
 
-	public void method_40040() {
-		this.field_36366 = true;
+	public void setReady() {
+		this.ready = true;
 	}
 
 	@Override

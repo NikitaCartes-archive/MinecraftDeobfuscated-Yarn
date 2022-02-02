@@ -14,7 +14,7 @@ public class LookAtCustomerGoal extends LookAtEntityGoal {
 	@Override
 	public boolean canStart() {
 		if (this.merchant.hasCustomer()) {
-			this.target = this.merchant.getCurrentCustomer();
+			this.target = this.merchant.getCustomer();
 			return true;
 		} else {
 			return false;

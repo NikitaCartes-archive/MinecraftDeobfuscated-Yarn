@@ -15,12 +15,12 @@ public class NetworkThreadUtils {
 
 	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T listener, ThreadExecutor<?> engine) throws OffThreadException {
 		if (!engine.isOnThread()) {
-			engine.method_40000(() -> {
+			engine.executeSync(() -> {
 				if (listener.getConnection().isOpen()) {
 					try {
 						packet.apply(listener);
 					} catch (Exception var3) {
-						if (listener.method_40065()) {
+						if (listener.shouldCrashOnException()) {
 							throw var3;
 						}
 

@@ -10,10 +10,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 
 public interface Merchant {
-	void setCurrentCustomer(@Nullable PlayerEntity customer);
+	void setCustomer(@Nullable PlayerEntity customer);
 
 	@Nullable
-	PlayerEntity getCurrentCustomer();
+	PlayerEntity getCustomer();
 
 	TradeOfferList getOffers();
 

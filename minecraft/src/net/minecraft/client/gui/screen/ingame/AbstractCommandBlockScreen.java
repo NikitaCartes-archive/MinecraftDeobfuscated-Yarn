@@ -50,7 +50,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, button -> this.commitAndClose())
 		);
 		this.cancelButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.onClose())
+			new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.close())
 		);
 		boolean bl = this.getCommandExecutor().isTrackingOutput();
 		this.toggleTrackingOutputButton = this.addDrawableChild(
@@ -59,7 +59,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				.omitKeyText()
 				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
 					CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-					commandBlockExecutor.setTrackingOutput(trackOutput);
+					commandBlockExecutor.setTrackOutput(trackOutput);
 					this.setPreviousOutputText(trackOutput);
 				})
 		);

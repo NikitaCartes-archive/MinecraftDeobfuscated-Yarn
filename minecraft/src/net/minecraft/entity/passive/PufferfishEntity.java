@@ -78,7 +78,7 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setPuffState(nbt.getInt("PuffState"));
+		this.setPuffState(Math.min(nbt.getInt("PuffState"), 2));
 	}
 
 	@Override

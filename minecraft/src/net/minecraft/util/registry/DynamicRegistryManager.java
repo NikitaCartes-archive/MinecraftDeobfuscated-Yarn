@@ -52,7 +52,7 @@ public abstract class DynamicRegistryManager {
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
 		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
-		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
+		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC, ConfiguredFeature.NETWORK_CODEC);
 		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
 		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
 		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);

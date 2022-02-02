@@ -27,6 +27,10 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	@Deprecated
 	boolean isChunkLoaded(int chunkX, int chunkZ);
 
+	/**
+	 * {@return the Y coordinate of the topmost block at the coordinates
+	 * {@code x} and {@code z} using {@code heightmap}}
+	 */
 	int getTopY(Heightmap.Type heightmap, int x, int z);
 
 	int getAmbientDarkness();
@@ -82,6 +86,10 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getDimension().getHeight();
 	}
 
+	/**
+	 * {@return the position of the topmost block in the column
+	 * containing {@code pos} using {@code heightmap} heightmap}
+	 */
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
 	}
@@ -90,6 +98,15 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getBlockState(pos).isAir();
 	}
 
+	/**
+	 * {@return whether the sky is visible at {@code pos}}
+	 * 
+	 * <p>In addition to the normal logic that checks the sky light level, this method
+	 * also returns {@code true} if {@code pos} is below the sea level, and every block
+	 * between the sea level and {@code pos} is either transparent or liquid.
+	 * 
+	 * @see BlockRenderView#isSkyVisible
+	 */
 	default boolean isSkyVisibleAllowingSea(BlockPos pos) {
 		if (pos.getY() >= this.getSeaLevel()) {
 			return this.isSkyVisible(pos);
@@ -119,10 +136,16 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getBlockState(pos).getStrongRedstonePower(this, pos, direction);
 	}
 
+	/**
+	 * {@return the chunk that contains {@code pos}}
+	 */
 	default Chunk getChunk(BlockPos pos) {
 		return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
+	/**
+	 * {@return the chunk with position {@code chunkX} and {@code chunkZ}}
+	 */
 	default Chunk getChunk(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, true);
 	}
@@ -141,6 +164,9 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getFluidState(pos).isIn(FluidTags.WATER);
 	}
 
+	/**
+	 * {@return {@code true} if any of the blocks inside {@code box} contain fluid}
+	 */
 	default boolean containsFluid(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);

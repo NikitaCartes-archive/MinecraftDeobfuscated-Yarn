@@ -41,12 +41,15 @@ public class NbtIo {
 		return var2;
 	}
 
-	private static DataInputStream method_40059(InputStream inputStream) throws IOException {
-		return new DataInputStream(new FixedBufferInputStream(new GZIPInputStream(inputStream)));
+	/**
+	 * {@return a new input stream that decompresses the input {@code stream}}
+	 */
+	private static DataInputStream decompress(InputStream stream) throws IOException {
+		return new DataInputStream(new FixedBufferInputStream(new GZIPInputStream(stream)));
 	}
 
 	public static NbtCompound readCompressed(InputStream stream) throws IOException {
-		DataInputStream dataInputStream = method_40059(stream);
+		DataInputStream dataInputStream = decompress(stream);
 
 		NbtCompound var2;
 		try {
@@ -70,11 +73,20 @@ public class NbtIo {
 		return var2;
 	}
 
-	public static void method_40057(File file, NbtScanner nbtScanner) throws IOException {
+	/**
+	 * Scans the compressed NBT file using {@code scanner}.
+	 * 
+	 * @apiNote This method does not return the scan result; the user is expected
+	 * to call the appropriate method of the {@link NbtScanner} subclasses, such as
+	 * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
+	 * 
+	 * @see #scanCompressed(InputStream, NbtScanner)
+	 */
+	public static void scanCompressed(File file, NbtScanner scanner) throws IOException {
 		InputStream inputStream = new FileInputStream(file);
 
 		try {
-			method_40058(inputStream, nbtScanner);
+			scanCompressed(inputStream, scanner);
 		} catch (Throwable var6) {
 			try {
 				inputStream.close();
@@ -88,11 +100,20 @@ public class NbtIo {
 		inputStream.close();
 	}
 
-	public static void method_40058(InputStream inputStream, NbtScanner nbtScanner) throws IOException {
-		DataInputStream dataInputStream = method_40059(inputStream);
+	/**
+	 * Scans the compressed NBT stream using {@code scanner}.
+	 * 
+	 * @apiNote This method does not return the scan result; the user is expected
+	 * to call the appropriate method of the {@link NbtScanner} subclasses, such as
+	 * {@link net.minecraft.nbt.scanner.NbtCollector#getRoot()}.
+	 * 
+	 * @see #scanCompressed(File, NbtScanner)
+	 */
+	public static void scanCompressed(InputStream stream, NbtScanner scanner) throws IOException {
+		DataInputStream dataInputStream = decompress(stream);
 
 		try {
-			read(dataInputStream, nbtScanner);
+			scan(dataInputStream, scanner);
 		} catch (Throwable var6) {
 			if (dataInputStream != null) {
 				try {
@@ -234,14 +255,14 @@ public class NbtIo {
 		write((NbtElement)compound, output);
 	}
 
-	public static void read(DataInput input, NbtScanner visitor) throws IOException {
+	public static void scan(DataInput input, NbtScanner scanner) throws IOException {
 		NbtType<?> nbtType = NbtTypes.byId(input.readByte());
 		if (nbtType == NbtEnd.TYPE) {
-			if (visitor.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
-				visitor.visitEnd();
+			if (scanner.start(NbtEnd.TYPE) == NbtScanner.Result.CONTINUE) {
+				scanner.visitEnd();
 			}
 		} else {
-			switch (visitor.start(nbtType)) {
+			switch (scanner.start(nbtType)) {
 				case HALT:
 				default:
 					break;
@@ -251,7 +272,7 @@ public class NbtIo {
 					break;
 				case CONTINUE:
 					NbtString.skip(input);
-					nbtType.doAccept(input, visitor);
+					nbtType.doAccept(input, scanner);
 			}
 		}
 	}

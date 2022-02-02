@@ -36,8 +36,8 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 		this.controlActor = new TaskExecutor<>(new TaskQueue.Prioritized(4), executor, "sorter");
 	}
 
-	public boolean method_39994() {
-		return this.controlActor.method_40001() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::method_39993);
+	public boolean shouldDelayShutdown() {
+		return this.controlActor.hasQueuedTasks() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::hasQueuedElement);
 	}
 
 	public static <T> ChunkTaskPrioritySystem.Task<T> createTask(Function<MessageListener<Unit>, T> taskFunction, long pos, IntSupplier lastLevelUpdatedToProvider) {
@@ -89,8 +89,7 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 						0,
 						() -> yield.send(
 								MessageListener.create(
-									"chunk priority sorter around " + executor.getName(),
-									unblockingMessage -> this.removeChunk(executor, unblockingMessage.pos, unblockingMessage.callback, unblockingMessage.removeTask)
+									"chunk priority sorter around " + executor.getName(), message -> this.removeChunk(executor, message.pos, message.callback, message.removeTask)
 								)
 							)
 					)
@@ -171,7 +170,7 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 							+ (String)((LevelPrioritizedQueue)entry.getValue())
 								.getBlockingChunks()
 								.stream()
-								.map(long_ -> long_ + ":" + new ChunkPos(long_))
+								.map(pos -> pos + ":" + new ChunkPos(pos))
 								.collect(Collectors.joining(","))
 							+ "]"
 				)

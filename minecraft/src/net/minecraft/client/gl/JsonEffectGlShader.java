@@ -323,7 +323,7 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 				LOGGER.warn("Shader {} could not find uniform named {} in the specified shader program.", this.name, string2);
 			} else {
 				this.uniformLocs.add(k);
-				glUniform.setLoc(k);
+				glUniform.setLocation(k);
 				this.uniformByName.put(string2, glUniform);
 			}
 		}

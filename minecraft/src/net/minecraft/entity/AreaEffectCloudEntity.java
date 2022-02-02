@@ -287,16 +287,16 @@ public class AreaEffectCloudEntity extends Entity {
 		return this.radiusOnUse;
 	}
 
-	public void setRadiusOnUse(float radius) {
-		this.radiusOnUse = radius;
+	public void setRadiusOnUse(float radiusOnUse) {
+		this.radiusOnUse = radiusOnUse;
 	}
 
 	public float getRadiusGrowth() {
 		return this.radiusGrowth;
 	}
 
-	public void setRadiusGrowth(float growth) {
-		this.radiusGrowth = growth;
+	public void setRadiusGrowth(float radiusGrowth) {
+		this.radiusGrowth = radiusGrowth;
 	}
 
 	public int getDurationOnUse() {
@@ -311,8 +311,8 @@ public class AreaEffectCloudEntity extends Entity {
 		return this.waitTime;
 	}
 
-	public void setWaitTime(int ticks) {
-		this.waitTime = ticks;
+	public void setWaitTime(int waitTime) {
+		this.waitTime = waitTime;
 	}
 
 	public void setOwner(@Nullable LivingEntity owner) {

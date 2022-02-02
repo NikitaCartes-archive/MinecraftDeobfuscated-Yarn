@@ -126,8 +126,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		return SoundEvents.ENTITY_EVOKER_HURT;
 	}
 
-	void setWololoTarget(@Nullable SheepEntity sheep) {
-		this.wololoTarget = sheep;
+	void setWololoTarget(@Nullable SheepEntity wololoTarget) {
+		this.wololoTarget = wololoTarget;
 	}
 
 	@Nullable

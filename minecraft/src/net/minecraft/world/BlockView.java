@@ -22,6 +22,9 @@ import net.minecraft.util.shape.VoxelShape;
  * Represents a scoped, read-only view of block states, fluid states and block entities.
  */
 public interface BlockView extends HeightLimitView {
+	/**
+	 * {@return the block entity at {@code pos}, or {@code null} if there is none}
+	 */
 	@Nullable
 	BlockEntity getBlockEntity(BlockPos pos);
 
@@ -30,8 +33,20 @@ public interface BlockView extends HeightLimitView {
 		return blockEntity != null && blockEntity.getType() == type ? Optional.of(blockEntity) : Optional.empty();
 	}
 
+	/**
+	 * {@return the block state at {@code pos}}
+	 * 
+	 * @implNote This returns the block state for {@link net.minecraft.block.Blocks#VOID_AIR}
+	 * if the Y coordinate is outside the height limit.
+	 */
 	BlockState getBlockState(BlockPos pos);
 
+	/**
+	 * {@return the fluid state at {@code pos}}
+	 * 
+	 * @implNote This returns the fluid state for {@link net.minecraft.fluid.Fluids#EMPTY}
+	 * if the Y coordinate is outside the height limit.
+	 */
 	FluidState getFluidState(BlockPos pos);
 
 	default int getLuminance(BlockPos pos) {

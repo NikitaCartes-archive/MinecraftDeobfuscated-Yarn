@@ -63,30 +63,33 @@ public class BlockStateModelGenerator {
 	final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE))
 		.put(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.RED_SANDSTONE))
-		.put(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.SANDSTONE, "_top")))
-		.put(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(Texture.getSubId(Blocks.RED_SANDSTONE, "_top")))
+		.put(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(TextureMap.getSubId(Blocks.SANDSTONE, "_top")))
+		.put(Blocks.SMOOTH_RED_SANDSTONE, TexturedModel.getCubeAll(TextureMap.getSubId(Blocks.RED_SANDSTONE, "_top")))
 		.put(
-			Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))
+			Blocks.CUT_SANDSTONE,
+			TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).textures(textureMap -> textureMap.put(TextureKey.SIDE, TextureMap.getId(Blocks.CUT_SANDSTONE)))
 		)
 		.put(
 			Blocks.CUT_RED_SANDSTONE,
-			TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_RED_SANDSTONE)))
+			TexturedModel.CUBE_COLUMN.get(Blocks.RED_SANDSTONE).textures(textureMap -> textureMap.put(TextureKey.SIDE, TextureMap.getId(Blocks.CUT_RED_SANDSTONE)))
 		)
 		.put(Blocks.QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.get(Blocks.QUARTZ_BLOCK))
-		.put(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom")))
+		.put(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(TextureMap.getSubId(Blocks.QUARTZ_BLOCK, "_bottom")))
 		.put(Blocks.BLACKSTONE, TexturedModel.SIDE_END_WALL.get(Blocks.BLACKSTONE))
 		.put(Blocks.DEEPSLATE, TexturedModel.SIDE_END_WALL.get(Blocks.DEEPSLATE))
 		.put(
 			Blocks.CHISELED_QUARTZ_BLOCK,
-			TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_QUARTZ_BLOCK).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))
+			TexturedModel.CUBE_COLUMN
+				.get(Blocks.CHISELED_QUARTZ_BLOCK)
+				.textures(textureMap -> textureMap.put(TextureKey.SIDE, TextureMap.getId(Blocks.CHISELED_QUARTZ_BLOCK)))
 		)
-		.put(Blocks.CHISELED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_SANDSTONE).texture(texture -> {
-			texture.put(TextureKey.END, Texture.getSubId(Blocks.SANDSTONE, "_top"));
-			texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_SANDSTONE));
+		.put(Blocks.CHISELED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_SANDSTONE).textures(textures -> {
+			textures.put(TextureKey.END, TextureMap.getSubId(Blocks.SANDSTONE, "_top"));
+			textures.put(TextureKey.SIDE, TextureMap.getId(Blocks.CHISELED_SANDSTONE));
 		}))
-		.put(Blocks.CHISELED_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_RED_SANDSTONE).texture(texture -> {
-			texture.put(TextureKey.END, Texture.getSubId(Blocks.RED_SANDSTONE, "_top"));
-			texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_RED_SANDSTONE));
+		.put(Blocks.CHISELED_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_RED_SANDSTONE).textures(textures -> {
+			textures.put(TextureKey.END, TextureMap.getSubId(Blocks.RED_SANDSTONE, "_top"));
+			textures.put(TextureKey.SIDE, TextureMap.getId(Blocks.CHISELED_RED_SANDSTONE));
 		}))
 		.build();
 	static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>>builder()
@@ -151,16 +154,16 @@ public class BlockStateModelGenerator {
 	);
 
 	private static BlockStateSupplier createStoneState(
-		Block block, Identifier modelId, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
+		Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
 	) {
-		Identifier identifier = Models.CUBE_MIRRORED_ALL.upload(block, texture, modelCollector);
+		Identifier identifier = Models.CUBE_MIRRORED_ALL.upload(block, textures, modelCollector);
 		return createBlockStateWithTwoModelAndRandomInversion(block, modelId, identifier);
 	}
 
 	private static BlockStateSupplier createDeepslateState(
-		Block block, Identifier modelId, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
+		Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
 	) {
-		Identifier identifier = Models.CUBE_COLUMN_MIRRORED.upload(block, texture, modelCollector);
+		Identifier identifier = Models.CUBE_COLUMN_MIRRORED.upload(block, textures, modelCollector);
 		return createBlockStateWithTwoModelAndRandomInversion(block, modelId, identifier).coordinate(createAxisRotatedVariantMap());
 	}
 
@@ -187,19 +190,19 @@ public class BlockStateModelGenerator {
 	}
 
 	void registerItemModel(Item item) {
-		Models.GENERATED.upload(ModelIds.getItemModelId(item), Texture.layer0(item), this.modelCollector);
+		Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(item), this.modelCollector);
 	}
 
 	private void registerItemModel(Block block) {
 		Item item = block.asItem();
 		if (item != Items.AIR) {
-			Models.GENERATED.upload(ModelIds.getItemModelId(item), Texture.layer0(block), this.modelCollector);
+			Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(block), this.modelCollector);
 		}
 	}
 
 	private void registerItemModel(Block block, String textureSuffix) {
 		Item item = block.asItem();
-		Models.GENERATED.upload(ModelIds.getItemModelId(item), Texture.layer0(Texture.getSubId(block, textureSuffix)), this.modelCollector);
+		Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(TextureMap.getSubId(block, textureSuffix)), this.modelCollector);
 	}
 
 	private static BlockStateVariantMap createNorthDefaultHorizontalRotationStates() {
@@ -1093,8 +1096,8 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createAxisRotatedBlockState(block, identifier, identifier2));
 	}
 
-	private Identifier createSubModel(Block block, String suffix, Model model, Function<Identifier, Texture> textureFactory) {
-		return model.upload(block, suffix, (Texture)textureFactory.apply(Texture.getSubId(block, suffix)), this.modelCollector);
+	private Identifier createSubModel(Block block, String suffix, Model model, Function<Identifier, TextureMap> texturesFactory) {
+		return model.upload(block, suffix, (TextureMap)texturesFactory.apply(TextureMap.getSubId(block, suffix)), this.modelCollector);
 	}
 
 	static BlockStateSupplier createPressurePlateBlockState(Block pressurePlateBlock, Identifier upModelId, Identifier downModelId) {
@@ -1119,40 +1122,40 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(block, modelFactory.upload(block, this.modelCollector)));
 	}
 
-	private void registerSingleton(Block block, Texture texture, Model model) {
-		Identifier identifier = model.upload(block, texture, this.modelCollector);
+	private void registerSingleton(Block block, TextureMap textures, Model model) {
+		Identifier identifier = model.upload(block, textures, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private BlockStateModelGenerator.BlockTexturePool registerCubeAllModelTexturePool(Block block) {
 		TexturedModel texturedModel = (TexturedModel)this.sandstoneModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
-		return new BlockStateModelGenerator.BlockTexturePool(texturedModel.getTexture()).base(block, texturedModel.getModel());
+		return new BlockStateModelGenerator.BlockTexturePool(texturedModel.getTextures()).base(block, texturedModel.getModel());
 	}
 
 	void registerDoor(Block doorBlock) {
-		Texture texture = Texture.topBottom(doorBlock);
-		Identifier identifier = Models.DOOR_BOTTOM.upload(doorBlock, texture, this.modelCollector);
-		Identifier identifier2 = Models.DOOR_BOTTOM_RH.upload(doorBlock, texture, this.modelCollector);
-		Identifier identifier3 = Models.DOOR_TOP.upload(doorBlock, texture, this.modelCollector);
-		Identifier identifier4 = Models.DOOR_TOP_RH.upload(doorBlock, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.topBottom(doorBlock);
+		Identifier identifier = Models.DOOR_BOTTOM.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.DOOR_BOTTOM_RH.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier3 = Models.DOOR_TOP.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier4 = Models.DOOR_TOP_RH.upload(doorBlock, textureMap, this.modelCollector);
 		this.registerItemModel(doorBlock.asItem());
 		this.blockStateCollector.accept(createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4));
 	}
 
 	void registerOrientableTrapdoor(Block trapdoorBlock) {
-		Texture texture = Texture.texture(trapdoorBlock);
-		Identifier identifier = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_TOP.upload(trapdoorBlock, texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, texture, this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_OPEN.upload(trapdoorBlock, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.texture(trapdoorBlock);
+		Identifier identifier = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_TOP.upload(trapdoorBlock, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, textureMap, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_ORIENTABLE_TRAPDOOR_OPEN.upload(trapdoorBlock, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createOrientableTrapdoorBlockState(trapdoorBlock, identifier, identifier2, identifier3));
 		this.registerParentedItemModel(trapdoorBlock, identifier2);
 	}
 
 	void registerTrapdoor(Block trapdoorBlock) {
-		Texture texture = Texture.texture(trapdoorBlock);
-		Identifier identifier = Models.TEMPLATE_TRAPDOOR_TOP.upload(trapdoorBlock, texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, texture, this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_TRAPDOOR_OPEN.upload(trapdoorBlock, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.texture(trapdoorBlock);
+		Identifier identifier = Models.TEMPLATE_TRAPDOOR_TOP.upload(trapdoorBlock, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_TRAPDOOR_BOTTOM.upload(trapdoorBlock, textureMap, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_TRAPDOOR_OPEN.upload(trapdoorBlock, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createTrapdoorBlockState(trapdoorBlock, identifier, identifier2, identifier3));
 		this.registerParentedItemModel(trapdoorBlock, identifier2);
 	}
@@ -1177,7 +1180,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private BlockStateModelGenerator.LogTexturePool registerLog(Block logBlock) {
-		return new BlockStateModelGenerator.LogTexturePool(Texture.sideAndEndForTop(logBlock));
+		return new BlockStateModelGenerator.LogTexturePool(TextureMap.sideAndEndForTop(logBlock));
 	}
 
 	private void registerSimpleState(Block block) {
@@ -1193,25 +1196,25 @@ public class BlockStateModelGenerator {
 		this.registerTintableCrossBlockState(block, tintType);
 	}
 
-	private void registerTintableCross(Block block, BlockStateModelGenerator.TintType tintType, Texture texture) {
+	private void registerTintableCross(Block block, BlockStateModelGenerator.TintType tintType, TextureMap texture) {
 		this.registerItemModel(block);
 		this.registerTintableCrossBlockState(block, tintType, texture);
 	}
 
 	private void registerTintableCrossBlockState(Block block, BlockStateModelGenerator.TintType tintType) {
-		Texture texture = Texture.cross(block);
-		this.registerTintableCrossBlockState(block, tintType, texture);
+		TextureMap textureMap = TextureMap.cross(block);
+		this.registerTintableCrossBlockState(block, tintType, textureMap);
 	}
 
-	private void registerTintableCrossBlockState(Block block, BlockStateModelGenerator.TintType tintType, Texture crossTexture) {
+	private void registerTintableCrossBlockState(Block block, BlockStateModelGenerator.TintType tintType, TextureMap crossTexture) {
 		Identifier identifier = tintType.getCrossModel().upload(block, crossTexture, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private void registerFlowerPotPlant(Block plantBlock, Block flowerPotBlock, BlockStateModelGenerator.TintType tintType) {
 		this.registerTintableCross(plantBlock, tintType);
-		Texture texture = Texture.plant(plantBlock);
-		Identifier identifier = tintType.getFlowerPotCrossModel().upload(flowerPotBlock, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.plant(plantBlock);
+		Identifier identifier = tintType.getFlowerPotCrossModel().upload(flowerPotBlock, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(flowerPotBlock, identifier));
 	}
 
@@ -1219,7 +1222,7 @@ public class BlockStateModelGenerator {
 		TexturedModel texturedModel = TexturedModel.CORAL_FAN.get(coralFanBlock);
 		Identifier identifier = texturedModel.upload(coralFanBlock, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(coralFanBlock, identifier));
-		Identifier identifier2 = Models.CORAL_WALL_FAN.upload(coralWallFanBlock, texturedModel.getTexture(), this.modelCollector);
+		Identifier identifier2 = Models.CORAL_WALL_FAN.upload(coralWallFanBlock, texturedModel.getTextures(), this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(coralWallFanBlock, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2))
@@ -1230,9 +1233,9 @@ public class BlockStateModelGenerator {
 
 	private void registerGourd(Block stemBlock, Block attachedStemBlock) {
 		this.registerItemModel(stemBlock.asItem());
-		Texture texture = Texture.stem(stemBlock);
-		Texture texture2 = Texture.stemAndUpper(stemBlock, attachedStemBlock);
-		Identifier identifier = Models.STEM_FRUIT.upload(attachedStemBlock, texture2, this.modelCollector);
+		TextureMap textureMap = TextureMap.stem(stemBlock);
+		TextureMap textureMap2 = TextureMap.stemAndUpper(stemBlock, attachedStemBlock);
+		Identifier identifier = Models.STEM_FRUIT.upload(attachedStemBlock, textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(attachedStemBlock, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
@@ -1250,7 +1253,7 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.AGE_7)
 							.register(
-								integer -> BlockStateVariant.create().put(VariantSettings.MODEL, Models.STEM_GROWTH_STAGES[integer].upload(stemBlock, texture, this.modelCollector))
+								integer -> BlockStateVariant.create().put(VariantSettings.MODEL, Models.STEM_GROWTH_STAGES[integer].upload(stemBlock, textureMap, this.modelCollector))
 							)
 					)
 			);
@@ -1269,21 +1272,21 @@ public class BlockStateModelGenerator {
 
 	private void registerDoubleBlock(Block doubleBlock, BlockStateModelGenerator.TintType tintType) {
 		this.registerItemModel(doubleBlock, "_top");
-		Identifier identifier = this.createSubModel(doubleBlock, "_top", tintType.getCrossModel(), Texture::cross);
-		Identifier identifier2 = this.createSubModel(doubleBlock, "_bottom", tintType.getCrossModel(), Texture::cross);
+		Identifier identifier = this.createSubModel(doubleBlock, "_top", tintType.getCrossModel(), TextureMap::cross);
+		Identifier identifier2 = this.createSubModel(doubleBlock, "_bottom", tintType.getCrossModel(), TextureMap::cross);
 		this.registerDoubleBlock(doubleBlock, identifier, identifier2);
 	}
 
 	private void registerSunflower() {
 		this.registerItemModel(Blocks.SUNFLOWER, "_front");
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SUNFLOWER, "_top");
-		Identifier identifier2 = this.createSubModel(Blocks.SUNFLOWER, "_bottom", BlockStateModelGenerator.TintType.NOT_TINTED.getCrossModel(), Texture::cross);
+		Identifier identifier2 = this.createSubModel(Blocks.SUNFLOWER, "_bottom", BlockStateModelGenerator.TintType.NOT_TINTED.getCrossModel(), TextureMap::cross);
 		this.registerDoubleBlock(Blocks.SUNFLOWER, identifier, identifier2);
 	}
 
 	private void registerTallSeagrass() {
-		Identifier identifier = this.createSubModel(Blocks.TALL_SEAGRASS, "_top", Models.TEMPLATE_SEAGRASS, Texture::texture);
-		Identifier identifier2 = this.createSubModel(Blocks.TALL_SEAGRASS, "_bottom", Models.TEMPLATE_SEAGRASS, Texture::texture);
+		Identifier identifier = this.createSubModel(Blocks.TALL_SEAGRASS, "_top", Models.TEMPLATE_SEAGRASS, TextureMap::texture);
+		Identifier identifier2 = this.createSubModel(Blocks.TALL_SEAGRASS, "_bottom", Models.TEMPLATE_SEAGRASS, TextureMap::texture);
 		this.registerDoubleBlock(Blocks.TALL_SEAGRASS, identifier, identifier2);
 	}
 
@@ -1316,12 +1319,12 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerTurnableRail(Block rail) {
-		Texture texture = Texture.rail(rail);
-		Texture texture2 = Texture.rail(Texture.getSubId(rail, "_corner"));
-		Identifier identifier = Models.RAIL_FLAT.upload(rail, texture, this.modelCollector);
-		Identifier identifier2 = Models.RAIL_CURVED.upload(rail, texture2, this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_RAIL_RAISED_NE.upload(rail, texture, this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_RAIL_RAISED_SW.upload(rail, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.rail(rail);
+		TextureMap textureMap2 = TextureMap.rail(TextureMap.getSubId(rail, "_corner"));
+		Identifier identifier = Models.RAIL_FLAT.upload(rail, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.RAIL_CURVED.upload(rail, textureMap2, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_RAIL_RAISED_NE.upload(rail, textureMap, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_RAIL_RAISED_SW.upload(rail, textureMap, this.modelCollector);
 		this.registerItemModel(rail);
 		this.blockStateCollector
 			.accept(
@@ -1347,12 +1350,12 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerStraightRail(Block rail) {
-		Identifier identifier = this.createSubModel(rail, "", Models.RAIL_FLAT, Texture::rail);
-		Identifier identifier2 = this.createSubModel(rail, "", Models.TEMPLATE_RAIL_RAISED_NE, Texture::rail);
-		Identifier identifier3 = this.createSubModel(rail, "", Models.TEMPLATE_RAIL_RAISED_SW, Texture::rail);
-		Identifier identifier4 = this.createSubModel(rail, "_on", Models.RAIL_FLAT, Texture::rail);
-		Identifier identifier5 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_NE, Texture::rail);
-		Identifier identifier6 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_SW, Texture::rail);
+		Identifier identifier = this.createSubModel(rail, "", Models.RAIL_FLAT, TextureMap::rail);
+		Identifier identifier2 = this.createSubModel(rail, "", Models.TEMPLATE_RAIL_RAISED_NE, TextureMap::rail);
+		Identifier identifier3 = this.createSubModel(rail, "", Models.TEMPLATE_RAIL_RAISED_SW, TextureMap::rail);
+		Identifier identifier4 = this.createSubModel(rail, "_on", Models.RAIL_FLAT, TextureMap::rail);
+		Identifier identifier5 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_NE, TextureMap::rail);
+		Identifier identifier6 = this.createSubModel(rail, "_on", Models.TEMPLATE_RAIL_RAISED_SW, TextureMap::rail);
 		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(Properties.POWERED, Properties.STRAIGHT_RAIL_SHAPE).register((boolean_, shape) -> {
 			switch (shape) {
 				case NORTH_SOUTH:
@@ -1384,16 +1387,16 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerBuiltinWithParticle(Block block, Item particleSource) {
-		Identifier identifier = Models.PARTICLE.upload(block, Texture.particle(particleSource), this.modelCollector);
+		Identifier identifier = Models.PARTICLE.upload(block, TextureMap.particle(particleSource), this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private void registerBuiltinWithParticle(Block block, Identifier particleSource) {
-		Identifier identifier = Models.PARTICLE.upload(block, Texture.particle(particleSource), this.modelCollector);
+		Identifier identifier = Models.PARTICLE.upload(block, TextureMap.particle(particleSource), this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
-	private void registerCarpet(Block wool, Block carpet) {
+	private void registerWoolAndCarpet(Block wool, Block carpet) {
 		this.registerSimpleCubeAll(wool);
 		Identifier identifier = TexturedModel.CARPET.get(wool).upload(carpet, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(carpet, identifier));
@@ -1419,14 +1422,14 @@ public class BlockStateModelGenerator {
 
 	private void registerGlassPane(Block glass, Block glassPane) {
 		this.registerSimpleCubeAll(glass);
-		Texture texture = Texture.paneAndTopForEdge(glass, glassPane);
-		Identifier identifier = Models.TEMPLATE_GLASS_PANE_POST.upload(glassPane, texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_GLASS_PANE_SIDE.upload(glassPane, texture, this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_GLASS_PANE_SIDE_ALT.upload(glassPane, texture, this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_GLASS_PANE_NOSIDE.upload(glassPane, texture, this.modelCollector);
-		Identifier identifier5 = Models.TEMPLATE_GLASS_PANE_NOSIDE_ALT.upload(glassPane, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.paneAndTopForEdge(glass, glassPane);
+		Identifier identifier = Models.TEMPLATE_GLASS_PANE_POST.upload(glassPane, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_GLASS_PANE_SIDE.upload(glassPane, textureMap, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_GLASS_PANE_SIDE_ALT.upload(glassPane, textureMap, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_GLASS_PANE_NOSIDE.upload(glassPane, textureMap, this.modelCollector);
+		Identifier identifier5 = Models.TEMPLATE_GLASS_PANE_NOSIDE_ALT.upload(glassPane, textureMap, this.modelCollector);
 		Item item = glassPane.asItem();
-		Models.GENERATED.upload(ModelIds.getItemModelId(item), Texture.layer0(glass), this.modelCollector);
+		Models.GENERATED.upload(ModelIds.getItemModelId(item), TextureMap.layer0(glass), this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				MultipartBlockStateSupplier.create(glassPane)
@@ -1455,9 +1458,9 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerCommandBlock(Block commandBlock) {
-		Texture texture = Texture.sideFrontBack(commandBlock);
-		Identifier identifier = Models.TEMPLATE_COMMAND_BLOCK.upload(commandBlock, texture, this.modelCollector);
-		Identifier identifier2 = this.createSubModel(commandBlock, "_conditional", Models.TEMPLATE_COMMAND_BLOCK, id -> texture.copyAndAdd(TextureKey.SIDE, id));
+		TextureMap textureMap = TextureMap.sideFrontBack(commandBlock);
+		Identifier identifier = Models.TEMPLATE_COMMAND_BLOCK.upload(commandBlock, textureMap, this.modelCollector);
+		Identifier identifier2 = this.createSubModel(commandBlock, "_conditional", Models.TEMPLATE_COMMAND_BLOCK, id -> textureMap.copyAndAdd(TextureKey.SIDE, id));
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(commandBlock)
@@ -1513,7 +1516,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerBarrel() {
-		Identifier identifier = Texture.getSubId(Blocks.BARREL, "_top_open");
+		Identifier identifier = TextureMap.getSubId(Blocks.BARREL, "_top_open");
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.BARREL)
@@ -1528,7 +1531,7 @@ public class BlockStateModelGenerator {
 										VariantSettings.MODEL,
 										TexturedModel.CUBE_BOTTOM_TOP
 											.get(Blocks.BARREL)
-											.texture(texture -> texture.put(TextureKey.TOP, identifier))
+											.textures(textureMap -> textureMap.put(TextureKey.TOP, identifier))
 											.upload(Blocks.BARREL, "_open", this.modelCollector)
 									)
 							)
@@ -1547,11 +1550,11 @@ public class BlockStateModelGenerator {
 		});
 	}
 
-	private void registerBeehive(Block beehive, Function<Block, Texture> textureGetter) {
-		Texture texture = ((Texture)textureGetter.apply(beehive)).inherit(TextureKey.SIDE, TextureKey.PARTICLE);
-		Texture texture2 = texture.copyAndAdd(TextureKey.FRONT, Texture.getSubId(beehive, "_front_honey"));
-		Identifier identifier = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, texture, this.modelCollector);
-		Identifier identifier2 = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, "_honey", texture2, this.modelCollector);
+	private void registerBeehive(Block beehive, Function<Block, TextureMap> texturesFactory) {
+		TextureMap textureMap = ((TextureMap)texturesFactory.apply(beehive)).inherit(TextureKey.SIDE, TextureKey.PARTICLE);
+		TextureMap textureMap2 = textureMap.copyAndAdd(TextureKey.FRONT, TextureMap.getSubId(beehive, "_front_honey"));
+		Identifier identifier = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.ORIENTABLE_WITH_BOTTOM.upload(beehive, "_honey", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(beehive)
@@ -1570,7 +1573,7 @@ public class BlockStateModelGenerator {
 					integer -> {
 						int i = ageTextureIndices[integer];
 						Identifier identifier = int2ObjectMap.computeIfAbsent(
-							i, (Int2ObjectFunction<? extends Identifier>)(j -> this.createSubModel(crop, "_stage" + i, Models.CROP, Texture::crop))
+							i, (Int2ObjectFunction<? extends Identifier>)(j -> this.createSubModel(crop, "_stage" + i, Models.CROP, TextureMap::crop))
 						);
 						return BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
 					}
@@ -1707,8 +1710,10 @@ public class BlockStateModelGenerator {
 
 	private void registerCooker(Block cooker, TexturedModel.Factory modelFactory) {
 		Identifier identifier = modelFactory.upload(cooker, this.modelCollector);
-		Identifier identifier2 = Texture.getSubId(cooker, "_front_on");
-		Identifier identifier3 = modelFactory.get(cooker).texture(texture -> texture.put(TextureKey.FRONT, identifier2)).upload(cooker, "_on", this.modelCollector);
+		Identifier identifier2 = TextureMap.getSubId(cooker, "_front_on");
+		Identifier identifier3 = modelFactory.get(cooker)
+			.textures(textures -> textures.put(TextureKey.FRONT, identifier2))
+			.upload(cooker, "_on", this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(cooker)
@@ -1721,7 +1726,7 @@ public class BlockStateModelGenerator {
 		Identifier identifier = ModelIds.getMinecraftNamespacedBlock("campfire_off");
 
 		for (Block block : blocks) {
-			Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.campfire(block), this.modelCollector);
+			Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, TextureMap.campfire(block), this.modelCollector);
 			this.registerItemModel(block.asItem());
 			this.blockStateCollector
 				.accept(
@@ -1733,18 +1738,18 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerAzalea(Block block) {
-		Identifier identifier = Models.TEMPLATE_AZALEA.upload(block, Texture.sideAndTop(block), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_AZALEA.upload(block, TextureMap.sideAndTop(block), this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private void registerPottedAzaleaBush(Block block) {
-		Identifier identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, Texture.sideAndTop(block), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, TextureMap.sideAndTop(block), this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private void registerBookshelf() {
-		Texture texture = Texture.sideEnd(Texture.getId(Blocks.BOOKSHELF), Texture.getId(Blocks.OAK_PLANKS));
-		Identifier identifier = Models.CUBE_COLUMN.upload(Blocks.BOOKSHELF, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.sideEnd(TextureMap.getId(Blocks.BOOKSHELF), TextureMap.getId(Blocks.OAK_PLANKS));
+		Identifier identifier = Models.CUBE_COLUMN.upload(Blocks.BOOKSHELF, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.BOOKSHELF, identifier));
 	}
 
@@ -1841,13 +1846,13 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerSmoothStone() {
-		Texture texture = Texture.all(Blocks.SMOOTH_STONE);
-		Texture texture2 = Texture.sideEnd(Texture.getSubId(Blocks.SMOOTH_STONE_SLAB, "_side"), texture.getTexture(TextureKey.TOP));
-		Identifier identifier = Models.SLAB.upload(Blocks.SMOOTH_STONE_SLAB, texture2, this.modelCollector);
-		Identifier identifier2 = Models.SLAB_TOP.upload(Blocks.SMOOTH_STONE_SLAB, texture2, this.modelCollector);
-		Identifier identifier3 = Models.CUBE_COLUMN.uploadWithoutVariant(Blocks.SMOOTH_STONE_SLAB, "_double", texture2, this.modelCollector);
+		TextureMap textureMap = TextureMap.all(Blocks.SMOOTH_STONE);
+		TextureMap textureMap2 = TextureMap.sideEnd(TextureMap.getSubId(Blocks.SMOOTH_STONE_SLAB, "_side"), textureMap.getTexture(TextureKey.TOP));
+		Identifier identifier = Models.SLAB.upload(Blocks.SMOOTH_STONE_SLAB, textureMap2, this.modelCollector);
+		Identifier identifier2 = Models.SLAB_TOP.upload(Blocks.SMOOTH_STONE_SLAB, textureMap2, this.modelCollector);
+		Identifier identifier3 = Models.CUBE_COLUMN.uploadWithoutVariant(Blocks.SMOOTH_STONE_SLAB, "_double", textureMap2, this.modelCollector);
 		this.blockStateCollector.accept(createSlabBlockState(Blocks.SMOOTH_STONE_SLAB, identifier, identifier2, identifier3));
-		this.blockStateCollector.accept(createSingletonBlockState(Blocks.SMOOTH_STONE, Models.CUBE_ALL.upload(Blocks.SMOOTH_STONE, texture, this.modelCollector)));
+		this.blockStateCollector.accept(createSingletonBlockState(Blocks.SMOOTH_STONE, Models.CUBE_ALL.upload(Blocks.SMOOTH_STONE, textureMap, this.modelCollector)));
 	}
 
 	private void registerBrewingStand() {
@@ -1855,36 +1860,36 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				MultipartBlockStateSupplier.create(Blocks.BREWING_STAND)
-					.with(BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getId(Blocks.BREWING_STAND)))
+					.with(BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getId(Blocks.BREWING_STAND)))
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_0, true),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_bottle0"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_bottle0"))
 					)
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_1, true),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_bottle1"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_bottle1"))
 					)
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_2, true),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_bottle2"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_bottle2"))
 					)
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_0, false),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_empty0"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_empty0"))
 					)
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_1, false),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_empty1"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_empty1"))
 					)
 					.with(
 						When.create().set(Properties.HAS_BOTTLE_2, false),
-						BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.BREWING_STAND, "_empty2"))
+						BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.BREWING_STAND, "_empty2"))
 					)
 			);
 	}
 
 	private void registerMushroomBlock(Block mushroomBlock) {
-		Identifier identifier = Models.TEMPLATE_SINGLE_FACE.upload(mushroomBlock, Texture.texture(mushroomBlock), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_SINGLE_FACE.upload(mushroomBlock, TextureMap.texture(mushroomBlock), this.modelCollector);
 		Identifier identifier2 = ModelIds.getMinecraftNamespacedBlock("mushroom_block_inside");
 		this.blockStateCollector
 			.accept(
@@ -1969,44 +1974,44 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerCartographyTable() {
-		Texture texture = new Texture()
-			.put(TextureKey.PARTICLE, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
-			.put(TextureKey.DOWN, Texture.getId(Blocks.DARK_OAK_PLANKS))
-			.put(TextureKey.UP, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_top"))
-			.put(TextureKey.NORTH, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
-			.put(TextureKey.EAST, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
-			.put(TextureKey.SOUTH, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side1"))
-			.put(TextureKey.WEST, Texture.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side2"));
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.PARTICLE, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
+			.put(TextureKey.DOWN, TextureMap.getId(Blocks.DARK_OAK_PLANKS))
+			.put(TextureKey.UP, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_top"))
+			.put(TextureKey.NORTH, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
+			.put(TextureKey.EAST, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side3"))
+			.put(TextureKey.SOUTH, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side1"))
+			.put(TextureKey.WEST, TextureMap.getSubId(Blocks.CARTOGRAPHY_TABLE, "_side2"));
 		this.blockStateCollector
-			.accept(createSingletonBlockState(Blocks.CARTOGRAPHY_TABLE, Models.CUBE.upload(Blocks.CARTOGRAPHY_TABLE, texture, this.modelCollector)));
+			.accept(createSingletonBlockState(Blocks.CARTOGRAPHY_TABLE, Models.CUBE.upload(Blocks.CARTOGRAPHY_TABLE, textureMap, this.modelCollector)));
 	}
 
 	private void registerSmithingTable() {
-		Texture texture = new Texture()
-			.put(TextureKey.PARTICLE, Texture.getSubId(Blocks.SMITHING_TABLE, "_front"))
-			.put(TextureKey.DOWN, Texture.getSubId(Blocks.SMITHING_TABLE, "_bottom"))
-			.put(TextureKey.UP, Texture.getSubId(Blocks.SMITHING_TABLE, "_top"))
-			.put(TextureKey.NORTH, Texture.getSubId(Blocks.SMITHING_TABLE, "_front"))
-			.put(TextureKey.SOUTH, Texture.getSubId(Blocks.SMITHING_TABLE, "_front"))
-			.put(TextureKey.EAST, Texture.getSubId(Blocks.SMITHING_TABLE, "_side"))
-			.put(TextureKey.WEST, Texture.getSubId(Blocks.SMITHING_TABLE, "_side"));
-		this.blockStateCollector.accept(createSingletonBlockState(Blocks.SMITHING_TABLE, Models.CUBE.upload(Blocks.SMITHING_TABLE, texture, this.modelCollector)));
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.PARTICLE, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_front"))
+			.put(TextureKey.DOWN, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_bottom"))
+			.put(TextureKey.UP, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_top"))
+			.put(TextureKey.NORTH, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_front"))
+			.put(TextureKey.SOUTH, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_front"))
+			.put(TextureKey.EAST, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_side"))
+			.put(TextureKey.WEST, TextureMap.getSubId(Blocks.SMITHING_TABLE, "_side"));
+		this.blockStateCollector.accept(createSingletonBlockState(Blocks.SMITHING_TABLE, Models.CUBE.upload(Blocks.SMITHING_TABLE, textureMap, this.modelCollector)));
 	}
 
-	private void registerCubeWithCustomTexture(Block block, Block otherTextureSource, BiFunction<Block, Block, Texture> textureFactory) {
-		Texture texture = (Texture)textureFactory.apply(block, otherTextureSource);
-		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, texture, this.modelCollector)));
+	private void registerCubeWithCustomTextures(Block block, Block otherTextureSource, BiFunction<Block, Block, TextureMap> texturesFactory) {
+		TextureMap textureMap = (TextureMap)texturesFactory.apply(block, otherTextureSource);
+		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, textureMap, this.modelCollector)));
 	}
 
 	private void registerPumpkins() {
-		Texture texture = Texture.sideEnd(Blocks.PUMPKIN);
+		TextureMap textureMap = TextureMap.sideEnd(Blocks.PUMPKIN);
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.PUMPKIN, ModelIds.getBlockModelId(Blocks.PUMPKIN)));
-		this.registerNorthDefaultHorizontalRotatable(Blocks.CARVED_PUMPKIN, texture);
-		this.registerNorthDefaultHorizontalRotatable(Blocks.JACK_O_LANTERN, texture);
+		this.registerNorthDefaultHorizontalRotatable(Blocks.CARVED_PUMPKIN, textureMap);
+		this.registerNorthDefaultHorizontalRotatable(Blocks.JACK_O_LANTERN, textureMap);
 	}
 
-	private void registerNorthDefaultHorizontalRotatable(Block block, Texture texture) {
-		Identifier identifier = Models.ORIENTABLE.upload(block, texture.copyAndAdd(TextureKey.FRONT, Texture.getId(block)), this.modelCollector);
+	private void registerNorthDefaultHorizontalRotatable(Block block, TextureMap texture) {
+		Identifier identifier = Models.ORIENTABLE.upload(block, texture.copyAndAdd(TextureKey.FRONT, TextureMap.getId(block)), this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
@@ -2021,7 +2026,7 @@ public class BlockStateModelGenerator {
 			.accept(
 				createSingletonBlockState(
 					Blocks.LAVA_CAULDRON,
-					Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, Texture.cauldron(Texture.getSubId(Blocks.LAVA, "_still")), this.modelCollector)
+					Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.LAVA_CAULDRON, TextureMap.cauldron(TextureMap.getSubId(Blocks.LAVA, "_still")), this.modelCollector)
 				)
 			);
 		this.blockStateCollector
@@ -2035,7 +2040,7 @@ public class BlockStateModelGenerator {
 									.put(
 										VariantSettings.MODEL,
 										Models.TEMPLATE_CAULDRON_LEVEL1
-											.upload(Blocks.WATER_CAULDRON, "_level1", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+											.upload(Blocks.WATER_CAULDRON, "_level1", TextureMap.cauldron(TextureMap.getSubId(Blocks.WATER, "_still")), this.modelCollector)
 									)
 							)
 							.register(
@@ -2044,7 +2049,7 @@ public class BlockStateModelGenerator {
 									.put(
 										VariantSettings.MODEL,
 										Models.TEMPLATE_CAULDRON_LEVEL2
-											.upload(Blocks.WATER_CAULDRON, "_level2", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+											.upload(Blocks.WATER_CAULDRON, "_level2", TextureMap.cauldron(TextureMap.getSubId(Blocks.WATER, "_still")), this.modelCollector)
 									)
 							)
 							.register(
@@ -2052,7 +2057,8 @@ public class BlockStateModelGenerator {
 								BlockStateVariant.create()
 									.put(
 										VariantSettings.MODEL,
-										Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.WATER_CAULDRON, "_full", Texture.cauldron(Texture.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+										Models.TEMPLATE_CAULDRON_FULL
+											.upload(Blocks.WATER_CAULDRON, "_full", TextureMap.cauldron(TextureMap.getSubId(Blocks.WATER, "_still")), this.modelCollector)
 									)
 							)
 					)
@@ -2068,7 +2074,7 @@ public class BlockStateModelGenerator {
 									.put(
 										VariantSettings.MODEL,
 										Models.TEMPLATE_CAULDRON_LEVEL1
-											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level1", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level1", TextureMap.cauldron(TextureMap.getId(Blocks.POWDER_SNOW)), this.modelCollector)
 									)
 							)
 							.register(
@@ -2077,7 +2083,7 @@ public class BlockStateModelGenerator {
 									.put(
 										VariantSettings.MODEL,
 										Models.TEMPLATE_CAULDRON_LEVEL2
-											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level2", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_level2", TextureMap.cauldron(TextureMap.getId(Blocks.POWDER_SNOW)), this.modelCollector)
 									)
 							)
 							.register(
@@ -2085,7 +2091,8 @@ public class BlockStateModelGenerator {
 								BlockStateVariant.create()
 									.put(
 										VariantSettings.MODEL,
-										Models.TEMPLATE_CAULDRON_FULL.upload(Blocks.POWDER_SNOW_CAULDRON, "_full", Texture.cauldron(Texture.getId(Blocks.POWDER_SNOW)), this.modelCollector)
+										Models.TEMPLATE_CAULDRON_FULL
+											.upload(Blocks.POWDER_SNOW_CAULDRON, "_full", TextureMap.cauldron(TextureMap.getId(Blocks.POWDER_SNOW)), this.modelCollector)
 									)
 							)
 					)
@@ -2093,23 +2100,25 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerChorusFlower() {
-		Texture texture = Texture.texture(Blocks.CHORUS_FLOWER);
-		Identifier identifier = Models.TEMPLATE_CHORUS_FLOWER.upload(Blocks.CHORUS_FLOWER, texture, this.modelCollector);
-		Identifier identifier2 = this.createSubModel(Blocks.CHORUS_FLOWER, "_dead", Models.TEMPLATE_CHORUS_FLOWER, id -> texture.copyAndAdd(TextureKey.TEXTURE, id));
+		TextureMap textureMap = TextureMap.texture(Blocks.CHORUS_FLOWER);
+		Identifier identifier = Models.TEMPLATE_CHORUS_FLOWER.upload(Blocks.CHORUS_FLOWER, textureMap, this.modelCollector);
+		Identifier identifier2 = this.createSubModel(
+			Blocks.CHORUS_FLOWER, "_dead", Models.TEMPLATE_CHORUS_FLOWER, id -> textureMap.copyAndAdd(TextureKey.TEXTURE, id)
+		);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.CHORUS_FLOWER).coordinate(createValueFencedModelMap(Properties.AGE_5, 5, identifier2, identifier)));
 	}
 
 	private void registerFurnaceLikeOrientable(Block block) {
-		Texture texture = new Texture()
-			.put(TextureKey.TOP, Texture.getSubId(Blocks.FURNACE, "_top"))
-			.put(TextureKey.SIDE, Texture.getSubId(Blocks.FURNACE, "_side"))
-			.put(TextureKey.FRONT, Texture.getSubId(block, "_front"));
-		Texture texture2 = new Texture()
-			.put(TextureKey.SIDE, Texture.getSubId(Blocks.FURNACE, "_top"))
-			.put(TextureKey.FRONT, Texture.getSubId(block, "_front_vertical"));
-		Identifier identifier = Models.ORIENTABLE.upload(block, texture, this.modelCollector);
-		Identifier identifier2 = Models.ORIENTABLE_VERTICAL.upload(block, texture2, this.modelCollector);
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.FURNACE, "_top"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.FURNACE, "_side"))
+			.put(TextureKey.FRONT, TextureMap.getSubId(block, "_front"));
+		TextureMap textureMap2 = new TextureMap()
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.FURNACE, "_top"))
+			.put(TextureKey.FRONT, TextureMap.getSubId(block, "_front_vertical"));
+		Identifier identifier = Models.ORIENTABLE.upload(block, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.ORIENTABLE_VERTICAL.upload(block, textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(block)
@@ -2266,16 +2275,16 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				MultipartBlockStateSupplier.create(Blocks.COMPOSTER)
-					.with(BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getId(Blocks.COMPOSTER)))
-					.with(When.create().set(Properties.LEVEL_8, 1), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents1")))
-					.with(When.create().set(Properties.LEVEL_8, 2), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents2")))
-					.with(When.create().set(Properties.LEVEL_8, 3), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents3")))
-					.with(When.create().set(Properties.LEVEL_8, 4), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents4")))
-					.with(When.create().set(Properties.LEVEL_8, 5), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents5")))
-					.with(When.create().set(Properties.LEVEL_8, 6), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents6")))
-					.with(When.create().set(Properties.LEVEL_8, 7), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents7")))
+					.with(BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getId(Blocks.COMPOSTER)))
+					.with(When.create().set(Properties.LEVEL_8, 1), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents1")))
+					.with(When.create().set(Properties.LEVEL_8, 2), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents2")))
+					.with(When.create().set(Properties.LEVEL_8, 3), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents3")))
+					.with(When.create().set(Properties.LEVEL_8, 4), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents4")))
+					.with(When.create().set(Properties.LEVEL_8, 5), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents5")))
+					.with(When.create().set(Properties.LEVEL_8, 6), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents6")))
+					.with(When.create().set(Properties.LEVEL_8, 7), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents7")))
 					.with(
-						When.create().set(Properties.LEVEL_8, 8), BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.COMPOSTER, "_contents_ready"))
+						When.create().set(Properties.LEVEL_8, 8), BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.COMPOSTER, "_contents_ready"))
 					)
 			);
 	}
@@ -2285,7 +2294,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(
-						block, BlockStateVariant.create().put(VariantSettings.MODEL, Models.CROSS.upload(block, Texture.cross(block), this.modelCollector))
+						block, BlockStateVariant.create().put(VariantSettings.MODEL, Models.CROSS.upload(block, TextureMap.cross(block), this.modelCollector))
 					)
 					.coordinate(this.createUpDefaultFacingVariantMap())
 			);
@@ -2315,22 +2324,25 @@ public class BlockStateModelGenerator {
 
 	private BlockStateVariant getDripstoneVariant(Direction direction, Thickness thickness) {
 		String string = "_" + direction.asString() + "_" + thickness.asString();
-		Texture texture = Texture.cross(Texture.getSubId(Blocks.POINTED_DRIPSTONE, string));
-		return BlockStateVariant.create().put(VariantSettings.MODEL, Models.POINTED_DRIPSTONE.upload(Blocks.POINTED_DRIPSTONE, string, texture, this.modelCollector));
+		TextureMap textureMap = TextureMap.cross(TextureMap.getSubId(Blocks.POINTED_DRIPSTONE, string));
+		return BlockStateVariant.create()
+			.put(VariantSettings.MODEL, Models.POINTED_DRIPSTONE.upload(Blocks.POINTED_DRIPSTONE, string, textureMap, this.modelCollector));
 	}
 
 	private void registerNetherrackBottomCustomTop(Block block) {
-		Texture texture = new Texture()
-			.put(TextureKey.BOTTOM, Texture.getId(Blocks.NETHERRACK))
-			.put(TextureKey.TOP, Texture.getId(block))
-			.put(TextureKey.SIDE, Texture.getSubId(block, "_side"));
-		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE_BOTTOM_TOP.upload(block, texture, this.modelCollector)));
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.BOTTOM, TextureMap.getId(Blocks.NETHERRACK))
+			.put(TextureKey.TOP, TextureMap.getId(block))
+			.put(TextureKey.SIDE, TextureMap.getSubId(block, "_side"));
+		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE_BOTTOM_TOP.upload(block, textureMap, this.modelCollector)));
 	}
 
 	private void registerDaylightDetector() {
-		Identifier identifier = Texture.getSubId(Blocks.DAYLIGHT_DETECTOR, "_side");
-		Texture texture = new Texture().put(TextureKey.TOP, Texture.getSubId(Blocks.DAYLIGHT_DETECTOR, "_top")).put(TextureKey.SIDE, identifier);
-		Texture texture2 = new Texture().put(TextureKey.TOP, Texture.getSubId(Blocks.DAYLIGHT_DETECTOR, "_inverted_top")).put(TextureKey.SIDE, identifier);
+		Identifier identifier = TextureMap.getSubId(Blocks.DAYLIGHT_DETECTOR, "_side");
+		TextureMap textureMap = new TextureMap().put(TextureKey.TOP, TextureMap.getSubId(Blocks.DAYLIGHT_DETECTOR, "_top")).put(TextureKey.SIDE, identifier);
+		TextureMap textureMap2 = new TextureMap()
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.DAYLIGHT_DETECTOR, "_inverted_top"))
+			.put(TextureKey.SIDE, identifier);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.DAYLIGHT_DETECTOR)
@@ -2338,14 +2350,15 @@ public class BlockStateModelGenerator {
 						BlockStateVariantMap.create(Properties.INVERTED)
 							.register(
 								false,
-								BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(Blocks.DAYLIGHT_DETECTOR, texture, this.modelCollector))
+								BlockStateVariant.create()
+									.put(VariantSettings.MODEL, Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(Blocks.DAYLIGHT_DETECTOR, textureMap, this.modelCollector))
 							)
 							.register(
 								true,
 								BlockStateVariant.create()
 									.put(
 										VariantSettings.MODEL,
-										Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(ModelIds.getBlockSubModelId(Blocks.DAYLIGHT_DETECTOR, "_inverted"), texture2, this.modelCollector)
+										Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(ModelIds.getBlockSubModelId(Blocks.DAYLIGHT_DETECTOR, "_inverted"), textureMap2, this.modelCollector)
 									)
 							)
 					)
@@ -2373,35 +2386,37 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerFarmland() {
-		Texture texture = new Texture().put(TextureKey.DIRT, Texture.getId(Blocks.DIRT)).put(TextureKey.TOP, Texture.getId(Blocks.FARMLAND));
-		Texture texture2 = new Texture().put(TextureKey.DIRT, Texture.getId(Blocks.DIRT)).put(TextureKey.TOP, Texture.getSubId(Blocks.FARMLAND, "_moist"));
-		Identifier identifier = Models.TEMPLATE_FARMLAND.upload(Blocks.FARMLAND, texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_FARMLAND.upload(Texture.getSubId(Blocks.FARMLAND, "_moist"), texture2, this.modelCollector);
+		TextureMap textureMap = new TextureMap().put(TextureKey.DIRT, TextureMap.getId(Blocks.DIRT)).put(TextureKey.TOP, TextureMap.getId(Blocks.FARMLAND));
+		TextureMap textureMap2 = new TextureMap()
+			.put(TextureKey.DIRT, TextureMap.getId(Blocks.DIRT))
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.FARMLAND, "_moist"));
+		Identifier identifier = Models.TEMPLATE_FARMLAND.upload(Blocks.FARMLAND, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_FARMLAND.upload(TextureMap.getSubId(Blocks.FARMLAND, "_moist"), textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.FARMLAND).coordinate(createValueFencedModelMap(Properties.MOISTURE, 7, identifier2, identifier)));
 	}
 
 	private List<Identifier> getFireFloorModels(Block texture) {
-		Identifier identifier = Models.TEMPLATE_FIRE_FLOOR.upload(ModelIds.getBlockSubModelId(texture, "_floor0"), Texture.fire0(texture), this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_FIRE_FLOOR.upload(ModelIds.getBlockSubModelId(texture, "_floor1"), Texture.fire1(texture), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_FIRE_FLOOR.upload(ModelIds.getBlockSubModelId(texture, "_floor0"), TextureMap.fire0(texture), this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_FIRE_FLOOR.upload(ModelIds.getBlockSubModelId(texture, "_floor1"), TextureMap.fire1(texture), this.modelCollector);
 		return ImmutableList.of(identifier, identifier2);
 	}
 
 	private List<Identifier> getFireSideModels(Block texture) {
-		Identifier identifier = Models.TEMPLATE_FIRE_SIDE.upload(ModelIds.getBlockSubModelId(texture, "_side0"), Texture.fire0(texture), this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_FIRE_SIDE.upload(ModelIds.getBlockSubModelId(texture, "_side1"), Texture.fire1(texture), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_FIRE_SIDE.upload(ModelIds.getBlockSubModelId(texture, "_side0"), TextureMap.fire0(texture), this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_FIRE_SIDE.upload(ModelIds.getBlockSubModelId(texture, "_side1"), TextureMap.fire1(texture), this.modelCollector);
 		Identifier identifier3 = Models.TEMPLATE_FIRE_SIDE_ALT
-			.upload(ModelIds.getBlockSubModelId(texture, "_side_alt0"), Texture.fire0(texture), this.modelCollector);
+			.upload(ModelIds.getBlockSubModelId(texture, "_side_alt0"), TextureMap.fire0(texture), this.modelCollector);
 		Identifier identifier4 = Models.TEMPLATE_FIRE_SIDE_ALT
-			.upload(ModelIds.getBlockSubModelId(texture, "_side_alt1"), Texture.fire1(texture), this.modelCollector);
+			.upload(ModelIds.getBlockSubModelId(texture, "_side_alt1"), TextureMap.fire1(texture), this.modelCollector);
 		return ImmutableList.of(identifier, identifier2, identifier3, identifier4);
 	}
 
 	private List<Identifier> getFireUpModels(Block texture) {
-		Identifier identifier = Models.TEMPLATE_FIRE_UP.upload(ModelIds.getBlockSubModelId(texture, "_up0"), Texture.fire0(texture), this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_FIRE_UP.upload(ModelIds.getBlockSubModelId(texture, "_up1"), Texture.fire1(texture), this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_FIRE_UP_ALT.upload(ModelIds.getBlockSubModelId(texture, "_up_alt0"), Texture.fire0(texture), this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_FIRE_UP_ALT.upload(ModelIds.getBlockSubModelId(texture, "_up_alt1"), Texture.fire1(texture), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_FIRE_UP.upload(ModelIds.getBlockSubModelId(texture, "_up0"), TextureMap.fire0(texture), this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_FIRE_UP.upload(ModelIds.getBlockSubModelId(texture, "_up1"), TextureMap.fire1(texture), this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_FIRE_UP_ALT.upload(ModelIds.getBlockSubModelId(texture, "_up_alt0"), TextureMap.fire0(texture), this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_FIRE_UP_ALT.upload(ModelIds.getBlockSubModelId(texture, "_up_alt1"), TextureMap.fire1(texture), this.modelCollector);
 		return ImmutableList.of(identifier, identifier2, identifier3, identifier4);
 	}
 
@@ -2470,32 +2485,32 @@ public class BlockStateModelGenerator {
 				VariantsBlockStateSupplier.create(Blocks.FROSTED_ICE)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.AGE_3)
-							.register(0, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_0", Models.CUBE_ALL, Texture::all)))
-							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_1", Models.CUBE_ALL, Texture::all)))
-							.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_2", Models.CUBE_ALL, Texture::all)))
-							.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_3", Models.CUBE_ALL, Texture::all)))
+							.register(0, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_0", Models.CUBE_ALL, TextureMap::all)))
+							.register(1, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_1", Models.CUBE_ALL, TextureMap::all)))
+							.register(2, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_2", Models.CUBE_ALL, TextureMap::all)))
+							.register(3, BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.FROSTED_ICE, "_3", Models.CUBE_ALL, TextureMap::all)))
 					)
 			);
 	}
 
 	private void registerTopSoils() {
-		Identifier identifier = Texture.getId(Blocks.DIRT);
-		Texture texture = new Texture()
+		Identifier identifier = TextureMap.getId(Blocks.DIRT);
+		TextureMap textureMap = new TextureMap()
 			.put(TextureKey.BOTTOM, identifier)
 			.inherit(TextureKey.BOTTOM, TextureKey.PARTICLE)
-			.put(TextureKey.TOP, Texture.getSubId(Blocks.GRASS_BLOCK, "_top"))
-			.put(TextureKey.SIDE, Texture.getSubId(Blocks.GRASS_BLOCK, "_snow"));
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.GRASS_BLOCK, "_top"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.GRASS_BLOCK, "_snow"));
 		BlockStateVariant blockStateVariant = BlockStateVariant.create()
-			.put(VariantSettings.MODEL, Models.CUBE_BOTTOM_TOP.upload(Blocks.GRASS_BLOCK, "_snow", texture, this.modelCollector));
+			.put(VariantSettings.MODEL, Models.CUBE_BOTTOM_TOP.upload(Blocks.GRASS_BLOCK, "_snow", textureMap, this.modelCollector));
 		this.registerTopSoil(Blocks.GRASS_BLOCK, ModelIds.getBlockModelId(Blocks.GRASS_BLOCK), blockStateVariant);
 		Identifier identifier2 = TexturedModel.CUBE_BOTTOM_TOP
 			.get(Blocks.MYCELIUM)
-			.texture(texturex -> texturex.put(TextureKey.BOTTOM, identifier))
+			.textures(textures -> textures.put(TextureKey.BOTTOM, identifier))
 			.upload(Blocks.MYCELIUM, this.modelCollector);
 		this.registerTopSoil(Blocks.MYCELIUM, identifier2, blockStateVariant);
 		Identifier identifier3 = TexturedModel.CUBE_BOTTOM_TOP
 			.get(Blocks.PODZOL)
-			.texture(texturex -> texturex.put(TextureKey.BOTTOM, identifier))
+			.textures(textures -> textures.put(TextureKey.BOTTOM, identifier))
 			.upload(Blocks.PODZOL, this.modelCollector);
 		this.registerTopSoil(Blocks.PODZOL, identifier3, blockStateVariant);
 	}
@@ -2528,9 +2543,9 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerPressurePlate(Block pressurePlate, Block textureSource) {
-		Texture texture = Texture.texture(textureSource);
-		Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlate, texture, this.modelCollector);
-		Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlate, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.texture(textureSource);
+		Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlate, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlate, textureMap, this.modelCollector);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(pressurePlate).coordinate(createValueFencedModelMap(Properties.POWER, 1, identifier2, identifier)));
 	}
@@ -2744,25 +2759,25 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerPistons() {
-		Texture texture = new Texture()
-			.put(TextureKey.BOTTOM, Texture.getSubId(Blocks.PISTON, "_bottom"))
-			.put(TextureKey.SIDE, Texture.getSubId(Blocks.PISTON, "_side"));
-		Identifier identifier = Texture.getSubId(Blocks.PISTON, "_top_sticky");
-		Identifier identifier2 = Texture.getSubId(Blocks.PISTON, "_top");
-		Texture texture2 = texture.copyAndAdd(TextureKey.PLATFORM, identifier);
-		Texture texture3 = texture.copyAndAdd(TextureKey.PLATFORM, identifier2);
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.BOTTOM, TextureMap.getSubId(Blocks.PISTON, "_bottom"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.PISTON, "_side"));
+		Identifier identifier = TextureMap.getSubId(Blocks.PISTON, "_top_sticky");
+		Identifier identifier2 = TextureMap.getSubId(Blocks.PISTON, "_top");
+		TextureMap textureMap2 = textureMap.copyAndAdd(TextureKey.PLATFORM, identifier);
+		TextureMap textureMap3 = textureMap.copyAndAdd(TextureKey.PLATFORM, identifier2);
 		Identifier identifier3 = ModelIds.getBlockSubModelId(Blocks.PISTON, "_base");
-		this.registerPiston(Blocks.PISTON, identifier3, texture3);
-		this.registerPiston(Blocks.STICKY_PISTON, identifier3, texture2);
-		Identifier identifier4 = Models.CUBE_BOTTOM_TOP.upload(Blocks.PISTON, "_inventory", texture.copyAndAdd(TextureKey.TOP, identifier2), this.modelCollector);
+		this.registerPiston(Blocks.PISTON, identifier3, textureMap3);
+		this.registerPiston(Blocks.STICKY_PISTON, identifier3, textureMap2);
+		Identifier identifier4 = Models.CUBE_BOTTOM_TOP.upload(Blocks.PISTON, "_inventory", textureMap.copyAndAdd(TextureKey.TOP, identifier2), this.modelCollector);
 		Identifier identifier5 = Models.CUBE_BOTTOM_TOP
-			.upload(Blocks.STICKY_PISTON, "_inventory", texture.copyAndAdd(TextureKey.TOP, identifier), this.modelCollector);
+			.upload(Blocks.STICKY_PISTON, "_inventory", textureMap.copyAndAdd(TextureKey.TOP, identifier), this.modelCollector);
 		this.registerParentedItemModel(Blocks.PISTON, identifier4);
 		this.registerParentedItemModel(Blocks.STICKY_PISTON, identifier5);
 	}
 
-	private void registerPiston(Block piston, Identifier extendedModelId, Texture texture) {
-		Identifier identifier = Models.TEMPLATE_PISTON.upload(piston, texture, this.modelCollector);
+	private void registerPiston(Block piston, Identifier extendedModelId, TextureMap textures) {
+		Identifier identifier = Models.TEMPLATE_PISTON.upload(piston, textures, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(piston)
@@ -2772,11 +2787,11 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerPistonHead() {
-		Texture texture = new Texture()
-			.put(TextureKey.UNSTICKY, Texture.getSubId(Blocks.PISTON, "_top"))
-			.put(TextureKey.SIDE, Texture.getSubId(Blocks.PISTON, "_side"));
-		Texture texture2 = texture.copyAndAdd(TextureKey.PLATFORM, Texture.getSubId(Blocks.PISTON, "_top_sticky"));
-		Texture texture3 = texture.copyAndAdd(TextureKey.PLATFORM, Texture.getSubId(Blocks.PISTON, "_top"));
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.UNSTICKY, TextureMap.getSubId(Blocks.PISTON, "_top"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.PISTON, "_side"));
+		TextureMap textureMap2 = textureMap.copyAndAdd(TextureKey.PLATFORM, TextureMap.getSubId(Blocks.PISTON, "_top_sticky"));
+		TextureMap textureMap3 = textureMap.copyAndAdd(TextureKey.PLATFORM, TextureMap.getSubId(Blocks.PISTON, "_top"));
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.PISTON_HEAD)
@@ -2785,24 +2800,25 @@ public class BlockStateModelGenerator {
 							.register(
 								false,
 								PistonType.DEFAULT,
-								BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head", texture3, this.modelCollector))
+								BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head", textureMap3, this.modelCollector))
 							)
 							.register(
 								false,
 								PistonType.STICKY,
-								BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head_sticky", texture2, this.modelCollector))
+								BlockStateVariant.create()
+									.put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head_sticky", textureMap2, this.modelCollector))
 							)
 							.register(
 								true,
 								PistonType.DEFAULT,
 								BlockStateVariant.create()
-									.put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short", texture3, this.modelCollector))
+									.put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short", textureMap3, this.modelCollector))
 							)
 							.register(
 								true,
 								PistonType.STICKY,
 								BlockStateVariant.create()
-									.put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short_sticky", texture2, this.modelCollector))
+									.put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short_sticky", textureMap2, this.modelCollector))
 							)
 					)
 					.coordinate(createNorthDefaultRotationStates())
@@ -2834,30 +2850,30 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerCaveVines() {
-		Identifier identifier = this.createSubModel(Blocks.CAVE_VINES, "", Models.CROSS, Texture::cross);
-		Identifier identifier2 = this.createSubModel(Blocks.CAVE_VINES, "_lit", Models.CROSS, Texture::cross);
+		Identifier identifier = this.createSubModel(Blocks.CAVE_VINES, "", Models.CROSS, TextureMap::cross);
+		Identifier identifier2 = this.createSubModel(Blocks.CAVE_VINES, "_lit", Models.CROSS, TextureMap::cross);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.CAVE_VINES).coordinate(createBooleanModelMap(Properties.BERRIES, identifier2, identifier)));
-		Identifier identifier3 = this.createSubModel(Blocks.CAVE_VINES_PLANT, "", Models.CROSS, Texture::cross);
-		Identifier identifier4 = this.createSubModel(Blocks.CAVE_VINES_PLANT, "_lit", Models.CROSS, Texture::cross);
+		Identifier identifier3 = this.createSubModel(Blocks.CAVE_VINES_PLANT, "", Models.CROSS, TextureMap::cross);
+		Identifier identifier4 = this.createSubModel(Blocks.CAVE_VINES_PLANT, "_lit", Models.CROSS, TextureMap::cross);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.CAVE_VINES_PLANT).coordinate(createBooleanModelMap(Properties.BERRIES, identifier4, identifier3)));
 	}
 
 	private void registerRedstoneLamp() {
 		Identifier identifier = TexturedModel.CUBE_ALL.upload(Blocks.REDSTONE_LAMP, this.modelCollector);
-		Identifier identifier2 = this.createSubModel(Blocks.REDSTONE_LAMP, "_on", Models.CUBE_ALL, Texture::all);
+		Identifier identifier2 = this.createSubModel(Blocks.REDSTONE_LAMP, "_on", Models.CUBE_ALL, TextureMap::all);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.REDSTONE_LAMP).coordinate(createBooleanModelMap(Properties.LIT, identifier2, identifier)));
 	}
 
 	private void registerTorch(Block torch, Block wallTorch) {
-		Texture texture = Texture.torch(torch);
-		this.blockStateCollector.accept(createSingletonBlockState(torch, Models.TEMPLATE_TORCH.upload(torch, texture, this.modelCollector)));
+		TextureMap textureMap = TextureMap.torch(torch);
+		this.blockStateCollector.accept(createSingletonBlockState(torch, Models.TEMPLATE_TORCH.upload(torch, textureMap, this.modelCollector)));
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(
-						wallTorch, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TORCH_WALL.upload(wallTorch, texture, this.modelCollector))
+						wallTorch, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_TORCH_WALL.upload(wallTorch, textureMap, this.modelCollector))
 					)
 					.coordinate(createEastDefaultHorizontalRotationStates())
 			);
@@ -2866,14 +2882,14 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerRedstoneTorch() {
-		Texture texture = Texture.torch(Blocks.REDSTONE_TORCH);
-		Texture texture2 = Texture.torch(Texture.getSubId(Blocks.REDSTONE_TORCH, "_off"));
-		Identifier identifier = Models.TEMPLATE_TORCH.upload(Blocks.REDSTONE_TORCH, texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_TORCH.upload(Blocks.REDSTONE_TORCH, "_off", texture2, this.modelCollector);
+		TextureMap textureMap = TextureMap.torch(Blocks.REDSTONE_TORCH);
+		TextureMap textureMap2 = TextureMap.torch(TextureMap.getSubId(Blocks.REDSTONE_TORCH, "_off"));
+		Identifier identifier = Models.TEMPLATE_TORCH.upload(Blocks.REDSTONE_TORCH, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_TORCH.upload(Blocks.REDSTONE_TORCH, "_off", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.REDSTONE_TORCH).coordinate(createBooleanModelMap(Properties.LIT, identifier, identifier2)));
-		Identifier identifier3 = Models.TEMPLATE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, texture, this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, "_off", texture2, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, textureMap, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_TORCH_WALL.upload(Blocks.REDSTONE_WALL_TORCH, "_off", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.REDSTONE_WALL_TORCH)
@@ -2900,7 +2916,7 @@ public class BlockStateModelGenerator {
 							stringBuilder.append("_locked");
 						}
 
-						return BlockStateVariant.create().put(VariantSettings.MODEL, Texture.getSubId(Blocks.REPEATER, stringBuilder.toString()));
+						return BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.REPEATER, stringBuilder.toString()));
 					}))
 					.coordinate(createSouthDefaultHorizontalRotationStates())
 			);
@@ -2926,8 +2942,8 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerSnows() {
-		Texture texture = Texture.all(Blocks.SNOW);
-		Identifier identifier = Models.CUBE_ALL.upload(Blocks.SNOW_BLOCK, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.all(Blocks.SNOW);
+		Identifier identifier = Models.CUBE_ALL.upload(Blocks.SNOW_BLOCK, textureMap, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.SNOW)
@@ -2961,7 +2977,7 @@ public class BlockStateModelGenerator {
 						BlockStateVariantMap.create(Properties.STRUCTURE_BLOCK_MODE)
 							.register(
 								structureBlockMode -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + structureBlockMode.asString(), Models.CUBE_ALL, Texture::all))
+										.put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + structureBlockMode.asString(), Models.CUBE_ALL, TextureMap::all))
 							)
 					)
 			);
@@ -2976,7 +2992,7 @@ public class BlockStateModelGenerator {
 						BlockStateVariantMap.create(Properties.AGE_3)
 							.register(
 								integer -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + integer, Models.CROSS, Texture::cross))
+										.put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + integer, Models.CROSS, TextureMap::cross))
 							)
 					)
 			);
@@ -3226,23 +3242,23 @@ public class BlockStateModelGenerator {
 						BlockStateVariantMap.create(Properties.ATTACHED, Properties.POWERED)
 							.register(
 								(boolean_, boolean2) -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, Texture.getSubId(Blocks.TRIPWIRE_HOOK, (boolean_ ? "_attached" : "") + (boolean2 ? "_on" : "")))
+										.put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.TRIPWIRE_HOOK, (boolean_ ? "_attached" : "") + (boolean2 ? "_on" : "")))
 							)
 					)
 					.coordinate(createNorthDefaultHorizontalRotationStates())
 			);
 	}
 
-	private Identifier getTurtleEggModel(int eggs, String prefix, Texture texture) {
+	private Identifier getTurtleEggModel(int eggs, String prefix, TextureMap textures) {
 		switch (eggs) {
 			case 1:
-				return Models.TEMPLATE_TURTLE_EGG.upload(ModelIds.getMinecraftNamespacedBlock(prefix + "turtle_egg"), texture, this.modelCollector);
+				return Models.TEMPLATE_TURTLE_EGG.upload(ModelIds.getMinecraftNamespacedBlock(prefix + "turtle_egg"), textures, this.modelCollector);
 			case 2:
-				return Models.TEMPLATE_TWO_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("two_" + prefix + "turtle_eggs"), texture, this.modelCollector);
+				return Models.TEMPLATE_TWO_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("two_" + prefix + "turtle_eggs"), textures, this.modelCollector);
 			case 3:
-				return Models.TEMPLATE_THREE_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("three_" + prefix + "turtle_eggs"), texture, this.modelCollector);
+				return Models.TEMPLATE_THREE_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("three_" + prefix + "turtle_eggs"), textures, this.modelCollector);
 			case 4:
-				return Models.TEMPLATE_FOUR_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("four_" + prefix + "turtle_eggs"), texture, this.modelCollector);
+				return Models.TEMPLATE_FOUR_TURTLE_EGGS.upload(ModelIds.getMinecraftNamespacedBlock("four_" + prefix + "turtle_eggs"), textures, this.modelCollector);
 			default:
 				throw new UnsupportedOperationException();
 		}
@@ -3251,11 +3267,11 @@ public class BlockStateModelGenerator {
 	private Identifier getTurtleEggModel(Integer eggs, Integer hatch) {
 		switch (hatch) {
 			case 0:
-				return this.getTurtleEggModel(eggs, "", Texture.all(Texture.getId(Blocks.TURTLE_EGG)));
+				return this.getTurtleEggModel(eggs, "", TextureMap.all(TextureMap.getId(Blocks.TURTLE_EGG)));
 			case 1:
-				return this.getTurtleEggModel(eggs, "slightly_cracked_", Texture.all(Texture.getSubId(Blocks.TURTLE_EGG, "_slightly_cracked")));
+				return this.getTurtleEggModel(eggs, "slightly_cracked_", TextureMap.all(TextureMap.getSubId(Blocks.TURTLE_EGG, "_slightly_cracked")));
 			case 2:
-				return this.getTurtleEggModel(eggs, "very_cracked_", Texture.all(Texture.getSubId(Blocks.TURTLE_EGG, "_very_cracked")));
+				return this.getTurtleEggModel(eggs, "very_cracked_", TextureMap.all(TextureMap.getSubId(Blocks.TURTLE_EGG, "_very_cracked")));
 			default:
 				throw new UnsupportedOperationException();
 		}
@@ -3295,14 +3311,14 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				createSingletonBlockState(
-					Blocks.MAGMA_BLOCK, Models.CUBE_ALL.upload(Blocks.MAGMA_BLOCK, Texture.all(ModelIds.getMinecraftNamespacedBlock("magma")), this.modelCollector)
+					Blocks.MAGMA_BLOCK, Models.CUBE_ALL.upload(Blocks.MAGMA_BLOCK, TextureMap.all(ModelIds.getMinecraftNamespacedBlock("magma")), this.modelCollector)
 				)
 			);
 	}
 
 	private void registerShulkerBox(Block shulkerBox) {
 		this.registerSingleton(shulkerBox, TexturedModel.PARTICLE);
-		Models.TEMPLATE_SHULKER_BOX.upload(ModelIds.getItemModelId(shulkerBox.asItem()), Texture.particle(shulkerBox), this.modelCollector);
+		Models.TEMPLATE_SHULKER_BOX.upload(ModelIds.getItemModelId(shulkerBox.asItem()), TextureMap.particle(shulkerBox), this.modelCollector);
 	}
 
 	private void registerPlantPart(Block plant, Block plantStem, BlockStateModelGenerator.TintType tintType) {
@@ -3311,7 +3327,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerBed(Block bed, Block particleSource) {
-		Models.TEMPLATE_BED.upload(ModelIds.getItemModelId(bed.asItem()), Texture.particle(particleSource), this.modelCollector);
+		Models.TEMPLATE_BED.upload(ModelIds.getItemModelId(bed.asItem()), TextureMap.particle(particleSource), this.modelCollector);
 	}
 
 	private void registerInfestedStone() {
@@ -3331,23 +3347,23 @@ public class BlockStateModelGenerator {
 
 	private void registerRoots(Block root, Block pottedRoot) {
 		this.registerTintableCross(root, BlockStateModelGenerator.TintType.NOT_TINTED);
-		Texture texture = Texture.plant(Texture.getSubId(root, "_pot"));
-		Identifier identifier = BlockStateModelGenerator.TintType.NOT_TINTED.getFlowerPotCrossModel().upload(pottedRoot, texture, this.modelCollector);
+		TextureMap textureMap = TextureMap.plant(TextureMap.getSubId(root, "_pot"));
+		Identifier identifier = BlockStateModelGenerator.TintType.NOT_TINTED.getFlowerPotCrossModel().upload(pottedRoot, textureMap, this.modelCollector);
 		this.blockStateCollector.accept(createSingletonBlockState(pottedRoot, identifier));
 	}
 
 	private void registerRespawnAnchor() {
-		Identifier identifier = Texture.getSubId(Blocks.RESPAWN_ANCHOR, "_bottom");
-		Identifier identifier2 = Texture.getSubId(Blocks.RESPAWN_ANCHOR, "_top_off");
-		Identifier identifier3 = Texture.getSubId(Blocks.RESPAWN_ANCHOR, "_top");
+		Identifier identifier = TextureMap.getSubId(Blocks.RESPAWN_ANCHOR, "_bottom");
+		Identifier identifier2 = TextureMap.getSubId(Blocks.RESPAWN_ANCHOR, "_top_off");
+		Identifier identifier3 = TextureMap.getSubId(Blocks.RESPAWN_ANCHOR, "_top");
 		Identifier[] identifiers = new Identifier[5];
 
 		for (int i = 0; i < 5; i++) {
-			Texture texture = new Texture()
+			TextureMap textureMap = new TextureMap()
 				.put(TextureKey.BOTTOM, identifier)
 				.put(TextureKey.TOP, i == 0 ? identifier2 : identifier3)
-				.put(TextureKey.SIDE, Texture.getSubId(Blocks.RESPAWN_ANCHOR, "_side" + i));
-			identifiers[i] = Models.CUBE_BOTTOM_TOP.upload(Blocks.RESPAWN_ANCHOR, "_" + i, texture, this.modelCollector);
+				.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.RESPAWN_ANCHOR, "_side" + i));
+			identifiers[i] = Models.CUBE_BOTTOM_TOP.upload(Blocks.RESPAWN_ANCHOR, "_" + i, textureMap, this.modelCollector);
 		}
 
 		this.blockStateCollector
@@ -3392,11 +3408,11 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerJigsaw() {
-		Identifier identifier = Texture.getSubId(Blocks.JIGSAW, "_top");
-		Identifier identifier2 = Texture.getSubId(Blocks.JIGSAW, "_bottom");
-		Identifier identifier3 = Texture.getSubId(Blocks.JIGSAW, "_side");
-		Identifier identifier4 = Texture.getSubId(Blocks.JIGSAW, "_lock");
-		Texture texture = new Texture()
+		Identifier identifier = TextureMap.getSubId(Blocks.JIGSAW, "_top");
+		Identifier identifier2 = TextureMap.getSubId(Blocks.JIGSAW, "_bottom");
+		Identifier identifier3 = TextureMap.getSubId(Blocks.JIGSAW, "_side");
+		Identifier identifier4 = TextureMap.getSubId(Blocks.JIGSAW, "_lock");
+		TextureMap textureMap = new TextureMap()
 			.put(TextureKey.DOWN, identifier3)
 			.put(TextureKey.WEST, identifier3)
 			.put(TextureKey.EAST, identifier3)
@@ -3404,7 +3420,7 @@ public class BlockStateModelGenerator {
 			.put(TextureKey.NORTH, identifier)
 			.put(TextureKey.SOUTH, identifier2)
 			.put(TextureKey.UP, identifier4);
-		Identifier identifier5 = Models.CUBE_DIRECTIONAL.upload(Blocks.JIGSAW, texture, this.modelCollector);
+		Identifier identifier5 = Models.CUBE_DIRECTIONAL.upload(Blocks.JIGSAW, textureMap, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.JIGSAW, BlockStateVariant.create().put(VariantSettings.MODEL, identifier5))
@@ -3420,8 +3436,8 @@ public class BlockStateModelGenerator {
 		Identifier identifier = ModelIds.getBlockModelId(block);
 		TexturedModel texturedModel = TexturedModel.CUBE_ALL.get(block);
 		Block block2 = Blocks.PETRIFIED_OAK_SLAB;
-		Identifier identifier2 = Models.SLAB.upload(block2, texturedModel.getTexture(), this.modelCollector);
-		Identifier identifier3 = Models.SLAB_TOP.upload(block2, texturedModel.getTexture(), this.modelCollector);
+		Identifier identifier2 = Models.SLAB.upload(block2, texturedModel.getTextures(), this.modelCollector);
+		Identifier identifier3 = Models.SLAB_TOP.upload(block2, texturedModel.getTextures(), this.modelCollector);
 		this.blockStateCollector.accept(createSlabBlockState(block2, identifier2, identifier3, identifier));
 	}
 
@@ -3484,13 +3500,13 @@ public class BlockStateModelGenerator {
 		this.registerPottedAzaleaBush(Blocks.POTTED_AZALEA_BUSH);
 		this.registerPottedAzaleaBush(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
 		this.registerCaveVines();
-		this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
+		this.registerWoolAndCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
 		this.registerLightBlock();
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
 		this.registerItemModel(Items.STRUCTURE_VOID);
-		this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
+		this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, TextureMap.getSubId(Blocks.PISTON, "_side"));
 		this.registerSimpleCubeAll(Blocks.COAL_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COAL_ORE);
 		this.registerSimpleCubeAll(Blocks.COAL_BLOCK);
@@ -3623,8 +3639,8 @@ public class BlockStateModelGenerator {
 		this.registerNorthDefaultHorizontalRotation(Blocks.BIG_DRIPLEAF_STEM);
 		this.registerTorch(Blocks.TORCH, Blocks.WALL_TORCH);
 		this.registerTorch(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH);
-		this.registerCubeWithCustomTexture(Blocks.CRAFTING_TABLE, Blocks.OAK_PLANKS, Texture::frontSideWithCustomBottom);
-		this.registerCubeWithCustomTexture(Blocks.FLETCHING_TABLE, Blocks.BIRCH_PLANKS, Texture::frontTopSide);
+		this.registerCubeWithCustomTextures(Blocks.CRAFTING_TABLE, Blocks.OAK_PLANKS, TextureMap::frontSideWithCustomBottom);
+		this.registerCubeWithCustomTextures(Blocks.FLETCHING_TABLE, Blocks.BIRCH_PLANKS, TextureMap::frontTopSide);
 		this.registerNetherrackBottomCustomTop(Blocks.CRIMSON_NYLIUM);
 		this.registerNetherrackBottomCustomTop(Blocks.WARPED_NYLIUM);
 		this.registerFurnaceLikeOrientable(Blocks.DISPENSER);
@@ -3646,8 +3662,8 @@ public class BlockStateModelGenerator {
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerNorthDefaultHorizontalRotated(Blocks.LOOM, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerPumpkins();
-		this.registerBeehive(Blocks.BEE_NEST, Texture::sideFrontTopBottom);
-		this.registerBeehive(Blocks.BEEHIVE, Texture::sideFrontEnd);
+		this.registerBeehive(Blocks.BEE_NEST, TextureMap::sideFrontTopBottom);
+		this.registerBeehive(Blocks.BEEHIVE, TextureMap::sideFrontEnd);
 		this.registerCrop(Blocks.BEETROOTS, Properties.AGE_3, 0, 1, 2, 3);
 		this.registerCrop(Blocks.CARROTS, Properties.AGE_7, 0, 0, 1, 1, 2, 2, 2, 3);
 		this.registerCrop(Blocks.NETHER_WART, Properties.AGE_3, 0, 1, 1, 2);
@@ -3850,22 +3866,22 @@ public class BlockStateModelGenerator {
 			Blocks.RED_GLAZED_TERRACOTTA,
 			Blocks.BLACK_GLAZED_TERRACOTTA
 		);
-		this.registerCarpet(Blocks.WHITE_WOOL, Blocks.WHITE_CARPET);
-		this.registerCarpet(Blocks.ORANGE_WOOL, Blocks.ORANGE_CARPET);
-		this.registerCarpet(Blocks.MAGENTA_WOOL, Blocks.MAGENTA_CARPET);
-		this.registerCarpet(Blocks.LIGHT_BLUE_WOOL, Blocks.LIGHT_BLUE_CARPET);
-		this.registerCarpet(Blocks.YELLOW_WOOL, Blocks.YELLOW_CARPET);
-		this.registerCarpet(Blocks.LIME_WOOL, Blocks.LIME_CARPET);
-		this.registerCarpet(Blocks.PINK_WOOL, Blocks.PINK_CARPET);
-		this.registerCarpet(Blocks.GRAY_WOOL, Blocks.GRAY_CARPET);
-		this.registerCarpet(Blocks.LIGHT_GRAY_WOOL, Blocks.LIGHT_GRAY_CARPET);
-		this.registerCarpet(Blocks.CYAN_WOOL, Blocks.CYAN_CARPET);
-		this.registerCarpet(Blocks.PURPLE_WOOL, Blocks.PURPLE_CARPET);
-		this.registerCarpet(Blocks.BLUE_WOOL, Blocks.BLUE_CARPET);
-		this.registerCarpet(Blocks.BROWN_WOOL, Blocks.BROWN_CARPET);
-		this.registerCarpet(Blocks.GREEN_WOOL, Blocks.GREEN_CARPET);
-		this.registerCarpet(Blocks.RED_WOOL, Blocks.RED_CARPET);
-		this.registerCarpet(Blocks.BLACK_WOOL, Blocks.BLACK_CARPET);
+		this.registerWoolAndCarpet(Blocks.WHITE_WOOL, Blocks.WHITE_CARPET);
+		this.registerWoolAndCarpet(Blocks.ORANGE_WOOL, Blocks.ORANGE_CARPET);
+		this.registerWoolAndCarpet(Blocks.MAGENTA_WOOL, Blocks.MAGENTA_CARPET);
+		this.registerWoolAndCarpet(Blocks.LIGHT_BLUE_WOOL, Blocks.LIGHT_BLUE_CARPET);
+		this.registerWoolAndCarpet(Blocks.YELLOW_WOOL, Blocks.YELLOW_CARPET);
+		this.registerWoolAndCarpet(Blocks.LIME_WOOL, Blocks.LIME_CARPET);
+		this.registerWoolAndCarpet(Blocks.PINK_WOOL, Blocks.PINK_CARPET);
+		this.registerWoolAndCarpet(Blocks.GRAY_WOOL, Blocks.GRAY_CARPET);
+		this.registerWoolAndCarpet(Blocks.LIGHT_GRAY_WOOL, Blocks.LIGHT_GRAY_CARPET);
+		this.registerWoolAndCarpet(Blocks.CYAN_WOOL, Blocks.CYAN_CARPET);
+		this.registerWoolAndCarpet(Blocks.PURPLE_WOOL, Blocks.PURPLE_CARPET);
+		this.registerWoolAndCarpet(Blocks.BLUE_WOOL, Blocks.BLUE_CARPET);
+		this.registerWoolAndCarpet(Blocks.BROWN_WOOL, Blocks.BROWN_CARPET);
+		this.registerWoolAndCarpet(Blocks.GREEN_WOOL, Blocks.GREEN_CARPET);
+		this.registerWoolAndCarpet(Blocks.RED_WOOL, Blocks.RED_CARPET);
+		this.registerWoolAndCarpet(Blocks.BLACK_WOOL, Blocks.BLACK_CARPET);
 		this.registerFlowerPotPlant(Blocks.FERN, Blocks.POTTED_FERN, BlockStateModelGenerator.TintType.TINTED);
 		this.registerFlowerPotPlant(Blocks.DANDELION, Blocks.POTTED_DANDELION, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerFlowerPotPlant(Blocks.POPPY, Blocks.POTTED_POPPY, BlockStateModelGenerator.TintType.NOT_TINTED);
@@ -3902,7 +3918,7 @@ public class BlockStateModelGenerator {
 		this.excludeFromSimpleItemModelGeneration(Blocks.WEEPING_VINES_PLANT);
 		this.registerItemModel(Blocks.TWISTING_VINES, "_plant");
 		this.excludeFromSimpleItemModelGeneration(Blocks.TWISTING_VINES_PLANT);
-		this.registerTintableCross(Blocks.BAMBOO_SAPLING, BlockStateModelGenerator.TintType.TINTED, Texture.cross(Texture.getSubId(Blocks.BAMBOO, "_stage0")));
+		this.registerTintableCross(Blocks.BAMBOO_SAPLING, BlockStateModelGenerator.TintType.TINTED, TextureMap.cross(TextureMap.getSubId(Blocks.BAMBOO, "_stage0")));
 		this.registerBamboo();
 		this.registerTintableCross(Blocks.COBWEB, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerDoubleBlock(Blocks.LILAC, BlockStateModelGenerator.TintType.NOT_TINTED);
@@ -4036,11 +4052,12 @@ public class BlockStateModelGenerator {
 
 		for (int i = 0; i < 16; i++) {
 			String string = String.format("_%02d", i);
-			Identifier identifier = Texture.getSubId(Items.LIGHT, string);
+			Identifier identifier = TextureMap.getSubId(Items.LIGHT, string);
 			singleProperty.register(
-				i, BlockStateVariant.create().put(VariantSettings.MODEL, Models.PARTICLE.upload(Blocks.LIGHT, string, Texture.particle(identifier), this.modelCollector))
+				i,
+				BlockStateVariant.create().put(VariantSettings.MODEL, Models.PARTICLE.upload(Blocks.LIGHT, string, TextureMap.particle(identifier), this.modelCollector))
 			);
-			Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), Texture.layer0(identifier), this.modelCollector);
+			Models.GENERATED.upload(ModelIds.getItemSubModelId(Items.LIGHT, string), TextureMap.layer0(identifier), this.modelCollector);
 		}
 
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.LIGHT).coordinate(singleProperty));
@@ -4048,16 +4065,16 @@ public class BlockStateModelGenerator {
 
 	private void registerCandle(Block candle, Block cake) {
 		this.registerItemModel(candle.asItem());
-		Texture texture = Texture.all(Texture.getId(candle));
-		Texture texture2 = Texture.all(Texture.getSubId(candle, "_lit"));
-		Identifier identifier = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle", texture, this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles", texture, this.modelCollector);
-		Identifier identifier3 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles", texture, this.modelCollector);
-		Identifier identifier4 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles", texture, this.modelCollector);
-		Identifier identifier5 = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle_lit", texture2, this.modelCollector);
-		Identifier identifier6 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles_lit", texture2, this.modelCollector);
-		Identifier identifier7 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles_lit", texture2, this.modelCollector);
-		Identifier identifier8 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles_lit", texture2, this.modelCollector);
+		TextureMap textureMap = TextureMap.all(TextureMap.getId(candle));
+		TextureMap textureMap2 = TextureMap.all(TextureMap.getSubId(candle, "_lit"));
+		Identifier identifier = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle", textureMap, this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles", textureMap, this.modelCollector);
+		Identifier identifier3 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles", textureMap, this.modelCollector);
+		Identifier identifier4 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles", textureMap, this.modelCollector);
+		Identifier identifier5 = Models.TEMPLATE_CANDLE.upload(candle, "_one_candle_lit", textureMap2, this.modelCollector);
+		Identifier identifier6 = Models.TEMPLATE_TWO_CANDLES.upload(candle, "_two_candles_lit", textureMap2, this.modelCollector);
+		Identifier identifier7 = Models.TEMPLATE_THREE_CANDLES.upload(candle, "_three_candles_lit", textureMap2, this.modelCollector);
+		Identifier identifier8 = Models.TEMPLATE_FOUR_CANDLES.upload(candle, "_four_candles_lit", textureMap2, this.modelCollector);
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(candle)
@@ -4073,30 +4090,30 @@ public class BlockStateModelGenerator {
 							.register(4, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier8))
 					)
 			);
-		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, Texture.candleCake(candle, false), this.modelCollector);
-		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, "_lit", Texture.candleCake(candle, true), this.modelCollector);
+		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, TextureMap.candleCake(candle, false), this.modelCollector);
+		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, "_lit", TextureMap.candleCake(candle, true), this.modelCollector);
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cake).coordinate(createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
 	}
 
 	class BlockTexturePool {
-		private final Texture texture;
+		private final TextureMap textures;
 		private final Map<Model, Identifier> knownModels = Maps.<Model, Identifier>newHashMap();
 		@Nullable
 		private BlockFamily family;
 		@Nullable
 		private Identifier baseModelId;
 
-		public BlockTexturePool(Texture texture) {
-			this.texture = texture;
+		public BlockTexturePool(TextureMap textures) {
+			this.textures = textures;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool base(Block block, Model model) {
-			this.baseModelId = model.upload(block, this.texture, BlockStateModelGenerator.this.modelCollector);
+			this.baseModelId = model.upload(block, this.textures, BlockStateModelGenerator.this.modelCollector);
 			if (BlockStateModelGenerator.this.stoneStateFactories.containsKey(block)) {
 				BlockStateModelGenerator.this.blockStateCollector
 					.accept(
 						((BlockStateModelGenerator.StateFactory)BlockStateModelGenerator.this.stoneStateFactories.get(block))
-							.create(block, this.baseModelId, this.texture, BlockStateModelGenerator.this.modelCollector)
+							.create(block, this.baseModelId, this.textures, BlockStateModelGenerator.this.modelCollector)
 					);
 			} else {
 				BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
@@ -4119,46 +4136,46 @@ public class BlockStateModelGenerator {
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool button(Block buttonBlock) {
-			Identifier identifier = Models.BUTTON.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.BUTTON_PRESSED.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.BUTTON.upload(buttonBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.BUTTON_PRESSED.upload(buttonBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createButtonBlockState(buttonBlock, identifier, identifier2));
-			Identifier identifier3 = Models.BUTTON_INVENTORY.upload(buttonBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier3 = Models.BUTTON_INVENTORY.upload(buttonBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.registerParentedItemModel(buttonBlock, identifier3);
 			return this;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool wall(Block wallBlock) {
-			Identifier identifier = Models.TEMPLATE_WALL_POST.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.TEMPLATE_WALL_SIDE.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier3 = Models.TEMPLATE_WALL_SIDE_TALL.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.TEMPLATE_WALL_POST.upload(wallBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.TEMPLATE_WALL_SIDE.upload(wallBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier3 = Models.TEMPLATE_WALL_SIDE_TALL.upload(wallBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createWallBlockState(wallBlock, identifier, identifier2, identifier3));
-			Identifier identifier4 = Models.WALL_INVENTORY.upload(wallBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier4 = Models.WALL_INVENTORY.upload(wallBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.registerParentedItemModel(wallBlock, identifier4);
 			return this;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool fence(Block fenceBlock) {
-			Identifier identifier = Models.FENCE_POST.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.FENCE_SIDE.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.FENCE_POST.upload(fenceBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.FENCE_SIDE.upload(fenceBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createFenceBlockState(fenceBlock, identifier, identifier2));
-			Identifier identifier3 = Models.FENCE_INVENTORY.upload(fenceBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier3 = Models.FENCE_INVENTORY.upload(fenceBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.registerParentedItemModel(fenceBlock, identifier3);
 			return this;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool fenceGate(Block fenceGateBlock) {
-			Identifier identifier = Models.TEMPLATE_FENCE_GATE_OPEN.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.TEMPLATE_FENCE_GATE.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier3 = Models.TEMPLATE_FENCE_GATE_WALL_OPEN.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier4 = Models.TEMPLATE_FENCE_GATE_WALL.upload(fenceGateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.TEMPLATE_FENCE_GATE_OPEN.upload(fenceGateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.TEMPLATE_FENCE_GATE.upload(fenceGateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier3 = Models.TEMPLATE_FENCE_GATE_WALL_OPEN.upload(fenceGateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier4 = Models.TEMPLATE_FENCE_GATE_WALL.upload(fenceGateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector
 				.accept(BlockStateModelGenerator.createFenceGateBlockState(fenceGateBlock, identifier, identifier2, identifier3, identifier4));
 			return this;
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool pressurePlate(Block pressurePlateBlock) {
-			Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlateBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlateBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector
 				.accept(BlockStateModelGenerator.createPressurePlateBlockState(pressurePlateBlock, identifier, identifier2));
 			return this;
@@ -4169,7 +4186,7 @@ public class BlockStateModelGenerator {
 				throw new IllegalStateException("Family not defined");
 			} else {
 				Block block = (Block)this.family.getVariants().get(BlockFamily.Variant.WALL_SIGN);
-				Identifier identifier = Models.PARTICLE.upload(signBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+				Identifier identifier = Models.PARTICLE.upload(signBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 				BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(signBlock, identifier));
 				BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
 				BlockStateModelGenerator.this.registerItemModel(signBlock.asItem());
@@ -4220,7 +4237,7 @@ public class BlockStateModelGenerator {
 		}
 
 		private Identifier ensureModel(Model model, Block block) {
-			return (Identifier)this.knownModels.computeIfAbsent(model, newModel -> newModel.upload(block, this.texture, BlockStateModelGenerator.this.modelCollector));
+			return (Identifier)this.knownModels.computeIfAbsent(model, newModel -> newModel.upload(block, this.textures, BlockStateModelGenerator.this.modelCollector));
 		}
 
 		public BlockStateModelGenerator.BlockTexturePool family(BlockFamily family) {
@@ -4243,7 +4260,7 @@ public class BlockStateModelGenerator {
 		private final Identifier modelId;
 
 		public BuiltinModelPool(Identifier modelId, Block block) {
-			this.modelId = Models.PARTICLE.upload(modelId, Texture.particle(block), BlockStateModelGenerator.this.modelCollector);
+			this.modelId = Models.PARTICLE.upload(modelId, TextureMap.particle(block), BlockStateModelGenerator.this.modelCollector);
 		}
 
 		public BlockStateModelGenerator.BuiltinModelPool includeWithItem(Block... blocks) {
@@ -4264,7 +4281,7 @@ public class BlockStateModelGenerator {
 
 		public BlockStateModelGenerator.BuiltinModelPool includeWithItem(Model model, Block... blocks) {
 			for (Block block : blocks) {
-				model.upload(ModelIds.getItemModelId(block.asItem()), Texture.particle(block), BlockStateModelGenerator.this.modelCollector);
+				model.upload(ModelIds.getItemModelId(block.asItem()), TextureMap.particle(block), BlockStateModelGenerator.this.modelCollector);
 			}
 
 			return this.includeWithItem(blocks);
@@ -4272,28 +4289,28 @@ public class BlockStateModelGenerator {
 	}
 
 	class LogTexturePool {
-		private final Texture texture;
+		private final TextureMap textures;
 
-		public LogTexturePool(Texture texture) {
-			this.texture = texture;
+		public LogTexturePool(TextureMap textures) {
+			this.textures = textures;
 		}
 
 		public BlockStateModelGenerator.LogTexturePool wood(Block woodBlock) {
-			Texture texture = this.texture.copyAndAdd(TextureKey.END, this.texture.getTexture(TextureKey.SIDE));
-			Identifier identifier = Models.CUBE_COLUMN.upload(woodBlock, texture, BlockStateModelGenerator.this.modelCollector);
+			TextureMap textureMap = this.textures.copyAndAdd(TextureKey.END, this.textures.getTexture(TextureKey.SIDE));
+			Identifier identifier = Models.CUBE_COLUMN.upload(woodBlock, textureMap, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(woodBlock, identifier));
 			return this;
 		}
 
 		public BlockStateModelGenerator.LogTexturePool stem(Block stemBlock) {
-			Identifier identifier = Models.CUBE_COLUMN.upload(stemBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.CUBE_COLUMN.upload(stemBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(stemBlock, identifier));
 			return this;
 		}
 
 		public BlockStateModelGenerator.LogTexturePool log(Block logBlock) {
-			Identifier identifier = Models.CUBE_COLUMN.upload(logBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
-			Identifier identifier2 = Models.CUBE_COLUMN_HORIZONTAL.upload(logBlock, this.texture, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier = Models.CUBE_COLUMN.upload(logBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
+			Identifier identifier2 = Models.CUBE_COLUMN_HORIZONTAL.upload(logBlock, this.textures, BlockStateModelGenerator.this.modelCollector);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createAxisRotatedBlockState(logBlock, identifier, identifier2));
 			return this;
 		}
@@ -4301,7 +4318,7 @@ public class BlockStateModelGenerator {
 
 	@FunctionalInterface
 	interface StateFactory {
-		BlockStateSupplier create(Block block, Identifier modelId, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector);
+		BlockStateSupplier create(Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector);
 	}
 
 	static enum TintType {

@@ -1978,8 +1978,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void setFireTicks(int ticks) {
-		super.setFireTicks(this.abilities.invulnerable ? Math.min(ticks, 1) : ticks);
+	public void setFireTicks(int fireTicks) {
+		super.setFireTicks(this.abilities.invulnerable ? Math.min(fireTicks, 1) : fireTicks);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -29,6 +30,7 @@ import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.UntamedActiveTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -83,16 +85,18 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	private float lastShakeProgress;
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	@Nullable
-	private UUID targetUuid;
+	private UUID angryAt;
 
 	public WolfEntity(EntityType<? extends WolfEntity> entityType, World world) {
 		super(entityType, world);
 		this.setTamed(false);
+		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0F);
 	}
 
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
+		this.goalSelector.add(1, new WolfEntity.WolfEscapeDangerGoal(1.5));
 		this.goalSelector.add(2, new SitGoal(this));
 		this.goalSelector.add(3, new WolfEntity.AvoidLlamaGoal(this, LlamaEntity.class, 24.0F, 1.5, 1.5));
 		this.goalSelector.add(4, new PounceAtTargetGoal(this, 0.4F));
@@ -440,8 +444,8 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngerTime(int ticks) {
-		this.dataTracker.set(ANGER_TIME, ticks);
+	public void setAngerTime(int angerTime) {
+		this.dataTracker.set(ANGER_TIME, angerTime);
 	}
 
 	@Override
@@ -452,12 +456,12 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Nullable
 	@Override
 	public UUID getAngryAt() {
-		return this.targetUuid;
+		return this.angryAt;
 	}
 
 	@Override
-	public void setAngryAt(@Nullable UUID uuid) {
-		this.targetUuid = uuid;
+	public void setAngryAt(@Nullable UUID angryAt) {
+		this.angryAt = angryAt;
 	}
 
 	public DyeColor getCollarColor() {
@@ -558,6 +562,17 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		public void tick() {
 			WolfEntity.this.setTarget(null);
 			super.tick();
+		}
+	}
+
+	class WolfEscapeDangerGoal extends EscapeDangerGoal {
+		public WolfEscapeDangerGoal(double speed) {
+			super(WolfEntity.this, speed);
+		}
+
+		@Override
+		protected boolean isInDanger() {
+			return this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
 		}
 	}
 }

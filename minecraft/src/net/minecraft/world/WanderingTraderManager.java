@@ -13,10 +13,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.spawner.Spawner;
 
 public class WanderingTraderManager implements Spawner {
 	private static final int DEFAULT_SPAWN_TIMER = 1200;

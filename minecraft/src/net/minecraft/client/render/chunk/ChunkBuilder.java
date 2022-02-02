@@ -272,15 +272,15 @@ public class ChunkBuilder {
 		private boolean needsRebuild = true;
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 		private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
-			for (int ix = 0; ix < mutables.length; ix++) {
-				mutables[ix] = new BlockPos.Mutable();
+			for (int i = 0; i < mutables.length; i++) {
+				mutables[i] = new BlockPos.Mutable();
 			}
 		});
 		private boolean needsImportantRebuild;
 
-		public BuiltChunk(int index, int i, int j, int k) {
+		public BuiltChunk(int index, int originX, int originY, int originZ) {
 			this.index = index;
-			this.setOrigin(i, j, k);
+			this.setOrigin(originX, originY, originZ);
 		}
 
 		private boolean isChunkNonEmpty(BlockPos pos) {
@@ -298,7 +298,7 @@ public class ChunkBuilder {
 					&& this.isChunkNonEmpty(this.neighborPositions[Direction.SOUTH.ordinal()]);
 		}
 
-		public Box method_40051() {
+		public Box getBoundingBox() {
 			return this.boundingBox;
 		}
 
@@ -525,7 +525,8 @@ public class ChunkBuilder {
 							}
 						}
 
-						FluidState fluidState = chunkRendererRegion.getFluidState(blockPos3);
+						BlockState blockState2 = chunkRendererRegion.getBlockState(blockPos3);
+						FluidState fluidState = blockState2.getFluidState();
 						if (!fluidState.isEmpty()) {
 							RenderLayer renderLayer = RenderLayers.getFluidLayer(fluidState);
 							BufferBuilder bufferBuilder = buffers.get(renderLayer);
@@ -533,7 +534,7 @@ public class ChunkBuilder {
 								BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 							}
 
-							if (blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, fluidState)) {
+							if (blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState2, fluidState)) {
 								data.empty = false;
 								data.nonEmptyLayers.add(renderLayer);
 							}

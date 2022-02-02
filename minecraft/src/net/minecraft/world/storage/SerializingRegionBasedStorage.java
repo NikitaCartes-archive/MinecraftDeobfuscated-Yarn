@@ -60,13 +60,13 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
-		while (this.method_40020() && shouldKeepTicking.getAsBoolean()) {
+		while (this.hasUnsavedElements() && shouldKeepTicking.getAsBoolean()) {
 			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
 			this.save(chunkPos);
 		}
 	}
 
-	public boolean method_40020() {
+	public boolean hasUnsavedElements() {
 		return !this.unsavedElements.isEmpty();
 	}
 
@@ -128,13 +128,13 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
+	private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {
 		if (data == null) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				this.loadedElements.put(chunkSectionPosAsLong(pos, i), Optional.empty());
 			}
 		} else {
-			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, data);
+			Dynamic<T> dynamic = new Dynamic<>(ops, data);
 			int j = getDataVersion(dynamic);
 			int k = SharedConstants.getGameVersion().getWorldVersion();
 			boolean bl = j != k;
@@ -147,7 +147,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 					.result()
 					.flatMap(dynamicx -> ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
 				this.loadedElements.put(m, optional);
-				optional.ifPresent(object -> {
+				optional.ifPresent(sections -> {
 					this.onLoad(m);
 					if (bl) {
 						this.onUpdate(m);
@@ -215,7 +215,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	public void saveChunk(ChunkPos pos) {
-		if (this.method_40020()) {
+		if (this.hasUnsavedElements()) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				long l = chunkSectionPosAsLong(pos, i);
 				if (this.unsavedElements.contains(l)) {

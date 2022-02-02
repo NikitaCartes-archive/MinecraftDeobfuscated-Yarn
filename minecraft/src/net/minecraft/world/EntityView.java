@@ -62,6 +62,12 @@ public interface EntityView {
 		return this.getOtherEntities(except, box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
+	/**
+	 * {@return {@code true} if {@code shape} does not intersect
+	 * with non-spectator entities except {@code except}}
+	 * 
+	 * @implNote This always returns {@code true} if {@code shape} is {@linkplain VoxelShape#isEmpty empty}.
+	 */
 	default boolean doesNotIntersectEntities(@Nullable Entity except, VoxelShape shape) {
 		if (shape.isEmpty()) {
 			return true;

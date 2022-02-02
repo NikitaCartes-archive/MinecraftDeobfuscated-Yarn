@@ -177,7 +177,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		this.lastOutput = lastOutput;
 	}
 
-	public void setTrackingOutput(boolean trackOutput) {
+	public void setTrackOutput(boolean trackOutput) {
 		this.trackOutput = trackOutput;
 	}
 

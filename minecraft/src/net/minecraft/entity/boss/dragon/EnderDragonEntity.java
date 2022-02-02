@@ -808,7 +808,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		double e;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0, 1.0);
+			double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0, 1.0);
 			e = (double)segmentOffset / d;
 		} else if (phase.isSittingOrHovering()) {
 			e = (double)segmentOffset;
@@ -827,7 +827,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		Vec3d vec3d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
 			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
+			float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0F, 1.0F);
 			float g = 6.0F / f;
 			float h = this.getPitch();
 			float i = 1.5F;

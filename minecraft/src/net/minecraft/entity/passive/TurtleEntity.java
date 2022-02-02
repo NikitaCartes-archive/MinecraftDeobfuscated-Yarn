@@ -566,7 +566,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (this.mob.getAttacker() == null && !this.mob.isOnFire()) {
+			if (!this.isInDanger()) {
 				return false;
 			} else {
 				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7);

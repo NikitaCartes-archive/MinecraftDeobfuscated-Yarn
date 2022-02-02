@@ -65,7 +65,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		DripstoneClusterFeatureConfig config
 	) {
 		Optional<CaveSurface> optional = CaveSurface.create(
-			world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava
+			world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::cannotGenerate
 		);
 		if (optional.isPresent()) {
 			OptionalInt optionalInt = ((CaveSurface)optional.get()).getCeilingHeight();

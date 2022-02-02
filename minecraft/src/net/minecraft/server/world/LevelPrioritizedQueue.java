@@ -38,7 +38,7 @@ public class LevelPrioritizedQueue<T> {
 				.get(fromLevel);
 			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.remove(pos.toLong());
 			if (fromLevel == this.firstNonEmptyLevel) {
-				while (this.method_39993() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
+				while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
 					this.firstNonEmptyLevel++;
 				}
 			}
@@ -75,7 +75,7 @@ public class LevelPrioritizedQueue<T> {
 			}
 		}
 
-		while (this.method_39993() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
+		while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
 			this.firstNonEmptyLevel++;
 		}
 
@@ -90,7 +90,7 @@ public class LevelPrioritizedQueue<T> {
 	public Stream<Either<T, Runnable>> poll() {
 		if (this.blockingChunks.size() >= this.maxBlocking) {
 			return null;
-		} else if (!this.method_39993()) {
+		} else if (!this.hasQueuedElement()) {
 			return null;
 		} else {
 			int i = this.firstNonEmptyLevel;
@@ -99,7 +99,7 @@ public class LevelPrioritizedQueue<T> {
 			long l = long2ObjectLinkedOpenHashMap.firstLongKey();
 			List<Optional<T>> list = long2ObjectLinkedOpenHashMap.removeFirst();
 
-			while (this.method_39993() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
+			while (this.hasQueuedElement() && ((Long2ObjectLinkedOpenHashMap)this.levelToPosToElements.get(this.firstNonEmptyLevel)).isEmpty()) {
 				this.firstNonEmptyLevel++;
 			}
 
@@ -107,7 +107,7 @@ public class LevelPrioritizedQueue<T> {
 		}
 	}
 
-	public boolean method_39993() {
+	public boolean hasQueuedElement() {
 		return this.firstNonEmptyLevel < LEVEL_COUNT;
 	}
 

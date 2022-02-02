@@ -248,7 +248,7 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(2, new PandaEntity.ExtinguishFireGoal(this, 2.0));
+		this.goalSelector.add(2, new PandaEntity.PandaEscapeDangerGoal(this, 2.0));
 		this.goalSelector.add(2, new PandaEntity.PandaMateGoal(this, 1.0));
 		this.goalSelector.add(3, new PandaEntity.AttackGoal(this, 1.2F, true));
 		this.goalSelector.add(4, new TemptGoal(this, 1.0, Ingredient.ofItems(Blocks.BAMBOO.asItem()), false));
@@ -694,42 +694,6 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	static class ExtinguishFireGoal extends EscapeDangerGoal {
-		private final PandaEntity panda;
-
-		public ExtinguishFireGoal(PandaEntity panda, double speed) {
-			super(panda, speed);
-			this.panda = panda;
-		}
-
-		@Override
-		public boolean canStart() {
-			if (!this.panda.isOnFire()) {
-				return false;
-			} else {
-				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 5);
-				if (blockPos != null) {
-					this.targetX = (double)blockPos.getX();
-					this.targetY = (double)blockPos.getY();
-					this.targetZ = (double)blockPos.getZ();
-					return true;
-				} else {
-					return this.findTarget();
-				}
-			}
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			if (this.panda.isScared()) {
-				this.panda.getNavigation().stop();
-				return false;
-			} else {
-				return super.shouldContinue();
-			}
-		}
-	}
-
 	public static enum Gene {
 		NORMAL(0, "normal", false),
 		LAZY(1, "lazy", false),
@@ -889,6 +853,30 @@ public class PandaEntity extends AnimalEntity {
 		public void tick() {
 			if (this.target != null) {
 				super.tick();
+			}
+		}
+	}
+
+	static class PandaEscapeDangerGoal extends EscapeDangerGoal {
+		private final PandaEntity panda;
+
+		public PandaEscapeDangerGoal(PandaEntity panda, double speed) {
+			super(panda, speed);
+			this.panda = panda;
+		}
+
+		@Override
+		protected boolean isInDanger() {
+			return this.mob.shouldEscapePowderSnow() || this.mob.isOnFire();
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			if (this.panda.isScared()) {
+				this.panda.getNavigation().stop();
+				return false;
+			} else {
+				return super.shouldContinue();
 			}
 		}
 	}

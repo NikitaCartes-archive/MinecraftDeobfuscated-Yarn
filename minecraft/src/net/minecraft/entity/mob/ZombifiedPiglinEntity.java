@@ -47,7 +47,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
 	@Nullable
-	private UUID targetUuid;
+	private UUID angryAt;
 	private static final int field_30524 = 10;
 	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
 	private int angerPassingCooldown;
@@ -58,8 +58,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngryAt(@Nullable UUID uuid) {
-		this.targetUuid = uuid;
+	public void setAngryAt(@Nullable UUID angryAt) {
+		this.angryAt = angryAt;
 	}
 
 	@Override
@@ -191,8 +191,8 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngerTime(int ticks) {
-		this.angerTime = ticks;
+	public void setAngerTime(int angerTime) {
+		this.angerTime = angerTime;
 	}
 
 	@Override
@@ -233,7 +233,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Nullable
 	@Override
 	public UUID getAngryAt() {
-		return this.targetUuid;
+		return this.angryAt;
 	}
 
 	@Override

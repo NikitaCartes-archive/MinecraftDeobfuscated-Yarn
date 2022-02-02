@@ -135,7 +135,7 @@ public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 
 			if (!world.isClient) {
 				if (BlockItem.getBlockEntityNbt(itemStack) == null) {
-					commandBlockExecutor.setTrackingOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
+					commandBlockExecutor.setTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
 					commandBlockBlockEntity.setAuto(this.auto);
 				}
 

@@ -24,7 +24,6 @@ import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 
@@ -153,7 +152,7 @@ public class VillagerGossips {
 	public void deserialize(Dynamic<?> dynamic) {
 		dynamic.asStream()
 			.map(VillagerGossips.GossipEntry::deserialize)
-			.flatMap(dataResult -> Util.stream(dataResult.result()))
+			.flatMap(dataResult -> dataResult.result().stream())
 			.forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
 	}
 

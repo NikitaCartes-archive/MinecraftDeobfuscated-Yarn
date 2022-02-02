@@ -12,7 +12,7 @@ import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ControlsOptionsScreen extends GameOptionsScreen {
-	private static final int field_36369 = 24;
+	private static final int MARGIN_Y = 24;
 
 	public ControlsOptionsScreen(Screen parent, GameOptions options) {
 		super(parent, options, new TranslatableText("controls.title"));

@@ -139,7 +139,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected final float[] handDropChances = new float[2];
 	private final DefaultedList<ItemStack> armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	protected final float[] armorDropChances = new float[4];
-	private boolean pickUpLoot;
+	private boolean canPickUpLoot;
 	private boolean persistent;
 	private final Map<PathNodeType, Float> pathfindingPenalties = Maps.newEnumMap(PathNodeType.class);
 	@Nullable
@@ -536,8 +536,8 @@ public abstract class MobEntity extends LivingEntity {
 		this.upwardSpeed = upwardSpeed;
 	}
 
-	public void setSidewaysSpeed(float sidewaysMovement) {
-		this.sidewaysSpeed = sidewaysMovement;
+	public void setSidewaysSpeed(float sidewaysSpeed) {
+		this.sidewaysSpeed = sidewaysSpeed;
 	}
 
 	@Override
@@ -1090,11 +1090,11 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean canPickUpLoot() {
-		return this.pickUpLoot;
+		return this.canPickUpLoot;
 	}
 
-	public void setCanPickUpLoot(boolean pickUpLoot) {
-		this.pickUpLoot = pickUpLoot;
+	public void setCanPickUpLoot(boolean canPickUpLoot) {
+		this.canPickUpLoot = canPickUpLoot;
 	}
 
 	@Override

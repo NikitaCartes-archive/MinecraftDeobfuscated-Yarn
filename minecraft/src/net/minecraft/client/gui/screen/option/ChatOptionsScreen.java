@@ -8,7 +8,7 @@ import net.minecraft.client.option.Option;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
-public class ChatOptionsScreen extends NarratorOptionsScreen {
+public class ChatOptionsScreen extends SimpleOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.VISIBILITY,
 		Option.CHAT_COLOR,

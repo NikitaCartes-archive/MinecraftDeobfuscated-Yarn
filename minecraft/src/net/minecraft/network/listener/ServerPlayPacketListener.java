@@ -1,6 +1,5 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.class_6857;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -50,7 +49,7 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 /**
  * A server side packet listener where play stage packets from a client are processed.
  */
-public interface ServerPlayPacketListener extends class_6857 {
+public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onHandSwing(HandSwingC2SPacket packet);
 
 	void onChatMessage(ChatMessageC2SPacket packet);

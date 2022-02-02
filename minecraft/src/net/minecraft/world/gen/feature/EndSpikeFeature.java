@@ -70,7 +70,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			new BlockPos(spike.getCenterX() - i, world.getBottomY(), spike.getCenterZ() - i),
 			new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
-			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1)
+			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ()) <= (double)(i * i + 1)
 				&& blockPos.getY() < spike.getHeight()) {
 				this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
 			} else if (blockPos.getY() > 65) {

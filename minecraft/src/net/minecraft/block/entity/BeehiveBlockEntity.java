@@ -214,7 +214,7 @@ public class BeehiveBlockEntity extends BlockEntity {
 
 							if (beeState == BeehiveBlockEntity.BeeState.HONEY_DELIVERED) {
 								beeEntity.onHoneyDelivered();
-								if (state.isIn(BlockTags.BEEHIVES, abstractBlockState -> abstractBlockState.contains(BeehiveBlock.HONEY_LEVEL))) {
+								if (state.isIn(BlockTags.BEEHIVES, statex -> statex.contains(BeehiveBlock.HONEY_LEVEL))) {
 									int i = getHoneyLevel(state);
 									if (i < 5) {
 										int j = world.random.nextInt(100) == 0 ? 2 : 1;

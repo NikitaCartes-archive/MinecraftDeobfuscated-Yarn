@@ -274,7 +274,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private String getPositionString(BeeDebugRenderer.Bee bee, BlockPos pos) {
-		double d = Math.sqrt(pos.getSquaredDistance(bee.position.getX(), bee.position.getY(), bee.position.getZ(), true));
+		double d = Math.sqrt(pos.getSquaredDistance(bee.position));
 		double e = (double)Math.round(d * 10.0) / 10.0;
 		return pos.toShortString() + " (dist " + e + ")";
 	}

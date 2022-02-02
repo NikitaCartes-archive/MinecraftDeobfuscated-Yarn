@@ -21,7 +21,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
-		PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
+		PlayerEntity playerEntity = villagerEntity.getCustomer();
 		return villagerEntity.isAlive()
 			&& playerEntity != null
 			&& !villagerEntity.isTouchingWater()
@@ -55,7 +55,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 
 	private void update(VillagerEntity villager) {
 		Brain<?> brain = villager.getBrain();
-		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(villager.getCurrentCustomer(), false), this.speed, 2));
-		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(villager.getCurrentCustomer(), true));
+		brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(villager.getCustomer(), false), this.speed, 2));
+		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(villager.getCustomer(), true));
 	}
 }

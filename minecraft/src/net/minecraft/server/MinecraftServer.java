@@ -139,11 +139,7 @@ import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.PhantomSpawner;
-import net.minecraft.world.gen.PillagerSpawner;
-import net.minecraft.world.gen.Spawner;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
@@ -151,6 +147,10 @@ import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.UnmodifiableLevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.spawner.CatSpawner;
+import net.minecraft.world.spawner.PatrolSpawner;
+import net.minecraft.world.spawner.PhantomSpawner;
+import net.minecraft.world.spawner.Spawner;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
@@ -365,7 +365,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		long l = generatorOptions.getSeed();
 		long m = BiomeAccess.hashSeed(l);
 		List<Spawner> list = ImmutableList.of(
-			new PhantomSpawner(), new PillagerSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
+			new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
 		SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
 		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
@@ -653,11 +653,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		}
 
-		while (this.worlds.values().stream().anyMatch(serverWorldx -> serverWorldx.getChunkManager().threadedAnvilChunkStorage.method_39992())) {
+		while (this.worlds.values().stream().anyMatch(world -> world.getChunkManager().threadedAnvilChunkStorage.shouldDelayShutdown())) {
 			this.timeReference = Util.getMeasuringTimeMs() + 1L;
 
 			for (ServerWorld serverWorldx : this.getWorlds()) {
-				serverWorldx.getChunkManager().method_39997();
+				serverWorldx.getChunkManager().removePersistentTickets();
 				serverWorldx.getChunkManager().tick(() -> true, false);
 			}
 
@@ -1378,11 +1378,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Override
-	public void method_40000(Runnable runnable) {
+	public void executeSync(Runnable runnable) {
 		if (this.isStopped()) {
 			throw new RejectedExecutionException("Server already shutting down");
 		} else {
-			super.method_40000(runnable);
+			super.executeSync(runnable);
 		}
 	}
 
@@ -1597,8 +1597,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.enforceWhitelist;
 	}
 
-	public void setEnforceWhitelist(boolean whitelistEnabled) {
-		this.enforceWhitelist = whitelistEnabled;
+	public void setEnforceWhitelist(boolean enforceWhitelist) {
+		this.enforceWhitelist = enforceWhitelist;
 	}
 
 	public float getTickTime() {

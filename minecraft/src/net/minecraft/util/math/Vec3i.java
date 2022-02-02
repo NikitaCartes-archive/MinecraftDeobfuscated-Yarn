@@ -305,14 +305,14 @@ public class Vec3i implements Comparable<Vec3i> {
 	 * {@return whether the distance between here and {@code vec} is less than {@code distance}}
 	 */
 	public boolean isWithinDistance(Vec3i vec, double distance) {
-		return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ(), false) < distance * distance;
+		return this.getSquaredDistance(vec) < MathHelper.square(distance);
 	}
 
 	/**
 	 * {@return whether the distance between here and {@code pos} is less than {@code distance}}
 	 */
 	public boolean isWithinDistance(Position pos, double distance) {
-		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), true) < distance * distance;
+		return this.getSquaredDistance(pos) < MathHelper.square(distance);
 	}
 
 	/**
@@ -321,44 +321,37 @@ public class Vec3i implements Comparable<Vec3i> {
 	 * @see #getSquaredDistance(Vec3i, boolean)
 	 */
 	public double getSquaredDistance(Vec3i vec) {
-		return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ(), true);
+		return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 
 	/**
 	 * {@return the squared distance between here and {@code pos}}
-	 * 
-	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
-	 * to the given pos; or {@code false} to calculate without an offset
 	 */
-	public double getSquaredDistance(Position pos, boolean center) {
-		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), center);
+	public double getSquaredDistance(Position pos) {
+		return this.getSquaredDistanceFromCenter(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	/**
-	 * {@return the squared distance between here and {@code vec}}
-	 * 
-	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
-	 * to the given vec; or {@code false} to calculate without an offset
+	 * {@return the squared distance between the center of this voxel and {@code (x, y, z)}}
+	 * This is equivalent to {@link Vec3d#ofCenter(Vec3i)
+	 * Vec3d.ofCenter(this).squaredDistanceTo(x, y, z)}.
 	 */
-	public double getSquaredDistance(Vec3i vec, boolean center) {
-		return this.getSquaredDistance((double)vec.x, (double)vec.y, (double)vec.z, center);
+	public double getSquaredDistanceFromCenter(double x, double y, double z) {
+		double d = (double)this.getX() + 0.5 - x;
+		double e = (double)this.getY() + 0.5 - y;
+		double f = (double)this.getZ() + 0.5 - z;
+		return d * d + e * e + f * f;
 	}
 
 	/**
-	 * {@return the squared distance between here (center or vertex) and {@code (x, y, z)}}
-	 * If {@code center} is {@code true}, this is equivalent to {@link Vec3d#ofCenter(Vec3i)
-	 * Vec3d.ofCenter(this).squaredDistanceTo(x, y, z)}; otherwise,
-	 * this is equivalent to {@code Vec3d.of(this).squaredDistanceTo(x, y, z)}.
-	 * 
-	 * @param center {@code true} to calculate the distance from the voxel's center (with 0.5 block offset in all axes)
-	 * to the given {@code (x, y, z)}; or {@code false} to calculate without an offset
+	 * {@return the squared distance between here and {@code (x, y, z)}}
+	 * This is equivalent to {@code Vec3d.of(this).squaredDistanceTo(x, y, z)}.
 	 */
-	public double getSquaredDistance(double x, double y, double z, boolean center) {
-		double d = center ? 0.5 : 0.0;
-		double e = (double)this.getX() + d - x;
-		double f = (double)this.getY() + d - y;
-		double g = (double)this.getZ() + d - z;
-		return e * e + f * f + g * g;
+	public double getSquaredDistance(double x, double y, double z) {
+		double d = (double)this.getX() - x;
+		double e = (double)this.getY() - y;
+		double f = (double)this.getZ() - z;
+		return d * d + e * e + f * f;
 	}
 
 	/**

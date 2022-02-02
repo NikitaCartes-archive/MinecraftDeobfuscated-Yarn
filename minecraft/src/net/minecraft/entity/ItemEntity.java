@@ -377,13 +377,13 @@ public class ItemEntity extends Entity {
 	}
 
 	/**
-	 * Sets the owner of this item entity to {@code uuid}.
+	 * Sets the owner of this item entity to {@code owner}.
 	 * 
 	 * <p>Used when an item is given to an entity, but this entity
 	 * does not have enough space in its inventory.
 	 */
-	public void setOwner(@Nullable UUID uuid) {
-		this.owner = uuid;
+	public void setOwner(@Nullable UUID owner) {
+		this.owner = owner;
 	}
 
 	/**
@@ -396,10 +396,10 @@ public class ItemEntity extends Entity {
 	}
 
 	/**
-	 * Sets the thrower of this item entity to {@code uuid}.
+	 * Sets the thrower of this item entity to {@code thrower}.
 	 */
-	public void setThrower(@Nullable UUID uuid) {
-		this.thrower = uuid;
+	public void setThrower(@Nullable UUID thrower) {
+		this.thrower = thrower;
 	}
 
 	/**

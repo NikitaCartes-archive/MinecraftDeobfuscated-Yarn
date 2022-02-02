@@ -25,7 +25,6 @@ import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
@@ -97,7 +96,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param world the input world
 	 */
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).values().stream().flatMap(recipe -> Util.stream(type.match(recipe, world, inventory))).findFirst();
+		return this.getAllOfType(type).values().stream().flatMap(recipe -> type.match(recipe, world, inventory).stream()).findFirst();
 	}
 
 	/**
@@ -133,7 +132,7 @@ public class RecipeManager extends JsonDataLoader {
 		return (List<T>)this.getAllOfType(type)
 			.values()
 			.stream()
-			.flatMap(recipe -> Util.stream(type.match(recipe, world, inventory)))
+			.flatMap(recipe -> type.match(recipe, world, inventory).stream())
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}

@@ -827,7 +827,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
 		if (this.client.currentScreen instanceof DownloadingTerrainScreen downloadingTerrainScreen) {
-			downloadingTerrainScreen.method_40040();
+			downloadingTerrainScreen.setReady();
 		}
 	}
 
@@ -2201,8 +2201,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
 			merchantScreenHandler.setExperienceFromServer(packet.getExperience());
 			merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
-			merchantScreenHandler.setCanLevel(packet.isLeveled());
-			merchantScreenHandler.setRefreshTrades(packet.isRefreshable());
+			merchantScreenHandler.setLeveled(packet.isLeveled());
+			merchantScreenHandler.setCanRefreshTrades(packet.isRefreshable());
 		}
 	}
 

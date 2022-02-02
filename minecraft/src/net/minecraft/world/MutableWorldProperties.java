@@ -9,7 +9,7 @@ public interface MutableWorldProperties extends WorldProperties {
 
 	void setSpawnZ(int spawnZ);
 
-	void setSpawnAngle(float angle);
+	void setSpawnAngle(float spawnAngle);
 
 	default void setSpawnPos(BlockPos pos, float angle) {
 		this.setSpawnX(pos.getX());

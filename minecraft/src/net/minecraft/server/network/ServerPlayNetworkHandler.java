@@ -512,7 +512,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 
 				commandBlockExecutor.setCommand(string);
-				commandBlockExecutor.setTrackingOutput(bl);
+				commandBlockExecutor.setTrackOutput(bl);
 				if (!bl) {
 					commandBlockExecutor.setLastOutput(null);
 				}
@@ -541,7 +541,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
 				commandBlockExecutor.setCommand(packet.getCommand());
-				commandBlockExecutor.setTrackingOutput(packet.shouldTrackOutput());
+				commandBlockExecutor.setTrackOutput(packet.shouldTrackOutput());
 				if (!packet.shouldTrackOutput()) {
 					commandBlockExecutor.setLastOutput(null);
 				}
@@ -645,8 +645,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			BlockPos blockPos = packet.getPos();
 			BlockState blockState = this.player.world.getBlockState(blockPos);
 			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
-				jigsawBlockEntity.setAttachmentType(packet.getAttachmentType());
-				jigsawBlockEntity.setTargetPool(packet.getTargetPool());
+				jigsawBlockEntity.setName(packet.getName());
+				jigsawBlockEntity.setTarget(packet.getTarget());
 				jigsawBlockEntity.setPool(packet.getPool());
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());

@@ -723,37 +723,37 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		}
 	}
 
-	private void bobViewWhenHurt(MatrixStack matrices, float f) {
+	private void bobViewWhenHurt(MatrixStack matrices, float tickDelta) {
 		if (this.client.getCameraEntity() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
-			float g = (float)livingEntity.hurtTime - f;
+			float f = (float)livingEntity.hurtTime - tickDelta;
 			if (livingEntity.isDead()) {
-				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
+				float g = Math.min((float)livingEntity.deathTime + tickDelta, 20.0F);
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (g + 200.0F)));
 			}
 
-			if (g < 0.0F) {
+			if (f < 0.0F) {
 				return;
 			}
 
-			g /= (float)livingEntity.maxHurtTime;
-			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
-			float h = livingEntity.knockbackVelocity;
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+			f /= (float)livingEntity.maxHurtTime;
+			f = MathHelper.sin(f * f * f * f * (float) Math.PI);
+			float g = livingEntity.knockbackVelocity;
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-g));
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-f * 14.0F));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
 		}
 	}
 
-	private void bobView(MatrixStack matrices, float f) {
+	private void bobView(MatrixStack matrices, float tickDelta) {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
-			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
-			float h = -(playerEntity.horizontalSpeed + g * f);
-			float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
-			matrices.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
+			float f = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
+			float g = -(playerEntity.horizontalSpeed + f * tickDelta);
+			float h = MathHelper.lerp(tickDelta, playerEntity.prevStrideDistance, playerEntity.strideDistance);
+			matrices.translate((double)(MathHelper.sin(g * (float) Math.PI) * h * 0.5F), (double)(-Math.abs(MathHelper.cos(g * (float) Math.PI) * h)), 0.0);
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(g * (float) Math.PI) * h * 3.0F));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F));
 		}
 	}
 

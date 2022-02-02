@@ -57,11 +57,11 @@ public interface ServerWorldProperties extends MutableWorldProperties {
 	@Nullable
 	UUID getWanderingTraderId();
 
-	void setWanderingTraderId(UUID uuid);
+	void setWanderingTraderId(UUID wanderingTraderId);
 
 	GameMode getGameMode();
 
-	void setWorldBorder(WorldBorder.Properties properties);
+	void setWorldBorder(WorldBorder.Properties worldBorder);
 
 	WorldBorder.Properties getWorldBorder();
 
