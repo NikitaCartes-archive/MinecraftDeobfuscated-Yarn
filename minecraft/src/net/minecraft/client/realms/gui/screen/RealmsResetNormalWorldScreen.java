@@ -59,7 +59,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 				button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 8, row(12), 97, 20, ScreenTexts.BACK, button -> this.onClose()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 8, row(12), 97, 20, ScreenTexts.BACK, button -> this.close()));
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.callback.accept(null);
 	}
 

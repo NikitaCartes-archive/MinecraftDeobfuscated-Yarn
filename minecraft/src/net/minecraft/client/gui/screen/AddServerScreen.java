@@ -91,7 +91,7 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.client.setScreen(this.parent);
 	}
 

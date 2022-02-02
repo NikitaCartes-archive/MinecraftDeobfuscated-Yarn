@@ -85,6 +85,14 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		this.syncWorldEvent(null, eventId, pos, data);
 	}
 
+	/**
+	 * Emits an game event.
+	 * 
+	 * @param entity the entity that triggered the game event, or {@code null} for events
+	 * not triggered by entities (such as dispensers)
+	 * @param event the game event
+	 * @param pos the position where the event occurred
+	 */
 	void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos);
 
 	default void emitGameEvent(GameEvent event, BlockPos pos) {

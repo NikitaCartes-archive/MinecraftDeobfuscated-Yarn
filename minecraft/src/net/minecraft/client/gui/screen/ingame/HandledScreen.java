@@ -567,7 +567,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (this.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
-			this.onClose();
+			this.close();
 			return true;
 		} else {
 			this.handleHotbarKeyPressed(keyCode, scanCode);
@@ -632,8 +632,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.client.player.closeHandledScreen();
-		super.onClose();
+		super.close();
 	}
 }

@@ -406,7 +406,7 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.cancel();
 	}
 

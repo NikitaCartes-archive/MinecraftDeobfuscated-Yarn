@@ -89,7 +89,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
-	public void method_40000(Runnable runnable) {
+	public void executeSync(Runnable runnable) {
 		this.execute(runnable);
 	}
 

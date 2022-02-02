@@ -59,7 +59,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
 	@Nullable
-	private UUID targetUuid;
+	private UUID angryAt;
 
 	public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
 		super(entityType, world);
@@ -127,8 +127,8 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngerTime(int ticks) {
-		this.angerTime = ticks;
+	public void setAngerTime(int angerTime) {
+		this.angerTime = angerTime;
 	}
 
 	@Override
@@ -137,14 +137,14 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngryAt(@Nullable UUID uuid) {
-		this.targetUuid = uuid;
+	public void setAngryAt(@Nullable UUID angryAt) {
+		this.angryAt = angryAt;
 	}
 
 	@Nullable
 	@Override
 	public UUID getAngryAt() {
-		return this.targetUuid;
+		return this.angryAt;
 	}
 
 	@Override
@@ -300,8 +300,8 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 		}
 
 		@Override
-		public boolean canStart() {
-			return !PolarBearEntity.this.isBaby() && !PolarBearEntity.this.isOnFire() ? false : super.canStart();
+		protected boolean isInDanger() {
+			return this.mob.getAttacker() != null && this.mob.isBaby() || this.mob.isOnFire();
 		}
 	}
 

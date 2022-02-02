@@ -201,12 +201,12 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return this.width;
 	}
 
-	public void setWidth(int value) {
-		this.width = value;
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
-	public void setAlpha(float value) {
-		this.alpha = value;
+	public void setAlpha(float alpha) {
+		this.alpha = alpha;
 	}
 
 	public void setMessage(Text message) {

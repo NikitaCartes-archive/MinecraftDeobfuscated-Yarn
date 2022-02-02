@@ -81,7 +81,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UniformIntProvider ANGER_TIME_RANGE = TimeHelper.betweenSeconds(20, 39);
 	private int angerTime;
 	@Nullable
-	private UUID targetUuid;
+	private UUID angryAt;
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
@@ -145,8 +145,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngerTime(int ticks) {
-		this.angerTime = ticks;
+	public void setAngerTime(int angerTime) {
+		this.angerTime = angerTime;
 	}
 
 	@Override
@@ -155,14 +155,14 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void setAngryAt(@Nullable UUID uuid) {
-		this.targetUuid = uuid;
+	public void setAngryAt(@Nullable UUID angryAt) {
+		this.angryAt = angryAt;
 	}
 
 	@Nullable
 	@Override
 	public UUID getAngryAt() {
-		return this.targetUuid;
+		return this.angryAt;
 	}
 
 	public void playAngrySound() {

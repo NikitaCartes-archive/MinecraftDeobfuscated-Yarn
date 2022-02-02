@@ -10,7 +10,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
-public class OnlineOptionsScreen extends NarratorOptionsScreen {
+public class OnlineOptionsScreen extends SimpleOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{Option.REALMS_NOTIFICATIONS, Option.ALLOW_SERVER_LISTING};
 
 	public OnlineOptionsScreen(Screen parent, GameOptions gameOptions) {

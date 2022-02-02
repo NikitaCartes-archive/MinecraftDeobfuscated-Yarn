@@ -241,7 +241,7 @@ public class ProtoChunk extends Chunk {
 			this.setBelowZeroRetrogen(null);
 		}
 
-		this.setShouldSave(true);
+		this.setNeedsSaving(true);
 	}
 
 	@Override

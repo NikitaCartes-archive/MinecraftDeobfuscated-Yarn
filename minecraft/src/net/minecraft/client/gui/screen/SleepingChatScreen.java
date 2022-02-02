@@ -23,7 +23,7 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.stopSleeping();
 	}
 

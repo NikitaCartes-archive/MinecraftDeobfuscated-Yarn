@@ -33,7 +33,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6856;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
@@ -41,7 +40,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.scanner.Query;
+import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
+import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
@@ -78,7 +78,7 @@ public class LevelStorage {
 	private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of(
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
-	private static final String field_36348 = "Data";
+	private static final String DATA_KEY = "Data";
 	final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
@@ -186,7 +186,7 @@ public class LevelStorage {
 	@Nullable
 	private static DataPackSettings readDataPackSettings(File file, DataFixer dataFixer) {
 		try {
-			NbtElement nbtElement = method_40035(file);
+			NbtElement nbtElement = loadCompactLevelData(file);
 			if (nbtElement instanceof NbtCompound nbtCompound) {
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
@@ -202,7 +202,7 @@ public class LevelStorage {
 		return null;
 	}
 
-	static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
+	static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> ops, DataPackSettings dataPackSettings) {
 		return (file, dataFixer) -> {
 			try {
 				NbtCompound nbtCompound = NbtIo.readCompressed(file);
@@ -211,7 +211,7 @@ public class LevelStorage {
 				nbtCompound2.remove("Player");
 				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
 				Dynamic<NbtElement> dynamic = dataFixer.update(
-					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(dynamicOps, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(ops, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
 				Pair<GeneratorOptions, Lifecycle> pair = readGeneratorProperties(dynamic, dataFixer, i);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
@@ -227,7 +227,7 @@ public class LevelStorage {
 	BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
 		return (filex, dataFixer) -> {
 			try {
-				NbtElement nbtElement = method_40035(filex);
+				NbtElement nbtElement = loadCompactLevelData(filex);
 				if (nbtElement instanceof NbtCompound nbtCompound) {
 					NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 					int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
@@ -258,11 +258,18 @@ public class LevelStorage {
 		};
 	}
 
+	/**
+	 * {@return the compact version of the NBT for the level data {@code file}}
+	 * 
+	 * <p>The returned NBT will not have {@code Player} and {@code WorldGenSettings} keys.
+	 */
 	@Nullable
-	private static NbtElement method_40035(File file) throws IOException {
-		class_6856 lv = new class_6856(new Query("Data", NbtCompound.TYPE, "Player"), new Query("Data", NbtCompound.TYPE, "WorldGenSettings"));
-		NbtIo.method_40057(file, lv);
-		return lv.getRoot();
+	private static NbtElement loadCompactLevelData(File file) throws IOException {
+		ExclusiveNbtCollector exclusiveNbtCollector = new ExclusiveNbtCollector(
+			new NbtScanQuery("Data", NbtCompound.TYPE, "Player"), new NbtScanQuery("Data", NbtCompound.TYPE, "WorldGenSettings")
+		);
+		NbtIo.scanCompressed(file, exclusiveNbtCollector);
+		return exclusiveNbtCollector.getRoot();
 	}
 
 	public boolean isLevelNameValid(String name) {
@@ -334,9 +341,9 @@ public class LevelStorage {
 		}
 
 		@Nullable
-		public SaveProperties readLevelProperties(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
+		public SaveProperties readLevelProperties(DynamicOps<NbtElement> ops, DataPackSettings dataPackSettings) {
 			this.checkValid();
-			return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(dynamicOps, dataPackSettings));
+			return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(ops, dataPackSettings));
 		}
 
 		@Nullable
@@ -373,6 +380,7 @@ public class LevelStorage {
 		public void deleteSessionLock() throws IOException {
 			this.checkValid();
 			final Path path = this.directory.resolve("session.lock");
+			LevelStorage.LOGGER.info("Deleting level {}", this.directoryName);
 
 			for(int i = 1; i <= 5; ++i) {
 				LevelStorage.LOGGER.info("Attempt {}...", i);

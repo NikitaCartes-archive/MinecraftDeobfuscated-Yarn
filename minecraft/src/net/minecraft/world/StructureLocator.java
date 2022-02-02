@@ -23,7 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.scanner.Query;
+import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -130,7 +130,9 @@ public class StructureLocator {
 	@Nullable
 	private StructurePresence getStructurePresence(ChunkPos pos, StructureFeature<?> feature, boolean skipExistingChunk, long posLong) {
 		SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
-			new Query(NbtInt.TYPE, "DataVersion"), new Query("Level", "Structures", NbtCompound.TYPE, "Starts"), new Query("structures", NbtCompound.TYPE, "starts")
+			new NbtScanQuery(NbtInt.TYPE, "DataVersion"),
+			new NbtScanQuery("Level", "Structures", NbtCompound.TYPE, "Starts"),
+			new NbtScanQuery("structures", NbtCompound.TYPE, "starts")
 		);
 
 		try {

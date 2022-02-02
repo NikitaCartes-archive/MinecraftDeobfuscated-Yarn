@@ -210,7 +210,7 @@ public class PresetsScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.client.setScreen(this.parent);
 	}
 
@@ -380,7 +380,7 @@ public class PresetsScreen extends Screen {
 			false,
 			false,
 			false,
-			new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE),
+			new FlatChunkGeneratorLayer(116, Blocks.SANDSTONE),
 			new FlatChunkGeneratorLayer(3, Blocks.STONE),
 			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
 		);

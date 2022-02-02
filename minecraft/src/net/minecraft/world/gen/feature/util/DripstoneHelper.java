@@ -114,6 +114,10 @@ public class DripstoneHelper {
 		return state.isAir() || state.isOf(Blocks.WATER);
 	}
 
+	public static boolean cannotGenerate(BlockState state) {
+		return !state.isAir() && !state.isOf(Blocks.WATER);
+	}
+
 	public static boolean canGenerateOrLava(BlockState state) {
 		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
 	}

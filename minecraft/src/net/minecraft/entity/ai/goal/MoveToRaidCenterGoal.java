@@ -12,10 +12,10 @@ import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
-	private static final int field_36302 = 20;
+	private static final int FREE_RAIDER_CHECK_INTERVAL = 20;
 	private static final float WALK_SPEED = 1.0F;
 	private final T actor;
-	private int field_36303;
+	private int nextFreeRaiderCheckAge;
 
 	public MoveToRaidCenterGoal(T actor) {
 		this.actor = actor;
@@ -43,8 +43,8 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	public void tick() {
 		if (this.actor.hasActiveRaid()) {
 			Raid raid = this.actor.getRaid();
-			if (this.actor.age > this.field_36303) {
-				this.field_36303 = this.actor.age + 20;
+			if (this.actor.age > this.nextFreeRaiderCheckAge) {
+				this.nextFreeRaiderCheckAge = this.actor.age + 20;
 				this.includeFreeRaiders(raid);
 			}
 

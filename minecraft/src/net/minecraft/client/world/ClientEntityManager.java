@@ -67,7 +67,7 @@ public class ClientEntityManager<T extends EntityLike> {
 		long l = ChunkSectionPos.toLong(entity.getBlockPos());
 		EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
 		entityTrackingSection.add(entity);
-		entity.setListener(new ClientEntityManager.Listener(entity, l, entityTrackingSection));
+		entity.setChangeListener(new ClientEntityManager.Listener(entity, l, entityTrackingSection));
 		this.handler.create(entity);
 		this.handler.startTracking(entity);
 		if (entity.isPlayer() || entityTrackingSection.getStatus().shouldTick()) {
@@ -144,7 +144,7 @@ public class ClientEntityManager<T extends EntityLike> {
 			ClientEntityManager.this.handler.stopTracking(this.entity);
 			ClientEntityManager.this.handler.destroy(this.entity);
 			ClientEntityManager.this.index.remove(this.entity);
-			this.entity.setListener(NONE);
+			this.entity.setChangeListener(NONE);
 			ClientEntityManager.this.removeIfEmpty(this.lastSectionPos, this.section);
 		}
 	}

@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.Spawner;
+import net.minecraft.world.spawner.Spawner;
 import org.slf4j.Logger;
 
 public class ZombieSiegeManager implements Spawner {

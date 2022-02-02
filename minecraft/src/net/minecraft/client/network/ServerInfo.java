@@ -69,8 +69,8 @@ public class ServerInfo {
 	 * <p>This is called when a user has responded to the prompt on whether to
 	 * accept server resource packs from this server in the future.
 	 */
-	public void setResourcePackPolicy(ServerInfo.ResourcePackPolicy policy) {
-		this.resourcePackPolicy = policy;
+	public void setResourcePackPolicy(ServerInfo.ResourcePackPolicy resourcePackPolicy) {
+		this.resourcePackPolicy = resourcePackPolicy;
 	}
 
 	public static ServerInfo fromNbt(NbtCompound root) {

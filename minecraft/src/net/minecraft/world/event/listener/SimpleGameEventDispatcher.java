@@ -60,7 +60,7 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 		if (!optional.isPresent()) {
 			return false;
 		} else {
-			double d = ((BlockPos)optional.get()).getSquaredDistance(pos, false);
+			double d = ((BlockPos)optional.get()).getSquaredDistance(pos);
 			int i = listener.getRange() * listener.getRange();
 			return d <= (double)i && listener.listen(world, event, entity, pos);
 		}

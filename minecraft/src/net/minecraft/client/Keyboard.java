@@ -13,7 +13,7 @@ import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
-import net.minecraft.client.gui.screen.option.NarratorOptionsScreen;
+import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
@@ -363,8 +363,8 @@ public class Keyboard {
 					boolean bl2 = this.client.options.narrator == NarratorMode.OFF;
 					this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
 					NarratorManager.INSTANCE.addToast(this.client.options.narrator);
-					if (screen instanceof NarratorOptionsScreen) {
-						((NarratorOptionsScreen)screen).updateNarratorButtonText();
+					if (screen instanceof SimpleOptionsScreen) {
+						((SimpleOptionsScreen)screen).updateNarratorButtonText();
 					}
 
 					if (bl2 && screen != null) {

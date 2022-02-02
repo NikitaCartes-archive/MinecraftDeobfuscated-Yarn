@@ -20,6 +20,14 @@ public interface BlockRenderView extends BlockView {
 		return this.getLightingProvider().getLight(pos, ambientDarkness);
 	}
 
+	/**
+	 * {@return if the sky is visible at {@code pos}}
+	 * 
+	 * @implNote This returns {@code true} if the sky light level
+	 * at {@code pos} is the maximum, {@code 15}.
+	 * 
+	 * @see WorldView#isSkyVisibleAllowingSea
+	 */
 	default boolean isSkyVisible(BlockPos pos) {
 		return this.getLightLevel(LightType.SKY, pos) >= this.getMaxLightLevel();
 	}

@@ -16,12 +16,12 @@ public class SimpleMerchant implements Merchant {
 	}
 
 	@Override
-	public PlayerEntity getCurrentCustomer() {
+	public PlayerEntity getCustomer() {
 		return this.player;
 	}
 
 	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity customer) {
+	public void setCustomer(@Nullable PlayerEntity customer) {
 	}
 
 	@Override

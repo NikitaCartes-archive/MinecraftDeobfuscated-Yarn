@@ -57,18 +57,72 @@ public interface ModifiableWorld {
 		return this.setBlockState(pos, state, flags, 512);
 	}
 
+	/**
+	 * Removes the block and replaces it with the fluid occupying the block
+	 * (such as water inside kelp), or air if it does not exist.
+	 * 
+	 * @implNote This does not emit the {@linkplain WorldEvents#BLOCK_BROKEN world event}
+	 * or the {@linkplain net.minecraft.world.event.GameEvent#BLOCK_DESTROY game event}.
+	 * 
+	 * @return whether the block was removed successfully
+	 * 
+	 * @see #breakBlock(BlockPos, boolean)
+	 * 
+	 * @param move whether the block was removed as part of piston moving blocks
+	 */
 	boolean removeBlock(BlockPos pos, boolean move);
 
+	/**
+	 * Removes the block and replaces it with the fluid occupying the block
+	 * (such as water inside kelp), or air if it does not exist. Additionally,
+	 * this emits the {@linkplain WorldEvents#BLOCK_BROKEN world event}
+	 * and the {@linkplain net.minecraft.world.event.GameEvent#BLOCK_DESTROY game event}.
+	 * 
+	 * @return whether the block was removed successfully
+	 * 
+	 * @see #removeBlock(BlockPos, boolean)
+	 * @see #breakBlock(BlockPos, boolean, Entity)
+	 */
 	default boolean breakBlock(BlockPos pos, boolean drop) {
 		return this.breakBlock(pos, drop, null);
 	}
 
+	/**
+	 * Removes the block and replaces it with the fluid occupying the block
+	 * (such as water inside kelp), or air if it does not exist. Additionally,
+	 * this emits the {@linkplain WorldEvents#BLOCK_BROKEN world event}
+	 * and the {@linkplain net.minecraft.world.event.GameEvent#BLOCK_DESTROY game event}.
+	 * 
+	 * @return whether the block was removed successfully
+	 * 
+	 * @see #breakBlock(BlockPos, boolean)
+	 * @see #breakBlock(BlockPos, boolean, Entity, int)
+	 */
 	default boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity) {
 		return this.breakBlock(pos, drop, breakingEntity, 512);
 	}
 
+	/**
+	 * Removes the block and replaces it with the fluid occupying the block
+	 * (such as water inside kelp), or air if it does not exist. Additionally,
+	 * this emits the {@linkplain WorldEvents#BLOCK_BROKEN world event}
+	 * and the {@linkplain net.minecraft.world.event.GameEvent#BLOCK_DESTROY game event}.
+	 * 
+	 * @return whether the block was removed successfully
+	 * 
+	 * @see #breakBlock(BlockPos, boolean)
+	 * @see #breakBlock(BlockPos, boolean, Entity)
+	 */
 	boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth);
 
+	/**
+	 * Spawns an entity.
+	 * 
+	 * @apiNote To spawn an entity with passengers, use
+	 * {@link ServerWorldAccess#spawnEntityAndPassengers}.
+	 * 
+	 * @see ServerWorldAccess#spawnEntityAndPassengers
+	 */
 	default boolean spawnEntity(Entity entity) {
 		return false;
 	}

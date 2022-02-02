@@ -71,7 +71,7 @@ public class EditGameRulesScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.ruleSaver.accept(Optional.empty());
 	}
 
@@ -86,8 +86,8 @@ public class EditGameRulesScreen extends Screen {
 		}
 	}
 
-	void setTooltipDescription(@Nullable List<OrderedText> description) {
-		this.tooltip = description;
+	void setTooltip(@Nullable List<OrderedText> tooltip) {
+		this.tooltip = tooltip;
 	}
 
 	private void updateDoneButton() {
@@ -295,7 +295,7 @@ public class EditGameRulesScreen extends Screen {
 			super.render(matrices, mouseX, mouseY, delta);
 			EditGameRulesScreen.AbstractRuleWidget abstractRuleWidget = this.getHoveredEntry();
 			if (abstractRuleWidget != null) {
-				EditGameRulesScreen.this.setTooltipDescription(abstractRuleWidget.description);
+				EditGameRulesScreen.this.setTooltip(abstractRuleWidget.description);
 			}
 		}
 	}

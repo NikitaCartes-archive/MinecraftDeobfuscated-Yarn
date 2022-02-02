@@ -24,7 +24,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 			Integer integer = networkState.getPacketId(this.side, packet);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(
-					ClientConnection.field_36380,
+					ClientConnection.PACKET_SENT_MARKER,
 					"OUT: [{}:{}] {}",
 					channelHandlerContext.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(),
 					integer,

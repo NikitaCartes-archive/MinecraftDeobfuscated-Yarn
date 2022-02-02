@@ -19,7 +19,7 @@ public class SelectWorldScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final Screen parent;
 	@Nullable
-	private List<OrderedText> tooltipText;
+	private List<OrderedText> tooltip;
 	private ButtonWidget deleteButton;
 	private ButtonWidget selectButton;
 	private ButtonWidget editButton;
@@ -106,7 +106,7 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public void onClose() {
+	public void close() {
 		this.client.setScreen(this.parent);
 	}
 
@@ -117,18 +117,18 @@ public class SelectWorldScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.tooltipText = null;
+		this.tooltip = null;
 		this.levelList.render(matrices, mouseX, mouseY, delta);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.tooltipText != null) {
-			this.renderOrderedTooltip(matrices, this.tooltipText, mouseX, mouseY);
+		if (this.tooltip != null) {
+			this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 	}
 
-	public void setTooltip(List<OrderedText> tooltipText) {
-		this.tooltipText = tooltipText;
+	public void setTooltip(List<OrderedText> tooltip) {
+		this.tooltip = tooltip;
 	}
 
 	public void worldSelected(boolean active) {

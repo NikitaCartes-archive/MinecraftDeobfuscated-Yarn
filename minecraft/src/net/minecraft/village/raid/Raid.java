@@ -223,8 +223,8 @@ public class Raid {
 		return this.badOmenLevel;
 	}
 
-	public void setBadOmenLevel(int level) {
-		this.badOmenLevel = level;
+	public void setBadOmenLevel(int badOmenLevel) {
+		this.badOmenLevel = badOmenLevel;
 	}
 
 	public void start(PlayerEntity player) {

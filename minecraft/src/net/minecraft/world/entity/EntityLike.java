@@ -26,7 +26,7 @@ public interface EntityLike {
 
 	Box getBoundingBox();
 
-	void setListener(EntityChangeListener listener);
+	void setChangeListener(EntityChangeListener changeListener);
 
 	/**
 	 * Returns a stream consisting of this entity and its passengers recursively.

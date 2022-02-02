@@ -467,9 +467,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	class SwoopMovementGoal extends PhantomEntity.MovementGoal {
-		private static final int field_36305 = 20;
+		private static final int CAT_CHECK_INTERVAL = 20;
 		private boolean catsNearby;
-		private int field_36307;
+		private int nextCatCheckAge;
 
 		@Override
 		public boolean canStart() {
@@ -491,8 +491,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				if (!this.canStart()) {
 					return false;
 				} else {
-					if (PhantomEntity.this.age > this.field_36307) {
-						this.field_36307 = PhantomEntity.this.age + 20;
+					if (PhantomEntity.this.age > this.nextCatCheckAge) {
+						this.nextCatCheckAge = PhantomEntity.this.age + 20;
 						List<CatEntity> list = PhantomEntity.this.world
 							.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 

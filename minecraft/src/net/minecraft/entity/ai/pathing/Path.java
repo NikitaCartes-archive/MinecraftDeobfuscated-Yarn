@@ -68,8 +68,8 @@ public class Path {
 		return this.currentNodeIndex;
 	}
 
-	public void setCurrentNodeIndex(int index) {
-		this.currentNodeIndex = index;
+	public void setCurrentNodeIndex(int nodeIndex) {
+		this.currentNodeIndex = nodeIndex;
 	}
 
 	public Vec3d getNodePosition(Entity entity, int index) {

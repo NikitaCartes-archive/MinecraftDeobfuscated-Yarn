@@ -138,8 +138,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		this.enabled = nbt.contains("Enabled") ? nbt.getBoolean("Enabled") : true;
 	}
 
-	public void setTransferCooldown(int cooldown) {
-		this.transferCooldown = cooldown;
+	public void setTransferCooldown(int transferCooldown) {
+		this.transferCooldown = transferCooldown;
 	}
 
 	public boolean isCoolingDown() {

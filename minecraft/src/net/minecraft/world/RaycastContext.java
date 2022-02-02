@@ -45,10 +45,10 @@ public class RaycastContext {
 	}
 
 	public static enum FluidHandling {
-		NONE(fluidState -> false),
+		NONE(state -> false),
 		SOURCE_ONLY(FluidState::isStill),
-		ANY(fluidState -> !fluidState.isEmpty()),
-		WATER(fluidState -> FluidTags.WATER.contains(fluidState.getFluid()));
+		ANY(state -> !state.isEmpty()),
+		WATER(state -> FluidTags.WATER.contains(state.getFluid()));
 
 		private final Predicate<FluidState> predicate;
 
@@ -70,9 +70,7 @@ public class RaycastContext {
 		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
 		VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape),
 		FALLDAMAGE_RESETTING(
-			(blockState, blockView, blockPos, shapeContext) -> BlockTags.FALL_DAMAGE_RESETTING.contains(blockState.getBlock())
-					? VoxelShapes.fullCube()
-					: VoxelShapes.empty()
+			(state, world, pos, context) -> BlockTags.FALL_DAMAGE_RESETTING.contains(state.getBlock()) ? VoxelShapes.fullCube() : VoxelShapes.empty()
 		);
 
 		private final RaycastContext.ShapeProvider provider;

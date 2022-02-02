@@ -504,12 +504,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 		this.drawsBackground = drawsBackground;
 	}
 
-	public void setEditableColor(int color) {
-		this.editableColor = color;
+	public void setEditableColor(int editableColor) {
+		this.editableColor = editableColor;
 	}
 
-	public void setUneditableColor(int color) {
-		this.uneditableColor = color;
+	public void setUneditableColor(int uneditableColor) {
+		this.uneditableColor = uneditableColor;
 	}
 
 	@Override

@@ -242,7 +242,7 @@ public class EntitySelectorOptions {
 							}
 						});
 						if (bl) {
-							reader.setHasNegatedGameMode(true);
+							reader.setExcludesGameMode(true);
 						} else {
 							reader.setSelectsGameMode(true);
 						}

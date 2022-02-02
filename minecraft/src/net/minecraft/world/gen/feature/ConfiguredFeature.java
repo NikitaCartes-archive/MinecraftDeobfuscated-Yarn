@@ -1,6 +1,5 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import java.util.List;
@@ -21,15 +20,16 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
-import org.slf4j.Logger;
 
 public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> {
 	public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE
 		.getCodec()
 		.dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
+	public static final Codec<ConfiguredFeature<?, ?>> NETWORK_CODEC = Codec.unit(
+		(Supplier<ConfiguredFeature<?, ?>>)(() -> new ConfiguredFeature<>(Feature.NO_OP, DefaultFeatureConfig.INSTANCE))
+	);
 	public static final Codec<Supplier<ConfiguredFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_KEY, CODEC);
 	public static final Codec<List<Supplier<ConfiguredFeature<?, ?>>>> LIST_CODEC = RegistryElementCodec.method_31194(Registry.CONFIGURED_FEATURE_KEY, CODEC);
-	private static final Logger LOGGER = LogUtils.getLogger();
 	public final F feature;
 	public final FC config;
 

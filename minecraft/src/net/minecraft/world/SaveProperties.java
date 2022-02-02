@@ -49,7 +49,7 @@ public interface SaveProperties {
 	@Nullable
 	NbtCompound getCustomBossEvents();
 
-	void setCustomBossEvents(@Nullable NbtCompound nbt);
+	void setCustomBossEvents(@Nullable NbtCompound customBossEvents);
 
 	ServerWorldProperties getMainWorldProperties();
 
@@ -75,7 +75,7 @@ public interface SaveProperties {
 
 	boolean isDifficultyLocked();
 
-	void setDifficultyLocked(boolean locked);
+	void setDifficultyLocked(boolean difficultyLocked);
 
 	GameRules getGameRules();
 
@@ -84,7 +84,7 @@ public interface SaveProperties {
 
 	NbtCompound getDragonFight();
 
-	void setDragonFight(NbtCompound nbt);
+	void setDragonFight(NbtCompound dragonFight);
 
 	GeneratorOptions getGeneratorOptions();
 

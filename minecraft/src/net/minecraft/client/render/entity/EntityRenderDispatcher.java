@@ -103,12 +103,12 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		this.rotation = rotation;
 	}
 
-	public void setRenderShadows(boolean value) {
-		this.renderShadows = value;
+	public void setRenderShadows(boolean renderShadows) {
+		this.renderShadows = renderShadows;
 	}
 
-	public void setRenderHitboxes(boolean value) {
-		this.renderHitboxes = value;
+	public void setRenderHitboxes(boolean renderHitboxes) {
+		this.renderHitboxes = renderHitboxes;
 	}
 
 	public boolean shouldRenderHitboxes() {

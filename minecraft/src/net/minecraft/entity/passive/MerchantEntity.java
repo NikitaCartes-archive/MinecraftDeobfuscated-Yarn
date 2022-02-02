@@ -90,13 +90,13 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	@Override
-	public void setCurrentCustomer(@Nullable PlayerEntity customer) {
+	public void setCustomer(@Nullable PlayerEntity customer) {
 		this.customer = customer;
 	}
 
 	@Nullable
 	@Override
-	public PlayerEntity getCurrentCustomer() {
+	public PlayerEntity getCustomer() {
 		return this.customer;
 	}
 
@@ -189,7 +189,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	}
 
 	protected void resetCustomer() {
-		this.setCurrentCustomer(null);
+		this.setCustomer(null);
 	}
 
 	@Override

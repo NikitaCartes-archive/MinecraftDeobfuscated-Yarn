@@ -127,19 +127,19 @@ public class Models {
 		"template_cake_with_candle", TextureKey.CANDLE, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE
 	);
 
-	private static Model make(TextureKey... requiredTextures) {
-		return new Model(Optional.empty(), Optional.empty(), requiredTextures);
+	private static Model make(TextureKey... requiredTextureKeys) {
+		return new Model(Optional.empty(), Optional.empty(), requiredTextureKeys);
 	}
 
-	private static Model block(String parent, TextureKey... requiredTextures) {
-		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.empty(), requiredTextures);
+	private static Model block(String parent, TextureKey... requiredTextureKeys) {
+		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.empty(), requiredTextureKeys);
 	}
 
-	private static Model item(String parent, TextureKey... requiredTextures) {
-		return new Model(Optional.of(new Identifier("minecraft", "item/" + parent)), Optional.empty(), requiredTextures);
+	private static Model item(String parent, TextureKey... requiredTextureKeys) {
+		return new Model(Optional.of(new Identifier("minecraft", "item/" + parent)), Optional.empty(), requiredTextureKeys);
 	}
 
-	private static Model block(String parent, String variant, TextureKey... requiredTextures) {
-		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.of(variant), requiredTextures);
+	private static Model block(String parent, String variant, TextureKey... requiredTextureKeys) {
+		return new Model(Optional.of(new Identifier("minecraft", "block/" + parent)), Optional.of(variant), requiredTextureKeys);
 	}
 }

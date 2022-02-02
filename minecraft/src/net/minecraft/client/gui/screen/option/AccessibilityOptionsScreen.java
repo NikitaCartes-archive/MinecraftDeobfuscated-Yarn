@@ -12,7 +12,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
+public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	private static final Option[] OPTIONS = new Option[]{
 		Option.NARRATOR,
 		Option.SUBTITLES,
