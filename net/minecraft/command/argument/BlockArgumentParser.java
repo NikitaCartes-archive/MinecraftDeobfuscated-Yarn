@@ -25,11 +25,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockArgumentParser {
@@ -46,7 +46,7 @@ public class BlockArgumentParser {
     private static final char PROPERTY_DEFINER = '=';
     private static final char PROPERTY_SEPARATOR = ',';
     private static final char TAG_PREFIX = '#';
-    private static final BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = (builder, tagGroup) -> builder.buildFuture();
+    private static final BiFunction<SuggestionsBuilder, Registry<Block>, CompletableFuture<Suggestions>> SUGGEST_DEFAULT = (builder, registry) -> builder.buildFuture();
     private final StringReader reader;
     private final boolean allowTag;
     private final Map<Property<?>, Comparable<?>> blockProperties = Maps.newHashMap();
@@ -56,9 +56,10 @@ public class BlockArgumentParser {
     private BlockState blockState;
     @Nullable
     private NbtCompound data;
-    private Identifier tagId = new Identifier("");
+    @Nullable
+    private TagKey<Block> tagId;
     private int cursorPos;
-    private BiFunction<SuggestionsBuilder, TagGroup<Block>, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
+    private BiFunction<SuggestionsBuilder, Registry<Block>, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
 
     public BlockArgumentParser(StringReader reader, boolean allowTag) {
         this.reader = reader;
@@ -80,7 +81,7 @@ public class BlockArgumentParser {
     }
 
     @Nullable
-    public Identifier getTagId() {
+    public TagKey<Block> getTagId() {
         return this.tagId;
     }
 
@@ -108,21 +109,21 @@ public class BlockArgumentParser {
         return this;
     }
 
-    private CompletableFuture<Suggestions> suggestBlockPropertiesOrEnd(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestBlockPropertiesOrEnd(SuggestionsBuilder builder, Registry<Block> registry) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(']'));
         }
-        return this.suggestBlockProperties(builder, tagGroup);
+        return this.suggestBlockProperties(builder, registry);
     }
 
-    private CompletableFuture<Suggestions> suggestTagPropertiesOrEnd(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestTagPropertiesOrEnd(SuggestionsBuilder builder, Registry<Block> registry) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(']'));
         }
-        return this.suggestTagProperties(builder, tagGroup);
+        return this.suggestTagProperties(builder, registry);
     }
 
-    private CompletableFuture<Suggestions> suggestBlockProperties(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestBlockProperties(SuggestionsBuilder builder, Registry<Block> registry) {
         String string = builder.getRemaining().toLowerCase(Locale.ROOT);
         for (Property<?> property : this.blockState.getProperties()) {
             if (this.blockProperties.containsKey(property) || !property.getName().startsWith(string)) continue;
@@ -131,12 +132,11 @@ public class BlockArgumentParser {
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestTagProperties(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
-        Tag<Block> tag;
+    private CompletableFuture<Suggestions> suggestTagProperties(SuggestionsBuilder builder, Registry<Block> registry) {
         String string = builder.getRemaining().toLowerCase(Locale.ROOT);
-        if (this.tagId != null && !this.tagId.getPath().isEmpty() && (tag = tagGroup.getTag(this.tagId)) != null) {
-            for (Block block : tag.values()) {
-                for (Property<?> property : block.getStateManager().getProperties()) {
+        if (this.tagId != null) {
+            for (RegistryEntry<Block> registryEntry : registry.iterateEntries(this.tagId)) {
+                for (Property<?> property : registryEntry.value().getStateManager().getProperties()) {
                     if (this.tagProperties.containsKey(property.getName()) || !property.getName().startsWith(string)) continue;
                     builder.suggest(property.getName() + "=");
                 }
@@ -145,35 +145,34 @@ public class BlockArgumentParser {
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestSnbt(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
-        if (builder.getRemaining().isEmpty() && this.hasBlockEntity(tagGroup)) {
+    private CompletableFuture<Suggestions> suggestSnbt(SuggestionsBuilder builder, Registry<Block> registry) {
+        if (builder.getRemaining().isEmpty() && this.hasBlockEntity(registry)) {
             builder.suggest(String.valueOf('{'));
         }
         return builder.buildFuture();
     }
 
-    private boolean hasBlockEntity(TagGroup<Block> tagGroup) {
-        Tag<Block> tag;
+    private boolean hasBlockEntity(Registry<Block> registry) {
         if (this.blockState != null) {
             return this.blockState.hasBlockEntity();
         }
-        if (this.tagId != null && (tag = tagGroup.getTag(this.tagId)) != null) {
-            for (Block block : tag.values()) {
-                if (!block.getDefaultState().hasBlockEntity()) continue;
+        if (this.tagId != null) {
+            for (RegistryEntry<Block> registryEntry : registry.iterateEntries(this.tagId)) {
+                if (!registryEntry.value().getDefaultState().hasBlockEntity()) continue;
                 return true;
             }
         }
         return false;
     }
 
-    private CompletableFuture<Suggestions> suggestEqualsCharacter(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestEqualsCharacter(SuggestionsBuilder builder, Registry<Block> registry) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf('='));
         }
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestCommaOrEnd(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestCommaOrEnd(SuggestionsBuilder builder, Registry<Block> registry) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(']'));
         }
@@ -194,11 +193,11 @@ public class BlockArgumentParser {
         return builder;
     }
 
-    private CompletableFuture<Suggestions> suggestTagPropertyValues(SuggestionsBuilder builder, TagGroup<Block> tagGroup, String propertyName) {
-        Tag<Block> tag;
+    private CompletableFuture<Suggestions> suggestTagPropertyValues(SuggestionsBuilder builder, Registry<Block> registry, String propertyName) {
         boolean bl = false;
-        if (this.tagId != null && !this.tagId.getPath().isEmpty() && (tag = tagGroup.getTag(this.tagId)) != null) {
-            block0: for (Block block : tag.values()) {
+        if (this.tagId != null) {
+            block0: for (RegistryEntry<Block> registryEntry : registry.iterateEntries(this.tagId)) {
+                Block block = registryEntry.value();
                 Property<?> property = block.getStateManager().getProperty(propertyName);
                 if (property != null) {
                     BlockArgumentParser.suggestPropertyValues(builder, property);
@@ -218,14 +217,14 @@ public class BlockArgumentParser {
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestSnbtOrTagProperties(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
-        Tag<Block> tag;
-        if (builder.getRemaining().isEmpty() && (tag = tagGroup.getTag(this.tagId)) != null) {
+    private CompletableFuture<Suggestions> suggestSnbtOrTagProperties(SuggestionsBuilder builder, Registry<Block> registry) {
+        if (builder.getRemaining().isEmpty() && this.tagId != null) {
+            RegistryEntry<Block> registryEntry;
             Block block;
             boolean bl = false;
             boolean bl2 = false;
-            Iterator<Block> iterator = tag.values().iterator();
-            while (!(!iterator.hasNext() || (bl |= !(block = iterator.next()).getStateManager().getProperties().isEmpty()) && (bl2 |= block.getDefaultState().hasBlockEntity()))) {
+            Iterator<RegistryEntry<Block>> iterator = registry.iterateEntries(this.tagId).iterator();
+            while (!(!iterator.hasNext() || (bl |= !(block = (registryEntry = iterator.next()).value()).getStateManager().getProperties().isEmpty()) && (bl2 |= block.getDefaultState().hasBlockEntity()))) {
             }
             if (bl) {
                 builder.suggest(String.valueOf('['));
@@ -234,10 +233,10 @@ public class BlockArgumentParser {
                 builder.suggest(String.valueOf('{'));
             }
         }
-        return this.suggestIdentifiers(builder, tagGroup);
+        return this.suggestIdentifiers(builder, registry);
     }
 
-    private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder builder, Registry<Block> registry) {
         if (builder.getRemaining().isEmpty()) {
             if (!this.blockState.getBlock().getStateManager().getProperties().isEmpty()) {
                 builder.suggest(String.valueOf('['));
@@ -249,15 +248,15 @@ public class BlockArgumentParser {
         return builder.buildFuture();
     }
 
-    private CompletableFuture<Suggestions> suggestIdentifiers(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
-        return CommandSource.suggestIdentifiers(tagGroup.getTagIds(), builder.createOffset(this.cursorPos).add(builder));
+    private CompletableFuture<Suggestions> suggestIdentifiers(SuggestionsBuilder builder, Registry<Block> registry) {
+        return CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder.createOffset(this.cursorPos).add(builder));
     }
 
-    private CompletableFuture<Suggestions> suggestBlockOrTagId(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
+    private CompletableFuture<Suggestions> suggestBlockOrTagId(SuggestionsBuilder builder, Registry<Block> registry) {
         if (this.allowTag) {
-            CommandSource.suggestIdentifiers(tagGroup.getTagIds(), builder, String.valueOf('#'));
+            CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, String.valueOf('#'));
         }
-        CommandSource.suggestIdentifiers(Registry.BLOCK.getIds(), builder);
+        CommandSource.suggestIdentifiers(registry.getIds(), builder);
         return builder.buildFuture();
     }
 
@@ -279,7 +278,7 @@ public class BlockArgumentParser {
         this.suggestions = this::suggestIdentifiers;
         this.reader.expect('#');
         this.cursorPos = this.reader.getCursor();
-        this.tagId = Identifier.fromCommandInput(this.reader);
+        this.tagId = TagKey.intern(Registry.BLOCK_KEY, Identifier.fromCommandInput(this.reader));
     }
 
     public void parseBlockProperties() throws CommandSyntaxException {
@@ -306,7 +305,7 @@ public class BlockArgumentParser {
             }
             this.reader.skip();
             this.reader.skipWhitespace();
-            this.suggestions = (builder, tagGroup) -> BlockArgumentParser.suggestPropertyValues(builder, property).buildFuture();
+            this.suggestions = (builder, registry) -> BlockArgumentParser.suggestPropertyValues(builder, property).buildFuture();
             int j = this.reader.getCursor();
             this.parsePropertyValue(property, this.reader.readString(), j);
             this.suggestions = this::suggestCommaOrEnd;
@@ -346,7 +345,7 @@ public class BlockArgumentParser {
             }
             this.reader.skip();
             this.reader.skipWhitespace();
-            this.suggestions = (builder, tagGroup) -> this.suggestTagPropertyValues((SuggestionsBuilder)builder, (TagGroup<Block>)tagGroup, string);
+            this.suggestions = (builder, registry) -> this.suggestTagPropertyValues((SuggestionsBuilder)builder, (Registry<Block>)registry, string);
             i = this.reader.getCursor();
             String string2 = this.reader.readString();
             this.tagProperties.put(string, string2);
@@ -407,8 +406,8 @@ public class BlockArgumentParser {
         builder.append(property.name(value));
     }
 
-    public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, TagGroup<Block> tagGroup) {
-        return this.suggestions.apply(builder.createOffset(this.reader.getCursor()), tagGroup);
+    public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, Registry<Block> registry) {
+        return this.suggestions.apply(builder.createOffset(this.reader.getCursor()), registry);
     }
 
     public Map<String, String> getProperties() {

@@ -18,6 +18,7 @@ import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -35,17 +36,12 @@ extends StructureFeature<DefaultFeatureConfig> {
         super(configCodec, StructureGeneratorFactory.simple(OceanMonumentFeature::canGenerate, OceanMonumentFeature::addPieces));
     }
 
-    @Override
-    protected boolean isUniformDistribution() {
-        return false;
-    }
-
     private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
         int i = context.chunkPos().getOffsetX(9);
         int j = context.chunkPos().getOffsetZ(9);
-        Set<Biome> set = context.biomeSource().getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.chunkGenerator().getMultiNoiseSampler());
-        for (Biome biome : set) {
-            if (biome.getCategory() == Biome.Category.OCEAN || biome.getCategory() == Biome.Category.RIVER) continue;
+        Set<RegistryEntry<Biome>> set = context.biomeSource().getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.chunkGenerator().getMultiNoiseSampler());
+        for (RegistryEntry<Biome> registryEntry : set) {
+            if (Biome.getCategory(registryEntry) == Biome.Category.OCEAN || Biome.getCategory(registryEntry) == Biome.Category.RIVER) continue;
             return false;
         }
         return context.isBiomeValid(Heightmap.Type.OCEAN_FLOOR_WG);

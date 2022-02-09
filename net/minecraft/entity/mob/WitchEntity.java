@@ -182,7 +182,7 @@ implements RangedAttackMob {
             amount = 0.0f;
         }
         if (source.isMagic()) {
-            amount = (float)((double)amount * 0.15);
+            amount *= 0.15f;
         }
         return amount;
     }

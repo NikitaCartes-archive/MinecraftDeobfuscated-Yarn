@@ -12,12 +12,13 @@ import java.util.BitSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 import java.util.stream.LongStream;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -96,15 +97,15 @@ public final class BelowZeroRetrogen {
         return this.missingBedrock.get((z & 0xF) * 16 + (x & 0xF));
     }
 
-    public static BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier, Registry<Biome> biomeRegistry, Chunk chunk) {
+    public static BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier, Chunk chunk) {
         if (!chunk.hasBelowZeroRetrogen()) {
             return biomeSupplier;
         }
-        Set set = CAVE_BIOMES.stream().map(biomeRegistry::get).collect(Collectors.toSet());
+        Predicate<RegistryKey> predicate = CAVE_BIOMES::contains;
         return (x, y, z, noise) -> {
-            Biome biome = biomeSupplier.getBiome(x, y, z, noise);
-            if (set.contains(biome)) {
-                return biome;
+            RegistryEntry<Biome> registryEntry = biomeSupplier.getBiome(x, y, z, noise);
+            if (registryEntry.matches(predicate)) {
+                return registryEntry;
             }
             return chunk.getBiomeForNoiseGen(x, 0, z);
         };

@@ -8,9 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.Identifier;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class GeodeLayerConfig {
@@ -20,19 +22,19 @@ public class GeodeLayerConfig {
     public final BlockStateProvider middleLayerProvider;
     public final BlockStateProvider outerLayerProvider;
     public final List<BlockState> innerBlocks;
-    public final Identifier cannotReplace;
-    public final Identifier invalidBlocks;
-    public static final Codec<GeodeLayerConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("filling_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.fillingProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("inner_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.innerLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("alternate_inner_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.alternateInnerLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("middle_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.middleLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("outer_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.outerLayerProvider), ((MapCodec)Codecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("inner_placements")).forGetter(geodeLayerConfig -> geodeLayerConfig.innerBlocks), ((MapCodec)Identifier.CODEC.fieldOf("cannot_replace")).forGetter(geodeLayerConfig -> geodeLayerConfig.cannotReplace), ((MapCodec)Identifier.CODEC.fieldOf("invalid_blocks")).forGetter(geodeLayerConfig -> geodeLayerConfig.invalidBlocks)).apply((Applicative<GeodeLayerConfig, ?>)instance, GeodeLayerConfig::new));
+    public final TagKey<Block> cannotReplace;
+    public final TagKey<Block> invalidBlocks;
+    public static final Codec<GeodeLayerConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("filling_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.fillingProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("inner_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.innerLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("alternate_inner_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.alternateInnerLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("middle_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.middleLayerProvider), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("outer_layer_provider")).forGetter(geodeLayerConfig -> geodeLayerConfig.outerLayerProvider), ((MapCodec)Codecs.nonEmptyList(BlockState.CODEC.listOf()).fieldOf("inner_placements")).forGetter(geodeLayerConfig -> geodeLayerConfig.innerBlocks), ((MapCodec)TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("cannot_replace")).forGetter(geodeLayerConfig -> geodeLayerConfig.cannotReplace), ((MapCodec)TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("invalid_blocks")).forGetter(geodeLayerConfig -> geodeLayerConfig.invalidBlocks)).apply((Applicative<GeodeLayerConfig, ?>)instance, GeodeLayerConfig::new));
 
-    public GeodeLayerConfig(BlockStateProvider fillingProvider, BlockStateProvider innerLayerProvider, BlockStateProvider alternateInnerLayerProvider, BlockStateProvider middleLayerProvider, BlockStateProvider outerLayerProvider, List<BlockState> innerBlocks, Identifier cannotReplace, Identifier invalidBlocks) {
+    public GeodeLayerConfig(BlockStateProvider fillingProvider, BlockStateProvider innerLayerProvider, BlockStateProvider alternateInnerLayerProvider, BlockStateProvider middleLayerProvider, BlockStateProvider outerLayerProvider, List<BlockState> innerBlocks, TagKey<Block> tagKey, TagKey<Block> tagKey2) {
         this.fillingProvider = fillingProvider;
         this.innerLayerProvider = innerLayerProvider;
         this.alternateInnerLayerProvider = alternateInnerLayerProvider;
         this.middleLayerProvider = middleLayerProvider;
         this.outerLayerProvider = outerLayerProvider;
         this.innerBlocks = innerBlocks;
-        this.cannotReplace = cannotReplace;
-        this.invalidBlocks = invalidBlocks;
+        this.cannotReplace = tagKey;
+        this.invalidBlocks = tagKey2;
     }
 }
 

@@ -90,7 +90,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.tag.TagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CsvWriter;
@@ -111,6 +110,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -202,8 +202,8 @@ implements StructureWorldAccess {
     private final StructureLocator structureLocator;
     private final boolean shouldTickTime;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
-        super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, RegistryEntry<DimensionType> registryEntry, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
+        super(properties, worldKey, registryEntry, server::getProfiler, false, debugWorld, seed);
         this.shouldTickTime = shouldTickTime;
         this.server = server;
         this.spawners = spawners;
@@ -251,7 +251,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+    public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
         return this.getChunkManager().getChunkGenerator().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }
 
@@ -421,7 +421,7 @@ implements StructureWorldAccess {
         if (this.random.nextInt(16) == 0) {
             blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
             BlockPos blockPos2 = blockPos.down();
-            Biome biome = this.getBiome(blockPos);
+            Biome biome = this.getBiome(blockPos).value();
             if (biome.canSetIce(this, blockPos2)) {
                 this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
             }
@@ -430,7 +430,7 @@ implements StructureWorldAccess {
                     this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
                 }
                 BlockState blockState = this.getBlockState(blockPos2);
-                Biome.Precipitation precipitation = this.getBiome(blockPos).getPrecipitation();
+                Biome.Precipitation precipitation = biome.getPrecipitation();
                 if (precipitation == Biome.Precipitation.RAIN && biome.isCold(blockPos2)) {
                     precipitation = Biome.Precipitation.SNOW;
                 }
@@ -559,10 +559,10 @@ implements StructureWorldAccess {
                 this.worldProperties.setRaining(bl3);
             }
             this.thunderGradientPrev = this.thunderGradient;
-            this.thunderGradient = this.properties.isThundering() ? (float)((double)this.thunderGradient + 0.01) : (float)((double)this.thunderGradient - 0.01);
+            this.thunderGradient = this.properties.isThundering() ? (this.thunderGradient += 0.01f) : (this.thunderGradient -= 0.01f);
             this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0f, 1.0f);
             this.rainGradientPrev = this.rainGradient;
-            this.rainGradient = this.properties.isRaining() ? (float)((double)this.rainGradient + 0.01) : (float)((double)this.rainGradient - 0.01);
+            this.rainGradient = this.properties.isRaining() ? (this.rainGradient += 0.01f) : (this.rainGradient -= 0.01f);
             this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0f, 1.0f);
         }
         if (this.rainGradientPrev != this.rainGradient) {
@@ -1089,18 +1089,13 @@ implements StructureWorldAccess {
     }
 
     @Nullable
-    public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int blockCheckInterval) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, biome2 -> biome2 == biome, this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
+    public BlockPos locateBiome(RegistryKey<Biome> biomeKey, BlockPos pos, int radius, int blockCheckInterval) {
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, entry -> entry.matchesKey(biomeKey), this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
     }
 
     @Override
     public RecipeManager getRecipeManager() {
         return this.server.getRecipeManager();
-    }
-
-    @Override
-    public TagManager getTagManager() {
-        return this.server.getTagManager();
     }
 
     @Override

@@ -955,7 +955,7 @@ extends DrawableHelper {
             return;
         }
         float f = MathHelper.clamp(1.0f - entity.getBrightnessAtEyes(), 0.0f, 1.0f);
-        this.vignetteDarkness = (float)((double)this.vignetteDarkness + (double)(f - this.vignetteDarkness) * 0.01);
+        this.vignetteDarkness += (f - this.vignetteDarkness) * 0.01f;
     }
 
     private void renderVignetteOverlay(Entity entity) {
@@ -1224,7 +1224,7 @@ extends DrawableHelper {
         }
 
         static HeartType fromPlayerState(PlayerEntity player) {
-            HeartType heartType = player.hasStatusEffect(StatusEffects.POISON) ? POISIONED : (player.hasStatusEffect(StatusEffects.WITHER) ? WITHERED : (player.isFreezing() ? FROZEN : NORMAL));
+            HeartType heartType = player.hasStatusEffect(StatusEffects.POISON) ? POISIONED : (player.hasStatusEffect(StatusEffects.WITHER) ? WITHERED : (player.isFrozen() ? FROZEN : NORMAL));
             return heartType;
         }
     }

@@ -68,8 +68,8 @@ implements AutoCloseable {
     }
 
     public void tick() {
-        this.flickerIntensity = (float)((double)this.flickerIntensity + (Math.random() - Math.random()) * Math.random() * Math.random() * 0.1);
-        this.flickerIntensity = (float)((double)this.flickerIntensity * 0.9);
+        this.flickerIntensity += (float)((Math.random() - Math.random()) * Math.random() * Math.random() * 0.1);
+        this.flickerIntensity *= 0.9f;
         this.dirty = true;
     }
 

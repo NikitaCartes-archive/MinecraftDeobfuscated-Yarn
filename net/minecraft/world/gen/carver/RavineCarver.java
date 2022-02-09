@@ -9,6 +9,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.carver.Carver;
@@ -29,7 +30,7 @@ extends Carver<RavineCarverConfig> {
     }
 
     @Override
-    public boolean carve(CarverContext carverContext, RavineCarverConfig ravineCarverConfig, Chunk chunk, Function<BlockPos, Biome> function, Random random, AquiferSampler aquiferSampler, ChunkPos chunkPos, CarvingMask carvingMask) {
+    public boolean carve(CarverContext carverContext, RavineCarverConfig ravineCarverConfig, Chunk chunk, Function<BlockPos, RegistryEntry<Biome>> function, Random random, AquiferSampler aquiferSampler, ChunkPos chunkPos, CarvingMask carvingMask) {
         int i = (this.getBranchFactor() * 2 - 1) * 16;
         double d = chunkPos.getOffsetX(random.nextInt(16));
         int j = ravineCarverConfig.y.get(random, carverContext);
@@ -44,7 +45,7 @@ extends Carver<RavineCarverConfig> {
         return true;
     }
 
-    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, CarvingMask mask) {
+    private void carveRavine(CarverContext context2, RavineCarverConfig config, Chunk chunk, Function<BlockPos, RegistryEntry<Biome>> posToBiome, long seed, AquiferSampler aquiferSampler, double x, double y2, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, CarvingMask mask) {
         Random random = new Random(seed);
         float[] fs = this.createHorizontalStretchFactors(context2, config, random);
         float f = 0.0f;

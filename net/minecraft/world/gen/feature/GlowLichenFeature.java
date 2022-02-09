@@ -60,7 +60,7 @@ extends Feature<GlowLichenFeatureConfig> {
         BlockPos.Mutable mutable = pos.mutableCopy();
         for (Direction direction : directions) {
             BlockState blockState = world.getBlockState(mutable.set((Vec3i)pos, direction));
-            if (!config.canPlaceOn.contains(blockState.getBlock())) continue;
+            if (!blockState.isIn(config.canPlaceOn)) continue;
             GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
             BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
             if (blockState2 == null) {

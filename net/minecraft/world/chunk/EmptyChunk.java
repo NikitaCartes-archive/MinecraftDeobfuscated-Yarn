@@ -11,16 +11,19 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
 public class EmptyChunk
 extends WorldChunk {
-    public EmptyChunk(World world, ChunkPos chunkPos) {
+    private final RegistryEntry<Biome> field_36407;
+
+    public EmptyChunk(World world, ChunkPos chunkPos, RegistryEntry<Biome> registryEntry) {
         super(world, chunkPos);
+        this.field_36407 = registryEntry;
     }
 
     @Override
@@ -78,8 +81,8 @@ extends WorldChunk {
     }
 
     @Override
-    public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        return BuiltinBiomes.PLAINS;
+    public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+        return this.field_36407;
     }
 }
 

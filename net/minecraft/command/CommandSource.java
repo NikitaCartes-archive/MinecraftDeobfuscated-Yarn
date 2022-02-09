@@ -86,6 +86,10 @@ public interface CommandSource {
         return builder.buildFuture();
     }
 
+    public static CompletableFuture<Suggestions> suggestIdentifiers(Stream<Identifier> candidates, SuggestionsBuilder builder, String prefix) {
+        return CommandSource.suggestIdentifiers(candidates::iterator, builder, prefix);
+    }
+
     public static CompletableFuture<Suggestions> suggestIdentifiers(Iterable<Identifier> candidates, SuggestionsBuilder builder) {
         String string = builder.getRemaining().toLowerCase(Locale.ROOT);
         CommandSource.forEachMatching(candidates, string, id -> id, id -> builder.suggest(id.toString()));

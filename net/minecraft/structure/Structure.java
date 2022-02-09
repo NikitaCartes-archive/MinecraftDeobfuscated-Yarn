@@ -343,12 +343,12 @@ public class Structure {
         return list2;
     }
 
-    private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs) {
+    private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
-            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
+            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
             NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
-            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
+            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
             Vec3d vec3d2 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
             NbtList nbtList = new NbtList();
             nbtList.add(NbtDouble.of(vec3d2.x));
@@ -357,8 +357,8 @@ public class Structure {
             nbtCompound.put("Pos", nbtList);
             nbtCompound.remove("UUID");
             Structure.getEntity(world, nbtCompound).ifPresent(entity -> {
-                float f = entity.applyMirror(mirror);
-                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.getYaw() + entity.applyRotation(rotation), entity.getPitch());
+                float f = entity.applyRotation(blockRotation);
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.applyMirror(blockMirror) - entity.getYaw(), entity.getPitch());
                 if (initializeMobs && entity instanceof MobEntity) {
                     ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
                 }

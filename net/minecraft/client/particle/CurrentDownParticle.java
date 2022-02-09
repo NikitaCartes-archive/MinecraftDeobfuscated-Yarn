@@ -59,7 +59,7 @@ extends SpriteBillboardParticle {
         if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER) || this.onGround) {
             this.markDead();
         }
-        this.accelerationAngle = (float)((double)this.accelerationAngle + 0.08);
+        this.accelerationAngle += 0.08f;
     }
 
     @Environment(value=EnvType.CLIENT)

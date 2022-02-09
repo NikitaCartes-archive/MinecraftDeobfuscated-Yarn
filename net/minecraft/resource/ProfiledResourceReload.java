@@ -43,7 +43,7 @@ extends SimpleResourceReload<Summary> {
                 application.run();
                 atomicLong2.addAndGet(Util.getMeasuringTimeNano() - l);
             }));
-            return completableFuture.thenApplyAsync(void_ -> {
+            return completableFuture.thenApplyAsync(dummy -> {
                 LOGGER.debug("Finished reloading " + reloader.getName());
                 return new Summary(reloader.getName(), profilerSystem.getResult(), profilerSystem2.getResult(), atomicLong, atomicLong2);
             }, applyExecutor);

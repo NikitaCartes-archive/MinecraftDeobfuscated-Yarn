@@ -121,7 +121,7 @@ VillagerDataContainer {
     @Nullable
     private PlayerEntity lastCustomer;
     private boolean field_30612;
-    private byte foodLevel;
+    private int foodLevel;
     private final VillagerGossips gossip = new VillagerGossips();
     private long gossipStartTime;
     private long lastGossipDecayTime;
@@ -415,7 +415,7 @@ VillagerDataContainer {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(field_36335::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
-        nbt.putByte("FoodLevel", this.foodLevel);
+        nbt.putByte("FoodLevel", (byte)this.foodLevel);
         nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
         nbt.putInt("Xp", this.experience);
         nbt.putLong("LastRestock", this.lastRestockTime);
@@ -608,7 +608,7 @@ VillagerDataContainer {
             ItemStack itemStack = this.getInventory().getStack(i);
             if (itemStack.isEmpty() || (integer = ITEM_FOOD_VALUES.get(itemStack.getItem())) == null) continue;
             for (int k = j = itemStack.getCount(); k > 0; --k) {
-                this.foodLevel = (byte)(this.foodLevel + integer);
+                this.foodLevel += integer.intValue();
                 this.getInventory().removeStack(i, 1);
                 if (this.lacksFood()) continue;
                 return;
@@ -621,7 +621,7 @@ VillagerDataContainer {
     }
 
     private void depleteFood(int amount) {
-        this.foodLevel = (byte)(this.foodLevel - amount);
+        this.foodLevel -= amount;
     }
 
     public void eatForBreeding() {
@@ -670,7 +670,7 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         }
         if (spawnReason == SpawnReason.STRUCTURE) {
             this.natural = true;
@@ -681,7 +681,7 @@ VillagerDataContainer {
     @Override
     public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.getBiomeKey(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.getBiome(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, serverWorld, villagerType);
         villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.BREEDING, null, null);
         return villagerEntity;

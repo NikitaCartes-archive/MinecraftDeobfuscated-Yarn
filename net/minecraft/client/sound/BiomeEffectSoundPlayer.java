@@ -56,7 +56,7 @@ implements ClientPlayerTickable {
     @Override
     public void tick() {
         this.soundLoops.values().removeIf(MovingSoundInstance::isDone);
-        Biome biome = this.biomeAccess.getBiomeForNoiseGen(this.player.getX(), this.player.getY(), this.player.getZ());
+        Biome biome = this.biomeAccess.getBiomeForNoiseGen(this.player.getX(), this.player.getY(), this.player.getZ()).value();
         if (biome != this.activeBiome) {
             this.activeBiome = biome;
             this.moodSound = biome.getMoodSound();

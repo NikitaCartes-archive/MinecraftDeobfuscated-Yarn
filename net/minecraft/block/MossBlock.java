@@ -33,7 +33,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL.generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up());
+        UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL.value().generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up());
     }
 }
 

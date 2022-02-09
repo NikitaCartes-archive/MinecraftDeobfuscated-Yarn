@@ -18,8 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -29,13 +28,13 @@ import org.jetbrains.annotations.Nullable;
 public class BlockPredicate {
     public static final BlockPredicate ANY = new BlockPredicate(null, null, StatePredicate.ANY, NbtPredicate.ANY);
     @Nullable
-    private final Tag<Block> tag;
+    private final TagKey<Block> tag;
     @Nullable
     private final Set<Block> blocks;
     private final StatePredicate state;
     private final NbtPredicate nbt;
 
-    public BlockPredicate(@Nullable Tag<Block> tag, @Nullable Set<Block> blocks, StatePredicate state, NbtPredicate nbt) {
+    public BlockPredicate(@Nullable TagKey<Block> tag, @Nullable Set<Block> blocks, StatePredicate state, NbtPredicate nbt) {
         this.tag = tag;
         this.blocks = blocks;
         this.state = state;
@@ -74,18 +73,18 @@ public class BlockPredicate {
         if (jsonArray != null) {
             ImmutableSet.Builder builder = ImmutableSet.builder();
             for (JsonElement jsonElement : jsonArray) {
-                Identifier identifier2 = new Identifier(JsonHelper.asString(jsonElement, "block"));
-                builder.add(Registry.BLOCK.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown block id '" + identifier2 + "'")));
+                Identifier identifier = new Identifier(JsonHelper.asString(jsonElement, "block"));
+                builder.add(Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block id '" + identifier + "'")));
             }
             set = builder.build();
         }
-        Tag<Block> tag = null;
+        TagKey<Block> tagKey = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.BLOCK_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown block tag '" + identifier + "'"));
+            tagKey = TagKey.intern(Registry.BLOCK_KEY, identifier2);
         }
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
-        return new BlockPredicate(tag, (Set<Block>)((Object)set), statePredicate, nbtPredicate);
+        return new BlockPredicate(tagKey, (Set<Block>)((Object)set), statePredicate, nbtPredicate);
     }
 
     public JsonElement toJson() {
@@ -101,7 +100,7 @@ public class BlockPredicate {
             jsonObject.add("blocks", jsonArray);
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.BLOCK_KEY, this.tag, () -> new IllegalStateException("Unknown block tag")).toString());
+            jsonObject.addProperty("tag", this.tag.id().toString());
         }
         jsonObject.add("nbt", this.nbt.toJson());
         jsonObject.add("state", this.state.toJson());
@@ -112,7 +111,7 @@ public class BlockPredicate {
         @Nullable
         private Set<Block> blocks;
         @Nullable
-        private Tag<Block> tag;
+        private TagKey<Block> tag;
         private StatePredicate state = StatePredicate.ANY;
         private NbtPredicate nbt = NbtPredicate.ANY;
 
@@ -133,7 +132,7 @@ public class BlockPredicate {
             return this;
         }
 
-        public Builder tag(Tag<Block> tag) {
+        public Builder tag(TagKey<Block> tag) {
             this.tag = tag;
             return this;
         }

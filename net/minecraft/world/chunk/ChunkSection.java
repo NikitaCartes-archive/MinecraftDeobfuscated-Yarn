@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -27,9 +28,9 @@ public class ChunkSection {
     private short randomTickableBlockCount;
     private short nonEmptyFluidCount;
     private final PalettedContainer<BlockState> blockStateContainer;
-    private final PalettedContainer<Biome> biomeContainer;
+    private final PalettedContainer<RegistryEntry<Biome>> biomeContainer;
 
-    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<Biome> biomeContainer) {
+    public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, PalettedContainer<RegistryEntry<Biome>> biomeContainer) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = blockStateContainer;
         this.biomeContainer = biomeContainer;
@@ -39,7 +40,7 @@ public class ChunkSection {
     public ChunkSection(int chunkPos, Registry<Biome> biomeRegistry) {
         this.yOffset = ChunkSection.blockCoordFromChunkCoord(chunkPos);
         this.blockStateContainer = new PalettedContainer<BlockState>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-        this.biomeContainer = new PalettedContainer<Biome>(biomeRegistry, biomeRegistry.getOrThrow(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+        this.biomeContainer = new PalettedContainer<RegistryEntry<Biome>>(biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
     }
 
     public static int blockCoordFromChunkCoord(int chunkPos) {
@@ -112,31 +113,49 @@ public class ChunkSection {
     }
 
     public void calculateCounts() {
-        this.nonEmptyBlockCount = 0;
-        this.randomTickableBlockCount = 0;
-        this.nonEmptyFluidCount = 0;
-        this.blockStateContainer.count((state, count) -> {
-            FluidState fluidState = state.getFluidState();
-            if (!state.isAir()) {
-                this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + count);
-                if (state.hasRandomTicks()) {
-                    this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + count);
+        class class_6869
+        implements PalettedContainer.Counter<BlockState> {
+            public int field_36408;
+            public int field_36409;
+            public int field_36410;
+
+            class_6869() {
+            }
+
+            @Override
+            public void accept(BlockState blockState, int i) {
+                FluidState fluidState = blockState.getFluidState();
+                if (!blockState.isAir()) {
+                    this.field_36408 += i;
+                    if (blockState.hasRandomTicks()) {
+                        this.field_36409 += i;
+                    }
+                }
+                if (!fluidState.isEmpty()) {
+                    this.field_36408 += i;
+                    if (fluidState.hasRandomTicks()) {
+                        this.field_36410 += i;
+                    }
                 }
             }
-            if (!fluidState.isEmpty()) {
-                this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + count);
-                if (fluidState.hasRandomTicks()) {
-                    this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + count);
-                }
+
+            @Override
+            public /* synthetic */ void accept(Object object, int i) {
+                this.accept((BlockState)object, i);
             }
-        });
+        }
+        class_6869 lv = new class_6869();
+        this.blockStateContainer.count(lv);
+        this.nonEmptyBlockCount = (short)lv.field_36408;
+        this.randomTickableBlockCount = (short)lv.field_36409;
+        this.nonEmptyFluidCount = (short)lv.field_36410;
     }
 
     public PalettedContainer<BlockState> getBlockStateContainer() {
         return this.blockStateContainer;
     }
 
-    public PalettedContainer<Biome> getBiomeContainer() {
+    public PalettedContainer<RegistryEntry<Biome>> getBiomeContainer() {
         return this.biomeContainer;
     }
 
@@ -160,7 +179,7 @@ public class ChunkSection {
         return this.blockStateContainer.hasAny(predicate);
     }
 
-    public Biome getBiome(int x, int y, int z) {
+    public RegistryEntry<Biome> getBiome(int x, int y, int z) {
         return this.biomeContainer.get(x, y, z);
     }
 
@@ -168,7 +187,7 @@ public class ChunkSection {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
-        PalettedContainer<Biome> palettedContainer = this.getBiomeContainer();
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.getBiomeContainer();
         palettedContainer.lock();
         try {
             int i = BiomeCoords.fromBlock(this.getYOffset());

@@ -1011,6 +1011,7 @@ extends AnimalEntity {
 
         @Override
         public boolean canStart() {
+            int j;
             if (!this.panda.isBaby() && !this.panda.isPlayful() || !this.panda.onGround) {
                 return false;
             }
@@ -1018,16 +1019,10 @@ extends AnimalEntity {
                 return false;
             }
             float f = this.panda.getYaw() * ((float)Math.PI / 180);
-            int i = 0;
-            int j = 0;
             float g = -MathHelper.sin(f);
             float h = MathHelper.cos(f);
-            if ((double)Math.abs(g) > 0.5) {
-                i = (int)((float)i + g / Math.abs(g));
-            }
-            if ((double)Math.abs(h) > 0.5) {
-                j = (int)((float)j + h / Math.abs(h));
-            }
+            int i = (double)Math.abs(g) > 0.5 ? MathHelper.sign(g) : 0;
+            int n = j = (double)Math.abs(h) > 0.5 ? MathHelper.sign(h) : 0;
             if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
                 return true;
             }

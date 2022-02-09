@@ -136,20 +136,20 @@ public class Mouse {
                         this.eventDeltaWheel = 0.0;
                     }
                     this.eventDeltaWheel += d;
-                    float g = (int)this.eventDeltaWheel;
-                    if (g == 0.0f) {
+                    int i = (int)this.eventDeltaWheel;
+                    if (i == 0) {
                         return;
                     }
-                    this.eventDeltaWheel -= (double)g;
+                    this.eventDeltaWheel -= (double)i;
                     if (this.client.player.isSpectator()) {
                         if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-                            this.client.inGameHud.getSpectatorHud().cycleSlot(-g);
+                            this.client.inGameHud.getSpectatorHud().cycleSlot(-i);
                         } else {
-                            float h = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + g * 0.005f, 0.0f, 0.2f);
-                            this.client.player.getAbilities().setFlySpeed(h);
+                            float g = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)i * 0.005f, 0.0f, 0.2f);
+                            this.client.player.getAbilities().setFlySpeed(g);
                         }
                     } else {
-                        this.client.player.getInventory().scrollInHotbar(g);
+                        this.client.player.getInventory().scrollInHotbar(i);
                     }
                 }
             }

@@ -109,6 +109,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
@@ -191,7 +192,7 @@ extends LivingEntity {
             return false;
         }
         ItemStack itemStack = this.getMainHandStack();
-        return itemStack.isEmpty() || !itemStack.canDestroy(world.getTagManager(), new CachedBlockPosition(world, pos, false));
+        return itemStack.isEmpty() || !itemStack.canDestroy(world.getRegistryManager().get(Registry.BLOCK_KEY), new CachedBlockPosition(world, pos, false));
     }
 
     public static DefaultAttributeContainer.Builder createPlayerAttributes() {
@@ -452,7 +453,7 @@ extends LivingEntity {
         super.tickMovement();
         this.airStrafingSpeed = 0.02f;
         if (this.isSprinting()) {
-            this.airStrafingSpeed = (float)((double)this.airStrafingSpeed + 0.005999999865889549);
+            this.airStrafingSpeed += 0.006f;
         }
         this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, (float)this.getVelocity().horizontalLength());
@@ -507,6 +508,14 @@ extends LivingEntity {
     public void addScore(int score) {
         int i = this.getScore();
         this.dataTracker.set(SCORE, i + score);
+    }
+
+    public void useRiptide(int riptideTicks) {
+        this.riptideTicks = riptideTicks;
+        if (!this.world.isClient) {
+            this.dropShoulderEntities();
+            this.setLivingFlag(LivingEntity.USING_RIPTIDE_FLAG, true);
+        }
     }
 
     @Override
@@ -1588,7 +1597,7 @@ extends LivingEntity {
         }
         BlockPos blockPos = pos.offset(facing.getOpposite());
         CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-        return stack.canPlaceOn(this.world.getTagManager(), cachedBlockPosition);
+        return stack.canPlaceOn(this.world.getRegistryManager().get(Registry.BLOCK_KEY), cachedBlockPosition);
     }
 
     @Override

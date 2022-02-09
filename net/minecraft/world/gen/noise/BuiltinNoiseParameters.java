@@ -5,11 +5,12 @@ package net.minecraft.world.gen.noise;
 
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
 
 public class BuiltinNoiseParameters {
-    public static DoublePerlinNoiseSampler.NoiseParameters init() {
+    public static RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> init() {
         BuiltinNoiseParameters.register(0, NoiseParametersKeys.TEMPERATURE, NoiseParametersKeys.VEGETATION, NoiseParametersKeys.CONTINENTALNESS, NoiseParametersKeys.EROSION);
         BuiltinNoiseParameters.register(-2, NoiseParametersKeys.TEMPERATURE_LARGE, NoiseParametersKeys.VEGETATION_LARGE, NoiseParametersKeys.CONTINENTALNESS_LARGE, NoiseParametersKeys.EROSION_LARGE);
         BuiltinNoiseParameters.register(NoiseParametersKeys.RIDGE, -7, 1.0, 2.0, 1.0, 0.0, 0.0, 0.0);
@@ -64,7 +65,7 @@ public class BuiltinNoiseParameters {
         BuiltinNoiseParameters.register(NoiseParametersKeys.NETHERRACK, -3, 1.0, 0.0, 0.0, 0.35);
         BuiltinNoiseParameters.register(NoiseParametersKeys.NETHER_WART, -3, 1.0, 0.0, 0.0, 0.9);
         BuiltinNoiseParameters.register(NoiseParametersKeys.NETHER_STATE_SELECTOR, -4, 1.0, new double[0]);
-        return (DoublePerlinNoiseSampler.NoiseParameters)BuiltinRegistries.NOISE_PARAMETERS.iterator().next();
+        return (RegistryEntry)BuiltinRegistries.NOISE_PARAMETERS.streamEntries().iterator().next();
     }
 
     private static void register(int firstOctaveOffset, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> temperature, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> vegetation, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> continentalness, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> erosion) {

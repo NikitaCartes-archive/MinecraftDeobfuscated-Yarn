@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -44,7 +45,6 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -54,9 +54,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -354,17 +352,14 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         public void recreate() {
             this.openReadingWorldScreen();
-            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, session);){
-                LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
-                DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
-                GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();
+                 class_6904 lv = this.client.method_40186(session, false);){
+                GeneratorOptions generatorOptions = lv.worldData().getGeneratorOptions();
                 Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {
-                    this.client.setScreen(new ConfirmScreen(confirmed -> this.client.setScreen(confirmed ? new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+                    this.client.setScreen(new ConfirmScreen(bl -> this.client.setScreen(bl ? CreateWorldScreen.create(this.screen, lv, path) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                 } else {
-                    this.client.setScreen(new CreateWorldScreen(this.screen, levelInfo, generatorOptions, path, dataPackSettings, impl));
+                    this.client.setScreen(CreateWorldScreen.create(this.screen, lv, path));
                 }
             } catch (Exception exception) {
                 LOGGER.error("Unable to recreate world", exception);

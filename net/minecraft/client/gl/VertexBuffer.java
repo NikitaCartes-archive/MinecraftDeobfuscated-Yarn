@@ -26,7 +26,7 @@ implements AutoCloseable {
     private int vertexArrayId;
     private int vertexCount;
     private VertexFormat.DrawMode drawMode;
-    private boolean usesTexture;
+    private boolean hasNoIndexBuffer;
     private VertexFormat vertexFormat;
 
     public VertexBuffer() {
@@ -43,7 +43,7 @@ implements AutoCloseable {
 
     public void bind() {
         RenderSystem.glBindBuffer(34962, () -> this.vertexBufferId);
-        if (this.usesTexture) {
+        if (this.hasNoIndexBuffer) {
             RenderSystem.glBindBuffer(34963, () -> {
                 RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(this.drawMode, this.vertexCount);
                 this.elementFormat = indexBuffer.getElementFormat();
@@ -78,25 +78,25 @@ implements AutoCloseable {
         BufferRenderer.unbindAll();
         BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
         ByteBuffer byteBuffer = pair.getSecond();
-        int i = drawArrayParameters.getLimit();
+        int i = drawArrayParameters.getIndexBufferStart();
         this.vertexCount = drawArrayParameters.getVertexCount();
         this.elementFormat = drawArrayParameters.getElementFormat();
         this.vertexFormat = drawArrayParameters.getVertexFormat();
         this.drawMode = drawArrayParameters.getMode();
-        this.usesTexture = drawArrayParameters.isTextured();
+        this.hasNoIndexBuffer = drawArrayParameters.hasNoIndexBuffer();
         this.bindVertexArray();
         this.bind();
-        if (!drawArrayParameters.isCameraOffset()) {
+        if (!drawArrayParameters.hasNoVertexBuffer()) {
             byteBuffer.limit(i);
             RenderSystem.glBufferData(34962, byteBuffer, 35044);
             byteBuffer.position(i);
         }
-        if (!this.usesTexture) {
-            byteBuffer.limit(drawArrayParameters.getDrawStart());
+        if (!this.hasNoIndexBuffer) {
+            byteBuffer.limit(drawArrayParameters.getIndexBufferEnd());
             RenderSystem.glBufferData(34963, byteBuffer, 35044);
             byteBuffer.position(0);
         } else {
-            byteBuffer.limit(drawArrayParameters.getDrawStart());
+            byteBuffer.limit(drawArrayParameters.getIndexBufferEnd());
             byteBuffer.position(0);
         }
         VertexBuffer.unbind();
@@ -115,7 +115,7 @@ implements AutoCloseable {
         if (this.vertexCount == 0) {
             return;
         }
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.type);
     }
 
     public void setShader(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {
@@ -176,11 +176,11 @@ implements AutoCloseable {
         RenderSystem.setupShaderLights(shader);
         this.bindVertexArray();
         this.bind();
-        this.getElementFormat().startDrawing();
+        this.getVertexFormat().startDrawing();
         shader.bind();
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.type);
         shader.unbind();
-        this.getElementFormat().endDrawing();
+        this.getVertexFormat().endDrawing();
         VertexBuffer.unbind();
         VertexBuffer.unbindVertexArray();
     }
@@ -193,7 +193,7 @@ implements AutoCloseable {
         this.bindVertexArray();
         this.bind();
         this.vertexFormat.startDrawing();
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.count);
+        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.elementFormat.type);
     }
 
     public static void unbind() {
@@ -217,7 +217,7 @@ implements AutoCloseable {
         }
     }
 
-    public VertexFormat getElementFormat() {
+    public VertexFormat getVertexFormat() {
         return this.vertexFormat;
     }
 }

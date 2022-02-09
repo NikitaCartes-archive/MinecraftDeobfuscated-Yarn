@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import net.minecraft.block.EntityShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +25,6 @@ public interface ShapeContext {
 
     public boolean isHolding(Item var1);
 
-    public boolean canWalkOnFluid(FluidState var1, FlowableFluid var2);
+    public boolean canWalkOnFluid(FluidState var1, FluidState var2);
 }
 

@@ -24,7 +24,7 @@ extends Feature<DefaultFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
-        float f = random.nextInt(3) + 4;
+        float f = (float)random.nextInt(3) + 4.0f;
         int i = 0;
         while (f > 0.5f) {
             for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); ++j) {
@@ -33,7 +33,7 @@ extends Feature<DefaultFeatureConfig> {
                     this.setBlockState(structureWorldAccess, blockPos.add(j, i, k), Blocks.END_STONE.getDefaultState());
                 }
             }
-            f = (float)((double)f - ((double)random.nextInt(2) + 0.5));
+            f -= (float)random.nextInt(2) + 0.5f;
             --i;
         }
         return true;

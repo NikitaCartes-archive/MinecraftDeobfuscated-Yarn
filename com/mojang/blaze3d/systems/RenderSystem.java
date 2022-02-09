@@ -468,9 +468,9 @@ public class RenderSystem {
         return shaderColor;
     }
 
-    public static void drawElements(int mode, int first, int count) {
+    public static void drawElements(int mode, int count, int type) {
         RenderSystem.assertOnRenderThread();
-        GlStateManager._drawElements(mode, first, count, 0L);
+        GlStateManager._drawElements(mode, count, type, 0L);
     }
 
     public static void lineWidth(float width) {

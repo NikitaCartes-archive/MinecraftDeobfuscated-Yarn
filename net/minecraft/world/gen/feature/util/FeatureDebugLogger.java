@@ -65,7 +65,7 @@ public class FeatureDebugLogger {
             String string2 = (bl ? "running" : "dead") + " " + string;
             Integer integer = features.chunksWithFeatures().getValue();
             LOGGER.debug(string2 + " total_chunks: " + integer);
-            features.featureData().forEach((featureData, count) -> LOGGER.debug(string2 + " " + String.format("%10d ", count) + String.format("%10f ", (double)count.intValue() / (double)integer.intValue()) + featureData.topFeature().flatMap(registry::getKey).map(RegistryKey::getValue) + " " + featureData.feature().getFeature() + " " + featureData.feature()));
+            features.featureData().forEach((featureData, count) -> LOGGER.debug(string2 + " " + String.format("%10d ", count) + String.format("%10f ", (double)count.intValue() / (double)integer.intValue()) + featureData.topFeature().flatMap(registry::getKey).map(RegistryKey::getValue) + " " + featureData.feature().feature() + " " + featureData.feature()));
         });
     }
 

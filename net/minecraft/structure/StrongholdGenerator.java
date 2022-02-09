@@ -45,6 +45,7 @@ public class StrongholdGenerator {
     private static final int field_31626 = 50;
     private static final int field_31627 = 10;
     private static final boolean field_31628 = true;
+    public static final int field_36417 = 64;
     private static final PieceData[] ALL_PIECES = new PieceData[]{new PieceData(Corridor.class, 40, 0), new PieceData(PrisonHall.class, 5, 5), new PieceData(LeftTurn.class, 20, 0), new PieceData(RightTurn.class, 20, 0), new PieceData(SquareRoom.class, 10, 6), new PieceData(Stairs.class, 5, 5), new PieceData(SpiralStaircase.class, 5, 5), new PieceData(FiveWayCrossing.class, 5, 4), new PieceData(ChestCorridor.class, 5, 4), new PieceData(Library.class, 10, 2){
 
         @Override

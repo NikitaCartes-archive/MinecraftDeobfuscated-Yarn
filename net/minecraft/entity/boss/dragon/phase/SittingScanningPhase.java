@@ -47,7 +47,7 @@ extends AbstractSittingPhase {
                     if (i > 40.0f) {
                         i = 40.0f;
                     }
-                    this.dragon.yawAcceleration = (float)((double)this.dragon.yawAcceleration + h * (double)(0.7f / i / j));
+                    this.dragon.yawAcceleration += (float)h * (0.7f / i / j);
                     this.dragon.setYaw(this.dragon.getYaw() + this.dragon.yawAcceleration);
                 }
             }

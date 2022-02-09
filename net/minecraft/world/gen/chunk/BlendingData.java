@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -25,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EightWayDirection;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -64,7 +66,7 @@ public class BlendingData {
     private final boolean oldNoise;
     private boolean field_35690;
     private final double[] heights;
-    private final Biome[] field_36345;
+    private final List<RegistryEntry<Biome>> field_36345;
     private final transient double[][] field_35693;
     private final transient double[] field_35694;
     private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
@@ -82,7 +84,9 @@ public class BlendingData {
         this.heights = optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
         this.field_35693 = new double[field_35518][];
         this.field_35694 = new double[field_35688 * field_35688];
-        this.field_36345 = new Biome[field_35518];
+        ObjectArrayList<RegistryEntry<Biome>> objectArrayList = new ObjectArrayList<RegistryEntry<Biome>>(field_35518);
+        objectArrayList.size(field_35518);
+        this.field_36345 = objectArrayList;
     }
 
     public boolean usesOldNoise() {
@@ -158,7 +162,7 @@ public class BlendingData {
             this.heights[index] = BlendingData.getSurfaceHeight(chunk, x, z);
         }
         this.field_35693[index] = BlendingData.method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
-        this.field_36345[index] = chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(MathHelper.floor(this.heights[index])), BiomeCoords.fromBlock(z));
+        this.field_36345.set(index, chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(MathHelper.floor(this.heights[index])), BiomeCoords.fromBlock(z)));
     }
 
     private static int getSurfaceHeight(Chunk chunk, int x, int z) {
@@ -262,10 +266,10 @@ public class BlendingData {
     }
 
     protected void method_40028(int i, int j, class_6853 arg) {
-        for (int k = 0; k < this.field_36345.length; ++k) {
-            Biome biome = this.field_36345[k];
-            if (biome == null) continue;
-            arg.consume(i + BlendingData.method_39343(k), j + BlendingData.method_39352(k), biome);
+        for (int k = 0; k < this.field_36345.size(); ++k) {
+            RegistryEntry<Biome> registryEntry = this.field_36345.get(k);
+            if (registryEntry == null) continue;
+            arg.consume(i + BlendingData.method_39343(k), j + BlendingData.method_39352(k), registryEntry);
         }
     }
 
@@ -337,7 +341,7 @@ public class BlendingData {
     }
 
     protected static interface class_6853 {
-        public void consume(int var1, int var2, Biome var3);
+        public void consume(int var1, int var2, RegistryEntry<Biome> var3);
     }
 
     protected static interface class_6751 {

@@ -143,7 +143,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -154,6 +154,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -165,6 +166,7 @@ public class EntityType<T extends Entity>
 implements TypeFilter<Entity, T> {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final String ENTITY_TAG_KEY = "EntityTag";
+    private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
     private static final float field_30054 = 1.3964844f;
     public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = EntityType.register("area_effect_cloud", Builder.create(AreaEffectCloudEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(6.0f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
     public static final EntityType<ArmorStandEntity> ARMOR_STAND = EntityType.register("armor_stand", Builder.create(ArmorStandEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 1.975f).maxTrackingRange(10));
@@ -569,8 +571,8 @@ implements TypeFilter<Entity, T> {
         return this != PLAYER && this != LLAMA_SPIT && this != WITHER && this != BAT && this != ITEM_FRAME && this != GLOW_ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != END_CRYSTAL && this != EVOKER_FANGS;
     }
 
-    public boolean isIn(Tag<EntityType<?>> tag) {
-        return tag.contains(this);
+    public boolean isIn(TagKey<EntityType<?>> tag) {
+        return this.registryEntry.isIn(tag);
     }
 
     @Override
@@ -582,6 +584,11 @@ implements TypeFilter<Entity, T> {
     @Override
     public Class<? extends Entity> getBaseClass() {
         return Entity.class;
+    }
+
+    @Deprecated
+    public RegistryEntry.Reference<EntityType<?>> getRegistryEntry() {
+        return this.registryEntry;
     }
 
     public static class Builder<T extends Entity> {

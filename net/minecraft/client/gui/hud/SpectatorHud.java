@@ -127,13 +127,12 @@ implements SpectatorMenuCloseCallback {
         return this.spectatorMenu != null;
     }
 
-    public void cycleSlot(double offset) {
-        int i = this.spectatorMenu.getSelectedSlot() + (int)offset;
-        while (!(i < 0 || i > 8 || this.spectatorMenu.getCommand(i) != SpectatorMenu.BLANK_COMMAND && this.spectatorMenu.getCommand(i).isEnabled())) {
-            i = (int)((double)i + offset);
+    public void cycleSlot(int i) {
+        int j;
+        for (j = this.spectatorMenu.getSelectedSlot() + i; !(j < 0 || j > 8 || this.spectatorMenu.getCommand(j) != SpectatorMenu.BLANK_COMMAND && this.spectatorMenu.getCommand(j).isEnabled()); j += i) {
         }
-        if (i >= 0 && i <= 8) {
-            this.spectatorMenu.useCommand(i);
+        if (j >= 0 && j <= 8) {
+            this.spectatorMenu.useCommand(j);
             this.lastInteractionTime = Util.getMeasuringTimeMs();
         }
     }

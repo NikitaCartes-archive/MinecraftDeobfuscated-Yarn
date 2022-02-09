@@ -6,6 +6,7 @@ package net.minecraft.util.registry;
 import com.mojang.serialization.Lifecycle;
 import java.util.OptionalInt;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 public abstract class MutableRegistry<T>
@@ -14,9 +15,9 @@ extends Registry<T> {
         super(registryKey, lifecycle);
     }
 
-    public abstract <V extends T> V set(int var1, RegistryKey<T> var2, V var3, Lifecycle var4);
+    public abstract RegistryEntry<T> set(int var1, RegistryKey<T> var2, T var3, Lifecycle var4);
 
-    public abstract <V extends T> V add(RegistryKey<T> var1, V var2, Lifecycle var3);
+    public abstract RegistryEntry<T> add(RegistryKey<T> var1, T var2, Lifecycle var3);
 
     /**
      * If the given key is already present in the registry, replaces the entry associated with the given
@@ -27,7 +28,7 @@ extends Registry<T> {
      * {@code rawId} is present, then this method gives the entry this raw ID. Otherwise, uses the
      * next available ID.
      */
-    public abstract <V extends T> V replace(OptionalInt var1, RegistryKey<T> var2, V var3, Lifecycle var4);
+    public abstract RegistryEntry<T> replace(OptionalInt var1, RegistryKey<T> var2, T var3, Lifecycle var4);
 
     public abstract boolean isEmpty();
 }

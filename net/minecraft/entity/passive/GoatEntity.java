@@ -65,6 +65,7 @@ extends AnimalEntity {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.getNavigation().setCanSwim(true);
         this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0f);
     }
 
     protected Brain.Profile<GoatEntity> createBrainProfile() {

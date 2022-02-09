@@ -33,7 +33,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -357,18 +356,15 @@ public class Util {
      * 
      * @param futures the completable futures to combine
      */
-    public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<? extends V>> futures) {
-        return futures.stream().reduce(CompletableFuture.completedFuture(Lists.newArrayList()), (completableFuture, completableFuture2) -> completableFuture2.thenCombine((CompletionStage)completableFuture, (object, list) -> {
-            ArrayList<Object> list2 = Lists.newArrayListWithCapacity(list.size() + 1);
-            list2.addAll((Collection<Object>)list);
-            list2.add(object);
-            return list2;
-        }), (completableFuture, completableFuture2) -> completableFuture.thenCombine((CompletionStage)completableFuture2, (list, list2) -> {
-            ArrayList list3 = Lists.newArrayListWithCapacity(list.size() + list2.size());
-            list3.addAll(list);
-            list3.addAll(list2);
-            return list3;
-        }));
+    public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<V>> futures) {
+        if (futures.isEmpty()) {
+            return CompletableFuture.completedFuture(List.of());
+        }
+        if (futures.size() == 1) {
+            return futures.get(0).thenApply(List::of);
+        }
+        CompletableFuture<Void> completableFuture = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        return completableFuture.thenApply(void_ -> futures.stream().map(CompletableFuture::join).toList());
     }
 
     /**
@@ -471,6 +467,13 @@ public class Util {
 
     public static <T> T getRandom(List<T> list, Random random) {
         return list.get(random.nextInt(list.size()));
+    }
+
+    public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
+        if (list.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(Util.getRandom(list, random));
     }
 
     private static BooleanSupplier renameTask(final Path src, final Path dest) {

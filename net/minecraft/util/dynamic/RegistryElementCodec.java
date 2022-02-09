@@ -3,16 +3,17 @@
  */
 package net.minecraft.util.dynamic;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import java.util.List;
-import java.util.function.Supplier;
+import com.mojang.serialization.Lifecycle;
+import java.util.Optional;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.RegistryLoader;
 import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 /**
@@ -29,17 +30,13 @@ import net.minecraft.util.registry.RegistryKey;
  * @see RegistryOps
  */
 public final class RegistryElementCodec<E>
-implements Codec<Supplier<E>> {
+implements Codec<RegistryEntry<E>> {
     private final RegistryKey<? extends Registry<E>> registryRef;
     private final Codec<E> elementCodec;
     private final boolean allowInlineDefinitions;
 
     public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {
         return RegistryElementCodec.of(registryRef, elementCodec, true);
-    }
-
-    public static <E> Codec<List<Supplier<E>>> method_31194(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {
-        return Codec.either(RegistryElementCodec.of(registryRef, elementCodec, false).listOf(), elementCodec.xmap(object -> () -> object, Supplier::get).listOf()).xmap(either -> either.map(list -> list, list -> list), Either::left);
     }
 
     private static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
@@ -53,19 +50,44 @@ implements Codec<Supplier<E>> {
     }
 
     @Override
-    public <T> DataResult<T> encode(Supplier<E> supplier, DynamicOps<T> dynamicOps, T object) {
-        if (dynamicOps instanceof RegistryReadingOps) {
-            return ((RegistryReadingOps)dynamicOps).encodeOrId(supplier.get(), object, this.registryRef, this.elementCodec);
+    public <T> DataResult<T> encode(RegistryEntry<E> registryEntry, DynamicOps<T> dynamicOps, T object) {
+        RegistryOps registryOps;
+        Optional optional;
+        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registryRef)).isPresent()) {
+            if (!registryEntry.setRegistry(optional.get())) {
+                return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
+            }
+            return registryEntry.getKeyOrValue().map(key -> Identifier.CODEC.encode(key.getValue(), dynamicOps, object), value -> this.elementCodec.encode(value, dynamicOps, object));
         }
-        return this.elementCodec.encode(supplier.get(), dynamicOps, object);
+        return this.elementCodec.encode(registryEntry.value(), dynamicOps, object);
     }
 
     @Override
-    public <T> DataResult<Pair<Supplier<E>, T>> decode(DynamicOps<T> ops, T input) {
+    public <T> DataResult<Pair<RegistryEntry<E>, T>> decode(DynamicOps<T> ops, T input) {
         if (ops instanceof RegistryOps) {
-            return ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec, this.allowInlineDefinitions);
+            RegistryOps registryOps = (RegistryOps)ops;
+            Optional optional = registryOps.getRegistry(this.registryRef);
+            if (optional.isEmpty()) {
+                return DataResult.error("Registry does not exist: " + this.registryRef);
+            }
+            Registry registry = optional.get();
+            DataResult dataResult = Identifier.CODEC.decode(ops, input);
+            if (dataResult.result().isEmpty()) {
+                if (!this.allowInlineDefinitions) {
+                    return DataResult.error("Inline definitions not allowed here");
+                }
+                return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
+            }
+            Pair pair2 = dataResult.result().get();
+            RegistryKey registryKey = RegistryKey.of(this.registryRef, (Identifier)pair2.getFirst());
+            Optional<RegistryLoader.LoaderAccess> optional2 = registryOps.getLoaderAccess();
+            if (optional2.isPresent()) {
+                return optional2.get().load(this.registryRef, this.elementCodec, registryKey, registryOps.getEntryOps()).map((? super R entry) -> Pair.of(entry, pair2.getSecond()));
+            }
+            RegistryEntry registryEntry = registry.getOrCreateEntry(registryKey);
+            return DataResult.success(Pair.of(registryEntry, pair2.getSecond()), Lifecycle.stable());
         }
-        return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(object -> () -> object));
+        return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
     }
 
     public String toString() {
@@ -74,7 +96,7 @@ implements Codec<Supplier<E>> {
 
     @Override
     public /* synthetic */ DataResult encode(Object input, DynamicOps ops, Object prefix) {
-        return this.encode((Supplier)input, ops, prefix);
+        return this.encode((RegistryEntry)input, ops, prefix);
     }
 }
 

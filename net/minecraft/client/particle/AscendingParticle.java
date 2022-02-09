@@ -33,8 +33,7 @@ extends SpriteBillboardParticle {
         this.green = f;
         this.blue = f;
         this.scale *= 0.75f * scaleMultiplier;
-        this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2));
-        this.maxAge = (int)((float)this.maxAge * scaleMultiplier);
+        this.maxAge = (int)((double)baseMaxAge / ((double)world.random.nextFloat() * 0.8 + 0.2) * (double)scaleMultiplier);
         this.maxAge = Math.max(this.maxAge, 1);
         this.setSpriteForAge(spriteProvider);
         this.collidesWithWorld = collidesWithWorld;

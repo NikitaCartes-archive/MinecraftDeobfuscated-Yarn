@@ -29,7 +29,7 @@ extends Feature<RandomPatchFeatureConfig> {
         int k = randomPatchFeatureConfig.ySpread() + 1;
         for (int l = 0; l < randomPatchFeatureConfig.tries(); ++l) {
             mutable.set(blockPos, random.nextInt(j) - random.nextInt(j), random.nextInt(k) - random.nextInt(k), random.nextInt(j) - random.nextInt(j));
-            if (!randomPatchFeatureConfig.feature().get().generateUnregistered(structureWorldAccess, context.getGenerator(), random, mutable)) continue;
+            if (!randomPatchFeatureConfig.feature().value().generateUnregistered(structureWorldAccess, context.getGenerator(), random, mutable)) continue;
             ++i;
         }
         return i > 0;

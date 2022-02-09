@@ -166,8 +166,8 @@ extends Screen {
             if (bl) {
                 this.client.startIntegratedServer(DEMO_WORLD_NAME);
             } else {
-                DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-                this.client.createWorld(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
+                DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
+                this.client.createWorld(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, GeneratorOptions.createDemo(dynamicRegistryManager));
             }
         }));
         this.buttonResetDemo = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), button -> {

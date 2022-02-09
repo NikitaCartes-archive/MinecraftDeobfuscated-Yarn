@@ -65,7 +65,7 @@ extends Entity {
     public static final int field_30697 = 0;
     public static final int field_30698 = 1;
     private static final int field_30695 = 60;
-    private static final double field_30696 = (double)0.3926991f;
+    private static final float field_30696 = 0.3926991f;
     public static final double field_30699 = 0.7853981852531433;
     public static final int field_30700 = 60;
     private final float[] paddlePhases = new float[2];
@@ -289,7 +289,7 @@ extends Entity {
         for (int i = 0; i <= 1; ++i) {
             if (this.isPaddleMoving(i)) {
                 SoundEvent soundEvent;
-                if (!this.isSilent() && (double)(this.paddlePhases[i] % ((float)Math.PI * 2)) <= 0.7853981852531433 && ((double)this.paddlePhases[i] + (double)0.3926991f) % 6.2831854820251465 >= 0.7853981852531433 && (soundEvent = this.getPaddleSoundEvent()) != null) {
+                if (!this.isSilent() && (double)(this.paddlePhases[i] % ((float)Math.PI * 2)) <= 0.7853981852531433 && (double)((this.paddlePhases[i] + 0.3926991f) % ((float)Math.PI * 2)) >= 0.7853981852531433 && (soundEvent = this.getPaddleSoundEvent()) != null) {
                     Vec3d vec3d = this.getRotationVec(1.0f);
                     double d = i == 1 ? -vec3d.z : vec3d.z;
                     double e = i == 1 ? vec3d.x : -vec3d.x;
@@ -297,7 +297,7 @@ extends Entity {
                     this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new BlockPos(this.getX() + d, this.getY(), this.getZ() + e));
                 }
                 int n = i;
-                this.paddlePhases[n] = (float)((double)this.paddlePhases[n] + (double)0.3926991f);
+                this.paddlePhases[n] = this.paddlePhases[n] + 0.3926991f;
                 continue;
             }
             this.paddlePhases[i] = 0.0f;
@@ -389,7 +389,7 @@ extends Entity {
 
     public float interpolatePaddlePhase(int paddle, float tickDelta) {
         if (this.isPaddleMoving(paddle)) {
-            return (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (double)0.3926991f, (double)this.paddlePhases[paddle], (double)tickDelta);
+            return MathHelper.clampedLerp(this.paddlePhases[paddle] - 0.3926991f, this.paddlePhases[paddle], tickDelta);
         }
         return 0.0f;
     }
@@ -598,7 +598,7 @@ extends Entity {
             int i = this.getPassengerList().indexOf(passenger);
             f = i == 0 ? 0.2f : -0.6f;
             if (passenger instanceof AnimalEntity) {
-                f = (float)((double)f + 0.2);
+                f += 0.2f;
             }
         }
         Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.getYaw() * ((float)Math.PI / 180) - 1.5707964f);
@@ -709,7 +709,7 @@ extends Entity {
             }
             this.onLanding();
         } else if (!this.world.getFluidState(this.getBlockPos().down()).isIn(FluidTags.WATER) && heightDifference < 0.0) {
-            this.fallDistance = (float)((double)this.fallDistance - heightDifference);
+            this.fallDistance -= (float)heightDifference;
         }
     }
 

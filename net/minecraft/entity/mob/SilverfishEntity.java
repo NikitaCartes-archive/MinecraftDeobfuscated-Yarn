@@ -17,6 +17,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.PowderSnowJumpGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
@@ -50,6 +51,7 @@ extends HostileEntity {
     protected void initGoals() {
         this.callForHelpGoal = new CallForHelpGoal(this);
         this.goalSelector.add(1, new SwimGoal(this));
+        this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.world));
         this.goalSelector.add(3, this.callForHelpGoal);
         this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
         this.goalSelector.add(5, new WanderAndInfestGoal(this));

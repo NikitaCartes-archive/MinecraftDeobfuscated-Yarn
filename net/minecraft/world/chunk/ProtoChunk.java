@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -229,7 +230,7 @@ extends Chunk {
     }
 
     @Override
-    public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+    public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         if (this.getStatus().isAtLeast(ChunkStatus.BIOMES) || this.belowZeroRetrogen != null && this.belowZeroRetrogen.getTargetStatus().isAtLeast(ChunkStatus.BIOMES)) {
             return super.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }

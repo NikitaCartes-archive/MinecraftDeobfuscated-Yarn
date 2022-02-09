@@ -69,8 +69,8 @@ public class Advancement {
         }
     }
 
-    public Task createTask() {
-        return new Task(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
+    public Builder createTask() {
+        return new Builder(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
     }
 
     @Nullable
@@ -134,7 +134,7 @@ public class Advancement {
         return this.text;
     }
 
-    public static class Task {
+    public static class Builder {
         @Nullable
         private Identifier parentId;
         @Nullable
@@ -147,7 +147,7 @@ public class Advancement {
         private String[][] requirements;
         private CriterionMerger merger = CriterionMerger.AND;
 
-        Task(@Nullable Identifier parentId, @Nullable AdvancementDisplay display, AdvancementRewards rewards, Map<String, AdvancementCriterion> criteria, String[][] requirements) {
+        Builder(@Nullable Identifier parentId, @Nullable AdvancementDisplay display, AdvancementRewards rewards, Map<String, AdvancementCriterion> criteria, String[][] requirements) {
             this.parentId = parentId;
             this.display = display;
             this.rewards = rewards;
@@ -155,50 +155,50 @@ public class Advancement {
             this.requirements = requirements;
         }
 
-        private Task() {
+        private Builder() {
         }
 
-        public static Task create() {
-            return new Task();
+        public static Builder create() {
+            return new Builder();
         }
 
-        public Task parent(Advancement parent) {
+        public Builder parent(Advancement parent) {
             this.parentObj = parent;
             return this;
         }
 
-        public Task parent(Identifier parentId) {
+        public Builder parent(Identifier parentId) {
             this.parentId = parentId;
             return this;
         }
 
-        public Task display(ItemStack icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
+        public Builder display(ItemStack icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
             return this.display(new AdvancementDisplay(icon, title, description, background, frame, showToast, announceToChat, hidden));
         }
 
-        public Task display(ItemConvertible icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
+        public Builder display(ItemConvertible icon, Text title, Text description, @Nullable Identifier background, AdvancementFrame frame, boolean showToast, boolean announceToChat, boolean hidden) {
             return this.display(new AdvancementDisplay(new ItemStack(icon.asItem()), title, description, background, frame, showToast, announceToChat, hidden));
         }
 
-        public Task display(AdvancementDisplay display) {
+        public Builder display(AdvancementDisplay display) {
             this.display = display;
             return this;
         }
 
-        public Task rewards(AdvancementRewards.Builder builder) {
+        public Builder rewards(AdvancementRewards.Builder builder) {
             return this.rewards(builder.build());
         }
 
-        public Task rewards(AdvancementRewards rewards) {
+        public Builder rewards(AdvancementRewards rewards) {
             this.rewards = rewards;
             return this;
         }
 
-        public Task criterion(String name, CriterionConditions conditions) {
+        public Builder criterion(String name, CriterionConditions conditions) {
             return this.criterion(name, new AdvancementCriterion(conditions));
         }
 
-        public Task criterion(String name, AdvancementCriterion criterion) {
+        public Builder criterion(String name, AdvancementCriterion criterion) {
             if (this.criteria.containsKey(name)) {
                 throw new IllegalArgumentException("Duplicate criterion " + name);
             }
@@ -206,12 +206,12 @@ public class Advancement {
             return this;
         }
 
-        public Task criteriaMerger(CriterionMerger merger) {
+        public Builder criteriaMerger(CriterionMerger merger) {
             this.merger = merger;
             return this;
         }
 
-        public Task requirements(String[][] requirements) {
+        public Builder requirements(String[][] requirements) {
             this.requirements = requirements;
             return this;
         }
@@ -303,7 +303,7 @@ public class Advancement {
             return "Task Advancement{parentId=" + this.parentId + ", display=" + this.display + ", rewards=" + this.rewards + ", criteria=" + this.criteria + ", requirements=" + Arrays.deepToString((Object[])this.requirements) + "}";
         }
 
-        public static Task fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+        public static Builder fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
             int i;
             Identifier identifier = obj.has("parent") ? new Identifier(JsonHelper.getString(obj, "parent")) : null;
             AdvancementDisplay advancementDisplay = obj.has("display") ? AdvancementDisplay.fromJson(JsonHelper.getObject(obj, "display")) : null;
@@ -350,10 +350,10 @@ public class Advancement {
                 if (bl) continue;
                 throw new JsonSyntaxException("Criterion '" + string3 + "' isn't a requirement for completion. This isn't supported behaviour, all criteria must be required.");
             }
-            return new Task(identifier, advancementDisplay, advancementRewards, map, strings);
+            return new Builder(identifier, advancementDisplay, advancementRewards, map, strings);
         }
 
-        public static Task fromPacket(PacketByteBuf buf) {
+        public static Builder fromPacket(PacketByteBuf buf) {
             Identifier identifier = buf.readBoolean() ? buf.readIdentifier() : null;
             AdvancementDisplay advancementDisplay = buf.readBoolean() ? AdvancementDisplay.fromPacket(buf) : null;
             Map<String, AdvancementCriterion> map = AdvancementCriterion.criteriaFromPacket(buf);
@@ -364,7 +364,7 @@ public class Advancement {
                     strings[i][j] = buf.readString();
                 }
             }
-            return new Task(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
+            return new Builder(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
         }
 
         public Map<String, AdvancementCriterion> getCriteria() {

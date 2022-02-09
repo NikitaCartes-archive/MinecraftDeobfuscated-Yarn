@@ -295,11 +295,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             ArrayList<Chunk> list2 = Lists.newArrayList();
             int l = 0;
             for (final Either either : list) {
-                Optional optional;
                 if (either == null) {
-                    this.crash(new IllegalStateException("At least one of the chunk futures were null"));
+                    throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
                 }
-                if (!(optional = either.left()).isPresent()) {
+                Optional optional = either.left();
+                if (!optional.isPresent()) {
                     final int m = l;
                     return Either.right(new ChunkHolder.Unloaded(){
 
@@ -319,7 +319,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return completableFuture3;
     }
 
-    public void crash(IllegalStateException exception) {
+    public CrashException crash(IllegalStateException exception, String string) {
         StringBuilder stringBuilder = new StringBuilder();
         Consumer<ChunkHolder> consumer = chunkHolder -> chunkHolder.collectFuturesByStatus().forEach(pair -> {
             ChunkStatus chunkStatus = (ChunkStatus)pair.getFirst();
@@ -334,8 +334,9 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.chunkHolders.values().forEach(consumer);
         CrashReport crashReport = CrashReport.create(exception, "Chunk loading");
         CrashReportSection crashReportSection = crashReport.addElement("Chunk loading");
+        crashReportSection.add("Details", string);
         crashReportSection.add("Futures", stringBuilder);
-        throw new CrashException(crashReport);
+        return new CrashException(crashReport);
     }
 
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {

@@ -51,7 +51,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
@@ -68,6 +67,7 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
@@ -124,13 +124,13 @@ extends World {
     private int simulationDistance;
     private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 
-    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, DimensionType dimensionType, int loadDistance, int simulationDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
-        super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
+    public ClientWorld(ClientPlayNetworkHandler netHandler, Properties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> registryEntry, int loadDistance, int simulationDistance, Supplier<Profiler> profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed) {
+        super(properties, registryRef, registryEntry, profiler, true, debugWorld, seed);
         this.networkHandler = netHandler;
         this.chunkManager = new ClientChunkManager(this, loadDistance);
         this.clientWorldProperties = properties;
         this.worldRenderer = worldRenderer;
-        this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
+        this.dimensionEffects = DimensionEffects.byDimensionType(registryEntry.value());
         this.setSpawnPos(new BlockPos(8, 64, 8), 0.0f);
         this.simulationDistance = simulationDistance;
         this.calculateAmbientDarkness();
@@ -339,7 +339,7 @@ extends World {
             this.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK_MARKER, blockState), (double)i + 0.5, (double)j + 0.5, (double)k + 0.5, 0.0, 0.0, 0.0);
         }
         if (!blockState.isFullCube(this, pos)) {
-            this.getBiome(pos).getParticleConfig().ifPresent(config -> {
+            this.getBiome(pos).value().getParticleConfig().ifPresent(config -> {
                 if (config.shouldAddParticle(this.random)) {
                     this.addParticle(config.getParticle(), (double)pos.getX() + this.random.nextDouble(), (double)pos.getY() + this.random.nextDouble(), (double)pos.getZ() + this.random.nextDouble(), 0.0, 0.0, 0.0);
                 }
@@ -475,11 +475,6 @@ extends World {
     }
 
     @Override
-    public TagManager getTagManager() {
-        return this.networkHandler.getTagManager();
-    }
-
-    @Override
     public DynamicRegistryManager getRegistryManager() {
         return this.networkHandler.getRegistryManager();
     }
@@ -555,8 +550,8 @@ extends World {
     }
 
     @Override
-    public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-        return this.getRegistryManager().get(Registry.BIOME_KEY).getOrThrow(BiomeKeys.PLAINS);
+    public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+        return this.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS);
     }
 
     public float getStarBrightness(float tickDelta) {
@@ -564,9 +559,8 @@ extends World {
         float g = 1.0f - (MathHelper.cos(f * ((float)Math.PI * 2)) * 2.0f + 0.2f);
         g = MathHelper.clamp(g, 0.0f, 1.0f);
         g = 1.0f - g;
-        g = (float)((double)g * (1.0 - (double)(this.getRainGradient(tickDelta) * 5.0f) / 16.0));
-        g = (float)((double)g * (1.0 - (double)(this.getThunderGradient(tickDelta) * 5.0f) / 16.0));
-        return g * 0.8f + 0.2f;
+        g *= 1.0f - this.getRainGradient(tickDelta) * 5.0f / 16.0f;
+        return (g *= 1.0f - this.getThunderGradient(tickDelta) * 5.0f / 16.0f) * 0.8f + 0.2f;
     }
 
     public Vec3d getSkyColor(Vec3d cameraPos, float tickDelta) {
@@ -575,7 +569,7 @@ extends World {
         float f = this.getSkyAngle(tickDelta);
         Vec3d vec3d = cameraPos.subtract(2.0, 2.0, 2.0).multiply(0.25);
         BiomeAccess biomeAccess = this.getBiomeAccess();
-        Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).getSkyColor()));
+        Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).value().getSkyColor()));
         float g = MathHelper.cos(f * ((float)Math.PI * 2)) * 2.0f + 0.5f;
         g = MathHelper.clamp(g, 0.0f, 1.0f);
         float h = (float)vec3d2.x * g;
@@ -689,7 +683,7 @@ extends World {
     public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
         int i = MinecraftClient.getInstance().options.biomeBlendRadius;
         if (i == 0) {
-            return colorResolver.getColor(this.getBiome(pos), pos.getX(), pos.getZ());
+            return colorResolver.getColor(this.getBiome(pos).value(), pos.getX(), pos.getZ());
         }
         int j = (i * 2 + 1) * (i * 2 + 1);
         int k = 0;
@@ -699,7 +693,7 @@ extends World {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         while (cuboidBlockIterator.step()) {
             mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-            int n = colorResolver.getColor(this.getBiome(mutable), mutable.getX(), mutable.getZ());
+            int n = colorResolver.getColor(this.getBiome(mutable).value(), mutable.getX(), mutable.getZ());
             k += (n & 0xFF0000) >> 16;
             l += (n & 0xFF00) >> 8;
             m += n & 0xFF;
@@ -994,11 +988,11 @@ extends World {
             return 63.0;
         }
 
-        public double getHorizonShadingRatio() {
+        public float getHorizonShadingRatio() {
             if (this.flatWorld) {
-                return 1.0;
+                return 1.0f;
             }
-            return 0.03125;
+            return 0.03125f;
         }
     }
 }

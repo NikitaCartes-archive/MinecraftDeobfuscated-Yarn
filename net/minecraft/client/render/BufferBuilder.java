@@ -50,11 +50,11 @@ implements BufferVertexConsumer {
     private boolean hasOverlay;
     private boolean building;
     @Nullable
-    private Vec3f[] currentParameters;
-    private float cameraX = Float.NaN;
-    private float cameraY = Float.NaN;
-    private float cameraZ = Float.NaN;
-    private boolean cameraOffset;
+    private Vec3f[] sortingPrimitiveCenters;
+    private float sortingCameraX = Float.NaN;
+    private float sortingCameraY = Float.NaN;
+    private float sortingCameraZ = Float.NaN;
+    private boolean hasNoVertexBuffer;
 
     public BufferBuilder(int initialCapacity) {
         this.buffer = GlAllocationUtils.allocateByteBuffer(initialCapacity * 6);
@@ -91,22 +91,22 @@ implements BufferVertexConsumer {
         return amount + i - j;
     }
 
-    public void setCameraPosition(float cameraX, float cameraY, float cameraZ) {
+    public void sortFrom(float cameraX, float cameraY, float cameraZ) {
         if (this.drawMode != VertexFormat.DrawMode.QUADS) {
             return;
         }
-        if (this.cameraX != cameraX || this.cameraY != cameraY || this.cameraZ != cameraZ) {
-            this.cameraX = cameraX;
-            this.cameraY = cameraY;
-            this.cameraZ = cameraZ;
-            if (this.currentParameters == null) {
-                this.currentParameters = this.buildParameterVector();
+        if (this.sortingCameraX != cameraX || this.sortingCameraY != cameraY || this.sortingCameraZ != cameraZ) {
+            this.sortingCameraX = cameraX;
+            this.sortingCameraY = cameraY;
+            this.sortingCameraZ = cameraZ;
+            if (this.sortingPrimitiveCenters == null) {
+                this.sortingPrimitiveCenters = this.buildPrimitiveCenters();
             }
         }
     }
 
     public State popState() {
-        return new State(this.drawMode, this.vertexCount, this.currentParameters, this.cameraX, this.cameraY, this.cameraZ);
+        return new State(this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sortingCameraX, this.sortingCameraY, this.sortingCameraZ);
     }
 
     public void restoreState(State state) {
@@ -114,11 +114,11 @@ implements BufferVertexConsumer {
         this.drawMode = state.drawMode;
         this.vertexCount = state.vertexCount;
         this.elementOffset = this.buildStart;
-        this.currentParameters = state.currentParameters;
-        this.cameraX = state.cameraX;
-        this.cameraY = state.cameraY;
-        this.cameraZ = state.cameraZ;
-        this.cameraOffset = true;
+        this.sortingPrimitiveCenters = state.sortingPrimitiveCenters;
+        this.sortingCameraX = state.sortingCameraX;
+        this.sortingCameraY = state.sortingCameraY;
+        this.sortingCameraZ = state.sortingCameraZ;
+        this.hasNoVertexBuffer = true;
     }
 
     public void begin(VertexFormat.DrawMode drawMode, VertexFormat format) {
@@ -144,7 +144,7 @@ implements BufferVertexConsumer {
         this.hasOverlay = bl;
     }
 
-    private IntConsumer createConsumer(VertexFormat.IntType elementFormat) {
+    private IntConsumer createIndexWriter(VertexFormat.IntType elementFormat) {
         switch (elementFormat) {
             case BYTE: {
                 return value -> this.buffer.put((byte)value);
@@ -156,7 +156,7 @@ implements BufferVertexConsumer {
         return value -> this.buffer.putInt(value);
     }
 
-    private Vec3f[] buildParameterVector() {
+    private Vec3f[] buildPrimitiveCenters() {
         FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
         int i = this.buildStart / 4;
         int j = this.format.getVertexSizeInteger();
@@ -178,18 +178,18 @@ implements BufferVertexConsumer {
         return vec3fs;
     }
 
-    private void writeCameraOffset(VertexFormat.IntType elementFormat) {
-        float[] fs = new float[this.currentParameters.length];
-        int[] is = new int[this.currentParameters.length];
-        for (int i2 = 0; i2 < this.currentParameters.length; ++i2) {
-            float f = this.currentParameters[i2].getX() - this.cameraX;
-            float g = this.currentParameters[i2].getY() - this.cameraY;
-            float h = this.currentParameters[i2].getZ() - this.cameraZ;
+    private void writeSortedIndices(VertexFormat.IntType elementFormat) {
+        float[] fs = new float[this.sortingPrimitiveCenters.length];
+        int[] is = new int[this.sortingPrimitiveCenters.length];
+        for (int i2 = 0; i2 < this.sortingPrimitiveCenters.length; ++i2) {
+            float f = this.sortingPrimitiveCenters[i2].getX() - this.sortingCameraX;
+            float g = this.sortingPrimitiveCenters[i2].getY() - this.sortingCameraY;
+            float h = this.sortingPrimitiveCenters[i2].getZ() - this.sortingCameraZ;
             fs[i2] = f * f + g * g + h * h;
             is[i2] = i2;
         }
         IntArrays.mergeSort(is, (i, j) -> Floats.compare(fs[j], fs[i]));
-        IntConsumer intConsumer = this.createConsumer(elementFormat);
+        IntConsumer intConsumer = this.createIndexWriter(elementFormat);
         this.buffer.position(this.elementOffset);
         for (int j2 : is) {
             intConsumer.accept(j2 * this.drawMode.size + 0);
@@ -208,10 +208,10 @@ implements BufferVertexConsumer {
         }
         int i = this.drawMode.getSize(this.vertexCount);
         VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
-        if (this.currentParameters != null) {
+        if (this.sortingPrimitiveCenters != null) {
             int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
             this.grow(j);
-            this.writeCameraOffset(intType);
+            this.writeSortedIndices(intType);
             bl = false;
             this.elementOffset += j;
             this.buildStart += this.vertexCount * this.format.getVertexSize() + j;
@@ -220,15 +220,15 @@ implements BufferVertexConsumer {
             this.buildStart += this.vertexCount * this.format.getVertexSize();
         }
         this.building = false;
-        this.parameters.add(new DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.cameraOffset, bl));
+        this.parameters.add(new DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.hasNoVertexBuffer, bl));
         this.vertexCount = 0;
         this.currentElement = null;
         this.currentElementId = 0;
-        this.currentParameters = null;
-        this.cameraX = Float.NaN;
-        this.cameraY = Float.NaN;
-        this.cameraZ = Float.NaN;
-        this.cameraOffset = false;
+        this.sortingPrimitiveCenters = null;
+        this.sortingCameraX = Float.NaN;
+        this.sortingCameraY = Float.NaN;
+        this.sortingCameraZ = Float.NaN;
+        this.hasNoVertexBuffer = false;
     }
 
     @Override
@@ -326,7 +326,7 @@ implements BufferVertexConsumer {
     public Pair<DrawArrayParameters, ByteBuffer> popData() {
         DrawArrayParameters drawArrayParameters = this.parameters.get(this.lastParameterIndex++);
         this.buffer.position(this.nextDrawStart);
-        this.nextDrawStart += MathHelper.roundUpToMultiple(drawArrayParameters.getDrawStart(), 4);
+        this.nextDrawStart += MathHelper.roundUpToMultiple(drawArrayParameters.getIndexBufferEnd(), 4);
         this.buffer.limit(this.nextDrawStart);
         if (this.lastParameterIndex == this.parameters.size() && this.vertexCount == 0) {
             this.clear();
@@ -368,18 +368,18 @@ implements BufferVertexConsumer {
         final VertexFormat.DrawMode drawMode;
         final int vertexCount;
         @Nullable
-        final Vec3f[] currentParameters;
-        final float cameraX;
-        final float cameraY;
-        final float cameraZ;
+        final Vec3f[] sortingPrimitiveCenters;
+        final float sortingCameraX;
+        final float sortingCameraY;
+        final float sortingCameraZ;
 
         State(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vec3f[] currentParameters, float cameraX, float cameraY, float cameraZ) {
             this.drawMode = drawMode;
             this.vertexCount = vertexCount;
-            this.currentParameters = currentParameters;
-            this.cameraX = cameraX;
-            this.cameraY = cameraY;
-            this.cameraZ = cameraZ;
+            this.sortingPrimitiveCenters = currentParameters;
+            this.sortingCameraX = cameraX;
+            this.sortingCameraY = cameraY;
+            this.sortingCameraZ = cameraZ;
         }
     }
 
@@ -390,17 +390,17 @@ implements BufferVertexConsumer {
         private final int vertexCount;
         private final VertexFormat.DrawMode mode;
         private final VertexFormat.IntType elementFormat;
-        private final boolean cameraOffset;
-        private final boolean textured;
+        private final boolean hasNoVertexBuffer;
+        private final boolean hasNoIndexBuffer;
 
-        DrawArrayParameters(VertexFormat vertexFormat, int count, int vertexCount, VertexFormat.DrawMode mode, VertexFormat.IntType elementFormat, boolean cameraOffset, boolean textured) {
+        DrawArrayParameters(VertexFormat vertexFormat, int count, int vertexCount, VertexFormat.DrawMode mode, VertexFormat.IntType elementFormat, boolean hasNoVertexBuffer, boolean hasNoIndexBuffer) {
             this.vertexFormat = vertexFormat;
             this.count = count;
             this.vertexCount = vertexCount;
             this.mode = mode;
             this.elementFormat = elementFormat;
-            this.cameraOffset = cameraOffset;
-            this.textured = textured;
+            this.hasNoVertexBuffer = hasNoVertexBuffer;
+            this.hasNoIndexBuffer = hasNoIndexBuffer;
         }
 
         public VertexFormat getVertexFormat() {
@@ -423,24 +423,24 @@ implements BufferVertexConsumer {
             return this.elementFormat;
         }
 
-        public int getLimit() {
+        public int getIndexBufferStart() {
             return this.count * this.vertexFormat.getVertexSize();
         }
 
-        private int getDrawLength() {
-            return this.textured ? 0 : this.vertexCount * this.elementFormat.size;
+        private int getIndexBufferLength() {
+            return this.hasNoIndexBuffer ? 0 : this.vertexCount * this.elementFormat.size;
         }
 
-        public int getDrawStart() {
-            return this.getLimit() + this.getDrawLength();
+        public int getIndexBufferEnd() {
+            return this.getIndexBufferStart() + this.getIndexBufferLength();
         }
 
-        public boolean isCameraOffset() {
-            return this.cameraOffset;
+        public boolean hasNoVertexBuffer() {
+            return this.hasNoVertexBuffer;
         }
 
-        public boolean isTextured() {
-            return this.textured;
+        public boolean hasNoIndexBuffer() {
+            return this.hasNoIndexBuffer;
         }
     }
 }

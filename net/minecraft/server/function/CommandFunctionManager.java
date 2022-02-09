@@ -75,7 +75,7 @@ public class CommandFunctionManager {
         this.executeAll(this.tickFunctions, TICK_TAG_ID);
         if (this.justLoaded) {
             this.justLoaded = false;
-            List<CommandFunction> collection = this.loader.getTags().getTagOrEmpty(LOAD_TAG_ID).values();
+            List<CommandFunction> collection = this.loader.getTagOrEmpty(LOAD_TAG_ID).values();
             this.executeAll(collection, LOAD_TAG_ID);
         }
     }
@@ -155,7 +155,7 @@ public class CommandFunctionManager {
     }
 
     private void load(FunctionLoader loader) {
-        this.tickFunctions = ImmutableList.copyOf(loader.getTags().getTagOrEmpty(TICK_TAG_ID).values());
+        this.tickFunctions = ImmutableList.copyOf(loader.getTagOrEmpty(TICK_TAG_ID).values());
         this.justLoaded = true;
     }
 
@@ -186,7 +186,7 @@ public class CommandFunctionManager {
     }
 
     public Iterable<Identifier> getFunctionTags() {
-        return this.loader.getTags().getTagIds();
+        return this.loader.getTags();
     }
 
     public static interface Tracer {

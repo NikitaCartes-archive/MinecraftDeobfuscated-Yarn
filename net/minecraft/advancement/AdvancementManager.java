@@ -54,17 +54,17 @@ public class AdvancementManager {
         }
     }
 
-    public void load(Map<Identifier, Advancement.Task> map) {
-        HashMap<Identifier, Advancement.Task> map2 = Maps.newHashMap(map);
+    public void load(Map<Identifier, Advancement.Builder> map) {
+        HashMap<Identifier, Advancement.Builder> map2 = Maps.newHashMap(map);
         while (!map2.isEmpty()) {
             boolean bl = false;
             Iterator iterator = map2.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry entry = iterator.next();
                 Identifier identifier = (Identifier)entry.getKey();
-                Advancement.Task task = (Advancement.Task)entry.getValue();
-                if (!task.findParent(this.advancements::get)) continue;
-                Advancement advancement = task.build(identifier);
+                Advancement.Builder builder = (Advancement.Builder)entry.getValue();
+                if (!builder.findParent(this.advancements::get)) continue;
+                Advancement advancement = builder.build(identifier);
                 this.advancements.put(identifier, advancement);
                 bl = true;
                 iterator.remove();

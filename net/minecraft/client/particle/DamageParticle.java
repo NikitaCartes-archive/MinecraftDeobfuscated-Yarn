@@ -45,8 +45,8 @@ extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        this.green = (float)((double)this.green * 0.96);
-        this.blue = (float)((double)this.blue * 0.9);
+        this.green *= 0.96f;
+        this.blue *= 0.9f;
     }
 
     @Override

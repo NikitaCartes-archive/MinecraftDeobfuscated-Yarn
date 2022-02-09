@@ -11,8 +11,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -34,7 +32,7 @@ extends Feature<VegetationPatchFeatureConfig> {
         VegetationPatchFeatureConfig vegetationPatchFeatureConfig = context.getConfig();
         Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
-        Predicate<BlockState> predicate = VegetationPatchFeature.getReplaceablePredicate(vegetationPatchFeatureConfig);
+        Predicate<BlockState> predicate = blockState -> blockState.isIn(vegetationPatchFeatureConfig.replaceable);
         int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
         int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
         Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);
@@ -86,7 +84,7 @@ extends Feature<VegetationPatchFeatureConfig> {
     }
 
     protected boolean generateVegetationFeature(StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos) {
-        return config.vegetationFeature.get().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
+        return config.vegetationFeature.value().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
     }
 
     protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth) {
@@ -101,11 +99,6 @@ extends Feature<VegetationPatchFeatureConfig> {
             pos.move(config.surface.getDirection());
         }
         return true;
-    }
-
-    private static Predicate<BlockState> getReplaceablePredicate(VegetationPatchFeatureConfig config) {
-        Tag<Block> tag = BlockTags.getTagGroup().getTag(config.replaceable);
-        return tag == null ? state -> true : state -> state.isIn(tag);
     }
 }
 

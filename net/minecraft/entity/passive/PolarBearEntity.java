@@ -4,8 +4,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.block.BlockState;
@@ -48,7 +46,7 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -106,8 +104,8 @@ implements Angerable {
     }
 
     public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
-        if (Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_OCEAN)) || Objects.equals(optional, Optional.of(BiomeKeys.DEEP_FROZEN_OCEAN))) {
+        RegistryEntry<Biome> registryEntry = world.getBiome(pos);
+        if (registryEntry.matchesKey(BiomeKeys.FROZEN_OCEAN) || registryEntry.matchesKey(BiomeKeys.DEEP_FROZEN_OCEAN)) {
             return PolarBearEntity.isLightLevelValidForNaturalSpawn(world, pos) && world.getBlockState(pos.down()).isIn(BlockTags.POLAR_BEARS_SPAWNABLE_ON_IN_FROZEN_OCEAN);
         }
         return PolarBearEntity.isValidNaturalSpawn(type, world, spawnReason, pos, random);

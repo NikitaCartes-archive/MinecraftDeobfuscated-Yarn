@@ -25,11 +25,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +47,7 @@ implements ArgumentType<BlockPredicate> {
             return new BlockPredicate(){
 
                 @Override
-                public Predicate<CachedBlockPosition> create(TagManager manager) {
+                public Predicate<CachedBlockPosition> create(Registry<Block> blockRegistry) {
                     return statePredicate;
                 }
 
@@ -60,13 +57,15 @@ implements ArgumentType<BlockPredicate> {
                 }
             };
         }
-        final Identifier identifier = blockArgumentParser.getTagId();
+        final TagKey<Block> tagKey = blockArgumentParser.getTagId();
         return new BlockPredicate(){
 
             @Override
-            public Predicate<CachedBlockPosition> create(TagManager manager) throws CommandSyntaxException {
-                Tag<Block> tag = manager.getTag(Registry.BLOCK_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
-                return new TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
+            public Predicate<CachedBlockPosition> create(Registry<Block> blockRegistry) throws CommandSyntaxException {
+                if (!blockRegistry.containsTag(tagKey)) {
+                    throw UNKNOWN_TAG_EXCEPTION.create(tagKey);
+                }
+                return new TagPredicate(tagKey, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
             }
 
             @Override
@@ -77,7 +76,7 @@ implements ArgumentType<BlockPredicate> {
     }
 
     public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return context.getArgument(name, BlockPredicate.class).create(context.getSource().getServer().getTagManager());
+        return context.getArgument(name, BlockPredicate.class).create(context.getSource().getServer().getRegistryManager().get(Registry.BLOCK_KEY));
     }
 
     @Override
@@ -90,7 +89,7 @@ implements ArgumentType<BlockPredicate> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
+        return blockArgumentParser.getSuggestions(builder, Registry.BLOCK);
     }
 
     @Override
@@ -144,19 +143,19 @@ implements ArgumentType<BlockPredicate> {
     }
 
     public static interface BlockPredicate {
-        public Predicate<CachedBlockPosition> create(TagManager var1) throws CommandSyntaxException;
+        public Predicate<CachedBlockPosition> create(Registry<Block> var1) throws CommandSyntaxException;
 
         public boolean hasNbt();
     }
 
     static class TagPredicate
     implements Predicate<CachedBlockPosition> {
-        private final Tag<Block> tag;
+        private final TagKey<Block> tag;
         @Nullable
         private final NbtCompound nbt;
         private final Map<String, String> properties;
 
-        TagPredicate(Tag<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
+        TagPredicate(TagKey<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
             this.tag = tag;
             this.properties = properties;
             this.nbt = nbt;

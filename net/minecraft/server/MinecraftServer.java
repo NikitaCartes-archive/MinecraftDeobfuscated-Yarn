@@ -59,6 +59,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6904;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -72,9 +73,13 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.LifecycledResourceManager;
+import net.minecraft.resource.LifecycledResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.OperatorEntry;
@@ -99,7 +104,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -134,8 +138,8 @@ import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -157,6 +161,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.MiscConfiguredFeatures;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.ServerWorldProperties;
@@ -231,7 +236,7 @@ AutoCloseable {
     private final DataFixer dataFixer;
     private String serverIp;
     private int serverPort = -1;
-    protected final DynamicRegistryManager.Impl registryManager;
+    private final DynamicRegistryManager.Immutable registryManager;
     private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.newLinkedHashMap();
     private PlayerManager playerManager;
     private volatile boolean running = true;
@@ -277,7 +282,7 @@ AutoCloseable {
     private final Executor workerExecutor;
     @Nullable
     private String serverId;
-    private ServerResourceManager serverResourceManager;
+    private class_6897 serverResourceManager;
     private final StructureManager structureManager;
     protected final SaveProperties saveProperties;
     private volatile boolean saving;
@@ -295,15 +300,15 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager dataPackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, @Nullable MinecraftSessionService sessionService, @Nullable GameProfileRepository gameProfileRepo, @Nullable UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager resourcePackManager, class_6904 arg, Proxy proxy, DataFixer dataFixer, @Nullable MinecraftSessionService minecraftSessionService, @Nullable GameProfileRepository gameProfileRepository, @Nullable UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
-        this.registryManager = registryManager;
-        this.saveProperties = saveProperties;
+        this.registryManager = arg.registryAccess();
+        this.saveProperties = arg.worldData();
         this.proxy = proxy;
-        this.dataPackManager = dataPackManager;
-        this.serverResourceManager = serverResourceManager;
-        this.sessionService = sessionService;
-        this.gameProfileRepo = gameProfileRepo;
+        this.dataPackManager = resourcePackManager;
+        this.serverResourceManager = new class_6897(arg.resourceManager(), arg.dataPackResources());
+        this.sessionService = minecraftSessionService;
+        this.gameProfileRepo = gameProfileRepository;
         this.userCache = userCache;
         if (userCache != null) {
             userCache.setExecutor(this);
@@ -313,8 +318,8 @@ AutoCloseable {
         this.session = session;
         this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
-        this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
-        this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
+        this.commandFunctionManager = new CommandFunctionManager(this, this.serverResourceManager.managers.getFunctionLoader());
+        this.structureManager = new StructureManager(arg.resourceManager(), session, dataFixer);
         this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
     }
@@ -360,23 +365,23 @@ AutoCloseable {
 
     protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
         ChunkGenerator chunkGenerator;
-        DimensionType dimensionType;
+        RegistryEntry<DimensionType> registryEntry;
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         GeneratorOptions generatorOptions = this.saveProperties.getGeneratorOptions();
         boolean bl = generatorOptions.isDebugWorld();
         long l = generatorOptions.getSeed();
         long m = BiomeAccess.hashSeed(l);
         ImmutableList<Spawner> list = ImmutableList.of(new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties));
-        SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
-        DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
+        Registry<DimensionOptions> registry = generatorOptions.getDimensions();
+        DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
-            dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
-            chunkGenerator = GeneratorOptions.createOverworldGenerator(this.registryManager, new Random().nextLong());
+            registryEntry = this.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).getOrCreateEntry(DimensionType.OVERWORLD_REGISTRY_KEY);
+            chunkGenerator = GeneratorOptions.createOverworldGenerator(this.getRegistryManager(), new Random().nextLong());
         } else {
-            dimensionType = dimensionOptions.getDimensionType();
+            registryEntry = dimensionOptions.getDimensionTypeSupplier();
             chunkGenerator = dimensionOptions.getChunkGenerator();
         }
-        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, dimensionType, worldGenerationProgressListener, chunkGenerator, bl, m, list, true);
+        ServerWorld serverWorld = new ServerWorld(this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, registryEntry, worldGenerationProgressListener, chunkGenerator, bl, m, list, true);
         this.worlds.put(World.OVERWORLD, serverWorld);
         PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
         this.initScoreboard(persistentStateManager);
@@ -404,14 +409,14 @@ AutoCloseable {
         if (this.saveProperties.getCustomBossEvents() != null) {
             this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
         }
-        for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
+        for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
             RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
-            DimensionType dimensionType2 = entry.getValue().getDimensionType();
+            RegistryEntry<DimensionType> registryEntry2 = entry.getValue().getDimensionTypeSupplier();
             ChunkGenerator chunkGenerator2 = entry.getValue().getChunkGenerator();
             UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
-            ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey2, dimensionType2, worldGenerationProgressListener, chunkGenerator2, bl, m, ImmutableList.of(), false);
+            ServerWorld serverWorld2 = new ServerWorld(this, this.workerExecutor, this.session, unmodifiableLevelProperties, registryKey2, registryEntry2, worldGenerationProgressListener, chunkGenerator2, bl, m, ImmutableList.of(), false);
             worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
             this.worlds.put(registryKey2, serverWorld2);
         }
@@ -451,7 +456,7 @@ AutoCloseable {
             k += m;
         }
         if (bonusChest) {
-            ConfiguredFeature<?, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST;
+            ConfiguredFeature<DefaultFeatureConfig, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST.value();
             configuredFeature.generate(world, chunkGenerator, world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ()));
         }
     }
@@ -548,7 +553,7 @@ AutoCloseable {
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
         this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
-        this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
+        this.session.backupLevelDataFile(this.getRegistryManager(), this.saveProperties, this.getPlayerManager().getUserData());
         if (flush) {
             for (ServerWorld serverWorld3 : this.getWorlds()) {
                 LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", (Object)serverWorld3.getChunkManager().threadedAnvilChunkStorage.getSaveDir());
@@ -682,7 +687,7 @@ AutoCloseable {
             }
         } catch (Throwable throwable) {
             LOGGER.error("Encountered an unexpected exception", throwable);
-            CrashReport crashReport = throwable instanceof CrashException ? ((CrashException)throwable).getReport() : new CrashReport("Exception in server tick loop", throwable);
+            CrashReport crashReport = MinecraftServer.createCrashReport(throwable);
             this.addSystemDetails(crashReport.getSystemDetailsSection());
             File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
             if (crashReport.writeToFile(file)) {
@@ -704,6 +709,25 @@ AutoCloseable {
                 this.exit();
             }
         }
+    }
+
+    private static CrashReport createCrashReport(Throwable throwable) {
+        CrashReport crashReport;
+        CrashException crashException = null;
+        for (Throwable throwable2 = throwable; throwable2 != null; throwable2 = throwable2.getCause()) {
+            CrashException crashException2;
+            if (!(throwable2 instanceof CrashException)) continue;
+            crashException = crashException2 = (CrashException)throwable2;
+        }
+        if (crashException != null) {
+            crashReport = crashException.getReport();
+            if (crashException != throwable) {
+                crashReport.addElement("Wrapped in").add("Wrapping exception", throwable);
+            }
+        } else {
+            crashReport = new CrashReport("Exception in server tick loop", throwable);
+        }
+        return crashReport;
     }
 
     private boolean shouldKeepTicking() {
@@ -1301,7 +1325,7 @@ AutoCloseable {
     }
 
     public ServerAdvancementLoader getAdvancementLoader() {
-        return this.serverResourceManager.getServerAdvancementLoader();
+        return this.serverResourceManager.managers.getServerAdvancementLoader();
     }
 
     public CommandFunctionManager getCommandFunctionManager() {
@@ -1314,20 +1338,26 @@ AutoCloseable {
      * @return a completable future which specifies whether the reload was successful
      * A reload has failed when the future is exceptionally completed.
      * @see CompletableFuture
-     * 
-     * @param datapacks a collection of datapacks to reload with
      */
-    public CompletableFuture<Void> reloadResources(Collection<String> datapacks) {
-        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> datapacks.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(immutableList -> ServerResourceManager.reload(immutableList, this.registryManager, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this))).thenAcceptAsync(serverResourceManager -> {
+    public CompletableFuture<Void> reloadResources(Collection<String> collection) {
+        DynamicRegistryManager.Immutable immutable = this.getRegistryManager();
+        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> collection.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(immutableList -> {
+            LifecycledResourceManagerImpl lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, (List<ResourcePack>)immutableList);
+            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this).whenComplete((serverResourceManager, throwable) -> {
+                if (throwable != null) {
+                    lifecycledResourceManager.close();
+                }
+            })).thenApply(serverResourceManager -> new class_6897(lifecycledResourceManager, (ServerResourceManager)serverResourceManager));
+        })).thenAcceptAsync(arg -> {
             this.serverResourceManager.close();
-            this.serverResourceManager = serverResourceManager;
-            this.dataPackManager.setEnabledProfiles(datapacks);
+            this.serverResourceManager = arg;
+            this.dataPackManager.setEnabledProfiles(collection);
             this.saveProperties.updateLevelInfo(MinecraftServer.createDataPackSettings(this.dataPackManager));
-            serverResourceManager.loadRegistryTags();
+            this.serverResourceManager.managers.method_40421(this.getRegistryManager());
             this.getPlayerManager().saveAllPlayerData();
             this.getPlayerManager().onDataPacksReloaded();
-            this.commandFunctionManager.setFunctions(this.serverResourceManager.getFunctionLoader());
-            this.structureManager.setResourceManager(this.serverResourceManager.getResourceManager());
+            this.commandFunctionManager.setFunctions(this.serverResourceManager.managers.getFunctionLoader());
+            this.structureManager.setResourceManager(this.serverResourceManager.resourceManager);
         }, (Executor)this);
         if (this.isOnThread()) {
             this.runTasks(((CompletableFuture)completableFuture)::isDone);
@@ -1392,7 +1422,7 @@ AutoCloseable {
      * The command manager is responsible for parsing and dispatching commands.
      */
     public CommandManager getCommandManager() {
-        return this.serverResourceManager.getCommandManager();
+        return this.serverResourceManager.managers.getCommandManager();
     }
 
     /**
@@ -1417,11 +1447,7 @@ AutoCloseable {
     public abstract boolean shouldBroadcastConsoleToOps();
 
     public RecipeManager getRecipeManager() {
-        return this.serverResourceManager.getRecipeManager();
-    }
-
-    public TagManager getTagManager() {
-        return this.serverResourceManager.getRegistryTagManager();
+        return this.serverResourceManager.managers.getRecipeManager();
     }
 
     public ServerScoreboard getScoreboard() {
@@ -1436,15 +1462,15 @@ AutoCloseable {
     }
 
     public LootManager getLootManager() {
-        return this.serverResourceManager.getLootManager();
+        return this.serverResourceManager.managers.getLootManager();
     }
 
     public LootConditionManager getPredicateManager() {
-        return this.serverResourceManager.getLootConditionManager();
+        return this.serverResourceManager.managers.getLootConditionManager();
     }
 
     public LootFunctionManager getItemModifierManager() {
-        return this.serverResourceManager.getLootFunctionManager();
+        return this.serverResourceManager.managers.getLootFunctionManager();
     }
 
     public GameRules getGameRules() {
@@ -1651,7 +1677,7 @@ AutoCloseable {
         return this.saveProperties;
     }
 
-    public DynamicRegistryManager getRegistryManager() {
+    public DynamicRegistryManager.Immutable getRegistryManager() {
         return this.registryManager;
     }
 
@@ -1676,7 +1702,7 @@ AutoCloseable {
     }
 
     public ResourceManager getResourceManager() {
-        return this.serverResourceManager.getResourceManager();
+        return this.serverResourceManager.resourceManager;
     }
 
     @Nullable
@@ -1718,6 +1744,14 @@ AutoCloseable {
     @Override
     public /* synthetic */ Runnable createTask(Runnable runnable) {
         return this.createTask(runnable);
+    }
+
+    record class_6897(LifecycledResourceManager resourceManager, ServerResourceManager managers) implements AutoCloseable
+    {
+        @Override
+        public void close() {
+            this.resourceManager.close();
+        }
     }
 
     static class DebugStart {

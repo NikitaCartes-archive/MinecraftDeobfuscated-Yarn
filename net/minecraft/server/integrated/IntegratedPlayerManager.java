@@ -22,7 +22,7 @@ public class IntegratedPlayerManager
 extends PlayerManager {
     private NbtCompound userData;
 
-    public IntegratedPlayerManager(IntegratedServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler) {
+    public IntegratedPlayerManager(IntegratedServer server, DynamicRegistryManager.Immutable registryManager, WorldSaveHandler saveHandler) {
         super(server, registryManager, saveHandler, 8);
         this.setViewDistance(10);
     }

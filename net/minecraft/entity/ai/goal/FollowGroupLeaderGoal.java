@@ -38,10 +38,10 @@ extends Goal {
             return false;
         }
         this.checkSurroundingDelay = this.getSurroundingSearchDelay(this.fish);
-        Predicate<SchoolingFishEntity> predicate = schoolingFishEntity -> schoolingFishEntity.canHaveMoreFishInGroup() || !schoolingFishEntity.hasLeader();
+        Predicate<SchoolingFishEntity> predicate = fish -> fish.canHaveMoreFishInGroup() || !fish.hasLeader();
         List<SchoolingFishEntity> list = this.fish.world.getEntitiesByClass(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
-        SchoolingFishEntity schoolingFishEntity2 = DataFixUtils.orElse(list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny(), this.fish);
-        schoolingFishEntity2.pullInOtherFish(list.stream().filter(schoolingFishEntity -> !schoolingFishEntity.hasLeader()));
+        SchoolingFishEntity schoolingFishEntity = DataFixUtils.orElse(list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny(), this.fish);
+        schoolingFishEntity.pullInOtherFish(list.stream().filter(fish -> !fish.hasLeader()));
         return this.fish.hasLeader();
     }
 

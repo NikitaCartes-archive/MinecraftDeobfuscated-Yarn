@@ -10,21 +10,22 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.chunk.SlideConfig;
-import net.minecraft.world.gen.chunk.StructureConfig;
-import net.minecraft.world.gen.chunk.StructuresConfig;
+import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.gen.chunk.placement.SpreadType;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
+import net.minecraft.world.gen.chunk.placement.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
@@ -33,7 +34,7 @@ import net.minecraft.world.gen.surfacebuilder.VanillaSurfaceRules;
 
 public final class ChunkGeneratorSettings {
     public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule")).forGetter(ChunkGeneratorSettings::getSurfaceRule), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("ore_veins_enabled")).forGetter(ChunkGeneratorSettings::hasOreVeins), ((MapCodec)Codec.BOOL.fieldOf("noodle_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoodleCaves), ((MapCodec)Codec.BOOL.fieldOf("legacy_random_source")).forGetter(ChunkGeneratorSettings::usesLegacyRandom)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
-    public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
+    public static final Codec<RegistryEntry<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
     private final ChunkRandom.RandomProvider randomProvider;
     private final StructuresConfig structuresConfig;
     private final GenerationShapeConfig generationShapeConfig;
@@ -139,8 +140,8 @@ public final class ChunkGeneratorSettings {
         BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
     }
 
-    public static ChunkGeneratorSettings getInstance() {
-        return (ChunkGeneratorSettings)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.iterator().next();
+    public static RegistryEntry<ChunkGeneratorSettings> getInstance() {
+        return (RegistryEntry)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.streamEntries().iterator().next();
     }
 
     private static ChunkGeneratorSettings createEndSettings() {
@@ -148,9 +149,9 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createNetherSettings() {
-        HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
-        map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
-        return new ChunkGeneratorSettings(new StructuresConfig(Optional.empty(), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createNetherParameters()), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), VanillaSurfaceRules.createNetherSurfaceRule(), 32, false, false, false, false, false, true);
+        HashMap<StructureFeature<?>, StructurePlacement> map = Maps.newHashMap(StructuresConfig.DEFAULT_PLACEMENTS);
+        map.put(StructureFeature.RUINED_PORTAL, new RandomSpreadStructurePlacement(25, 10, SpreadType.LINEAR, 34222645));
+        return new ChunkGeneratorSettings(new StructuresConfig(map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(0.9375, 3, 0), new SlideConfig(2.5, 4, -1), 1, 2, false, false, false, VanillaTerrainParametersCreator.createNetherParameters()), Blocks.NETHERRACK.getDefaultState(), Blocks.LAVA.getDefaultState(), VanillaSurfaceRules.createNetherSurfaceRule(), 32, false, false, false, false, false, true);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {

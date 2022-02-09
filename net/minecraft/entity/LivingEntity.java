@@ -115,7 +115,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -1896,7 +1896,7 @@ extends Entity {
         this.setVelocity(this.getVelocity().add(0.0, -0.04f, 0.0));
     }
 
-    protected void swimUpward(Tag<Fluid> fluid) {
+    protected void swimUpward(TagKey<Fluid> fluid) {
         this.setVelocity(this.getVelocity().add(0.0, 0.04f, 0.0));
     }
 
@@ -1904,7 +1904,7 @@ extends Entity {
         return 0.8f;
     }
 
-    public boolean canWalkOnFluid(Fluid fluid) {
+    public boolean canWalkOnFluid(FluidState fluidState) {
         return false;
     }
 
@@ -1927,7 +1927,7 @@ extends Entity {
                 this.onLanding();
             }
             FluidState fluidState = this.world.getFluidState(this.getBlockPos());
-            if (this.isTouchingWater() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState.getFluid())) {
+            if (this.isTouchingWater() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
                 double e = this.getY();
                 float f = this.isSprinting() ? 0.9f : this.getBaseMovementSpeedMultiplier();
                 float g = 0.02f;
@@ -1957,7 +1957,7 @@ extends Entity {
                 if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e, vec3d2.z)) {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
                 }
-            } else if (this.isInLava() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState.getFluid())) {
+            } else if (this.isInLava() && this.shouldSwimInFluids() && !this.canWalkOnFluid(fluidState)) {
                 Vec3d vec3d3;
                 double e = this.getY();
                 this.updateVelocity(0.02f, movementInput);
@@ -1989,11 +1989,11 @@ extends Entity {
                 double i = Math.sqrt(vec3d5.x * vec3d5.x + vec3d5.z * vec3d5.z);
                 double j = vec3d4.horizontalLength();
                 double k = vec3d5.length();
-                float l = MathHelper.cos(f);
-                l = (float)((double)l * ((double)l * Math.min(1.0, k / 0.4)));
-                vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + (double)l * 0.75), 0.0);
+                double l = Math.cos(f);
+                l = l * l * Math.min(1.0, k / 0.4);
+                vec3d4 = this.getVelocity().add(0.0, d * (-1.0 + l * 0.75), 0.0);
                 if (vec3d4.y < 0.0 && i > 0.0) {
-                    m = vec3d4.y * -0.1 * (double)l;
+                    m = vec3d4.y * -0.1 * l;
                     vec3d4 = vec3d4.add(vec3d5.x * m / i, m, vec3d5.z * m / i);
                 }
                 if (f < 0.0f && i > 0.0) {
@@ -2346,7 +2346,7 @@ extends Entity {
             this.setVelocity(this.getVelocity().multiply(0.98));
         }
         if (this.headTrackingIncrements > 0) {
-            this.headYaw = (float)((double)this.headYaw + MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (double)this.headTrackingIncrements);
+            this.headYaw += (float)MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (float)this.headTrackingIncrements;
             --this.headTrackingIncrements;
         }
         Vec3d vec3d = this.getVelocity();
@@ -2410,7 +2410,7 @@ extends Entity {
         }
         this.removePowderSnowSlow();
         this.addPowderSnowSlowIfNeeded();
-        if (!this.world.isClient && this.age % 40 == 0 && this.isFreezing() && this.canFreeze()) {
+        if (!this.world.isClient && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
             m = bl2 ? 5 : 1;
             this.damage(DamageSource.FREEZE, m);
         }
@@ -2506,13 +2506,6 @@ extends Entity {
     }
 
     protected void attackLivingEntity(LivingEntity target) {
-    }
-
-    public void setRiptideTicks(int riptideTicks) {
-        this.riptideTicks = riptideTicks;
-        if (!this.world.isClient) {
-            this.setLivingFlag(USING_RIPTIDE_FLAG, true);
-        }
     }
 
     public boolean isUsingRiptide() {

@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -51,6 +52,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -78,11 +80,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -246,10 +249,9 @@ CommandOutput {
     public int age;
     private int fireTicks = -this.getBurningDuration();
     protected boolean touchingWater;
-    protected Object2DoubleMap<Tag<Fluid>> fluidHeight = new Object2DoubleArrayMap<Tag<Fluid>>(2);
+    protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<TagKey<Fluid>>(2);
     protected boolean submergedInWater;
-    @Nullable
-    protected Tag<Fluid> submergedFluidTag;
+    private final Set<TagKey<Fluid>> submergedFluidTag = new HashSet<TagKey<Fluid>>();
     public int timeUntilRegen;
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
@@ -686,7 +688,7 @@ CommandOutput {
             double e = vec3d.x;
             double f = vec3d.y;
             double g = vec3d.z;
-            this.speed = (float)((double)this.speed + vec3d.length() * 0.6);
+            this.speed += (float)(vec3d.length() * 0.6);
             if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
                 f = 0.0;
             }
@@ -976,7 +978,7 @@ CommandOutput {
 
     private void playAmethystChimeSound(BlockState state) {
         if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.lastChimeAge + 20) {
-            this.lastChimeIntensity = (float)((double)this.lastChimeIntensity * Math.pow(0.997f, this.age - this.lastChimeAge));
+            this.lastChimeIntensity *= (float)Math.pow(0.997, this.age - this.lastChimeAge);
             this.lastChimeIntensity = Math.min(1.0f, this.lastChimeIntensity + 0.07f);
             float f = 0.5f + this.lastChimeIntensity * this.random.nextFloat() * 1.2f;
             float g = 0.1f + this.lastChimeIntensity * 1.2f;
@@ -1054,7 +1056,7 @@ CommandOutput {
             }
             this.onLanding();
         } else if (heightDifference < 0.0) {
-            this.fallDistance = (float)((double)this.fallDistance - heightDifference);
+            this.fallDistance -= (float)heightDifference;
         }
     }
 
@@ -1147,7 +1149,7 @@ CommandOutput {
     private void updateSubmergedInWaterState() {
         BoatEntity boatEntity;
         this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
-        this.submergedFluidTag = null;
+        this.submergedFluidTag.clear();
         double d = this.getEyeY() - 0.1111111119389534;
         Entity entity = this.getVehicle();
         if (entity instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSubmergedInWater() && boatEntity.getBoundingBox().maxY >= d && boatEntity.getBoundingBox().minY <= d) {
@@ -1155,13 +1157,9 @@ CommandOutput {
         }
         BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
         FluidState fluidState = this.world.getFluidState(blockPos);
-        for (Tag<Fluid> tag : FluidTags.getTags()) {
-            if (!fluidState.isIn(tag)) continue;
-            double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
-            if (e > d) {
-                this.submergedFluidTag = tag;
-            }
-            return;
+        double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
+        if (e > d) {
+            fluidState.streamTags().forEach(this.submergedFluidTag::add);
         }
     }
 
@@ -1215,8 +1213,8 @@ CommandOutput {
         }
     }
 
-    public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
-        return this.submergedFluidTag == fluidTag;
+    public boolean isSubmergedIn(TagKey<Fluid> fluidTag) {
+        return this.submergedFluidTag.contains(fluidTag);
     }
 
     public boolean isInLava() {
@@ -1863,6 +1861,17 @@ CommandOutput {
         return this.getRotationVector(this.getPitch(), this.getYaw());
     }
 
+    public Vec3d getHandPosOffset(Item item) {
+        Entity entity = this;
+        if (entity instanceof PlayerEntity) {
+            PlayerEntity playerEntity = (PlayerEntity)entity;
+            boolean bl = playerEntity.getOffHandStack().isOf(item);
+            Arm arm = bl ? playerEntity.getMainArm().getOpposite() : playerEntity.getMainArm();
+            return this.getRotationVector(0.0f, this.getYaw() + (float)(arm == Arm.RIGHT ? 80 : -80)).multiply(0.5);
+        }
+        return Vec3d.ZERO;
+    }
+
     public Vec2f getRotationClient() {
         return new Vec2f(this.getPitch(), this.getYaw());
     }
@@ -2127,7 +2136,7 @@ CommandOutput {
         return (float)Math.min(this.getFrozenTicks(), i) / (float)i;
     }
 
-    public boolean isFreezing() {
+    public boolean isFrozen() {
         return this.getFrozenTicks() >= this.getMinFreezeDamageTicks();
     }
 
@@ -2641,10 +2650,10 @@ CommandOutput {
     public float applyMirror(BlockMirror mirror) {
         float f = MathHelper.wrapDegrees(this.getYaw());
         switch (mirror) {
-            case LEFT_RIGHT: {
+            case FRONT_BACK: {
                 return -f;
             }
-            case FRONT_BACK: {
+            case LEFT_RIGHT: {
                 return 180.0f - f;
             }
         }
@@ -2805,7 +2814,7 @@ CommandOutput {
         this.prevYaw = this.getYaw();
     }
 
-    public boolean updateMovementInFluid(Tag<Fluid> tag, double speed) {
+    public boolean updateMovementInFluid(TagKey<Fluid> tag, double speed) {
         if (this.isRegionUnloaded()) {
             return false;
         }
@@ -2877,7 +2886,7 @@ CommandOutput {
         return !this.world.isRegionLoaded(i, k, j, l = MathHelper.ceil(box.maxZ));
     }
 
-    public double getFluidHeight(Tag<Fluid> fluid) {
+    public double getFluidHeight(TagKey<Fluid> fluid) {
         return this.fluidHeight.getDouble(fluid);
     }
 
@@ -3052,7 +3061,7 @@ CommandOutput {
     }
 
     public boolean canFreeze() {
-        return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
+        return !this.getType().isIn(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);
     }
 
     public boolean shouldEscapePowderSnow() {

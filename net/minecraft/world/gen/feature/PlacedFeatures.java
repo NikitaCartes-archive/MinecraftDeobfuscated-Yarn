@@ -3,17 +3,25 @@
  */
 package net.minecraft.world.gen.feature;
 
+import java.util.List;
 import java.util.Random;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.YOffset;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.EndPlacedFeatures;
+import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.MiscPlacedFeatures;
 import net.minecraft.world.gen.feature.NetherPlacedFeatures;
 import net.minecraft.world.gen.feature.OceanPlacedFeatures;
@@ -23,6 +31,8 @@ import net.minecraft.world.gen.feature.TreePlacedFeatures;
 import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 import net.minecraft.world.gen.feature.VegetationPlacedFeatures;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
+import net.minecraft.world.gen.placementmodifier.AbstractConditionalPlacementModifier;
+import net.minecraft.world.gen.placementmodifier.BlockFilterPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.CountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.HeightRangePlacementModifier;
 import net.minecraft.world.gen.placementmodifier.HeightmapPlacementModifier;
@@ -39,13 +49,17 @@ public class PlacedFeatures {
     public static final PlacementModifier FOUR_ABOVE_AND_BELOW_RANGE = HeightRangePlacementModifier.uniform(YOffset.aboveBottom(4), YOffset.belowTop(4));
     public static final PlacementModifier BOTTOM_TO_120_RANGE = HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(256));
 
-    public static PlacedFeature getDefaultPlacedFeature() {
-        PlacedFeature[] placedFeatures = new PlacedFeature[]{OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION, VillagePlacedFeatures.PILE_HAY};
-        return Util.getRandom(placedFeatures, new Random());
+    public static RegistryEntry<PlacedFeature> getDefaultPlacedFeature() {
+        List<RegistryEntry<PlacedFeature>> list = List.of(OceanPlacedFeatures.KELP_COLD, UndergroundPlacedFeatures.CAVE_VINES, EndPlacedFeatures.CHORUS_PLANT, MiscPlacedFeatures.BLUE_ICE, NetherPlacedFeatures.BASALT_BLOBS, OrePlacedFeatures.ORE_ANCIENT_DEBRIS_LARGE, TreePlacedFeatures.ACACIA_CHECKED, VegetationPlacedFeatures.BAMBOO_VEGETATION, VillagePlacedFeatures.PILE_HAY);
+        return Util.getRandom(list, new Random());
     }
 
-    public static PlacedFeature register(String id, PlacedFeature feature) {
-        return Registry.register(BuiltinRegistries.PLACED_FEATURE, id, feature);
+    public static RegistryEntry<PlacedFeature> register(String id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, List<PlacementModifier> modifiers) {
+        return BuiltinRegistries.add(BuiltinRegistries.PLACED_FEATURE, id, new PlacedFeature(RegistryEntry.upcast(registryEntry), List.copyOf(modifiers)));
+    }
+
+    public static RegistryEntry<PlacedFeature> register(String id, RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, PlacementModifier ... modifiers) {
+        return PlacedFeatures.register(id, registryEntry, List.of(modifiers));
     }
 
     public static PlacementModifier createCountExtraModifier(int count, float extraChance, int extraCount) {
@@ -55,6 +69,30 @@ public class PlacedFeatures {
         }
         DataPool<IntProvider> dataPool = DataPool.builder().add(ConstantIntProvider.create(count), (int)f - 1).add(ConstantIntProvider.create(count + extraCount), 1).build();
         return CountPlacementModifier.of(new WeightedListIntProvider(dataPool));
+    }
+
+    public static AbstractConditionalPlacementModifier isAir() {
+        return BlockFilterPlacementModifier.of(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+    }
+
+    public static BlockFilterPlacementModifier wouldSurvive(Block block) {
+        return BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
+    }
+
+    public static RegistryEntry<PlacedFeature> createEntry(RegistryEntry<? extends ConfiguredFeature<?, ?>> registryEntry, PlacementModifier ... modifiers) {
+        return RegistryEntry.of(new PlacedFeature(RegistryEntry.upcast(registryEntry), List.of(modifiers)));
+    }
+
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig, PlacementModifier ... modifiers) {
+        return PlacedFeatures.createEntry(RegistryEntry.of(new ConfiguredFeature<FC, F>(feature, featureConfig)), modifiers);
+    }
+
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig) {
+        return PlacedFeatures.createEntry(feature, featureConfig, BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+    }
+
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig, BlockPredicate predicate) {
+        return PlacedFeatures.createEntry(feature, featureConfig, BlockFilterPlacementModifier.of(predicate));
     }
 }
 

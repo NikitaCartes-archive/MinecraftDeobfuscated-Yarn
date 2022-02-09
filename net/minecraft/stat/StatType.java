@@ -29,7 +29,7 @@ implements Iterable<Stat<T>> {
     }
 
     public Stat<T> getOrCreateStat(T key, StatFormatter formatter) {
-        return this.stats.computeIfAbsent(key, object -> new Stat<Object>(this, object, formatter));
+        return this.stats.computeIfAbsent(key, value -> new Stat<Object>(this, value, formatter));
     }
 
     public Registry<T> getRegistry() {

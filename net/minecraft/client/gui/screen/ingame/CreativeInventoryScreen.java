@@ -5,14 +5,15 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -44,9 +45,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -84,7 +83,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     private CreativeInventoryListener listener;
     private boolean ignoreTypedCharacter;
     private boolean lastClickOutsideBounds;
-    private final Map<Identifier, Tag<Item>> searchResultTags = Maps.newTreeMap();
+    private final Set<TagKey<Item>> searchResultTags = new HashSet<TagKey<Item>>();
 
     public CreativeInventoryScreen(PlayerEntity player) {
         super(new CreativeScreenHandler(player), player.getInventory(), LiteralText.EMPTY);
@@ -357,8 +356,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             String string2 = id2.substring(i + 1).trim();
             predicate = id -> id.getNamespace().contains(string) && id.getPath().contains(string2);
         }
-        TagGroup<Item> tagGroup = ItemTags.getTagGroup();
-        tagGroup.getTagIds().stream().filter(predicate).forEach(id -> this.searchResultTags.put((Identifier)id, tagGroup.getTag((Identifier)id)));
+        Registry.ITEM.streamTags().filter(tagKey -> predicate.test(tagKey.id())).forEach(this.searchResultTags::add);
     }
 
     @Override
@@ -500,8 +498,8 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             return false;
         }
         int i = (((CreativeScreenHandler)this.handler).itemList.size() + 9 - 1) / 9 - 5;
-        this.scrollPosition = (float)((double)this.scrollPosition - amount / (double)i);
-        this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0f, 1.0f);
+        float f = (float)(amount / (double)i);
+        this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0f, 1.0f);
         ((CreativeScreenHandler)this.handler).scrollItems(this.scrollPosition);
         return true;
     }
@@ -566,9 +564,9 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
                     break;
                 }
             }
-            this.searchResultTags.forEach((id, tag) -> {
-                if (stack.isIn((Tag<Item>)tag)) {
-                    list2.add(1, new LiteralText("#" + id).formatted(Formatting.DARK_PURPLE));
+            this.searchResultTags.forEach(tagKey -> {
+                if (stack.isIn((TagKey<Item>)tagKey)) {
+                    list2.add(1, new LiteralText("#" + tagKey.id()).formatted(Formatting.DARK_PURPLE));
                 }
             });
             if (itemGroup != null) {

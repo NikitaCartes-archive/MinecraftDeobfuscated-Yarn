@@ -131,12 +131,12 @@ extends Screen {
             if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).getLevelDisplayName().equals("DEBUG world")) {
                 entry.delete();
             }
-            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+            DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
             long l = "test1".hashCode();
-            GeneratorOptions generatorOptions = GeneratorType.DEFAULT.createDefaultOptions(impl, l, true, false);
+            GeneratorOptions generatorOptions = GeneratorType.DEFAULT.createDefaultOptions(dynamicRegistryManager, l, true, false);
             LevelInfo levelInfo = new LevelInfo("DEBUG world", GameMode.SPECTATOR, false, Difficulty.NORMAL, true, new GameRules(), DataPackSettings.SAFE_MODE);
             String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
-            this.client.createWorld(string2, levelInfo, impl, generatorOptions);
+            this.client.createWorld(string2, levelInfo, dynamicRegistryManager, generatorOptions);
         } catch (IOException iOException) {
             LOGGER.error("Failed to recreate the debug world", iOException);
         }

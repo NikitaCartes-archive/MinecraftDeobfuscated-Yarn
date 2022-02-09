@@ -186,7 +186,7 @@ implements FeatureRendererContext<T, M> {
      * zombie, husk, or piglin undergoing conversion shakes.
      */
     protected boolean isShaking(T entity) {
-        return ((Entity)entity).isFreezing();
+        return ((Entity)entity).isFrozen();
     }
 
     protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {

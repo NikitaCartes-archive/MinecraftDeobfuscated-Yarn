@@ -95,7 +95,7 @@ implements Monster {
     private final EnderDragonFight fight;
     private final PhaseManager phaseManager;
     private int ticksUntilNextGrowl = 100;
-    private int damageDuringSitting;
+    private float damageDuringSitting;
     /**
      * The first 12 path nodes are used for end crystals; the others are not tied to them.
      */
@@ -169,9 +169,9 @@ implements Monster {
 
     @Override
     public void tickMovement() {
-        int ad;
-        float r;
+        int ac;
         float q;
+        float p;
         float o;
         this.addAirTravelEffects();
         if (this.world.isClient) {
@@ -246,68 +246,68 @@ implements Monster {
                 Vec3d vec3d4 = new Vec3d(MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), this.getVelocity().y, -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180))).normalize();
                 o = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5f) / 1.5f, 0.0f);
                 if (Math.abs(e) > (double)1.0E-5f || Math.abs(k) > (double)1.0E-5f) {
-                    double p = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(e, k) * 57.2957763671875 - (double)this.getYaw()), -50.0, 50.0);
+                    p = MathHelper.clamp(MathHelper.wrapDegrees(180.0f - (float)MathHelper.atan2(e, k) * 57.295776f - this.getYaw()), -50.0f, 50.0f);
                     this.yawAcceleration *= 0.8f;
-                    this.yawAcceleration = (float)((double)this.yawAcceleration + p * (double)phase.getYawAcceleration());
+                    this.yawAcceleration += p * phase.getYawAcceleration();
                     this.setYaw(this.getYaw() + this.yawAcceleration * 0.1f);
                 }
-                q = (float)(2.0 / (l + 1.0));
-                r = 0.06f;
-                this.updateVelocity(0.06f * (o * q + (1.0f - q)), new Vec3d(0.0, 0.0, -1.0));
+                p = (float)(2.0 / (l + 1.0));
+                q = 0.06f;
+                this.updateVelocity(0.06f * (o * p + (1.0f - p)), new Vec3d(0.0, 0.0, -1.0));
                 if (this.slowedDownByBlock) {
                     this.move(MovementType.SELF, this.getVelocity().multiply(0.8f));
                 } else {
                     this.move(MovementType.SELF, this.getVelocity());
                 }
                 Vec3d vec3d5 = this.getVelocity().normalize();
-                double s = 0.8 + 0.15 * (vec3d5.dotProduct(vec3d4) + 1.0) / 2.0;
-                this.setVelocity(this.getVelocity().multiply(s, 0.91f, s));
+                double r = 0.8 + 0.15 * (vec3d5.dotProduct(vec3d4) + 1.0) / 2.0;
+                this.setVelocity(this.getVelocity().multiply(r, 0.91f, r));
             }
         }
         this.bodyYaw = this.getYaw();
         Vec3d[] vec3ds = new Vec3d[this.parts.length];
-        for (int t = 0; t < this.parts.length; ++t) {
-            vec3ds[t] = new Vec3d(this.parts[t].getX(), this.parts[t].getY(), this.parts[t].getZ());
+        for (int s = 0; s < this.parts.length; ++s) {
+            vec3ds[s] = new Vec3d(this.parts[s].getX(), this.parts[s].getY(), this.parts[s].getZ());
         }
-        float u = (float)(this.getSegmentProperties(5, 1.0f)[1] - this.getSegmentProperties(10, 1.0f)[1]) * 10.0f * ((float)Math.PI / 180);
-        float v = MathHelper.cos(u);
-        float w = MathHelper.sin(u);
-        float x = this.getYaw() * ((float)Math.PI / 180);
-        float y = MathHelper.sin(x);
-        float z = MathHelper.cos(x);
-        this.movePart(this.body, y * 0.5f, 0.0, -z * 0.5f);
-        this.movePart(this.rightWing, z * 4.5f, 2.0, y * 4.5f);
-        this.movePart(this.leftWing, z * -4.5f, 2.0, y * -4.5f);
+        float t = (float)(this.getSegmentProperties(5, 1.0f)[1] - this.getSegmentProperties(10, 1.0f)[1]) * 10.0f * ((float)Math.PI / 180);
+        float u = MathHelper.cos(t);
+        float v = MathHelper.sin(t);
+        float w = this.getYaw() * ((float)Math.PI / 180);
+        float x = MathHelper.sin(w);
+        float y = MathHelper.cos(w);
+        this.movePart(this.body, x * 0.5f, 0.0, -y * 0.5f);
+        this.movePart(this.rightWing, y * 4.5f, 2.0, x * 4.5f);
+        this.movePart(this.leftWing, y * -4.5f, 2.0, x * -4.5f);
         if (!this.world.isClient && this.hurtTime == 0) {
             this.launchLivingEntities(this.world.getOtherEntities(this, this.rightWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.launchLivingEntities(this.world.getOtherEntities(this, this.leftWing.getBoundingBox().expand(4.0, 2.0, 4.0).offset(0.0, -2.0, 0.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.damageLivingEntities(this.world.getOtherEntities(this, this.head.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.damageLivingEntities(this.world.getOtherEntities(this, this.neck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
         }
-        float aa = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
-        float ab = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
-        float ac = this.getHeadVerticalMovement();
-        this.movePart(this.head, aa * 6.5f * v, ac + w * 6.5f, -ab * 6.5f * v);
-        this.movePart(this.neck, aa * 5.5f * v, ac + w * 5.5f, -ab * 5.5f * v);
+        float z = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
+        float aa = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
+        float ab = this.getHeadVerticalMovement();
+        this.movePart(this.head, z * 6.5f * u, ab + v * 6.5f, -aa * 6.5f * u);
+        this.movePart(this.neck, z * 5.5f * u, ab + v * 5.5f, -aa * 5.5f * u);
         double[] ds = this.getSegmentProperties(5, 1.0f);
-        for (ad = 0; ad < 3; ++ad) {
+        for (ac = 0; ac < 3; ++ac) {
             EnderDragonPart enderDragonPart = null;
-            if (ad == 0) {
+            if (ac == 0) {
                 enderDragonPart = this.tail1;
             }
-            if (ad == 1) {
+            if (ac == 1) {
                 enderDragonPart = this.tail2;
             }
-            if (ad == 2) {
+            if (ac == 2) {
                 enderDragonPart = this.tail3;
             }
-            double[] es = this.getSegmentProperties(12 + ad * 2, 1.0f);
-            float ae = this.getYaw() * ((float)Math.PI / 180) + this.wrapYawChange(es[0] - ds[0]) * ((float)Math.PI / 180);
-            o = MathHelper.sin(ae);
-            q = MathHelper.cos(ae);
-            r = 1.5f;
-            float af = (float)(ad + 1) * 2.0f;
-            this.movePart(enderDragonPart, -(y * 1.5f + o * af) * v, es[1] - ds[1] - (double)((af + 1.5f) * w) + 1.5, (z * 1.5f + q * af) * v);
+            double[] es = this.getSegmentProperties(12 + ac * 2, 1.0f);
+            float ad = this.getYaw() * ((float)Math.PI / 180) + this.wrapYawChange(es[0] - ds[0]) * ((float)Math.PI / 180);
+            o = MathHelper.sin(ad);
+            p = MathHelper.cos(ad);
+            q = 1.5f;
+            float ae = (float)(ac + 1) * 2.0f;
+            this.movePart(enderDragonPart, -(x * 1.5f + o * ae) * u, es[1] - ds[1] - (double)((ae + 1.5f) * v) + 1.5, (y * 1.5f + p * ae) * u);
         }
         if (!this.world.isClient) {
             this.slowedDownByBlock = this.destroyBlocks(this.head.getBoundingBox()) | this.destroyBlocks(this.neck.getBoundingBox()) | this.destroyBlocks(this.body.getBoundingBox());
@@ -315,13 +315,13 @@ implements Monster {
                 this.fight.updateFight(this);
             }
         }
-        for (ad = 0; ad < this.parts.length; ++ad) {
-            this.parts[ad].prevX = vec3ds[ad].x;
-            this.parts[ad].prevY = vec3ds[ad].y;
-            this.parts[ad].prevZ = vec3ds[ad].z;
-            this.parts[ad].lastRenderX = vec3ds[ad].x;
-            this.parts[ad].lastRenderY = vec3ds[ad].y;
-            this.parts[ad].lastRenderZ = vec3ds[ad].z;
+        for (ac = 0; ac < this.parts.length; ++ac) {
+            this.parts[ac].prevX = vec3ds[ac].x;
+            this.parts[ac].prevY = vec3ds[ac].y;
+            this.parts[ac].prevZ = vec3ds[ac].z;
+            this.parts[ac].lastRenderX = vec3ds[ac].x;
+            this.parts[ac].lastRenderY = vec3ds[ac].y;
+            this.parts[ac].lastRenderZ = vec3ds[ac].z;
         }
     }
 
@@ -443,9 +443,9 @@ implements Monster {
                 this.phaseManager.setPhase(PhaseType.DYING);
             }
             if (this.phaseManager.getCurrent().isSittingOrHovering()) {
-                this.damageDuringSitting = (int)((float)this.damageDuringSitting + (f - this.getHealth()));
-                if ((float)this.damageDuringSitting > 0.25f * this.getMaxHealth()) {
-                    this.damageDuringSitting = 0;
+                this.damageDuringSitting = this.damageDuringSitting + f - this.getHealth();
+                if (this.damageDuringSitting > 0.25f * this.getMaxHealth()) {
+                    this.damageDuringSitting = 0.0f;
                     this.phaseManager.setPhase(PhaseType.TAKEOFF);
                 }
             }

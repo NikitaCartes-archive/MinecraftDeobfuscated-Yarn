@@ -36,13 +36,13 @@ extends EntityRenderer<EvokerFangsEntity> {
         }
         float j = 2.0f;
         if (h > 0.9f) {
-            j = (float)((double)j * ((1.0 - (double)h) / (double)0.1f));
+            j *= (1.0f - h) / 0.1f;
         }
         matrixStack.push();
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f - evokerFangsEntity.getYaw()));
         matrixStack.scale(-j, -j, j);
         float k = 0.03125f;
-        matrixStack.translate(0.0, -0.626f, 0.0);
+        matrixStack.translate(0.0, -0.626, 0.0);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         this.model.setAngles(evokerFangsEntity, h, 0.0f, 0.0f, evokerFangsEntity.getYaw(), evokerFangsEntity.getPitch());
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));

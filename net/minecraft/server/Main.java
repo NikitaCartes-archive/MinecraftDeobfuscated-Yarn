@@ -7,6 +7,7 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.awt.GraphicsEnvironment;
@@ -15,7 +16,6 @@ import java.net.Proxy;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import joptsimple.AbstractOptionSpec;
 import joptsimple.ArgumentAcceptingOptionSpec;
@@ -25,6 +25,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6904;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -34,7 +35,6 @@ import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressLogger;
@@ -87,7 +87,8 @@ public class Main {
         OptionSpecBuilder optionSpec14 = optionParser.accepts("jfrProfile");
         NonOptionArgumentSpec<String> optionSpec15 = optionParser.nonOptions();
         try {
-            ServerResourceManager serverResourceManager;
+            class_6904 lv2;
+            boolean bl;
             OptionSet optionSet = optionParser.parse(args);
             if (optionSet.has(optionSpec8)) {
                 optionParser.printHelpOn(System.err);
@@ -100,7 +101,6 @@ public class Main {
             Bootstrap.initialize();
             Bootstrap.logMissing();
             Util.startTimerHack();
-            DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             Path path = Paths.get("server.properties", new String[0]);
             ServerPropertiesLoader serverPropertiesLoader = new ServerPropertiesLoader(path);
             serverPropertiesLoader.store();
@@ -133,46 +133,51 @@ public class Main {
                     return;
                 }
             }
-            DataPackSettings dataPackSettings = session.getDataPackSettings();
-            boolean bl = optionSet.has(optionSpec7);
-            if (bl) {
+            if (bl = optionSet.has(optionSpec7)) {
                 LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
             }
             ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
-            DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(resourcePackManager, dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings, bl);
-            CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), impl, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, Util.getMainWorkerExecutor(), Runnable::run);
             try {
-                serverResourceManager = completableFuture.get();
+                class_6904.class_6906 lv = new class_6904.class_6906(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl);
+                lv2 = class_6904.method_40431(lv, () -> {
+                    DataPackSettings dataPackSettings = session.getDataPackSettings();
+                    return dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings;
+                }, (resourceManager, dataPackSettings) -> {
+                    GeneratorOptions generatorOptions;
+                    LevelInfo levelInfo;
+                    DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
+                    RegistryOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
+                    SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings);
+                    if (saveProperties != null) {
+                        return Pair.of(saveProperties, mutable.toImmutable());
+                    }
+                    if (optionSet.has(optionSpec3)) {
+                        levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
+                        generatorOptions = GeneratorOptions.createDemo(mutable);
+                    } else {
+                        ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
+                        levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings);
+                        generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.getGeneratorOptions(mutable).withBonusChest() : serverPropertiesHandler.getGeneratorOptions(mutable);
+                    }
+                    LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
+                    return Pair.of(levelProperties, mutable.toImmutable());
+                }, Util.getMainWorkerExecutor(), Runnable::run).get();
             } catch (Exception exception) {
                 LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", exception);
                 resourcePackManager.close();
                 return;
             }
-            serverResourceManager.loadRegistryTags();
-            RegistryOps<NbtElement> registryOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, serverResourceManager.getResourceManager(), (DynamicRegistryManager)impl);
-            serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(impl);
-            SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings2);
-            if (saveProperties == null) {
-                GeneratorOptions generatorOptions;
-                LevelInfo levelInfo;
-                if (optionSet.has(optionSpec3)) {
-                    levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                    generatorOptions = GeneratorOptions.createDemo(impl);
-                } else {
-                    ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-                    levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings2);
-                    generatorOptions = optionSet.has(optionSpec4) ? serverPropertiesHandler.getGeneratorOptions(impl).withBonusChest() : serverPropertiesHandler.getGeneratorOptions(impl);
-                }
-                saveProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
-            }
+            lv2.method_40428();
+            DynamicRegistryManager.Immutable immutable = lv2.registryAccess();
+            serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
+            SaveProperties saveProperties = lv2.worldData();
             if (optionSet.has(optionSpec5)) {
                 Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions());
             }
-            session.backupLevelDataFile(impl, saveProperties);
-            SaveProperties saveProperties2 = saveProperties;
-            final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(serverThread -> {
+            session.backupLevelDataFile(immutable, saveProperties);
+            final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(thread -> {
                 boolean bl;
-                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)serverThread, impl, session, resourcePackManager, serverResourceManager, saveProperties2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, lv2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
                 minecraftDedicatedServer.setSinglePlayerName((String)optionSet.valueOf(optionSpec9));
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
@@ -183,15 +188,15 @@ public class Main {
                 }
                 return minecraftDedicatedServer;
             });
-            Thread thread = new Thread("Server Shutdown Thread"){
+            Thread thread2 = new Thread("Server Shutdown Thread"){
 
                 @Override
                 public void run() {
                     minecraftDedicatedServer.stop(true);
                 }
             };
-            thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
-            Runtime.getRuntime().addShutdownHook(thread);
+            thread2.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
+            Runtime.getRuntime().addShutdownHook(thread2);
         } catch (Exception exception2) {
             LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", exception2);
         }

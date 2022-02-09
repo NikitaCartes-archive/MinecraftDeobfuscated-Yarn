@@ -167,7 +167,7 @@ extends DrawableHelper {
         for (OrderedText orderedText : list) {
             if (bl && this.scrolledLines > 0) {
                 this.hasUnreadNewMessages = true;
-                this.scroll(1.0);
+                this.scroll(1);
             }
             this.visibleMessages.add(0, new ChatHudLine<OrderedText>(timestamp, orderedText, messageId));
         }
@@ -206,11 +206,11 @@ extends DrawableHelper {
         this.hasUnreadNewMessages = false;
     }
 
-    public void scroll(double amount) {
-        this.scrolledLines = (int)((double)this.scrolledLines + amount);
-        int i = this.visibleMessages.size();
-        if (this.scrolledLines > i - this.getVisibleLineCount()) {
-            this.scrolledLines = i - this.getVisibleLineCount();
+    public void scroll(int i) {
+        this.scrolledLines += i;
+        int j = this.visibleMessages.size();
+        if (this.scrolledLines > j - this.getVisibleLineCount()) {
+            this.scrolledLines = j - this.getVisibleLineCount();
         }
         if (this.scrolledLines <= 0) {
             this.scrolledLines = 0;

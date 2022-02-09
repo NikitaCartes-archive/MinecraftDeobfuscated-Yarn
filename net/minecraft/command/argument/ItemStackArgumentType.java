@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStringReader;
-import net.minecraft.tag.ItemTags;
+import net.minecraft.util.registry.Registry;
 
 public class ItemStackArgumentType
 implements ArgumentType<ItemStackArgument> {
@@ -44,7 +44,7 @@ implements ArgumentType<ItemStackArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return itemStringReader.getSuggestions(builder, ItemTags.getTagGroup());
+        return itemStringReader.getSuggestions(builder, Registry.ITEM);
     }
 
     @Override

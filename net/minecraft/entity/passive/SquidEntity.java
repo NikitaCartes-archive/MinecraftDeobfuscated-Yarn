@@ -125,7 +125,7 @@ extends WaterCreatureEntity {
             if (this.world.isClient) {
                 this.thrustTimer = (float)Math.PI * 2;
             } else {
-                this.thrustTimer = (float)((double)this.thrustTimer - Math.PI * 2);
+                this.thrustTimer -= (float)Math.PI * 2;
                 if (this.random.nextInt(10) == 0) {
                     this.thrustTimerSpeed = 1.0f / (this.random.nextFloat() + 1.0f) * 0.2f;
                 }
@@ -154,7 +154,7 @@ extends WaterCreatureEntity {
             double d = vec3d.horizontalLength();
             this.bodyYaw += (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * 57.295776f - this.bodyYaw) * 0.1f;
             this.setYaw(this.bodyYaw);
-            this.rollAngle = (float)((double)this.rollAngle + Math.PI * (double)this.turningSpeed * 1.5);
+            this.rollAngle += (float)Math.PI * this.turningSpeed * 1.5f;
             this.tiltAngle += (-((float)MathHelper.atan2(d, vec3d.y)) * 57.295776f - this.tiltAngle) * 0.1f;
         } else {
             this.tentacleAngle = MathHelper.abs(MathHelper.sin(this.thrustTimer)) * (float)Math.PI * 0.25f;
@@ -167,7 +167,7 @@ extends WaterCreatureEntity {
                 }
                 this.setVelocity(0.0, e * (double)0.98f, 0.0);
             }
-            this.tiltAngle = (float)((double)this.tiltAngle + (double)(-90.0f - this.tiltAngle) * 0.02);
+            this.tiltAngle += (-90.0f - this.tiltAngle) * 0.02f;
         }
     }
 
@@ -298,12 +298,12 @@ extends WaterCreatureEntity {
                 double d = vec3d.length();
                 if (d > 0.0) {
                     vec3d.normalize();
-                    float f = 3.0f;
+                    double e = 3.0;
                     if (d > 5.0) {
-                        f = (float)((double)f - (d - 5.0) / 5.0);
+                        e -= (d - 5.0) / 5.0;
                     }
-                    if (f > 0.0f) {
-                        vec3d = vec3d.multiply(f);
+                    if (e > 0.0) {
+                        vec3d = vec3d.multiply(e);
                     }
                 }
                 if (blockState.isAir()) {

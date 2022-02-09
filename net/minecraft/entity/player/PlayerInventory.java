@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
@@ -164,13 +164,8 @@ Nameable {
     }
 
     public void scrollInHotbar(double scrollAmount) {
-        if (scrollAmount > 0.0) {
-            scrollAmount = 1.0;
-        }
-        if (scrollAmount < 0.0) {
-            scrollAmount = -1.0;
-        }
-        this.selectedSlot = (int)((double)this.selectedSlot - scrollAmount);
+        int i = (int)Math.signum(scrollAmount);
+        this.selectedSlot -= i;
         while (this.selectedSlot < 0) {
             this.selectedSlot += 9;
         }
@@ -529,7 +524,7 @@ Nameable {
         return false;
     }
 
-    public boolean contains(Tag<Item> tag) {
+    public boolean contains(TagKey<Item> tag) {
         for (List list : this.combinedInventory) {
             for (ItemStack itemStack : list) {
                 if (itemStack.isEmpty() || !itemStack.isIn(tag)) continue;

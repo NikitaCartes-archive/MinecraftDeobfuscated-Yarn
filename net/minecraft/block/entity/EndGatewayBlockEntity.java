@@ -208,7 +208,7 @@ extends EndPortalBlockEntity {
         if (blockPos == null) {
             blockPos = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
             LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", (Object)blockPos);
-            EndConfiguredFeatures.END_ISLAND.generate(world, world.getChunkManager().getChunkGenerator(), new Random(blockPos.asLong()), blockPos);
+            EndConfiguredFeatures.END_ISLAND.value().generate(world, world.getChunkManager().getChunkGenerator(), new Random(blockPos.asLong()), blockPos);
         } else {
             LOGGER.debug("Found suitable block to teleport to: {}", (Object)blockPos);
         }
@@ -281,7 +281,7 @@ extends EndPortalBlockEntity {
     }
 
     private static void createPortal(ServerWorld world, BlockPos pos, EndGatewayFeatureConfig config) {
-        Feature.END_GATEWAY.configure(config).generate(world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
+        Feature.END_GATEWAY.method_40163(config, world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
     }
 
     @Override

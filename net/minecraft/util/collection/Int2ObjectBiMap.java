@@ -41,8 +41,8 @@ implements IndexedIterable<K> {
     }
 
     @Override
-    public int getRawId(@Nullable K entry) {
-        return this.getIdFromIndex(this.findIndex(entry, this.getIdealIndex(entry)));
+    public int getRawId(@Nullable K value) {
+        return this.getIdFromIndex(this.findIndex(value, this.getIdealIndex(value)));
     }
 
     @Override

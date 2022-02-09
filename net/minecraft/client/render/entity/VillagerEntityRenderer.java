@@ -37,7 +37,7 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
     protected void scale(VillagerEntity villagerEntity, MatrixStack matrixStack, float f) {
         float g = 0.9375f;
         if (villagerEntity.isBaby()) {
-            g = (float)((double)g * 0.5);
+            g *= 0.5f;
             this.shadowRadius = 0.25f;
         } else {
             this.shadowRadius = 0.5f;

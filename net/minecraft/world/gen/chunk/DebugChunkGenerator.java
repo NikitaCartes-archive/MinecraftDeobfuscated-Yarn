@@ -12,7 +12,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -32,12 +32,12 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.chunk.placement.StructuresConfig;
 
 public class DebugChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<DebugChunkGenerator> CODEC = RegistryLookupCodec.of(Registry.BIOME_KEY).xmap(DebugChunkGenerator::new, DebugChunkGenerator::getBiomeRegistry).stable().codec();
+    public static final Codec<DebugChunkGenerator> CODEC = RegistryOps.createRegistryCodec(Registry.BIOME_KEY).xmap(DebugChunkGenerator::new, DebugChunkGenerator::getBiomeRegistry).stable().codec();
     private static final int field_31467 = 2;
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
@@ -49,8 +49,9 @@ extends ChunkGenerator {
     private final Registry<Biome> biomeRegistry;
 
     public DebugChunkGenerator(Registry<Biome> biomeRegistry) {
-        super(new FixedBiomeSource(biomeRegistry.getOrThrow(BiomeKeys.PLAINS)), new StructuresConfig(false));
+        super(new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)), new StructuresConfig(false));
         this.biomeRegistry = biomeRegistry;
+        this.method_40145();
     }
 
     public Registry<Biome> getBiomeRegistry() {

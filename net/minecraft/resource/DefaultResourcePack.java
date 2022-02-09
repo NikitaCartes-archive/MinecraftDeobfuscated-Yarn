@@ -230,7 +230,7 @@ ResourceFactory {
     }
 
     @Override
-    public Resource getResource(final Identifier id) throws IOException {
+    public Resource getResource(final Identifier identifier) throws IOException {
         return new Resource(){
             @Nullable
             InputStream stream;
@@ -244,13 +244,13 @@ ResourceFactory {
 
             @Override
             public Identifier getId() {
-                return id;
+                return identifier;
             }
 
             @Override
             public InputStream getInputStream() {
                 try {
-                    this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, id);
+                    this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, identifier);
                 } catch (IOException iOException) {
                     throw new UncheckedIOException("Could not get client resource from vanilla pack", iOException);
                 }
@@ -270,7 +270,7 @@ ResourceFactory {
 
             @Override
             public String getResourcePackName() {
-                return id.toString();
+                return identifier.toString();
             }
         };
     }

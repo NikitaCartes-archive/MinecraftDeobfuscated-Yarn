@@ -17,7 +17,7 @@ public class FormCaravanGoal
 extends Goal {
     public final LlamaEntity llama;
     private double speed;
-    private static final int field_30217 = 8;
+    private static final int MAX_CARAVAN_LENGTH = 8;
     private int counter;
 
     public FormCaravanGoal(LlamaEntity llama, double speed) {

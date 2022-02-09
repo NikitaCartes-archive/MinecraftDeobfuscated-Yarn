@@ -113,13 +113,16 @@ implements FlyingItemEntity {
             }
             if (this.shooter != null) {
                 if (this.shooter.isFallFlying()) {
-                    vec3d = this.shooter.getRotationVector();
+                    Vec3d vec3d = this.shooter.getRotationVector();
                     double d = 1.5;
                     double e = 0.1;
                     Vec3d vec3d2 = this.shooter.getVelocity();
                     this.shooter.setVelocity(vec3d2.add(vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5));
+                    vec3d3 = this.shooter.getHandPosOffset(Items.FIREWORK_ROCKET);
+                } else {
+                    vec3d3 = Vec3d.ZERO;
                 }
-                this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+                this.setPosition(this.shooter.getX() + vec3d3.x, this.shooter.getY() + vec3d3.y, this.shooter.getZ() + vec3d3.z);
                 this.setVelocity(this.shooter.getVelocity());
             }
         } else {
@@ -127,9 +130,9 @@ implements FlyingItemEntity {
                 double f = this.horizontalCollision ? 1.0 : 1.15;
                 this.setVelocity(this.getVelocity().multiply(f, 1.0, f).add(0.0, 0.04, 0.0));
             }
-            vec3d = this.getVelocity();
-            this.move(MovementType.SELF, vec3d);
-            this.setVelocity(vec3d);
+            vec3d3 = this.getVelocity();
+            this.move(MovementType.SELF, vec3d3);
+            this.setVelocity(vec3d3);
         }
         HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         if (!this.noClip) {
@@ -142,7 +145,7 @@ implements FlyingItemEntity {
         }
         ++this.life;
         if (this.world.isClient && this.life % 2 < 2) {
-            this.world.addParticle(ParticleTypes.FIREWORK, this.getX(), this.getY() - 0.3, this.getZ(), this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05);
+            this.world.addParticle(ParticleTypes.FIREWORK, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05);
         }
         if (!this.world.isClient && this.life > this.lifeTime) {
             this.explodeAndRemove();

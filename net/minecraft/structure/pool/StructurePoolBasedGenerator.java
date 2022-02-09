@@ -34,6 +34,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
@@ -59,11 +60,11 @@ public class StructurePoolBasedGenerator {
         ChunkGenerator chunkGenerator = context2.chunkGenerator();
         StructureManager structureManager = context2.structureManager();
         HeightLimitView heightLimitView = context2.world();
-        Predicate<Biome> predicate = context2.validBiome();
+        Predicate<RegistryEntry<Biome>> predicate = context2.validBiome();
         StructureFeature.init();
         Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
         BlockRotation blockRotation = BlockRotation.random(chunkRandom);
-        StructurePool structurePool = structurePoolFeatureConfig.getStartPool().get();
+        StructurePool structurePool = structurePoolFeatureConfig.getStartPool().value();
         StructurePoolElement structurePoolElement = structurePool.getRandomElement(chunkRandom);
         if (structurePoolElement == EmptyPoolElement.INSTANCE) {
             return Optional.empty();

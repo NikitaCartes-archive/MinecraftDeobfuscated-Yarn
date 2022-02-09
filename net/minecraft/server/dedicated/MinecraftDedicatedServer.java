@@ -27,11 +27,11 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_6904;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.ServerConfigHandler;
@@ -61,10 +61,8 @@ import net.minecraft.util.logging.UncaughtExceptionHandler;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.jetbrains.annotations.Nullable;
@@ -91,12 +89,12 @@ implements DedicatedServer {
     @Nullable
     private final Text resourcePackPrompt;
 
-    public MinecraftDedicatedServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(serverThread, registryManager, session, saveProperties, dataPackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
-        this.propertiesLoader = propertiesLoader;
+    public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager resourcePackManager, class_6904 arg, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, session, resourcePackManager, arg, Proxy.NO_PROXY, dataFixer, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+        this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
-        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(propertiesLoader);
+        this.filterer = TextFilterer.load(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
+        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(serverPropertiesLoader);
     }
 
     @Override
@@ -169,7 +167,7 @@ implements DedicatedServer {
         if (!ServerConfigHandler.checkSuccess(this)) {
             return false;
         }
-        this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
+        this.setPlayerManager(new DedicatedPlayerManager(this, this.getRegistryManager(), this.saveHandler));
         long l = Util.getMeasuringTimeNano();
         SkullBlockEntity.setServices(this.getUserCache(), this.getSessionService(), this);
         UserCache.setUseRemote(this.isOnlineMode());
@@ -277,7 +275,7 @@ implements DedicatedServer {
             writer.write(String.format("view-distance=%d%n", serverPropertiesHandler.viewDistance));
             writer.write(String.format("simulation-distance=%d%n", serverPropertiesHandler.simulationDistance));
             writer.write(String.format("spawn-animals=%s%n", serverPropertiesHandler.spawnAnimals));
-            writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.getGeneratorOptions(this.registryManager).shouldGenerateStructures()));
+            writer.write(String.format("generate-structures=%s%n", serverPropertiesHandler.getGeneratorOptions(this.getRegistryManager()).shouldGenerateStructures()));
             writer.write(String.format("use-native=%s%n", serverPropertiesHandler.useNativeTransport));
             writer.write(String.format("rate-limit=%d%n", serverPropertiesHandler.rateLimit));
         }

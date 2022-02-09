@@ -15,6 +15,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.minecraft.util.dynamic.Codecs;
@@ -191,21 +192,24 @@ public class MultiNoiseUtil {
             return this.entries;
         }
 
-        public T method_39529(NoiseValuePoint noiseValuePoint, T object) {
+        public T method_39529(NoiseValuePoint noiseValuePoint) {
             return this.method_39527(noiseValuePoint);
         }
 
         @VisibleForTesting
-        public T method_39530(NoiseValuePoint noiseValuePoint, T object) {
-            long l = Long.MAX_VALUE;
-            T object2 = object;
-            for (Pair<NoiseHypercube, T> pair : this.getEntries()) {
-                long m = pair.getFirst().getSquaredDistance(noiseValuePoint);
+        public T method_39530(NoiseValuePoint noiseValuePoint) {
+            Iterator<Pair<NoiseHypercube, T>> iterator = this.getEntries().iterator();
+            Pair<NoiseHypercube, T> pair = iterator.next();
+            long l = pair.getFirst().getSquaredDistance(noiseValuePoint);
+            T object = pair.getSecond();
+            while (iterator.hasNext()) {
+                Pair<NoiseHypercube, T> pair2 = iterator.next();
+                long m = pair2.getFirst().getSquaredDistance(noiseValuePoint);
                 if (m >= l) continue;
                 l = m;
-                object2 = pair.getSecond();
+                object = pair2.getSecond();
             }
-            return object2;
+            return object;
         }
 
         public T method_39527(NoiseValuePoint noiseValuePoint) {

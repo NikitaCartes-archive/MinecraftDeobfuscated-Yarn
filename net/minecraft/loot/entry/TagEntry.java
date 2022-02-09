@@ -5,11 +5,9 @@ package net.minecraft.loot.entry;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootChoice;
 import net.minecraft.loot.condition.LootCondition;
@@ -18,18 +16,18 @@ import net.minecraft.loot.entry.LeafEntry;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.loot.entry.LootPoolEntryTypes;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class TagEntry
 extends LeafEntry {
-    final Tag<Item> name;
+    final TagKey<Item> name;
     final boolean expand;
 
-    TagEntry(Tag<Item> name, boolean expand, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
+    TagEntry(TagKey<Item> name, boolean expand, int weight, int quality, LootCondition[] conditions, LootFunction[] functions) {
         super(weight, quality, conditions, functions);
         this.name = name;
         this.expand = expand;
@@ -42,17 +40,17 @@ extends LeafEntry {
 
     @Override
     public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-        this.name.values().forEach(item -> lootConsumer.accept(new ItemStack((ItemConvertible)item)));
+        Registry.ITEM.iterateEntries(this.name).forEach(entry -> lootConsumer.accept(new ItemStack((RegistryEntry<Item>)entry)));
     }
 
     private boolean grow(LootContext context, Consumer<LootChoice> lootChoiceExpander) {
         if (this.test(context)) {
-            for (final Item item : this.name.values()) {
+            for (final RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(this.name)) {
                 lootChoiceExpander.accept(new LeafEntry.Choice(){
 
                     @Override
                     public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-                        lootConsumer.accept(new ItemStack(item));
+                        lootConsumer.accept(new ItemStack(registryEntry));
                     }
                 });
             }
@@ -69,11 +67,11 @@ extends LeafEntry {
         return super.expand(lootContext, consumer);
     }
 
-    public static LeafEntry.Builder<?> builder(Tag<Item> name) {
+    public static LeafEntry.Builder<?> builder(TagKey<Item> name) {
         return TagEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new TagEntry(name, false, weight, quality, conditions, functions));
     }
 
-    public static LeafEntry.Builder<?> expandBuilder(Tag<Item> name) {
+    public static LeafEntry.Builder<?> expandBuilder(TagKey<Item> name) {
         return TagEntry.builder((int weight, int quality, LootCondition[] conditions, LootFunction[] functions) -> new TagEntry(name, true, weight, quality, conditions, functions));
     }
 
@@ -82,16 +80,16 @@ extends LeafEntry {
         @Override
         public void addEntryFields(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
             super.addEntryFields(jsonObject, tagEntry, jsonSerializationContext);
-            jsonObject.addProperty("name", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, tagEntry.name, () -> new IllegalStateException("Unknown item tag")).toString());
+            jsonObject.addProperty("name", tagEntry.name.id().toString());
             jsonObject.addProperty("expand", tagEntry.expand);
         }
 
         @Override
         protected TagEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonParseException("Can't find tag: " + id));
+            TagKey<Item> tagKey = TagKey.intern(Registry.ITEM_KEY, identifier);
             boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
-            return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
+            return new TagEntry(tagKey, bl, i, j, lootConditions, lootFunctions);
         }
 
         @Override

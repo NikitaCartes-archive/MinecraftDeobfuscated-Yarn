@@ -12,6 +12,7 @@ import net.minecraft.block.Fertilizable;
 import net.minecraft.block.SpreadableBlock;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -41,7 +42,7 @@ implements Fertilizable {
         BlockPos blockPos = pos.up();
         BlockState blockState = Blocks.GRASS.getDefaultState();
         block0: for (int i = 0; i < 128; ++i) {
-            PlacedFeature placedFeature;
+            RegistryEntry<PlacedFeature> registryEntry;
             BlockPos blockPos2 = blockPos;
             for (int j = 0; j < i / 16; ++j) {
                 if (!world.getBlockState((blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1)).down()).isOf(this) || world.getBlockState(blockPos2).isFullCube(world, blockPos2)) continue block0;
@@ -52,13 +53,13 @@ implements Fertilizable {
             }
             if (!blockState2.isAir()) continue;
             if (random.nextInt(8) == 0) {
-                List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
+                List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).value().getGenerationSettings().getFlowerFeatures();
                 if (list.isEmpty()) continue;
-                placedFeature = ((RandomPatchFeatureConfig)list.get(0).getConfig()).feature().get();
+                registryEntry = ((RandomPatchFeatureConfig)list.get(0).config()).feature();
             } else {
-                placedFeature = VegetationPlacedFeatures.GRASS_BONEMEAL;
+                registryEntry = VegetationPlacedFeatures.GRASS_BONEMEAL;
             }
-            placedFeature.generateUnregistered(world, world.getChunkManager().getChunkGenerator(), random, blockPos2);
+            registryEntry.value().generateUnregistered(world, world.getChunkManager().getChunkGenerator(), random, blockPos2);
         }
     }
 }

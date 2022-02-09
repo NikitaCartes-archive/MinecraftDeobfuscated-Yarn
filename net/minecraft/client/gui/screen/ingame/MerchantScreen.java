@@ -254,8 +254,7 @@ extends HandledScreen<MerchantScreenHandler> {
         int i = ((MerchantScreenHandler)this.handler).getRecipes().size();
         if (this.canScroll(i)) {
             int j = i - 7;
-            this.indexStartOffset = (int)((double)this.indexStartOffset - amount);
-            this.indexStartOffset = MathHelper.clamp(this.indexStartOffset, 0, j);
+            this.indexStartOffset = MathHelper.clamp((int)((double)this.indexStartOffset - amount), 0, j);
         }
         return true;
     }

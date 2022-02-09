@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -18,7 +19,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
@@ -44,21 +44,20 @@ extends Screen {
 
     @Nullable
     public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
-        DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-        MinecraftClient.IntegratedResourceManager integratedResourceManager = client.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, storageSession);
+        class_6904 lv = client.method_40186(storageSession, false);
         try {
-            SaveProperties saveProperties = integratedResourceManager.getSaveProperties();
-            storageSession.backupLevelDataFile(impl, saveProperties);
+            SaveProperties saveProperties = lv.worldData();
+            storageSession.backupLevelDataFile(lv.registryAccess(), saveProperties);
             OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
-            if (integratedResourceManager != null) {
-                integratedResourceManager.close();
+            if (lv != null) {
+                lv.close();
             }
             return optimizeWorldScreen;
         } catch (Throwable throwable) {
             try {
-                if (integratedResourceManager != null) {
+                if (lv != null) {
                     try {
-                        integratedResourceManager.close();
+                        lv.close();
                     } catch (Throwable throwable2) {
                         throwable.addSuppressed(throwable2);
                     }

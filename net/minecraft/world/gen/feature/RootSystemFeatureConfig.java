@@ -7,8 +7,10 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Supplier;
-import net.minecraft.util.Identifier;
+import net.minecraft.block.Block;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.PlacedFeature;
@@ -16,11 +18,11 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class RootSystemFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RootSystemFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.feature), ((MapCodec)Codec.intRange(1, 64).fieldOf("required_vertical_space_for_tree")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree), ((MapCodec)Codec.intRange(1, 64).fieldOf("root_radius")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootRadius), ((MapCodec)Identifier.CODEC.fieldOf("root_replaceable")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootReplaceable), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("root_state_provider")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootStateProvider), ((MapCodec)Codec.intRange(1, 256).fieldOf("root_placement_attempts")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootPlacementAttempts), ((MapCodec)Codec.intRange(1, 4096).fieldOf("root_column_max_height")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.maxRootColumnHeight), ((MapCodec)Codec.intRange(1, 64).fieldOf("hanging_root_radius")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootRadius), ((MapCodec)Codec.intRange(0, 16).fieldOf("hanging_roots_vertical_span")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootVerticalSpan), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("hanging_root_state_provider")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootStateProvider), ((MapCodec)Codec.intRange(1, 256).fieldOf("hanging_root_placement_attempts")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts), ((MapCodec)Codec.intRange(1, 64).fieldOf("allowed_vertical_water_for_tree")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.allowedVerticalWaterForTree), ((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("allowed_tree_position")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.predicate)).apply((Applicative<RootSystemFeatureConfig, ?>)instance, RootSystemFeatureConfig::new));
-    public final Supplier<PlacedFeature> feature;
+    public static final Codec<RootSystemFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.feature), ((MapCodec)Codec.intRange(1, 64).fieldOf("required_vertical_space_for_tree")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree), ((MapCodec)Codec.intRange(1, 64).fieldOf("root_radius")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootRadius), ((MapCodec)TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("root_replaceable")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootReplaceable), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("root_state_provider")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootStateProvider), ((MapCodec)Codec.intRange(1, 256).fieldOf("root_placement_attempts")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootPlacementAttempts), ((MapCodec)Codec.intRange(1, 4096).fieldOf("root_column_max_height")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.maxRootColumnHeight), ((MapCodec)Codec.intRange(1, 64).fieldOf("hanging_root_radius")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootRadius), ((MapCodec)Codec.intRange(0, 16).fieldOf("hanging_roots_vertical_span")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootVerticalSpan), ((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("hanging_root_state_provider")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootStateProvider), ((MapCodec)Codec.intRange(1, 256).fieldOf("hanging_root_placement_attempts")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.hangingRootPlacementAttempts), ((MapCodec)Codec.intRange(1, 64).fieldOf("allowed_vertical_water_for_tree")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.allowedVerticalWaterForTree), ((MapCodec)BlockPredicate.BASE_CODEC.fieldOf("allowed_tree_position")).forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.predicate)).apply((Applicative<RootSystemFeatureConfig, ?>)instance, RootSystemFeatureConfig::new));
+    public final RegistryEntry<PlacedFeature> feature;
     public final int requiredVerticalSpaceForTree;
     public final int rootRadius;
-    public final Identifier rootReplaceable;
+    public final TagKey<Block> rootReplaceable;
     public final BlockStateProvider rootStateProvider;
     public final int rootPlacementAttempts;
     public final int maxRootColumnHeight;
@@ -31,11 +33,11 @@ implements FeatureConfig {
     public final int allowedVerticalWaterForTree;
     public final BlockPredicate predicate;
 
-    public RootSystemFeatureConfig(Supplier<PlacedFeature> feature, int requiredVerticalSpaceForTree, int rootRadius, Identifier rootReplaceable, BlockStateProvider rootStateProvider, int rootPlacementAttempts, int maxRootColumnHeight, int hangingRootRadius, int hangingRootVerticalSpan, BlockStateProvider hangingRootStateProvider, int hangingRootPlacementAttempts, int allowedVerticalWaterForTree, BlockPredicate predicate) {
-        this.feature = feature;
+    public RootSystemFeatureConfig(RegistryEntry<PlacedFeature> registryEntry, int requiredVerticalSpaceForTree, int rootRadius, TagKey<Block> tagKey, BlockStateProvider rootStateProvider, int rootPlacementAttempts, int maxRootColumnHeight, int hangingRootRadius, int hangingRootVerticalSpan, BlockStateProvider hangingRootStateProvider, int hangingRootPlacementAttempts, int allowedVerticalWaterForTree, BlockPredicate predicate) {
+        this.feature = registryEntry;
         this.requiredVerticalSpaceForTree = requiredVerticalSpaceForTree;
         this.rootRadius = rootRadius;
-        this.rootReplaceable = rootReplaceable;
+        this.rootReplaceable = tagKey;
         this.rootStateProvider = rootStateProvider;
         this.rootPlacementAttempts = rootPlacementAttempts;
         this.maxRootColumnHeight = maxRootColumnHeight;

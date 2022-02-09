@@ -103,7 +103,7 @@ RangedAttackMob {
             int j;
             int i = MathHelper.floor(this.getX());
             BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.getY()), k = MathHelper.floor(this.getZ()));
-            Biome biome = this.world.getBiome(blockPos);
+            Biome biome = this.world.getBiome(blockPos).value();
             if (biome.isHot(blockPos)) {
                 this.damage(DamageSource.ON_FIRE, 1.0f);
             }

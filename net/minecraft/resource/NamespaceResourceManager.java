@@ -27,6 +27,14 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
+/**
+ * A resource manager that only loads resources for a specific namespace.
+ * This is an implementation detail for {@link LifecycledResourceManagerImpl}, based
+ * on the heuristic that most namespaces are only defined in few resource
+ * packs, making loading in those namespaces faster.
+ * 
+ * @see LifecycledResourceManagerImpl
+ */
 public class NamespaceResourceManager
 implements ResourceManager {
     static final Logger LOGGER = LogUtils.getLogger();
@@ -49,23 +57,23 @@ implements ResourceManager {
     }
 
     @Override
-    public Resource getResource(Identifier id) throws IOException {
-        this.validate(id);
+    public Resource getResource(Identifier identifier) throws IOException {
+        this.validate(identifier);
         ResourcePack resourcePack = null;
-        Identifier identifier = NamespaceResourceManager.getMetadataPath(id);
+        Identifier identifier2 = NamespaceResourceManager.getMetadataPath(identifier);
         for (int i = this.packList.size() - 1; i >= 0; --i) {
             ResourcePack resourcePack2 = this.packList.get(i);
-            if (resourcePack == null && resourcePack2.contains(this.type, identifier)) {
+            if (resourcePack == null && resourcePack2.contains(this.type, identifier2)) {
                 resourcePack = resourcePack2;
             }
-            if (!resourcePack2.contains(this.type, id)) continue;
+            if (!resourcePack2.contains(this.type, identifier)) continue;
             InputStream inputStream = null;
             if (resourcePack != null) {
-                inputStream = this.open(identifier, resourcePack);
+                inputStream = this.open(identifier2, resourcePack);
             }
-            return new ResourceImpl(resourcePack2.getName(), id, this.open(id, resourcePack2), inputStream);
+            return new ResourceImpl(resourcePack2.getName(), identifier, this.open(identifier, resourcePack2), inputStream);
         }
-        throw new FileNotFoundException(id.toString());
+        throw new FileNotFoundException(identifier.toString());
     }
 
     @Override

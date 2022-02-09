@@ -24,6 +24,7 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ implements DataProvider {
         this.tagBuilders.clear();
         this.configure();
         this.tagBuilders.forEach((id, builder) -> {
-            List list = builder.streamEntries().filter(tag -> !tag.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
+            List<Tag.TrackedEntry> list = builder.streamEntries().filter(tag -> !tag.entry().canAdd(this.registry::containsId, this.tagBuilders::containsKey)).toList();
             if (!list.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", id, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }
@@ -72,13 +73,13 @@ implements DataProvider {
 
     protected abstract Path getOutput(Identifier var1);
 
-    protected ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
+    protected ObjectBuilder<T> getOrCreateTagBuilder(TagKey<T> tag) {
         Tag.Builder builder = this.getTagBuilder(tag);
         return new ObjectBuilder<T>(builder, this.registry, "vanilla");
     }
 
-    protected Tag.Builder getTagBuilder(Tag.Identified<T> tag) {
-        return this.tagBuilders.computeIfAbsent(tag.getId(), id -> new Tag.Builder());
+    protected Tag.Builder getTagBuilder(TagKey<T> tag) {
+        return this.tagBuilders.computeIfAbsent(tag.id(), id -> new Tag.Builder());
     }
 
     protected static class ObjectBuilder<T> {
@@ -102,8 +103,8 @@ implements DataProvider {
             return this;
         }
 
-        public ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
-            this.builder.addTag(identifiedTag.getId(), this.source);
+        public ObjectBuilder<T> addTag(TagKey<T> identifiedTag) {
+            this.builder.addTag(identifiedTag.id(), this.source);
             return this;
         }
 

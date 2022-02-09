@@ -13,8 +13,8 @@ public interface StatFormatter {
     public static final DecimalFormat DECIMAL_FORMAT = Util.make(new DecimalFormat("########0.00"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT)));
     public static final StatFormatter DEFAULT = NumberFormat.getIntegerInstance(Locale.US)::format;
     public static final StatFormatter DIVIDE_BY_TEN = i -> DECIMAL_FORMAT.format((double)i * 0.1);
-    public static final StatFormatter DISTANCE = i -> {
-        double d = (double)i / 100.0;
+    public static final StatFormatter DISTANCE = cm -> {
+        double d = (double)cm / 100.0;
         double e = d / 1000.0;
         if (e > 0.5) {
             return DECIMAL_FORMAT.format(e) + " km";
@@ -22,10 +22,10 @@ public interface StatFormatter {
         if (d > 0.5) {
             return DECIMAL_FORMAT.format(d) + " m";
         }
-        return i + " cm";
+        return cm + " cm";
     };
-    public static final StatFormatter TIME = i -> {
-        double d = (double)i / 20.0;
+    public static final StatFormatter TIME = ticks -> {
+        double d = (double)ticks / 20.0;
         double e = d / 60.0;
         double f = e / 60.0;
         double g = f / 24.0;

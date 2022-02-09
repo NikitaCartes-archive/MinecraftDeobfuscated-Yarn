@@ -355,7 +355,7 @@ extends RenderPhase {
             return;
         }
         if (this.translucent) {
-            buffer.setCameraPosition(cameraX, cameraY, cameraZ);
+            buffer.sortFrom(cameraX, cameraY, cameraZ);
         }
         buffer.end();
         this.startDrawing();

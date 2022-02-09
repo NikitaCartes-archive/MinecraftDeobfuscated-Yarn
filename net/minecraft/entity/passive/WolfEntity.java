@@ -100,6 +100,7 @@ implements Angerable {
         super((EntityType<? extends TameableEntity>)entityType, world);
         this.setTamed(false);
         this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0f);
+        this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0f);
     }
 
     @Override

@@ -46,8 +46,8 @@ implements IndexedIterable<T> {
     }
 
     @Override
-    public int getRawId(T entry) {
-        return this.idMap.getInt(entry);
+    public int getRawId(T value) {
+        return this.idMap.getInt(value);
     }
 
     @Override

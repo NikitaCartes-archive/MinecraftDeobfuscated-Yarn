@@ -10,11 +10,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.blockpredicate.AllOfBlockPredicate;
 import net.minecraft.world.gen.blockpredicate.AlwaysTrueBlockPredicate;
@@ -63,7 +64,7 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
     }
 
     public static BlockPredicate matchingBlocks(List<Block> blocks, Vec3i offset) {
-        return new MatchingBlocksBlockPredicate(offset, blocks);
+        return new MatchingBlocksBlockPredicate(offset, RegistryEntryList.of(Block::getRegistryEntry, blocks));
     }
 
     public static BlockPredicate matchingBlocks(List<Block> blocks) {
@@ -74,16 +75,16 @@ extends BiPredicate<StructureWorldAccess, BlockPos> {
         return BlockPredicate.matchingBlocks(List.of(block), offset);
     }
 
-    public static BlockPredicate matchingBlockTag(Tag<Block> tag, Vec3i offset) {
+    public static BlockPredicate matchingBlockTag(TagKey<Block> tag, Vec3i offset) {
         return new MatchingBlockTagPredicate(offset, tag);
     }
 
-    public static BlockPredicate matchingBlockTag(Tag<Block> offset) {
+    public static BlockPredicate matchingBlockTag(TagKey<Block> offset) {
         return BlockPredicate.matchingBlockTag(offset, Vec3i.ZERO);
     }
 
     public static BlockPredicate matchingFluids(List<Fluid> fluids, Vec3i offset) {
-        return new MatchingFluidsBlockPredicate(offset, fluids);
+        return new MatchingFluidsBlockPredicate(offset, RegistryEntryList.of(Fluid::getRegistryEntry, fluids));
     }
 
     public static BlockPredicate matchingFluid(Fluid fluid, Vec3i offset) {

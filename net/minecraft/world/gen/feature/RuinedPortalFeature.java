@@ -24,6 +24,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -112,8 +113,8 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         });
     }
 
-    private static boolean isColdAt(BlockPos pos, Biome biome) {
-        return biome.isCold(pos);
+    private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> registryEntry) {
+        return registryEntry.value().isCold(pos);
     }
 
     private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {

@@ -27,7 +27,7 @@ extends Feature<SimpleRandomFeatureConfig> {
         BlockPos blockPos = context.getOrigin();
         ChunkGenerator chunkGenerator = context.getGenerator();
         int i = random.nextInt(simpleRandomFeatureConfig.features.size());
-        PlacedFeature placedFeature = simpleRandomFeatureConfig.features.get(i).get();
+        PlacedFeature placedFeature = simpleRandomFeatureConfig.features.get(i).value();
         return placedFeature.generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
     }
 }

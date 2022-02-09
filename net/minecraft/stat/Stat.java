@@ -40,8 +40,8 @@ extends ScoreboardCriterion {
         return this.value;
     }
 
-    public String format(int i) {
-        return this.formatter.format(i);
+    public String format(int value) {
+        return this.formatter.format(value);
     }
 
     public boolean equals(Object o) {

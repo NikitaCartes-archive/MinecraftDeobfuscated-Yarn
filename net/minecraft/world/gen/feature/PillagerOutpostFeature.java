@@ -11,7 +11,7 @@ import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.feature.JigsawFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
@@ -39,17 +39,15 @@ extends JigsawFeature {
     }
 
     private static boolean isVillageNearby(ChunkGenerator chunkGenerator, long seed, ChunkPos chunkPos) {
-        StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
-        if (structureConfig == null) {
-            return false;
-        }
-        int i = chunkPos.x;
-        int j = chunkPos.z;
-        for (int k = i - 10; k <= i + 10; ++k) {
-            for (int l = j - 10; l <= j + 10; ++l) {
-                ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, seed, k, l);
-                if (k != chunkPos2.x || l != chunkPos2.z) continue;
-                return true;
+        StructurePlacement structurePlacement = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
+        if (structurePlacement != null) {
+            int i = chunkPos.x;
+            int j = chunkPos.z;
+            for (int k = i - 10; k <= i + 10; ++k) {
+                for (int l = j - 10; l <= j + 10; ++l) {
+                    if (!structurePlacement.isStartChunk(chunkGenerator, k, l)) continue;
+                    return true;
+                }
             }
         }
         return false;

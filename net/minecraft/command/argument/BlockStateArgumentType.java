@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.util.registry.Registry;
 
 public class BlockStateArgumentType
 implements ArgumentType<BlockStateArgument> {
@@ -45,7 +45,7 @@ implements ArgumentType<BlockStateArgument> {
         } catch (CommandSyntaxException commandSyntaxException) {
             // empty catch block
         }
-        return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
+        return blockArgumentParser.getSuggestions(builder, Registry.BLOCK);
     }
 
     @Override

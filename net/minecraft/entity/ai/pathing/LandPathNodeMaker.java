@@ -64,8 +64,8 @@ extends PathNodeMaker {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         int i = this.entity.getBlockY();
         BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
-        if (this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
-            while (this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
+        if (this.entity.canWalkOnFluid(blockState.getFluidState())) {
+            while (this.entity.canWalkOnFluid(blockState.getFluidState())) {
                 blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
             }
             --i;
@@ -387,7 +387,7 @@ extends PathNodeMaker {
                 pathNodeType = PathNodeType.STICKY_HONEY;
             }
             if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
-                pathNodeType = PathNodeType.POWDER_SNOW;
+                pathNodeType = PathNodeType.DANGER_POWDER_SNOW;
             }
         }
         if (pathNodeType == PathNodeType.WALKABLE) {

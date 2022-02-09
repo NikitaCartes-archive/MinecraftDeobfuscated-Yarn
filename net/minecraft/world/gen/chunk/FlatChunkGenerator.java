@@ -3,17 +3,17 @@
  */
 package net.minecraft.world.gen.chunk;
 
+import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -31,7 +31,7 @@ import net.minecraft.world.gen.chunk.VerticalBlockSample;
 
 public class FlatChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<FlatChunkGenerator> CODEC = ((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).xmap(FlatChunkGenerator::new, FlatChunkGenerator::getConfig).codec();
+    public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).forGetter(FlatChunkGenerator::getConfig)).apply((Applicative<FlatChunkGenerator, ?>)instance, instance.stable(FlatChunkGenerator::new)));
     private final FlatChunkGeneratorConfig config;
 
     public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
@@ -63,8 +63,8 @@ extends ChunkGenerator {
     }
 
     @Override
-    protected boolean testBiomeByKey(Registry<Biome> registry, Predicate<RegistryKey<Biome>> condition, Biome biome) {
-        return registry.getKey(this.config.getBiome()).filter(condition).isPresent();
+    protected RegistryEntry<Biome> method_40149(RegistryEntry<Biome> registryEntry) {
+        return this.config.getBiome();
     }
 
     @Override

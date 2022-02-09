@@ -86,10 +86,10 @@ extends BipedEntityModel<T> {
         this.body.pivotZ = -0.0f;
         this.rightLeg.pitch -= 0.0f;
         this.leftLeg.pitch -= 0.0f;
-        this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
-        this.leftArm.pitch = (float)((double)this.leftArm.pitch * 0.5);
-        this.rightLeg.pitch = (float)((double)this.rightLeg.pitch * 0.5);
-        this.leftLeg.pitch = (float)((double)this.leftLeg.pitch * 0.5);
+        this.rightArm.pitch *= 0.5f;
+        this.leftArm.pitch *= 0.5f;
+        this.rightLeg.pitch *= 0.5f;
+        this.leftLeg.pitch *= 0.5f;
         float l = 0.4f;
         if (this.rightArm.pitch > 0.4f) {
             this.rightArm.pitch = 0.4f;

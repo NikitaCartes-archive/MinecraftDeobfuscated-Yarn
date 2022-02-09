@@ -19,19 +19,19 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.Vanishable;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MiningToolItem
 extends ToolItem
 implements Vanishable {
-    private final Tag<Block> effectiveBlocks;
+    private final TagKey<Block> effectiveBlocks;
     protected final float miningSpeed;
     private final float attackDamage;
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
-    protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, Tag<Block> effectiveBlocks, Item.Settings settings) {
+    protected MiningToolItem(float attackDamage, float attackSpeed, ToolMaterial material, TagKey<Block> effectiveBlocks, Item.Settings settings) {
         super(material, settings);
         this.effectiveBlocks = effectiveBlocks;
         this.miningSpeed = material.getMiningSpeedMultiplier();
@@ -44,7 +44,7 @@ implements Vanishable {
 
     @Override
     public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        return this.effectiveBlocks.contains(state.getBlock()) ? this.miningSpeed : 1.0f;
+        return state.isIn(this.effectiveBlocks) ? this.miningSpeed : 1.0f;
     }
 
     @Override

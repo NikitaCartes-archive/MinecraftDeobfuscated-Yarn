@@ -11,14 +11,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -52,9 +49,5 @@ ModifiableTestableWorld {
     }
 
     public DynamicRegistryManager getRegistryManager();
-
-    default public Optional<RegistryKey<Biome>> getBiomeKey(BlockPos pos) {
-        return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(pos));
-    }
 }
 

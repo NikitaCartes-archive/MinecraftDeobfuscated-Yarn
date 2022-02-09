@@ -11,6 +11,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
@@ -47,7 +48,7 @@ BiomeAccess.Storage {
 
     public BiomeAccess getBiomeAccess();
 
-    default public Biome getBiome(BlockPos pos) {
+    default public RegistryEntry<Biome> getBiome(BlockPos pos) {
         return this.getBiomeAccess().getBiome(pos);
     }
 
@@ -66,11 +67,11 @@ BiomeAccess.Storage {
 
     @Override
     default public int getColor(BlockPos pos, ColorResolver colorResolver) {
-        return colorResolver.getColor(this.getBiome(pos), pos.getX(), pos.getZ());
+        return colorResolver.getColor(this.getBiome(pos).value(), pos.getX(), pos.getZ());
     }
 
     @Override
-    default public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+    default public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
         Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
         if (chunk != null) {
             return chunk.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
@@ -78,7 +79,7 @@ BiomeAccess.Storage {
         return this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
     }
 
-    public Biome getGeneratorStoredBiome(int var1, int var2, int var3);
+    public RegistryEntry<Biome> getGeneratorStoredBiome(int var1, int var2, int var3);
 
     /**
      * Checks if this world view is on the logical client.

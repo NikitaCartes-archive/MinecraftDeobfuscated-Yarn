@@ -73,7 +73,7 @@ implements VillagerDataContainer {
 
     public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
         super((EntityType<? extends ZombieEntity>)entityType, world);
-        this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
+        Registry.VILLAGER_PROFESSION.getRandom(this.random).ifPresent(registryEntry -> this.setVillagerData(this.getVillagerData().withProfession((VillagerProfession)registryEntry.value())));
     }
 
     @Override
@@ -284,7 +284,7 @@ implements VillagerDataContainer {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
+        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 

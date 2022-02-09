@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.biome.source;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -31,6 +32,8 @@ import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -46,16 +49,16 @@ import org.jetbrains.annotations.Nullable;
 public abstract class BiomeSource
 implements BiomeSupplier {
     public static final Codec<BiomeSource> CODEC;
-    private final Set<Biome> biomes;
-    private final List<class_6827> field_34469;
+    private final Set<RegistryEntry<Biome>> biomes;
+    private final Supplier<List<class_6827>> field_34469;
 
-    protected BiomeSource(Stream<Supplier<Biome>> stream) {
-        this(stream.map(Supplier::get).distinct().collect(ImmutableList.toImmutableList()));
+    protected BiomeSource(Stream<RegistryEntry<Biome>> stream) {
+        this(stream.distinct().toList());
     }
 
-    protected BiomeSource(List<Biome> biomes) {
-        this.biomes = new ObjectLinkedOpenHashSet<Biome>(biomes);
-        this.field_34469 = this.method_39525(biomes, true);
+    protected BiomeSource(List<RegistryEntry<Biome>> biomes) {
+        this.biomes = new ObjectLinkedOpenHashSet<RegistryEntry<Biome>>(biomes);
+        this.field_34469 = Suppliers.memoize(() -> this.method_39525(biomes.stream().map(RegistryEntry::value).toList(), true));
     }
 
     private List<class_6827> method_39525(List<Biome> biomes, boolean bl) {
@@ -70,11 +73,11 @@ implements BiomeSupplier {
         for (Biome biome : biomes) {
             int j;
             list = Lists.newArrayList();
-            List<List<Supplier<PlacedFeature>>> list2 = biome.getGenerationSettings().getFeatures();
+            List<RegistryEntryList<PlacedFeature>> list2 = biome.getGenerationSettings().getFeatures();
             i = Math.max(i, list2.size());
             for (j = 0; j < list2.size(); ++j) {
-                for (Supplier supplier : (List)list2.get(j)) {
-                    PlacedFeature placedFeature = (PlacedFeature)supplier.get();
+                for (RegistryEntry registryEntry : (RegistryEntryList)list2.get(j)) {
+                    PlacedFeature placedFeature = (PlacedFeature)registryEntry.value();
                     list.add(new class_6543(object2IntMap.computeIfAbsent(placedFeature, object -> mutableInt.getAndIncrement()), j, placedFeature));
                 }
             }
@@ -132,11 +135,11 @@ implements BiomeSupplier {
 
     public abstract BiomeSource withSeed(long var1);
 
-    public Set<Biome> getBiomes() {
-        return this.biomes;
+    public Stream<RegistryEntry<Biome>> getBiomes() {
+        return this.biomes.stream();
     }
 
-    public Set<Biome> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
+    public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
         int i = BiomeCoords.fromBlock(x - radius);
         int j = BiomeCoords.fromBlock(y - radius);
         int k = BiomeCoords.fromBlock(z - radius);
@@ -146,7 +149,7 @@ implements BiomeSupplier {
         int o = l - i + 1;
         int p = m - j + 1;
         int q = n - k + 1;
-        HashSet<Biome> set = Sets.newHashSet();
+        HashSet<RegistryEntry<Biome>> set = Sets.newHashSet();
         for (int r = 0; r < q; ++r) {
             for (int s = 0; s < o; ++s) {
                 for (int t = 0; t < p; ++t) {
@@ -161,12 +164,12 @@ implements BiomeSupplier {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<Biome> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<Biome> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public BlockPos locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         int n;
         int i = BiomeCoords.fromBlock(x);
         int j = BiomeCoords.fromBlock(z);
@@ -203,13 +206,13 @@ implements BiomeSupplier {
     }
 
     @Override
-    public abstract Biome getBiome(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
+    public abstract RegistryEntry<Biome> getBiome(int var1, int var2, int var3, MultiNoiseUtil.MultiNoiseSampler var4);
 
     public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }
 
     public List<class_6827> method_38115() {
-        return this.field_34469;
+        return this.field_34469.get();
     }
 
     static {

@@ -7,16 +7,19 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Random;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -101,8 +104,12 @@ extends State<Fluid, FluidState> {
         return this.getFluid().getParticle();
     }
 
-    public boolean isIn(Tag<Fluid> tag) {
-        return this.getFluid().isIn(tag);
+    public boolean isIn(TagKey<Fluid> tag) {
+        return this.getFluid().getRegistryEntry().isIn(tag);
+    }
+
+    public boolean isIn(RegistryEntryList<Fluid> fluids) {
+        return fluids.contains(this.getFluid().getRegistryEntry());
     }
 
     public boolean isOf(Fluid fluid) {
@@ -119,6 +126,14 @@ extends State<Fluid, FluidState> {
 
     public VoxelShape getShape(BlockView world, BlockPos pos) {
         return this.getFluid().getShape(this, world, pos);
+    }
+
+    public RegistryEntry<Fluid> getRegistryEntry() {
+        return ((Fluid)this.owner).getRegistryEntry();
+    }
+
+    public Stream<TagKey<Fluid>> streamTags() {
+        return ((Fluid)this.owner).getRegistryEntry().streamTags();
     }
 }
 

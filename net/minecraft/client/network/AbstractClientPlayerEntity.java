@@ -124,8 +124,7 @@ extends PlayerEntity {
         if (this.getAbilities().flying) {
             f *= 1.1f;
         }
-        f = (float)((double)f * ((this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / (double)this.getAbilities().getWalkSpeed() + 1.0) / 2.0));
-        if (this.getAbilities().getWalkSpeed() == 0.0f || Float.isNaN(f) || Float.isInfinite(f)) {
+        if (this.getAbilities().getWalkSpeed() == 0.0f || Float.isNaN(f *= ((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) / this.getAbilities().getWalkSpeed() + 1.0f) / 2.0f) || Float.isInfinite(f)) {
             f = 1.0f;
         }
         ItemStack itemStack = this.getActiveItem();

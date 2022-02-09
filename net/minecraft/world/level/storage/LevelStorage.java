@@ -106,7 +106,7 @@ public class LevelStorage {
         Dynamic dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
         DataResult dataResult = GeneratorOptions.CODEC.parse(dynamic2);
         return Pair.of(dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).orElseGet(() -> {
-            DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.Impl.method_39199(dynamic2);
+            DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.createDynamicRegistryManager(dynamic2);
             return GeneratorOptions.getDefaultOptions(dynamicRegistryManager);
         }), dataResult.lifecycle());
     }

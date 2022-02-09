@@ -18,7 +18,7 @@ public class DedicatedPlayerManager
 extends PlayerManager {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public DedicatedPlayerManager(MinecraftDedicatedServer server, DynamicRegistryManager.Impl tracker, WorldSaveHandler saveHandler) {
+    public DedicatedPlayerManager(MinecraftDedicatedServer server, DynamicRegistryManager.Immutable tracker, WorldSaveHandler saveHandler) {
         super(server, tracker, saveHandler, server.getProperties().maxPlayers);
         ServerPropertiesHandler serverPropertiesHandler = server.getProperties();
         this.setViewDistance(serverPropertiesHandler.viewDistance);

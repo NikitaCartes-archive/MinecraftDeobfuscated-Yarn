@@ -80,12 +80,12 @@ extends AnimalEntity {
         super.tickMovement();
         this.prevFlapProgress = this.flapProgress;
         this.prevMaxWingDeviation = this.maxWingDeviation;
-        this.maxWingDeviation = (float)((double)this.maxWingDeviation + (double)(this.onGround ? -1 : 4) * 0.3);
+        this.maxWingDeviation += (this.onGround ? -1.0f : 4.0f) * 0.3f;
         this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0f, 1.0f);
         if (!this.onGround && this.flapSpeed < 1.0f) {
             this.flapSpeed = 1.0f;
         }
-        this.flapSpeed = (float)((double)this.flapSpeed * 0.9);
+        this.flapSpeed *= 0.9f;
         Vec3d vec3d = this.getVelocity();
         if (!this.onGround && vec3d.y < 0.0) {
             this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));

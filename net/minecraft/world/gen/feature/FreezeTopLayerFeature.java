@@ -36,7 +36,7 @@ extends Feature<DefaultFeatureConfig> {
                 int m = structureWorldAccess.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l);
                 mutable.set(k, m, l);
                 mutable2.set(mutable).move(Direction.DOWN, 1);
-                Biome biome = structureWorldAccess.getBiome(mutable);
+                Biome biome = structureWorldAccess.getBiome(mutable).value();
                 if (biome.canSetIce(structureWorldAccess, mutable2, false)) {
                     structureWorldAccess.setBlockState(mutable2, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
                 }

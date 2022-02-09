@@ -285,7 +285,7 @@ extends ProjectileEntity {
             if (this.fishTravelCountdown > 0) {
                 double j;
                 double e;
-                this.fishAngle = (float)((double)this.fishAngle + this.random.nextGaussian() * 4.0);
+                this.fishAngle += (float)(this.random.nextGaussian() * 4.0);
                 float f = this.fishAngle * ((float)Math.PI / 180);
                 float g = MathHelper.sin(f);
                 float h = MathHelper.cos(f);
@@ -312,19 +312,19 @@ extends ProjectileEntity {
             this.waitCountdown -= i;
             float f = 0.15f;
             if (this.waitCountdown < 20) {
-                f = (float)((double)f + (double)(20 - this.waitCountdown) * 0.05);
+                f += (float)(20 - this.waitCountdown) * 0.05f;
             } else if (this.waitCountdown < 40) {
-                f = (float)((double)f + (double)(40 - this.waitCountdown) * 0.02);
+                f += (float)(40 - this.waitCountdown) * 0.02f;
             } else if (this.waitCountdown < 60) {
-                f = (float)((double)f + (double)(60 - this.waitCountdown) * 0.01);
+                f += (float)(60 - this.waitCountdown) * 0.01f;
             }
             if (this.random.nextFloat() < f) {
                 double j;
                 double e;
                 float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float)Math.PI / 180);
                 float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
-                double d = this.getX() + (double)(MathHelper.sin(g) * h * 0.1f);
-                BlockState blockState = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(MathHelper.cos(g) * h * 0.1f)));
+                double d = this.getX() + (double)(MathHelper.sin(g) * h) * 0.1;
+                BlockState blockState = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(MathHelper.cos(g) * h) * 0.1));
                 if (blockState.isOf(Blocks.WATER)) {
                     serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
                 }

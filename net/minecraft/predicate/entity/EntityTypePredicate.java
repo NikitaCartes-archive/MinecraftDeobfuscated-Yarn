@@ -9,8 +9,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -41,11 +40,11 @@ public abstract class EntityTypePredicate {
         }
         String string = JsonHelper.asString(json, "type");
         if (string.startsWith("#")) {
-            Identifier identifier2 = new Identifier(string.substring(1));
-            return new Tagged(ServerTagManagerHolder.getTagManager().getTag(Registry.ENTITY_TYPE_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown entity tag '" + identifier + "'")));
+            Identifier identifier = new Identifier(string.substring(1));
+            return new Tagged(TagKey.intern(Registry.ENTITY_TYPE_KEY, identifier));
         }
-        Identifier identifier3 = new Identifier(string);
-        EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier3 + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));
+        Identifier identifier = new Identifier(string);
+        EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));
         return new Single(entityType);
     }
 
@@ -53,15 +52,15 @@ public abstract class EntityTypePredicate {
         return new Single(type);
     }
 
-    public static EntityTypePredicate create(Tag<EntityType<?>> tag) {
+    public static EntityTypePredicate create(TagKey<EntityType<?>> tag) {
         return new Tagged(tag);
     }
 
     static class Tagged
     extends EntityTypePredicate {
-        private final Tag<EntityType<?>> tag;
+        private final TagKey<EntityType<?>> tag;
 
-        public Tagged(Tag<EntityType<?>> tag) {
+        public Tagged(TagKey<EntityType<?>> tag) {
             this.tag = tag;
         }
 
@@ -72,7 +71,7 @@ public abstract class EntityTypePredicate {
 
         @Override
         public JsonElement toJson() {
-            return new JsonPrimitive("#" + ServerTagManagerHolder.getTagManager().getTagId(Registry.ENTITY_TYPE_KEY, this.tag, () -> new IllegalStateException("Unknown entity type tag")));
+            return new JsonPrimitive("#" + this.tag.id());
         }
     }
 

@@ -90,7 +90,7 @@ implements Comparable<Identifier> {
         return strings;
     }
 
-    private static DataResult<Identifier> validate(String id) {
+    public static DataResult<Identifier> validate(String id) {
         try {
             return DataResult.success(new Identifier(id));
         } catch (InvalidIdentifierException invalidIdentifierException) {

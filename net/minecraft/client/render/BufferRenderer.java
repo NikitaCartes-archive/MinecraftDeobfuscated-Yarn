@@ -47,12 +47,12 @@ public class BufferRenderer {
             RenderSystem.recordRenderCall(() -> {
                 Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
                 BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
-                BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount(), drawArrayParameters.getElementFormat(), drawArrayParameters.getVertexCount(), drawArrayParameters.isTextured());
+                BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount(), drawArrayParameters.getElementFormat(), drawArrayParameters.getVertexCount(), drawArrayParameters.hasNoIndexBuffer());
             });
         } else {
             Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
             BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
-            BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount(), drawArrayParameters.getElementFormat(), drawArrayParameters.getVertexCount(), drawArrayParameters.isTextured());
+            BufferRenderer.draw(pair.getSecond(), drawArrayParameters.getMode(), drawArrayParameters.getVertexFormat(), drawArrayParameters.getCount(), drawArrayParameters.getElementFormat(), drawArrayParameters.getVertexCount(), drawArrayParameters.hasNoIndexBuffer());
         }
     }
 
@@ -76,7 +76,7 @@ public class BufferRenderer {
                 GlStateManager._glBindBuffer(34963, j);
                 currentElementBuffer = j;
             }
-            k = indexBuffer.getElementFormat().count;
+            k = indexBuffer.getElementFormat().type;
         } else {
             int l = vertexFormat.getElementBuffer();
             if (l != currentElementBuffer) {
@@ -86,7 +86,7 @@ public class BufferRenderer {
             buffer.position(i);
             buffer.limit(i + vertexCount * elementFormat.size);
             GlStateManager._glBufferData(34963, buffer, 35048);
-            k = elementFormat.count;
+            k = elementFormat.type;
         }
         Shader shader = RenderSystem.getShader();
         for (j = 0; j < 8; ++j) {
@@ -162,7 +162,7 @@ public class BufferRenderer {
             GlStateManager._glBindBuffer(34963, k);
             currentElementBuffer = k;
         }
-        int l = indexBuffer.getElementFormat().count;
+        int l = indexBuffer.getElementFormat().type;
         GlStateManager._drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.getVertexCount(), l, 0L);
         byteBuffer.position(0);
     }

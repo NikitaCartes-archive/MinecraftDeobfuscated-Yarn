@@ -10,10 +10,11 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class TaigaVillageData {
-    public static final StructurePool STRUCTURE_POOLS = StructurePools.register(new StructurePool(new Identifier("village/taiga/town_centers"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_1", StructureProcessorLists.ZOMBIE_TAIGA), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_2", StructureProcessorLists.ZOMBIE_TAIGA), 1)), StructurePool.Projection.RIGID));
+    public static final RegistryEntry<StructurePool> STRUCTURE_POOLS = StructurePools.register(new StructurePool(new Identifier("village/taiga/town_centers"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/town_centers/taiga_meeting_point_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_1", StructureProcessorLists.ZOMBIE_TAIGA), 1), Pair.of(StructurePoolElement.ofProcessedLegacySingle("village/taiga/zombie/town_centers/taiga_meeting_point_2", StructureProcessorLists.ZOMBIE_TAIGA), 1)), StructurePool.Projection.RIGID));
 
     public static void init() {
     }

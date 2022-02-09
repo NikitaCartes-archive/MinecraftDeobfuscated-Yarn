@@ -19,13 +19,13 @@ import net.minecraft.util.Identifier;
 public class AdvancementUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final boolean clearCurrent;
-    private final Map<Identifier, Advancement.Task> toEarn;
+    private final Map<Identifier, Advancement.Builder> toEarn;
     private final Set<Identifier> toRemove;
     private final Map<Identifier, AdvancementProgress> toSetProgress;
 
     public AdvancementUpdateS2CPacket(boolean clearCurrent, Collection<Advancement> toEarn, Set<Identifier> toRemove, Map<Identifier, AdvancementProgress> toSetProgress) {
         this.clearCurrent = clearCurrent;
-        ImmutableMap.Builder<Identifier, Advancement.Task> builder = ImmutableMap.builder();
+        ImmutableMap.Builder<Identifier, Advancement.Builder> builder = ImmutableMap.builder();
         for (Advancement advancement : toEarn) {
             builder.put(advancement.getId(), advancement.createTask());
         }
@@ -36,7 +36,7 @@ implements Packet<ClientPlayPacketListener> {
 
     public AdvancementUpdateS2CPacket(PacketByteBuf buf) {
         this.clearCurrent = buf.readBoolean();
-        this.toEarn = buf.readMap(PacketByteBuf::readIdentifier, Advancement.Task::fromPacket);
+        this.toEarn = buf.readMap(PacketByteBuf::readIdentifier, Advancement.Builder::fromPacket);
         this.toRemove = buf.readCollection(Sets::newLinkedHashSetWithExpectedSize, PacketByteBuf::readIdentifier);
         this.toSetProgress = buf.readMap(PacketByteBuf::readIdentifier, AdvancementProgress::fromPacket);
     }
@@ -54,7 +54,7 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onAdvancements(this);
     }
 
-    public Map<Identifier, Advancement.Task> getAdvancementsToEarn() {
+    public Map<Identifier, Advancement.Builder> getAdvancementsToEarn() {
         return this.toEarn;
     }
 

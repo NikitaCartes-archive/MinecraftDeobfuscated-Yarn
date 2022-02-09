@@ -22,7 +22,7 @@ public interface StringIdentifiable {
      */
     public static <E extends Enum<E>> Codec<E> createCodec(Supplier<E[]> enumValues, Function<String, E> fromString) {
         Enum[] enums = (Enum[])enumValues.get();
-        return Codecs.method_39512(Codecs.method_39508(object -> ((StringIdentifiable)object).asString(), fromString), Codecs.method_39511(object -> ((Enum)object).ordinal(), ordinal -> ordinal >= 0 && ordinal < enums.length ? enums[ordinal] : null, -1));
+        return Codecs.orCompressed(Codecs.method_39508(object -> ((StringIdentifiable)object).asString(), fromString), Codecs.rawIdChecked(object -> ((Enum)object).ordinal(), ordinal -> ordinal >= 0 && ordinal < enums.length ? enums[ordinal] : null, -1));
     }
 
     public static Keyable toKeyable(final StringIdentifiable[] values) {

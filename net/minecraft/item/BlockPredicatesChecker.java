@@ -7,12 +7,13 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
 import java.util.function.Predicate;
+import net.minecraft.block.Block;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.tag.TagManager;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -62,7 +63,7 @@ public class BlockPredicatesChecker {
      * {@return true if any of the predicates in the {@code stack}'s NBT
      * matched against the block at {@code pos}, false otherwise}
      */
-    public boolean check(ItemStack stack, TagManager tagManager, CachedBlockPosition pos) {
+    public boolean check(ItemStack stack, Registry<Block> blockRegistry, CachedBlockPosition pos) {
         if (BlockPredicatesChecker.canUseCache(pos, this.cachedPos, this.nbtAware)) {
             return this.lastResult;
         }
@@ -76,7 +77,7 @@ public class BlockPredicatesChecker {
                 try {
                     BlockPredicateArgumentType.BlockPredicate blockPredicate = BLOCK_PREDICATE.parse(new StringReader(string));
                     this.nbtAware |= blockPredicate.hasNbt();
-                    Predicate<CachedBlockPosition> predicate = blockPredicate.create(tagManager);
+                    Predicate<CachedBlockPosition> predicate = blockPredicate.create(blockRegistry);
                     if (predicate.test(pos)) {
                         this.lastResult = true;
                         return true;

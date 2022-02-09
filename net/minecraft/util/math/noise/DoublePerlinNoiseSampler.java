@@ -12,10 +12,10 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public class DoublePerlinNoiseSampler {
@@ -92,7 +92,7 @@ public class DoublePerlinNoiseSampler {
         private final int firstOctave;
         private final DoubleList amplitudes;
         public static final Codec<NoiseParameters> field_35424 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("firstOctave")).forGetter(NoiseParameters::getFirstOctave), ((MapCodec)Codec.DOUBLE.listOf().fieldOf("amplitudes")).forGetter(NoiseParameters::getAmplitudes)).apply((Applicative<NoiseParameters, ?>)instance, NoiseParameters::new));
-        public static final Codec<Supplier<NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
+        public static final Codec<RegistryEntry<NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
 
         public NoiseParameters(int firstOctave, List<Double> amplitudes) {
             this.firstOctave = firstOctave;

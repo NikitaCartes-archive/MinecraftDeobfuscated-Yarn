@@ -368,7 +368,7 @@ ModelWithHead {
         f = 1.0f - f;
         float g = MathHelper.sin(f * (float)Math.PI);
         float h = MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -(this.head.pitch - 0.7f) * 0.75f;
-        modelPart.pitch = (float)((double)modelPart.pitch - ((double)g * 1.2 + (double)h));
+        modelPart.pitch -= g * 1.2f + h;
         modelPart.yaw += this.body.yaw * 2.0f;
         modelPart.roll += MathHelper.sin(this.handSwingProgress * (float)Math.PI) * -0.4f;
     }

@@ -30,7 +30,7 @@ extends Feature<RandomFeatureConfig> {
             if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
             return randomFeatureEntry.generate(structureWorldAccess, chunkGenerator, random, blockPos);
         }
-        return randomFeatureConfig.defaultFeature.get().generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
+        return randomFeatureConfig.defaultFeature.value().generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
     }
 }
 

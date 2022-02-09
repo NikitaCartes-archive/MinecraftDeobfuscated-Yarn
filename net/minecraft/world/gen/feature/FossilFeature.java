@@ -11,7 +11,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
@@ -60,10 +59,10 @@ extends Feature<FossilFeatureConfig> {
             return false;
         }
         structurePlacementData.clearProcessors();
-        fossilFeatureConfig.fossilProcessors.get().getList().forEach(processor -> structurePlacementData.addProcessor((StructureProcessor)processor));
+        fossilFeatureConfig.fossilProcessors.value().getList().forEach(structurePlacementData::addProcessor);
         structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
         structurePlacementData.clearProcessors();
-        fossilFeatureConfig.overlayProcessors.get().getList().forEach(processor -> structurePlacementData.addProcessor((StructureProcessor)processor));
+        fossilFeatureConfig.overlayProcessors.value().getList().forEach(structurePlacementData::addProcessor);
         structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
         return true;
     }

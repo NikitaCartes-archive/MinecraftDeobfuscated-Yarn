@@ -4,16 +4,21 @@
 package net.minecraft.util.registry;
 
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Keyable;
 import com.mojang.serialization.Lifecycle;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -67,6 +72,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
@@ -77,6 +83,8 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.MutableRegistry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.village.VillagerProfession;
@@ -94,6 +102,7 @@ import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -118,7 +127,7 @@ IndexedIterable<T> {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Map<Identifier, Supplier<?>> DEFAULT_ENTRIES = Maps.newLinkedHashMap();
     public static final Identifier ROOT_KEY = new Identifier("root");
-    protected static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry(Registry.createRegistryKey("root"), Lifecycle.experimental());
+    protected static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry(Registry.createRegistryKey("root"), Lifecycle.experimental(), null);
     public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
     public static final RegistryKey<Registry<SoundEvent>> SOUND_EVENT_KEY = Registry.createRegistryKey("sound_event");
     public static final RegistryKey<Registry<Fluid>> FLUID_KEY = Registry.createRegistryKey("fluid");
@@ -175,49 +184,49 @@ IndexedIterable<T> {
      * @see #WORLD_KEY
      */
     public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_KEY = Registry.createRegistryKey("dimension");
-    public static final DefaultedRegistry<GameEvent> GAME_EVENT = Registry.create(GAME_EVENT_KEY, "step", () -> GameEvent.STEP);
-    public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
-    public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
-    public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
-    public static final DefaultedRegistry<Block> BLOCK = Registry.create(BLOCK_KEY, "air", () -> Blocks.AIR);
-    public static final Registry<Enchantment> ENCHANTMENT = Registry.create(ENCHANTMENT_KEY, () -> Enchantments.FORTUNE);
-    public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = Registry.create(ENTITY_TYPE_KEY, "pig", () -> EntityType.PIG);
-    public static final DefaultedRegistry<Item> ITEM = Registry.create(ITEM_KEY, "air", () -> Items.AIR);
-    public static final DefaultedRegistry<Potion> POTION = Registry.create(POTION_KEY, "empty", () -> Potions.EMPTY);
-    public static final Registry<ParticleType<?>> PARTICLE_TYPE = Registry.create(PARTICLE_TYPE_KEY, () -> ParticleTypes.BLOCK);
-    public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = Registry.create(BLOCK_ENTITY_TYPE_KEY, () -> BlockEntityType.FURNACE);
-    public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = Registry.create(MOTIVE_KEY, "kebab", () -> PaintingMotive.KEBAB);
-    public static final Registry<Identifier> CUSTOM_STAT = Registry.create(CUSTOM_STAT_KEY, () -> Stats.JUMP);
-    public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = Registry.create(CHUNK_STATUS_KEY, "empty", () -> ChunkStatus.EMPTY);
-    public static final Registry<RuleTestType<?>> RULE_TEST = Registry.create(RULE_TEST_KEY, () -> RuleTestType.ALWAYS_TRUE);
-    public static final Registry<PosRuleTestType<?>> POS_RULE_TEST = Registry.create(POS_RULE_TEST_KEY, () -> PosRuleTestType.ALWAYS_TRUE);
-    public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = Registry.create(MENU_KEY, () -> ScreenHandlerType.ANVIL);
-    public static final Registry<RecipeType<?>> RECIPE_TYPE = Registry.create(RECIPE_TYPE_KEY, () -> RecipeType.CRAFTING);
-    public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = Registry.create(RECIPE_SERIALIZER_KEY, () -> RecipeSerializer.SHAPELESS);
-    public static final Registry<EntityAttribute> ATTRIBUTE = Registry.create(ATTRIBUTE_KEY, () -> EntityAttributes.GENERIC_LUCK);
-    public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = Registry.create(POSITION_SOURCE_TYPE_KEY, () -> PositionSourceType.BLOCK);
-    public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, () -> Stats.USED);
-    public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", () -> VillagerType.PLAINS);
-    public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", () -> VillagerProfession.NONE);
-    public static final DefaultedRegistry<PointOfInterestType> POINT_OF_INTEREST_TYPE = Registry.create(POINT_OF_INTEREST_TYPE_KEY, "unemployed", () -> PointOfInterestType.UNEMPLOYED);
-    public static final DefaultedRegistry<MemoryModuleType<?>> MEMORY_MODULE_TYPE = Registry.create(MEMORY_MODULE_TYPE_KEY, "dummy", () -> MemoryModuleType.DUMMY);
-    public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = Registry.create(SENSOR_TYPE_KEY, "dummy", () -> SensorType.DUMMY);
-    public static final Registry<Schedule> SCHEDULE = Registry.create(SCHEDULE_KEY, () -> Schedule.EMPTY);
-    public static final Registry<Activity> ACTIVITY = Registry.create(ACTIVITY_KEY, () -> Activity.IDLE);
-    public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = Registry.create(LOOT_POOL_ENTRY_TYPE_KEY, () -> LootPoolEntryTypes.EMPTY);
-    public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = Registry.create(LOOT_FUNCTION_TYPE_KEY, () -> LootFunctionTypes.SET_COUNT);
-    public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = Registry.create(LOOT_CONDITION_TYPE_KEY, () -> LootConditionTypes.INVERTED);
-    public static final Registry<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = Registry.create(LOOT_NUMBER_PROVIDER_TYPE_KEY, () -> LootNumberProviderTypes.CONSTANT);
-    public static final Registry<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = Registry.create(LOOT_NBT_PROVIDER_TYPE_KEY, () -> LootNbtProviderTypes.CONTEXT);
-    public static final Registry<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = Registry.create(LOOT_SCORE_PROVIDER_TYPE_KEY, () -> LootScoreProviderTypes.CONTEXT);
+    public static final DefaultedRegistry<GameEvent> GAME_EVENT = Registry.create(GAME_EVENT_KEY, "step", GameEvent::getRegistryEntry, (Registry<T> registry) -> GameEvent.STEP);
+    public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, registry -> SoundEvents.ENTITY_ITEM_PICKUP);
+    public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", Fluid::getRegistryEntry, (Registry<T> registry) -> Fluids.EMPTY);
+    public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, registry -> StatusEffects.LUCK);
+    public static final DefaultedRegistry<Block> BLOCK = Registry.create(BLOCK_KEY, "air", Block::getRegistryEntry, (Registry<T> registry) -> Blocks.AIR);
+    public static final Registry<Enchantment> ENCHANTMENT = Registry.create(ENCHANTMENT_KEY, registry -> Enchantments.FORTUNE);
+    public static final DefaultedRegistry<EntityType<?>> ENTITY_TYPE = Registry.create(ENTITY_TYPE_KEY, "pig", EntityType::getRegistryEntry, (Registry<T> registry) -> EntityType.PIG);
+    public static final DefaultedRegistry<Item> ITEM = Registry.create(ITEM_KEY, "air", Item::getRegistryEntry, (Registry<T> registry) -> Items.AIR);
+    public static final DefaultedRegistry<Potion> POTION = Registry.create(POTION_KEY, "empty", (Registry<T> registry) -> Potions.EMPTY);
+    public static final Registry<ParticleType<?>> PARTICLE_TYPE = Registry.create(PARTICLE_TYPE_KEY, registry -> ParticleTypes.BLOCK);
+    public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = Registry.create(BLOCK_ENTITY_TYPE_KEY, registry -> BlockEntityType.FURNACE);
+    public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = Registry.create(MOTIVE_KEY, "kebab", (Registry<T> registry) -> PaintingMotive.KEBAB);
+    public static final Registry<Identifier> CUSTOM_STAT = Registry.create(CUSTOM_STAT_KEY, registry -> Stats.JUMP);
+    public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = Registry.create(CHUNK_STATUS_KEY, "empty", (Registry<T> registry) -> ChunkStatus.EMPTY);
+    public static final Registry<RuleTestType<?>> RULE_TEST = Registry.create(RULE_TEST_KEY, registry -> RuleTestType.ALWAYS_TRUE);
+    public static final Registry<PosRuleTestType<?>> POS_RULE_TEST = Registry.create(POS_RULE_TEST_KEY, registry -> PosRuleTestType.ALWAYS_TRUE);
+    public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = Registry.create(MENU_KEY, registry -> ScreenHandlerType.ANVIL);
+    public static final Registry<RecipeType<?>> RECIPE_TYPE = Registry.create(RECIPE_TYPE_KEY, registry -> RecipeType.CRAFTING);
+    public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = Registry.create(RECIPE_SERIALIZER_KEY, registry -> RecipeSerializer.SHAPELESS);
+    public static final Registry<EntityAttribute> ATTRIBUTE = Registry.create(ATTRIBUTE_KEY, registry -> EntityAttributes.GENERIC_LUCK);
+    public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = Registry.create(POSITION_SOURCE_TYPE_KEY, registry -> PositionSourceType.BLOCK);
+    public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, registry -> Stats.USED);
+    public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", (Registry<T> registry) -> VillagerType.PLAINS);
+    public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", (Registry<T> registry) -> VillagerProfession.NONE);
+    public static final DefaultedRegistry<PointOfInterestType> POINT_OF_INTEREST_TYPE = Registry.create(POINT_OF_INTEREST_TYPE_KEY, "unemployed", (Registry<T> registry) -> PointOfInterestType.UNEMPLOYED);
+    public static final DefaultedRegistry<MemoryModuleType<?>> MEMORY_MODULE_TYPE = Registry.create(MEMORY_MODULE_TYPE_KEY, "dummy", (Registry<T> registry) -> MemoryModuleType.DUMMY);
+    public static final DefaultedRegistry<SensorType<?>> SENSOR_TYPE = Registry.create(SENSOR_TYPE_KEY, "dummy", (Registry<T> registry) -> SensorType.DUMMY);
+    public static final Registry<Schedule> SCHEDULE = Registry.create(SCHEDULE_KEY, registry -> Schedule.EMPTY);
+    public static final Registry<Activity> ACTIVITY = Registry.create(ACTIVITY_KEY, registry -> Activity.IDLE);
+    public static final Registry<LootPoolEntryType> LOOT_POOL_ENTRY_TYPE = Registry.create(LOOT_POOL_ENTRY_TYPE_KEY, registry -> LootPoolEntryTypes.EMPTY);
+    public static final Registry<LootFunctionType> LOOT_FUNCTION_TYPE = Registry.create(LOOT_FUNCTION_TYPE_KEY, registry -> LootFunctionTypes.SET_COUNT);
+    public static final Registry<LootConditionType> LOOT_CONDITION_TYPE = Registry.create(LOOT_CONDITION_TYPE_KEY, registry -> LootConditionTypes.INVERTED);
+    public static final Registry<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = Registry.create(LOOT_NUMBER_PROVIDER_TYPE_KEY, registry -> LootNumberProviderTypes.CONSTANT);
+    public static final Registry<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = Registry.create(LOOT_NBT_PROVIDER_TYPE_KEY, registry -> LootNbtProviderTypes.CONTEXT);
+    public static final Registry<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = Registry.create(LOOT_SCORE_PROVIDER_TYPE_KEY, registry -> LootScoreProviderTypes.CONTEXT);
     public static final RegistryKey<Registry<FloatProviderType<?>>> FLOAT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("float_provider_type");
-    public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = Registry.create(FLOAT_PROVIDER_TYPE_KEY, () -> FloatProviderType.CONSTANT);
+    public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = Registry.create(FLOAT_PROVIDER_TYPE_KEY, registry -> FloatProviderType.CONSTANT);
     public static final RegistryKey<Registry<IntProviderType<?>>> INT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("int_provider_type");
-    public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = Registry.create(INT_PROVIDER_TYPE_KEY, () -> IntProviderType.CONSTANT);
+    public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = Registry.create(INT_PROVIDER_TYPE_KEY, tegistry -> IntProviderType.CONSTANT);
     public static final RegistryKey<Registry<HeightProviderType<?>>> HEIGHT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("height_provider_type");
-    public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = Registry.create(HEIGHT_PROVIDER_TYPE_KEY, () -> HeightProviderType.CONSTANT);
+    public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = Registry.create(HEIGHT_PROVIDER_TYPE_KEY, registry -> HeightProviderType.CONSTANT);
     public static final RegistryKey<Registry<BlockPredicateType<?>>> BLOCK_PREDICATE_TYPE_KEY = Registry.createRegistryKey("block_predicate_type");
-    public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = Registry.create(BLOCK_PREDICATE_TYPE_KEY, () -> BlockPredicateType.NOT);
+    public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = Registry.create(BLOCK_PREDICATE_TYPE_KEY, registry -> BlockPredicateType.NOT);
     public static final RegistryKey<Registry<ChunkGeneratorSettings>> CHUNK_GENERATOR_SETTINGS_KEY = Registry.createRegistryKey("worldgen/noise_settings");
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = Registry.createRegistryKey("worldgen/configured_carver");
     public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = Registry.createRegistryKey("worldgen/configured_feature");
@@ -228,15 +237,17 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
     public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = Registry.createRegistryKey("worldgen/noise");
     public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = Registry.createRegistryKey("worldgen/carver");
-    public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, () -> Carver.CAVE);
+    public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, registry -> Carver.CAVE);
     public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = Registry.createRegistryKey("worldgen/feature");
-    public static final Registry<Feature<?>> FEATURE = Registry.create(FEATURE_KEY, () -> Feature.ORE);
+    public static final Registry<Feature<?>> FEATURE = Registry.create(FEATURE_KEY, registry -> Feature.ORE);
     public static final RegistryKey<Registry<StructureFeature<?>>> STRUCTURE_FEATURE_KEY = Registry.createRegistryKey("worldgen/structure_feature");
-    public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = Registry.create(STRUCTURE_FEATURE_KEY, () -> StructureFeature.MINESHAFT);
+    public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = Registry.create(STRUCTURE_FEATURE_KEY, registry -> StructureFeature.MINESHAFT);
+    public static final RegistryKey<Registry<StructurePlacementType<?>>> STRUCTURE_PLACEMENT_KEY = Registry.createRegistryKey("worldgen/structure_placement");
+    public static final Registry<StructurePlacementType<?>> STRUCTURE_PLACEMENT = Registry.create(STRUCTURE_PLACEMENT_KEY, registry -> StructurePlacementType.RANDOM_SPREAD);
     public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE_KEY = Registry.createRegistryKey("worldgen/structure_piece");
-    public static final Registry<StructurePieceType> STRUCTURE_PIECE = Registry.create(STRUCTURE_PIECE_KEY, () -> StructurePieceType.MINESHAFT_ROOM);
+    public static final Registry<StructurePieceType> STRUCTURE_PIECE = Registry.create(STRUCTURE_PIECE_KEY, registry -> StructurePieceType.MINESHAFT_ROOM);
     public static final RegistryKey<Registry<PlacementModifierType<?>>> PLACEMENT_MODIFIER_TYPE_KEY = Registry.createRegistryKey("worldgen/placement_modifier_type");
-    public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = Registry.create(PLACEMENT_MODIFIER_TYPE_KEY, () -> PlacementModifierType.COUNT);
+    public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = Registry.create(PLACEMENT_MODIFIER_TYPE_KEY, registry -> PlacementModifierType.COUNT);
     public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE_KEY = Registry.createRegistryKey("worldgen/block_state_provider_type");
     public static final RegistryKey<Registry<FoliagePlacerType<?>>> FOLIAGE_PLACER_TYPE_KEY = Registry.createRegistryKey("worldgen/foliage_placer_type");
     public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE_KEY = Registry.createRegistryKey("worldgen/trunk_placer_type");
@@ -248,17 +259,17 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE_KEY = Registry.createRegistryKey("worldgen/material_rule");
     public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR_KEY = Registry.createRegistryKey("worldgen/structure_processor");
     public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT_KEY = Registry.createRegistryKey("worldgen/structure_pool_element");
-    public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = Registry.create(BLOCK_STATE_PROVIDER_TYPE_KEY, () -> BlockStateProviderType.SIMPLE_STATE_PROVIDER);
-    public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = Registry.create(FOLIAGE_PLACER_TYPE_KEY, () -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
-    public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = Registry.create(TRUNK_PLACER_TYPE_KEY, () -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
-    public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = Registry.create(TREE_DECORATOR_TYPE_KEY, () -> TreeDecoratorType.LEAVE_VINE);
-    public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = Registry.create(FEATURE_SIZE_TYPE_KEY, () -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
-    public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = Registry.create(BIOME_SOURCE_KEY, Lifecycle.stable(), () -> BiomeSource.CODEC);
-    public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = Registry.create(CHUNK_GENERATOR_KEY, Lifecycle.stable(), () -> ChunkGenerator.CODEC);
+    public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = Registry.create(BLOCK_STATE_PROVIDER_TYPE_KEY, registry -> BlockStateProviderType.SIMPLE_STATE_PROVIDER);
+    public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = Registry.create(FOLIAGE_PLACER_TYPE_KEY, registry -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
+    public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = Registry.create(TRUNK_PLACER_TYPE_KEY, registry -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
+    public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = Registry.create(TREE_DECORATOR_TYPE_KEY, registry -> TreeDecoratorType.LEAVE_VINE);
+    public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = Registry.create(FEATURE_SIZE_TYPE_KEY, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
+    public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = Registry.create(BIOME_SOURCE_KEY, Lifecycle.stable(), (Registry<T> registry) -> BiomeSource.CODEC);
+    public static final Registry<Codec<? extends ChunkGenerator>> CHUNK_GENERATOR = Registry.create(CHUNK_GENERATOR_KEY, Lifecycle.stable(), (Registry<T> registry) -> ChunkGenerator.CODEC);
     public static final Registry<Codec<? extends MaterialRules.MaterialCondition>> MATERIAL_CONDITION = Registry.create(MATERIAL_CONDITION_KEY, MaterialRules.MaterialCondition::registerAndGetDefault);
     public static final Registry<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = Registry.create(MATERIAL_RULE_KEY, MaterialRules.MaterialRule::registerAndGetDefault);
-    public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = Registry.create(STRUCTURE_PROCESSOR_KEY, () -> StructureProcessorType.BLOCK_IGNORE);
-    public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = Registry.create(STRUCTURE_POOL_ELEMENT_KEY, () -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
+    public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = Registry.create(STRUCTURE_PROCESSOR_KEY, registry -> StructureProcessorType.BLOCK_IGNORE);
+    public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = Registry.create(STRUCTURE_POOL_ELEMENT_KEY, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT);
     /**
      * The key representing the type of elements held by this registry. It is also the
      * key of this registry within the root registry.
@@ -270,45 +281,63 @@ IndexedIterable<T> {
         return RegistryKey.ofRegistry(new Identifier(registryId));
     }
 
-    public static <T extends MutableRegistry<?>> void validate(MutableRegistry<T> registry) {
-        registry.forEach(mutableRegistry2 -> {
-            if (mutableRegistry2.getIds().isEmpty()) {
-                Util.error("Registry '" + registry.getId((MutableRegistry)mutableRegistry2) + "' was empty after loading");
+    public static <T extends Registry<?>> void validate(Registry<T> registries) {
+        registries.forEach(registry -> {
+            if (registry.getIds().isEmpty()) {
+                Util.error("Registry '" + registries.getId((Registry)registry) + "' was empty after loading");
             }
-            if (mutableRegistry2 instanceof DefaultedRegistry) {
-                Identifier identifier = ((DefaultedRegistry)mutableRegistry2).getDefaultId();
-                Validate.notNull(mutableRegistry2.get(identifier), "Missing default of DefaultedMappedRegistry: " + identifier, new Object[0]);
+            if (registry instanceof DefaultedRegistry) {
+                Identifier identifier = ((DefaultedRegistry)registry).getDefaultId();
+                Validate.notNull(registry.get(identifier), "Missing default of DefaultedMappedRegistry: " + identifier, new Object[0]);
             }
         });
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Supplier<T> defaultEntry) {
-        return Registry.create(key, Lifecycle.experimental(), defaultEntry);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, Lifecycle.experimental(), defaultEntryGetter);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Supplier<T> defaultEntry) {
-        return Registry.create(key, defaultId, Lifecycle.experimental(), defaultEntry);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, defaultId, Lifecycle.experimental(), defaultEntryGetter);
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(key, new SimpleRegistry(key, lifecycle), defaultEntry, lifecycle);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, defaultId, Lifecycle.experimental(), valueToEntryFunction, defaultEntryGetter);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle), defaultEntry, lifecycle);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, new SimpleRegistry(key, lifecycle, null), defaultEntryGetter, lifecycle);
     }
 
-    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle) {
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, new SimpleRegistry<T>(key, lifecycle, valueToEntryFunction), defaultEntryGetter, lifecycle);
+    }
+
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle, null), defaultEntryGetter, lifecycle);
+    }
+
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Function<T, RegistryEntry.Reference<T>> valueToEntryFunction, DefaultEntryGetter<T> defaultEntryGetter) {
+        return Registry.create(key, new DefaultedRegistry<T>(defaultId, key, lifecycle, valueToEntryFunction), defaultEntryGetter, lifecycle);
+    }
+
+    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, DefaultEntryGetter<T> defaultEntryGetter, Lifecycle lifecycle) {
         Identifier identifier = key.getValue();
-        DEFAULT_ENTRIES.put(identifier, defaultEntry);
-        MutableRegistry<MutableRegistry<?>> mutableRegistry = ROOT;
-        return mutableRegistry.add(key, registry, lifecycle);
+        DEFAULT_ENTRIES.put(identifier, () -> defaultEntryGetter.run(registry));
+        ROOT.add(key, registry, lifecycle);
+        return registry;
     }
 
     protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
         Bootstrap.ensureBootstrapped(() -> "registry " + key);
         this.registryKey = key;
         this.lifecycle = lifecycle;
+    }
+
+    public static void freezeRegistries() {
+        for (Registry registry : REGISTRIES) {
+            registry.freeze();
+        }
     }
 
     public RegistryKey<? extends Registry<T>> getKey() {
@@ -324,13 +353,18 @@ IndexedIterable<T> {
     }
 
     public Codec<T> getCodec() {
-        Codec<Object> codec = Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(this.get((Identifier)identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry key in " + this.registryKey + ": " + identifier)), object -> this.getKey(object).map(RegistryKey::getValue).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry element in " + this.registryKey + ":" + object)));
-        Codec<Object> codec2 = Codecs.method_39511(object -> this.getKey(object).isPresent() ? this.getRawId(object) : -1, this::get, -1);
-        return Codecs.method_39504(Codecs.method_39512(codec, codec2), this::getEntryLifecycle, object -> this.lifecycle);
+        Codec<Object> codec = Identifier.CODEC.flatXmap(id -> Optional.ofNullable(this.get((Identifier)id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry key in " + this.registryKey + ": " + id)), value -> this.getKey(value).map(RegistryKey::getValue).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry element in " + this.registryKey + ":" + value)));
+        Codec<Object> codec2 = Codecs.rawIdChecked(value -> this.getKey(value).isPresent() ? this.getRawId(value) : -1, this::get, -1);
+        return Codecs.withLifecycle(Codecs.orCompressed(codec, codec2), this::getEntryLifecycle, value -> this.lifecycle);
     }
 
-    public <U> Stream<U> keys(DynamicOps<U> dynamicOps) {
-        return this.getIds().stream().map(identifier -> dynamicOps.createString(identifier.toString()));
+    public Codec<RegistryEntry<T>> createEntryCodec() {
+        Codec<RegistryEntry> codec = Identifier.CODEC.flatXmap(id -> this.getEntry(RegistryKey.of(this.registryKey, id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry key in " + this.registryKey + ": " + id)), entry -> entry.getKey().map(RegistryKey::getValue).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown registry element in " + this.registryKey + ":" + entry)));
+        return Codecs.withLifecycle(codec, entry -> this.getEntryLifecycle(entry.value()), entry -> this.lifecycle);
+    }
+
+    public <U> Stream<U> keys(DynamicOps<U> ops) {
+        return this.getIds().stream().map(id -> ops.createString(id.toString()));
     }
 
     @Nullable
@@ -379,8 +413,7 @@ IndexedIterable<T> {
 
     public abstract Set<Map.Entry<RegistryKey<T>, T>> getEntries();
 
-    @Nullable
-    public abstract T getRandom(Random var1);
+    public abstract Optional<RegistryEntry<T>> getRandom(Random var1);
 
     public Stream<T> stream() {
         return StreamSupport.stream(this.spliterator(), false);
@@ -399,11 +432,79 @@ IndexedIterable<T> {
     }
 
     public static <V, T extends V> T register(Registry<V> registry, RegistryKey<V> key, T entry) {
-        return ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
+        ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
+        return entry;
     }
 
     public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {
-        return ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.registryKey, new Identifier(id)), entry, Lifecycle.stable());
+        ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.registryKey, new Identifier(id)), entry, Lifecycle.stable());
+        return entry;
+    }
+
+    public abstract Registry<T> freeze();
+
+    public abstract RegistryEntry<T> getOrCreateEntry(RegistryKey<T> var1);
+
+    public abstract RegistryEntry.Reference<T> createEntry(T var1);
+
+    public abstract Optional<RegistryEntry<T>> getEntry(int var1);
+
+    public abstract Optional<RegistryEntry<T>> getEntry(RegistryKey<T> var1);
+
+    public RegistryEntry<T> entryOf(RegistryKey<T> key) {
+        return this.getEntry(key).orElseThrow(() -> new IllegalStateException("Missing key in " + this.registryKey + ": " + key));
+    }
+
+    public abstract Stream<RegistryEntry.Reference<T>> streamEntries();
+
+    public abstract Optional<RegistryEntryList.Named<T>> getEntryList(TagKey<T> var1);
+
+    public Iterable<RegistryEntry<T>> iterateEntries(TagKey<T> tag) {
+        return DataFixUtils.orElse(this.getEntryList(tag), List.of());
+    }
+
+    public abstract RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> var1);
+
+    public abstract Stream<Pair<TagKey<T>, RegistryEntryList.Named<T>>> streamTagsAndEntries();
+
+    public abstract Stream<TagKey<T>> streamTags();
+
+    public abstract boolean containsTag(TagKey<T> var1);
+
+    public abstract void clearTags();
+
+    public abstract void populateTags(Map<TagKey<T>, List<RegistryEntry<T>>> var1);
+
+    public IndexedIterable<RegistryEntry<T>> getIndexedEntries() {
+        return new IndexedIterable<RegistryEntry<T>>(){
+
+            @Override
+            public int getRawId(RegistryEntry<T> registryEntry) {
+                return Registry.this.getRawId(registryEntry.value());
+            }
+
+            @Override
+            @Nullable
+            public RegistryEntry<T> get(int i) {
+                return Registry.this.getEntry(i).orElse(null);
+            }
+
+            @Override
+            public int size() {
+                return Registry.this.size();
+            }
+
+            @Override
+            public Iterator<RegistryEntry<T>> iterator() {
+                return Registry.this.streamEntries().map(entry -> entry).iterator();
+            }
+
+            @Override
+            @Nullable
+            public /* synthetic */ Object get(int index) {
+                return this.get(index);
+            }
+        };
     }
 
     static {
@@ -414,6 +515,11 @@ IndexedIterable<T> {
             }
         });
         Registry.validate(ROOT);
+    }
+
+    @FunctionalInterface
+    static interface DefaultEntryGetter<T> {
+        public T run(Registry<T> var1);
     }
 }
 

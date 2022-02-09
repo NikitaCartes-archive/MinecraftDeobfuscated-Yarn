@@ -80,11 +80,11 @@ implements GameEventListener {
         if (this.event.isPresent()) {
             return false;
         }
-        if (!GameEventTags.VIBRATIONS.contains(event)) {
+        if (!event.isIn(GameEventTags.VIBRATIONS)) {
             return false;
         }
         if (entity != null) {
-            if (GameEventTags.IGNORE_VIBRATIONS_SNEAKING.contains(event) && entity.bypassesSteppingEffects()) {
+            if (event.isIn(GameEventTags.IGNORE_VIBRATIONS_SNEAKING) && entity.bypassesSteppingEffects()) {
                 return false;
             }
             if (entity.occludeVibrationSignals()) {

@@ -68,7 +68,7 @@ implements Spawner {
     private boolean spawn(ServerWorld world) {
         for (PlayerEntity playerEntity : world.getPlayers()) {
             BlockPos blockPos;
-            if (playerEntity.isSpectator() || !world.isNearOccupiedPointOfInterest(blockPos = playerEntity.getBlockPos()) || world.getBiome(blockPos).getCategory() == Biome.Category.MUSHROOM) continue;
+            if (playerEntity.isSpectator() || !world.isNearOccupiedPointOfInterest(blockPos = playerEntity.getBlockPos()) || Biome.getCategory(world.getBiome(blockPos)) == Biome.Category.MUSHROOM) continue;
             for (int i = 0; i < 10; ++i) {
                 float f = world.random.nextFloat() * ((float)Math.PI * 2);
                 this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0f);

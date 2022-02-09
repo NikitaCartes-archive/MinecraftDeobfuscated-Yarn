@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.io.IOUtils;
@@ -110,7 +109,7 @@ public class TagGroupLoader<T> {
         }
     }
 
-    public TagGroup<T> buildGroup(Map<Identifier, Tag.Builder> tags) {
+    public Map<Identifier, Tag<T>> buildGroup(Map<Identifier, Tag.Builder> tags) {
         HashMap map = Maps.newHashMap();
         Function<Identifier, Tag> function = map::get;
         Function<Identifier, Object> function2 = id -> this.registryGetter.apply((Identifier)id).orElse(null);
@@ -118,11 +117,11 @@ public class TagGroupLoader<T> {
         tags.forEach((identifier, builder) -> builder.forEachTagId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         tags.forEach((identifier, builder) -> builder.forEachGroupId(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         HashSet set = Sets.newHashSet();
-        tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load tag {} as it is missing following references: {}", identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, tag))));
-        return TagGroup.create(map);
+        tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load tag {} as it is missing following references: {}", identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, (Tag)tag))));
+        return map;
     }
 
-    public TagGroup<T> load(ResourceManager manager) {
+    public Map<Identifier, Tag<T>> load(ResourceManager manager) {
         return this.buildGroup(this.loadTags(manager));
     }
 }

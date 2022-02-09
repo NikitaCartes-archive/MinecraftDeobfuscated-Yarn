@@ -9,6 +9,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -30,13 +31,13 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
         return context -> context.isBiomeValid(heightmapType);
     }
 
-    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<Biome> validBiome, StructureManager structureManager, DynamicRegistryManager registryManager) {
+    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiome, StructureManager structureManager, DynamicRegistryManager registryManager) {
         public boolean isBiomeValid(Heightmap.Type heightmapType) {
             int i = this.chunkPos.getCenterX();
             int j = this.chunkPos.getCenterZ();
             int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world);
-            Biome biome = this.chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j));
-            return this.validBiome.test(biome);
+            RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j));
+            return this.validBiome.test(registryEntry);
         }
 
         public int[] getCornerHeights(int x, int width, int z, int height) {

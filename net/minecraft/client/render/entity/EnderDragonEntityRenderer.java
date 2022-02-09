@@ -286,9 +286,9 @@ extends EntityRenderer<EnderDragonEntity> {
                 this.neck.pivotY = i;
                 this.neck.pivotZ = j;
                 this.neck.pivotX = h;
-                i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
-                j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                i += MathHelper.sin(this.neck.pitch) * 10.0f;
+                j -= MathHelper.cos(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0f;
+                h -= MathHelper.sin(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0f;
                 this.neck.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             }
             this.head.pivotY = i;
@@ -317,7 +317,7 @@ extends EntityRenderer<EnderDragonEntity> {
             this.setLimbRotation(matrices, vertices, light, overlay, g, this.leftWing, this.leftFrontLeg, this.leftFrontLegTip, this.leftFrontFoot, this.leftHindLeg, this.leftHindLegTip, this.leftHindFoot, alpha);
             this.setLimbRotation(matrices, vertices, light, overlay, g, this.rightWing, this.rightFrontLeg, this.rightFrontLegTip, this.rightFrontFoot, this.rightHindLeg, this.rightHindLegTip, this.rightHindFoot, alpha);
             matrices.pop();
-            p = -((float)Math.sin(f * ((float)Math.PI * 2))) * 0.0f;
+            p = -MathHelper.sin(f * ((float)Math.PI * 2)) * 0.0f;
             n = f * ((float)Math.PI * 2);
             i = 10.0f;
             j = 60.0f;
@@ -325,16 +325,15 @@ extends EntityRenderer<EnderDragonEntity> {
             ds = this.dragon.getSegmentProperties(11, this.tickDelta);
             for (int r = 0; r < 12; ++r) {
                 fs = this.dragon.getSegmentProperties(12 + r, this.tickDelta);
-                p = (float)((double)p + Math.sin((float)r * 0.45f + n) * (double)0.05f);
                 this.neck.yaw = (MathHelper.fwrapDegrees(fs[0] - ds[0]) * 1.5f + 180.0f) * ((float)Math.PI / 180);
-                this.neck.pitch = p + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;
+                this.neck.pitch = (p += MathHelper.sin((float)r * 0.45f + n) * 0.05f) + (float)(fs[1] - ds[1]) * ((float)Math.PI / 180) * 1.5f * 5.0f;
                 this.neck.roll = MathHelper.fwrapDegrees(fs[0] - (double)m) * ((float)Math.PI / 180) * 1.5f;
                 this.neck.pivotY = i;
                 this.neck.pivotZ = j;
                 this.neck.pivotX = h;
-                i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
-                j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
+                i += MathHelper.sin(this.neck.pitch) * 10.0f;
+                j -= MathHelper.cos(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0f;
+                h -= MathHelper.sin(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0f;
                 this.neck.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             }
             matrices.pop();

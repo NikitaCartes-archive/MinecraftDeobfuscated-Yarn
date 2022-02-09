@@ -5,7 +5,6 @@ package net.minecraft.util.dynamic;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -13,9 +12,11 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.lang.invoke.CallSite;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -24,7 +25,9 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
 import net.minecraft.util.Util;
+import net.minecraft.util.registry.RegistryEntryList;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 /**
@@ -79,22 +82,22 @@ public class Codecs {
         });
     }
 
-    public static <A> Codec.ResultFunction<A> method_39028(final A object) {
+    public static <A> Codec.ResultFunction<A> orElsePartial(final A object) {
         return new Codec.ResultFunction<A>(){
 
             @Override
-            public <T> DataResult<Pair<A, T>> apply(DynamicOps<T> dynamicOps, T object2, DataResult<Pair<A, T>> dataResult) {
+            public <T> DataResult<Pair<A, T>> apply(DynamicOps<T> ops, T input, DataResult<Pair<A, T>> result) {
                 MutableObject mutableObject = new MutableObject();
-                Optional optional = dataResult.resultOrPartial(mutableObject::setValue);
+                Optional optional = result.resultOrPartial(mutableObject::setValue);
                 if (optional.isPresent()) {
-                    return dataResult;
+                    return result;
                 }
-                return DataResult.error("(" + (String)mutableObject.getValue() + " -> using default)", Pair.of(object, object2));
+                return DataResult.error("(" + (String)mutableObject.getValue() + " -> using default)", Pair.of(object, input));
             }
 
             @Override
-            public <T> DataResult<T> coApply(DynamicOps<T> dynamicOps, A object2, DataResult<T> dataResult) {
-                return dataResult;
+            public <T> DataResult<T> coApply(DynamicOps<T> ops, A input, DataResult<T> result) {
+                return result;
             }
 
             public String toString() {
@@ -103,10 +106,10 @@ public class Codecs {
         };
     }
 
-    public static <E> Codec<E> method_39511(ToIntFunction<E> toIntFunction, IntFunction<E> intFunction, int i) {
-        return Codec.INT.flatXmap(integer -> Optional.ofNullable(intFunction.apply((int)integer)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + integer)), object -> {
-            int j = toIntFunction.applyAsInt(object);
-            return j == i ? DataResult.error("Element with unknown id: " + object) : DataResult.success(j);
+    public static <E> Codec<E> rawIdChecked(ToIntFunction<E> elementToRawId, IntFunction<E> rawIdToElement, int errorRawId) {
+        return Codec.INT.flatXmap(rawId -> Optional.ofNullable(rawIdToElement.apply((int)rawId)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element id: " + rawId)), element -> {
+            int j = elementToRawId.applyAsInt(element);
+            return j == errorRawId ? DataResult.error("Element with unknown id: " + element) : DataResult.success(j);
         });
     }
 
@@ -114,42 +117,42 @@ public class Codecs {
         return Codec.STRING.flatXmap(string -> Optional.ofNullable(function2.apply((String)string)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name:" + string)), object -> Optional.ofNullable((String)function.apply(object)).map(DataResult::success).orElseGet(() -> DataResult.error("Element with unknown name: " + object)));
     }
 
-    public static <E> Codec<E> method_39512(final Codec<E> codec, final Codec<E> codec2) {
+    public static <E> Codec<E> orCompressed(final Codec<E> uncompressedCodec, final Codec<E> compressedCodec) {
         return new Codec<E>(){
 
             @Override
-            public <T> DataResult<T> encode(E object, DynamicOps<T> dynamicOps, T object2) {
-                if (dynamicOps.compressMaps()) {
-                    return codec2.encode(object, dynamicOps, object2);
+            public <T> DataResult<T> encode(E input, DynamicOps<T> ops, T prefix) {
+                if (ops.compressMaps()) {
+                    return compressedCodec.encode(input, ops, prefix);
                 }
-                return codec.encode(object, dynamicOps, object2);
+                return uncompressedCodec.encode(input, ops, prefix);
             }
 
             @Override
-            public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> dynamicOps, T object) {
-                if (dynamicOps.compressMaps()) {
-                    return codec2.decode(dynamicOps, object);
+            public <T> DataResult<Pair<E, T>> decode(DynamicOps<T> ops, T input) {
+                if (ops.compressMaps()) {
+                    return compressedCodec.decode(ops, input);
                 }
-                return codec.decode(dynamicOps, object);
+                return uncompressedCodec.decode(ops, input);
             }
 
             public String toString() {
-                return codec + " orCompressed " + codec2;
+                return uncompressedCodec + " orCompressed " + compressedCodec;
             }
         };
     }
 
-    public static <E> Codec<E> method_39504(Codec<E> codec, final Function<E, Lifecycle> function, final Function<E, Lifecycle> function2) {
-        return codec.mapResult(new Codec.ResultFunction<E>(){
+    public static <E> Codec<E> withLifecycle(Codec<E> originalCodec, final Function<E, Lifecycle> function, final Function<E, Lifecycle> function2) {
+        return originalCodec.mapResult(new Codec.ResultFunction<E>(){
 
             @Override
-            public <T> DataResult<Pair<E, T>> apply(DynamicOps<T> dynamicOps, T object, DataResult<Pair<E, T>> dataResult) {
-                return dataResult.result().map(pair -> dataResult.setLifecycle((Lifecycle)function.apply(pair.getFirst()))).orElse(dataResult);
+            public <T> DataResult<Pair<E, T>> apply(DynamicOps<T> ops, T input, DataResult<Pair<E, T>> result) {
+                return result.result().map(pair -> result.setLifecycle((Lifecycle)function.apply(pair.getFirst()))).orElse(result);
             }
 
             @Override
-            public <T> DataResult<T> coApply(DynamicOps<T> dynamicOps, E object, DataResult<T> dataResult) {
-                return dataResult.setLifecycle((Lifecycle)function2.apply(object));
+            public <T> DataResult<T> coApply(DynamicOps<T> ops, E input, DataResult<T> result) {
+                return result.setLifecycle((Lifecycle)function2.apply(input));
             }
 
             public String toString() {
@@ -199,41 +202,68 @@ public class Codecs {
         return originalCodec.flatXmap(Codecs.createNonEmptyListChecker(), Codecs.createNonEmptyListChecker());
     }
 
-    public static <T> Function<List<Supplier<T>>, DataResult<List<Supplier<T>>>> createPresentValuesChecker() {
-        return suppliers -> {
-            ArrayList<CallSite> list = Lists.newArrayList();
-            for (int i = 0; i < suppliers.size(); ++i) {
-                Supplier supplier = (Supplier)suppliers.get(i);
-                try {
-                    if (supplier.get() != null) continue;
-                    list.add((CallSite)((Object)("Missing value [" + i + "] : " + supplier)));
-                    continue;
-                } catch (Exception exception) {
-                    list.add((CallSite)((Object)("Invalid value [" + i + "]: " + supplier + ", message: " + exception.getMessage())));
-                }
+    public static <T> Function<RegistryEntryList<T>, DataResult<RegistryEntryList<T>>> createNonEmptyEntryListChecker() {
+        return entries -> {
+            if (entries.getStorage().right().filter(List::isEmpty).isPresent()) {
+                return DataResult.error("List must have contents");
             }
-            if (!list.isEmpty()) {
-                return DataResult.error(String.join((CharSequence)"; ", list));
-            }
-            return DataResult.success(suppliers, Lifecycle.stable());
+            return DataResult.success(entries);
         };
     }
 
-    public static <T> Function<Supplier<T>, DataResult<Supplier<T>>> createPresentValueChecker() {
-        return supplier -> {
-            try {
-                if (supplier.get() == null) {
-                    return DataResult.error("Missing value: " + supplier);
-                }
-            } catch (Exception exception) {
-                return DataResult.error("Invalid value: " + supplier + ", message: " + exception.getMessage());
-            }
-            return DataResult.success(supplier, Lifecycle.stable());
-        };
+    public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
+        return originalCodec.flatXmap(Codecs.createNonEmptyEntryListChecker(), Codecs.createNonEmptyEntryListChecker());
     }
 
     public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
         return new Lazy<A>(supplier);
+    }
+
+    public static <E> MapCodec<E> createContextRetrievalCodec(Function<DynamicOps<?>, DataResult<E>> retriever) {
+        class ContextRetrievalCodec
+        extends MapCodec<E> {
+            final /* synthetic */ Function field_36397;
+
+            ContextRetrievalCodec(Function retriever) {
+                this.field_36397 = retriever;
+            }
+
+            @Override
+            public <T> RecordBuilder<T> encode(E input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+                return prefix;
+            }
+
+            @Override
+            public <T> DataResult<E> decode(DynamicOps<T> ops, MapLike<T> input) {
+                return (DataResult)this.field_36397.apply(ops);
+            }
+
+            public String toString() {
+                return "ContextRetrievalCodec[" + this.field_36397 + "]";
+            }
+
+            @Override
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                return Stream.empty();
+            }
+        }
+        return new ContextRetrievalCodec(retriever);
+    }
+
+    public static <E, L extends Collection<E>, T> Function<L, DataResult<L>> createEqualTypeChecker(Function<E, T> typeGetter) {
+        return collection -> {
+            Iterator iterator = collection.iterator();
+            if (iterator.hasNext()) {
+                Object object = typeGetter.apply(iterator.next());
+                while (iterator.hasNext()) {
+                    Object object2 = iterator.next();
+                    Object object3 = typeGetter.apply(object2);
+                    if (object3 == object) continue;
+                    return DataResult.error("Mixed type list: element " + object2 + " had type " + object3 + ", but list is of type " + object);
+                }
+            }
+            return DataResult.success(collection, Lifecycle.stable());
+        };
     }
 
     static final class Xor<F, S>

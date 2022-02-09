@@ -38,7 +38,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -46,6 +46,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -200,13 +202,13 @@ RecipeInputProvider {
      * net.minecraft.tag.ItemTags#NON_FLAMMABLE_WOOD non_flammable_wood} tag}
      */
     private static boolean isNonFlammableWood(Item item) {
-        return ItemTags.NON_FLAMMABLE_WOOD.contains(item);
+        return item.getRegistryEntry().isIn(ItemTags.NON_FLAMMABLE_WOOD);
     }
 
-    private static void addFuel(Map<Item, Integer> fuelTimes, Tag<Item> tag, int fuelTime) {
-        for (Item item : tag.values()) {
-            if (AbstractFurnaceBlockEntity.isNonFlammableWood(item)) continue;
-            fuelTimes.put(item, fuelTime);
+    private static void addFuel(Map<Item, Integer> fuelTimes, TagKey<Item> tag, int fuelTime) {
+        for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(tag)) {
+            if (AbstractFurnaceBlockEntity.isNonFlammableWood(registryEntry.value())) continue;
+            fuelTimes.put(registryEntry.value(), fuelTime);
         }
     }
 

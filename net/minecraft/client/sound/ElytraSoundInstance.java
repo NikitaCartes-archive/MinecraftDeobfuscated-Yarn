@@ -41,7 +41,7 @@ extends MovingSoundInstance {
         if (this.tickCount < 20) {
             this.volume = 0.0f;
         } else if (this.tickCount < 40) {
-            this.volume = (float)((double)this.volume * ((double)(this.tickCount - 20) / 20.0));
+            this.volume *= (float)(this.tickCount - 20) / 20.0f;
         }
         float g = 0.8f;
         this.pitch = this.volume > 0.8f ? 1.0f + (this.volume - 0.8f) : 1.0f;

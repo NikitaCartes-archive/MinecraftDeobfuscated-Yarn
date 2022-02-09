@@ -147,6 +147,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -962,7 +963,18 @@ ServerPlayPacketListener {
         Hand hand = packet.getHand();
         ItemStack itemStack = this.player.getStackInHand(hand);
         BlockHitResult blockHitResult = packet.getBlockHitResult();
+        Vec3d vec3d = blockHitResult.getPos();
         BlockPos blockPos = blockHitResult.getBlockPos();
+        Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
+        if (this.player.world.getServer() == null || this.player.getChunkPos().getChebyshevDistance(new ChunkPos(blockPos)) >= this.player.world.getServer().getPlayerManager().getViewDistance()) {
+            LOGGER.warn("Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.player.getGameProfile().getName(), blockPos, this.player.getBlockPos());
+            return;
+        }
+        double d = 1.0000001;
+        if (!(Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001)) {
+            LOGGER.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
+            return;
+        }
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
         int i = this.player.world.getTopY();
