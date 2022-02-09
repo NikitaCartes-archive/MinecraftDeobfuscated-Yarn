@@ -299,7 +299,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			for(final Either<Chunk, ChunkHolder.Unloaded> either : listx) {
 				if (either == null) {
-					this.crash(new IllegalStateException("At least one of the chunk futures were null"));
+					throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
 				}
 
 				Optional<Chunk> optional = either.left();
@@ -326,7 +326,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return completableFuture3;
 	}
 
-	public void crash(IllegalStateException exception) {
+	public CrashException crash(IllegalStateException exception, String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Consumer<ChunkHolder> consumer = chunkHolder -> chunkHolder.collectFuturesByStatus()
 				.forEach(
@@ -349,8 +349,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkHolders.values().forEach(consumer);
 		CrashReport crashReport = CrashReport.create(exception, "Chunk loading");
 		CrashReportSection crashReportSection = crashReport.addElement("Chunk loading");
+		crashReportSection.add("Details", string);
 		crashReportSection.add("Futures", stringBuilder);
-		throw new CrashException(crashReport);
+		return new CrashException(crashReport);
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {

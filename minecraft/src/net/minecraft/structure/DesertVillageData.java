@@ -7,10 +7,11 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.VillagePlacedFeatures;
 
 public class DesertVillageData {
-	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
+	public static final RegistryEntry<StructurePool> STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("village/desert/town_centers"),
 			new Identifier("empty"),

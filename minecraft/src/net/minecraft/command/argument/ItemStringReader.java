@@ -13,7 +13,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -25,7 +25,7 @@ public class ItemStringReader {
 	);
 	private static final char LEFT_CURLY_BRACKET = '{';
 	private static final char HASH_SIGN = '#';
-	private static final BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (builder, group) -> builder.buildFuture(
+	private static final BiFunction<SuggestionsBuilder, Registry<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (builder, registry) -> builder.buildFuture(
 			
 		);
 	private final StringReader reader;
@@ -33,9 +33,10 @@ public class ItemStringReader {
 	private Item item;
 	@Nullable
 	private NbtCompound nbt;
-	private Identifier id = new Identifier("");
+	@Nullable
+	private TagKey<Item> id;
 	private int cursor;
-	private BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
+	private BiFunction<SuggestionsBuilder, Registry<Item>, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
 
 	public ItemStringReader(StringReader reader, boolean allowTag) {
 		this.reader = reader;
@@ -51,7 +52,7 @@ public class ItemStringReader {
 		return this.nbt;
 	}
 
-	public Identifier getId() {
+	public TagKey<Item> getId() {
 		return this.id;
 	}
 
@@ -71,7 +72,7 @@ public class ItemStringReader {
 			this.suggestions = this::suggestTag;
 			this.reader.expect('#');
 			this.cursor = this.reader.getCursor();
-			this.id = Identifier.fromCommandInput(this.reader);
+			this.id = TagKey.intern(Registry.ITEM_KEY, Identifier.fromCommandInput(this.reader));
 		}
 	}
 
@@ -96,7 +97,7 @@ public class ItemStringReader {
 		return this;
 	}
 
-	private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder builder, TagGroup<Item> group) {
+	private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder builder, Registry<Item> registry) {
 		if (builder.getRemaining().isEmpty()) {
 			builder.suggest(String.valueOf('{'));
 		}
@@ -104,19 +105,19 @@ public class ItemStringReader {
 		return builder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder builder, TagGroup<Item> group) {
-		return CommandSource.suggestIdentifiers(group.getTagIds(), builder.createOffset(this.cursor));
+	private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder builder, Registry<Item> registry) {
+		return CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder.createOffset(this.cursor));
 	}
 
-	private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder builder, TagGroup<Item> group) {
+	private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder builder, Registry<Item> registry) {
 		if (this.allowTag) {
-			CommandSource.suggestIdentifiers(group.getTagIds(), builder, String.valueOf('#'));
+			CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, String.valueOf('#'));
 		}
 
 		return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), builder);
 	}
 
-	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, TagGroup<Item> group) {
-		return (CompletableFuture<Suggestions>)this.suggestions.apply(builder.createOffset(this.reader.getCursor()), group);
+	public CompletableFuture<Suggestions> getSuggestions(SuggestionsBuilder builder, Registry<Item> registry) {
+		return (CompletableFuture<Suggestions>)this.suggestions.apply(builder.createOffset(this.reader.getCursor()), registry);
 	}
 }

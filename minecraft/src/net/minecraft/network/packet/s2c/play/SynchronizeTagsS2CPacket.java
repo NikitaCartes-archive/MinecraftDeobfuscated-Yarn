@@ -4,19 +4,19 @@ import java.util.Map;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.tag.TagGroup;
+import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
 public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups;
+	private final Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> groups;
 
-	public SynchronizeTagsS2CPacket(Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups) {
+	public SynchronizeTagsS2CPacket(Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> groups) {
 		this.groups = groups;
 	}
 
 	public SynchronizeTagsS2CPacket(PacketByteBuf buf) {
-		this.groups = buf.readMap(bufx -> RegistryKey.ofRegistry(bufx.readIdentifier()), TagGroup.Serialized::fromBuf);
+		this.groups = buf.readMap(bufx -> RegistryKey.ofRegistry(bufx.readIdentifier()), TagPacketSerializer.Serialized::fromBuf);
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener
 		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 
-	public Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> getGroups() {
+	public Map<RegistryKey<? extends Registry<?>>, TagPacketSerializer.Serialized> getGroups() {
 		return this.groups;
 	}
 }

@@ -42,7 +42,7 @@ public class PlaceFeatureCommand {
 
 	public static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<ConfiguredFeature<?, ?>> configuredFeatureEntry, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		ConfiguredFeature<?, ?> configuredFeature = configuredFeatureEntry.resource();
+		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature)configuredFeatureEntry.resource();
 		if (!configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), serverWorld.getRandom(), pos)) {
 			throw FAILED_EXCEPTION.create();
 		} else {

@@ -9,20 +9,20 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.SharedConstants;
-import net.minecraft.data.client.BlockStateDefinitionProvider;
+import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
 import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
-import net.minecraft.data.report.WorldgenListProvider;
-import net.minecraft.data.server.AdvancementsProvider;
-import net.minecraft.data.server.BlockTagsProvider;
-import net.minecraft.data.server.EntityTypeTagsProvider;
-import net.minecraft.data.server.FluidTagsProvider;
-import net.minecraft.data.server.GameEventTagsProvider;
-import net.minecraft.data.server.ItemTagsProvider;
-import net.minecraft.data.server.LootTablesProvider;
-import net.minecraft.data.server.RecipesProvider;
+import net.minecraft.data.report.WorldgenProvider;
+import net.minecraft.data.server.AdvancementProvider;
+import net.minecraft.data.server.BlockTagProvider;
+import net.minecraft.data.server.EntityTypeTagProvider;
+import net.minecraft.data.server.FluidTagProvider;
+import net.minecraft.data.server.GameEventTagProvider;
+import net.minecraft.data.server.ItemTagProvider;
+import net.minecraft.data.server.LootTableProvider;
+import net.minecraft.data.server.RecipeProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.obfuscate.DontObfuscate;
 
@@ -67,19 +67,19 @@ public class Main {
 		}
 
 		if (includeClient) {
-			dataGenerator.addProvider(new BlockStateDefinitionProvider(dataGenerator));
+			dataGenerator.addProvider(new ModelProvider(dataGenerator));
 		}
 
 		if (includeServer) {
-			dataGenerator.addProvider(new FluidTagsProvider(dataGenerator));
-			BlockTagsProvider blockTagsProvider = new BlockTagsProvider(dataGenerator);
-			dataGenerator.addProvider(blockTagsProvider);
-			dataGenerator.addProvider(new ItemTagsProvider(dataGenerator, blockTagsProvider));
-			dataGenerator.addProvider(new EntityTypeTagsProvider(dataGenerator));
-			dataGenerator.addProvider(new RecipesProvider(dataGenerator));
-			dataGenerator.addProvider(new AdvancementsProvider(dataGenerator));
-			dataGenerator.addProvider(new LootTablesProvider(dataGenerator));
-			dataGenerator.addProvider(new GameEventTagsProvider(dataGenerator));
+			dataGenerator.addProvider(new FluidTagProvider(dataGenerator));
+			BlockTagProvider blockTagProvider = new BlockTagProvider(dataGenerator);
+			dataGenerator.addProvider(blockTagProvider);
+			dataGenerator.addProvider(new ItemTagProvider(dataGenerator, blockTagProvider));
+			dataGenerator.addProvider(new EntityTypeTagProvider(dataGenerator));
+			dataGenerator.addProvider(new RecipeProvider(dataGenerator));
+			dataGenerator.addProvider(new AdvancementProvider(dataGenerator));
+			dataGenerator.addProvider(new LootTableProvider(dataGenerator));
+			dataGenerator.addProvider(new GameEventTagProvider(dataGenerator));
 		}
 
 		if (includeDev) {
@@ -90,7 +90,7 @@ public class Main {
 			dataGenerator.addProvider(new BlockListProvider(dataGenerator));
 			dataGenerator.addProvider(new RegistryDumpProvider(dataGenerator));
 			dataGenerator.addProvider(new CommandSyntaxProvider(dataGenerator));
-			dataGenerator.addProvider(new WorldgenListProvider(dataGenerator));
+			dataGenerator.addProvider(new WorldgenProvider(dataGenerator));
 		}
 
 		return dataGenerator;

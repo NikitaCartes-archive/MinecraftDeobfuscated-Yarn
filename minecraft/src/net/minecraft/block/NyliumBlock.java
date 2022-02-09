@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.NetherConfiguredFeatures;
 
 public class NyliumBlock extends Block implements Fertilizable {
@@ -46,12 +47,12 @@ public class NyliumBlock extends Block implements Fertilizable {
 		BlockPos blockPos = pos.up();
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		if (blockState.isOf(Blocks.CRIMSON_NYLIUM)) {
-			NetherConfiguredFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL.generate(world, chunkGenerator, random, blockPos);
+			((ConfiguredFeature)NetherConfiguredFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL.value()).generate(world, chunkGenerator, random, blockPos);
 		} else if (blockState.isOf(Blocks.WARPED_NYLIUM)) {
-			NetherConfiguredFeatures.WARPED_FOREST_VEGETATION_BONEMEAL.generate(world, chunkGenerator, random, blockPos);
-			NetherConfiguredFeatures.NETHER_SPROUTS_BONEMEAL.generate(world, chunkGenerator, random, blockPos);
+			((ConfiguredFeature)NetherConfiguredFeatures.WARPED_FOREST_VEGETATION_BONEMEAL.value()).generate(world, chunkGenerator, random, blockPos);
+			((ConfiguredFeature)NetherConfiguredFeatures.NETHER_SPROUTS_BONEMEAL.value()).generate(world, chunkGenerator, random, blockPos);
 			if (random.nextInt(8) == 0) {
-				NetherConfiguredFeatures.TWISTING_VINES_BONEMEAL.generate(world, chunkGenerator, random, blockPos);
+				((ConfiguredFeature)NetherConfiguredFeatures.TWISTING_VINES_BONEMEAL.value()).generate(world, chunkGenerator, random, blockPos);
 			}
 		}
 	}

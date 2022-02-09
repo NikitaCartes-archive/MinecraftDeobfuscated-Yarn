@@ -6,6 +6,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
@@ -23,7 +24,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		CarverContext carverContext,
 		RavineCarverConfig ravineCarverConfig,
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
+		Function<BlockPos, RegistryEntry<Biome>> function,
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos chunkPos,
@@ -47,7 +48,7 @@ public class RavineCarver extends Carver<RavineCarverConfig> {
 		CarverContext context,
 		RavineCarverConfig config,
 		Chunk chunk,
-		Function<BlockPos, Biome> posToBiome,
+		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		long seed,
 		AquiferSampler aquiferSampler,
 		double x,

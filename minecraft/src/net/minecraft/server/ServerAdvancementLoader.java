@@ -33,12 +33,12 @@ public class ServerAdvancementLoader extends JsonDataLoader {
 	}
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
-		Map<Identifier, Advancement.Task> map2 = Maps.<Identifier, Advancement.Task>newHashMap();
+		Map<Identifier, Advancement.Builder> map2 = Maps.<Identifier, Advancement.Builder>newHashMap();
 		map.forEach((id, json) -> {
 			try {
 				JsonObject jsonObject = JsonHelper.asObject(json, "advancement");
-				Advancement.Task task = Advancement.Task.fromJson(jsonObject, new AdvancementEntityPredicateDeserializer(id, this.conditionManager));
-				map2.put(id, task);
+				Advancement.Builder builder = Advancement.Builder.fromJson(jsonObject, new AdvancementEntityPredicateDeserializer(id, this.conditionManager));
+				map2.put(id, builder);
 			} catch (Exception var6) {
 				LOGGER.error("Parsing error loading custom advancement {}: {}", id, var6.getMessage());
 			}

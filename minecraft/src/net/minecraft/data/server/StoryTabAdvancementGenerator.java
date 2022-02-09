@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
-		Advancement advancement = Advancement.Task.create()
+		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,
 				new TranslatableText("advancements.story.root.title"),
@@ -37,7 +37,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.CRAFTING_TABLE))
 			.build(consumer, "story/root");
-		Advancement advancement2 = Advancement.Task.create()
+		Advancement advancement2 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.WOODEN_PICKAXE,
@@ -51,7 +51,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.STONE_TOOL_MATERIALS).build()))
 			.build(consumer, "story/mine_stone");
-		Advancement advancement3 = Advancement.Task.create()
+		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Items.STONE_PICKAXE,
@@ -65,7 +65,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.STONE_PICKAXE))
 			.build(consumer, "story/upgrade_tools");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Builder.create()
 			.parent(advancement3)
 			.display(
 				Items.IRON_INGOT,
@@ -79,7 +79,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("iron", InventoryChangedCriterion.Conditions.items(Items.IRON_INGOT))
 			.build(consumer, "story/smelt_iron");
-		Advancement advancement5 = Advancement.Task.create()
+		Advancement advancement5 = Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.IRON_PICKAXE,
@@ -93,7 +93,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.items(Items.IRON_PICKAXE))
 			.build(consumer, "story/iron_tools");
-		Advancement advancement6 = Advancement.Task.create()
+		Advancement advancement6 = Advancement.Builder.create()
 			.parent(advancement5)
 			.display(
 				Items.DIAMOND,
@@ -107,7 +107,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("diamond", InventoryChangedCriterion.Conditions.items(Items.DIAMOND))
 			.build(consumer, "story/mine_diamond");
-		Advancement advancement7 = Advancement.Task.create()
+		Advancement advancement7 = Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.LAVA_BUCKET,
@@ -121,7 +121,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.items(Items.LAVA_BUCKET))
 			.build(consumer, "story/lava_bucket");
-		Advancement advancement8 = Advancement.Task.create()
+		Advancement advancement8 = Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.IRON_CHESTPLATE,
@@ -139,7 +139,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.IRON_LEGGINGS))
 			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.IRON_BOOTS))
 			.build(consumer, "story/obtain_armor");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement6)
 			.display(
 				Items.ENCHANTED_BOOK,
@@ -153,7 +153,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("enchanted_item", EnchantedItemCriterion.Conditions.any())
 			.build(consumer, "story/enchant_item");
-		Advancement advancement9 = Advancement.Task.create()
+		Advancement advancement9 = Advancement.Builder.create()
 			.parent(advancement7)
 			.display(
 				Blocks.OBSIDIAN,
@@ -167,7 +167,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.OBSIDIAN))
 			.build(consumer, "story/form_obsidian");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement8)
 			.display(
 				Items.SHIELD,
@@ -184,7 +184,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				EntityHurtPlayerCriterion.Conditions.create(DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true))
 			)
 			.build(consumer, "story/deflect_arrow");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement6)
 			.display(
 				Items.DIAMOND_CHESTPLATE,
@@ -202,7 +202,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_LEGGINGS))
 			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_BOOTS))
 			.build(consumer, "story/shiny_gear");
-		Advancement advancement10 = Advancement.Task.create()
+		Advancement advancement10 = Advancement.Builder.create()
 			.parent(advancement9)
 			.display(
 				Items.FLINT_AND_STEEL,
@@ -216,7 +216,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(consumer, "story/enter_the_nether");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement10)
 			.display(
 				Items.GOLDEN_APPLE,
@@ -230,7 +230,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
 			.build(consumer, "story/cure_zombie_villager");
-		Advancement advancement11 = Advancement.Task.create()
+		Advancement advancement11 = Advancement.Builder.create()
 			.parent(advancement10)
 			.display(
 				Items.ENDER_EYE,
@@ -244,7 +244,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			)
 			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement11)
 			.display(
 				Blocks.END_STONE,

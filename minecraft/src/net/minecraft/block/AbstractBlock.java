@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -37,7 +38,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -50,6 +51,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -860,12 +862,20 @@ public abstract class AbstractBlock {
 			return this.getBlock().createScreenHandlerFactory(this.asBlockState(), world, pos);
 		}
 
-		public boolean isIn(Tag<Block> tag) {
-			return tag.contains(this.getBlock());
+		public boolean isIn(TagKey<Block> tag) {
+			return this.getBlock().getRegistryEntry().isIn(tag);
 		}
 
-		public boolean isIn(Tag<Block> tag, Predicate<AbstractBlock.AbstractBlockState> predicate) {
+		public boolean isIn(TagKey<Block> tag, Predicate<AbstractBlock.AbstractBlockState> predicate) {
 			return this.isIn(tag) && predicate.test(this);
+		}
+
+		public boolean isIn(RegistryEntryList<Block> blocks) {
+			return blocks.contains(this.getBlock().getRegistryEntry());
+		}
+
+		public Stream<TagKey<Block>> streamTags() {
+			return this.getBlock().getRegistryEntry().streamTags();
 		}
 
 		public boolean hasBlockEntity() {

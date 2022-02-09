@@ -1,6 +1,8 @@
 package net.minecraft.world.event;
 
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class GameEvent {
 	public static final GameEvent BLOCK_ATTACH = register("block_attach");
@@ -51,6 +53,7 @@ public class GameEvent {
 	public static final int DEFAULT_RANGE = 16;
 	private final String id;
 	private final int range;
+	private final RegistryEntry.Reference<GameEvent> registryEntry = Registry.GAME_EVENT.createEntry(this);
 
 	public GameEvent(String id, int range) {
 		this.id = id;
@@ -75,5 +78,14 @@ public class GameEvent {
 
 	public String toString() {
 		return "Game Event{ " + this.id + " , " + this.range + "}";
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<GameEvent> getRegistryEntry() {
+		return this.registryEntry;
+	}
+
+	public boolean isIn(TagKey<GameEvent> tag) {
+		return this.registryEntry.isIn(tag);
 	}
 }

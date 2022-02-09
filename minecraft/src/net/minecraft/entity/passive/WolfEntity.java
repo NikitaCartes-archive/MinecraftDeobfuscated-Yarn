@@ -91,6 +91,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		super(entityType, world);
 		this.setTamed(false);
 		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
 	}
 
 	@Override

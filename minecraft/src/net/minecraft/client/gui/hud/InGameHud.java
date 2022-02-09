@@ -1035,7 +1035,7 @@ public class InGameHud extends DrawableHelper {
 	private void updateVignetteDarkness(Entity entity) {
 		if (entity != null) {
 			float f = MathHelper.clamp(1.0F - entity.getBrightnessAtEyes(), 0.0F, 1.0F);
-			this.vignetteDarkness = (float)((double)this.vignetteDarkness + (double)(f - this.vignetteDarkness) * 0.01);
+			this.vignetteDarkness += (f - this.vignetteDarkness) * 0.01F;
 		}
 	}
 
@@ -1332,7 +1332,7 @@ public class InGameHud extends DrawableHelper {
 				heartType = POISIONED;
 			} else if (player.hasStatusEffect(StatusEffects.WITHER)) {
 				heartType = WITHERED;
-			} else if (player.isFreezing()) {
+			} else if (player.isFrozen()) {
 				heartType = FROZEN;
 			} else {
 				heartType = NORMAL;

@@ -69,8 +69,8 @@ public class Advancement {
 		}
 	}
 
-	public Advancement.Task createTask() {
-		return new Advancement.Task(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
+	public Advancement.Builder createTask() {
+		return new Advancement.Builder(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
 	}
 
 	@Nullable
@@ -146,7 +146,7 @@ public class Advancement {
 		return this.text;
 	}
 
-	public static class Task {
+	public static class Builder {
 		@Nullable
 		private Identifier parentId;
 		@Nullable
@@ -159,7 +159,7 @@ public class Advancement {
 		private String[][] requirements;
 		private CriterionMerger merger = CriterionMerger.AND;
 
-		Task(
+		Builder(
 			@Nullable Identifier parentId,
 			@Nullable AdvancementDisplay display,
 			AdvancementRewards rewards,
@@ -173,24 +173,24 @@ public class Advancement {
 			this.requirements = requirements;
 		}
 
-		private Task() {
+		private Builder() {
 		}
 
-		public static Advancement.Task create() {
-			return new Advancement.Task();
+		public static Advancement.Builder create() {
+			return new Advancement.Builder();
 		}
 
-		public Advancement.Task parent(Advancement parent) {
+		public Advancement.Builder parent(Advancement parent) {
 			this.parentObj = parent;
 			return this;
 		}
 
-		public Advancement.Task parent(Identifier parentId) {
+		public Advancement.Builder parent(Identifier parentId) {
 			this.parentId = parentId;
 			return this;
 		}
 
-		public Advancement.Task display(
+		public Advancement.Builder display(
 			ItemStack icon,
 			Text title,
 			Text description,
@@ -203,7 +203,7 @@ public class Advancement {
 			return this.display(new AdvancementDisplay(icon, title, description, background, frame, showToast, announceToChat, hidden));
 		}
 
-		public Advancement.Task display(
+		public Advancement.Builder display(
 			ItemConvertible icon,
 			Text title,
 			Text description,
@@ -216,25 +216,25 @@ public class Advancement {
 			return this.display(new AdvancementDisplay(new ItemStack(icon.asItem()), title, description, background, frame, showToast, announceToChat, hidden));
 		}
 
-		public Advancement.Task display(AdvancementDisplay display) {
+		public Advancement.Builder display(AdvancementDisplay display) {
 			this.display = display;
 			return this;
 		}
 
-		public Advancement.Task rewards(AdvancementRewards.Builder builder) {
+		public Advancement.Builder rewards(AdvancementRewards.Builder builder) {
 			return this.rewards(builder.build());
 		}
 
-		public Advancement.Task rewards(AdvancementRewards rewards) {
+		public Advancement.Builder rewards(AdvancementRewards rewards) {
 			this.rewards = rewards;
 			return this;
 		}
 
-		public Advancement.Task criterion(String name, CriterionConditions conditions) {
+		public Advancement.Builder criterion(String name, CriterionConditions conditions) {
 			return this.criterion(name, new AdvancementCriterion(conditions));
 		}
 
-		public Advancement.Task criterion(String name, AdvancementCriterion criterion) {
+		public Advancement.Builder criterion(String name, AdvancementCriterion criterion) {
 			if (this.criteria.containsKey(name)) {
 				throw new IllegalArgumentException("Duplicate criterion " + name);
 			} else {
@@ -243,12 +243,12 @@ public class Advancement {
 			}
 		}
 
-		public Advancement.Task criteriaMerger(CriterionMerger merger) {
+		public Advancement.Builder criteriaMerger(CriterionMerger merger) {
 			this.merger = merger;
 			return this;
 		}
 
-		public Advancement.Task requirements(String[][] requirements) {
+		public Advancement.Builder requirements(String[][] requirements) {
 			this.requirements = requirements;
 			return this;
 		}
@@ -368,7 +368,7 @@ public class Advancement {
 				+ "}";
 		}
 
-		public static Advancement.Task fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
+		public static Advancement.Builder fromJson(JsonObject obj, AdvancementEntityPredicateDeserializer predicateDeserializer) {
 			Identifier identifier = obj.has("parent") ? new Identifier(JsonHelper.getString(obj, "parent")) : null;
 			AdvancementDisplay advancementDisplay = obj.has("display") ? AdvancementDisplay.fromJson(JsonHelper.getObject(obj, "display")) : null;
 			AdvancementRewards advancementRewards = obj.has("rewards") ? AdvancementRewards.fromJson(JsonHelper.getObject(obj, "rewards")) : AdvancementRewards.NONE;
@@ -426,11 +426,11 @@ public class Advancement {
 					}
 				}
 
-				return new Advancement.Task(identifier, advancementDisplay, advancementRewards, map, strings);
+				return new Advancement.Builder(identifier, advancementDisplay, advancementRewards, map, strings);
 			}
 		}
 
-		public static Advancement.Task fromPacket(PacketByteBuf buf) {
+		public static Advancement.Builder fromPacket(PacketByteBuf buf) {
 			Identifier identifier = buf.readBoolean() ? buf.readIdentifier() : null;
 			AdvancementDisplay advancementDisplay = buf.readBoolean() ? AdvancementDisplay.fromPacket(buf) : null;
 			Map<String, AdvancementCriterion> map = AdvancementCriterion.criteriaFromPacket(buf);
@@ -444,7 +444,7 @@ public class Advancement {
 				}
 			}
 
-			return new Advancement.Task(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
+			return new Advancement.Builder(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
 		}
 
 		public Map<String, AdvancementCriterion> getCriteria() {

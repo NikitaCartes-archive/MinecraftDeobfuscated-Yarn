@@ -169,7 +169,7 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	protected int getXpToDrop(PlayerEntity player) {
 		if (this.isBaby()) {
-			this.experiencePoints = (int)((float)this.experiencePoints * 2.5F);
+			this.experiencePoints = (int)((double)this.experiencePoints * 2.5);
 		}
 
 		return super.getXpToDrop(player);

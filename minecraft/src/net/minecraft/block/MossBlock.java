@@ -5,6 +5,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.UndergroundConfiguredFeatures;
 
 public class MossBlock extends Block implements Fertilizable {
@@ -24,6 +25,7 @@ public class MossBlock extends Block implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL.generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up());
+		((ConfiguredFeature)UndergroundConfiguredFeatures.MOSS_PATCH_BONEMEAL.value())
+			.generate(world, world.getChunkManager().getChunkGenerator(), random, pos.up());
 	}
 }

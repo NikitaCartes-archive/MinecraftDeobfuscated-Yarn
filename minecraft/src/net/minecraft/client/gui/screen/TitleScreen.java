@@ -216,8 +216,8 @@ public class TitleScreen extends Screen {
 			if (bl) {
 				this.client.startIntegratedServer("Demo_World");
 			} else {
-				DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, impl, GeneratorOptions.createDemo(impl));
+				DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
+				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, GeneratorOptions.createDemo(dynamicRegistryManager));
 			}
 		}));
 		this.buttonResetDemo = this.addDrawableChild(

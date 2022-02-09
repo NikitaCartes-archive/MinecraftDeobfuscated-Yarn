@@ -16,8 +16,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -35,7 +37,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	public ClientChunkManager(ClientWorld world, int loadDistance) {
 		this.world = world;
-		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0));
+		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0), world.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS));
 		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 		this.chunks = new ClientChunkManager.ClientChunkMap(getChunkMapRadius(loadDistance));
 	}

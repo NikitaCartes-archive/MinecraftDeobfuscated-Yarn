@@ -50,6 +50,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.EndConfiguredFeatures;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import net.minecraft.world.gen.feature.EndSpikeFeature;
@@ -391,7 +392,8 @@ public class EnderDragonFight {
 
 	private void generateEndGateway(BlockPos pos) {
 		this.world.syncWorldEvent(WorldEvents.END_GATEWAY_SPAWNS, pos, 0);
-		EndConfiguredFeatures.END_GATEWAY_DELAYED.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), pos);
+		((ConfiguredFeature)EndConfiguredFeatures.END_GATEWAY_DELAYED.value())
+			.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), pos);
 	}
 
 	private void generateEndPortal(boolean previouslyKilled) {
@@ -404,8 +406,7 @@ public class EnderDragonFight {
 			}
 		}
 
-		endPortalFeature.configure(FeatureConfig.DEFAULT)
-			.generate(this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
+		endPortalFeature.method_40163(FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
 	}
 
 	private EnderDragonEntity createDragon() {

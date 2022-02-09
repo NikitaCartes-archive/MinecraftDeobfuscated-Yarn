@@ -26,6 +26,6 @@ public class RandomFeature extends Feature<RandomFeatureConfig> {
 			}
 		}
 
-		return ((PlacedFeature)randomFeatureConfig.defaultFeature.get()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
+		return ((PlacedFeature)randomFeatureConfig.defaultFeature.value()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

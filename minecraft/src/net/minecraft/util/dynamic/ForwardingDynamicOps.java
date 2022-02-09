@@ -30,13 +30,13 @@ public abstract class ForwardingDynamicOps<T> implements DynamicOps<T> {
 	}
 
 	@Override
-	public <U> U convertTo(DynamicOps<U> dynamicOps, T object) {
-		return this.delegate.convertTo(dynamicOps, object);
+	public <U> U convertTo(DynamicOps<U> outputOps, T input) {
+		return this.delegate.convertTo(outputOps, input);
 	}
 
 	@Override
-	public DataResult<Number> getNumberValue(T object) {
-		return this.delegate.getNumberValue(object);
+	public DataResult<Number> getNumberValue(T input) {
+		return this.delegate.getNumberValue(input);
 	}
 
 	@Override
@@ -75,8 +75,8 @@ public abstract class ForwardingDynamicOps<T> implements DynamicOps<T> {
 	}
 
 	@Override
-	public DataResult<Boolean> getBooleanValue(T object) {
-		return this.delegate.getBooleanValue(object);
+	public DataResult<Boolean> getBooleanValue(T input) {
+		return this.delegate.getBooleanValue(input);
 	}
 
 	@Override
@@ -85,8 +85,8 @@ public abstract class ForwardingDynamicOps<T> implements DynamicOps<T> {
 	}
 
 	@Override
-	public DataResult<String> getStringValue(T object) {
-		return this.delegate.getStringValue(object);
+	public DataResult<String> getStringValue(T input) {
+		return this.delegate.getStringValue(input);
 	}
 
 	@Override
@@ -95,53 +95,53 @@ public abstract class ForwardingDynamicOps<T> implements DynamicOps<T> {
 	}
 
 	@Override
-	public DataResult<T> mergeToList(T object, T object2) {
-		return this.delegate.mergeToList(object, object2);
+	public DataResult<T> mergeToList(T list, T value) {
+		return this.delegate.mergeToList(list, value);
 	}
 
 	@Override
-	public DataResult<T> mergeToList(T object, List<T> list) {
-		return this.delegate.mergeToList(object, list);
+	public DataResult<T> mergeToList(T list, List<T> values) {
+		return this.delegate.mergeToList(list, values);
 	}
 
 	@Override
-	public DataResult<T> mergeToMap(T object, T object2, T object3) {
-		return this.delegate.mergeToMap(object, object2, object3);
+	public DataResult<T> mergeToMap(T map, T key, T value) {
+		return this.delegate.mergeToMap(map, key, value);
 	}
 
 	@Override
-	public DataResult<T> mergeToMap(T object, MapLike<T> mapLike) {
-		return this.delegate.mergeToMap(object, mapLike);
+	public DataResult<T> mergeToMap(T map, MapLike<T> values) {
+		return this.delegate.mergeToMap(map, values);
 	}
 
 	@Override
-	public DataResult<Stream<Pair<T, T>>> getMapValues(T object) {
-		return this.delegate.getMapValues(object);
+	public DataResult<Stream<Pair<T, T>>> getMapValues(T input) {
+		return this.delegate.getMapValues(input);
 	}
 
 	@Override
-	public DataResult<Consumer<BiConsumer<T, T>>> getMapEntries(T object) {
-		return this.delegate.getMapEntries(object);
+	public DataResult<Consumer<BiConsumer<T, T>>> getMapEntries(T input) {
+		return this.delegate.getMapEntries(input);
 	}
 
 	@Override
-	public T createMap(Stream<Pair<T, T>> stream) {
-		return this.delegate.createMap(stream);
+	public T createMap(Stream<Pair<T, T>> map) {
+		return this.delegate.createMap(map);
 	}
 
 	@Override
-	public DataResult<MapLike<T>> getMap(T object) {
-		return this.delegate.getMap(object);
+	public DataResult<MapLike<T>> getMap(T input) {
+		return this.delegate.getMap(input);
 	}
 
 	@Override
-	public DataResult<Stream<T>> getStream(T object) {
-		return this.delegate.getStream(object);
+	public DataResult<Stream<T>> getStream(T input) {
+		return this.delegate.getStream(input);
 	}
 
 	@Override
-	public DataResult<Consumer<Consumer<T>>> getList(T object) {
-		return this.delegate.getList(object);
+	public DataResult<Consumer<Consumer<T>>> getList(T input) {
+		return this.delegate.getList(input);
 	}
 
 	@Override
@@ -150,38 +150,38 @@ public abstract class ForwardingDynamicOps<T> implements DynamicOps<T> {
 	}
 
 	@Override
-	public DataResult<ByteBuffer> getByteBuffer(T object) {
-		return this.delegate.getByteBuffer(object);
+	public DataResult<ByteBuffer> getByteBuffer(T input) {
+		return this.delegate.getByteBuffer(input);
 	}
 
 	@Override
-	public T createByteList(ByteBuffer byteBuffer) {
-		return this.delegate.createByteList(byteBuffer);
+	public T createByteList(ByteBuffer buf) {
+		return this.delegate.createByteList(buf);
 	}
 
 	@Override
-	public DataResult<IntStream> getIntStream(T object) {
-		return this.delegate.getIntStream(object);
+	public DataResult<IntStream> getIntStream(T input) {
+		return this.delegate.getIntStream(input);
 	}
 
 	@Override
-	public T createIntList(IntStream intStream) {
-		return this.delegate.createIntList(intStream);
+	public T createIntList(IntStream stream) {
+		return this.delegate.createIntList(stream);
 	}
 
 	@Override
-	public DataResult<LongStream> getLongStream(T object) {
-		return this.delegate.getLongStream(object);
+	public DataResult<LongStream> getLongStream(T input) {
+		return this.delegate.getLongStream(input);
 	}
 
 	@Override
-	public T createLongList(LongStream longStream) {
-		return this.delegate.createLongList(longStream);
+	public T createLongList(LongStream stream) {
+		return this.delegate.createLongList(stream);
 	}
 
 	@Override
-	public T remove(T object, String string) {
-		return this.delegate.remove(object, string);
+	public T remove(T input, String key) {
+		return this.delegate.remove(input, key);
 	}
 
 	@Override

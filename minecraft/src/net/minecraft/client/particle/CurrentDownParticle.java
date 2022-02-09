@@ -50,7 +50,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 				this.markDead();
 			}
 
-			this.accelerationAngle = (float)((double)this.accelerationAngle + 0.08);
+			this.accelerationAngle += 0.08F;
 		}
 	}
 

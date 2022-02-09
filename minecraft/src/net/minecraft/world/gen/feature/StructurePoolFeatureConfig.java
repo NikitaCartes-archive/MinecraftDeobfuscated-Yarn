@@ -3,8 +3,8 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.function.Supplier;
 import net.minecraft.structure.pool.StructurePool;
+import net.minecraft.util.registry.RegistryEntry;
 
 /**
  * A feature config that specifies a starting pool and a size for {@linkplain
@@ -18,11 +18,11 @@ public class StructurePoolFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, StructurePoolFeatureConfig::new)
 	);
-	private final Supplier<StructurePool> startPool;
+	private final RegistryEntry<StructurePool> startPool;
 	private final int size;
 
-	public StructurePoolFeatureConfig(Supplier<StructurePool> startPool, int size) {
-		this.startPool = startPool;
+	public StructurePoolFeatureConfig(RegistryEntry<StructurePool> registryEntry, int size) {
+		this.startPool = registryEntry;
 		this.size = size;
 	}
 
@@ -30,7 +30,7 @@ public class StructurePoolFeatureConfig implements FeatureConfig {
 		return this.size;
 	}
 
-	public Supplier<StructurePool> getStartPool() {
+	public RegistryEntry<StructurePool> getStartPool() {
 		return this.startPool;
 	}
 }

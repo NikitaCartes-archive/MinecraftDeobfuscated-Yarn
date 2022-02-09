@@ -2,9 +2,9 @@ package net.minecraft.structure.processor;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import java.util.function.Supplier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
 	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
@@ -27,7 +27,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
 	Codec<StructureProcessorList> field_25876 = Codec.either(field_26663.fieldOf("processors").codec(), field_26663)
 		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
-	Codec<Supplier<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, field_25876);
+	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, field_25876);
 
 	Codec<P> codec();
 

@@ -8,6 +8,7 @@ import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
@@ -58,8 +59,8 @@ public class PatrolSpawner implements Spawner {
 							if (!world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)) {
 								return 0;
 							} else {
-								Biome biome = world.getBiome(mutable);
-								Biome.Category category = biome.getCategory();
+								RegistryEntry<Biome> registryEntry = world.getBiome(mutable);
+								Biome.Category category = Biome.getCategory(registryEntry);
 								if (category == Biome.Category.MUSHROOM) {
 									return 0;
 								} else {

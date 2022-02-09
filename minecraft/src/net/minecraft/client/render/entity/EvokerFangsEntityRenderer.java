@@ -27,14 +27,14 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 		if (h != 0.0F) {
 			float j = 2.0F;
 			if (h > 0.9F) {
-				j = (float)((double)j * ((1.0 - (double)h) / 0.1F));
+				j *= (1.0F - h) / 0.1F;
 			}
 
 			matrixStack.push();
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F - evokerFangsEntity.getYaw()));
 			matrixStack.scale(-j, -j, j);
 			float k = 0.03125F;
-			matrixStack.translate(0.0, -0.626F, 0.0);
+			matrixStack.translate(0.0, -0.626, 0.0);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			this.model.setAngles(evokerFangsEntity, h, 0.0F, 0.0F, evokerFangsEntity.getYaw(), evokerFangsEntity.getPitch());
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(TEXTURE));

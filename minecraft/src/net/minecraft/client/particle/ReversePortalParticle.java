@@ -9,7 +9,7 @@ import net.minecraft.particle.DefaultParticleType;
 public class ReversePortalParticle extends PortalParticle {
 	ReversePortalParticle(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
 		super(clientWorld, d, e, f, g, h, i);
-		this.scale = (float)((double)this.scale * 1.5);
+		this.scale *= 1.5F;
 		this.maxAge = (int)(Math.random() * 2.0) + 60;
 	}
 

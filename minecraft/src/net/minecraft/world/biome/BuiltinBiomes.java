@@ -1,19 +1,21 @@
 package net.minecraft.world.biome;
 
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 public abstract class BuiltinBiomes {
-	@Deprecated
-	public static final Biome THE_VOID = register(BiomeKeys.THE_VOID, OverworldBiomeCreator.createTheVoid());
-	@Deprecated
-	public static final Biome PLAINS = register(BiomeKeys.PLAINS, OverworldBiomeCreator.createPlains(false, false, false));
+	private static void register(RegistryKey<Biome> key, Biome biome) {
+		BuiltinRegistries.add(BuiltinRegistries.BIOME, key, biome);
+	}
 
-	private static Biome register(RegistryKey<Biome> key, Biome biome) {
-		return BuiltinRegistries.set(BuiltinRegistries.BIOME, key, biome);
+	public static RegistryEntry<Biome> getDefaultBiome() {
+		return BuiltinRegistries.BIOME.entryOf(BiomeKeys.PLAINS);
 	}
 
 	static {
+		register(BiomeKeys.THE_VOID, OverworldBiomeCreator.createTheVoid());
+		register(BiomeKeys.PLAINS, OverworldBiomeCreator.createPlains(false, false, false));
 		register(BiomeKeys.SUNFLOWER_PLAINS, OverworldBiomeCreator.createPlains(true, false, false));
 		register(BiomeKeys.SNOWY_PLAINS, OverworldBiomeCreator.createPlains(false, true, false));
 		register(BiomeKeys.ICE_SPIKES, OverworldBiomeCreator.createPlains(false, true, true));

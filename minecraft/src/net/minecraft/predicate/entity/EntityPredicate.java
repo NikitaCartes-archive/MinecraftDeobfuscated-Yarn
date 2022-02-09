@@ -21,7 +21,7 @@ import net.minecraft.predicate.PlayerPredicate;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Vec3d;
@@ -301,7 +301,7 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder type(Tag<EntityType<?>> tag) {
+		public EntityPredicate.Builder type(TagKey<EntityType<?>> tag) {
 			this.type = EntityTypePredicate.create(tag);
 			return this;
 		}

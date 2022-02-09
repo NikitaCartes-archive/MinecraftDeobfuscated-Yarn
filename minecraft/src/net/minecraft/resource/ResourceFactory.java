@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier;
 /**
  * Provides resource access.
  */
+@FunctionalInterface
 public interface ResourceFactory {
 	/**
 	 * Finds and returns the corresponding resource for a resource's identifier.

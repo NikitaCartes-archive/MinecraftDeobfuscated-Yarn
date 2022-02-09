@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.DesertVillageData;
 import net.minecraft.structure.PillagerOutpostGenerator;
@@ -11,6 +10,7 @@ import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -19,123 +19,124 @@ import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class ConfiguredStructureFeatures {
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> PILLAGER_OUTPOST = register(
-		"pillager_outpost", StructureFeature.PILLAGER_OUTPOST.configure(new StructurePoolFeatureConfig(() -> PillagerOutpostGenerator.STRUCTURE_POOLS, 7))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> PILLAGER_OUTPOST = register(
+		"pillager_outpost", StructureFeature.PILLAGER_OUTPOST.configure(new StructurePoolFeatureConfig(PillagerOutpostGenerator.STRUCTURE_POOLS, 7))
 	);
-	private static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> MINESHAFT = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<MineshaftFeatureConfig, ?>> MINESHAFT = register(
 		"mineshaft", StructureFeature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004F, MineshaftFeature.Type.NORMAL))
 	);
-	private static final ConfiguredStructureFeature<MineshaftFeatureConfig, ? extends StructureFeature<MineshaftFeatureConfig>> MINESHAFT_MESA = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<MineshaftFeatureConfig, ?>> MINESHAFT_MESA = register(
 		"mineshaft_mesa", StructureFeature.MINESHAFT.configure(new MineshaftFeatureConfig(0.004F, MineshaftFeature.Type.MESA))
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> MANSION = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> MANSION = register(
 		"mansion", StructureFeature.MANSION.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> JUNGLE_PYRAMID = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> JUNGLE_PYRAMID = register(
 		"jungle_pyramid", StructureFeature.JUNGLE_PYRAMID.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> DESERT_PYRAMID = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> DESERT_PYRAMID = register(
 		"desert_pyramid", StructureFeature.DESERT_PYRAMID.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> IGLOO = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> IGLOO = register(
 		"igloo", StructureFeature.IGLOO.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> SHIPWRECK = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<ShipwreckFeatureConfig, ?>> SHIPWRECK = register(
 		"shipwreck", StructureFeature.SHIPWRECK.configure(new ShipwreckFeatureConfig(false))
 	);
-	private static final ConfiguredStructureFeature<ShipwreckFeatureConfig, ? extends StructureFeature<ShipwreckFeatureConfig>> SHIPWRECK_BEACHED = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<ShipwreckFeatureConfig, ?>> SHIPWRECK_BEACHED = register(
 		"shipwreck_beached", StructureFeature.SHIPWRECK.configure(new ShipwreckFeatureConfig(true))
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> SWAMP_HUT = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> SWAMP_HUT = register(
 		"swamp_hut", StructureFeature.SWAMP_HUT.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	public static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> STRONGHOLD = register(
+	public static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> STRONGHOLD = register(
 		"stronghold", StructureFeature.STRONGHOLD.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> MONUMENT = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> MONUMENT = register(
 		"monument", StructureFeature.MONUMENT.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> OCEAN_RUIN_COLD = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<OceanRuinFeatureConfig, ?>> OCEAN_RUIN_COLD = register(
 		"ocean_ruin_cold", StructureFeature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F))
 	);
-	private static final ConfiguredStructureFeature<OceanRuinFeatureConfig, ? extends StructureFeature<OceanRuinFeatureConfig>> OCEAN_RUIN_WARM = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<OceanRuinFeatureConfig, ?>> OCEAN_RUIN_WARM = register(
 		"ocean_ruin_warm", StructureFeature.OCEAN_RUIN.configure(new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.WARM, 0.3F, 0.9F))
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> FORTRESS = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> FORTRESS = register(
 		"fortress", StructureFeature.FORTRESS.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<RangeFeatureConfig, ? extends StructureFeature<RangeFeatureConfig>> NETHER_FOSSIL = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RangeFeatureConfig, ?>> NETHER_FOSSIL = register(
 		"nether_fossil", StructureFeature.NETHER_FOSSIL.configure(new RangeFeatureConfig(UniformHeightProvider.create(YOffset.fixed(32), YOffset.belowTop(2))))
 	);
-	private static final ConfiguredStructureFeature<DefaultFeatureConfig, ? extends StructureFeature<DefaultFeatureConfig>> END_CITY = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<DefaultFeatureConfig, ?>> END_CITY = register(
 		"end_city", StructureFeature.END_CITY.configure(DefaultFeatureConfig.INSTANCE)
 	);
-	private static final ConfiguredStructureFeature<ProbabilityConfig, ? extends StructureFeature<ProbabilityConfig>> BURIED_TREASURE = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<ProbabilityConfig, ?>> BURIED_TREASURE = register(
 		"buried_treasure", StructureFeature.BURIED_TREASURE.configure(new ProbabilityConfig(0.01F))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> BASTION_REMNANT = register(
-		"bastion_remnant", StructureFeature.BASTION_REMNANT.configure(new StructurePoolFeatureConfig(() -> BastionRemnantGenerator.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> BASTION_REMNANT = register(
+		"bastion_remnant", StructureFeature.BASTION_REMNANT.configure(new StructurePoolFeatureConfig(BastionRemnantGenerator.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_PLAINS = register(
-		"village_plains", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> PlainsVillageData.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> VILLAGE_PLAINS = register(
+		"village_plains", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(PlainsVillageData.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_DESERT = register(
-		"village_desert", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> DesertVillageData.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> VILLAGE_DESERT = register(
+		"village_desert", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(DesertVillageData.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_SAVANNA = register(
-		"village_savanna", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> SavannaVillageData.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> VILLAGE_SAVANNA = register(
+		"village_savanna", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(SavannaVillageData.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_SNOWY = register(
-		"village_snowy", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> SnowyVillageData.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> VILLAGE_SNOWY = register(
+		"village_snowy", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(SnowyVillageData.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_TAIGA = register(
-		"village_taiga", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> TaigaVillageData.STRUCTURE_POOLS, 6))
+	private static final RegistryEntry<ConfiguredStructureFeature<StructurePoolFeatureConfig, ?>> VILLAGE_TAIGA = register(
+		"village_taiga", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(TaigaVillageData.STRUCTURE_POOLS, 6))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL = register(
 		"ruined_portal", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.STANDARD))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_DESERT = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_DESERT = register(
 		"ruined_portal_desert", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.DESERT))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_JUNGLE = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_JUNGLE = register(
 		"ruined_portal_jungle", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.JUNGLE))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_SWAMP = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_SWAMP = register(
 		"ruined_portal_swamp", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.SWAMP))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_MOUNTAIN = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_MOUNTAIN = register(
 		"ruined_portal_mountain", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.MOUNTAIN))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_OCEAN = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_OCEAN = register(
 		"ruined_portal_ocean", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.OCEAN))
 	);
-	private static final ConfiguredStructureFeature<RuinedPortalFeatureConfig, ? extends StructureFeature<RuinedPortalFeatureConfig>> RUINED_PORTAL_NETHER = register(
+	private static final RegistryEntry<ConfiguredStructureFeature<RuinedPortalFeatureConfig, ?>> RUINED_PORTAL_NETHER = register(
 		"ruined_portal_nether", StructureFeature.RUINED_PORTAL.configure(new RuinedPortalFeatureConfig(RuinedPortalFeature.Type.NETHER))
 	);
 
-	public static ConfiguredStructureFeature<?, ?> getDefault() {
+	public static RegistryEntry<? extends ConfiguredStructureFeature<?, ?>> getDefault() {
 		return MINESHAFT;
 	}
 
-	private static <FC extends FeatureConfig, F extends StructureFeature<FC>> ConfiguredStructureFeature<FC, F> register(
+	private static <FC extends FeatureConfig, F extends StructureFeature<FC>> RegistryEntry<ConfiguredStructureFeature<FC, ?>> register(
 		String id, ConfiguredStructureFeature<FC, F> configuredStructureFeature
 	) {
-		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, id, configuredStructureFeature);
+		return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_STRUCTURE_FEATURE, id, configuredStructureFeature);
 	}
 
 	private static void register(
-		BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar, ConfiguredStructureFeature<?, ?> feature, Set<RegistryKey<Biome>> biomes
+		ConfiguredStructureFeatures.class_6896 arg, RegistryEntry<? extends ConfiguredStructureFeature<?, ?>> registryEntry, Set<RegistryKey<Biome>> biomes
 	) {
-		biomes.forEach(biome -> registrar.accept(feature, biome));
+		biomes.forEach(biome -> register(arg, registryEntry, biome));
 	}
 
 	private static void register(
-		BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar, ConfiguredStructureFeature<?, ?> feature, RegistryKey<Biome> biome
+		ConfiguredStructureFeatures.class_6896 arg, RegistryEntry<? extends ConfiguredStructureFeature<?, ?>> registryEntry, RegistryKey<Biome> biome
 	) {
-		registrar.accept(feature, biome);
+		RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry2 = RegistryEntry.upcast(registryEntry);
+		arg.accept(registryEntry2.value().feature, (RegistryKey<ConfiguredStructureFeature<?, ?>>)registryEntry2.getKey().orElseThrow(), biome);
 	}
 
-	public static void registerAll(BiConsumer<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> registrar) {
+	public static void registerAll(ConfiguredStructureFeatures.class_6896 arg) {
 		Set<RegistryKey<Biome>> set = ImmutableSet.<RegistryKey<Biome>>builder()
 			.add(BiomeKeys.DEEP_FROZEN_OCEAN)
 			.add(BiomeKeys.DEEP_COLD_OCEAN)
@@ -195,92 +196,136 @@ public class ConfiguredStructureFeatures {
 			.add(BiomeKeys.CRIMSON_FOREST)
 			.add(BiomeKeys.WARPED_FOREST)
 			.build();
-		register(registrar, BURIED_TREASURE, set3);
-		register(registrar, DESERT_PYRAMID, BiomeKeys.DESERT);
-		register(registrar, IGLOO, BiomeKeys.SNOWY_TAIGA);
-		register(registrar, IGLOO, BiomeKeys.SNOWY_PLAINS);
-		register(registrar, IGLOO, BiomeKeys.SNOWY_SLOPES);
-		register(registrar, JUNGLE_PYRAMID, BiomeKeys.BAMBOO_JUNGLE);
-		register(registrar, JUNGLE_PYRAMID, BiomeKeys.JUNGLE);
-		register(registrar, MINESHAFT, set2);
-		register(registrar, MINESHAFT, set4);
-		register(registrar, MINESHAFT, set3);
-		register(registrar, MINESHAFT, BiomeKeys.STONY_SHORE);
-		register(registrar, MINESHAFT, set5);
-		register(registrar, MINESHAFT, set7);
-		register(registrar, MINESHAFT, set8);
-		register(registrar, MINESHAFT, set9);
-		register(registrar, MINESHAFT, set10);
-		register(registrar, MINESHAFT, BiomeKeys.MUSHROOM_FIELDS);
-		register(registrar, MINESHAFT, BiomeKeys.ICE_SPIKES);
-		register(registrar, MINESHAFT, BiomeKeys.WINDSWEPT_SAVANNA);
-		register(registrar, MINESHAFT, BiomeKeys.DESERT);
-		register(registrar, MINESHAFT, BiomeKeys.SAVANNA);
-		register(registrar, MINESHAFT, BiomeKeys.SNOWY_PLAINS);
-		register(registrar, MINESHAFT, BiomeKeys.PLAINS);
-		register(registrar, MINESHAFT, BiomeKeys.SUNFLOWER_PLAINS);
-		register(registrar, MINESHAFT, BiomeKeys.SWAMP);
-		register(registrar, MINESHAFT, BiomeKeys.SAVANNA_PLATEAU);
-		register(registrar, MINESHAFT, BiomeKeys.DRIPSTONE_CAVES);
-		register(registrar, MINESHAFT, BiomeKeys.LUSH_CAVES);
-		register(registrar, MINESHAFT_MESA, set6);
-		register(registrar, MONUMENT, set);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.FROZEN_OCEAN);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.COLD_OCEAN);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.OCEAN);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.DEEP_FROZEN_OCEAN);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.DEEP_COLD_OCEAN);
-		register(registrar, OCEAN_RUIN_COLD, BiomeKeys.DEEP_OCEAN);
-		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.LUKEWARM_OCEAN);
-		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.WARM_OCEAN);
-		register(registrar, OCEAN_RUIN_WARM, BiomeKeys.DEEP_LUKEWARM_OCEAN);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.DESERT);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.PLAINS);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SAVANNA);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.SNOWY_PLAINS);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.TAIGA);
-		register(registrar, PILLAGER_OUTPOST, set5);
-		register(registrar, PILLAGER_OUTPOST, BiomeKeys.GROVE);
-		register(registrar, RUINED_PORTAL_DESERT, BiomeKeys.DESERT);
-		register(registrar, RUINED_PORTAL_JUNGLE, set9);
-		register(registrar, RUINED_PORTAL_OCEAN, set2);
-		register(registrar, RUINED_PORTAL_SWAMP, BiomeKeys.SWAMP);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, set6);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, set7);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SAVANNA_PLATEAU);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.WINDSWEPT_SAVANNA);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, BiomeKeys.STONY_SHORE);
-		register(registrar, RUINED_PORTAL_MOUNTAIN, set5);
-		register(registrar, RUINED_PORTAL, BiomeKeys.MUSHROOM_FIELDS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.ICE_SPIKES);
-		register(registrar, RUINED_PORTAL, set3);
-		register(registrar, RUINED_PORTAL, set4);
-		register(registrar, RUINED_PORTAL, set8);
-		register(registrar, RUINED_PORTAL, set10);
-		register(registrar, RUINED_PORTAL, BiomeKeys.DRIPSTONE_CAVES);
-		register(registrar, RUINED_PORTAL, BiomeKeys.LUSH_CAVES);
-		register(registrar, RUINED_PORTAL, BiomeKeys.SAVANNA);
-		register(registrar, RUINED_PORTAL, BiomeKeys.SNOWY_PLAINS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.PLAINS);
-		register(registrar, RUINED_PORTAL, BiomeKeys.SUNFLOWER_PLAINS);
-		register(registrar, SHIPWRECK_BEACHED, set3);
-		register(registrar, SHIPWRECK, set2);
-		register(registrar, SWAMP_HUT, BiomeKeys.SWAMP);
-		register(registrar, VILLAGE_DESERT, BiomeKeys.DESERT);
-		register(registrar, VILLAGE_PLAINS, BiomeKeys.PLAINS);
-		register(registrar, VILLAGE_PLAINS, BiomeKeys.MEADOW);
-		register(registrar, VILLAGE_SAVANNA, BiomeKeys.SAVANNA);
-		register(registrar, VILLAGE_SNOWY, BiomeKeys.SNOWY_PLAINS);
-		register(registrar, VILLAGE_TAIGA, BiomeKeys.TAIGA);
-		register(registrar, MANSION, BiomeKeys.DARK_FOREST);
-		register(registrar, FORTRESS, set11);
-		register(registrar, NETHER_FOSSIL, BiomeKeys.SOUL_SAND_VALLEY);
-		register(registrar, BASTION_REMNANT, BiomeKeys.CRIMSON_FOREST);
-		register(registrar, BASTION_REMNANT, BiomeKeys.NETHER_WASTES);
-		register(registrar, BASTION_REMNANT, BiomeKeys.SOUL_SAND_VALLEY);
-		register(registrar, BASTION_REMNANT, BiomeKeys.WARPED_FOREST);
-		register(registrar, RUINED_PORTAL_NETHER, set11);
-		register(registrar, END_CITY, BiomeKeys.END_HIGHLANDS);
-		register(registrar, END_CITY, BiomeKeys.END_MIDLANDS);
+		Set<RegistryKey<Biome>> set12 = ImmutableSet.<RegistryKey<Biome>>builder()
+			.add(BiomeKeys.THE_VOID)
+			.add(BiomeKeys.PLAINS)
+			.add(BiomeKeys.SUNFLOWER_PLAINS)
+			.add(BiomeKeys.SNOWY_PLAINS)
+			.add(BiomeKeys.ICE_SPIKES)
+			.add(BiomeKeys.DESERT)
+			.add(BiomeKeys.FOREST)
+			.add(BiomeKeys.FLOWER_FOREST)
+			.add(BiomeKeys.BIRCH_FOREST)
+			.add(BiomeKeys.DARK_FOREST)
+			.add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST)
+			.add(BiomeKeys.OLD_GROWTH_PINE_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA)
+			.add(BiomeKeys.TAIGA)
+			.add(BiomeKeys.SNOWY_TAIGA)
+			.add(BiomeKeys.SAVANNA)
+			.add(BiomeKeys.SAVANNA_PLATEAU)
+			.add(BiomeKeys.WINDSWEPT_HILLS)
+			.add(BiomeKeys.WINDSWEPT_GRAVELLY_HILLS)
+			.add(BiomeKeys.WINDSWEPT_FOREST)
+			.add(BiomeKeys.WINDSWEPT_SAVANNA)
+			.add(BiomeKeys.JUNGLE)
+			.add(BiomeKeys.SPARSE_JUNGLE)
+			.add(BiomeKeys.BAMBOO_JUNGLE)
+			.add(BiomeKeys.BADLANDS)
+			.add(BiomeKeys.ERODED_BADLANDS)
+			.add(BiomeKeys.WOODED_BADLANDS)
+			.add(BiomeKeys.MEADOW)
+			.add(BiomeKeys.GROVE)
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
+			.add(BiomeKeys.STONY_PEAKS)
+			.add(BiomeKeys.MUSHROOM_FIELDS)
+			.add(BiomeKeys.DRIPSTONE_CAVES)
+			.add(BiomeKeys.LUSH_CAVES)
+			.build();
+		register(arg, BURIED_TREASURE, set3);
+		register(arg, DESERT_PYRAMID, BiomeKeys.DESERT);
+		register(arg, IGLOO, BiomeKeys.SNOWY_TAIGA);
+		register(arg, IGLOO, BiomeKeys.SNOWY_PLAINS);
+		register(arg, IGLOO, BiomeKeys.SNOWY_SLOPES);
+		register(arg, JUNGLE_PYRAMID, BiomeKeys.BAMBOO_JUNGLE);
+		register(arg, JUNGLE_PYRAMID, BiomeKeys.JUNGLE);
+		register(arg, MINESHAFT, set2);
+		register(arg, MINESHAFT, set4);
+		register(arg, MINESHAFT, set3);
+		register(arg, MINESHAFT, BiomeKeys.STONY_SHORE);
+		register(arg, MINESHAFT, set5);
+		register(arg, MINESHAFT, set7);
+		register(arg, MINESHAFT, set8);
+		register(arg, MINESHAFT, set9);
+		register(arg, MINESHAFT, set10);
+		register(arg, MINESHAFT, BiomeKeys.MUSHROOM_FIELDS);
+		register(arg, MINESHAFT, BiomeKeys.ICE_SPIKES);
+		register(arg, MINESHAFT, BiomeKeys.WINDSWEPT_SAVANNA);
+		register(arg, MINESHAFT, BiomeKeys.DESERT);
+		register(arg, MINESHAFT, BiomeKeys.SAVANNA);
+		register(arg, MINESHAFT, BiomeKeys.SNOWY_PLAINS);
+		register(arg, MINESHAFT, BiomeKeys.PLAINS);
+		register(arg, MINESHAFT, BiomeKeys.SUNFLOWER_PLAINS);
+		register(arg, MINESHAFT, BiomeKeys.SWAMP);
+		register(arg, MINESHAFT, BiomeKeys.SAVANNA_PLATEAU);
+		register(arg, MINESHAFT, BiomeKeys.DRIPSTONE_CAVES);
+		register(arg, MINESHAFT, BiomeKeys.LUSH_CAVES);
+		register(arg, MINESHAFT_MESA, set6);
+		register(arg, MONUMENT, set);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.FROZEN_OCEAN);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.COLD_OCEAN);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.OCEAN);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.DEEP_FROZEN_OCEAN);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.DEEP_COLD_OCEAN);
+		register(arg, OCEAN_RUIN_COLD, BiomeKeys.DEEP_OCEAN);
+		register(arg, OCEAN_RUIN_WARM, BiomeKeys.LUKEWARM_OCEAN);
+		register(arg, OCEAN_RUIN_WARM, BiomeKeys.WARM_OCEAN);
+		register(arg, OCEAN_RUIN_WARM, BiomeKeys.DEEP_LUKEWARM_OCEAN);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.DESERT);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.PLAINS);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.SAVANNA);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.SNOWY_PLAINS);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.TAIGA);
+		register(arg, PILLAGER_OUTPOST, set5);
+		register(arg, PILLAGER_OUTPOST, BiomeKeys.GROVE);
+		register(arg, RUINED_PORTAL_DESERT, BiomeKeys.DESERT);
+		register(arg, RUINED_PORTAL_JUNGLE, set9);
+		register(arg, RUINED_PORTAL_OCEAN, set2);
+		register(arg, RUINED_PORTAL_SWAMP, BiomeKeys.SWAMP);
+		register(arg, RUINED_PORTAL_MOUNTAIN, set6);
+		register(arg, RUINED_PORTAL_MOUNTAIN, set7);
+		register(arg, RUINED_PORTAL_MOUNTAIN, BiomeKeys.SAVANNA_PLATEAU);
+		register(arg, RUINED_PORTAL_MOUNTAIN, BiomeKeys.WINDSWEPT_SAVANNA);
+		register(arg, RUINED_PORTAL_MOUNTAIN, BiomeKeys.STONY_SHORE);
+		register(arg, RUINED_PORTAL_MOUNTAIN, set5);
+		register(arg, RUINED_PORTAL, BiomeKeys.MUSHROOM_FIELDS);
+		register(arg, RUINED_PORTAL, BiomeKeys.ICE_SPIKES);
+		register(arg, RUINED_PORTAL, set3);
+		register(arg, RUINED_PORTAL, set4);
+		register(arg, RUINED_PORTAL, set8);
+		register(arg, RUINED_PORTAL, set10);
+		register(arg, RUINED_PORTAL, BiomeKeys.DRIPSTONE_CAVES);
+		register(arg, RUINED_PORTAL, BiomeKeys.LUSH_CAVES);
+		register(arg, RUINED_PORTAL, BiomeKeys.SAVANNA);
+		register(arg, RUINED_PORTAL, BiomeKeys.SNOWY_PLAINS);
+		register(arg, RUINED_PORTAL, BiomeKeys.PLAINS);
+		register(arg, RUINED_PORTAL, BiomeKeys.SUNFLOWER_PLAINS);
+		register(arg, SHIPWRECK_BEACHED, set3);
+		register(arg, SHIPWRECK, set2);
+		register(arg, SWAMP_HUT, BiomeKeys.SWAMP);
+		register(arg, VILLAGE_DESERT, BiomeKeys.DESERT);
+		register(arg, VILLAGE_PLAINS, BiomeKeys.PLAINS);
+		register(arg, VILLAGE_PLAINS, BiomeKeys.MEADOW);
+		register(arg, VILLAGE_SAVANNA, BiomeKeys.SAVANNA);
+		register(arg, VILLAGE_SNOWY, BiomeKeys.SNOWY_PLAINS);
+		register(arg, VILLAGE_TAIGA, BiomeKeys.TAIGA);
+		register(arg, MANSION, BiomeKeys.DARK_FOREST);
+		register(arg, STRONGHOLD, set12);
+		register(arg, FORTRESS, set11);
+		register(arg, NETHER_FOSSIL, BiomeKeys.SOUL_SAND_VALLEY);
+		register(arg, BASTION_REMNANT, BiomeKeys.CRIMSON_FOREST);
+		register(arg, BASTION_REMNANT, BiomeKeys.NETHER_WASTES);
+		register(arg, BASTION_REMNANT, BiomeKeys.SOUL_SAND_VALLEY);
+		register(arg, BASTION_REMNANT, BiomeKeys.WARPED_FOREST);
+		register(arg, RUINED_PORTAL_NETHER, set11);
+		register(arg, END_CITY, BiomeKeys.END_HIGHLANDS);
+		register(arg, END_CITY, BiomeKeys.END_MIDLANDS);
+	}
+
+	@FunctionalInterface
+	public interface class_6896 {
+		void accept(StructureFeature<?> feature, RegistryKey<ConfiguredStructureFeature<?, ?>> configuredFeatureKey, RegistryKey<Biome> biomeKey);
 	}
 }

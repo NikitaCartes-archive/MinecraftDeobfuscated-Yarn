@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class RandomFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -16,22 +16,18 @@ public class RandomFeatureConfig implements FeatureConfig {
 			)
 	);
 	public final List<RandomFeatureEntry> features;
-	public final Supplier<PlacedFeature> defaultFeature;
+	public final RegistryEntry<PlacedFeature> defaultFeature;
 
-	public RandomFeatureConfig(List<RandomFeatureEntry> features, PlacedFeature defaultFeature) {
-		this(features, () -> defaultFeature);
-	}
-
-	private RandomFeatureConfig(List<RandomFeatureEntry> features, Supplier<PlacedFeature> defaultFeature) {
+	public RandomFeatureConfig(List<RandomFeatureEntry> features, RegistryEntry<PlacedFeature> registryEntry) {
 		this.features = features;
-		this.defaultFeature = defaultFeature;
+		this.defaultFeature = registryEntry;
 	}
 
 	@Override
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
 		return Stream.concat(
-			this.features.stream().flatMap(randomFeatureEntry -> ((PlacedFeature)randomFeatureEntry.feature.get()).getDecoratedFeatures()),
-			((PlacedFeature)this.defaultFeature.get()).getDecoratedFeatures()
+			this.features.stream().flatMap(randomFeatureEntry -> ((PlacedFeature)randomFeatureEntry.feature.value()).getDecoratedFeatures()),
+			((PlacedFeature)this.defaultFeature.value()).getDecoratedFeatures()
 		);
 	}
 }

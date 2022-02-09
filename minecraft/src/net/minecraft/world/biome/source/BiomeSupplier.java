@@ -1,8 +1,9 @@
 package net.minecraft.world.biome.source;
 
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
 public interface BiomeSupplier {
-	Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise);
+	RegistryEntry<Biome> getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise);
 }

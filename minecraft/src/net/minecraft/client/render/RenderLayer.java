@@ -898,7 +898,7 @@ public abstract class RenderLayer extends RenderPhase {
 	public void draw(BufferBuilder buffer, int cameraX, int cameraY, int cameraZ) {
 		if (buffer.isBuilding()) {
 			if (this.translucent) {
-				buffer.setCameraPosition((float)cameraX, (float)cameraY, (float)cameraZ);
+				buffer.sortFrom((float)cameraX, (float)cameraY, (float)cameraZ);
 			}
 
 			buffer.end();

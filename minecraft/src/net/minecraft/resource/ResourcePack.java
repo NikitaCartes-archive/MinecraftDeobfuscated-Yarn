@@ -12,8 +12,10 @@ import net.minecraft.util.Identifier;
 /**
  * A resource pack, providing resources to resource managers.
  * 
- * <p>They are single-use in each reload cycle of a reloadable resource manager.
- * {@link ResourcePackProfile} is a persistent version of the resource packs.
+ * <p>They are single-use in the lifecycle of a {@linkplain LifecycledResourceManagerImpl
+ * lifecycled resource manager}. A {@link ResourcePackProfile} is a persistent
+ * representation of the resource packs, and can be used to recreate the packs
+ * on demand.
  */
 public interface ResourcePack extends AutoCloseable {
 	String METADATA_PATH_SUFFIX = ".mcmeta";

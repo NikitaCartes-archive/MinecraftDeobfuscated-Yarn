@@ -1,18 +1,18 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final DimensionType dimensionType;
+	private final RegistryEntry<DimensionType> dimensionType;
 	private final RegistryKey<World> dimension;
 	private final long sha256Seed;
 	private final GameMode gameMode;
@@ -23,7 +23,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private final boolean keepPlayerAttributes;
 
 	public PlayerRespawnS2CPacket(
-		DimensionType dimensionType,
+		RegistryEntry<DimensionType> registryEntry,
 		RegistryKey<World> dimension,
 		long sha256Seed,
 		GameMode gameMode,
@@ -32,7 +32,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		boolean flatWorld,
 		boolean keepPlayerAttributes
 	) {
-		this.dimensionType = dimensionType;
+		this.dimensionType = registryEntry;
 		this.dimension = dimension;
 		this.sha256Seed = sha256Seed;
 		this.gameMode = gameMode;
@@ -43,7 +43,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public PlayerRespawnS2CPacket(PacketByteBuf buf) {
-		this.dimensionType = (DimensionType)((Supplier)buf.decode(DimensionType.REGISTRY_CODEC)).get();
+		this.dimensionType = buf.decode(DimensionType.REGISTRY_CODEC);
 		this.dimension = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
@@ -55,7 +55,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.encode(DimensionType.REGISTRY_CODEC, (Supplier)() -> this.dimensionType);
+		buf.encode(DimensionType.REGISTRY_CODEC, this.dimensionType);
 		buf.writeIdentifier(this.dimension.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeByte(this.gameMode.getId());
@@ -69,7 +69,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 
-	public DimensionType getDimensionType() {
+	public RegistryEntry<DimensionType> getDimensionType() {
 		return this.dimensionType;
 	}
 

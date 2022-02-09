@@ -2,7 +2,6 @@ package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
@@ -18,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +33,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -249,8 +250,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
-import net.minecraft.tag.RequiredTagListRegistry;
-import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagKey;
+import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -266,6 +267,7 @@ import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
@@ -298,7 +300,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
-	private TagManager tagManager = TagManager.EMPTY;
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private int simulationDistance = 3;
@@ -307,7 +308,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
 	private Set<RegistryKey<World>> worldKeys;
-	private DynamicRegistryManager registryManager = DynamicRegistryManager.create();
+	private DynamicRegistryManager.Immutable registryManager = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 	private final TelemetrySender telemetrySender;
 
 	public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, GameProfile profile, TelemetrySender telemetrySender) {
@@ -336,16 +337,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onGameJoin(GameJoinS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.interactionManager = new ClientPlayerInteractionManager(this.client, this);
+		this.registryManager = packet.registryManager();
 		if (!this.connection.isLocal()) {
-			RequiredTagListRegistry.clearAllTags();
+			this.registryManager.streamAllRegistries().forEach(entry -> entry.value().clearTags());
 		}
 
 		List<RegistryKey<World>> list = Lists.<RegistryKey<World>>newArrayList(packet.dimensionIds());
 		Collections.shuffle(list);
 		this.worldKeys = Sets.<RegistryKey<World>>newLinkedHashSet(list);
-		this.registryManager = packet.registryManager();
 		RegistryKey<World> registryKey = packet.dimensionId();
-		DimensionType dimensionType = packet.dimensionType();
+		RegistryEntry<DimensionType> registryEntry = packet.dimensionType();
 		this.chunkLoadDistance = packet.viewDistance();
 		this.simulationDistance = packet.simulationDistance();
 		boolean bl = packet.debugWorld();
@@ -356,7 +357,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this,
 			properties,
 			registryKey,
-			dimensionType,
+			registryEntry,
 			this.chunkLoadDistance,
 			this.simulationDistance,
 			this.client::getProfiler,
@@ -922,7 +923,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		RegistryKey<World> registryKey = packet.getDimension();
-		DimensionType dimensionType = packet.getDimensionType();
+		RegistryEntry<DimensionType> registryEntry = packet.getDimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
@@ -936,7 +937,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this,
 				properties,
 				registryKey,
-				dimensionType,
+				registryEntry,
 				this.chunkLoadDistance,
 				this.simulationDistance,
 				this.client::getProfiler,
@@ -1367,18 +1368,22 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		TagManager tagManager = TagManager.fromPacket(this.registryManager, packet.getGroups());
-		Multimap<RegistryKey<? extends Registry<?>>, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
-		if (!multimap.isEmpty()) {
-			LOGGER.warn("Incomplete server tags, disconnecting. Missing: {}", multimap);
-			this.connection.disconnect(new TranslatableText("multiplayer.disconnect.missing_tags"));
-		} else {
-			this.tagManager = tagManager;
-			if (!this.connection.isLocal()) {
-				tagManager.apply();
-			}
+		packet.getGroups().forEach(this::loadTags);
+		if (!this.connection.isLocal()) {
+			Blocks.refreshShapeCache();
+		}
 
-			this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
+		this.client.getSearchableContainer(SearchManager.ITEM_TAG).reload();
+	}
+
+	private <T> void loadTags(RegistryKey<? extends Registry<? extends T>> registryKey, TagPacketSerializer.Serialized serialized) {
+		if (!serialized.isEmpty()) {
+			Registry<T> registry = (Registry)this.registryManager
+				.getOptional(registryKey)
+				.orElseThrow(() -> new IllegalStateException("Unknown registry " + registryKey));
+			Map<TagKey<T>, List<RegistryEntry<T>>> map = new HashMap();
+			TagPacketSerializer.loadTags(registryKey, registry, serialized, map::put);
+			registry.populateTags(map);
 		}
 	}
 
@@ -1777,7 +1782,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos = packetByteBuf.readBlockPos();
 				((NeighborUpdateDebugRenderer)this.client.debugRenderer.neighborUpdateDebugRenderer).addNeighborUpdate(l, blockPos);
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-				DimensionType dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).get(packetByteBuf.readIdentifier());
+				DimensionType dimensionType = this.registryManager.<DimensionType>get(Registry.DIMENSION_TYPE_KEY).get(packetByteBuf.readIdentifier());
 				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 				);
@@ -2297,10 +2302,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	public ClientWorld getWorld() {
 		return this.world;
-	}
-
-	public TagManager getTagManager() {
-		return this.tagManager;
 	}
 
 	public DataQueryHandler getDataQueryHandler() {

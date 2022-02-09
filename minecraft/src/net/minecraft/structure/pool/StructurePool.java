@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.processor.GravityStructureProcessor;
@@ -24,6 +23,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import org.slf4j.Logger;
 
@@ -42,7 +42,7 @@ public class StructurePool {
 				)
 				.apply(instance, StructurePool::new)
 	);
-	public static final Codec<Supplier<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
+	public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
 	private final Identifier id;
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;

@@ -17,10 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
@@ -39,10 +37,13 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
 			return context -> itemPredicate;
 		} else {
-			Identifier identifier = itemStringReader.getId();
-			return context -> {
-				Tag<Item> tag = context.getSource().getServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> UNKNOWN_TAG_EXCEPTION.create(id.toString()));
-				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getNbt());
+			TagKey<Item> tagKey = itemStringReader.getId();
+			return commandContext -> {
+				if (!Registry.ITEM.containsTag(tagKey)) {
+					throw UNKNOWN_TAG_EXCEPTION.create(tagKey);
+				} else {
+					return new ItemPredicateArgumentType.TagPredicate(tagKey, itemStringReader.getNbt());
+				}
 			};
 		}
 	}
@@ -62,7 +63,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return itemStringReader.getSuggestions(builder, ItemTags.getTagGroup());
+		return itemStringReader.getSuggestions(builder, Registry.ITEM);
 	}
 
 	@Override
@@ -90,11 +91,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	static class TagPredicate implements Predicate<ItemStack> {
-		private final Tag<Item> tag;
+		private final TagKey<Item> tag;
 		@Nullable
 		private final NbtCompound compound;
 
-		public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbt) {
+		public TagPredicate(TagKey<Item> tag, @Nullable NbtCompound nbt) {
 			this.tag = tag;
 			this.compound = nbt;
 		}

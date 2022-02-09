@@ -6,7 +6,6 @@ import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
@@ -28,10 +27,5 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<ProbabilityConfig> context) {
 		BlockPos blockPos = new BlockPos(context.chunkPos().getOffsetX(9), 90, context.chunkPos().getOffsetZ(9));
 		collector.addPiece(new BuriedTreasureGenerator.Piece(blockPos));
-	}
-
-	@Override
-	public BlockPos getLocatedPos(ChunkPos chunkPos) {
-		return new BlockPos(chunkPos.getOffsetX(9), 0, chunkPos.getOffsetZ(9));
 	}
 }

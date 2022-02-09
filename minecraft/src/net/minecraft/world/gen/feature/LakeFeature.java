@@ -141,7 +141,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 						for(int u = 0; u < 16; ++u) {
 							int v = 4;
 							BlockPos blockPos4 = blockPos.add(t, 4, u);
-							if (structureWorldAccess.getBiome(blockPos4).canSetIce(structureWorldAccess, blockPos4, false)
+							if (structureWorldAccess.getBiome(blockPos4).value().canSetIce(structureWorldAccess, blockPos4, false)
 								&& this.canReplace(structureWorldAccess.getBlockState(blockPos4))) {
 								structureWorldAccess.setBlockState(blockPos4, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
 							}

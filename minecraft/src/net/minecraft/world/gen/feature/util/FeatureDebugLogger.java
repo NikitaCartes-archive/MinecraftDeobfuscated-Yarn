@@ -71,7 +71,7 @@ public class FeatureDebugLogger {
 										+ String.format("%10f ", (double)count.intValue() / (double)integer.intValue())
 										+ featureData.topFeature().flatMap(registry::getKey).map(RegistryKey::getValue)
 										+ " "
-										+ featureData.feature().getFeature()
+										+ featureData.feature().feature()
 										+ " "
 										+ featureData.feature()
 								)

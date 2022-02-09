@@ -7,6 +7,7 @@ import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.world.biome.source.BiomeCoords;
 
 public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
@@ -14,7 +15,13 @@ public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureCo
 	}
 
 	private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
-		return context.chunkGenerator().isStrongholdStartingChunk(context.chunkPos());
+		return context.validBiome()
+			.test(
+				context.chunkGenerator()
+					.getBiomeForNoiseGen(
+						BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
+					)
+			);
 	}
 
 	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {

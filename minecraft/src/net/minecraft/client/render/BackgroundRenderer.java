@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 
@@ -33,7 +34,7 @@ public class BackgroundRenderer {
 		Entity entity = camera.getFocusedEntity();
 		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			long l = Util.getMeasuringTimeMs();
-			int j = world.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
+			int j = world.getBiome(new BlockPos(camera.getPos())).value().getWaterFogColor();
 			if (lastWaterFogColorUpdateTime < 0L) {
 				waterFogColor = j;
 				nextWaterFogColor = j;
@@ -80,7 +81,7 @@ public class BackgroundRenderer {
 			BiomeAccess biomeAccess = world.getBiomeAccess();
 			Vec3d vec3d2 = camera.getPos().subtract(2.0, 2.0, 2.0).multiply(0.25);
 			Vec3d vec3d3 = CubicSampler.sampleColor(
-				vec3d2, (ix, j, k) -> world.getDimensionEffects().adjustFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, j, k).getFogColor()), x)
+				vec3d2, (ix, j, k) -> world.getDimensionEffects().adjustFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(ix, j, k).value().getFogColor()), x)
 			);
 			red = (float)vec3d3.getX();
 			green = (float)vec3d3.getY();
@@ -127,25 +128,25 @@ public class BackgroundRenderer {
 			lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = (camera.getPos().y - (double)world.getBottomY()) * world.getLevelProperties().getHorizonShadingRatio();
+		float t = ((float)camera.getPos().y - (float)world.getBottomY()) * world.getLevelProperties().getHorizonShadingRatio();
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
-			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
-			if (j < 20) {
-				d = (double)(1.0F - (float)j / 20.0F);
+			int y = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
+			if (y < 20) {
+				t = 1.0F - (float)y / 20.0F;
 			} else {
-				d = 0.0;
+				t = 0.0F;
 			}
 		}
 
-		if (d < 1.0 && cameraSubmersionType != CameraSubmersionType.LAVA && cameraSubmersionType != CameraSubmersionType.POWDER_SNOW) {
-			if (d < 0.0) {
-				d = 0.0;
+		if (t < 1.0F && cameraSubmersionType != CameraSubmersionType.LAVA && cameraSubmersionType != CameraSubmersionType.POWDER_SNOW) {
+			if (t < 0.0F) {
+				t = 0.0F;
 			}
 
-			d *= d;
-			red = (float)((double)red * d);
-			green = (float)((double)green * d);
-			blue = (float)((double)blue * d);
+			t *= t;
+			red *= t;
+			green *= t;
+			blue *= t;
 		}
 
 		if (f > 0.0F) {
@@ -154,24 +155,24 @@ public class BackgroundRenderer {
 			blue = blue * (1.0F - f) + blue * 0.6F * f;
 		}
 
-		float u;
+		float z;
 		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			if (entity instanceof ClientPlayerEntity) {
-				u = ((ClientPlayerEntity)entity).getUnderwaterVisibility();
+				z = ((ClientPlayerEntity)entity).getUnderwaterVisibility();
 			} else {
-				u = 1.0F;
+				z = 1.0F;
 			}
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-			u = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
+			z = GameRenderer.getNightVisionStrength((LivingEntity)entity, tickDelta);
 		} else {
-			u = 0.0F;
+			z = 0.0F;
 		}
 
 		if (red != 0.0F && green != 0.0F && blue != 0.0F) {
-			float v = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
-			red = red * (1.0F - u) + red * v * u;
-			green = green * (1.0F - u) + green * v * u;
-			blue = blue * (1.0F - u) + blue * v * u;
+			float u = Math.min(1.0F / red, Math.min(1.0F / green, 1.0F / blue));
+			red = red * (1.0F - z) + red * u * z;
+			green = green * (1.0F - z) + green * u * z;
+			blue = blue * (1.0F - z) + blue * u * z;
 		}
 
 		RenderSystem.clearColor(red, green, blue, 0.0F);
@@ -221,8 +222,8 @@ public class BackgroundRenderer {
 			g = 96.0F;
 			if (entity instanceof ClientPlayerEntity clientPlayerEntity) {
 				g *= Math.max(0.25F, clientPlayerEntity.getUnderwaterVisibility());
-				Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
-				if (biome.getCategory() == Biome.Category.SWAMP) {
+				RegistryEntry<Biome> registryEntry = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
+				if (Biome.getCategory(registryEntry) == Biome.Category.SWAMP) {
 					g *= 0.85F;
 				}
 			}

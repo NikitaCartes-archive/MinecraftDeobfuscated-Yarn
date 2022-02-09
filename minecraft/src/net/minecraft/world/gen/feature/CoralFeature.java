@@ -11,6 +11,9 @@ import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -25,7 +28,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		Optional<Block> optional = BlockTags.CORAL_BLOCKS.getRandom(random);
+		Optional<Block> optional = Registry.BLOCK.getEntryList(BlockTags.CORAL_BLOCKS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value);
 		return optional.isEmpty() ? false : this.generateCoral(structureWorldAccess, random, blockPos, ((Block)optional.get()).getDefaultState());
 	}
 
@@ -37,7 +40,11 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 		if ((blockState.isOf(Blocks.WATER) || blockState.isIn(BlockTags.CORALS)) && world.getBlockState(blockPos).isOf(Blocks.WATER)) {
 			world.setBlockState(pos, state, Block.NOTIFY_ALL);
 			if (random.nextFloat() < 0.25F) {
-				BlockTags.CORALS.getRandom(random).ifPresent(block -> world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS));
+				Registry.BLOCK
+					.getEntryList(BlockTags.CORALS)
+					.flatMap(blocks -> blocks.getRandom(random))
+					.map(RegistryEntry::value)
+					.ifPresent(block -> world.setBlockState(blockPos, block.getDefaultState(), Block.NOTIFY_LISTENERS));
 			} else if (random.nextFloat() < 0.05F) {
 				world.setBlockState(
 					blockPos, Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1)), Block.NOTIFY_LISTENERS
@@ -48,7 +55,7 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 				if (random.nextFloat() < 0.2F) {
 					BlockPos blockPos2 = pos.offset(direction);
 					if (world.getBlockState(blockPos2).isOf(Blocks.WATER)) {
-						BlockTags.WALL_CORALS.getRandom(random).ifPresent(block -> {
+						Registry.BLOCK.getEntryList(BlockTags.WALL_CORALS).flatMap(blocks -> blocks.getRandom(random)).map(RegistryEntry::value).ifPresent(block -> {
 							BlockState blockStatexx = block.getDefaultState();
 							if (blockStatexx.contains(DeadCoralWallFanBlock.FACING)) {
 								blockStatexx = blockStatexx.with(DeadCoralWallFanBlock.FACING, direction);

@@ -48,7 +48,7 @@ public class RaycastContext {
 		NONE(state -> false),
 		SOURCE_ONLY(FluidState::isStill),
 		ANY(state -> !state.isEmpty()),
-		WATER(state -> FluidTags.WATER.contains(state.getFluid()));
+		WATER(state -> state.isIn(FluidTags.WATER));
 
 		private final Predicate<FluidState> predicate;
 
@@ -69,9 +69,7 @@ public class RaycastContext {
 		COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
 		OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
 		VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape),
-		FALLDAMAGE_RESETTING(
-			(state, world, pos, context) -> BlockTags.FALL_DAMAGE_RESETTING.contains(state.getBlock()) ? VoxelShapes.fullCube() : VoxelShapes.empty()
-		);
+		FALLDAMAGE_RESETTING((state, world, pos, context) -> state.isIn(BlockTags.FALL_DAMAGE_RESETTING) ? VoxelShapes.fullCube() : VoxelShapes.empty());
 
 		private final RaycastContext.ShapeProvider provider;
 

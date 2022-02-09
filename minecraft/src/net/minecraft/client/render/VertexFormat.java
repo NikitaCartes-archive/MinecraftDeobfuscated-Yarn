@@ -166,11 +166,11 @@ public class VertexFormat {
 		SHORT(5123, 2),
 		INT(5125, 4);
 
-		public final int count;
+		public final int type;
 		public final int size;
 
-		private IntType(int count, int size) {
-			this.count = count;
+		private IntType(int type, int size) {
+			this.type = type;
 			this.size = size;
 		}
 

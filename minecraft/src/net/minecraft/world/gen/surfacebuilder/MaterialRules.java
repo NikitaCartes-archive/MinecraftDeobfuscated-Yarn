@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -160,12 +162,19 @@ public class MaterialRules {
 		}
 	}
 
-	static record BiomeMaterialCondition(List<RegistryKey<Biome>> biomes) implements MaterialRules.MaterialCondition {
+	static final class BiomeMaterialCondition implements MaterialRules.MaterialCondition {
 		static final Codec<MaterialRules.BiomeMaterialCondition> CONDITION_CODEC = RegistryKey.createCodec(Registry.BIOME_KEY)
 			.listOf()
 			.fieldOf("biome_is")
-			.<MaterialRules.BiomeMaterialCondition>xmap(MaterialRules::biome, MaterialRules.BiomeMaterialCondition::biomes)
+			.<MaterialRules.BiomeMaterialCondition>xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.field_36414)
 			.codec();
+		private final List<RegistryKey<Biome>> field_36414;
+		final Predicate<RegistryKey<Biome>> field_36415;
+
+		BiomeMaterialCondition(List<RegistryKey<Biome>> list) {
+			this.field_36414 = list;
+			this.field_36415 = Set.copyOf(list)::contains;
+		}
 
 		@Override
 		public Codec<? extends MaterialRules.MaterialCondition> codec() {
@@ -173,8 +182,6 @@ public class MaterialRules {
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			final Set<RegistryKey<Biome>> set = Set.copyOf(this.biomes);
-
 			class BiomePredicate extends MaterialRules.FullLazyAbstractPredicate {
 				BiomePredicate() {
 					super(materialRuleContext);
@@ -182,7 +189,7 @@ public class MaterialRules {
 
 				@Override
 				protected boolean test() {
-					return set.contains(this.context.biomeKeySupplier.get());
+					return ((RegistryEntry)this.context.biomeSupplier.get()).matches(BiomeMaterialCondition.this.field_36415);
 				}
 			}
 
@@ -341,19 +348,18 @@ public class MaterialRules {
 	public interface MaterialCondition extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BooleanSupplier> {
 		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION.getCodec().dispatch(MaterialRules.MaterialCondition::codec, Function.identity());
 
-		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault() {
-			Registry.register(Registry.MATERIAL_CONDITION, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "y_above", MaterialRules.AboveYMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "water", MaterialRules.WaterMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "temperature", MaterialRules.TemperatureMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "steep", MaterialRules.SteepMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "not", MaterialRules.NotMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "hole", MaterialRules.HoleMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "above_preliminary_surface", MaterialRules.SurfaceMaterialCondition.CONDITION_CODEC);
-			Registry.register(Registry.MATERIAL_CONDITION, "stone_depth", MaterialRules.StoneDepthMaterialCondition.CONDITION_CODEC);
-			return (Codec<? extends MaterialRules.MaterialCondition>)Registry.MATERIAL_CONDITION.iterator().next();
+		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialCondition>> registry) {
+			Registry.register(registry, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "y_above", MaterialRules.AboveYMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "water", MaterialRules.WaterMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "temperature", MaterialRules.TemperatureMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "steep", MaterialRules.SteepMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "not", MaterialRules.NotMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "hole", MaterialRules.HoleMaterialCondition.CONDITION_CODEC);
+			Registry.register(registry, "above_preliminary_surface", MaterialRules.SurfaceMaterialCondition.CONDITION_CODEC);
+			return Registry.register(registry, "stone_depth", MaterialRules.StoneDepthMaterialCondition.CONDITION_CODEC);
 		}
 
 		Codec<? extends MaterialRules.MaterialCondition> codec();
@@ -362,12 +368,11 @@ public class MaterialRules {
 	public interface MaterialRule extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BlockStateRule> {
 		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(MaterialRules.MaterialRule::codec, Function.identity());
 
-		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault() {
-			Registry.register(Registry.MATERIAL_RULE, "bandlands", MaterialRules.TerracottaBandsMaterialRule.RULE_CODEC);
-			Registry.register(Registry.MATERIAL_RULE, "block", MaterialRules.BlockMaterialRule.RULE_CODEC);
-			Registry.register(Registry.MATERIAL_RULE, "sequence", MaterialRules.SequenceMaterialRule.RULE_CODEC);
-			Registry.register(Registry.MATERIAL_RULE, "condition", MaterialRules.ConditionMaterialRule.RULE_CODEC);
-			return (Codec<? extends MaterialRules.MaterialRule>)Registry.MATERIAL_RULE.iterator().next();
+		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialRule>> registry) {
+			Registry.register(registry, "bandlands", MaterialRules.TerracottaBandsMaterialRule.RULE_CODEC);
+			Registry.register(registry, "block", MaterialRules.BlockMaterialRule.RULE_CODEC);
+			Registry.register(registry, "sequence", MaterialRules.SequenceMaterialRule.RULE_CODEC);
+			return Registry.register(registry, "condition", MaterialRules.ConditionMaterialRule.RULE_CODEC);
 		}
 
 		Codec<? extends MaterialRules.MaterialRule> codec();
@@ -385,8 +390,7 @@ public class MaterialRules {
 		final MaterialRules.BooleanSupplier surfacePredicate = new MaterialRules.MaterialRuleContext.SurfacePredicate();
 		final Chunk chunk;
 		private final ChunkNoiseSampler chunkNoiseSampler;
-		private final Function<BlockPos, Biome> posToBiome;
-		private final Registry<Biome> biomeRegistry;
+		private final Function<BlockPos, RegistryEntry<Biome>> posToBiome;
 		final HeightContext heightContext;
 		private long field_36278 = Long.MAX_VALUE;
 		private final int[] field_36279 = new int[4];
@@ -400,8 +404,7 @@ public class MaterialRules {
 		private int surfaceMinY;
 		long uniquePosValue = -9223372036854775807L;
 		final BlockPos.Mutable pos = new BlockPos.Mutable();
-		Supplier<Biome> biomeSupplier;
-		Supplier<RegistryKey<Biome>> biomeKeySupplier;
+		Supplier<RegistryEntry<Biome>> biomeSupplier;
 		int y;
 		int fluidHeight;
 		int stoneDepthBelow;
@@ -411,7 +414,7 @@ public class MaterialRules {
 			SurfaceBuilder surfaceBuilder,
 			Chunk chunk,
 			ChunkNoiseSampler chunkNoiseSampler,
-			Function<BlockPos, Biome> posToBiome,
+			Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 			Registry<Biome> biomeRegistry,
 			HeightContext heightContext
 		) {
@@ -419,7 +422,6 @@ public class MaterialRules {
 			this.chunk = chunk;
 			this.chunkNoiseSampler = chunkNoiseSampler;
 			this.posToBiome = posToBiome;
-			this.biomeRegistry = biomeRegistry;
 			this.heightContext = heightContext;
 		}
 
@@ -433,12 +435,7 @@ public class MaterialRules {
 
 		protected void initVerticalContext(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int x, int y, int z) {
 			++this.uniquePosValue;
-			this.biomeSupplier = Suppliers.memoize(() -> (Biome)this.posToBiome.apply(this.pos.set(x, y, z)));
-			this.biomeKeySupplier = Suppliers.memoize(
-				() -> (RegistryKey<Biome>)this.biomeRegistry
-						.getKey((Biome)this.biomeSupplier.get())
-						.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + this.biomeSupplier))
-			);
+			this.biomeSupplier = Suppliers.memoize(() -> (RegistryEntry<Biome>)this.posToBiome.apply(this.pos.set(x, y, z)));
 			this.y = y;
 			this.fluidHeight = fluidHeight;
 			this.stoneDepthBelow = stoneDepthBelow;
@@ -499,7 +496,7 @@ public class MaterialRules {
 
 			@Override
 			protected boolean test() {
-				return ((Biome)this.context.biomeSupplier.get()).isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
+				return ((Biome)((RegistryEntry)this.context.biomeSupplier.get()).value()).isCold(this.context.pos.set(this.context.x, this.context.y, this.context.z));
 			}
 		}
 

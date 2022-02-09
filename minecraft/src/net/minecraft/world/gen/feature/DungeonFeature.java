@@ -33,7 +33,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE.getId());
+		Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE);
 		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();

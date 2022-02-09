@@ -5,11 +5,12 @@ import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.TrapezoidFloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
 
 public class ConfiguredCarvers {
-	public static final ConfiguredCarver<CaveCarverConfig> CAVE = register(
+	public static final RegistryEntry<ConfiguredCarver<CaveCarverConfig>> CAVE = register(
 		"cave",
 		Carver.CAVE
 			.configure(
@@ -25,7 +26,7 @@ public class ConfiguredCarvers {
 				)
 			)
 	);
-	public static final ConfiguredCarver<CaveCarverConfig> CAVE_EXTRA_UNDERGROUND = register(
+	public static final RegistryEntry<ConfiguredCarver<CaveCarverConfig>> CAVE_EXTRA_UNDERGROUND = register(
 		"cave_extra_underground",
 		Carver.CAVE
 			.configure(
@@ -41,7 +42,7 @@ public class ConfiguredCarvers {
 				)
 			)
 	);
-	public static final ConfiguredCarver<RavineCarverConfig> CANYON = register(
+	public static final RegistryEntry<ConfiguredCarver<RavineCarverConfig>> CANYON = register(
 		"canyon",
 		Carver.RAVINE
 			.configure(
@@ -58,7 +59,7 @@ public class ConfiguredCarvers {
 				)
 			)
 	);
-	public static final ConfiguredCarver<CaveCarverConfig> NETHER_CAVE = register(
+	public static final RegistryEntry<ConfiguredCarver<CaveCarverConfig>> NETHER_CAVE = register(
 		"nether_cave",
 		Carver.NETHER_CAVE
 			.configure(
@@ -75,7 +76,7 @@ public class ConfiguredCarvers {
 			)
 	);
 
-	private static <WC extends CarverConfig> ConfiguredCarver<WC> register(String id, ConfiguredCarver<WC> configuredCarver) {
-		return BuiltinRegistries.add(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
+	private static <WC extends CarverConfig> RegistryEntry<ConfiguredCarver<WC>> register(String id, ConfiguredCarver<WC> configuredCarver) {
+		return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
 	}
 }

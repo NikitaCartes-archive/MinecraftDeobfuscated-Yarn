@@ -38,6 +38,7 @@ public class StrongholdGenerator {
 	private static final int field_31626 = 50;
 	private static final int field_31627 = 10;
 	private static final boolean field_31628 = true;
+	public static final int field_36417 = 64;
 	private static final StrongholdGenerator.PieceData[] ALL_PIECES = new StrongholdGenerator.PieceData[]{
 		new StrongholdGenerator.PieceData(StrongholdGenerator.Corridor.class, 40, 0),
 		new StrongholdGenerator.PieceData(StrongholdGenerator.PrisonHall.class, 5, 5),

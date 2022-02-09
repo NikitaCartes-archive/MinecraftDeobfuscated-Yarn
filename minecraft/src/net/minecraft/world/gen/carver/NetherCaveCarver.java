@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
@@ -57,7 +58,7 @@ public class NetherCaveCarver extends CaveCarver {
 		CarverContext carverContext,
 		CaveCarverConfig caveCarverConfig,
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
+		Function<BlockPos, RegistryEntry<Biome>> function,
 		CarvingMask carvingMask,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,

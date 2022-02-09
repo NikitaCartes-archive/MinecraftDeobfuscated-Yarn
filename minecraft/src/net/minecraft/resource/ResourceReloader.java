@@ -6,9 +6,9 @@ import net.minecraft.util.profiler.Profiler;
 
 /**
  * A resource reloader performs actual reloading in its {@linkplain #reload
- * reload} in a reloadable resource manager it is registered to.
+ * reload} when called by {@link SimpleResourceReload#start}.
  * 
- * @see ReloadableResourceManager
+ * @see SimpleResourceReload#start
  * @see SinglePreparationResourceReloader SinglePreparationResourceReloader
  * (completes preparation in one method)
  * @see SynchronousResourceReloader SynchronousResourceReloader

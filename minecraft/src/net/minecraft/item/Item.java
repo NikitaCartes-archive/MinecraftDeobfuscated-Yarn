@@ -42,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ public class Item implements ItemConvertible {
 	public static final int DEFAULT_MAX_COUNT = 64;
 	public static final int field_30888 = 32;
 	public static final int field_30889 = 13;
+	private final RegistryEntry.Reference<Item> registryEntry = Registry.ITEM.createEntry(this);
 	@Nullable
 	protected final ItemGroup group;
 	private final Rarity rarity;
@@ -97,6 +99,11 @@ public class Item implements ItemConvertible {
 				LOGGER.error("Item classes should end with Item and {} doesn't.", string);
 			}
 		}
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<Item> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {

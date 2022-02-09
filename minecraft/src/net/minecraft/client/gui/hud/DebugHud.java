@@ -45,8 +45,8 @@ import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -59,11 +59,14 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
@@ -301,7 +304,7 @@ public class DebugHud extends DrawableHelper {
 
 				list.add(stringBuilder.toString());
 				if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
-					list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
+					list.add("Biome: " + getBiomeString(this.client.world.getBiome(blockPos)));
 					long l = 0L;
 					float h = 0.0F;
 					if (worldChunk2 != null) {
@@ -354,6 +357,10 @@ public class DebugHud extends DrawableHelper {
 			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
 			return list;
 		}
+	}
+
+	private static String getBiomeString(RegistryEntry<Biome> biome) {
+		return biome.getKeyOrValue().map(biomeKey -> biomeKey.getValue().toString(), biome_ -> "[unregistered " + biome_ + "]");
 	}
 
 	@Nullable
@@ -435,9 +442,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for(Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(blockState.getBlock())) {
-					list.add("#" + identifier);
-				}
+				blockState.streamTags().map(tagKey -> "#" + tagKey.id()).forEach(list::add);
 			}
 
 			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
@@ -451,9 +456,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for(Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.FLUID_KEY).getTagsFor(fluidState.getFluid())) {
-					list.add("#" + identifier);
-				}
+				fluidState.streamTags().map(tagKey -> "#" + tagKey.id()).forEach(list::add);
 			}
 
 			Entity entity = this.client.targetedEntity;
