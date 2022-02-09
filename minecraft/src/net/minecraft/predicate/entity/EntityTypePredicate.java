@@ -7,8 +7,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -36,10 +35,7 @@ public abstract class EntityTypePredicate {
 			String string = JsonHelper.asString(json, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
-				return new EntityTypePredicate.Tagged(
-					ServerTagManagerHolder.getTagManager()
-						.getTag(Registry.ENTITY_TYPE_KEY, identifier, identifierx -> new JsonSyntaxException("Unknown entity tag '" + identifierx + "'"))
-				);
+				return new EntityTypePredicate.Tagged(TagKey.intern(Registry.ENTITY_TYPE_KEY, identifier));
 			} else {
 				Identifier identifier = new Identifier(string);
 				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE
@@ -58,7 +54,7 @@ public abstract class EntityTypePredicate {
 		return new EntityTypePredicate.Single(type);
 	}
 
-	public static EntityTypePredicate create(Tag<EntityType<?>> tag) {
+	public static EntityTypePredicate create(TagKey<EntityType<?>> tag) {
 		return new EntityTypePredicate.Tagged(tag);
 	}
 
@@ -81,9 +77,9 @@ public abstract class EntityTypePredicate {
 	}
 
 	static class Tagged extends EntityTypePredicate {
-		private final Tag<EntityType<?>> tag;
+		private final TagKey<EntityType<?>> tag;
 
-		public Tagged(Tag<EntityType<?>> tag) {
+		public Tagged(TagKey<EntityType<?>> tag) {
 			this.tag = tag;
 		}
 
@@ -94,9 +90,7 @@ public abstract class EntityTypePredicate {
 
 		@Override
 		public JsonElement toJson() {
-			return new JsonPrimitive(
-				"#" + ServerTagManagerHolder.getTagManager().getTagId(Registry.ENTITY_TYPE_KEY, this.tag, () -> new IllegalStateException("Unknown entity type tag"))
-			);
+			return new JsonPrimitive("#" + this.tag.id());
 		}
 	}
 }

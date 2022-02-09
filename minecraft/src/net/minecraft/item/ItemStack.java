@@ -3,6 +3,7 @@ package net.minecraft.item;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Streams;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
@@ -18,6 +19,7 @@ import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -48,9 +50,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -69,6 +69,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -221,6 +222,10 @@ public final class ItemStack {
 		this(item, 1);
 	}
 
+	public ItemStack(RegistryEntry<Item> entry) {
+		this(entry.value(), 1);
+	}
+
 	private ItemStack(ItemConvertible item, int count, Optional<NbtCompound> nbt) {
 		this(item, count);
 		nbt.ifPresent(this::setNbt);
@@ -293,19 +298,25 @@ public final class ItemStack {
 		return this.empty ? Items.AIR : this.item;
 	}
 
-	public boolean isIn(Tag<Item> tag) {
-		return tag.contains(this.getItem());
+	public boolean isIn(TagKey<Item> tag) {
+		return this.getItem().getRegistryEntry().isIn(tag);
 	}
 
 	public boolean isOf(Item item) {
 		return this.getItem() == item;
 	}
 
+	public Stream<TagKey<Item>> streamTags() {
+		return this.getItem().getRegistryEntry().streamTags();
+	}
+
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		PlayerEntity playerEntity = context.getPlayer();
 		BlockPos blockPos = context.getBlockPos();
 		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(context.getWorld(), blockPos, false);
-		if (playerEntity != null && !playerEntity.getAbilities().allowModifyWorld && !this.canPlaceOn(context.getWorld().getTagManager(), cachedBlockPosition)) {
+		if (playerEntity != null
+			&& !playerEntity.getAbilities().allowModifyWorld
+			&& !this.canPlaceOn(context.getWorld().getRegistryManager().get(Registry.BLOCK_KEY), cachedBlockPosition)) {
 			return ActionResult.PASS;
 		} else {
 			Item item = this.getItem();
@@ -940,23 +951,23 @@ public final class ItemStack {
 		try {
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(tag), true).parse(true);
 			BlockState blockState = blockArgumentParser.getBlockState();
-			Identifier identifier = blockArgumentParser.getTagId();
+			TagKey<Block> tagKey = blockArgumentParser.getTagId();
 			boolean bl = blockState != null;
-			boolean bl2 = identifier != null;
-			if (bl || bl2) {
-				if (bl) {
-					return Lists.<Text>newArrayList(blockState.getBlock().getName().formatted(Formatting.DARK_GRAY));
-				}
+			boolean bl2 = tagKey != null;
+			if (bl) {
+				return Lists.<Text>newArrayList(blockState.getBlock().getName().formatted(Formatting.DARK_GRAY));
+			}
 
-				Tag<Block> tag2 = BlockTags.getTagGroup().getTag(identifier);
-				if (tag2 != null) {
-					Collection<Block> collection = tag2.values();
-					if (!collection.isEmpty()) {
-						return (Collection<Text>)collection.stream().map(Block::getName).map(text -> text.formatted(Formatting.DARK_GRAY)).collect(Collectors.toList());
-					}
+			if (bl2) {
+				List<Text> list = (List<Text>)Streams.stream(Registry.BLOCK.iterateEntries(tagKey))
+					.map(entry -> ((Block)entry.value()).getName())
+					.map(text -> text.formatted(Formatting.DARK_GRAY))
+					.collect(Collectors.toList());
+				if (!list.isEmpty()) {
+					return list;
 				}
 			}
-		} catch (CommandSyntaxException var8) {
+		} catch (CommandSyntaxException var7) {
 		}
 
 		return Lists.<Text>newArrayList(new LiteralText("missingno").formatted(Formatting.DARK_GRAY));
@@ -1086,20 +1097,20 @@ public final class ItemStack {
 		return mutableText2;
 	}
 
-	public boolean canPlaceOn(TagManager tagManager, CachedBlockPosition pos) {
+	public boolean canPlaceOn(Registry<Block> blockRegistry, CachedBlockPosition pos) {
 		if (this.placeChecker == null) {
 			this.placeChecker = new BlockPredicatesChecker("CanPlaceOn");
 		}
 
-		return this.placeChecker.check(this, tagManager, pos);
+		return this.placeChecker.check(this, blockRegistry, pos);
 	}
 
-	public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {
+	public boolean canDestroy(Registry<Block> blockRegistry, CachedBlockPosition pos) {
 		if (this.destroyChecker == null) {
 			this.destroyChecker = new BlockPredicatesChecker("CanDestroy");
 		}
 
-		return this.destroyChecker.check(this, tagManager, pos);
+		return this.destroyChecker.check(this, blockRegistry, pos);
 	}
 
 	public int getBobbingAnimationTime() {

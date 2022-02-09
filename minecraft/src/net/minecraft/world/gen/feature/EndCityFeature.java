@@ -24,11 +24,6 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		super(configCodec, EndCityFeature::addPieces);
 	}
 
-	@Override
-	protected boolean isUniformDistribution() {
-		return false;
-	}
-
 	private static int getGenerationHeight(ChunkPos pos, ChunkGenerator chunkGenerator, HeightLimitView world) {
 		Random random = new Random((long)(pos.x + pos.z * 10387313));
 		BlockRotation blockRotation = BlockRotation.random(random);

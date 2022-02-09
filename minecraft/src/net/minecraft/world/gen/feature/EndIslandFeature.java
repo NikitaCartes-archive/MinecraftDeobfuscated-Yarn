@@ -18,7 +18,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
-		float f = (float)(random.nextInt(3) + 4);
+		float f = (float)random.nextInt(3) + 4.0F;
 
 		for (int i = 0; f > 0.5F; i--) {
 			for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); j++) {
@@ -29,7 +29,7 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			f = (float)((double)f - ((double)random.nextInt(2) + 0.5));
+			f -= (float)random.nextInt(2) + 0.5F;
 		}
 
 		return true;

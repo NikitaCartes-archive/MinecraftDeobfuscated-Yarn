@@ -139,6 +139,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -998,29 +999,46 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		BlockHitResult blockHitResult = packet.getBlockHitResult();
+		Vec3d vec3d = blockHitResult.getPos();
 		BlockPos blockPos = blockHitResult.getBlockPos();
-		Direction direction = blockHitResult.getSide();
-		this.player.updateLastActionTime();
-		int i = this.player.world.getTopY();
-		if (blockPos.getY() < i) {
-			if (this.requestedTeleportPos == null
-				&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
-				&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
-				ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
-				if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
-					Text text = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
-					this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
-				} else if (actionResult.shouldSwingHand()) {
-					this.player.swingHand(hand, true);
+		Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
+		if (this.player.world.getServer() != null
+			&& this.player.getChunkPos().getChebyshevDistance(new ChunkPos(blockPos)) < this.player.world.getServer().getPlayerManager().getViewDistance()) {
+			double d = 1.0000001;
+			if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
+				Direction direction = blockHitResult.getSide();
+				this.player.updateLastActionTime();
+				int i = this.player.world.getTopY();
+				if (blockPos.getY() < i) {
+					if (this.requestedTeleportPos == null
+						&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
+						&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
+						ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+						if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
+							Text text = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
+							this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
+						} else if (actionResult.shouldSwingHand()) {
+							this.player.swingHand(hand, true);
+						}
+					}
+				} else {
+					Text text2 = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
+					this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
 				}
+
+				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
+				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
+			} else {
+				LOGGER.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
 			}
 		} else {
-			Text text2 = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
-			this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
+			LOGGER.warn(
+				"Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.",
+				this.player.getGameProfile().getName(),
+				blockPos,
+				this.player.getBlockPos()
+			);
 		}
-
-		this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
-		this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
 	}
 
 	@Override

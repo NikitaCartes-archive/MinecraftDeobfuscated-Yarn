@@ -85,8 +85,8 @@ public class WorldChunk extends Chunk {
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
 
-	public WorldChunk(World world, ChunkPos pos) {
-		this(world, pos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0L, null, null, null);
+	public WorldChunk(World world, ChunkPos chunkPos) {
+		this(world, chunkPos, UpgradeData.NO_UPGRADE_DATA, new ChunkTickScheduler<>(), new ChunkTickScheduler<>(), 0L, null, null, null);
 	}
 
 	public WorldChunk(

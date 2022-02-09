@@ -38,7 +38,7 @@ public class ElytraSoundInstance extends MovingSoundInstance {
 			if (this.tickCount < 20) {
 				this.volume = 0.0F;
 			} else if (this.tickCount < 40) {
-				this.volume = (float)((double)this.volume * ((double)(this.tickCount - 20) / 20.0));
+				this.volume = this.volume * ((float)(this.tickCount - 20) / 20.0F);
 			}
 
 			float g = 0.8F;

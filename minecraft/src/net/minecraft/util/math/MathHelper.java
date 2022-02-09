@@ -648,14 +648,14 @@ public class MathHelper {
 	}
 
 	public static double[] getCumulativeDistribution(double... values) {
-		float f = 0.0F;
+		double d = 0.0;
 
-		for (double d : values) {
-			f = (float)((double)f + d);
+		for (double e : values) {
+			d += e;
 		}
 
 		for (int i = 0; i < values.length; i++) {
-			values[i] /= (double)f;
+			values[i] /= d;
 		}
 
 		for (int i = 0; i < values.length; i++) {

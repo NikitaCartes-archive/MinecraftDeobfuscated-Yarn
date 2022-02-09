@@ -34,7 +34,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -253,54 +253,47 @@ public class EntitySelectorOptions {
 					reader.setSelectsTeam(true);
 				}
 			}, reader -> !reader.selectsTeam(), new TranslatableText("argument.entity.options.team.description"));
-			putOption(
-				"type",
-				reader -> {
-					reader.setSuggestionProvider((builder, consumer) -> {
-						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder, String.valueOf('!'));
-						CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), builder, "!#");
-						if (!reader.excludesEntityType()) {
-							CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder);
-							CommandSource.suggestIdentifiers(EntityTypeTags.getTagGroup().getTagIds(), builder, String.valueOf('#'));
-						}
+			putOption("type", reader -> {
+				reader.setSuggestionProvider((builder, consumer) -> {
+					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder, String.valueOf('!'));
+					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.streamTags().map(TagKey::id), builder, "!#");
+					if (!reader.excludesEntityType()) {
+						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), builder);
+						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.streamTags().map(TagKey::id), builder, String.valueOf('#'));
+					}
 
-						return builder.buildFuture();
-					});
-					int i = reader.getReader().getCursor();
-					boolean bl = reader.readNegationCharacter();
-					if (reader.excludesEntityType() && !bl) {
-						reader.getReader().setCursor(i);
-						throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(reader.getReader(), "type");
+					return builder.buildFuture();
+				});
+				int i = reader.getReader().getCursor();
+				boolean bl = reader.readNegationCharacter();
+				if (reader.excludesEntityType() && !bl) {
+					reader.getReader().setCursor(i);
+					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(reader.getReader(), "type");
+				} else {
+					if (bl) {
+						reader.setExcludesEntityType();
+					}
+
+					if (reader.readTagCharacter()) {
+						TagKey<EntityType<?>> tagKey = TagKey.intern(Registry.ENTITY_TYPE_KEY, Identifier.fromCommandInput(reader.getReader()));
+						reader.setPredicate(entity -> entity.getType().isIn(tagKey) != bl);
 					} else {
-						if (bl) {
-							reader.setExcludesEntityType();
+						Identifier identifier = Identifier.fromCommandInput(reader.getReader());
+						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
+							reader.getReader().setCursor(i);
+							return INVALID_TYPE_EXCEPTION.createWithContext(reader.getReader(), identifier.toString());
+						});
+						if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
+							reader.setIncludesNonPlayers(false);
 						}
 
-						if (reader.readTagCharacter()) {
-							Identifier identifier = Identifier.fromCommandInput(reader.getReader());
-							reader.setPredicate(
-								entity -> entity.getType().isIn(entity.getServer().getTagManager().getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY).getTagOrEmpty(identifier)) != bl
-							);
-						} else {
-							Identifier identifier = Identifier.fromCommandInput(reader.getReader());
-							EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
-								reader.getReader().setCursor(i);
-								return INVALID_TYPE_EXCEPTION.createWithContext(reader.getReader(), identifier.toString());
-							});
-							if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
-								reader.setIncludesNonPlayers(false);
-							}
-
-							reader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
-							if (!bl) {
-								reader.setEntityType(entityType);
-							}
+						reader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
+						if (!bl) {
+							reader.setEntityType(entityType);
 						}
 					}
-				},
-				reader -> !reader.selectsEntityType(),
-				new TranslatableText("argument.entity.options.type.description")
-			);
+				}
+			}, reader -> !reader.selectsEntityType(), new TranslatableText("argument.entity.options.type.description"));
 			putOption("tag", reader -> {
 				boolean bl = reader.readNegationCharacter();
 				String string = reader.getReader().readUnquotedString();

@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -32,9 +33,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.dynamic.RegistryReadingOps;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -123,13 +123,10 @@ public class EditWorldScreen extends Screen {
 				20,
 				new TranslatableText("selectWorld.edit.export_worldgen_settings"),
 				button -> {
-					DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-
 					DataResult<String> dataResult2;
-					try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
-							.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, this.storageSession)) {
-						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, impl);
-						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
+					try (class_6904 lv = this.client.method_40186(this.storageSession, false)) {
+						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lv.registryAccess());
+						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, lv.worldData().getGeneratorOptions());
 						dataResult2 = dataResult.flatMap(json -> {
 							Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
@@ -142,8 +139,8 @@ public class EditWorldScreen extends Screen {
 									if (jsonWriter != null) {
 										try {
 											jsonWriter.close();
-										} catch (Throwable var6x) {
-											var7.addSuppressed(var6x);
+										} catch (Throwable var6) {
+											var7.addSuppressed(var6);
 										}
 									}
 
@@ -153,15 +150,15 @@ public class EditWorldScreen extends Screen {
 								if (jsonWriter != null) {
 									jsonWriter.close();
 								}
-							} catch (JsonIOException | IOException var8) {
-								return DataResult.error("Error writing file: " + var8.getMessage());
+							} catch (JsonIOException | IOException var8x) {
+								return DataResult.error("Error writing file: " + var8x.getMessage());
 							}
 
 							return DataResult.success(path.toString());
 						});
-					} catch (Exception var9) {
-						LOGGER.warn("Could not parse level data", (Throwable)var9);
-						dataResult2 = DataResult.error("Could not parse level data: " + var9.getMessage());
+					} catch (Exception var8) {
+						LOGGER.warn("Could not parse level data", (Throwable)var8);
+						dataResult2 = DataResult.error("Could not parse level data: " + var8.getMessage());
 					}
 
 					Text text = new LiteralText(dataResult2.get().map(Function.identity(), PartialResult::message));

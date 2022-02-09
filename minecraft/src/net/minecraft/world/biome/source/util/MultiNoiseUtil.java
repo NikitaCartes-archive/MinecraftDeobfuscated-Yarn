@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -89,24 +90,27 @@ public class MultiNoiseUtil {
 			return this.entries;
 		}
 
-		public T method_39529(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, T object) {
+		public T method_39529(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
 			return this.method_39527(noiseValuePoint);
 		}
 
 		@VisibleForTesting
-		public T method_39530(MultiNoiseUtil.NoiseValuePoint noiseValuePoint, T object) {
-			long l = Long.MAX_VALUE;
-			T object2 = object;
+		public T method_39530(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {
+			Iterator<Pair<MultiNoiseUtil.NoiseHypercube, T>> iterator = this.getEntries().iterator();
+			Pair<MultiNoiseUtil.NoiseHypercube, T> pair = (Pair<MultiNoiseUtil.NoiseHypercube, T>)iterator.next();
+			long l = pair.getFirst().getSquaredDistance(noiseValuePoint);
+			T object = pair.getSecond();
 
-			for (Pair<MultiNoiseUtil.NoiseHypercube, T> pair : this.getEntries()) {
-				long m = pair.getFirst().getSquaredDistance(noiseValuePoint);
+			while (iterator.hasNext()) {
+				Pair<MultiNoiseUtil.NoiseHypercube, T> pair2 = (Pair<MultiNoiseUtil.NoiseHypercube, T>)iterator.next();
+				long m = pair2.getFirst().getSquaredDistance(noiseValuePoint);
 				if (m < l) {
 					l = m;
-					object2 = pair.getSecond();
+					object = pair2.getSecond();
 				}
 			}
 
-			return object2;
+			return object;
 		}
 
 		public T method_39527(MultiNoiseUtil.NoiseValuePoint noiseValuePoint) {

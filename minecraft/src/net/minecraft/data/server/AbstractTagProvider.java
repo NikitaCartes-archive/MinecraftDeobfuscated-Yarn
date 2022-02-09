@@ -20,6 +20,7 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
@@ -45,9 +46,9 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		this.tagBuilders
 			.forEach(
 				(id, builder) -> {
-					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamEntries()
-						.filter(tag -> !tag.getEntry().canAdd(this.registry::containsId, this.tagBuilders::containsKey))
-						.collect(Collectors.toList());
+					List<Tag.TrackedEntry> list = builder.streamEntries()
+						.filter(tag -> !tag.entry().canAdd(this.registry::containsId, this.tagBuilders::containsKey))
+						.toList();
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(
 							String.format(
@@ -95,13 +96,13 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 
 	protected abstract Path getOutput(Identifier id);
 
-	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
+	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(TagKey<T> tag) {
 		Tag.Builder builder = this.getTagBuilder(tag);
 		return new AbstractTagProvider.ObjectBuilder<>(builder, this.registry, "vanilla");
 	}
 
-	protected Tag.Builder getTagBuilder(Tag.Identified<T> tag) {
-		return (Tag.Builder)this.tagBuilders.computeIfAbsent(tag.getId(), id -> new Tag.Builder());
+	protected Tag.Builder getTagBuilder(TagKey<T> tag) {
+		return (Tag.Builder)this.tagBuilders.computeIfAbsent(tag.id(), id -> new Tag.Builder());
 	}
 
 	protected static class ObjectBuilder<T> {
@@ -125,8 +126,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			return this;
 		}
 
-		public AbstractTagProvider.ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
-			this.builder.addTag(identifiedTag.getId(), this.source);
+		public AbstractTagProvider.ObjectBuilder<T> addTag(TagKey<T> identifiedTag) {
+			this.builder.addTag(identifiedTag.id(), this.source);
 			return this;
 		}
 

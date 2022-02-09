@@ -61,7 +61,7 @@ public class BoatEntity extends Entity {
 	public static final int field_30697 = 0;
 	public static final int field_30698 = 1;
 	private static final int field_30695 = 60;
-	private static final double field_30696 = (float) (Math.PI / 8);
+	private static final float field_30696 = (float) (Math.PI / 8);
 	public static final double field_30699 = (float) (Math.PI / 4);
 	public static final int field_30700 = 60;
 	private final float[] paddlePhases = new float[2];
@@ -301,7 +301,7 @@ public class BoatEntity extends Entity {
 			if (this.isPaddleMoving(i)) {
 				if (!this.isSilent()
 					&& (double)(this.paddlePhases[i] % (float) (Math.PI * 2)) <= (float) (Math.PI / 4)
-					&& ((double)this.paddlePhases[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2) >= (float) (Math.PI / 4)) {
+					&& (double)((this.paddlePhases[i] + (float) (Math.PI / 8)) % (float) (Math.PI * 2)) >= (float) (Math.PI / 4)) {
 					SoundEvent soundEvent = this.getPaddleSoundEvent();
 					if (soundEvent != null) {
 						Vec3d vec3d = this.getRotationVec(1.0F);
@@ -313,7 +313,7 @@ public class BoatEntity extends Entity {
 					}
 				}
 
-				this.paddlePhases[i] = (float)((double)this.paddlePhases[i] + (float) (Math.PI / 8));
+				this.paddlePhases[i] = this.paddlePhases[i] + (float) (Math.PI / 8);
 			} else {
 				this.paddlePhases[i] = 0.0F;
 			}
@@ -420,9 +420,7 @@ public class BoatEntity extends Entity {
 	}
 
 	public float interpolatePaddlePhase(int paddle, float tickDelta) {
-		return this.isPaddleMoving(paddle)
-			? (float)MathHelper.clampedLerp((double)this.paddlePhases[paddle] - (float) (Math.PI / 8), (double)this.paddlePhases[paddle], (double)tickDelta)
-			: 0.0F;
+		return this.isPaddleMoving(paddle) ? MathHelper.clampedLerp(this.paddlePhases[paddle] - (float) (Math.PI / 8), this.paddlePhases[paddle], tickDelta) : 0.0F;
 	}
 
 	private BoatEntity.Location checkLocation() {
@@ -666,7 +664,7 @@ public class BoatEntity extends Entity {
 				}
 
 				if (passenger instanceof AnimalEntity) {
-					f = (float)((double)f + 0.2);
+					f += 0.2F;
 				}
 			}
 
@@ -784,7 +782,7 @@ public class BoatEntity extends Entity {
 
 				this.onLanding();
 			} else if (!this.world.getFluidState(this.getBlockPos().down()).isIn(FluidTags.WATER) && heightDifference < 0.0) {
-				this.fallDistance = (float)((double)this.fallDistance - heightDifference);
+				this.fallDistance -= (float)heightDifference;
 			}
 		}
 	}

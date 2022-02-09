@@ -15,9 +15,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
@@ -28,9 +28,7 @@ import net.minecraft.util.SystemDetails;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.slf4j.Logger;
 
@@ -52,33 +50,29 @@ public class IntegratedServer extends MinecraftServer {
 	public IntegratedServer(
 		Thread serverThread,
 		MinecraftClient client,
-		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		ResourcePackManager dataPackManager,
-		ServerResourceManager serverResourceManager,
-		SaveProperties saveProperties,
-		MinecraftSessionService sessionService,
-		GameProfileRepository gameProfileRepo,
+		ResourcePackManager resourcePackManager,
+		class_6904 arg,
+		MinecraftSessionService minecraftSessionService,
+		GameProfileRepository gameProfileRepository,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
 			serverThread,
-			registryManager,
 			session,
-			saveProperties,
-			dataPackManager,
+			resourcePackManager,
+			arg,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
-			serverResourceManager,
-			sessionService,
-			gameProfileRepo,
+			minecraftSessionService,
+			gameProfileRepository,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
 		this.setSinglePlayerName(client.getSession().getUsername());
 		this.setDemo(client.isDemo());
-		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
+		this.setPlayerManager(new IntegratedPlayerManager(this, this.getRegistryManager(), this.saveHandler));
 		this.client = client;
 	}
 

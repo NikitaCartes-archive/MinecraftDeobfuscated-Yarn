@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
@@ -20,6 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -129,7 +131,15 @@ public class ServerPlayerInteractionManager {
 		double f = this.player.getZ() - ((double)pos.getZ() + 0.5);
 		double g = d * d + e * e + f * f;
 		if (g > 36.0) {
-			this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "too far"));
+			BlockState blockState;
+			if (this.player.world.getServer() != null
+				&& this.player.getChunkPos().getChebyshevDistance(new ChunkPos(pos)) < this.player.world.getServer().getPlayerManager().getViewDistance()) {
+				blockState = this.world.getBlockState(pos);
+			} else {
+				blockState = Blocks.AIR.getDefaultState();
+			}
+
+			this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, blockState, action, false, "too far"));
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, false, "too high"));
 		} else {
@@ -151,13 +161,13 @@ public class ServerPlayerInteractionManager {
 
 				this.startMiningTime = this.tickCounter;
 				float h = 1.0F;
-				BlockState blockState = this.world.getBlockState(pos);
-				if (!blockState.isAir()) {
-					blockState.onBlockBreakStart(this.world, pos, this.player);
-					h = blockState.calcBlockBreakingDelta(this.player, this.player.world, pos);
+				BlockState blockState2 = this.world.getBlockState(pos);
+				if (!blockState2.isAir()) {
+					blockState2.onBlockBreakStart(this.world, pos, this.player);
+					h = blockState2.calcBlockBreakingDelta(this.player, this.player.world, pos);
 				}
 
-				if (!blockState.isAir() && h >= 1.0F) {
+				if (!blockState2.isAir() && h >= 1.0F) {
 					this.finishMining(pos, action, "insta mine");
 				} else {
 					if (this.mining) {
@@ -184,9 +194,9 @@ public class ServerPlayerInteractionManager {
 			} else if (action == PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK) {
 				if (pos.equals(this.miningPos)) {
 					int j = this.tickCounter - this.startMiningTime;
-					BlockState blockStatex = this.world.getBlockState(pos);
-					if (!blockStatex.isAir()) {
-						float k = blockStatex.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(j + 1);
+					BlockState blockState2x = this.world.getBlockState(pos);
+					if (!blockState2x.isAir()) {
+						float k = blockState2x.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(j + 1);
 						if (k >= 0.7F) {
 							this.mining = false;
 							this.world.setBlockBreakingInfo(this.player.getId(), pos, -1);

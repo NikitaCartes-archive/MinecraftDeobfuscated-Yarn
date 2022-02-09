@@ -3,13 +3,11 @@ package net.minecraft.predicate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import javax.annotation.Nullable;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.BlockPos;
@@ -18,12 +16,12 @@ import net.minecraft.util.registry.Registry;
 public class FluidPredicate {
 	public static final FluidPredicate ANY = new FluidPredicate(null, null, StatePredicate.ANY);
 	@Nullable
-	private final Tag<Fluid> tag;
+	private final TagKey<Fluid> tag;
 	@Nullable
 	private final Fluid fluid;
 	private final StatePredicate state;
 
-	public FluidPredicate(@Nullable Tag<Fluid> tag, @Nullable Fluid fluid, StatePredicate state) {
+	public FluidPredicate(@Nullable TagKey<Fluid> tag, @Nullable Fluid fluid, StatePredicate state) {
 		this.tag = tag;
 		this.fluid = fluid;
 		this.state = state;
@@ -36,11 +34,10 @@ public class FluidPredicate {
 			return false;
 		} else {
 			FluidState fluidState = world.getFluidState(pos);
-			Fluid fluid = fluidState.getFluid();
-			if (this.tag != null && !fluid.isIn(this.tag)) {
+			if (this.tag != null && !fluidState.isIn(this.tag)) {
 				return false;
 			} else {
-				return this.fluid != null && fluid != this.fluid ? false : this.state.test(fluidState);
+				return this.fluid != null && !fluidState.isOf(this.fluid) ? false : this.state.test(fluidState);
 			}
 		}
 	}
@@ -54,14 +51,14 @@ public class FluidPredicate {
 				fluid = Registry.FLUID.get(identifier);
 			}
 
-			Tag<Fluid> tag = null;
+			TagKey<Fluid> tagKey = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = ServerTagManagerHolder.getTagManager().getTag(Registry.FLUID_KEY, identifier2, id -> new JsonSyntaxException("Unknown fluid tag '" + id + "'"));
+				tagKey = TagKey.intern(Registry.FLUID_KEY, identifier2);
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
-			return new FluidPredicate(tag, fluid, statePredicate);
+			return new FluidPredicate(tagKey, fluid, statePredicate);
 		} else {
 			return ANY;
 		}
@@ -77,9 +74,7 @@ public class FluidPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty(
-					"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.FLUID_KEY, this.tag, () -> new IllegalStateException("Unknown fluid tag")).toString()
-				);
+				jsonObject.addProperty("tag", this.tag.id().toString());
 			}
 
 			jsonObject.add("state", this.state.toJson());
@@ -91,7 +86,7 @@ public class FluidPredicate {
 		@Nullable
 		private Fluid fluid;
 		@Nullable
-		private Tag<Fluid> tag;
+		private TagKey<Fluid> tag;
 		private StatePredicate state = StatePredicate.ANY;
 
 		private Builder() {
@@ -106,7 +101,7 @@ public class FluidPredicate {
 			return this;
 		}
 
-		public FluidPredicate.Builder tag(Tag<Fluid> tag) {
+		public FluidPredicate.Builder tag(TagKey<Fluid> tag) {
 			this.tag = tag;
 			return this;
 		}

@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
@@ -63,6 +64,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.slf4j.Logger;
 
@@ -1017,11 +1019,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 						bl = blockState.createScreenHandlerFactory(this.client.world, blockPos) != null;
 					} else {
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.client.world, blockPos, false);
-						bl = !itemStack.isEmpty()
-							&& (
-								itemStack.canDestroy(this.client.world.getTagManager(), cachedBlockPosition)
-									|| itemStack.canPlaceOn(this.client.world.getTagManager(), cachedBlockPosition)
-							);
+						Registry<Block> registry = this.client.world.getRegistryManager().get(Registry.BLOCK_KEY);
+						bl = !itemStack.isEmpty() && (itemStack.canDestroy(registry, cachedBlockPosition) || itemStack.canPlaceOn(registry, cachedBlockPosition));
 					}
 				}
 			}

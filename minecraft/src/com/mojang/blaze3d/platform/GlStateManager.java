@@ -691,9 +691,9 @@ public class GlStateManager {
 		GL20.glDisableVertexAttribArray(index);
 	}
 
-	public static void _drawElements(int mode, int first, int type, long indices) {
+	public static void _drawElements(int mode, int count, int type, long indices) {
 		RenderSystem.assertOnRenderThread();
-		GL11.glDrawElements(mode, first, type, indices);
+		GL11.glDrawElements(mode, count, type, indices);
 	}
 
 	public static void _pixelStore(int pname, int param) {

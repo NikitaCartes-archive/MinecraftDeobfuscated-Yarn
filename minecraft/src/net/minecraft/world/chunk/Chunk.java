@@ -32,6 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -65,7 +66,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	private long inhabitedTime;
 	@Nullable
 	@Deprecated
-	private Biome biome;
+	private RegistryEntry<Biome> biome;
 	@Nullable
 	protected ChunkNoiseSampler chunkNoiseSampler;
 	protected final UpgradeData upgradeData;
@@ -370,16 +371,16 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	@Deprecated
-	public Biome setBiomeIfAbsent(Supplier<Biome> biomeSupplier) {
+	public RegistryEntry<Biome> setBiomeIfAbsent(Supplier<RegistryEntry<Biome>> biomeSupplier) {
 		if (this.biome == null) {
-			this.biome = (Biome)biomeSupplier.get();
+			this.biome = (RegistryEntry<Biome>)biomeSupplier.get();
 		}
 
 		return this.biome;
 	}
 
 	@Override
-	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+	public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		try {
 			int i = BiomeCoords.fromBlock(this.getBottomY());
 			int j = i + BiomeCoords.fromBlock(this.getHeight()) - 1;

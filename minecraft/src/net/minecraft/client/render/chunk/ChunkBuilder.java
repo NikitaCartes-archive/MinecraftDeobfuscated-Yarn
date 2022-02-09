@@ -560,7 +560,7 @@ public class ChunkBuilder {
 
 					if (data.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
 						BufferBuilder bufferBuilder2 = buffers.get(RenderLayer.getTranslucent());
-						bufferBuilder2.setCameraPosition(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
+						bufferBuilder2.sortFrom(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
 						data.bufferState = bufferBuilder2.popState();
 					}
 
@@ -624,9 +624,7 @@ public class ChunkBuilder {
 						BufferBuilder bufferBuilder = buffers.get(RenderLayer.getTranslucent());
 						BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 						bufferBuilder.restoreState(state);
-						bufferBuilder.setCameraPosition(
-							f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ()
-						);
+						bufferBuilder.sortFrom(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ());
 						this.data.bufferState = bufferBuilder.popState();
 						bufferBuilder.end();
 						if (this.cancelled.get()) {

@@ -6,10 +6,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -23,15 +21,16 @@ import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryCodecs;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
@@ -56,8 +55,8 @@ public final class Biome {
 				)
 				.apply(instance, (weather, category, biomeEffects) -> new Biome(weather, category, biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
-	public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
-	public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
+	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
+	public static final Codec<RegistryEntryList<Biome>> field_26750 = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(0)
 	);
@@ -265,13 +264,13 @@ public final class Biome {
 		return this.effects.getMusic();
 	}
 
-	public final Biome.Category getCategory() {
+	Biome.Category getCategory() {
 		return this.category;
 	}
 
-	public String toString() {
-		Identifier identifier = BuiltinRegistries.BIOME.getId(this);
-		return identifier == null ? super.toString() : identifier.toString();
+	@Deprecated
+	public static Biome.Category getCategory(RegistryEntry<Biome> biomeEntry) {
+		return biomeEntry.value().getCategory();
 	}
 
 	public static class Builder {
@@ -290,6 +289,17 @@ public final class Biome {
 		private SpawnSettings spawnSettings;
 		@Nullable
 		private GenerationSettings generationSettings;
+
+		public static Biome.Builder method_40137(Biome biome) {
+			return new Biome.Builder()
+				.precipitation(biome.getPrecipitation())
+				.category(biome.getCategory())
+				.temperature(biome.getTemperature())
+				.downfall(biome.getDownfall())
+				.effects(biome.getEffects())
+				.generationSettings(biome.getGenerationSettings())
+				.spawnSettings(biome.getSpawnSettings());
+		}
 
 		public Biome.Builder precipitation(Biome.Precipitation precipitation) {
 			this.precipitation = precipitation;

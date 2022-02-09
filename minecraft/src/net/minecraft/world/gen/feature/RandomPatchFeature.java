@@ -24,7 +24,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 
 		for (int l = 0; l < randomPatchFeatureConfig.tries(); l++) {
 			mutable.set(blockPos, random.nextInt(j) - random.nextInt(j), random.nextInt(k) - random.nextInt(k), random.nextInt(j) - random.nextInt(j));
-			if (((PlacedFeature)randomPatchFeatureConfig.feature().get()).generateUnregistered(structureWorldAccess, context.getGenerator(), random, mutable)) {
+			if (randomPatchFeatureConfig.feature().value().generateUnregistered(structureWorldAccess, context.getGenerator(), random, mutable)) {
 				i++;
 			}
 		}

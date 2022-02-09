@@ -12,14 +12,14 @@ import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 
 public class FollowMobTask extends Task<LivingEntity> {
 	private final Predicate<LivingEntity> predicate;
 	private final float maxDistanceSquared;
 	private Optional<LivingEntity> target = Optional.empty();
 
-	public FollowMobTask(Tag<EntityType<?>> entityType, float maxDistance) {
+	public FollowMobTask(TagKey<EntityType<?>> entityType, float maxDistance) {
 		this(entity -> entity.getType().isIn(entityType), maxDistance);
 	}
 

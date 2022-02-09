@@ -9,6 +9,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -37,7 +38,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	BiomeAccess getBiomeAccess();
 
-	default Biome getBiome(BlockPos pos) {
+	default RegistryEntry<Biome> getBiome(BlockPos pos) {
 		return this.getBiomeAccess().getBiome(pos);
 	}
 
@@ -53,16 +54,16 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default int getColor(BlockPos pos, ColorResolver colorResolver) {
-		return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
+		return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
 	}
 
 	@Override
-	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+	default RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
 		return chunk != null ? chunk.getBiomeForNoiseGen(biomeX, biomeY, biomeZ) : this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
 	}
 
-	Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ);
+	RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ);
 
 	/**
 	 * Checks if this world view is on the logical client.

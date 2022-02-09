@@ -139,8 +139,8 @@ public interface EntryLoader {
 		private static final Logger LOGGER = LogUtils.getLogger();
 		private final Map<RegistryKey<?>, EntryLoader.Impl.Element> values = Maps.<RegistryKey<?>, EntryLoader.Impl.Element>newIdentityHashMap();
 
-		public <E> void add(DynamicRegistryManager.Impl registryManager, RegistryKey<E> key, Encoder<E> encoder, int rawId, E entry, Lifecycle lifecycle) {
-			DataResult<JsonElement> dataResult = encoder.encodeStart(RegistryReadingOps.of(JsonOps.INSTANCE, registryManager), entry);
+		public <E> void add(DynamicRegistryManager registryManager, RegistryKey<E> key, Encoder<E> encoder, int rawId, E entry, Lifecycle lifecycle) {
+			DataResult<JsonElement> dataResult = encoder.encodeStart(RegistryOps.of(JsonOps.INSTANCE, registryManager), entry);
 			Optional<PartialResult<JsonElement>> optional = dataResult.error();
 			if (optional.isPresent()) {
 				LOGGER.error("Error adding element: {}", ((PartialResult)optional.get()).message());
@@ -151,7 +151,7 @@ public interface EntryLoader {
 
 		@Override
 		public <E> Collection<RegistryKey<E>> getKnownEntryPaths(RegistryKey<? extends Registry<E>> key) {
-			return (Collection<RegistryKey<E>>)this.values.keySet().stream().flatMap(registryKey -> registryKey.method_39752(key).stream()).collect(Collectors.toList());
+			return (Collection<RegistryKey<E>>)this.values.keySet().stream().flatMap(registryKey -> registryKey.tryCast(key).stream()).collect(Collectors.toList());
 		}
 
 		@Override

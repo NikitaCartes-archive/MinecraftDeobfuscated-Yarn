@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 public interface IndexedIterable<T> extends Iterable<T> {
 	int ABSENT_RAW_ID = -1;
 
-	int getRawId(T entry);
+	int getRawId(T value);
 
 	@Nullable
 	T get(int index);

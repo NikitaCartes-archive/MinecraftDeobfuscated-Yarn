@@ -46,7 +46,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
@@ -63,6 +62,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.Difficulty;
@@ -119,7 +119,7 @@ public class ClientWorld extends World {
 		ClientPlayNetworkHandler netHandler,
 		ClientWorld.Properties properties,
 		RegistryKey<World> registryRef,
-		DimensionType dimensionType,
+		RegistryEntry<DimensionType> registryEntry,
 		int loadDistance,
 		int simulationDistance,
 		Supplier<Profiler> profiler,
@@ -127,12 +127,12 @@ public class ClientWorld extends World {
 		boolean debugWorld,
 		long seed
 	) {
-		super(properties, registryRef, dimensionType, profiler, true, debugWorld, seed);
+		super(properties, registryRef, registryEntry, profiler, true, debugWorld, seed);
 		this.networkHandler = netHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
-		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionType);
+		this.dimensionEffects = DimensionEffects.byDimensionType(registryEntry.value());
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
 		this.simulationDistance = simulationDistance;
 		this.calculateAmbientDarkness();
@@ -351,6 +351,7 @@ public class ClientWorld extends World {
 
 		if (!blockState.isFullCube(this, pos)) {
 			this.getBiome(pos)
+				.value()
 				.getParticleConfig()
 				.ifPresent(
 					config -> {
@@ -507,11 +508,6 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public TagManager getTagManager() {
-		return this.networkHandler.getTagManager();
-	}
-
-	@Override
 	public DynamicRegistryManager getRegistryManager() {
 		return this.networkHandler.getRegistryManager();
 	}
@@ -590,8 +586,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getRegistryManager().get(Registry.BIOME_KEY).getOrThrow(BiomeKeys.PLAINS);
+	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+		return this.getRegistryManager().get(Registry.BIOME_KEY).entryOf(BiomeKeys.PLAINS);
 	}
 
 	public float getStarBrightness(float tickDelta) {
@@ -599,8 +595,8 @@ public class ClientWorld extends World {
 		float g = 1.0F - (MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.2F);
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
 		g = 1.0F - g;
-		g = (float)((double)g * (1.0 - (double)(this.getRainGradient(tickDelta) * 5.0F) / 16.0));
-		g = (float)((double)g * (1.0 - (double)(this.getThunderGradient(tickDelta) * 5.0F) / 16.0));
+		g *= 1.0F - this.getRainGradient(tickDelta) * 5.0F / 16.0F;
+		g *= 1.0F - this.getThunderGradient(tickDelta) * 5.0F / 16.0F;
 		return g * 0.8F + 0.2F;
 	}
 
@@ -608,7 +604,7 @@ public class ClientWorld extends World {
 		float f = this.getSkyAngle(tickDelta);
 		Vec3d vec3d = cameraPos.subtract(2.0, 2.0, 2.0).multiply(0.25);
 		BiomeAccess biomeAccess = this.getBiomeAccess();
-		Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).getSkyColor()));
+		Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).value().getSkyColor()));
 		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
 		float h = (float)vec3d2.x * g;
@@ -726,7 +722,7 @@ public class ClientWorld extends World {
 	public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
 		int i = MinecraftClient.getInstance().options.biomeBlendRadius;
 		if (i == 0) {
-			return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
+			return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
 		} else {
 			int j = (i * 2 + 1) * (i * 2 + 1);
 			int k = 0;
@@ -737,7 +733,7 @@ public class ClientWorld extends World {
 
 			while (cuboidBlockIterator.step()) {
 				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-				int n = colorResolver.getColor(this.getBiome(mutable), (double)mutable.getX(), (double)mutable.getZ());
+				int n = colorResolver.getColor(this.getBiome(mutable).value(), (double)mutable.getX(), (double)mutable.getZ());
 				k += (n & 0xFF0000) >> 16;
 				l += (n & 0xFF00) >> 8;
 				m += n & 0xFF;
@@ -980,8 +976,8 @@ public class ClientWorld extends World {
 			return this.flatWorld ? (double)world.getBottomY() : 63.0;
 		}
 
-		public double getHorizonShadingRatio() {
-			return this.flatWorld ? 1.0 : 0.03125;
+		public float getHorizonShadingRatio() {
+			return this.flatWorld ? 1.0F : 0.03125F;
 		}
 	}
 }

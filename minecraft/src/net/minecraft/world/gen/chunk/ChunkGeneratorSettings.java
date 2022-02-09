@@ -5,16 +5,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
+import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.gen.chunk.placement.SpreadType;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
+import net.minecraft.world.gen.chunk.placement.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
@@ -39,7 +42,7 @@ public final class ChunkGeneratorSettings {
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);
-	public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
+	public static final Codec<RegistryEntry<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CHUNK_GENERATOR_SETTINGS_KEY, CODEC);
 	private final ChunkRandom.RandomProvider randomProvider;
 	private final StructuresConfig structuresConfig;
 	private final GenerationShapeConfig generationShapeConfig;
@@ -160,8 +163,8 @@ public final class ChunkGeneratorSettings {
 		BuiltinRegistries.add(BuiltinRegistries.CHUNK_GENERATOR_SETTINGS, registryKey.getValue(), settings);
 	}
 
-	public static ChunkGeneratorSettings getInstance() {
-		return (ChunkGeneratorSettings)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.iterator().next();
+	public static RegistryEntry<ChunkGeneratorSettings> getInstance() {
+		return (RegistryEntry<ChunkGeneratorSettings>)BuiltinRegistries.CHUNK_GENERATOR_SETTINGS.streamEntries().iterator().next();
 	}
 
 	private static ChunkGeneratorSettings createEndSettings() {
@@ -194,10 +197,10 @@ public final class ChunkGeneratorSettings {
 	}
 
 	private static ChunkGeneratorSettings createNetherSettings() {
-		Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
-		map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
+		Map<StructureFeature<?>, StructurePlacement> map = Maps.<StructureFeature<?>, StructurePlacement>newHashMap(StructuresConfig.DEFAULT_PLACEMENTS);
+		map.put(StructureFeature.RUINED_PORTAL, new RandomSpreadStructurePlacement(25, 10, SpreadType.LINEAR, 34222645));
 		return new ChunkGeneratorSettings(
-			new StructuresConfig(Optional.empty(), map),
+			new StructuresConfig(map),
 			GenerationShapeConfig.create(
 				0,
 				128,

@@ -1,27 +1,24 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.DataResult.PartialResult;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
@@ -35,19 +32,17 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.FileResourcePackProvider;
+import net.minecraft.resource.LifecycledResourceManager;
+import net.minecraft.resource.LifecycledResourceManagerImpl;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
@@ -70,13 +65,13 @@ public class MoreOptionsDialog implements Drawable {
 	private ButtonWidget unchangeableMapTypeButton;
 	private ButtonWidget customizeTypeButton;
 	private ButtonWidget importSettingsButton;
-	private DynamicRegistryManager.Impl registryManager;
+	private DynamicRegistryManager.Immutable registryManager;
 	private GeneratorOptions generatorOptions;
 	private Optional<GeneratorType> generatorType;
 	private OptionalLong seed;
 
 	public MoreOptionsDialog(
-		DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions, Optional<GeneratorType> generatorType, OptionalLong seed
+		DynamicRegistryManager.Immutable registryManager, GeneratorOptions generatorOptions, Optional<GeneratorType> generatorType, OptionalLong seed
 	) {
 		this.registryManager = registryManager;
 		this.generatorOptions = generatorOptions;
@@ -161,81 +156,70 @@ public class MoreOptionsDialog implements Drawable {
 				button -> {
 					String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
 					if (string != null) {
-						DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-						ResourcePackManager resourcePackManager = new ResourcePackManager(
-							ResourceType.SERVER_DATA,
-							new VanillaDataPackProvider(),
-							new FileResourcePackProvider(parent.getDataPackTempDir().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
-						);
-
-						ServerResourceManager serverResourceManager;
-						try {
-							MinecraftServer.loadDataPacks(resourcePackManager, parent.dataPackSettings, false);
-							CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-								resourcePackManager.createResourcePacks(), impl, CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client
-							);
-							client.runTasks(completableFuture::isDone);
-							serverResourceManager = (ServerResourceManager)completableFuture.get();
-						} catch (ExecutionException | InterruptedException var15) {
-							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var15);
-							Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
-							Text text2 = new LiteralText(var15.getMessage());
-							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
-							resourcePackManager.close();
-							return;
-						}
-
-						RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
-						JsonParser jsonParser = new JsonParser();
+						DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
 
 						DataResult<GeneratorOptions> dataResult;
-						try {
-							BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
+						try (ResourcePackManager resourcePackManager = new ResourcePackManager(
+								ResourceType.SERVER_DATA,
+								new VanillaDataPackProvider(),
+								new FileResourcePackProvider(parent.getDataPackTempDir().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+							)) {
+							MinecraftServer.loadDataPacks(resourcePackManager, parent.dataPackSettings, false);
 
-							try {
-								JsonElement jsonElement = jsonParser.parse(bufferedReader);
-								dataResult = GeneratorOptions.CODEC.parse(registryOps, jsonElement);
-							} catch (Throwable var16) {
-								if (bufferedReader != null) {
+							try (LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(
+									ResourceType.SERVER_DATA, resourcePackManager.createResourcePacks()
+								)) {
+								DynamicOps<JsonElement> dynamicOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, lifecycledResourceManager);
+
+								try {
+									BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(string));
+
 									try {
-										bufferedReader.close();
-									} catch (Throwable var14) {
-										var16.addSuppressed(var14);
+										JsonElement jsonElement = JsonParser.parseReader(bufferedReader);
+										dataResult = GeneratorOptions.CODEC.parse(dynamicOps, jsonElement);
+									} catch (Throwable var16) {
+										if (bufferedReader != null) {
+											try {
+												bufferedReader.close();
+											} catch (Throwable var15) {
+												var16.addSuppressed(var15);
+											}
+										}
+
+										throw var16;
 									}
+
+									if (bufferedReader != null) {
+										bufferedReader.close();
+									}
+								} catch (Exception var17) {
+									dataResult = DataResult.error("Failed to parse file: " + var17.getMessage());
 								}
 
-								throw var16;
+								if (dataResult.error().isPresent()) {
+									Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
+									String string2 = ((PartialResult)dataResult.error().get()).message();
+									LOGGER.error("Error parsing world settings: {}", string2);
+									Text text2 = new LiteralText(string2);
+									client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
+									return;
+								}
 							}
-
-							if (bufferedReader != null) {
-								bufferedReader.close();
-							}
-						} catch (JsonIOException | JsonSyntaxException | IOException var17) {
-							dataResult = DataResult.error("Failed to parse file: " + var17.getMessage());
 						}
 
-						if (dataResult.error().isPresent()) {
-							Text text3 = new TranslatableText("selectWorld.import_worldgen_settings.failure");
-							String string2 = ((PartialResult)dataResult.error().get()).message();
-							LOGGER.error("Error parsing world settings: {}", string2);
-							Text text4 = new LiteralText(string2);
-							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text3, text4));
-						}
-
-						serverResourceManager.close();
-						Lifecycle lifecycle = dataResult.lifecycle();
+						Lifecycle var20 = dataResult.lifecycle();
 						dataResult.resultOrPartial(LOGGER::error)
 							.ifPresent(
 								generatorOptions -> {
 									BooleanConsumer booleanConsumer = confirmed -> {
 										client.setScreen(parent);
 										if (confirmed) {
-											this.importOptions(impl, generatorOptions);
+											this.importOptions(mutable.toImmutable(), generatorOptions);
 										}
 									};
-									if (lifecycle == Lifecycle.stable()) {
-										this.importOptions(impl, generatorOptions);
-									} else if (lifecycle == Lifecycle.experimental()) {
+									if (var20 == Lifecycle.stable()) {
+										this.importOptions(mutable.toImmutable(), generatorOptions);
+									} else if (var20 == Lifecycle.experimental()) {
 										client.setScreen(
 											new ConfirmScreen(
 												booleanConsumer,
@@ -262,7 +246,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.amplifiedInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
 	}
 
-	private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
+	private void importOptions(DynamicRegistryManager.Immutable registryManager, GeneratorOptions generatorOptions) {
 		this.registryManager = registryManager;
 		this.generatorOptions = generatorOptions;
 		this.generatorType = GeneratorType.fromGeneratorOptions(generatorOptions);
@@ -331,21 +315,13 @@ public class MoreOptionsDialog implements Drawable {
 		}
 	}
 
-	public DynamicRegistryManager.Impl getRegistryManager() {
+	public DynamicRegistryManager getRegistryManager() {
 		return this.registryManager;
 	}
 
-	void loadDatapacks(ServerResourceManager serverResourceManager) {
-		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
-		RegistryOps<JsonElement> registryOps = RegistryOps.ofLoaded(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
-		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
-			.encodeStart(registryReadingOps, this.generatorOptions)
-			.flatMap(json -> GeneratorOptions.CODEC.parse(registryOps, json));
-		dataResult.resultOrPartial(Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)).ifPresent(generatorOptions -> {
-			this.generatorOptions = generatorOptions;
-			this.registryManager = impl;
-		});
+	void loadDatapacks(class_6904 arg) {
+		this.generatorOptions = arg.worldData().getGeneratorOptions();
+		this.registryManager = arg.registryAccess();
 	}
 
 	public void disableBonusItems() {

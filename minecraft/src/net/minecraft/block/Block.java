@@ -48,6 +48,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -86,6 +87,7 @@ import org.slf4j.Logger;
  */
 public class Block extends AbstractBlock implements ItemConvertible {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private final RegistryEntry.Reference<Block> registryEntry = Registry.BLOCK.createEntry(this);
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
 	private static final LoadingCache<VoxelShape, Boolean> FULL_CUBE_SHAPE_CACHE = CacheBuilder.newBuilder()
 		.maximumSize(512L)
@@ -275,8 +277,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.randomTicks;
 	}
 
-	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos blockPos) {
-		BlockState blockState = world.getBlockState(blockPos);
+	public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos otherPos) {
+		BlockState blockState = world.getBlockState(otherPos);
 		if (state.isSideInvisible(blockState, side)) {
 			return false;
 		} else if (blockState.isOpaque()) {
@@ -290,7 +292,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 				if (voxelShape.isEmpty()) {
 					return true;
 				} else {
-					VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, side.getOpposite());
+					VoxelShape voxelShape2 = blockState.getCullingFace(world, otherPos, side.getOpposite());
 					boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 					if (object2ByteLinkedOpenHashMap.size() == 2048) {
 						object2ByteLinkedOpenHashMap.removeLastByte();
@@ -591,6 +593,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	protected ImmutableMap<BlockState, VoxelShape> getShapesForStates(Function<BlockState, VoxelShape> stateToShape) {
 		return (ImmutableMap<BlockState, VoxelShape>)this.stateManager.getStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), stateToShape));
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<Block> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	public static final class NeighborGroup {

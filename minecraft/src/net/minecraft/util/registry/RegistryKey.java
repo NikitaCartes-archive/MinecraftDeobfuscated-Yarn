@@ -67,7 +67,7 @@ public class RegistryKey<T> {
 
 	private static <T> RegistryKey<T> of(Identifier registry, Identifier value) {
 		String string = (registry + ":" + value).intern();
-		return (RegistryKey<T>)INSTANCES.computeIfAbsent(string, stringx -> new RegistryKey(registry, value));
+		return (RegistryKey<T>)INSTANCES.computeIfAbsent(string, id -> new RegistryKey(registry, value));
 	}
 
 	private RegistryKey(Identifier registry, Identifier value) {
@@ -88,8 +88,15 @@ public class RegistryKey<T> {
 		return this.registry.equals(registry.getValue());
 	}
 
-	public <E> Optional<RegistryKey<E>> method_39752(RegistryKey<? extends Registry<E>> registryKey) {
-		return this.isOf(registryKey) ? Optional.of(this) : Optional.empty();
+	/**
+	 * {@return {@code Optional.of(this)} if the key is of {@code registryRef},
+	 * otherwise {@link Optional#empty}}
+	 * 
+	 * @apiNote This can be used to safely cast an unknown key to {@code RegistryKey<E>}
+	 * by passing the registry {@code E}.
+	 */
+	public <E> Optional<RegistryKey<E>> tryCast(RegistryKey<? extends Registry<E>> registryRef) {
+		return this.isOf(registryRef) ? Optional.of(this) : Optional.empty();
 	}
 
 	public Identifier getValue() {

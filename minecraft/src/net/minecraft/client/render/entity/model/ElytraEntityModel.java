@@ -93,9 +93,9 @@ public class ElytraEntityModel<T extends LivingEntity> extends AnimalModel<T> {
 
 		this.leftWing.pivotY = m;
 		if (livingEntity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
-			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(k - abstractClientPlayerEntity.elytraPitch) * 0.1);
-			abstractClientPlayerEntity.elytraYaw = (float)((double)abstractClientPlayerEntity.elytraYaw + (double)(n - abstractClientPlayerEntity.elytraYaw) * 0.1);
-			abstractClientPlayerEntity.elytraRoll = (float)((double)abstractClientPlayerEntity.elytraRoll + (double)(l - abstractClientPlayerEntity.elytraRoll) * 0.1);
+			abstractClientPlayerEntity.elytraPitch = abstractClientPlayerEntity.elytraPitch + (k - abstractClientPlayerEntity.elytraPitch) * 0.1F;
+			abstractClientPlayerEntity.elytraYaw = abstractClientPlayerEntity.elytraYaw + (n - abstractClientPlayerEntity.elytraYaw) * 0.1F;
+			abstractClientPlayerEntity.elytraRoll = abstractClientPlayerEntity.elytraRoll + (l - abstractClientPlayerEntity.elytraRoll) * 0.1F;
 			this.leftWing.pitch = abstractClientPlayerEntity.elytraPitch;
 			this.leftWing.yaw = abstractClientPlayerEntity.elytraYaw;
 			this.leftWing.roll = abstractClientPlayerEntity.elytraRoll;

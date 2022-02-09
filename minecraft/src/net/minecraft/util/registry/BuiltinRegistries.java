@@ -38,8 +38,10 @@ import org.slf4j.Logger;
  */
 public class BuiltinRegistries {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<Identifier, Supplier<?>> DEFAULT_VALUE_SUPPLIERS = Maps.<Identifier, Supplier<?>>newLinkedHashMap();
-	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental());
+	private static final Map<Identifier, Supplier<? extends RegistryEntry<?>>> DEFAULT_VALUE_SUPPLIERS = Maps.<Identifier, Supplier<? extends RegistryEntry<?>>>newLinkedHashMap();
+	private static final MutableRegistry<MutableRegistry<?>> ROOT = new SimpleRegistry<>(
+		RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental(), null
+	);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
 	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
@@ -53,42 +55,45 @@ public class BuiltinRegistries {
 		Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS
 	);
 	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
-	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, () -> BuiltinBiomes.PLAINS);
+	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance
 	);
 	public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = addRegistry(Registry.NOISE_WORLDGEN, BuiltinNoiseParameters::init);
+	public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER = DynamicRegistryManager.of(REGISTRIES);
 
-	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<T> defaultValueSupplier) {
+	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {
 		return addRegistry(registryRef, Lifecycle.stable(), defaultValueSupplier);
 	}
 
-	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Supplier<T> defaultValueSupplier) {
-		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle), defaultValueSupplier, lifecycle);
+	private static <T> Registry<T> addRegistry(
+		RegistryKey<? extends Registry<T>> registryRef, Lifecycle lifecycle, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier
+	) {
+		return addRegistry(registryRef, new SimpleRegistry<>(registryRef, lifecycle, null), defaultValueSupplier, lifecycle);
 	}
 
 	private static <T, R extends MutableRegistry<T>> R addRegistry(
-		RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<T> defaultValueSupplier, Lifecycle lifecycle
+		RegistryKey<? extends Registry<T>> registryRef, R registry, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier, Lifecycle lifecycle
 	) {
 		Identifier identifier = registryRef.getValue();
 		DEFAULT_VALUE_SUPPLIERS.put(identifier, defaultValueSupplier);
-		MutableRegistry<R> mutableRegistry = ROOT;
-		return mutableRegistry.add((RegistryKey<R>)registryRef, registry, lifecycle);
+		ROOT.add((RegistryKey<MutableRegistry<?>>)registryRef, registry, lifecycle);
+		return registry;
 	}
 
-	public static <T> T add(Registry<? super T> registry, String id, T object) {
+	public static <V extends T, T> RegistryEntry<V> method_40360(Registry<T> registry, String id, V value) {
+		return add(registry, new Identifier(id), value);
+	}
+
+	public static <T> RegistryEntry<T> add(Registry<T> registry, String id, T object) {
 		return add(registry, new Identifier(id), object);
 	}
 
-	public static <V, T extends V> T add(Registry<V> registry, Identifier id, T object) {
+	public static <T> RegistryEntry<T> add(Registry<T> registry, Identifier id, T object) {
 		return add(registry, RegistryKey.of(registry.getKey(), id), object);
 	}
 
-	public static <V, T extends V> T add(Registry<V> registry, RegistryKey<V> key, T object) {
-		return ((MutableRegistry)registry).add(key, object, Lifecycle.stable());
-	}
-
-	public static <V, T extends V> T set(Registry<V> registry, RegistryKey<V> key, T object) {
+	public static <T> RegistryEntry<T> add(Registry<T> registry, RegistryKey<T> key, T object) {
 		return ((MutableRegistry)registry).add(key, object, Lifecycle.stable());
 	}
 
@@ -97,7 +102,7 @@ public class BuiltinRegistries {
 
 	static {
 		DEFAULT_VALUE_SUPPLIERS.forEach((id, supplier) -> {
-			if (supplier.get() == null) {
+			if (!((RegistryEntry)supplier.get()).hasKeyAndValue()) {
 				LOGGER.error("Unable to bootstrap registry '{}'", id);
 			}
 		});

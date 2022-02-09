@@ -1,18 +1,16 @@
 package net.minecraft.world.dimension;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.Supplier;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -25,10 +23,7 @@ import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 public final class DimensionOptions {
 	public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					DimensionType.REGISTRY_CODEC
-						.fieldOf("type")
-						.flatXmap(Codecs.createPresentValueChecker(), Codecs.createPresentValueChecker())
-						.forGetter(DimensionOptions::getDimensionTypeSupplier),
+					DimensionType.REGISTRY_CODEC.fieldOf("type").forGetter(DimensionOptions::getDimensionTypeSupplier),
 					ChunkGenerator.CODEC.fieldOf("generator").forGetter(DimensionOptions::getChunkGenerator)
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))
@@ -36,93 +31,86 @@ public final class DimensionOptions {
 	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("overworld"));
 	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_end"));
-	private static final Set<RegistryKey<DimensionOptions>> BASE_DIMENSIONS = Sets.<RegistryKey<DimensionOptions>>newLinkedHashSet(
-		ImmutableList.of(OVERWORLD, NETHER, END)
-	);
-	private final Supplier<DimensionType> dimensionTypeSupplier;
+	private static final Set<RegistryKey<DimensionOptions>> BASE_DIMENSIONS = ImmutableSet.of(OVERWORLD, NETHER, END);
+	private final RegistryEntry<DimensionType> dimensionTypeSupplier;
 	private final ChunkGenerator chunkGenerator;
 
-	public DimensionOptions(Supplier<DimensionType> typeSupplier, ChunkGenerator chunkGenerator) {
-		this.dimensionTypeSupplier = typeSupplier;
+	public DimensionOptions(RegistryEntry<DimensionType> registryEntry, ChunkGenerator chunkGenerator) {
+		this.dimensionTypeSupplier = registryEntry;
 		this.chunkGenerator = chunkGenerator;
 	}
 
-	public Supplier<DimensionType> getDimensionTypeSupplier() {
+	public RegistryEntry<DimensionType> getDimensionTypeSupplier() {
 		return this.dimensionTypeSupplier;
-	}
-
-	public DimensionType getDimensionType() {
-		return (DimensionType)this.dimensionTypeSupplier.get();
 	}
 
 	public ChunkGenerator getChunkGenerator() {
 		return this.chunkGenerator;
 	}
 
-	public static SimpleRegistry<DimensionOptions> method_29569(SimpleRegistry<DimensionOptions> simpleRegistry) {
-		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+	public static Registry<DimensionOptions> method_29569(Registry<DimensionOptions> registry) {
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
 
 		for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
-			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
+			DimensionOptions dimensionOptions = registry.get(registryKey);
 			if (dimensionOptions != null) {
-				simpleRegistry2.add(registryKey, dimensionOptions, simpleRegistry.getEntryLifecycle(dimensionOptions));
+				mutableRegistry.add(registryKey, dimensionOptions, registry.getEntryLifecycle(dimensionOptions));
 			}
 		}
 
-		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
-				simpleRegistry2.add(registryKey2, (DimensionOptions)entry.getValue(), simpleRegistry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+				mutableRegistry.add(registryKey2, (DimensionOptions)entry.getValue(), registry.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
-		return simpleRegistry2;
+		return mutableRegistry;
 	}
 
-	public static boolean hasDefaultSettings(long seed, SimpleRegistry<DimensionOptions> options) {
-		List<Entry<RegistryKey<DimensionOptions>, DimensionOptions>> list = Lists.<Entry<RegistryKey<DimensionOptions>, DimensionOptions>>newArrayList(
-			options.getEntries()
-		);
-		if (list.size() != BASE_DIMENSIONS.size()) {
+	public static boolean hasDefaultSettings(long seed, Registry<DimensionOptions> registry) {
+		if (registry.size() != BASE_DIMENSIONS.size()) {
 			return false;
 		} else {
-			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry = (Entry<RegistryKey<DimensionOptions>, DimensionOptions>)list.get(0);
-			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry2 = (Entry<RegistryKey<DimensionOptions>, DimensionOptions>)list.get(1);
-			Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry3 = (Entry<RegistryKey<DimensionOptions>, DimensionOptions>)list.get(2);
-			if (entry.getKey() != OVERWORLD || entry2.getKey() != NETHER || entry3.getKey() != END) {
-				return false;
-			} else if (!((DimensionOptions)entry.getValue()).getDimensionType().equals(DimensionType.OVERWORLD)
-				&& ((DimensionOptions)entry.getValue()).getDimensionType() != DimensionType.OVERWORLD_CAVES) {
-				return false;
-			} else if (!((DimensionOptions)entry2.getValue()).getDimensionType().equals(DimensionType.THE_NETHER)) {
-				return false;
-			} else if (!((DimensionOptions)entry3.getValue()).getDimensionType().equals(DimensionType.THE_END)) {
-				return false;
-			} else if (((DimensionOptions)entry2.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator
-				&& ((DimensionOptions)entry3.getValue()).getChunkGenerator() instanceof NoiseChunkGenerator) {
-				NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)entry2.getValue()).getChunkGenerator();
-				NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)entry3.getValue()).getChunkGenerator();
-				if (!noiseChunkGenerator.matchesSettings(seed, ChunkGeneratorSettings.NETHER)) {
+			Optional<DimensionOptions> optional = registry.getOrEmpty(OVERWORLD);
+			Optional<DimensionOptions> optional2 = registry.getOrEmpty(NETHER);
+			Optional<DimensionOptions> optional3 = registry.getOrEmpty(END);
+			if (!optional.isEmpty() && !optional2.isEmpty() && !optional3.isEmpty()) {
+				if (!((DimensionOptions)optional.get()).getDimensionTypeSupplier().value().equals(DimensionType.OVERWORLD)
+					&& ((DimensionOptions)optional.get()).getDimensionTypeSupplier().value() != DimensionType.OVERWORLD_CAVES) {
 					return false;
-				} else if (!noiseChunkGenerator2.matchesSettings(seed, ChunkGeneratorSettings.END)) {
+				} else if (!((DimensionOptions)optional2.get()).getDimensionTypeSupplier().value().equals(DimensionType.THE_NETHER)) {
 					return false;
-				} else if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
+				} else if (!((DimensionOptions)optional3.get()).getDimensionTypeSupplier().value().equals(DimensionType.THE_END)) {
 					return false;
-				} else {
-					MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
-					if (!multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER)) {
+				} else if (((DimensionOptions)optional2.get()).getChunkGenerator() instanceof NoiseChunkGenerator
+					&& ((DimensionOptions)optional3.get()).getChunkGenerator() instanceof NoiseChunkGenerator) {
+					NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)((DimensionOptions)optional2.get()).getChunkGenerator();
+					NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)((DimensionOptions)optional3.get()).getChunkGenerator();
+					if (!noiseChunkGenerator.matchesSettings(seed, ChunkGeneratorSettings.NETHER)) {
+						return false;
+					} else if (!noiseChunkGenerator2.matchesSettings(seed, ChunkGeneratorSettings.END)) {
+						return false;
+					} else if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
 						return false;
 					} else {
-						BiomeSource biomeSource = ((DimensionOptions)entry.getValue()).getChunkGenerator().getBiomeSource();
-						if (biomeSource instanceof MultiNoiseBiomeSource && !((MultiNoiseBiomeSource)biomeSource).matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
-							return false;
-						} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
+						MultiNoiseBiomeSource multiNoiseBiomeSource = (MultiNoiseBiomeSource)noiseChunkGenerator.getBiomeSource();
+						if (!multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER)) {
 							return false;
 						} else {
-							TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-							return theEndBiomeSource.matches(seed);
+							BiomeSource biomeSource = ((DimensionOptions)optional.get()).getChunkGenerator().getBiomeSource();
+							if (biomeSource instanceof MultiNoiseBiomeSource && !((MultiNoiseBiomeSource)biomeSource).matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
+								return false;
+							} else if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
+								return false;
+							} else {
+								TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
+								return theEndBiomeSource.matches(seed);
+							}
 						}
 					}
+				} else {
+					return false;
 				}
 			} else {
 				return false;

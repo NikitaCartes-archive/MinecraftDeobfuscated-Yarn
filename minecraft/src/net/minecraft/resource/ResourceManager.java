@@ -75,8 +75,8 @@ public interface ResourceManager extends ResourceFactory {
 		}
 
 		@Override
-		public Resource getResource(Identifier id) throws IOException {
-			throw new FileNotFoundException(id.toString());
+		public Resource getResource(Identifier identifier) throws IOException {
+			throw new FileNotFoundException(identifier.toString());
 		}
 
 		@Override

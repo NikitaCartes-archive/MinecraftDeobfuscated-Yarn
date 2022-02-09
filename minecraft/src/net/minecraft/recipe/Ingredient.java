@@ -21,11 +21,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 public final class Ingredient implements Predicate<ItemStack> {
 	public static final Ingredient EMPTY = new Ingredient(Stream.empty());
@@ -128,7 +128,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(Ingredient.StackEntry::new));
 	}
 
-	public static Ingredient fromTag(Tag<Item> tag) {
+	public static Ingredient fromTag(TagKey<Item> tag) {
 		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
 	}
 
@@ -161,9 +161,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			Tag<Item> tag = ServerTagManagerHolder.getTagManager()
-				.getTag(Registry.ITEM_KEY, identifier, identifierx -> new JsonSyntaxException("Unknown item tag '" + identifierx + "'"));
-			return new Ingredient.TagEntry(tag);
+			TagKey<Item> tagKey = TagKey.intern(Registry.ITEM_KEY, identifier);
+			return new Ingredient.TagEntry(tagKey);
 		} else {
 			throw new JsonParseException("An ingredient entry needs either a tag or an item");
 		}
@@ -196,9 +195,9 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	static class TagEntry implements Ingredient.Entry {
-		private final Tag<Item> tag;
+		private final TagKey<Item> tag;
 
-		TagEntry(Tag<Item> tag) {
+		TagEntry(TagKey<Item> tag) {
 			this.tag = tag;
 		}
 
@@ -206,8 +205,8 @@ public final class Ingredient implements Predicate<ItemStack> {
 		public Collection<ItemStack> getStacks() {
 			List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-			for (Item item : this.tag.values()) {
-				list.add(new ItemStack(item));
+			for (RegistryEntry<Item> registryEntry : Registry.ITEM.iterateEntries(this.tag)) {
+				list.add(new ItemStack(registryEntry));
 			}
 
 			return list;
@@ -216,9 +215,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty(
-				"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString()
-			);
+			jsonObject.addProperty("tag", this.tag.id().toString());
 			return jsonObject;
 		}
 	}

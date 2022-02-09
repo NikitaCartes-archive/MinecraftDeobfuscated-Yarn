@@ -9,7 +9,7 @@ import java.util.stream.StreamSupport;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -27,9 +27,10 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.placement.StructuresConfig;
 
 public class DebugChunkGenerator extends ChunkGenerator {
-	public static final Codec<DebugChunkGenerator> CODEC = RegistryLookupCodec.of(Registry.BIOME_KEY)
+	public static final Codec<DebugChunkGenerator> CODEC = RegistryOps.createRegistryCodec(Registry.BIOME_KEY)
 		.<DebugChunkGenerator>xmap(DebugChunkGenerator::new, DebugChunkGenerator::getBiomeRegistry)
 		.stable()
 		.codec();
@@ -46,8 +47,9 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	private final Registry<Biome> biomeRegistry;
 
 	public DebugChunkGenerator(Registry<Biome> biomeRegistry) {
-		super(new FixedBiomeSource(biomeRegistry.getOrThrow(BiomeKeys.PLAINS)), new StructuresConfig(false));
+		super(new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)), new StructuresConfig(false));
 		this.biomeRegistry = biomeRegistry;
+		this.method_40145();
 	}
 
 	public Registry<Biome> getBiomeRegistry() {

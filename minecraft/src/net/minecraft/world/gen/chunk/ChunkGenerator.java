@@ -1,11 +1,11 @@
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,11 +40,15 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.StructurePresence;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -52,10 +56,14 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement;
+import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
+import net.minecraft.world.gen.chunk.placement.StructuresConfig;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.ChunkRandom;
@@ -77,74 +85,82 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	protected final BiomeSource populationSource;
 	protected final BiomeSource biomeSource;
 	private final StructuresConfig structuresConfig;
-	private final long worldSeed;
-	private final List<ChunkPos> strongholds = Lists.<ChunkPos>newArrayList();
+	private final Map<ConcentricRingsStructurePlacement, ArrayList<ChunkPos>> field_36405;
+	private final long field_36406;
 
 	public ChunkGenerator(BiomeSource biomeSource, StructuresConfig structuresConfig) {
 		this(biomeSource, biomeSource, structuresConfig, 0L);
 	}
 
-	public ChunkGenerator(BiomeSource populationSource, BiomeSource biomeSource, StructuresConfig structuresConfig, long worldSeed) {
-		this.populationSource = populationSource;
-		this.biomeSource = biomeSource;
+	public ChunkGenerator(BiomeSource biomeSource, BiomeSource biomeSource2, StructuresConfig structuresConfig, long worldSeed) {
+		this.populationSource = biomeSource;
+		this.biomeSource = biomeSource2;
 		this.structuresConfig = structuresConfig;
-		this.worldSeed = worldSeed;
-	}
+		this.field_36406 = worldSeed;
+		this.field_36405 = new Object2ObjectArrayMap<>();
 
-	private void generateStrongholdPositions() {
-		if (this.strongholds.isEmpty()) {
-			StrongholdConfig strongholdConfig = this.structuresConfig.getStronghold();
-			if (strongholdConfig != null && strongholdConfig.getCount() != 0) {
-				List<Biome> list = Lists.<Biome>newArrayList();
-
-				for (Biome biome : this.populationSource.getBiomes()) {
-					if (canPlaceStrongholdInBiome(biome)) {
-						list.add(biome);
-					}
-				}
-
-				int i = strongholdConfig.getDistance();
-				int j = strongholdConfig.getCount();
-				int k = strongholdConfig.getSpread();
-				Random random = new Random();
-				random.setSeed(this.worldSeed);
-				double d = random.nextDouble() * Math.PI * 2.0;
-				int l = 0;
-				int m = 0;
-
-				for (int n = 0; n < j; n++) {
-					double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
-					int o = (int)Math.round(Math.cos(d) * e);
-					int p = (int)Math.round(Math.sin(d) * e);
-					BlockPos blockPos = this.populationSource
-						.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random, this.getMultiNoiseSampler());
-					if (blockPos != null) {
-						o = ChunkSectionPos.getSectionCoord(blockPos.getX());
-						p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
-					}
-
-					this.strongholds.add(new ChunkPos(o, p));
-					d += (Math.PI * 2) / (double)k;
-					if (++l == k) {
-						m++;
-						l = 0;
-						k += 2 * k / (m + 1);
-						k = Math.min(k, j - n);
-						d += random.nextDouble() * Math.PI * 2.0;
-					}
-				}
+		for (Entry<StructureFeature<?>, StructurePlacement> entry : structuresConfig.getStructures().entrySet()) {
+			if (entry.getValue() instanceof ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+				this.field_36405.put(concentricRingsStructurePlacement, new ArrayList());
 			}
 		}
 	}
 
-	private static boolean canPlaceStrongholdInBiome(Biome biome) {
-		Biome.Category category = biome.getCategory();
-		return category != Biome.Category.OCEAN
-			&& category != Biome.Category.RIVER
-			&& category != Biome.Category.BEACH
-			&& category != Biome.Category.SWAMP
-			&& category != Biome.Category.NETHER
-			&& category != Biome.Category.THEEND;
+	protected void method_40145() {
+		for (Entry<StructureFeature<?>, StructurePlacement> entry : this.structuresConfig.getStructures().entrySet()) {
+			if (entry.getValue() instanceof ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+				this.generateStrongholdPositions((StructureFeature<?>)entry.getKey(), concentricRingsStructurePlacement);
+			}
+		}
+	}
+
+	private void generateStrongholdPositions(StructureFeature<?> structureFeature, ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+		if (concentricRingsStructurePlacement.count() != 0) {
+			Predicate<RegistryKey<Biome>> predicate = ((Set)this.structuresConfig
+				.getConfiguredStructureFeature(structureFeature)
+				.values()
+				.stream()
+				.collect(Collectors.toUnmodifiableSet()))::contains;
+			List<ChunkPos> list = this.getConcentricRingsStartChunks(concentricRingsStructurePlacement);
+			int i = concentricRingsStructurePlacement.distance();
+			int j = concentricRingsStructurePlacement.count();
+			int k = concentricRingsStructurePlacement.spread();
+			Random random = new Random();
+			random.setSeed(this.field_36406);
+			double d = random.nextDouble() * Math.PI * 2.0;
+			int l = 0;
+			int m = 0;
+
+			for (int n = 0; n < j; n++) {
+				double e = (double)(4 * i + i * m * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
+				int o = (int)Math.round(Math.cos(d) * e);
+				int p = (int)Math.round(Math.sin(d) * e);
+				BlockPos blockPos = this.populationSource
+					.locateBiome(
+						ChunkSectionPos.getOffsetPos(o, 8),
+						0,
+						ChunkSectionPos.getOffsetPos(p, 8),
+						112,
+						registryEntry -> registryEntry.matches(predicate),
+						random,
+						this.getMultiNoiseSampler()
+					);
+				if (blockPos != null) {
+					o = ChunkSectionPos.getSectionCoord(blockPos.getX());
+					p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+				}
+
+				list.add(new ChunkPos(o, p));
+				d += (Math.PI * 2) / (double)k;
+				if (++l == k) {
+					m++;
+					l = 0;
+					k += 2 * k / (m + 1);
+					k = Math.min(k, j - n);
+					d += random.nextDouble() * Math.PI * 2.0;
+				}
+			}
+		}
 	}
 
 	protected abstract Codec<? extends ChunkGenerator> getCodec();
@@ -167,7 +183,7 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	public abstract MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler();
 
 	@Override
-	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+	public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.getMultiNoiseSampler());
 	}
 
@@ -191,44 +207,108 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> structureFeature, BlockPos center, int radius, boolean skipExistingChunks) {
-		if (structureFeature == StructureFeature.STRONGHOLD) {
-			this.generateStrongholdPositions();
-			BlockPos blockPos = null;
-			double d = Double.MAX_VALUE;
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-			for (ChunkPos chunkPos : this.strongholds) {
-				mutable.set(ChunkSectionPos.getOffsetPos(chunkPos.x, 8), 32, ChunkSectionPos.getOffsetPos(chunkPos.z, 8));
-				double e = mutable.getSquaredDistance(center);
-				if (blockPos == null) {
-					blockPos = new BlockPos(mutable);
-					d = e;
-				} else if (e < d) {
-					blockPos = new BlockPos(mutable);
-					d = e;
-				}
-			}
-
-			return blockPos;
-		} else {
-			StructureConfig structureConfig = this.structuresConfig.getForType(structureFeature);
-			ImmutableMultimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> immutableMultimap = this.structuresConfig
-				.getConfiguredStructureFeature(structureFeature);
-			if (structureConfig != null && !immutableMultimap.isEmpty()) {
-				Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
-				Set<RegistryKey<Biome>> set = (Set<RegistryKey<Biome>>)this.biomeSource
-					.getBiomes()
-					.stream()
-					.flatMap(biome -> registry.getKey(biome).stream())
-					.collect(Collectors.toSet());
-				return immutableMultimap.values().stream().noneMatch(set::contains)
-					? null
-					: structureFeature.locateStructure(world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), structureConfig);
-			} else {
+	public BlockPos locateStructure(ServerWorld world, StructureFeature<?> feature, BlockPos center, int radius, boolean skipExistingChunks) {
+		StructurePlacement structurePlacement = this.structuresConfig.getForType(feature);
+		Collection<RegistryKey<Biome>> collection = this.structuresConfig.getConfiguredStructureFeature(feature).values();
+		if (structurePlacement != null && !collection.isEmpty()) {
+			Set<RegistryKey<Biome>> set = (Set<RegistryKey<Biome>>)this.biomeSource
+				.getBiomes()
+				.flatMap(registryEntry -> registryEntry.getKey().stream())
+				.collect(Collectors.toSet());
+			if (collection.stream().noneMatch(set::contains)) {
 				return null;
+			} else if (structurePlacement instanceof ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+				return this.method_40148(center, concentricRingsStructurePlacement);
+			} else if (structurePlacement instanceof RandomSpreadStructurePlacement randomSpreadStructurePlacement) {
+				return method_40146(feature, world, world.getStructureAccessor(), center, radius, skipExistingChunks, world.getSeed(), randomSpreadStructurePlacement);
+			} else {
+				throw new IllegalStateException("Invalid structure placement type");
+			}
+		} else {
+			return null;
+		}
+	}
+
+	@Nullable
+	private BlockPos method_40148(BlockPos blockPos, ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+		List<ChunkPos> list = this.getConcentricRingsStartChunks(concentricRingsStructurePlacement);
+		BlockPos blockPos2 = null;
+		double d = Double.MAX_VALUE;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (ChunkPos chunkPos : list) {
+			mutable.set(ChunkSectionPos.getOffsetPos(chunkPos.x, 8), 32, ChunkSectionPos.getOffsetPos(chunkPos.z, 8));
+			double e = mutable.getSquaredDistance(blockPos);
+			if (blockPos2 == null) {
+				blockPos2 = new BlockPos(mutable);
+				d = e;
+			} else if (e < d) {
+				blockPos2 = new BlockPos(mutable);
+				d = e;
 			}
 		}
+
+		return blockPos2;
+	}
+
+	@Nullable
+	private static BlockPos method_40146(
+		StructureFeature<?> structureFeature,
+		WorldView worldView,
+		StructureAccessor structureAccessor,
+		BlockPos blockPos,
+		int i,
+		boolean bl,
+		long l,
+		RandomSpreadStructurePlacement randomSpreadStructurePlacement
+	) {
+		int j = randomSpreadStructurePlacement.spacing();
+		int k = ChunkSectionPos.getSectionCoord(blockPos.getX());
+		int m = ChunkSectionPos.getSectionCoord(blockPos.getZ());
+
+		for (int n = 0; n <= i; n++) {
+			for (int o = -n; o <= n; o++) {
+				boolean bl2 = o == -n || o == n;
+
+				for (int p = -n; p <= n; p++) {
+					boolean bl3 = p == -n || p == n;
+					if (bl2 || bl3) {
+						int q = k + j * o;
+						int r = m + j * p;
+						ChunkPos chunkPos = randomSpreadStructurePlacement.getStartChunk(l, q, r);
+						StructurePresence structurePresence = structureAccessor.getStructurePresence(chunkPos, structureFeature, bl);
+						if (structurePresence != StructurePresence.START_NOT_PRESENT) {
+							if (!bl && structurePresence == StructurePresence.START_PRESENT) {
+								return StructureFeature.getLocatedPos(randomSpreadStructurePlacement, chunkPos);
+							}
+
+							Chunk chunk = worldView.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
+							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), structureFeature, chunk);
+							if (structureStart != null && structureStart.hasChildren()) {
+								if (bl && structureStart.isInExistingChunk()) {
+									structureAccessor.incrementReferences(structureStart);
+									return StructureFeature.getLocatedPos(randomSpreadStructurePlacement, structureStart.getPos());
+								}
+
+								if (!bl) {
+									return StructureFeature.getLocatedPos(randomSpreadStructurePlacement, structureStart.getPos());
+								}
+							}
+
+							if (n == 0) {
+								break;
+							}
+						}
+					}
+				}
+
+				if (n == 0) {
+					break;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public void generateFeatures(StructureWorldAccess world, Chunk chunk, StructureAccessor structureAccessor) {
@@ -244,16 +324,16 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 			long l = chunkRandom.setPopulationSeed(world.getSeed(), blockPos.getX(), blockPos.getZ());
 			Set<Biome> set = new ObjectArraySet<>();
 			if (this instanceof FlatChunkGenerator) {
-				set.addAll(this.populationSource.getBiomes());
+				this.populationSource.getBiomes().map(RegistryEntry::value).forEach(set::add);
 			} else {
 				ChunkPos.stream(chunkSectionPos.toChunkPos(), 1).forEach(chunkPosx -> {
 					Chunk chunkx = world.getChunk(chunkPosx.x, chunkPosx.z);
 
 					for (ChunkSection chunkSection : chunkx.getSectionArray()) {
-						chunkSection.getBiomeContainer().method_39793(set::add);
+						chunkSection.getBiomeContainer().method_39793(registryEntry -> set.add((Biome)registryEntry.value()));
 					}
 				});
-				set.retainAll(this.populationSource.getBiomes());
+				set.retainAll((Collection)this.populationSource.getBiomes().map(RegistryEntry::value).collect(Collectors.toSet()));
 			}
 
 			int i = list.size();
@@ -288,11 +368,11 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 						IntSet intSet = new IntArraySet();
 
 						for (Biome biome : set) {
-							List<List<Supplier<PlacedFeature>>> list3 = biome.getGenerationSettings().getFeatures();
+							List<RegistryEntryList<PlacedFeature>> list3 = biome.getGenerationSettings().getFeatures();
 							if (k < list3.size()) {
-								List<Supplier<PlacedFeature>> list4 = (List<Supplier<PlacedFeature>>)list3.get(k);
+								RegistryEntryList<PlacedFeature> registryEntryList = (RegistryEntryList<PlacedFeature>)list3.get(k);
 								BiomeSource.class_6827 lv = (BiomeSource.class_6827)list.get(k);
-								list4.stream().map(Supplier::get).forEach(placedFeaturex -> intSet.add(lv.indexMapping().applyAsInt(placedFeaturex)));
+								registryEntryList.stream().map(RegistryEntry::value).forEach(placedFeaturex -> intSet.add(lv.indexMapping().applyAsInt(placedFeaturex)));
 							}
 						}
 
@@ -359,8 +439,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 
 	public abstract int getWorldHeight();
 
-	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
-		return biome.getSpawnSettings().getSpawnEntries(group);
+	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(RegistryEntry<Biome> registryEntry, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+		return registryEntry.value().getSpawnSettings().getSpawnEntries(group);
 	}
 
 	/**
@@ -371,63 +451,44 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 	) {
 		ChunkPos chunkPos = chunk.getPos();
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
-		StructureConfig structureConfig = this.structuresConfig.getForType(StructureFeature.STRONGHOLD);
-		if (structureConfig != null) {
-			StructureStart<?> structureStart = structureAccessor.getStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, chunk);
-			if (structureStart == null || !structureStart.hasChildren()) {
-				StructureStart<?> structureStart2 = ConfiguredStructureFeatures.STRONGHOLD
-					.tryPlaceStart(
-						registryManager,
-						this,
-						this.populationSource,
-						structureManager,
-						worldSeed,
-						chunkPos,
-						getStructureReferences(structureAccessor, chunk, chunkSectionPos, StructureFeature.STRONGHOLD),
-						structureConfig,
-						chunk,
-						ChunkGenerator::canPlaceStrongholdInBiome
-					);
-				structureAccessor.setStructureStart(chunkSectionPos, StructureFeature.STRONGHOLD, structureStart2, chunk);
-			}
-		}
+		Registry<ConfiguredStructureFeature<?, ?>> registry = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
 
-		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-
-		label48:
+		label45:
 		for (StructureFeature<?> structureFeature : Registry.STRUCTURE_FEATURE) {
-			if (structureFeature != StructureFeature.STRONGHOLD) {
-				StructureConfig structureConfig2 = this.structuresConfig.getForType(structureFeature);
-				if (structureConfig2 != null) {
-					StructureStart<?> structureStart3 = structureAccessor.getStructureStart(chunkSectionPos, structureFeature, chunk);
-					if (structureStart3 == null || !structureStart3.hasChildren()) {
-						int i = getStructureReferences(structureAccessor, chunk, chunkSectionPos, structureFeature);
-
-						for (Entry<ConfiguredStructureFeature<?, ?>, Collection<RegistryKey<Biome>>> entry : this.structuresConfig
+			StructurePlacement structurePlacement = this.structuresConfig.getForType(structureFeature);
+			if (structurePlacement != null) {
+				StructureStart<?> structureStart = structureAccessor.getStructureStart(chunkSectionPos, structureFeature, chunk);
+				if (structureStart == null || !structureStart.hasChildren()) {
+					int i = getStructureReferences(structureAccessor, chunk, chunkSectionPos, structureFeature);
+					if (structurePlacement.isStartChunk(this, chunkPos.x, chunkPos.z)) {
+						for (Entry<RegistryKey<ConfiguredStructureFeature<?, ?>>, Collection<RegistryKey<Biome>>> entry : this.structuresConfig
 							.getConfiguredStructureFeature(structureFeature)
 							.asMap()
 							.entrySet()) {
-							StructureStart<?> structureStart4 = ((ConfiguredStructureFeature)entry.getKey())
-								.tryPlaceStart(
-									registryManager,
-									this,
-									this.populationSource,
-									structureManager,
-									worldSeed,
-									chunkPos,
-									i,
-									structureConfig2,
-									chunk,
-									b -> this.testBiomeByKey(registry, ((Collection)entry.getValue())::contains, b)
-								);
-							if (structureStart4.hasChildren()) {
-								structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart4, chunk);
-								continue label48;
+							Optional<ConfiguredStructureFeature<?, ?>> optional = registry.getOrEmpty((RegistryKey<ConfiguredStructureFeature<?, ?>>)entry.getKey());
+							if (!optional.isEmpty()) {
+								Predicate<RegistryKey<Biome>> predicate = Set.copyOf((Collection)entry.getValue())::contains;
+								StructureStart<?> structureStart2 = ((ConfiguredStructureFeature)optional.get())
+									.tryPlaceStart(
+										registryManager,
+										this,
+										this.populationSource,
+										structureManager,
+										worldSeed,
+										chunkPos,
+										i,
+										chunk,
+										registryEntry -> this.method_40149(registryEntry).matches(predicate)
+									);
+								if (structureStart2.hasChildren()) {
+									structureAccessor.setStructureStart(chunkSectionPos, structureFeature, structureStart2, chunk);
+									continue label45;
+								}
 							}
 						}
-
-						structureAccessor.setStructureStart(chunkSectionPos, structureFeature, StructureStart.DEFAULT, chunk);
 					}
+
+					structureAccessor.setStructureStart(chunkSectionPos, structureFeature, StructureStart.DEFAULT, chunk);
 				}
 			}
 		}
@@ -438,8 +499,8 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 		return structureStart != null ? structureStart.getReferences() : 0;
 	}
 
-	protected boolean testBiomeByKey(Registry<Biome> registry, Predicate<RegistryKey<Biome>> condition, Biome biome) {
-		return registry.getKey(biome).filter(condition).isPresent();
+	protected RegistryEntry<Biome> method_40149(RegistryEntry<Biome> registryEntry) {
+		return registryEntry;
 	}
 
 	/**
@@ -505,9 +566,12 @@ public abstract class ChunkGenerator implements BiomeAccess.Storage {
 		return this.getHeight(x, z, heightmap, world) - 1;
 	}
 
-	public boolean isStrongholdStartingChunk(ChunkPos pos) {
-		this.generateStrongholdPositions();
-		return this.strongholds.contains(pos);
+	public List<ChunkPos> getConcentricRingsStartChunks(ConcentricRingsStructurePlacement concentricRingsStructurePlacement) {
+		return (List<ChunkPos>)this.field_36405.get(concentricRingsStructurePlacement);
+	}
+
+	public long getSeed() {
+		return this.field_36406;
 	}
 
 	static {

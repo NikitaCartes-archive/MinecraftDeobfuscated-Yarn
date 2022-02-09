@@ -25,7 +25,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
-		Advancement advancement = Advancement.Task.create()
+		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.END_STONE,
 				new TranslatableText("advancements.end.root.title"),
@@ -38,7 +38,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(World.END))
 			.build(consumer, "end/root");
-		Advancement advancement2 = Advancement.Task.create()
+		Advancement advancement2 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Blocks.DRAGON_HEAD,
@@ -52,7 +52,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/kill_dragon");
-		Advancement advancement3 = Advancement.Task.create()
+		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Items.ENDER_PEARL,
@@ -66,7 +66,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.END_GATEWAY))
 			.build(consumer, "end/enter_end_gateway");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Items.END_CRYSTAL,
@@ -80,7 +80,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/respawn_dragon");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Builder.create()
 			.parent(advancement3)
 			.display(
 				Blocks.PURPUR_BLOCK,
@@ -94,7 +94,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.END_CITY)))
 			.build(consumer, "end/find_end_city");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Items.DRAGON_BREATH,
@@ -108,7 +108,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.items(Items.DRAGON_BREATH))
 			.build(consumer, "end/dragon_breath");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.SHULKER_SHELL,
@@ -123,7 +123,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.rewards(AdvancementRewards.Builder.experience(50))
 			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0))))
 			.build(consumer, "end/levitate");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.ELYTRA,
@@ -137,7 +137,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("elytra", InventoryChangedCriterion.Conditions.items(Items.ELYTRA))
 			.build(consumer, "end/elytra");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Blocks.DRAGON_EGG,

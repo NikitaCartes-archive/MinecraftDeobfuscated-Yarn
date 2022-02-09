@@ -31,7 +31,6 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	 * The weight of reloaders' progress in the total progress calculation. Has value {@value}.
 	 */
 	private static final int RELOADER_WEIGHT = 1;
-	protected final ResourceManager manager;
 	protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
 	protected final CompletableFuture<List<S>> applyStageFuture;
 	final Set<ResourceReloader> waitingReloaders;
@@ -67,7 +66,6 @@ public class SimpleResourceReload<S> implements ResourceReload {
 		SimpleResourceReload.Factory<S> factory,
 		CompletableFuture<Unit> initialStage
 	) {
-		this.manager = manager;
 		this.reloaderCount = reloaders.size();
 		this.toPrepareCount.incrementAndGet();
 		initialStage.thenRun(this.preparedCount::incrementAndGet);
@@ -109,8 +107,8 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	}
 
 	@Override
-	public CompletableFuture<Unit> whenComplete() {
-		return this.applyStageFuture.thenApply(results -> Unit.INSTANCE);
+	public CompletableFuture<?> whenComplete() {
+		return this.applyStageFuture;
 	}
 
 	@Override
@@ -121,16 +119,31 @@ public class SimpleResourceReload<S> implements ResourceReload {
 		return f / g;
 	}
 
-	@Override
-	public boolean isComplete() {
-		return this.applyStageFuture.isDone();
-	}
-
-	@Override
-	public void throwException() {
-		if (this.applyStageFuture.isCompletedExceptionally()) {
-			this.applyStageFuture.join();
-		}
+	/**
+	 * Starts a resource reload with the content from the {@code manager} supplied
+	 * to the {@code reloaders}.
+	 * 
+	 * @apiNote In vanilla, this is respectively called by {@link ReloadableResourceManagerImpl}
+	 * on the client and {@link ServerResourceManager} on the server.
+	 * 
+	 * @param manager the resource manager, providing resources to the reloaders
+	 * @param reloaders the reloaders performing the reload
+	 * @param prepareExecutor the executor for the prepare stage, often asynchronous
+	 * @param applyExecutor the executor for the apply stage, synchronous with the game engine
+	 * @param initialStage the initial stage, must be completed before the reloaders can prepare resources
+	 * @param profiled whether to profile this reload and log the statistics
+	 */
+	public static ResourceReload start(
+		ResourceManager manager,
+		List<ResourceReloader> reloaders,
+		Executor prepareExecutor,
+		Executor applyExecutor,
+		CompletableFuture<Unit> initialStage,
+		boolean profiled
+	) {
+		return (ResourceReload)(profiled
+			? new ProfiledResourceReload(manager, reloaders, prepareExecutor, applyExecutor, initialStage)
+			: create(manager, reloaders, prepareExecutor, applyExecutor, initialStage));
 	}
 
 	/**

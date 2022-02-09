@@ -2,10 +2,10 @@ package net.minecraft.village;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.Optional;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -62,7 +62,7 @@ public final class VillagerType {
 		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(id), new VillagerType(id));
 	}
 
-	public static VillagerType forBiome(Optional<RegistryKey<Biome>> biomeKey) {
-		return (VillagerType)biomeKey.flatMap(biomeKeyx -> Optional.ofNullable((VillagerType)BIOME_TO_TYPE.get(biomeKeyx))).orElse(PLAINS);
+	public static VillagerType forBiome(RegistryEntry<Biome> biomeEntry) {
+		return (VillagerType)biomeEntry.getKey().map(BIOME_TO_TYPE::get).orElse(PLAINS);
 	}
 }

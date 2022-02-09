@@ -130,7 +130,7 @@ public class TagGroupLoader<T> {
 		}
 	}
 
-	public TagGroup<T> buildGroup(Map<Identifier, Tag.Builder> tags) {
+	public Map<Identifier, Tag<T>> buildGroup(Map<Identifier, Tag.Builder> tags) {
 		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
 		Function<Identifier, Tag<T>> function = map::get;
 		Function<Identifier, T> function2 = id -> ((Optional)this.registryGetter.apply(id)).orElse(null);
@@ -156,10 +156,10 @@ public class TagGroupLoader<T> {
 								.ifRight(tag -> map.put(identifierx, tag))
 					)
 			);
-		return TagGroup.create(map);
+		return map;
 	}
 
-	public TagGroup<T> load(ResourceManager manager) {
+	public Map<Identifier, Tag<T>> load(ResourceManager manager) {
 		return this.buildGroup(this.loadTags(manager));
 	}
 }

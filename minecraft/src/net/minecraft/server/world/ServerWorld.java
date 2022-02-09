@@ -80,7 +80,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.tag.TagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CsvWriter;
@@ -101,6 +100,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -193,7 +193,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		LevelStorage.Session session,
 		ServerWorldProperties properties,
 		RegistryKey<World> worldKey,
-		DimensionType dimensionType,
+		RegistryEntry<DimensionType> registryEntry,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkGenerator chunkGenerator,
 		boolean debugWorld,
@@ -201,7 +201,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		List<Spawner> spawners,
 		boolean shouldTickTime
 	) {
-		super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
+		super(properties, worldKey, registryEntry, server::getProfiler, false, debugWorld, seed);
 		this.shouldTickTime = shouldTickTime;
 		this.server = server;
 		this.spawners = spawners;
@@ -279,7 +279,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public Biome getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
+	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
 		return this.getChunkManager().getChunkGenerator().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
@@ -455,7 +455,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (this.random.nextInt(16) == 0) {
 			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
 			BlockPos blockPos2 = blockPos.down();
-			Biome biome = this.getBiome(blockPos);
+			Biome biome = this.getBiome(blockPos).value();
 			if (biome.canSetIce(this, blockPos2)) {
 				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
 			}
@@ -466,7 +466,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 
 				BlockState blockState = this.getBlockState(blockPos2);
-				Biome.Precipitation precipitation = this.getBiome(blockPos).getPrecipitation();
+				Biome.Precipitation precipitation = biome.getPrecipitation();
 				if (precipitation == Biome.Precipitation.RAIN && biome.isCold(blockPos2)) {
 					precipitation = Biome.Precipitation.SNOW;
 				}
@@ -625,17 +625,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			this.thunderGradientPrev = this.thunderGradient;
 			if (this.properties.isThundering()) {
-				this.thunderGradient = (float)((double)this.thunderGradient + 0.01);
+				this.thunderGradient += 0.01F;
 			} else {
-				this.thunderGradient = (float)((double)this.thunderGradient - 0.01);
+				this.thunderGradient -= 0.01F;
 			}
 
 			this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0F, 1.0F);
 			this.rainGradientPrev = this.rainGradient;
 			if (this.properties.isRaining()) {
-				this.rainGradient = (float)((double)this.rainGradient + 0.01);
+				this.rainGradient += 0.01F;
 			} else {
-				this.rainGradient = (float)((double)this.rainGradient - 0.01);
+				this.rainGradient -= 0.01F;
 			}
 
 			this.rainGradient = MathHelper.clamp(this.rainGradient, 0.0F, 1.0F);
@@ -1227,7 +1227,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	public BlockPos locateBiome(Biome biome, BlockPos pos, int radius, int blockCheckInterval) {
+	public BlockPos locateBiome(RegistryKey<Biome> biomeKey, BlockPos pos, int radius, int blockCheckInterval) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
@@ -1237,7 +1237,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				pos.getZ(),
 				radius,
 				blockCheckInterval,
-				biome2 -> biome2 == biome,
+				entry -> entry.matchesKey(biomeKey),
 				this.random,
 				true,
 				this.getChunkManager().getChunkGenerator().getMultiNoiseSampler()
@@ -1247,11 +1247,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public RecipeManager getRecipeManager() {
 		return this.server.getRecipeManager();
-	}
-
-	@Override
-	public TagManager getTagManager() {
-		return this.server.getTagManager();
 	}
 
 	@Override

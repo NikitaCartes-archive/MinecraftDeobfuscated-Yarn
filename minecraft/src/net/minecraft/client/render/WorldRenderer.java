@@ -281,7 +281,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					double r = (double)this.field_20794[q] * 0.5;
 					double s = (double)this.field_20795[q] * 0.5;
 					mutable.set((double)p, e, (double)o);
-					Biome biome = world.getBiome(mutable);
+					Biome biome = world.getBiome(mutable).value();
 					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
 						int t = world.getTopY(Heightmap.Type.MOTION_BLOCKING, p, o);
 						int u = j - l;
@@ -414,7 +414,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				int k = random.nextInt(21) - 10;
 				int l = random.nextInt(21) - 10;
 				BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
-				Biome biome = worldView.getBiome(blockPos3);
+				Biome biome = worldView.getBiome(blockPos3).value();
 				if (blockPos3.getY() > worldView.getBottomY()
 					&& blockPos3.getY() <= blockPos.getY() + 10
 					&& blockPos3.getY() >= blockPos.getY() - 10

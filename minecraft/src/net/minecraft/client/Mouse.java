@@ -133,21 +133,21 @@ public class Mouse {
 					}
 
 					this.eventDeltaWheel += d;
-					float g = (float)((int)this.eventDeltaWheel);
-					if (g == 0.0F) {
+					int i = (int)this.eventDeltaWheel;
+					if (i == 0) {
 						return;
 					}
 
-					this.eventDeltaWheel -= (double)g;
+					this.eventDeltaWheel -= (double)i;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-							this.client.inGameHud.getSpectatorHud().cycleSlot((double)(-g));
+							this.client.inGameHud.getSpectatorHud().cycleSlot(-i);
 						} else {
-							float h = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + g * 0.005F, 0.0F, 0.2F);
-							this.client.player.getAbilities().setFlySpeed(h);
+							float g = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)i * 0.005F, 0.0F, 0.2F);
+							this.client.player.getAbilities().setFlySpeed(g);
 						}
 					} else {
-						this.client.player.getInventory().scrollInHotbar((double)g);
+						this.client.player.getInventory().scrollInHotbar((double)i);
 					}
 				}
 			}

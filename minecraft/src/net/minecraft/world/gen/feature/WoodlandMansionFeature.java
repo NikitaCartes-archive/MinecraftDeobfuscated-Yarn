@@ -27,11 +27,6 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		super(configCodec, WoodlandMansionFeature::addPieces, WoodlandMansionFeature::postPlace);
 	}
 
-	@Override
-	protected boolean isUniformDistribution() {
-		return false;
-	}
-
 	private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);

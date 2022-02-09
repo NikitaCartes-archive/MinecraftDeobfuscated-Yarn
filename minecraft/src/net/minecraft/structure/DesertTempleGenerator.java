@@ -15,8 +15,8 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class DesertTempleGenerator extends ShiftableStructurePiece {
-	public static final int field_34725 = 21;
-	public static final int field_34726 = 21;
+	public static final int WIDTH = 21;
+	public static final int DEPTH = 21;
 	private final boolean[] hasPlacedChest = new boolean[4];
 
 	public DesertTempleGenerator(Random random, int x, int z) {

@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.util.Set;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
-import net.minecraft.util.dynamic.RegistryReadingOps;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -248,9 +249,9 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		nbtCompound.putString("Series", SharedConstants.getGameVersion().getSaveVersion().getSeries());
 		levelNbt.put("Version", nbtCompound);
 		levelNbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, registryManager);
+		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, registryManager);
 		GeneratorOptions.CODEC
-			.encodeStart(registryReadingOps, this.generatorOptions)
+			.encodeStart(dynamicOps, this.generatorOptions)
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
 			.ifPresent(nbtElement -> levelNbt.put("WorldGenSettings", nbtElement));
 		levelNbt.putInt("GameType", this.levelInfo.getGameMode().getId());

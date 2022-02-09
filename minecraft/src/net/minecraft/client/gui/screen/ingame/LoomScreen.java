@@ -234,9 +234,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
 		if (this.canApplyDyePattern) {
 			int i = PATTERN_BUTTON_ROW_COUNT - 4;
-			this.scrollPosition = (float)((double)this.scrollPosition - amount / (double)i);
-			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
-			this.firstPatternButtonId = 1 + (int)((double)(this.scrollPosition * (float)i) + 0.5) * 4;
+			float f = (float)amount / (float)i;
+			this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
+			this.firstPatternButtonId = 1 + (int)(this.scrollPosition * (float)i + 0.5F) * 4;
 		}
 
 		return true;

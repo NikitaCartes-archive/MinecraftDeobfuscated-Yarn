@@ -639,8 +639,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.jumping = this.input.jumping;
 			this.lastRenderYaw = this.renderYaw;
 			this.lastRenderPitch = this.renderPitch;
-			this.renderPitch = (float)((double)this.renderPitch + (double)(this.getPitch() - this.renderPitch) * 0.5);
-			this.renderYaw = (float)((double)this.renderYaw + (double)(this.getYaw() - this.renderYaw) * 0.5);
+			this.renderPitch = this.renderPitch + (this.getPitch() - this.renderPitch) * 0.5F;
+			this.renderYaw = this.renderYaw + (this.getYaw() - this.renderYaw) * 0.5F;
 		}
 	}
 

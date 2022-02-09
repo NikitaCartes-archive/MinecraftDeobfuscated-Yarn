@@ -136,6 +136,7 @@ import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
+import net.minecraft.datafixer.fix.StructureSettingsFlattenFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
@@ -823,6 +824,8 @@ public class Schemas {
 		);
 		Schema schema153 = builder.addSchema(2852, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema153));
+		Schema schema154 = builder.addSchema(2967, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StructureSettingsFlattenFix(schema154));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

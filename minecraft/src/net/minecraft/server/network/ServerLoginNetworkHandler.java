@@ -183,12 +183,17 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void onHello(LoginHelloC2SPacket packet) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.HELLO, "Unexpected hello packet");
 		this.profile = packet.getProfile();
+		Validate.validState(isValidName(this.profile.getName()), "Invalid characters in username");
 		if (this.server.isOnlineMode() && !this.connection.isLocal()) {
 			this.state = ServerLoginNetworkHandler.State.KEY;
 			this.connection.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic().getEncoded(), this.nonce));
 		} else {
 			this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 		}
+	}
+
+	public static boolean isValidName(String name) {
+		return name.chars().filter(c -> c <= 32 || c >= 127).findAny().isEmpty();
 	}
 
 	@Override

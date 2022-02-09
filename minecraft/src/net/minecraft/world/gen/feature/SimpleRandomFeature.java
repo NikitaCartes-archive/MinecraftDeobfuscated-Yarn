@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -21,7 +20,7 @@ public class SimpleRandomFeature extends Feature<SimpleRandomFeatureConfig> {
 		BlockPos blockPos = context.getOrigin();
 		ChunkGenerator chunkGenerator = context.getGenerator();
 		int i = random.nextInt(simpleRandomFeatureConfig.features.size());
-		PlacedFeature placedFeature = (PlacedFeature)((Supplier)simpleRandomFeatureConfig.features.get(i)).get();
+		PlacedFeature placedFeature = simpleRandomFeatureConfig.features.get(i).value();
 		return placedFeature.generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

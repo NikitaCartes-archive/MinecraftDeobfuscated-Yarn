@@ -18,6 +18,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -88,23 +89,25 @@ public abstract class StructurePoolElement {
 	}
 
 	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofLegacySingle(String id) {
-		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), () -> StructureProcessorLists.EMPTY, projection);
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, projection);
 	}
 
-	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(String id, StructureProcessorList processors) {
-		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), () -> processors, projection);
+	public static Function<StructurePool.Projection, LegacySinglePoolElement> ofProcessedLegacySingle(
+		String id, RegistryEntry<StructureProcessorList> registryEntry
+	) {
+		return projection -> new LegacySinglePoolElement(Either.left(new Identifier(id)), registryEntry, projection);
 	}
 
 	public static Function<StructurePool.Projection, SinglePoolElement> ofSingle(String id) {
-		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), () -> StructureProcessorLists.EMPTY, projection);
+		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), StructureProcessorLists.EMPTY, projection);
 	}
 
-	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, StructureProcessorList processors) {
-		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), () -> processors, projection);
+	public static Function<StructurePool.Projection, SinglePoolElement> ofProcessedSingle(String id, RegistryEntry<StructureProcessorList> registryEntry) {
+		return projection -> new SinglePoolElement(Either.left(new Identifier(id)), registryEntry, projection);
 	}
 
-	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(PlacedFeature placedFeature) {
-		return projection -> new FeaturePoolElement(() -> placedFeature, projection);
+	public static Function<StructurePool.Projection, FeaturePoolElement> ofFeature(RegistryEntry<PlacedFeature> registryEntry) {
+		return projection -> new FeaturePoolElement(registryEntry, projection);
 	}
 
 	public static Function<StructurePool.Projection, ListPoolElement> ofList(List<Function<StructurePool.Projection, ? extends StructurePoolElement>> list) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
@@ -48,19 +49,19 @@ public class GrassBlock extends SpreadableBlock implements Fertilizable {
 			}
 
 			if (blockState2.isAir()) {
-				PlacedFeature placedFeature;
+				RegistryEntry<PlacedFeature> registryEntry;
 				if (random.nextInt(8) == 0) {
-					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
+					List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).value().getGenerationSettings().getFlowerFeatures();
 					if (list.isEmpty()) {
 						continue;
 					}
 
-					placedFeature = (PlacedFeature)((RandomPatchFeatureConfig)((ConfiguredFeature)list.get(0)).getConfig()).feature().get();
+					registryEntry = ((RandomPatchFeatureConfig)((ConfiguredFeature)list.get(0)).config()).feature();
 				} else {
-					placedFeature = VegetationPlacedFeatures.GRASS_BONEMEAL;
+					registryEntry = VegetationPlacedFeatures.GRASS_BONEMEAL;
 				}
 
-				placedFeature.generateUnregistered(world, world.getChunkManager().getChunkGenerator(), random, blockPos2);
+				registryEntry.value().generateUnregistered(world, world.getChunkManager().getChunkGenerator(), random, blockPos2);
 			}
 		}
 	}

@@ -56,7 +56,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = this.entity.getBlockY();
 		BlockState blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)i, this.entity.getZ()));
-		if (!this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
+		if (!this.entity.canWalkOnFluid(blockState.getFluidState())) {
 			if (this.canSwim() && this.entity.isTouchingWater()) {
 				while (true) {
 					if (!blockState.isOf(Blocks.WATER) && blockState.getFluidState() != Fluids.WATER.getStill(false)) {
@@ -84,7 +84,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				i = blockPos.up().getY();
 			}
 		} else {
-			while (this.entity.canWalkOnFluid(blockState.getFluidState().getFluid())) {
+			while (this.entity.canWalkOnFluid(blockState.getFluidState())) {
 				blockState = this.cachedWorld.getBlockState(mutable.set(this.entity.getX(), (double)(++i), this.entity.getZ()));
 			}
 
@@ -481,7 +481,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			}
 
 			if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
-				pathNodeType = PathNodeType.POWDER_SNOW;
+				pathNodeType = PathNodeType.DANGER_POWDER_SNOW;
 			}
 		}
 

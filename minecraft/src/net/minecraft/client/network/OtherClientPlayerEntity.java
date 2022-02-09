@@ -57,7 +57,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.headTrackingIncrements > 0) {
-			this.headYaw = (float)((double)this.headYaw + MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (double)this.headTrackingIncrements);
+			this.headYaw = this.headYaw + (float)(MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (double)this.headTrackingIncrements);
 			this.headTrackingIncrements--;
 		}
 

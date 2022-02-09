@@ -8,8 +8,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
@@ -27,7 +25,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		VegetationPatchFeatureConfig vegetationPatchFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
-		Predicate<BlockState> predicate = getReplaceablePredicate(vegetationPatchFeatureConfig);
+		Predicate<BlockState> predicate = blockState -> blockState.isIn(vegetationPatchFeatureConfig.replaceable);
 		int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
 		int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
 		Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);
@@ -99,8 +97,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 	protected boolean generateVegetationFeature(
 		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos
 	) {
-		return ((PlacedFeature)config.vegetationFeature.get())
-			.generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
+		return config.vegetationFeature.value().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
 	}
 
 	protected boolean placeGround(
@@ -120,10 +117,5 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		}
 
 		return true;
-	}
-
-	private static Predicate<BlockState> getReplaceablePredicate(VegetationPatchFeatureConfig config) {
-		Tag<Block> tag = BlockTags.getTagGroup().getTag(config.replaceable);
-		return tag == null ? state -> true : state -> state.isIn(tag);
 	}
 }

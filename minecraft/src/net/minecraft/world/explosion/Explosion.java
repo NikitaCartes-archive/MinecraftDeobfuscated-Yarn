@@ -128,12 +128,12 @@ public class Explosion {
 			int i = 0;
 			int j = 0;
 
-			for (float k = 0.0F; k <= 1.0F; k = (float)((double)k + d)) {
-				for (float l = 0.0F; l <= 1.0F; l = (float)((double)l + e)) {
-					for (float m = 0.0F; m <= 1.0F; m = (float)((double)m + f)) {
-						double n = MathHelper.lerp((double)k, box.minX, box.maxX);
-						double o = MathHelper.lerp((double)l, box.minY, box.maxY);
-						double p = MathHelper.lerp((double)m, box.minZ, box.maxZ);
+			for (double k = 0.0; k <= 1.0; k += d) {
+				for (double l = 0.0; l <= 1.0; l += e) {
+					for (double m = 0.0; m <= 1.0; m += f) {
+						double n = MathHelper.lerp(k, box.minX, box.maxX);
+						double o = MathHelper.lerp(l, box.minY, box.maxY);
+						double p = MathHelper.lerp(m, box.minZ, box.maxZ);
 						Vec3d vec3d = new Vec3d(n + g, o, p + h);
 						if (entity.world.raycast(new RaycastContext(vec3d, source, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType()
 							== HitResult.Type.MISS) {

@@ -2,8 +2,10 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.Supplier;
-import net.minecraft.util.Identifier;
+import net.minecraft.block.Block;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -15,7 +17,7 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 						.fieldOf("required_vertical_space_for_tree")
 						.forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.requiredVerticalSpaceForTree),
 					Codec.intRange(1, 64).fieldOf("root_radius").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootRadius),
-					Identifier.CODEC.fieldOf("root_replaceable").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootReplaceable),
+					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("root_replaceable").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootReplaceable),
 					BlockStateProvider.TYPE_CODEC.fieldOf("root_state_provider").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootStateProvider),
 					Codec.intRange(1, 256).fieldOf("root_placement_attempts").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.rootPlacementAttempts),
 					Codec.intRange(1, 4096).fieldOf("root_column_max_height").forGetter(rootSystemFeatureConfig -> rootSystemFeatureConfig.maxRootColumnHeight),
@@ -32,10 +34,10 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, RootSystemFeatureConfig::new)
 	);
-	public final Supplier<PlacedFeature> feature;
+	public final RegistryEntry<PlacedFeature> feature;
 	public final int requiredVerticalSpaceForTree;
 	public final int rootRadius;
-	public final Identifier rootReplaceable;
+	public final TagKey<Block> rootReplaceable;
 	public final BlockStateProvider rootStateProvider;
 	public final int rootPlacementAttempts;
 	public final int maxRootColumnHeight;
@@ -47,10 +49,10 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 	public final BlockPredicate predicate;
 
 	public RootSystemFeatureConfig(
-		Supplier<PlacedFeature> feature,
+		RegistryEntry<PlacedFeature> registryEntry,
 		int requiredVerticalSpaceForTree,
 		int rootRadius,
-		Identifier rootReplaceable,
+		TagKey<Block> tagKey,
 		BlockStateProvider rootStateProvider,
 		int rootPlacementAttempts,
 		int maxRootColumnHeight,
@@ -61,10 +63,10 @@ public class RootSystemFeatureConfig implements FeatureConfig {
 		int allowedVerticalWaterForTree,
 		BlockPredicate predicate
 	) {
-		this.feature = feature;
+		this.feature = registryEntry;
 		this.requiredVerticalSpaceForTree = requiredVerticalSpaceForTree;
 		this.rootRadius = rootRadius;
-		this.rootReplaceable = rootReplaceable;
+		this.rootReplaceable = tagKey;
 		this.rootStateProvider = rootStateProvider;
 		this.rootPlacementAttempts = rootPlacementAttempts;
 		this.maxRootColumnHeight = maxRootColumnHeight;

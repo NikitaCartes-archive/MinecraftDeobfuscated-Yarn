@@ -12,17 +12,17 @@ public interface StatFormatter {
 	);
 	StatFormatter DEFAULT = NumberFormat.getIntegerInstance(Locale.US)::format;
 	StatFormatter DIVIDE_BY_TEN = i -> DECIMAL_FORMAT.format((double)i * 0.1);
-	StatFormatter DISTANCE = i -> {
-		double d = (double)i / 100.0;
+	StatFormatter DISTANCE = cm -> {
+		double d = (double)cm / 100.0;
 		double e = d / 1000.0;
 		if (e > 0.5) {
 			return DECIMAL_FORMAT.format(e) + " km";
 		} else {
-			return d > 0.5 ? DECIMAL_FORMAT.format(d) + " m" : i + " cm";
+			return d > 0.5 ? DECIMAL_FORMAT.format(d) + " m" : cm + " cm";
 		}
 	};
-	StatFormatter TIME = i -> {
-		double d = (double)i / 20.0;
+	StatFormatter TIME = ticks -> {
+		double d = (double)ticks / 20.0;
 		double e = d / 60.0;
 		double f = e / 60.0;
 		double g = f / 24.0;
@@ -38,5 +38,5 @@ public interface StatFormatter {
 		}
 	};
 
-	String format(int i);
+	String format(int value);
 }

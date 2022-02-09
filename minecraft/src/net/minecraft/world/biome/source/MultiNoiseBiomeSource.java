@@ -15,16 +15,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
@@ -60,14 +59,14 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			multiNoiseBiomeSource -> (Either)multiNoiseBiomeSource.getInstance().map(Either::left).orElseGet(() -> Either.right(multiNoiseBiomeSource))
 		)
 		.codec();
-	private final MultiNoiseUtil.Entries<Supplier<Biome>> biomeEntries;
+	private final MultiNoiseUtil.Entries<RegistryEntry<Biome>> biomeEntries;
 	private final Optional<MultiNoiseBiomeSource.Instance> instance;
 
-	private MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Supplier<Biome>> entries) {
+	private MultiNoiseBiomeSource(MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries) {
 		this(entries, Optional.empty());
 	}
 
-	MultiNoiseBiomeSource(MultiNoiseUtil.Entries<Supplier<Biome>> biomeEntries, Optional<MultiNoiseBiomeSource.Instance> instance) {
+	MultiNoiseBiomeSource(MultiNoiseUtil.Entries<RegistryEntry<Biome>> biomeEntries, Optional<MultiNoiseBiomeSource.Instance> instance) {
 		super(biomeEntries.getEntries().stream().map(Pair::getSecond));
 		this.instance = instance;
 		this.biomeEntries = biomeEntries;
@@ -92,13 +91,13 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 	}
 
 	@Override
-	public Biome getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
+	public RegistryEntry<Biome> getBiome(int x, int y, int z, MultiNoiseUtil.MultiNoiseSampler noise) {
 		return this.getBiomeAtPoint(noise.sample(x, y, z));
 	}
 
 	@Debug
-	public Biome getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
-		return (Biome)this.biomeEntries.method_39529(point, () -> BuiltinBiomes.THE_VOID).get();
+	public RegistryEntry<Biome> getBiomeAtPoint(MultiNoiseUtil.NoiseValuePoint point) {
+		return this.biomeEntries.method_39529(point);
 	}
 
 	@Override
@@ -167,7 +166,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 							.fieldOf("preset")
 							.stable()
 							.forGetter(MultiNoiseBiomeSource.Instance::preset),
-						RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(MultiNoiseBiomeSource.Instance::biomeRegistry)
+						RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(MultiNoiseBiomeSource.Instance::biomeRegistry)
 					)
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.Instance::new))
 		);
@@ -183,30 +182,31 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			new Identifier("nether"),
 			registry -> new MultiNoiseUtil.Entries(
 					ImmutableList.of(
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), () -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.375F), () -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)),
-						Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.175F), () -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS))
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.NETHER_WASTES)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, -0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.SOUL_SAND_VALLEY)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F), registry.getOrCreateEntry(BiomeKeys.CRIMSON_FOREST)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0F, 0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.375F), registry.getOrCreateEntry(BiomeKeys.WARPED_FOREST)),
+						Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.175F), registry.getOrCreateEntry(BiomeKeys.BASALT_DELTAS))
 					)
 				)
 		);
 		public static final MultiNoiseBiomeSource.Preset OVERWORLD = new MultiNoiseBiomeSource.Preset(new Identifier("overworld"), registry -> {
-			Builder<Pair<MultiNoiseUtil.NoiseHypercube, Supplier<Biome>>> builder = ImmutableList.builder();
-			new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(registryKey -> () -> (Biome)registry.getOrThrow(registryKey))));
+			Builder<Pair<MultiNoiseUtil.NoiseHypercube, RegistryEntry<Biome>>> builder = ImmutableList.builder();
+			new VanillaBiomeParameters().writeVanillaBiomeParameters(pair -> builder.add(pair.mapSecond(registry::getOrCreateEntry)));
 			return new MultiNoiseUtil.Entries(builder.build());
 		});
 		final Identifier id;
-		private final Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction;
+		private final Function<Registry<Biome>, MultiNoiseUtil.Entries<RegistryEntry<Biome>>> biomeSourceFunction;
 
-		public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<Supplier<Biome>>> biomeSourceFunction) {
+		public Preset(Identifier id, Function<Registry<Biome>, MultiNoiseUtil.Entries<RegistryEntry<Biome>>> biomeSourceFunction) {
 			this.id = id;
 			this.biomeSourceFunction = biomeSourceFunction;
 			BY_IDENTIFIER.put(id, this);
 		}
 
 		MultiNoiseBiomeSource getBiomeSource(MultiNoiseBiomeSource.Instance instance, boolean useInstance) {
-			MultiNoiseUtil.Entries<Supplier<Biome>> entries = (MultiNoiseUtil.Entries<Supplier<Biome>>)this.biomeSourceFunction.apply(instance.biomeRegistry());
+			MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries = (MultiNoiseUtil.Entries<RegistryEntry<Biome>>)this.biomeSourceFunction
+				.apply(instance.biomeRegistry());
 			return new MultiNoiseBiomeSource(entries, useInstance ? Optional.of(instance) : Optional.empty());
 		}
 

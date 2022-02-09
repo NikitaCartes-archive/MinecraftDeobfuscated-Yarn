@@ -110,6 +110,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			}
 
 			if (this.shooter != null) {
+				Vec3d vec3d3;
 				if (this.shooter.isFallFlying()) {
 					Vec3d vec3d = this.shooter.getRotationVector();
 					double d = 1.5;
@@ -121,9 +122,12 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 								vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5
 							)
 						);
+					vec3d3 = this.shooter.getHandPosOffset(Items.FIREWORK_ROCKET);
+				} else {
+					vec3d3 = Vec3d.ZERO;
 				}
 
-				this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+				this.setPosition(this.shooter.getX() + vec3d3.x, this.shooter.getY() + vec3d3.y, this.shooter.getZ() + vec3d3.z);
 				this.setVelocity(this.shooter.getVelocity());
 			}
 		} else {
@@ -132,9 +136,9 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				this.setVelocity(this.getVelocity().multiply(f, 1.0, f).add(0.0, 0.04, 0.0));
 			}
 
-			Vec3d vec3d = this.getVelocity();
-			this.move(MovementType.SELF, vec3d);
-			this.setVelocity(vec3d);
+			Vec3d vec3d3 = this.getVelocity();
+			this.move(MovementType.SELF, vec3d3);
+			this.setVelocity(vec3d3);
 		}
 
 		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
@@ -154,7 +158,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				.addParticle(
 					ParticleTypes.FIREWORK,
 					this.getX(),
-					this.getY() - 0.3,
+					this.getY(),
 					this.getZ(),
 					this.random.nextGaussian() * 0.05,
 					-this.getVelocity().y * 0.5,

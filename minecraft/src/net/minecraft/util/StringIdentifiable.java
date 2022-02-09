@@ -19,9 +19,9 @@ public interface StringIdentifiable {
 	 */
 	static <E extends Enum<E> & StringIdentifiable> Codec<E> createCodec(Supplier<E[]> enumValues, Function<String, E> fromString) {
 		E[] enums = (E[])enumValues.get();
-		return Codecs.method_39512(
+		return Codecs.orCompressed(
 			Codecs.method_39508(object -> ((StringIdentifiable)object).asString(), fromString),
-			Codecs.method_39511(object -> ((Enum)object).ordinal(), ordinal -> ordinal >= 0 && ordinal < enums.length ? enums[ordinal] : null, -1)
+			Codecs.rawIdChecked(object -> ((Enum)object).ordinal(), ordinal -> ordinal >= 0 && ordinal < enums.length ? enums[ordinal] : null, -1)
 		);
 	}
 

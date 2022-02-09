@@ -1,8 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
@@ -44,7 +42,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -102,11 +100,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
 			return false;
 		} else {
-			Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
+			RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 			boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 				&& isSpawnDark(world, pos, random)
 				&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-			return !Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) && !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))
+			return !registryEntry.matchesKey(BiomeKeys.RIVER) && !registryEntry.matchesKey(BiomeKeys.FROZEN_RIVER)
 				? random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl
 				: random.nextInt(15) == 0 && bl;
 		}

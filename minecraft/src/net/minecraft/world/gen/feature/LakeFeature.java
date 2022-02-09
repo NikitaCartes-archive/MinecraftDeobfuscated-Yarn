@@ -140,7 +140,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 						for (int uxx = 0; uxx < 16; uxx++) {
 							int vx = 4;
 							BlockPos blockPos4 = blockPos.add(t, 4, uxx);
-							if (structureWorldAccess.getBiome(blockPos4).canSetIce(structureWorldAccess, blockPos4, false)
+							if (structureWorldAccess.getBiome(blockPos4).value().canSetIce(structureWorldAccess, blockPos4, false)
 								&& this.canReplace(structureWorldAccess.getBlockState(blockPos4))) {
 								structureWorldAccess.setBlockState(blockPos4, Blocks.ICE.getDefaultState(), Block.NOTIFY_LISTENERS);
 							}

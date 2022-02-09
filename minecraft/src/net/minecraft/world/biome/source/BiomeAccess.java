@@ -3,6 +3,7 @@ package net.minecraft.world.biome.source;
 import com.google.common.hash.Hashing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 public class BiomeAccess {
@@ -26,7 +27,7 @@ public class BiomeAccess {
 		return new BiomeAccess(storage, this.seed);
 	}
 
-	public Biome getBiome(BlockPos pos) {
+	public RegistryEntry<Biome> getBiome(BlockPos pos) {
 		int i = pos.getX() - 2;
 		int j = pos.getY() - 2;
 		int k = pos.getZ() - 2;
@@ -62,21 +63,21 @@ public class BiomeAccess {
 		return this.storage.getBiomeForNoiseGen(px, w, x);
 	}
 
-	public Biome getBiomeForNoiseGen(double x, double y, double z) {
+	public RegistryEntry<Biome> getBiomeForNoiseGen(double x, double y, double z) {
 		int i = BiomeCoords.fromBlock(MathHelper.floor(x));
 		int j = BiomeCoords.fromBlock(MathHelper.floor(y));
 		int k = BiomeCoords.fromBlock(MathHelper.floor(z));
 		return this.getBiomeForNoiseGen(i, j, k);
 	}
 
-	public Biome getBiomeForNoiseGen(BlockPos pos) {
+	public RegistryEntry<Biome> getBiomeForNoiseGen(BlockPos pos) {
 		int i = BiomeCoords.fromBlock(pos.getX());
 		int j = BiomeCoords.fromBlock(pos.getY());
 		int k = BiomeCoords.fromBlock(pos.getZ());
 		return this.getBiomeForNoiseGen(i, j, k);
 	}
 
-	public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+	public RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
 		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
@@ -101,6 +102,6 @@ public class BiomeAccess {
 	}
 
 	public interface Storage {
-		Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
+		RegistryEntry<Biome> getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
 	}
 }

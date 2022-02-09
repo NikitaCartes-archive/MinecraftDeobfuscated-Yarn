@@ -25,7 +25,7 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class IglooGenerator {
-	public static final int field_31550 = 90;
+	public static final int OFFSET_Y = 90;
 	static final Identifier TOP_TEMPLATE = new Identifier("igloo/top");
 	private static final Identifier MIDDLE_TEMPLATE = new Identifier("igloo/middle");
 	private static final Identifier BOTTOM_TEMPLATE = new Identifier("igloo/bottom");

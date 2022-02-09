@@ -5,9 +5,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
@@ -72,7 +70,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 					return false;
 				}
 
-				if (((PlacedFeature)config.feature.get()).generateUnregistered(world, generator, random, mutablePos)) {
+				if (config.feature.value().generateUnregistered(world, generator, random, mutablePos)) {
 					generateRootsColumn(pos, pos.getY() + i, world, config, random);
 					return true;
 				}
@@ -94,8 +92,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 
 	private static void generateRoots(StructureWorldAccess world, RootSystemFeatureConfig config, Random random, int x, int z, BlockPos.Mutable mutablePos) {
 		int i = config.rootRadius;
-		Tag<Block> tag = BlockTags.getTagGroup().getTag(config.rootReplaceable);
-		Predicate<BlockState> predicate = tag == null ? state -> true : state -> state.isIn(tag);
+		Predicate<BlockState> predicate = state -> state.isIn(config.rootReplaceable);
 
 		for (int j = 0; j < config.rootPlacementAttempts; j++) {
 			mutablePos.set(mutablePos, random.nextInt(i) - random.nextInt(i), 0, random.nextInt(i) - random.nextInt(i));

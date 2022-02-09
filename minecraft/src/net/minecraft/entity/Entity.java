@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -41,6 +42,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -69,11 +71,12 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -232,10 +235,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
 	protected boolean touchingWater;
-	protected Object2DoubleMap<Tag<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
+	protected Object2DoubleMap<TagKey<Fluid>> fluidHeight = new Object2DoubleArrayMap<>(2);
 	protected boolean submergedInWater;
-	@Nullable
-	protected Tag<Fluid> submergedFluidTag;
+	private final Set<TagKey<Fluid>> submergedFluidTag = new HashSet();
 	public int timeUntilRegen;
 	protected boolean firstUpdate = true;
 	protected final DataTracker dataTracker;
@@ -692,7 +694,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					double e = vec3d.x;
 					double f = vec3d.y;
 					double g = vec3d.z;
-					this.speed = (float)((double)this.speed + vec3d.length() * 0.6);
+					this.speed = this.speed + (float)(vec3d.length() * 0.6);
 					if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
 						f = 0.0;
 					}
@@ -1010,7 +1012,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private void playAmethystChimeSound(BlockState state) {
 		if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.lastChimeAge + 20) {
-			this.lastChimeIntensity = (float)((double)this.lastChimeIntensity * Math.pow(0.997F, (double)(this.age - this.lastChimeAge)));
+			this.lastChimeIntensity = this.lastChimeIntensity * (float)Math.pow(0.997, (double)(this.age - this.lastChimeAge));
 			this.lastChimeIntensity = Math.min(1.0F, this.lastChimeIntensity + 0.07F);
 			float f = 0.5F + this.lastChimeIntensity * this.random.nextFloat() * 1.2F;
 			float g = 0.1F + this.lastChimeIntensity * 1.2F;
@@ -1089,7 +1091,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			this.onLanding();
 		} else if (heightDifference < 0.0) {
-			this.fallDistance = (float)((double)this.fallDistance - heightDifference);
+			this.fallDistance -= (float)heightDifference;
 		}
 	}
 
@@ -1183,7 +1185,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private void updateSubmergedInWaterState() {
 		this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
-		this.submergedFluidTag = null;
+		this.submergedFluidTag.clear();
 		double d = this.getEyeY() - 0.11111111F;
 		if (this.getVehicle() instanceof BoatEntity boatEntity
 			&& !boatEntity.isSubmergedInWater()
@@ -1194,16 +1196,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 		BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
 		FluidState fluidState = this.world.getFluidState(blockPos);
-
-		for (Tag<Fluid> tag : FluidTags.getTags()) {
-			if (fluidState.isIn(tag)) {
-				double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
-				if (e > d) {
-					this.submergedFluidTag = tag;
-				}
-
-				return;
-			}
+		double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
+		if (e > d) {
+			fluidState.streamTags().forEach(this.submergedFluidTag::add);
 		}
 	}
 
@@ -1265,8 +1260,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
-		return this.submergedFluidTag == fluidTag;
+	public boolean isSubmergedIn(TagKey<Fluid> fluidTag) {
+		return this.submergedFluidTag.contains(fluidTag);
 	}
 
 	public boolean isInLava() {
@@ -1956,6 +1951,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getRotationVector(this.getPitch(), this.getYaw());
 	}
 
+	public Vec3d getHandPosOffset(Item item) {
+		if (this instanceof PlayerEntity playerEntity) {
+			boolean bl = playerEntity.getOffHandStack().isOf(item);
+			Arm arm = bl ? playerEntity.getMainArm().getOpposite() : playerEntity.getMainArm();
+			return this.getRotationVector(0.0F, this.getYaw() + (float)(arm == Arm.RIGHT ? 80 : -80)).multiply(0.5);
+		} else {
+			return Vec3d.ZERO;
+		}
+	}
+
 	public Vec2f getRotationClient() {
 		return new Vec2f(this.getPitch(), this.getYaw());
 	}
@@ -2216,7 +2221,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return (float)Math.min(this.getFrozenTicks(), i) / (float)i;
 	}
 
-	public boolean isFreezing() {
+	public boolean isFrozen() {
 		return this.getFrozenTicks() >= this.getMinFreezeDamageTicks();
 	}
 
@@ -2791,9 +2796,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public float applyMirror(BlockMirror mirror) {
 		float f = MathHelper.wrapDegrees(this.getYaw());
 		switch (mirror) {
-			case LEFT_RIGHT:
-				return -f;
 			case FRONT_BACK:
+				return -f;
+			case LEFT_RIGHT:
 				return 180.0F - f;
 			default:
 				return f;
@@ -2967,7 +2972,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.prevYaw = this.getYaw();
 	}
 
-	public boolean updateMovementInFluid(Tag<Fluid> tag, double speed) {
+	public boolean updateMovementInFluid(TagKey<Fluid> tag, double speed) {
 		if (this.isRegionUnloaded()) {
 			return false;
 		} else {
@@ -3051,7 +3056,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return !this.world.isRegionLoaded(i, k, j, l);
 	}
 
-	public double getFluidHeight(Tag<Fluid> fluid) {
+	public double getFluidHeight(TagKey<Fluid> fluid) {
 		return this.fluidHeight.getDouble(fluid);
 	}
 
@@ -3228,7 +3233,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean canFreeze() {
-		return !EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES.contains(this.getType());
+		return !this.getType().isIn(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES);
 	}
 
 	public boolean shouldEscapePowderSnow() {

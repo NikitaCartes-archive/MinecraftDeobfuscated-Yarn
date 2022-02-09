@@ -51,19 +51,19 @@ public class AdvancementManager {
 		}
 	}
 
-	public void load(Map<Identifier, Advancement.Task> map) {
-		Map<Identifier, Advancement.Task> map2 = Maps.<Identifier, Advancement.Task>newHashMap(map);
+	public void load(Map<Identifier, Advancement.Builder> map) {
+		Map<Identifier, Advancement.Builder> map2 = Maps.<Identifier, Advancement.Builder>newHashMap(map);
 
 		while (!map2.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, Advancement.Task>> iterator = map2.entrySet().iterator();
+			Iterator<Entry<Identifier, Advancement.Builder>> iterator = map2.entrySet().iterator();
 
 			while (iterator.hasNext()) {
-				Entry<Identifier, Advancement.Task> entry = (Entry<Identifier, Advancement.Task>)iterator.next();
+				Entry<Identifier, Advancement.Builder> entry = (Entry<Identifier, Advancement.Builder>)iterator.next();
 				Identifier identifier = (Identifier)entry.getKey();
-				Advancement.Task task = (Advancement.Task)entry.getValue();
-				if (task.findParent(this.advancements::get)) {
-					Advancement advancement = task.build(identifier);
+				Advancement.Builder builder = (Advancement.Builder)entry.getValue();
+				if (builder.findParent(this.advancements::get)) {
+					Advancement advancement = builder.build(identifier);
 					this.advancements.put(identifier, advancement);
 					bl = true;
 					iterator.remove();
@@ -82,7 +82,7 @@ public class AdvancementManager {
 			}
 
 			if (!bl) {
-				for (Entry<Identifier, Advancement.Task> entry : map2.entrySet()) {
+				for (Entry<Identifier, Advancement.Builder> entry : map2.entrySet()) {
 					LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
 				}
 				break;

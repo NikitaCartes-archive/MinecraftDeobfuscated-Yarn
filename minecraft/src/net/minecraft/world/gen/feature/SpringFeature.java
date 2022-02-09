@@ -17,35 +17,34 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 		SpringFeatureConfig springFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.up()).getBlock())) {
+		if (!structureWorldAccess.getBlockState(blockPos.up()).isIn(springFeatureConfig.validBlocks)) {
 			return false;
-		} else if (springFeatureConfig.requiresBlockBelow
-			&& !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {
+		} else if (springFeatureConfig.requiresBlockBelow && !structureWorldAccess.getBlockState(blockPos.down()).isIn(springFeatureConfig.validBlocks)) {
 			return false;
 		} else {
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos);
-			if (!blockState.isAir() && !springFeatureConfig.validBlocks.contains(blockState.getBlock())) {
+			if (!blockState.isAir() && !blockState.isIn(springFeatureConfig.validBlocks)) {
 				return false;
 			} else {
 				int i = 0;
 				int j = 0;
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.west()).getBlock())) {
+				if (structureWorldAccess.getBlockState(blockPos.west()).isIn(springFeatureConfig.validBlocks)) {
 					j++;
 				}
 
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.east()).getBlock())) {
+				if (structureWorldAccess.getBlockState(blockPos.east()).isIn(springFeatureConfig.validBlocks)) {
 					j++;
 				}
 
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.north()).getBlock())) {
+				if (structureWorldAccess.getBlockState(blockPos.north()).isIn(springFeatureConfig.validBlocks)) {
 					j++;
 				}
 
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.south()).getBlock())) {
+				if (structureWorldAccess.getBlockState(blockPos.south()).isIn(springFeatureConfig.validBlocks)) {
 					j++;
 				}
 
-				if (springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {
+				if (structureWorldAccess.getBlockState(blockPos.down()).isIn(springFeatureConfig.validBlocks)) {
 					j++;
 				}
 

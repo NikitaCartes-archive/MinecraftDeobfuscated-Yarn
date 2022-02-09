@@ -34,6 +34,7 @@ import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeCoords;
@@ -91,7 +92,7 @@ public final class SpawnHelper {
 	}
 
 	static Biome getBiomeDirectly(BlockPos pos, Chunk chunk) {
-		return chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(pos.getX()), BiomeCoords.fromBlock(pos.getY()), BiomeCoords.fromBlock(pos.getZ()));
+		return chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(pos.getX()), BiomeCoords.fromBlock(pos.getY()), BiomeCoords.fromBlock(pos.getZ())).value();
 	}
 
 	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
@@ -253,10 +254,10 @@ public final class SpawnHelper {
 	private static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(
 		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos pos
 	) {
-		Biome biome = world.getBiome(pos);
-		return spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98F
+		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
+		return spawnGroup == SpawnGroup.WATER_AMBIENT && Biome.getCategory(registryEntry) == Biome.Category.RIVER && random.nextFloat() < 0.98F
 			? Optional.empty()
-			: getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome).getOrEmpty(random);
+			: getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, registryEntry).getOrEmpty(random);
 	}
 
 	private static boolean containsSpawnEntry(
@@ -271,11 +272,16 @@ public final class SpawnHelper {
 	}
 
 	private static Pool<SpawnSettings.SpawnEntry> getSpawnEntries(
-		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome
+		ServerWorld world,
+		StructureAccessor structureAccessor,
+		ChunkGenerator chunkGenerator,
+		SpawnGroup spawnGroup,
+		BlockPos pos,
+		@Nullable RegistryEntry<Biome> biomeEntry
 	) {
 		return shouldUseNetherFortressSpawns(pos, world, spawnGroup, structureAccessor)
 			? NetherFortressFeature.MONSTER_SPAWNS
-			: chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(pos), structureAccessor, spawnGroup, pos);
+			: chunkGenerator.getEntitySpawnList(biomeEntry != null ? biomeEntry : world.getBiome(pos), structureAccessor, spawnGroup, pos);
 	}
 
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
@@ -331,8 +337,8 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void populateEntities(ServerWorldAccess world, Biome biome, ChunkPos chunkPos, Random random) {
-		SpawnSettings spawnSettings = biome.getSpawnSettings();
+	public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, Random random) {
+		SpawnSettings spawnSettings = registryEntry.value().getSpawnSettings();
 		Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
 		if (!pool.isEmpty()) {
 			int i = chunkPos.getStartX();

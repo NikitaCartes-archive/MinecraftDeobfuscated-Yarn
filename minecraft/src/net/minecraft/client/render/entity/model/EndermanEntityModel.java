@@ -98,10 +98,10 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		this.body.pivotZ = -0.0F;
 		this.rightLeg.pitch -= 0.0F;
 		this.leftLeg.pitch -= 0.0F;
-		this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
-		this.leftArm.pitch = (float)((double)this.leftArm.pitch * 0.5);
-		this.rightLeg.pitch = (float)((double)this.rightLeg.pitch * 0.5);
-		this.leftLeg.pitch = (float)((double)this.leftLeg.pitch * 0.5);
+		this.rightArm.pitch *= 0.5F;
+		this.leftArm.pitch *= 0.5F;
+		this.rightLeg.pitch *= 0.5F;
+		this.leftLeg.pitch *= 0.5F;
 		float l = 0.4F;
 		if (this.rightArm.pitch > 0.4F) {
 			this.rightArm.pitch = 0.4F;

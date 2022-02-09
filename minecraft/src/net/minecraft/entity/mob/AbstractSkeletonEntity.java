@@ -224,6 +224,6 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	public boolean isShaking() {
-		return this.isFreezing();
+		return this.isFrozen();
 	}
 }

@@ -125,7 +125,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			.addProcessor(blockIgnoreStructureProcessor)
 			.addProcessor(new RuleStructureProcessor(list))
 			.addProcessor(new BlockAgeStructureProcessor(properties.mossiness))
-			.addProcessor(new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE.getId()))
+			.addProcessor(new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE))
 			.addProcessor(new LavaSubmergedBlockStructureProcessor());
 		if (properties.replaceWithBlackstone) {
 			structurePlacementData.addProcessor(BlackstoneReplacementStructureProcessor.INSTANCE);

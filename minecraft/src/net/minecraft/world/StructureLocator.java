@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -47,6 +48,7 @@ public class StructureLocator {
 	private final NbtScannable chunkIoWorker;
 	private final DynamicRegistryManager registryManager;
 	private final Registry<Biome> biomeRegistry;
+	private final Registry<ConfiguredStructureFeature<?, ?>> configuredStructureFeatureRegistry;
 	private final StructureManager structureManager;
 	private final RegistryKey<World> worldKey;
 	private final ChunkGenerator chunkGenerator;
@@ -77,7 +79,8 @@ public class StructureLocator {
 		this.biomeSource = biomeSource;
 		this.seed = seed;
 		this.dataFixer = dataFixer;
-		this.biomeRegistry = registryManager.getMutable(Registry.BIOME_KEY);
+		this.biomeRegistry = registryManager.getManaged(Registry.BIOME_KEY);
+		this.configuredStructureFeatureRegistry = registryManager.getManaged(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
 	}
 
 	public <F extends StructureFeature<?>> StructurePresence getStructurePresence(ChunkPos pos, F feature, boolean skipExistingChunk) {
@@ -94,12 +97,15 @@ public class StructureLocator {
 					.computeIfAbsent(
 						l,
 						(Long2BooleanFunction)(posx -> {
-							Multimap<ConfiguredStructureFeature<?, ?>, RegistryKey<Biome>> multimap = this.chunkGenerator
+							Multimap<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>> multimap = this.chunkGenerator
 								.getStructuresConfig()
 								.getConfiguredStructureFeature(feature);
 
-							for (Entry<ConfiguredStructureFeature<?, ?>, Collection<RegistryKey<Biome>>> entry : multimap.asMap().entrySet()) {
-								if (this.isGenerationPossible(pos, (ConfiguredStructureFeature)entry.getKey(), (Collection<RegistryKey<Biome>>)entry.getValue())) {
+							for (Entry<RegistryKey<ConfiguredStructureFeature<?, ?>>, Collection<RegistryKey<Biome>>> entry : multimap.asMap().entrySet()) {
+								Optional<ConfiguredStructureFeature<?, ?>> optional = this.configuredStructureFeatureRegistry
+									.getOrEmpty((RegistryKey<ConfiguredStructureFeature<?, ?>>)entry.getKey());
+								if (optional.isPresent()
+									&& this.isGenerationPossible(pos, (ConfiguredStructureFeature)optional.get(), (Collection<RegistryKey<Biome>>)entry.getValue())) {
 									return true;
 								}
 							}
@@ -122,9 +128,19 @@ public class StructureLocator {
 	private <FC extends FeatureConfig, F extends StructureFeature<FC>> boolean isGenerationPossible(
 		ChunkPos pos, ConfiguredStructureFeature<FC, F> feature, Collection<RegistryKey<Biome>> allowedBiomes
 	) {
-		Predicate<Biome> predicate = biome -> this.biomeRegistry.getKey(biome).filter(allowedBiomes::contains).isPresent();
+		Predicate<RegistryKey<Biome>> predicate = allowedBiomes::contains;
 		return feature.feature
-			.canGenerate(this.registryManager, this.chunkGenerator, this.biomeSource, this.structureManager, this.seed, pos, feature.config, this.world, predicate);
+			.canGenerate(
+				this.registryManager,
+				this.chunkGenerator,
+				this.biomeSource,
+				this.structureManager,
+				this.seed,
+				pos,
+				feature.config,
+				this.world,
+				entry -> entry.matches(predicate)
+			);
 	}
 
 	@Nullable

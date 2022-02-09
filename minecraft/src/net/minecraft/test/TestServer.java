@@ -2,6 +2,7 @@ package net.minecraft.test;
 
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
@@ -9,13 +10,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
+import net.minecraft.class_6904;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.WorldGenerationProgressLogger;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemDetails;
@@ -27,6 +29,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
@@ -39,7 +42,7 @@ import org.slf4j.Logger;
 
 public class TestServer extends MinecraftServer {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final int field_33157 = 20;
+	private static final int RESULT_STRING_LOG_INTERVAL = 20;
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {
@@ -52,76 +55,66 @@ public class TestServer extends MinecraftServer {
 	@Nullable
 	private TestSet testSet;
 
-	public TestServer(
-		Thread serverThread,
-		LevelStorage.Session session,
-		ResourcePackManager dataPackManager,
-		ServerResourceManager serverResourceManager,
-		Collection<GameTestBatch> batches,
-		BlockPos pos,
-		DynamicRegistryManager.Impl registryManager
+	public static TestServer create(
+		Thread thread, LevelStorage.Session session, ResourcePackManager resourcePackManager, Collection<GameTestBatch> batches, BlockPos pos
 	) {
-		this(
-			serverThread,
-			session,
-			dataPackManager,
-			serverResourceManager,
-			batches,
-			pos,
-			registryManager,
-			registryManager.get(Registry.BIOME_KEY),
-			registryManager.get(Registry.DIMENSION_TYPE_KEY)
-		);
+		if (batches.isEmpty()) {
+			throw new IllegalArgumentException("No test batches were given!");
+		} else {
+			class_6904.class_6906 lv = new class_6904.class_6906(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, 4, false);
+
+			try {
+				class_6904 lv2 = (class_6904)class_6904.method_40431(
+						lv,
+						() -> DataPackSettings.SAFE_MODE,
+						(resourceManager, dataPackSettings) -> {
+							DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
+							Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
+							Registry<DimensionType> registry2 = immutable.get(Registry.DIMENSION_TYPE_KEY);
+							SaveProperties saveProperties = new LevelProperties(
+								TEST_LEVEL,
+								new GeneratorOptions(
+									0L,
+									false,
+									false,
+									GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
+										registry2, DimensionType.createDefaultDimensionOptions(immutable, 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(registry))
+									)
+								),
+								Lifecycle.stable()
+							);
+							return Pair.of(saveProperties, immutable);
+						},
+						Util.getMainWorkerExecutor(),
+						Runnable::run
+					)
+					.get();
+				lv2.method_40428();
+				return new TestServer(thread, session, resourcePackManager, lv2, batches, pos);
+			} catch (Exception var7) {
+				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var7);
+				System.exit(-1);
+				throw new IllegalStateException();
+			}
+		}
 	}
 
 	private TestServer(
 		Thread serverThread,
 		LevelStorage.Session session,
 		ResourcePackManager dataPackManager,
-		ServerResourceManager serverResourceManager,
+		class_6904 serverResourceManager,
 		Collection<GameTestBatch> batches,
-		BlockPos pos,
-		DynamicRegistryManager.Impl registryManager,
-		Registry<Biome> biomeRegistry,
-		Registry<DimensionType> dimensionTypeRegistry
+		BlockPos pos
 	) {
-		super(
-			serverThread,
-			registryManager,
-			session,
-			new LevelProperties(
-				TEST_LEVEL,
-				new GeneratorOptions(
-					0L,
-					false,
-					false,
-					GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
-						dimensionTypeRegistry,
-						DimensionType.createDefaultDimensionOptions(registryManager, 0L),
-						new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry))
-					)
-				),
-				Lifecycle.stable()
-			),
-			dataPackManager,
-			Proxy.NO_PROXY,
-			Schemas.getFixer(),
-			serverResourceManager,
-			null,
-			null,
-			null,
-			WorldGenerationProgressLogger::new
-		);
+		super(serverThread, session, dataPackManager, serverResourceManager, Proxy.NO_PROXY, Schemas.getFixer(), null, null, null, WorldGenerationProgressLogger::new);
 		this.batches = Lists.<GameTestBatch>newArrayList(batches);
 		this.pos = pos;
-		if (batches.isEmpty()) {
-			throw new IllegalArgumentException("No test batches were given!");
-		}
 	}
 
 	@Override
 	public boolean setupServer() {
-		this.setPlayerManager(new PlayerManager(this, this.registryManager, this.saveHandler, 1) {
+		this.setPlayerManager(new PlayerManager(this, this.getRegistryManager(), this.saveHandler, 1) {
 		});
 		this.loadWorld();
 		ServerWorld serverWorld = this.getOverworld();

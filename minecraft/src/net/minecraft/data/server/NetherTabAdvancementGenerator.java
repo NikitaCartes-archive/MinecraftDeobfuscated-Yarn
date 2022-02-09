@@ -85,7 +85,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 	);
 
 	public void accept(Consumer<Advancement> consumer) {
-		Advancement advancement = Advancement.Task.create()
+		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,
 				new TranslatableText("advancements.nether.root.title"),
@@ -98,7 +98,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER))
 			.build(consumer, "nether/root");
-		Advancement advancement2 = Advancement.Task.create()
+		Advancement advancement2 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.FIRE_CHARGE,
@@ -119,7 +119,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/return_to_sender");
-		Advancement advancement3 = Advancement.Task.create()
+		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Blocks.NETHER_BRICKS,
@@ -133,7 +133,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.MAP,
@@ -148,7 +148,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion("travelled", TravelCriterion.Conditions.netherTravel(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0))))
 			.build(consumer, "nether/fast_travel");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement2)
 			.display(
 				Items.GHAST_TEAR,
@@ -168,7 +168,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
-		Advancement advancement4 = Advancement.Task.create()
+		Advancement advancement4 = Advancement.Builder.create()
 			.parent(advancement3)
 			.display(
 				Blocks.WITHER_SKELETON_SKULL,
@@ -182,7 +182,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.WITHER_SKELETON_SKULL))
 			.build(consumer, "nether/get_wither_skull");
-		Advancement advancement5 = Advancement.Task.create()
+		Advancement advancement5 = Advancement.Builder.create()
 			.parent(advancement4)
 			.display(
 				Items.NETHER_STAR,
@@ -196,7 +196,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("summoned", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.WITHER)))
 			.build(consumer, "nether/summon_wither");
-		Advancement advancement6 = Advancement.Task.create()
+		Advancement advancement6 = Advancement.Builder.create()
 			.parent(advancement3)
 			.display(
 				Items.BLAZE_ROD,
@@ -210,7 +210,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.BLAZE_ROD))
 			.build(consumer, "nether/obtain_blaze_rod");
-		Advancement advancement7 = Advancement.Task.create()
+		Advancement advancement7 = Advancement.Builder.create()
 			.parent(advancement5)
 			.display(
 				Blocks.BEACON,
@@ -224,7 +224,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.atLeast(1)))
 			.build(consumer, "nether/create_beacon");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement7)
 			.display(
 				Blocks.BEACON,
@@ -238,7 +238,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.exactly(4)))
 			.build(consumer, "nether/create_full_beacon");
-		Advancement advancement8 = Advancement.Task.create()
+		Advancement advancement8 = Advancement.Builder.create()
 			.parent(advancement6)
 			.display(
 				Items.POTION,
@@ -252,7 +252,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("potion", BrewedPotionCriterion.Conditions.any())
 			.build(consumer, "nether/brew_potion");
-		Advancement advancement9 = Advancement.Task.create()
+		Advancement advancement9 = Advancement.Builder.create()
 			.parent(advancement8)
 			.display(
 				Items.MILK_BUCKET,
@@ -285,7 +285,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/all_potions");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement9)
 			.display(
 				Items.BUCKET,
@@ -331,7 +331,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/all_effects");
-		Advancement advancement10 = Advancement.Task.create()
+		Advancement advancement10 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.ANCIENT_DEBRIS,
@@ -345,7 +345,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("ancient_debris", InventoryChangedCriterion.Conditions.items(Items.ANCIENT_DEBRIS))
 			.build(consumer, "nether/obtain_ancient_debris");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement10)
 			.display(
 				Items.NETHERITE_CHESTPLATE,
@@ -363,7 +363,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				InventoryChangedCriterion.Conditions.items(Items.NETHERITE_HELMET, Items.NETHERITE_CHESTPLATE, Items.NETHERITE_LEGGINGS, Items.NETHERITE_BOOTS)
 			)
 			.build(consumer, "nether/netherite_armor");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement10)
 			.display(
 				Items.LODESTONE,
@@ -383,7 +383,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/use_lodestone");
-		Advancement advancement11 = Advancement.Task.create()
+		Advancement advancement11 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.CRYING_OBSIDIAN,
@@ -397,7 +397,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("crying_obsidian", InventoryChangedCriterion.Conditions.items(Items.CRYING_OBSIDIAN))
 			.build(consumer, "nether/obtain_crying_obsidian");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement11)
 			.display(
 				Items.RESPAWN_ANCHOR,
@@ -423,7 +423,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/charge_respawn_anchor");
-		Advancement advancement12 = Advancement.Task.create()
+		Advancement advancement12 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
@@ -444,7 +444,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/ride_strider");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement12)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
@@ -466,7 +466,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				)
 			)
 			.build(consumer, "nether/ride_strider_in_overworld_lava");
-		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Task.create(), NETHER_BIOMES)
+		AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), NETHER_BIOMES)
 			.parent(advancement12)
 			.display(
 				Items.NETHERITE_BOOTS,
@@ -480,7 +480,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.rewards(AdvancementRewards.Builder.experience(500))
 			.build(consumer, "nether/explore_nether");
-		Advancement advancement13 = Advancement.Task.create()
+		Advancement advancement13 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
 				Items.POLISHED_BLACKSTONE_BRICKS,
@@ -494,7 +494,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(StructureFeature.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement13)
 			.display(
 				Blocks.CHEST,
@@ -512,7 +512,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criterion("loot_bastion_hoglin_stable", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_hoglin_stable")))
 			.criterion("loot_bastion_bridge", PlayerGeneratesContainerLootCriterion.Conditions.create(new Identifier("minecraft:chests/bastion_bridge")))
 			.build(consumer, "nether/loot_bastion");
-		Advancement.Task.create()
+		Advancement.Builder.create()
 			.parent(advancement)
 			.criteriaMerger(CriterionMerger.OR)
 			.display(

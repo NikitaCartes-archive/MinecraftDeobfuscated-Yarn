@@ -42,6 +42,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
+import net.minecraft.entity.ai.goal.PowderSnowJumpGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -76,6 +77,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -139,6 +141,7 @@ public class FoxEntity extends AnimalEntity {
 		this.followBabyTurtleGoal = new ActiveTargetGoal(this, TurtleEntity.class, 10, false, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER);
 		this.followFishGoal = new ActiveTargetGoal(this, FishEntity.class, 20, false, false, entity -> entity instanceof SchoolingFishEntity);
 		this.goalSelector.add(0, new FoxEntity.FoxSwimGoal());
+		this.goalSelector.add(0, new PowderSnowJumpGoal(this, this.world));
 		this.goalSelector.add(1, new FoxEntity.StopWanderingGoal());
 		this.goalSelector.add(2, new FoxEntity.EscapeWhenNotAggressiveGoal(2.2));
 		this.goalSelector.add(3, new FoxEntity.MateGoal(1.0));
@@ -295,8 +298,8 @@ public class FoxEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		Biome biome = world.getBiome(this.getBlockPos());
-		FoxEntity.Type type = FoxEntity.Type.fromBiome(biome);
+		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
+		FoxEntity.Type type = FoxEntity.Type.fromBiome(registryEntry);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
 			type = ((FoxEntity.FoxData)entityData).type;
@@ -1479,8 +1482,8 @@ public class FoxEntity extends AnimalEntity {
 			return TYPES[id];
 		}
 
-		public static FoxEntity.Type fromBiome(Biome biome) {
-			return biome.getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
+		public static FoxEntity.Type fromBiome(RegistryEntry<Biome> registryEntry) {
+			return registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
 		}
 	}
 

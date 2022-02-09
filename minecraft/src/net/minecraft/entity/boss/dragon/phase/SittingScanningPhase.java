@@ -52,7 +52,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 						i = 40.0F;
 					}
 
-					this.dragon.yawAcceleration = (float)((double)this.dragon.yawAcceleration + h * (double)(0.7F / i / j));
+					this.dragon.yawAcceleration += (float)h * (0.7F / i / j);
 					this.dragon.setYaw(this.dragon.getYaw() + this.dragon.yawAcceleration);
 				}
 			}

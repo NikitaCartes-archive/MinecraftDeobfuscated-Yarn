@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.util.registry.Registry;
 
 public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "foo{bar=baz}");
@@ -39,7 +39,7 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 		} catch (CommandSyntaxException var6) {
 		}
 
-		return blockArgumentParser.getSuggestions(builder, BlockTags.getTagGroup());
+		return blockArgumentParser.getSuggestions(builder, Registry.BLOCK);
 	}
 
 	@Override

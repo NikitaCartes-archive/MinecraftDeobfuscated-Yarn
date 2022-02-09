@@ -60,7 +60,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
@@ -1449,7 +1449,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void swimUpward(Tag<Fluid> fluid) {
+	protected void swimUpward(TagKey<Fluid> fluid) {
 		if (this.getNavigation().canSwim()) {
 			super.swimUpward(fluid);
 		} else {

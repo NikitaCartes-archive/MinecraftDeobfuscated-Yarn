@@ -3,10 +3,10 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.RegistryEntry;
 
 public class FossilFeatureConfig implements FeatureConfig {
 	public static final Codec<FossilFeatureConfig> CODEC = RecordCodecBuilder.create(
@@ -21,15 +21,15 @@ public class FossilFeatureConfig implements FeatureConfig {
 	);
 	public final List<Identifier> fossilStructures;
 	public final List<Identifier> overlayStructures;
-	public final Supplier<StructureProcessorList> fossilProcessors;
-	public final Supplier<StructureProcessorList> overlayProcessors;
+	public final RegistryEntry<StructureProcessorList> fossilProcessors;
+	public final RegistryEntry<StructureProcessorList> overlayProcessors;
 	public final int maxEmptyCorners;
 
 	public FossilFeatureConfig(
 		List<Identifier> fossilStructures,
 		List<Identifier> overlayStructures,
-		Supplier<StructureProcessorList> fossilProcessors,
-		Supplier<StructureProcessorList> overlayProcessors,
+		RegistryEntry<StructureProcessorList> registryEntry,
+		RegistryEntry<StructureProcessorList> registryEntry2,
 		int maxEmptyCorners
 	) {
 		if (fossilStructures.isEmpty()) {
@@ -39,19 +39,9 @@ public class FossilFeatureConfig implements FeatureConfig {
 		} else {
 			this.fossilStructures = fossilStructures;
 			this.overlayStructures = overlayStructures;
-			this.fossilProcessors = fossilProcessors;
-			this.overlayProcessors = overlayProcessors;
+			this.fossilProcessors = registryEntry;
+			this.overlayProcessors = registryEntry2;
 			this.maxEmptyCorners = maxEmptyCorners;
 		}
-	}
-
-	public FossilFeatureConfig(
-		List<Identifier> fossilStructures,
-		List<Identifier> overlayStructures,
-		StructureProcessorList fossilProcessors,
-		StructureProcessorList overlayProcessors,
-		int maxEmptyCorners
-	) {
-		this(fossilStructures, overlayStructures, () -> fossilProcessors, () -> overlayProcessors, maxEmptyCorners);
 	}
 }

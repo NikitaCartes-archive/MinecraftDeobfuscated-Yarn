@@ -382,7 +382,7 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			f = 1.0F - f;
 			float g = MathHelper.sin(f * (float) Math.PI);
 			float h = MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -(this.head.pitch - 0.7F) * 0.75F;
-			modelPart.pitch = (float)((double)modelPart.pitch - ((double)g * 1.2 + (double)h));
+			modelPart.pitch -= g * 1.2F + h;
 			modelPart.yaw = modelPart.yaw + this.body.yaw * 2.0F;
 			modelPart.roll = modelPart.roll + MathHelper.sin(this.handSwingProgress * (float) Math.PI) * -0.4F;
 		}

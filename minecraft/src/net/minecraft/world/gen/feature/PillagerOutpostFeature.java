@@ -7,7 +7,7 @@ import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
@@ -28,23 +28,20 @@ public class PillagerOutpostFeature extends JigsawFeature {
 	}
 
 	private static boolean isVillageNearby(ChunkGenerator chunkGenerator, long seed, ChunkPos chunkPos) {
-		StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
-		if (structureConfig == null) {
-			return false;
-		} else {
+		StructurePlacement structurePlacement = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
+		if (structurePlacement != null) {
 			int i = chunkPos.x;
 			int j = chunkPos.z;
 
 			for (int k = i - 10; k <= i + 10; k++) {
 				for (int l = j - 10; l <= j + 10; l++) {
-					ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, seed, k, l);
-					if (k == chunkPos2.x && l == chunkPos2.z) {
+					if (structurePlacement.isStartChunk(chunkGenerator, k, l)) {
 						return true;
 					}
 				}
 			}
-
-			return false;
 		}
+
+		return false;
 	}
 }

@@ -26,7 +26,18 @@ public class SystemToast implements Toast {
 	private final int width;
 
 	public SystemToast(SystemToast.Type type, Text title, @Nullable Text description) {
-		this(type, title, getTextAsList(description), 160);
+		this(
+			type,
+			title,
+			getTextAsList(description),
+			Math.max(
+				160,
+				30
+					+ Math.max(
+						MinecraftClient.getInstance().textRenderer.getWidth(title), description == null ? 0 : MinecraftClient.getInstance().textRenderer.getWidth(description)
+					)
+			)
+		);
 	}
 
 	public static SystemToast create(MinecraftClient client, SystemToast.Type type, Text title, Text description) {
@@ -146,6 +157,7 @@ public class SystemToast implements Toast {
 		WORLD_GEN_SETTINGS_TRANSFER,
 		PACK_LOAD_FAILURE,
 		WORLD_ACCESS_FAILURE,
-		PACK_COPY_FAILURE;
+		PACK_COPY_FAILURE,
+		PERIODIC_NOTIFICATION;
 	}
 }

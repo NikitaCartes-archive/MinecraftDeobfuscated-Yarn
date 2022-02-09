@@ -42,6 +42,7 @@ public class ChunkHolder {
 	public static final Either<Chunk, ChunkHolder.Unloaded> UNLOADED_CHUNK = Either.right(ChunkHolder.Unloaded.INSTANCE);
 	public static final CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> UNLOADED_CHUNK_FUTURE = CompletableFuture.completedFuture(UNLOADED_CHUNK);
 	public static final Either<WorldChunk, ChunkHolder.Unloaded> UNLOADED_WORLD_CHUNK = Either.right(ChunkHolder.Unloaded.INSTANCE);
+	private static final Either<Chunk, ChunkHolder.Unloaded> field_36388 = Either.right(ChunkHolder.Unloaded.INSTANCE);
 	private static final CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> UNLOADED_WORLD_CHUNK_FUTURE = CompletableFuture.completedFuture(
 		UNLOADED_WORLD_CHUNK
 	);
@@ -265,13 +266,13 @@ public class ChunkHolder {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
 			.get(i);
 		if (completableFuture != null) {
-			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
-			if (either == null && completableFuture.isDone()) {
-				throw new IllegalStateException("future for status: " + targetStatus + " was incorrectly set to null at chunk: " + this.pos);
+			Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)completableFuture.getNow(field_36388);
+			if (either == null) {
+				String string = "value in future for status: " + targetStatus + " was incorrectly set to null at chunk: " + this.pos;
+				throw chunkStorage.crash(new IllegalStateException("null value previously set for chunk status"), string);
 			}
 
-			boolean bl = either != null && either.right().isPresent();
-			if (!bl) {
+			if (either == field_36388 || either.right().isEmpty()) {
 				return completableFuture;
 			}
 		}

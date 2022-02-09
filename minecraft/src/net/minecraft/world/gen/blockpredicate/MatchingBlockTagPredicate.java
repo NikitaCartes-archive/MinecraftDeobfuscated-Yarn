@@ -4,24 +4,19 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 
 public class MatchingBlockTagPredicate extends OffsetPredicate {
-	final Tag<Block> tag;
+	final TagKey<Block> tag;
 	public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> registerOffsetField(instance)
-				.and(
-					Tag.codec(() -> ServerTagManagerHolder.getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY))
-						.fieldOf("tag")
-						.forGetter(matchingBlockTagPredicate -> matchingBlockTagPredicate.tag)
-				)
+				.and(TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag").forGetter(matchingBlockTagPredicate -> matchingBlockTagPredicate.tag))
 				.apply(instance, MatchingBlockTagPredicate::new)
 	);
 
-	protected MatchingBlockTagPredicate(Vec3i offset, Tag<Block> tag) {
+	protected MatchingBlockTagPredicate(Vec3i offset, TagKey<Block> tag) {
 		super(offset);
 		this.tag = tag;
 	}

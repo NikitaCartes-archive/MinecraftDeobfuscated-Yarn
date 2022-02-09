@@ -2,7 +2,6 @@ package net.minecraft;
 
 import com.mojang.logging.LogUtils;
 import java.io.PrintStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -23,13 +22,13 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.util.Language;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.DebugLoggerPrintStream;
 import net.minecraft.util.logging.LoggerPrintStream;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
@@ -56,7 +55,7 @@ public class Bootstrap {
 					DispenserBehavior.registerDefaults();
 					CauldronBehavior.registerBehavior();
 					ArgumentTypes.register();
-					RequiredTagListRegistry.validateRegistrations();
+					Registry.freezeRegistries();
 					setOutputStreams();
 				}
 			}
@@ -128,10 +127,10 @@ public class Bootstrap {
 
 	private static void logMissingBiomePlacementModifier() {
 		BuiltinRegistries.BIOME.stream().forEach(biome -> {
-			List<List<Supplier<PlacedFeature>>> list = biome.getGenerationSettings().getFeatures();
-			list.stream().flatMap(Collection::stream).forEach(placedFeatureSupplier -> {
-				if (!((PlacedFeature)placedFeatureSupplier.get()).getPlacementModifiers().contains(BiomePlacementModifier.of())) {
-					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)placedFeatureSupplier.get()) + " is missing BiomeFilter.biome()");
+			List<RegistryEntryList<PlacedFeature>> list = biome.getGenerationSettings().getFeatures();
+			list.stream().flatMap(RegistryEntryList::stream).forEach(registryEntry -> {
+				if (!((PlacedFeature)registryEntry.value()).placementModifiers().contains(BiomePlacementModifier.of())) {
+					Util.error("Placed feature " + BuiltinRegistries.PLACED_FEATURE.getKey((PlacedFeature)registryEntry.value()) + " is missing BiomeFilter.biome()");
 				}
 			});
 		});

@@ -8,11 +8,13 @@ import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -22,6 +24,7 @@ public abstract class Fluid {
 	public static final IdList<FluidState> STATE_IDS = new IdList<>();
 	protected final StateManager<Fluid, FluidState> stateManager;
 	private FluidState defaultState;
+	private final RegistryEntry.Reference<Fluid> registryEntry = Registry.FLUID.createEntry(this);
 
 	protected Fluid() {
 		StateManager.Builder<Fluid, FluidState> builder = new StateManager.Builder<>(this);
@@ -91,8 +94,9 @@ public abstract class Fluid {
 		return fluid == this;
 	}
 
-	public boolean isIn(Tag<Fluid> tag) {
-		return tag.contains(this);
+	@Deprecated
+	public boolean isIn(TagKey<Fluid> tag) {
+		return this.registryEntry.isIn(tag);
 	}
 
 	public abstract VoxelShape getShape(FluidState state, BlockView world, BlockPos pos);
@@ -102,5 +106,10 @@ public abstract class Fluid {
 	 */
 	public Optional<SoundEvent> getBucketFillSound() {
 		return Optional.empty();
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<Fluid> getRegistryEntry() {
+		return this.registryEntry;
 	}
 }

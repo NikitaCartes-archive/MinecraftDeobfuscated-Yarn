@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Lists;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import java.io.IOException;
 import java.util.Iterator;
@@ -34,7 +33,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashCallable;
@@ -49,6 +47,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -63,10 +62,8 @@ import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
-import org.slf4j.Logger;
 
 public abstract class World implements WorldAccess, AutoCloseable {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
@@ -92,7 +89,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	protected float thunderGradientPrev;
 	protected float thunderGradient;
 	public final Random random = new Random();
-	private final DimensionType dimension;
+	final DimensionType dimension;
+	private final RegistryEntry<DimensionType> field_36402;
 	protected final MutableWorldProperties properties;
 	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
@@ -104,7 +102,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	protected World(
 		MutableWorldProperties properties,
 		RegistryKey<World> registryRef,
-		DimensionType dimensionType,
+		RegistryEntry<DimensionType> registryEntry,
 		Supplier<Profiler> profiler,
 		boolean isClient,
 		boolean debugWorld,
@@ -112,19 +110,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	) {
 		this.profiler = profiler;
 		this.properties = properties;
-		this.dimension = dimensionType;
+		this.field_36402 = registryEntry;
+		this.dimension = registryEntry.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
-		if (dimensionType.getCoordinateScale() != 1.0) {
+		if (this.dimension.getCoordinateScale() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / dimensionType.getCoordinateScale();
+					return super.getCenterX() / World.this.dimension.getCoordinateScale();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / dimensionType.getCoordinateScale();
+					return super.getCenterZ() / World.this.dimension.getCoordinateScale();
 				}
 			};
 		} else {
@@ -916,7 +915,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		} else if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos).getY() > pos.getY()) {
 			return false;
 		} else {
-			Biome biome = this.getBiome(pos);
+			Biome biome = this.getBiome(pos).value();
 			return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
 		}
 	}
@@ -927,7 +926,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * <p>Humidity affects the chance of fire spreading.
 	 */
 	public boolean hasHighHumidity(BlockPos pos) {
-		Biome biome = this.getBiome(pos);
+		Biome biome = this.getBiome(pos).value();
 		return biome.hasHighHumidity();
 	}
 
@@ -1015,6 +1014,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.dimension;
 	}
 
+	public RegistryEntry<DimensionType> method_40134() {
+		return this.field_36402;
+	}
+
 	public RegistryKey<World> getRegistryKey() {
 		return this.registryKey;
 	}
@@ -1035,8 +1038,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public abstract RecipeManager getRecipeManager();
-
-	public abstract TagManager getTagManager();
 
 	public BlockPos getRandomPosInChunk(int x, int y, int z, int i) {
 		this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;

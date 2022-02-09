@@ -1,14 +1,15 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.Optional;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
-import net.minecraft.util.Identifier;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -17,6 +18,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public abstract class Feature<FC extends FeatureConfig> {
@@ -119,7 +121,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public Feature(Codec<FC> configCodec) {
 		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), feature -> feature.config)
+			.<ConfiguredFeature<FC, Feature<FC>>>xmap(config -> new ConfiguredFeature<>(this, config), ConfiguredFeature::config)
 			.codec();
 	}
 
@@ -127,17 +129,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 		return this.codec;
 	}
 
-	public ConfiguredFeature<FC, ?> configure(FC config) {
-		return new ConfiguredFeature<>(this, config);
-	}
-
 	protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state, Block.NOTIFY_ALL);
 	}
 
-	public static Predicate<BlockState> notInBlockTagPredicate(Identifier tagId) {
-		Tag<Block> tag = BlockTags.getTagGroup().getTag(tagId);
-		return tag == null ? state -> true : state -> !state.isIn(tag);
+	public static Predicate<BlockState> notInBlockTagPredicate(TagKey<Block> tagKey) {
+		return state -> !state.isIn(tagKey);
 	}
 
 	protected void setBlockStateIf(StructureWorldAccess world, BlockPos pos, BlockState state, Predicate<BlockState> predicate) {
@@ -147,6 +144,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 	}
 
 	public abstract boolean generate(FeatureContext<FC> context);
+
+	public boolean method_40163(FC featureConfig, StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos) {
+		return structureWorldAccess.isValidForSetBlock(blockPos)
+			? this.generate(new FeatureContext<>(Optional.empty(), structureWorldAccess, chunkGenerator, random, blockPos, featureConfig))
+			: false;
+	}
 
 	protected static boolean isStone(BlockState state) {
 		return state.isIn(BlockTags.BASE_STONE_OVERWORLD);

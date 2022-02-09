@@ -8,7 +8,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
-import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -63,10 +62,10 @@ public class FossilFeature extends Feature<FossilFeatureConfig> {
 			return false;
 		} else {
 			structurePlacementData.clearProcessors();
-			((StructureProcessorList)fossilFeatureConfig.fossilProcessors.get()).getList().forEach(processor -> structurePlacementData.addProcessor(processor));
+			fossilFeatureConfig.fossilProcessors.value().getList().forEach(structurePlacementData::addProcessor);
 			structure.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
 			structurePlacementData.clearProcessors();
-			((StructureProcessorList)fossilFeatureConfig.overlayProcessors.get()).getList().forEach(processor -> structurePlacementData.addProcessor(processor));
+			fossilFeatureConfig.overlayProcessors.value().getList().forEach(structurePlacementData::addProcessor);
 			structure2.place(structureWorldAccess, blockPos3, blockPos3, structurePlacementData, random, Block.NO_REDRAW);
 			return true;
 		}

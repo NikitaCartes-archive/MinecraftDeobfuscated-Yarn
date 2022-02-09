@@ -3,38 +3,42 @@ package net.minecraft.util.registry;
 import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 
 public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
-	private T defaultValue;
+	private RegistryEntry<T> defaultEntry;
 
-	public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
-		super(key, lifecycle);
+	public DefaultedRegistry(
+		String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction
+	) {
+		super(key, lifecycle, valueToEntryFunction);
 		this.defaultId = new Identifier(defaultId);
 	}
 
 	@Override
-	public <V extends T> V set(int rawId, RegistryKey<T> key, V entry, Lifecycle lifecycle) {
+	public RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle) {
+		RegistryEntry<T> registryEntry = super.set(rawId, key, value, lifecycle);
 		if (this.defaultId.equals(key.getValue())) {
-			this.defaultValue = (T)entry;
+			this.defaultEntry = registryEntry;
 		}
 
-		return super.set(rawId, key, entry, lifecycle);
+		return registryEntry;
 	}
 
 	@Override
-	public int getRawId(@Nullable T entry) {
-		int i = super.getRawId(entry);
-		return i == -1 ? super.getRawId(this.defaultValue) : i;
+	public int getRawId(@Nullable T value) {
+		int i = super.getRawId(value);
+		return i == -1 ? super.getRawId(this.defaultEntry.value()) : i;
 	}
 
 	@Nonnull
 	@Override
-	public Identifier getId(T entry) {
-		Identifier identifier = super.getId(entry);
+	public Identifier getId(T value) {
+		Identifier identifier = super.getId(value);
 		return identifier == null ? this.defaultId : identifier;
 	}
 
@@ -42,7 +46,7 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	@Override
 	public T get(@Nullable Identifier id) {
 		T object = super.get(id);
-		return object == null ? this.defaultValue : object;
+		return object == null ? this.defaultEntry.value() : object;
 	}
 
 	@Override
@@ -54,14 +58,12 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	@Override
 	public T get(int index) {
 		T object = super.get(index);
-		return object == null ? this.defaultValue : object;
+		return object == null ? this.defaultEntry.value() : object;
 	}
 
-	@Nonnull
 	@Override
-	public T getRandom(Random random) {
-		T object = super.getRandom(random);
-		return object == null ? this.defaultValue : object;
+	public Optional<RegistryEntry<T>> getRandom(Random random) {
+		return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
 	}
 
 	public Identifier getDefaultId() {

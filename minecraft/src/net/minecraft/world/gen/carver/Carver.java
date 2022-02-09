@@ -18,6 +18,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
@@ -85,7 +86,7 @@ public abstract class Carver<C extends CarverConfig> {
 	}
 
 	public Carver(Codec<C> configCodec) {
-		this.codec = configCodec.fieldOf("config").<ConfiguredCarver<C>>xmap(this::configure, ConfiguredCarver::getConfig).codec();
+		this.codec = configCodec.fieldOf("config").<ConfiguredCarver<C>>xmap(this::configure, ConfiguredCarver::config).codec();
 	}
 
 	public ConfiguredCarver<C> configure(C config) {
@@ -104,7 +105,7 @@ public abstract class Carver<C extends CarverConfig> {
 		CarverContext context,
 		C config,
 		Chunk chunk,
-		Function<BlockPos, Biome> posToBiome,
+		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		AquiferSampler aquiferSampler,
 		double d,
 		double e,
@@ -164,7 +165,7 @@ public abstract class Carver<C extends CarverConfig> {
 		CarverContext context,
 		C config,
 		Chunk chunk,
-		Function<BlockPos, Biome> posToBiome,
+		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		CarvingMask mask,
 		BlockPos.Mutable mutable,
 		BlockPos.Mutable mutable2,
@@ -234,7 +235,7 @@ public abstract class Carver<C extends CarverConfig> {
 		CarverContext context,
 		C config,
 		Chunk chunk,
-		Function<BlockPos, Biome> posToBiome,
+		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		Random random,
 		AquiferSampler aquiferSampler,
 		ChunkPos pos,

@@ -115,7 +115,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Nullable
 	private PlayerEntity lastCustomer;
 	private boolean field_30612;
-	private byte foodLevel;
+	private int foodLevel;
 	private final VillagerGossips gossip = new VillagerGossips();
 	private long gossipStartTime;
 	private long lastGossipDecayTime;
@@ -494,7 +494,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			.encodeStart(NbtOps.INSTANCE, this.getVillagerData())
 			.resultOrPartial(field_36335::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
-		nbt.putByte("FoodLevel", this.foodLevel);
+		nbt.putByte("FoodLevel", (byte)this.foodLevel);
 		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		nbt.putInt("Xp", this.experience);
 		nbt.putLong("LastRestock", this.lastRestockTime);
@@ -690,7 +690,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 						int j = itemStack.getCount();
 
 						for (int k = j; k > 0; k--) {
-							this.foodLevel = (byte)(this.foodLevel + integer);
+							this.foodLevel = this.foodLevel + integer;
 							this.getInventory().removeStack(i, 1);
 							if (!this.lacksFood()) {
 								return;
@@ -707,7 +707,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void depleteFood(int amount) {
-		this.foodLevel = (byte)(this.foodLevel - amount);
+		this.foodLevel -= amount;
 	}
 
 	public void eatForBreeding() {
@@ -759,7 +759,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiome(this.getBlockPos()))));
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
@@ -773,7 +773,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.forBiome(serverWorld.getBiomeKey(this.getBlockPos()));
+			villagerType = VillagerType.forBiome(serverWorld.getBiome(this.getBlockPos()));
 		} else if (d < 0.75) {
 			villagerType = this.getVillagerData().getType();
 		} else {

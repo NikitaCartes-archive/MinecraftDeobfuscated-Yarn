@@ -7,6 +7,8 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
@@ -29,9 +31,8 @@ public class LocateBiomeCommand {
 	}
 
 	private static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<Biome> biomeEntry) throws CommandSyntaxException {
-		Biome biome = biomeEntry.resource();
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		BlockPos blockPos2 = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
+		BlockPos blockPos2 = source.getWorld().locateBiome(RegistryKey.of(Registry.BIOME_KEY, biomeEntry.id()), blockPos, 6400, 8);
 		String string = biomeEntry.id().toString();
 		if (blockPos2 == null) {
 			throw NOT_FOUND_EXCEPTION.create(string);

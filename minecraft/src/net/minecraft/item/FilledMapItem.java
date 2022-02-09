@@ -227,7 +227,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 				for (int l = 0; l < 128 * i; l++) {
 					for (int m = 0; m < 128 * i; m++) {
-						Biome.Category category = world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l)).getCategory();
+						Biome.Category category = Biome.getCategory(world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l)));
 						bls[l * 128 * i + m] = category == Biome.Category.OCEAN || category == Biome.Category.RIVER || category == Biome.Category.SWAMP;
 					}
 				}

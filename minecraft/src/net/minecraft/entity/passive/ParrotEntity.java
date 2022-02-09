@@ -208,13 +208,13 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	private void flapWings() {
 		this.prevFlapProgress = this.flapProgress;
 		this.prevMaxWingDeviation = this.maxWingDeviation;
-		this.maxWingDeviation = (float)((double)this.maxWingDeviation + (double)(!this.onGround && !this.hasVehicle() ? 4 : -1) * 0.3);
+		this.maxWingDeviation = this.maxWingDeviation + (float)(!this.onGround && !this.hasVehicle() ? 4 : -1) * 0.3F;
 		this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0F, 1.0F);
 		if (!this.onGround && this.flapSpeed < 1.0F) {
 			this.flapSpeed = 1.0F;
 		}
 
-		this.flapSpeed = (float)((double)this.flapSpeed * 0.9);
+		this.flapSpeed *= 0.9F;
 		Vec3d vec3d = this.getVelocity();
 		if (!this.onGround && vec3d.y < 0.0) {
 			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));

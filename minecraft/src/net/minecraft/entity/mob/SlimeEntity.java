@@ -1,8 +1,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -274,7 +272,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.SWAMP))
+			if (world.getBiome(pos).matchesKey(BiomeKeys.SWAMP)
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F

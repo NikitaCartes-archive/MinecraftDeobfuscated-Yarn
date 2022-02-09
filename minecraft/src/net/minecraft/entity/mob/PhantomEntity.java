@@ -381,18 +381,18 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.targetSpeed = 0.1F;
 			}
 
-			float f = (float)(PhantomEntity.this.targetPosition.x - PhantomEntity.this.getX());
-			float g = (float)(PhantomEntity.this.targetPosition.y - PhantomEntity.this.getY());
-			float h = (float)(PhantomEntity.this.targetPosition.z - PhantomEntity.this.getZ());
-			double d = (double)MathHelper.sqrt(f * f + h * h);
-			if (Math.abs(d) > 1.0E-5F) {
-				double e = 1.0 - (double)MathHelper.abs(g * 0.7F) / d;
-				f = (float)((double)f * e);
-				h = (float)((double)h * e);
-				d = (double)MathHelper.sqrt(f * f + h * h);
-				double i = (double)MathHelper.sqrt(f * f + h * h + g * g);
+			double d = PhantomEntity.this.targetPosition.x - PhantomEntity.this.getX();
+			double e = PhantomEntity.this.targetPosition.y - PhantomEntity.this.getY();
+			double f = PhantomEntity.this.targetPosition.z - PhantomEntity.this.getZ();
+			double g = Math.sqrt(d * d + f * f);
+			if (Math.abs(g) > 1.0E-5F) {
+				double h = 1.0 - Math.abs(e * 0.7F) / g;
+				d *= h;
+				f *= h;
+				g = Math.sqrt(d * d + f * f);
+				double i = Math.sqrt(d * d + f * f + e * e);
 				float j = PhantomEntity.this.getYaw();
-				float k = (float)MathHelper.atan2((double)h, (double)f);
+				float k = (float)MathHelper.atan2(f, d);
 				float l = MathHelper.wrapDegrees(PhantomEntity.this.getYaw() + 90.0F);
 				float m = MathHelper.wrapDegrees(k * (180.0F / (float)Math.PI));
 				PhantomEntity.this.setYaw(MathHelper.stepUnwrappedAngleTowards(l, m, 4.0F) - 90.0F);
@@ -403,12 +403,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					this.targetSpeed = MathHelper.stepTowards(this.targetSpeed, 0.2F, 0.025F);
 				}
 
-				float n = (float)(-(MathHelper.atan2((double)(-g), d) * 180.0F / (float)Math.PI));
+				float n = (float)(-(MathHelper.atan2(-e, g) * 180.0F / (float)Math.PI));
 				PhantomEntity.this.setPitch(n);
 				float o = PhantomEntity.this.getYaw() + 90.0F;
-				double p = (double)(this.targetSpeed * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
-				double q = (double)(this.targetSpeed * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
-				double r = (double)(this.targetSpeed * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
+				double p = (double)(this.targetSpeed * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs(d / i);
+				double q = (double)(this.targetSpeed * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs(f / i);
+				double r = (double)(this.targetSpeed * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs(e / i);
 				Vec3d vec3d = PhantomEntity.this.getVelocity();
 				PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
 			}

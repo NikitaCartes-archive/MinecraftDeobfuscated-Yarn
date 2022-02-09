@@ -411,13 +411,13 @@ public class Structure {
 	}
 
 	private void spawnEntities(
-		ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs
+		ServerWorldAccess world, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean initializeMobs
 	) {
 		for (Structure.StructureEntityInfo structureEntityInfo : this.entities) {
-			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
+			BlockPos blockPos = transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
 			if (area == null || area.contains(blockPos)) {
 				NbtCompound nbtCompound = structureEntityInfo.nbt.copy();
-				Vec3d vec3d = transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
+				Vec3d vec3d = transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
 				Vec3d vec3d2 = vec3d.add((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 				NbtList nbtList = new NbtList();
 				nbtList.add(NbtDouble.of(vec3d2.x));
@@ -426,8 +426,8 @@ public class Structure {
 				nbtCompound.put("Pos", nbtList);
 				nbtCompound.remove("UUID");
 				getEntity(world, nbtCompound).ifPresent(entity -> {
-					float f = entity.applyMirror(mirror);
-					f += entity.getYaw() + entity.applyRotation(rotation);
+					float f = entity.applyRotation(blockRotation);
+					f += entity.applyMirror(blockMirror) - entity.getYaw();
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.getPitch());
 					if (initializeMobs && entity instanceof MobEntity) {
 						((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);

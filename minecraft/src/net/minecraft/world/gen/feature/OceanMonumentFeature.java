@@ -13,6 +13,7 @@ import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -27,17 +28,13 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		super(configCodec, StructureGeneratorFactory.simple(OceanMonumentFeature::canGenerate, OceanMonumentFeature::addPieces));
 	}
 
-	@Override
-	protected boolean isUniformDistribution() {
-		return false;
-	}
-
 	private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
 		int i = context.chunkPos().getOffsetX(9);
 		int j = context.chunkPos().getOffsetZ(9);
 
-		for (Biome biome : context.biomeSource().getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.chunkGenerator().getMultiNoiseSampler())) {
-			if (biome.getCategory() != Biome.Category.OCEAN && biome.getCategory() != Biome.Category.RIVER) {
+		for (RegistryEntry<Biome> registryEntry : context.biomeSource()
+			.getBiomesInArea(i, context.chunkGenerator().getSeaLevel(), j, 29, context.chunkGenerator().getMultiNoiseSampler())) {
+			if (Biome.getCategory(registryEntry) != Biome.Category.OCEAN && Biome.getCategory(registryEntry) != Biome.Category.RIVER) {
 				return false;
 			}
 		}

@@ -180,7 +180,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	 * zombie, husk, or piglin undergoing conversion shakes.
 	 */
 	protected boolean isShaking(T entity) {
-		return entity.isFreezing();
+		return entity.isFrozen();
 	}
 
 	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {

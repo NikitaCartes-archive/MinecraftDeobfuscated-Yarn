@@ -7,9 +7,9 @@ import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public class DoublePerlinNoiseSampler {
@@ -96,7 +96,7 @@ public class DoublePerlinNoiseSampler {
 					)
 					.apply(instance, DoublePerlinNoiseSampler.NoiseParameters::new)
 		);
-		public static final Codec<Supplier<DoublePerlinNoiseSampler.NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
+		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
 
 		public NoiseParameters(int firstOctave, List<Double> amplitudes) {
 			this.firstOctave = firstOctave;

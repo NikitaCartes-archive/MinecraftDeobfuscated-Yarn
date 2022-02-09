@@ -50,7 +50,7 @@ public class BufferRenderer {
 						drawArrayParametersx.getCount(),
 						drawArrayParametersx.getElementFormat(),
 						drawArrayParametersx.getVertexCount(),
-						drawArrayParametersx.isTextured()
+						drawArrayParametersx.hasNoIndexBuffer()
 					);
 				}
 			);
@@ -64,7 +64,7 @@ public class BufferRenderer {
 				drawArrayParameters.getCount(),
 				drawArrayParameters.getElementFormat(),
 				drawArrayParameters.getVertexCount(),
-				drawArrayParameters.isTextured()
+				drawArrayParameters.hasNoIndexBuffer()
 			);
 		}
 	}
@@ -95,7 +95,7 @@ public class BufferRenderer {
 					currentElementBuffer = j;
 				}
 
-				k = indexBuffer.getElementFormat().count;
+				k = indexBuffer.getElementFormat().type;
 			} else {
 				int l = vertexFormat.getElementBuffer();
 				if (l != currentElementBuffer) {
@@ -106,7 +106,7 @@ public class BufferRenderer {
 				buffer.position(i);
 				buffer.limit(i + vertexCount * elementFormat.size);
 				GlStateManager._glBufferData(34963, buffer, 35048);
-				k = elementFormat.count;
+				k = elementFormat.type;
 			}
 
 			Shader shader = RenderSystem.getShader();
@@ -197,7 +197,7 @@ public class BufferRenderer {
 				currentElementBuffer = k;
 			}
 
-			int l = indexBuffer.getElementFormat().count;
+			int l = indexBuffer.getElementFormat().type;
 			GlStateManager._drawElements(drawArrayParameters.getMode().mode, drawArrayParameters.getVertexCount(), l, 0L);
 			byteBuffer.position(0);
 		}

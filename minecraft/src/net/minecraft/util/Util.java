@@ -358,23 +358,15 @@ public class Util {
 	 * 
 	 * @param futures the completable futures to combine
 	 */
-	public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<? extends V>> futures) {
-		return (CompletableFuture<List<V>>)futures.stream()
-			.reduce(
-				CompletableFuture.completedFuture(Lists.newArrayList()),
-				(completableFuture, completableFuture2) -> completableFuture2.thenCombine(completableFuture, (object, list) -> {
-						List<V> list2 = Lists.<V>newArrayListWithCapacity(list.size() + 1);
-						list2.addAll(list);
-						list2.add(object);
-						return list2;
-					}),
-				(completableFuture, completableFuture2) -> completableFuture.thenCombine(completableFuture2, (list, list2) -> {
-						List<V> list3 = Lists.<V>newArrayListWithCapacity(list.size() + list2.size());
-						list3.addAll(list);
-						list3.addAll(list2);
-						return list3;
-					})
-			);
+	public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<V>> futures) {
+		if (futures.isEmpty()) {
+			return CompletableFuture.completedFuture(List.of());
+		} else if (futures.size() == 1) {
+			return ((CompletableFuture)futures.get(0)).thenApply(List::of);
+		} else {
+			CompletableFuture<Void> completableFuture = CompletableFuture.allOf((CompletableFuture[])futures.toArray(new CompletableFuture[0]));
+			return completableFuture.thenApply(void_ -> futures.stream().map(CompletableFuture::join).toList());
+		}
 	}
 
 	/**
@@ -476,6 +468,10 @@ public class Util {
 
 	public static <T> T getRandom(List<T> list, Random random) {
 		return (T)list.get(random.nextInt(list.size()));
+	}
+
+	public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
+		return list.isEmpty() ? Optional.empty() : Optional.of(getRandom(list, random));
 	}
 
 	private static BooleanSupplier renameTask(Path src, Path dest) {

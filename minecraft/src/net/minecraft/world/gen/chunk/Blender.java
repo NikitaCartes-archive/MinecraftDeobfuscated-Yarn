@@ -16,6 +16,7 @@ import net.minecraft.util.math.EightWayDirection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
@@ -217,25 +218,25 @@ public class Blender {
 
 	public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
 		return (x, y, z, noise) -> {
-			Biome biome = this.blendBiome(x, z);
-			return biome == null ? biomeSupplier.getBiome(x, y, z, noise) : biome;
+			RegistryEntry<Biome> registryEntry = this.blendBiome(x, z);
+			return registryEntry == null ? biomeSupplier.getBiome(x, y, z, noise) : registryEntry;
 		};
 	}
 
 	@Nullable
-	private Biome blendBiome(int x, int y) {
+	private RegistryEntry<Biome> blendBiome(int x, int y) {
 		double d = (double)x + field_35681.sample((double)x, 0.0, (double)y) * 12.0;
 		double e = (double)y + field_35681.sample((double)y, (double)x, 0.0) * 12.0;
 		MutableDouble mutableDouble = new MutableDouble(Double.POSITIVE_INFINITY);
-		MutableObject<Biome> mutableObject = new MutableObject<>();
+		MutableObject<RegistryEntry<Biome>> mutableObject = new MutableObject<>();
 		this.field_36343
 			.forEach(
 				(long_, blendingData) -> blendingData.method_40028(
-						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (i, j, biome) -> {
+						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (i, j, registryEntry) -> {
 							double fx = MathHelper.hypot(d - (double)i, e - (double)j);
 							if (!(fx > (double)field_35502)) {
 								if (fx < mutableDouble.doubleValue()) {
-									mutableObject.setValue(biome);
+									mutableObject.setValue(registryEntry);
 									mutableDouble.setValue(fx);
 								}
 							}

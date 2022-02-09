@@ -9,10 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.biome.Biome;
 
 /**
  * A world view or {@link World}'s superinterface that exposes access to
@@ -42,8 +39,4 @@ public interface RegistryWorldView extends EntityView, WorldView, ModifiableTest
 	}
 
 	DynamicRegistryManager getRegistryManager();
-
-	default Optional<RegistryKey<Biome>> getBiomeKey(BlockPos pos) {
-		return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(pos));
-	}
 }

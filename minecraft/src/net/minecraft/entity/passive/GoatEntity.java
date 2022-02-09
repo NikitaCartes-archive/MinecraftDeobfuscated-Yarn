@@ -82,6 +82,7 @@ public class GoatEntity extends AnimalEntity {
 		super(entityType, world);
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
 	}
 
 	@Override

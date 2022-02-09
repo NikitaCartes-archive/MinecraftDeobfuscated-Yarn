@@ -53,6 +53,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6904;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -66,9 +67,12 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DataPackSettings;
+import net.minecraft.resource.LifecycledResourceManager;
+import net.minecraft.resource.LifecycledResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.command.CommandManager;
@@ -84,7 +88,6 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.tag.TagManager;
 import net.minecraft.test.TestManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -119,8 +122,8 @@ import net.minecraft.util.profiling.jfr.Finishable;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
@@ -215,7 +218,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final DataFixer dataFixer;
 	private String serverIp;
 	private int serverPort = -1;
-	protected final DynamicRegistryManager.Impl registryManager;
+	private final DynamicRegistryManager.Immutable registryManager;
 	private final Map<RegistryKey<World>, ServerWorld> worlds = Maps.<RegistryKey<World>, ServerWorld>newLinkedHashMap();
 	private PlayerManager playerManager;
 	private volatile boolean running = true;
@@ -261,7 +264,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final Executor workerExecutor;
 	@Nullable
 	private String serverId;
-	private ServerResourceManager serverResourceManager;
+	private MinecraftServer.class_6897 serverResourceManager;
 	private final StructureManager structureManager;
 	protected final SaveProperties saveProperties;
 	private volatile boolean saving;
@@ -282,26 +285,24 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public MinecraftServer(
 		Thread serverThread,
-		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		SaveProperties saveProperties,
-		ResourcePackManager dataPackManager,
+		ResourcePackManager resourcePackManager,
+		class_6904 arg,
 		Proxy proxy,
 		DataFixer dataFixer,
-		ServerResourceManager serverResourceManager,
-		@Nullable MinecraftSessionService sessionService,
-		@Nullable GameProfileRepository gameProfileRepo,
+		@Nullable MinecraftSessionService minecraftSessionService,
+		@Nullable GameProfileRepository gameProfileRepository,
 		@Nullable UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super("Server");
-		this.registryManager = registryManager;
-		this.saveProperties = saveProperties;
+		this.registryManager = arg.registryAccess();
+		this.saveProperties = arg.worldData();
 		this.proxy = proxy;
-		this.dataPackManager = dataPackManager;
-		this.serverResourceManager = serverResourceManager;
-		this.sessionService = sessionService;
-		this.gameProfileRepo = gameProfileRepo;
+		this.dataPackManager = resourcePackManager;
+		this.serverResourceManager = new MinecraftServer.class_6897(arg.resourceManager(), arg.dataPackResources());
+		this.sessionService = minecraftSessionService;
+		this.gameProfileRepo = gameProfileRepository;
 		this.userCache = userCache;
 		if (userCache != null) {
 			userCache.setExecutor(this);
@@ -312,8 +313,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.session = session;
 		this.saveHandler = session.createSaveHandler();
 		this.dataFixer = dataFixer;
-		this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
-		this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
+		this.commandFunctionManager = new CommandFunctionManager(this, this.serverResourceManager.managers.getFunctionLoader());
+		this.structureManager = new StructureManager(arg.resourceManager(), session, dataFixer);
 		this.serverThread = serverThread;
 		this.workerExecutor = Util.getMainWorkerExecutor();
 	}
@@ -367,15 +368,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		List<Spawner> list = ImmutableList.of(
 			new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(serverWorldProperties)
 		);
-		SimpleRegistry<DimensionOptions> simpleRegistry = generatorOptions.getDimensions();
-		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
+		Registry<DimensionOptions> registry = generatorOptions.getDimensions();
+		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
 		ChunkGenerator chunkGenerator;
-		DimensionType dimensionType;
+		RegistryEntry<DimensionType> registryEntry;
 		if (dimensionOptions == null) {
-			dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
-			chunkGenerator = GeneratorOptions.createOverworldGenerator(this.registryManager, new Random().nextLong());
+			registryEntry = this.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY).getOrCreateEntry(DimensionType.OVERWORLD_REGISTRY_KEY);
+			chunkGenerator = GeneratorOptions.createOverworldGenerator(this.getRegistryManager(), new Random().nextLong());
 		} else {
-			dimensionType = dimensionOptions.getDimensionType();
+			registryEntry = dimensionOptions.getDimensionTypeSupplier();
 			chunkGenerator = dimensionOptions.getChunkGenerator();
 		}
 
@@ -385,7 +386,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.session,
 			serverWorldProperties,
 			World.OVERWORLD,
-			dimensionType,
+			registryEntry,
 			worldGenerationProgressListener,
 			chunkGenerator,
 			bl,
@@ -424,11 +425,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
 		}
 
-		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
 				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());
-				DimensionType dimensionType2 = ((DimensionOptions)entry.getValue()).getDimensionType();
+				RegistryEntry<DimensionType> registryEntry2 = ((DimensionOptions)entry.getValue()).getDimensionTypeSupplier();
 				ChunkGenerator chunkGenerator2 = ((DimensionOptions)entry.getValue()).getChunkGenerator();
 				UnmodifiableLevelProperties unmodifiableLevelProperties = new UnmodifiableLevelProperties(this.saveProperties, serverWorldProperties);
 				ServerWorld serverWorld2 = new ServerWorld(
@@ -437,7 +438,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.session,
 					unmodifiableLevelProperties,
 					registryKey2,
-					dimensionType2,
+					registryEntry2,
 					worldGenerationProgressListener,
 					chunkGenerator2,
 					bl,
@@ -492,7 +493,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			if (bonusChest) {
-				ConfiguredFeature<?, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST;
+				ConfiguredFeature<?, ?> configuredFeature = MiscConfiguredFeatures.BONUS_CHEST.value();
 				configuredFeature.generate(
 					world, chunkGenerator, world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())
 				);
@@ -602,7 +603,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
-		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
+		this.session.backupLevelDataFile(this.getRegistryManager(), this.saveProperties, this.getPlayerManager().getUserData());
 		if (flush) {
 			for (ServerWorld serverWorld3 : this.getWorlds()) {
 				LOGGER.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", serverWorld3.getChunkManager().threadedAnvilChunkStorage.getSaveDir());
@@ -749,13 +750,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 		} catch (Throwable var44) {
 			LOGGER.error("Encountered an unexpected exception", var44);
-			CrashReport crashReport;
-			if (var44 instanceof CrashException) {
-				crashReport = ((CrashException)var44).getReport();
-			} else {
-				crashReport = new CrashReport("Exception in server tick loop", var44);
-			}
-
+			CrashReport crashReport = createCrashReport(var44);
 			this.addSystemDetails(crashReport.getSystemDetailsSection());
 			File file = new File(
 				new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"
@@ -781,6 +776,28 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.exit();
 			}
 		}
+	}
+
+	private static CrashReport createCrashReport(Throwable throwable) {
+		CrashException crashException = null;
+
+		for (Throwable throwable2 = throwable; throwable2 != null; throwable2 = throwable2.getCause()) {
+			if (throwable2 instanceof CrashException crashException2) {
+				crashException = crashException2;
+			}
+		}
+
+		CrashReport crashReport;
+		if (crashException != null) {
+			crashReport = crashException.getReport();
+			if (crashException != throwable) {
+				crashReport.addElement("Wrapped in").add("Wrapping exception", throwable);
+			}
+		} else {
+			crashReport = new CrashReport("Exception in server tick loop", throwable);
+		}
+
+		return crashReport;
 	}
 
 	private boolean shouldKeepTicking() {
@@ -1408,7 +1425,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ServerAdvancementLoader getAdvancementLoader() {
-		return this.serverResourceManager.getServerAdvancementLoader();
+		return this.serverResourceManager.managers.getServerAdvancementLoader();
 	}
 
 	public CommandFunctionManager getCommandFunctionManager() {
@@ -1421,12 +1438,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * @return a completable future which specifies whether the reload was successful
 	 * A reload has failed when the future is exceptionally completed.
 	 * @see CompletableFuture
-	 * 
-	 * @param datapacks a collection of datapacks to reload with
 	 */
-	public CompletableFuture<Void> reloadResources(Collection<String> datapacks) {
+	public CompletableFuture<Void> reloadResources(Collection<String> collection) {
+		DynamicRegistryManager.Immutable immutable = this.getRegistryManager();
 		CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(
-				() -> (ImmutableList)datapacks.stream()
+				() -> (ImmutableList)collection.stream()
 						.map(this.dataPackManager::getProfile)
 						.filter(Objects::nonNull)
 						.map(ResourcePackProfile::createResourcePack)
@@ -1434,25 +1450,34 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this
 			)
 			.thenCompose(
-				immutableList -> ServerResourceManager.reload(
-						immutableList,
-						this.registryManager,
-						this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
-						this.getFunctionPermissionLevel(),
-						this.workerExecutor,
-						this
-					)
+				immutableList -> {
+					LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, immutableList);
+					return ServerResourceManager.reload(
+							lifecycledResourceManager,
+							immutable,
+							this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
+							this.getFunctionPermissionLevel(),
+							this.workerExecutor,
+							this
+						)
+						.whenComplete((serverResourceManager, throwable) -> {
+							if (throwable != null) {
+								lifecycledResourceManager.close();
+							}
+						})
+						.thenApply(serverResourceManager -> new MinecraftServer.class_6897(lifecycledResourceManager, serverResourceManager));
+				}
 			)
-			.thenAcceptAsync(serverResourceManager -> {
+			.thenAcceptAsync(arg -> {
 				this.serverResourceManager.close();
-				this.serverResourceManager = serverResourceManager;
-				this.dataPackManager.setEnabledProfiles(datapacks);
+				this.serverResourceManager = arg;
+				this.dataPackManager.setEnabledProfiles(collection);
 				this.saveProperties.updateLevelInfo(createDataPackSettings(this.dataPackManager));
-				serverResourceManager.loadRegistryTags();
+				this.serverResourceManager.managers.method_40421(this.getRegistryManager());
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
-				this.commandFunctionManager.setFunctions(this.serverResourceManager.getFunctionLoader());
-				this.structureManager.setResourceManager(this.serverResourceManager.getResourceManager());
+				this.commandFunctionManager.setFunctions(this.serverResourceManager.managers.getFunctionLoader());
+				this.structureManager.setResourceManager(this.serverResourceManager.resourceManager);
 			}, this);
 		if (this.isOnThread()) {
 			this.runTasks(completableFuture::isDone);
@@ -1527,7 +1552,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * The command manager is responsible for parsing and dispatching commands.
 	 */
 	public CommandManager getCommandManager() {
-		return this.serverResourceManager.getCommandManager();
+		return this.serverResourceManager.managers.getCommandManager();
 	}
 
 	/**
@@ -1554,11 +1579,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract boolean shouldBroadcastConsoleToOps();
 
 	public RecipeManager getRecipeManager() {
-		return this.serverResourceManager.getRecipeManager();
-	}
-
-	public TagManager getTagManager() {
-		return this.serverResourceManager.getRegistryTagManager();
+		return this.serverResourceManager.managers.getRecipeManager();
 	}
 
 	public ServerScoreboard getScoreboard() {
@@ -1574,15 +1595,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public LootManager getLootManager() {
-		return this.serverResourceManager.getLootManager();
+		return this.serverResourceManager.managers.getLootManager();
 	}
 
 	public LootConditionManager getPredicateManager() {
-		return this.serverResourceManager.getLootConditionManager();
+		return this.serverResourceManager.managers.getLootConditionManager();
 	}
 
 	public LootFunctionManager getItemModifierManager() {
-		return this.serverResourceManager.getLootFunctionManager();
+		return this.serverResourceManager.managers.getLootFunctionManager();
 	}
 
 	public GameRules getGameRules() {
@@ -1885,7 +1906,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.saveProperties;
 	}
 
-	public DynamicRegistryManager getRegistryManager() {
+	public DynamicRegistryManager.Immutable getRegistryManager() {
 		return this.registryManager;
 	}
 
@@ -1910,7 +1931,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ResourceManager getResourceManager() {
-		return this.serverResourceManager.getResourceManager();
+		return this.serverResourceManager.resourceManager;
 	}
 
 	@Nullable
@@ -1986,6 +2007,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					return "";
 				}
 			};
+		}
+	}
+
+	static record class_6897(LifecycledResourceManager resourceManager, ServerResourceManager managers) implements AutoCloseable {
+
+		public void close() {
+			this.resourceManager.close();
 		}
 	}
 }

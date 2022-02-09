@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
  */
 @Environment(EnvType.CLIENT)
 public class ChatScreen extends Screen {
-	public static final int SHIFT_SCROLL_AMOUNT = 7;
+	public static final double SHIFT_SCROLL_AMOUNT = 7.0;
 	private static final Text USAGE_TEXT = new TranslatableText("chat_screen.usage");
 	private String chatLastMessage = "";
 	private int messageHistorySize = -1;
@@ -107,10 +107,10 @@ public class ChatScreen extends Screen {
 			this.setChatFromHistory(1);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_PAGE_UP) {
-			this.client.inGameHud.getChatHud().scroll((double)(this.client.inGameHud.getChatHud().getVisibleLineCount() - 1));
+			this.client.inGameHud.getChatHud().scroll(this.client.inGameHud.getChatHud().getVisibleLineCount() - 1);
 			return true;
 		} else if (keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
-			this.client.inGameHud.getChatHud().scroll((double)(-this.client.inGameHud.getChatHud().getVisibleLineCount() + 1));
+			this.client.inGameHud.getChatHud().scroll(-this.client.inGameHud.getChatHud().getVisibleLineCount() + 1);
 			return true;
 		} else {
 			return false;
@@ -119,14 +119,7 @@ public class ChatScreen extends Screen {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		if (amount > 1.0) {
-			amount = 1.0;
-		}
-
-		if (amount < -1.0) {
-			amount = -1.0;
-		}
-
+		amount = MathHelper.clamp(amount, -1.0, 1.0);
 		if (this.commandSuggestor.mouseScrolled(amount)) {
 			return true;
 		} else {
@@ -134,7 +127,7 @@ public class ChatScreen extends Screen {
 				amount *= 7.0;
 			}
 
-			this.client.inGameHud.getChatHud().scroll(amount);
+			this.client.inGameHud.getChatHud().scroll((int)amount);
 			return true;
 		}
 	}

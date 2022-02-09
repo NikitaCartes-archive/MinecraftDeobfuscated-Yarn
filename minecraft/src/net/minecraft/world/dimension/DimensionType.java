@@ -9,10 +9,9 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +20,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.World;
@@ -62,7 +62,7 @@ public class DimensionType {
 						Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(DimensionType::getMinimumY),
 						Codec.intRange(16, MAX_HEIGHT).fieldOf("height").forGetter(DimensionType::getHeight),
 						Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height").forGetter(DimensionType::getLogicalHeight),
-						Identifier.CODEC.fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
+						TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("infiniburn").forGetter(dimensionType -> dimensionType.infiniburn),
 						Identifier.CODEC.fieldOf("effects").orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.effects),
 						Codec.FLOAT.fieldOf("ambient_light").forGetter(dimensionType -> dimensionType.ambientLight)
 					)
@@ -75,67 +75,19 @@ public class DimensionType {
 	public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<DimensionType> THE_END_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_end"));
 	protected static final DimensionType OVERWORLD = create(
-		OptionalLong.empty(),
-		true,
-		false,
-		false,
-		true,
-		1.0,
-		false,
-		false,
-		true,
-		false,
-		true,
-		-64,
-		384,
-		384,
-		BlockTags.INFINIBURN_OVERWORLD.getId(),
-		OVERWORLD_ID,
-		0.0F
+		OptionalLong.empty(), true, false, false, true, 1.0, false, false, true, false, true, -64, 384, 384, BlockTags.INFINIBURN_OVERWORLD, OVERWORLD_ID, 0.0F
 	);
 	protected static final DimensionType THE_NETHER = create(
-		OptionalLong.of(18000L),
-		false,
-		true,
-		true,
-		false,
-		8.0,
-		false,
-		true,
-		false,
-		true,
-		false,
-		0,
-		256,
-		128,
-		BlockTags.INFINIBURN_NETHER.getId(),
-		THE_NETHER_ID,
-		0.1F
+		OptionalLong.of(18000L), false, true, true, false, 8.0, false, true, false, true, false, 0, 256, 128, BlockTags.INFINIBURN_NETHER, THE_NETHER_ID, 0.1F
 	);
 	protected static final DimensionType THE_END = create(
-		OptionalLong.of(6000L), false, false, false, false, 1.0, true, false, false, false, true, 0, 256, 256, BlockTags.INFINIBURN_END.getId(), THE_END_ID, 0.0F
+		OptionalLong.of(6000L), false, false, false, false, 1.0, true, false, false, false, true, 0, 256, 256, BlockTags.INFINIBURN_END, THE_END_ID, 0.0F
 	);
 	public static final RegistryKey<DimensionType> OVERWORLD_CAVES_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld_caves"));
 	protected static final DimensionType OVERWORLD_CAVES = create(
-		OptionalLong.empty(),
-		true,
-		true,
-		false,
-		true,
-		1.0,
-		false,
-		false,
-		true,
-		false,
-		true,
-		-64,
-		384,
-		384,
-		BlockTags.INFINIBURN_OVERWORLD.getId(),
-		OVERWORLD_ID,
-		0.0F
+		OptionalLong.empty(), true, true, false, true, 1.0, false, false, true, false, true, -64, 384, 384, BlockTags.INFINIBURN_OVERWORLD, OVERWORLD_ID, 0.0F
 	);
-	public static final Codec<Supplier<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, CODEC);
+	public static final Codec<RegistryEntry<DimensionType>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.DIMENSION_TYPE_KEY, CODEC);
 	private final OptionalLong fixedTime;
 	private final boolean hasSkyLight;
 	private final boolean hasCeiling;
@@ -150,7 +102,7 @@ public class DimensionType {
 	private final int minimumY;
 	private final int height;
 	private final int logicalHeight;
-	private final Identifier infiniburn;
+	private final TagKey<Block> infiniburn;
 	private final Identifier effects;
 	private final float ambientLight;
 	private final transient float[] brightnessByLightLevel;
@@ -183,7 +135,7 @@ public class DimensionType {
 		int minimumY,
 		int height,
 		int logicalHeight,
-		Identifier infiniburn,
+		TagKey<Block> tagKey,
 		Identifier effects,
 		float ambientLight
 	) {
@@ -202,7 +154,7 @@ public class DimensionType {
 			minimumY,
 			height,
 			logicalHeight,
-			infiniburn,
+			tagKey,
 			effects,
 			ambientLight
 		);
@@ -223,7 +175,7 @@ public class DimensionType {
 		int minimumY,
 		int height,
 		int logicalHeight,
-		Identifier infiniburn,
+		TagKey<Block> tagKey,
 		Identifier effects,
 		float ambientLight
 	) {
@@ -242,7 +194,7 @@ public class DimensionType {
 			minimumY,
 			height,
 			logicalHeight,
-			infiniburn,
+			tagKey,
 			effects,
 			ambientLight
 		);
@@ -268,7 +220,7 @@ public class DimensionType {
 		int minimumY,
 		int height,
 		int logicalHeight,
-		Identifier infiniburn,
+		TagKey<Block> tagKey,
 		Identifier effects,
 		float ambientLight
 	) {
@@ -286,7 +238,7 @@ public class DimensionType {
 		this.minimumY = minimumY;
 		this.height = height;
 		this.logicalHeight = logicalHeight;
-		this.infiniburn = infiniburn;
+		this.infiniburn = tagKey;
 		this.effects = effects;
 		this.ambientLight = ambientLight;
 		this.brightnessByLightLevel = computeBrightnessByLightLevel(ambientLight);
@@ -325,7 +277,7 @@ public class DimensionType {
 		return World.CODEC.parse(nbt);
 	}
 
-	public static DynamicRegistryManager addRegistryDefaults(DynamicRegistryManager registryManager) {
+	public static DynamicRegistryManager.Mutable addRegistryDefaults(DynamicRegistryManager.Mutable registryManager) {
 		MutableRegistry<DimensionType> mutableRegistry = registryManager.getMutable(Registry.DIMENSION_TYPE_KEY);
 		mutableRegistry.add(OVERWORLD_REGISTRY_KEY, OVERWORLD, Lifecycle.stable());
 		mutableRegistry.add(OVERWORLD_CAVES_REGISTRY_KEY, OVERWORLD_CAVES, Lifecycle.stable());
@@ -334,35 +286,35 @@ public class DimensionType {
 		return registryManager;
 	}
 
-	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed) {
+	public static Registry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed) {
 		return createDefaultDimensionOptions(registryManager, seed, true);
 	}
 
-	public static SimpleRegistry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed, boolean bl) {
-		SimpleRegistry<DimensionOptions> simpleRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
+	public static Registry<DimensionOptions> createDefaultDimensionOptions(DynamicRegistryManager registryManager, long seed, boolean bl) {
+		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
 		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = registryManager.get(Registry.NOISE_WORLDGEN);
-		simpleRegistry.add(
+		mutableRegistry.add(
 			DimensionOptions.NETHER,
 			new DimensionOptions(
-				() -> registry.getOrThrow(THE_NETHER_REGISTRY_KEY),
+				registry.getOrCreateEntry(THE_NETHER_REGISTRY_KEY),
 				new NoiseChunkGenerator(
-					registry4, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, () -> registry3.getOrThrow(ChunkGeneratorSettings.NETHER)
+					registry4, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, registry3.getOrCreateEntry(ChunkGeneratorSettings.NETHER)
 				)
 			),
 			Lifecycle.stable()
 		);
-		simpleRegistry.add(
+		mutableRegistry.add(
 			DimensionOptions.END,
 			new DimensionOptions(
-				() -> registry.getOrThrow(THE_END_REGISTRY_KEY),
-				new NoiseChunkGenerator(registry4, new TheEndBiomeSource(registry2, seed), seed, () -> registry3.getOrThrow(ChunkGeneratorSettings.END))
+				registry.getOrCreateEntry(THE_END_REGISTRY_KEY),
+				new NoiseChunkGenerator(registry4, new TheEndBiomeSource(registry2, seed), seed, registry3.getOrCreateEntry(ChunkGeneratorSettings.END))
 			),
 			Lifecycle.stable()
 		);
-		return simpleRegistry;
+		return mutableRegistry;
 	}
 
 	public static double getCoordinateScaleFactor(DimensionType fromDimension, DimensionType toDimension) {
@@ -465,9 +417,8 @@ public class DimensionType {
 		return this.brightnessByLightLevel[lightLevel];
 	}
 
-	public Tag<Block> getInfiniburnBlocks() {
-		Tag<Block> tag = BlockTags.getTagGroup().getTag(this.infiniburn);
-		return (Tag<Block>)(tag != null ? tag : BlockTags.INFINIBURN_OVERWORLD);
+	public TagKey<Block> getInfiniburnBlocks() {
+		return this.infiniburn;
 	}
 
 	/**

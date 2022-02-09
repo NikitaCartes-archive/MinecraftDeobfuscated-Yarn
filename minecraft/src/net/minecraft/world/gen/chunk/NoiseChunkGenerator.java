@@ -5,8 +5,6 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -14,7 +12,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
@@ -22,12 +19,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Pool;
-import net.minecraft.util.dynamic.RegistryLookupCodec;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
@@ -68,7 +66,7 @@ import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 public final class NoiseChunkGenerator extends ChunkGenerator {
 	public static final Codec<NoiseChunkGenerator> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RegistryLookupCodec.of(Registry.NOISE_WORLDGEN).forGetter(noiseChunkGenerator -> noiseChunkGenerator.noiseRegistry),
+					RegistryOps.createRegistryCodec(Registry.NOISE_WORLDGEN).forGetter(noiseChunkGenerator -> noiseChunkGenerator.noiseRegistry),
 					BiomeSource.CODEC.fieldOf("biome_source").forGetter(noiseChunkGenerator -> noiseChunkGenerator.populationSource),
 					Codec.LONG.fieldOf("seed").stable().forGetter(noiseChunkGenerator -> noiseChunkGenerator.seed),
 					ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(noiseChunkGenerator -> noiseChunkGenerator.settings)
@@ -80,16 +78,16 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	protected final BlockState defaultBlock;
 	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry;
 	private final long seed;
-	protected final Supplier<ChunkGeneratorSettings> settings;
+	protected final RegistryEntry<ChunkGeneratorSettings> settings;
 	private final NoiseColumnSampler noiseColumnSampler;
 	private final SurfaceBuilder surfaceBuilder;
 	private final BlockSource blockStateSampler;
 	private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
 
 	public NoiseChunkGenerator(
-		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BiomeSource biomeSource, long seed, Supplier<ChunkGeneratorSettings> settings
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BiomeSource biomeSource, long seed, RegistryEntry<ChunkGeneratorSettings> registryEntry
 	) {
-		this(noiseRegistry, biomeSource, biomeSource, seed, settings);
+		this(noiseRegistry, biomeSource, biomeSource, seed, registryEntry);
 	}
 
 	private NoiseChunkGenerator(
@@ -97,13 +95,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		BiomeSource populationSource,
 		BiomeSource biomeSource,
 		long seed,
-		Supplier<ChunkGeneratorSettings> settings
+		RegistryEntry<ChunkGeneratorSettings> registryEntry
 	) {
-		super(populationSource, biomeSource, ((ChunkGeneratorSettings)settings.get()).getStructuresConfig(), seed);
+		super(populationSource, biomeSource, registryEntry.value().getStructuresConfig(), seed);
 		this.noiseRegistry = noiseRegistry;
 		this.seed = seed;
-		this.settings = settings;
-		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
+		this.settings = registryEntry;
+		ChunkGeneratorSettings chunkGeneratorSettings = this.settings.value();
 		this.defaultBlock = chunkGeneratorSettings.getDefaultBlock();
 		GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
 		this.noiseColumnSampler = new NoiseColumnSampler(
@@ -119,6 +117,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		AquiferSampler.FluidLevel fluidLevel3 = new AquiferSampler.FluidLevel(generationShapeConfig.minimumY() - 1, Blocks.AIR.getDefaultState());
 		this.fluidLevelSampler = (j, k, l) -> k < Math.min(-54, i) ? fluidLevel : fluidLevel2;
 		this.surfaceBuilder = new SurfaceBuilder(noiseRegistry, this.defaultBlock, i, seed, chunkGeneratorSettings.getRandomProvider());
+		this.method_40145();
 	}
 
 	@Override
@@ -126,20 +125,16 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		Registry<Biome> biomeRegistry, Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk
 	) {
 		return CompletableFuture.supplyAsync(Util.debugSupplier("init_biomes", () -> {
-			this.populateBiomes(biomeRegistry, blender, structureAccessor, chunk);
+			this.populateBiomes(blender, structureAccessor, chunk);
 			return chunk;
 		}), Util.getMainWorkerExecutor());
 	}
 
-	private void populateBiomes(Registry<Biome> biomeRegistry, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+	private void populateBiomes(Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
-			this.noiseColumnSampler,
-			() -> new StructureWeightSampler(structureAccessor, chunk),
-			(ChunkGeneratorSettings)this.settings.get(),
-			this.fluidLevelSampler,
-			blender
+			this.noiseColumnSampler, () -> new StructureWeightSampler(structureAccessor, chunk), this.settings.value(), this.fluidLevelSampler, blender
 		);
-		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.biomeSource), biomeRegistry, chunk);
+		BiomeSupplier biomeSupplier = BelowZeroRetrogen.getBiomeSupplier(blender.getBiomeSupplier(this.biomeSource), chunk);
 		chunk.populateBiomes(biomeSupplier, (x, y, z) -> this.noiseColumnSampler.method_39329(x, y, z, chunkNoiseSampler.createMultiNoisePoint(x, z)));
 	}
 
@@ -159,12 +154,12 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	public boolean matchesSettings(long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
-		return this.seed == seed && ((ChunkGeneratorSettings)this.settings.get()).equals(settingsKey);
+		return this.seed == seed && this.settings.value().equals(settingsKey);
 	}
 
 	@Override
 	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
+		GenerationShapeConfig generationShapeConfig = this.settings.value().getGenerationShapeConfig();
 		int i = Math.max(generationShapeConfig.minimumY(), world.getBottomY());
 		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), world.getTopY());
 		int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
@@ -174,7 +169,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
+		GenerationShapeConfig generationShapeConfig = this.settings.value().getGenerationShapeConfig();
 		int i = Math.max(generationShapeConfig.minimumY(), world.getBottomY());
 		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), world.getTopY());
 		int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
@@ -189,7 +184,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	private OptionalInt sampleHeightmap(int i, int j, @Nullable BlockState[] states, @Nullable Predicate<BlockState> predicate, int k, int l) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
+		GenerationShapeConfig generationShapeConfig = this.settings.value().getGenerationShapeConfig();
 		int m = generationShapeConfig.horizontalBlockSize();
 		int n = generationShapeConfig.verticalBlockSize();
 		int o = Math.floorDiv(i, m);
@@ -200,9 +195,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int t = p * m;
 		double d = (double)q / (double)m;
 		double e = (double)r / (double)m;
-		ChunkNoiseSampler chunkNoiseSampler = ChunkNoiseSampler.create(
-			s, t, k, l, this.noiseColumnSampler, (ChunkGeneratorSettings)this.settings.get(), this.fluidLevelSampler
-		);
+		ChunkNoiseSampler chunkNoiseSampler = ChunkNoiseSampler.create(s, t, k, l, this.noiseColumnSampler, this.settings.value(), this.fluidLevelSampler);
 		chunkNoiseSampler.sampleStartNoise();
 		chunkNoiseSampler.sampleEndNoise(0);
 
@@ -235,7 +228,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public void buildSurface(ChunkRegion region, StructureAccessor structures, Chunk chunk) {
 		if (!SharedConstants.method_37896(chunk.getPos())) {
 			HeightContext heightContext = new HeightContext(this, region);
-			ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
+			ChunkGeneratorSettings chunkGeneratorSettings = this.settings.value();
 			ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
 				this.noiseColumnSampler, () -> new StructureWeightSampler(structures, chunk), chunkGeneratorSettings, this.fluidLevelSampler, Blender.getBlender(region)
 			);
@@ -263,7 +256,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
 			this.noiseColumnSampler,
 			() -> new StructureWeightSampler(structureAccessor, chunk),
-			(ChunkGeneratorSettings)this.settings.get(),
+			this.settings.value(),
 			this.fluidLevelSampler,
 			Blender.getBlender(chunkRegion)
 		);
@@ -279,17 +272,19 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 						() -> this.populationSource
 								.getBiome(BiomeCoords.fromBlock(chunkPos2.getStartX()), 0, BiomeCoords.fromBlock(chunkPos2.getStartZ()), this.getMultiNoiseSampler())
 					)
+					.value()
 					.getGenerationSettings();
-				List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(generationStep);
-				ListIterator<Supplier<ConfiguredCarver<?>>> listIterator = list.listIterator();
+				Iterable<RegistryEntry<ConfiguredCarver<?>>> iterable = generationSettings.getCarversForStep(generationStep);
+				int l = 0;
 
-				while (listIterator.hasNext()) {
-					int l = listIterator.nextIndex();
-					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)((Supplier)listIterator.next()).get();
+				for (RegistryEntry<ConfiguredCarver<?>> registryEntry : iterable) {
+					ConfiguredCarver<?> configuredCarver = registryEntry.value();
 					chunkRandom.setCarverSeed(seed + (long)l, chunkPos2.x, chunkPos2.z);
 					if (configuredCarver.shouldCarve(chunkRandom)) {
 						configuredCarver.carve(carverContext, chunk, biomeAccess2::getBiome, chunkRandom, aquiferSampler, chunkPos2, carvingMask);
 					}
+
+					l++;
 				}
 			}
 		}
@@ -297,7 +292,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
-		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
+		GenerationShapeConfig generationShapeConfig = this.settings.value().getGenerationShapeConfig();
 		HeightLimitView heightLimitView = chunk.getHeightLimitView();
 		int i = Math.max(generationShapeConfig.minimumY(), heightLimitView.getBottomY());
 		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), heightLimitView.getTopY());
@@ -328,7 +323,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	private Chunk populateNoise(Blender blender, StructureAccessor structureAccessor, Chunk chunk, int i, int j) {
-		ChunkGeneratorSettings chunkGeneratorSettings = (ChunkGeneratorSettings)this.settings.get();
+		ChunkGeneratorSettings chunkGeneratorSettings = this.settings.value();
 		ChunkNoiseSampler chunkNoiseSampler = chunk.getOrCreateChunkNoiseSampler(
 			this.noiseColumnSampler, () -> new StructureWeightSampler(structureAccessor, chunk), chunkGeneratorSettings, this.fluidLevelSampler, blender
 		);
@@ -415,23 +410,23 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public int getWorldHeight() {
-		return ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().height();
+		return this.settings.value().getGenerationShapeConfig().height();
 	}
 
 	@Override
 	public int getSeaLevel() {
-		return ((ChunkGeneratorSettings)this.settings.get()).getSeaLevel();
+		return this.settings.value().getSeaLevel();
 	}
 
 	@Override
 	public int getMinimumY() {
-		return ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().minimumY();
+		return this.settings.value().getGenerationShapeConfig().minimumY();
 	}
 
 	@Override
-	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
+	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(RegistryEntry<Biome> registryEntry, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
 		if (!accessor.hasStructureReferences(pos)) {
-			return super.getEntitySpawnList(biome, accessor, group, pos);
+			return super.getEntitySpawnList(registryEntry, accessor, group, pos);
 		} else {
 			if (accessor.getStructureContaining(pos, StructureFeature.SWAMP_HUT).hasChildren()) {
 				if (group == SpawnGroup.MONSTER) {
@@ -460,26 +455,25 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			return (group == SpawnGroup.UNDERGROUND_WATER_CREATURE || group == SpawnGroup.AXOLOTLS)
 					&& accessor.getStructureAt(pos, StructureFeature.MONUMENT).hasChildren()
 				? SpawnSettings.EMPTY_ENTRY_POOL
-				: super.getEntitySpawnList(biome, accessor, group, pos);
+				: super.getEntitySpawnList(registryEntry, accessor, group, pos);
 		}
 	}
 
 	@Override
 	public void populateEntities(ChunkRegion region) {
-		if (!((ChunkGeneratorSettings)this.settings.get()).isMobGenerationDisabled()) {
+		if (!this.settings.value().isMobGenerationDisabled()) {
 			ChunkPos chunkPos = region.getCenterPos();
-			Biome biome = region.getBiome(chunkPos.getStartPos().withY(region.getTopY() - 1));
+			RegistryEntry<Biome> registryEntry = region.getBiome(chunkPos.getStartPos().withY(region.getTopY() - 1));
 			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(RandomSeed.getSeed()));
 			chunkRandom.setPopulationSeed(region.getSeed(), chunkPos.getStartX(), chunkPos.getStartZ());
-			SpawnHelper.populateEntities(region, biome, chunkPos, chunkRandom);
+			SpawnHelper.populateEntities(region, registryEntry, chunkPos, chunkRandom);
 		}
 	}
 
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(
-		CarverContext context, Function<BlockPos, Biome> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid
+		CarverContext context, Function<BlockPos, RegistryEntry<Biome>> posToBiome, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, BlockPos pos, boolean hasFluid
 	) {
-		return this.surfaceBuilder
-			.applyMaterialRule(((ChunkGeneratorSettings)this.settings.get()).getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, hasFluid);
+		return this.surfaceBuilder.applyMaterialRule(this.settings.value().getSurfaceRule(), context, posToBiome, chunk, chunkNoiseSampler, pos, hasFluid);
 	}
 }

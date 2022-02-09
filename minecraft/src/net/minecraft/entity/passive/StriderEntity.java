@@ -42,7 +42,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -171,8 +171,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public boolean canWalkOnFluid(Fluid fluid) {
-		return fluid.isIn(FluidTags.LAVA);
+	public boolean canWalkOnFluid(FluidState fluidState) {
+		return fluidState.isIn(FluidTags.LAVA);
 	}
 
 	@Override

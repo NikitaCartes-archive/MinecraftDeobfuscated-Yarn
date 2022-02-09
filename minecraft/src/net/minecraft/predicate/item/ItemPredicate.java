@@ -24,8 +24,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.tag.ServerTagManagerHolder;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -33,7 +32,7 @@ import net.minecraft.util.registry.Registry;
 public class ItemPredicate {
 	public static final ItemPredicate ANY = new ItemPredicate();
 	@Nullable
-	private final Tag<Item> tag;
+	private final TagKey<Item> tag;
 	@Nullable
 	private final Set<Item> items;
 	private final NumberRange.IntRange count;
@@ -56,7 +55,7 @@ public class ItemPredicate {
 	}
 
 	public ItemPredicate(
-		@Nullable Tag<Item> tag,
+		@Nullable TagKey<Item> tag,
 		@Nullable Set<Item> items,
 		NumberRange.IntRange count,
 		NumberRange.IntRange durability,
@@ -138,10 +137,10 @@ public class ItemPredicate {
 					set = builder.build();
 				}
 
-				Tag<Item> tag = null;
+				TagKey<Item> tagKey = null;
 				if (jsonObject.has("tag")) {
 					Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-					tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
+					tagKey = TagKey.intern(Registry.ITEM_KEY, identifier2);
 				}
 
 				Potion potion = null;
@@ -152,7 +151,7 @@ public class ItemPredicate {
 
 				EnchantmentPredicate[] enchantmentPredicates = EnchantmentPredicate.deserializeAll(jsonObject.get("enchantments"));
 				EnchantmentPredicate[] enchantmentPredicates2 = EnchantmentPredicate.deserializeAll(jsonObject.get("stored_enchantments"));
-				return new ItemPredicate(tag, set, intRange, intRange2, enchantmentPredicates, enchantmentPredicates2, potion, nbtPredicate);
+				return new ItemPredicate(tagKey, set, intRange, intRange2, enchantmentPredicates, enchantmentPredicates2, potion, nbtPredicate);
 			}
 		} else {
 			return ANY;
@@ -175,9 +174,7 @@ public class ItemPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty(
-					"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString()
-				);
+				jsonObject.addProperty("tag", this.tag.id().toString());
 			}
 
 			jsonObject.add("count", this.count.toJson());
@@ -232,7 +229,7 @@ public class ItemPredicate {
 		@Nullable
 		private Set<Item> item;
 		@Nullable
-		private Tag<Item> tag;
+		private TagKey<Item> tag;
 		private NumberRange.IntRange count = NumberRange.IntRange.ANY;
 		private NumberRange.IntRange durability = NumberRange.IntRange.ANY;
 		@Nullable
@@ -251,7 +248,7 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder tag(Tag<Item> tag) {
+		public ItemPredicate.Builder tag(TagKey<Item> tag) {
 			this.tag = tag;
 			return this;
 		}

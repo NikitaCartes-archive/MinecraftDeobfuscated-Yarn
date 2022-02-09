@@ -74,7 +74,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.math.BlockPos;
@@ -657,7 +657,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected void swimUpward(Tag<Fluid> fluid) {
+	protected void swimUpward(TagKey<Fluid> fluid) {
 		this.setVelocity(this.getVelocity().add(0.0, 0.01, 0.0));
 	}
 

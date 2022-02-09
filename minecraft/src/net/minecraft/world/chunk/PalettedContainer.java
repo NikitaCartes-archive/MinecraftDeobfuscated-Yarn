@@ -65,7 +65,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	public static <T> Codec<PalettedContainer<T>> createCodec(IndexedIterable<T> idList, Codec<T> entryCodec, PalettedContainer.PaletteProvider provider, T object) {
 		return RecordCodecBuilder.create(
 				instance -> instance.group(
-							entryCodec.mapResult(Codecs.method_39028(object)).listOf().fieldOf("palette").forGetter(PalettedContainer.Serialized::paletteEntries),
+							entryCodec.mapResult(Codecs.orElsePartial(object)).listOf().fieldOf("palette").forGetter(PalettedContainer.Serialized::paletteEntries),
 							Codec.LONG_STREAM.optionalFieldOf("data").forGetter(PalettedContainer.Serialized::storage)
 						)
 						.apply(instance, PalettedContainer.Serialized::new)

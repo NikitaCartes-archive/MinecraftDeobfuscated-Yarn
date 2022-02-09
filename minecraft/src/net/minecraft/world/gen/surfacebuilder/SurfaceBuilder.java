@@ -14,6 +14,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -132,10 +133,8 @@ public class SurfaceBuilder {
 				int n = j + l;
 				int o = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
 				mutable.setX(m).setZ(n);
-				Biome biome = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
-				RegistryKey<Biome> registryKey = (RegistryKey<Biome>)biomeRegistry.getKey(biome)
-					.orElseThrow(() -> new IllegalStateException("Unregistered biome: " + biome));
-				if (registryKey == BiomeKeys.ERODED_BADLANDS) {
+				RegistryEntry<Biome> registryEntry = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
+				if (registryEntry.matchesKey(BiomeKeys.ERODED_BADLANDS)) {
 					this.placeBadlandsPillar(blockColumn, m, n, o, chunk);
 				}
 
@@ -180,8 +179,8 @@ public class SurfaceBuilder {
 					}
 				}
 
-				if (registryKey == BiomeKeys.FROZEN_OCEAN || registryKey == BiomeKeys.DEEP_FROZEN_OCEAN) {
-					this.placeIceberg(materialRuleContext.method_39551(), biome, blockColumn, mutable2, m, n, o);
+				if (registryEntry.matchesKey(BiomeKeys.FROZEN_OCEAN) || registryEntry.matchesKey(BiomeKeys.DEEP_FROZEN_OCEAN)) {
+					this.placeIceberg(materialRuleContext.method_39551(), registryEntry.value(), blockColumn, mutable2, m, n, o);
 				}
 			}
 		}
@@ -204,7 +203,7 @@ public class SurfaceBuilder {
 	public Optional<BlockState> applyMaterialRule(
 		MaterialRules.MaterialRule rule,
 		CarverContext context,
-		Function<BlockPos, Biome> posToBiome,
+		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		Chunk chunk,
 		ChunkNoiseSampler chunkNoiseSampler,
 		BlockPos pos,

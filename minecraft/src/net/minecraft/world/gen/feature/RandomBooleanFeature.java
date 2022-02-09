@@ -20,8 +20,8 @@ public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
 		ChunkGenerator chunkGenerator = context.getGenerator();
 		BlockPos blockPos = context.getOrigin();
 		boolean bl = random.nextBoolean();
-		return bl
-			? ((PlacedFeature)randomBooleanFeatureConfig.featureTrue.get()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos)
-			: ((PlacedFeature)randomBooleanFeatureConfig.featureFalse.get()).generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
+		return (bl ? randomBooleanFeatureConfig.featureTrue : randomBooleanFeatureConfig.featureFalse)
+			.value()
+			.generateUnregistered(structureWorldAccess, chunkGenerator, random, blockPos);
 	}
 }

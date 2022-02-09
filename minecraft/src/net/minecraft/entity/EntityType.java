@@ -128,7 +128,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -139,6 +139,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
@@ -148,6 +149,7 @@ import org.slf4j.Logger;
 public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String ENTITY_TAG_KEY = "EntityTag";
+	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
 		"area_effect_cloud",
@@ -943,8 +945,8 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 			&& this != EVOKER_FANGS;
 	}
 
-	public boolean isIn(Tag<EntityType<?>> tag) {
-		return tag.contains(this);
+	public boolean isIn(TagKey<EntityType<?>> tag) {
+		return this.registryEntry.isIn(tag);
 	}
 
 	@Nullable
@@ -955,6 +957,11 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	@Override
 	public Class<? extends Entity> getBaseClass() {
 		return Entity.class;
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<EntityType<?>> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	public static class Builder<T extends Entity> {

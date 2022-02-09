@@ -399,9 +399,9 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				this.neck.pivotY = i;
 				this.neck.pivotZ = j;
 				this.neck.pivotX = h;
-				i = (float)((double)i + Math.sin((double)this.neck.pitch) * 10.0);
-				j = (float)((double)j - Math.cos((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
-				h = (float)((double)h - Math.sin((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
+				i += MathHelper.sin(this.neck.pitch) * 10.0F;
+				j -= MathHelper.cos(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0F;
+				h -= MathHelper.sin(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0F;
 				this.neck.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			}
 
@@ -459,7 +459,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				alpha
 			);
 			matrices.pop();
-			float p = -((float)Math.sin((double)(f * (float) (Math.PI * 2)))) * 0.0F;
+			float p = -MathHelper.sin(f * (float) (Math.PI * 2)) * 0.0F;
 			n = f * (float) (Math.PI * 2);
 			i = 10.0F;
 			j = 60.0F;
@@ -468,16 +468,16 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 
 			for (int r = 0; r < 12; r++) {
 				fs = this.dragon.getSegmentProperties(12 + r, this.tickDelta);
-				p = (float)((double)p + Math.sin((double)((float)r * 0.45F + n)) * 0.05F);
+				p += MathHelper.sin((float)r * 0.45F + n) * 0.05F;
 				this.neck.yaw = (MathHelper.fwrapDegrees(fs[0] - ds[0]) * 1.5F + 180.0F) * (float) (Math.PI / 180.0);
 				this.neck.pitch = p + (float)(fs[1] - ds[1]) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
 				this.neck.roll = MathHelper.fwrapDegrees(fs[0] - (double)m) * (float) (Math.PI / 180.0) * 1.5F;
 				this.neck.pivotY = i;
 				this.neck.pivotZ = j;
 				this.neck.pivotX = h;
-				i = (float)((double)i + Math.sin((double)this.neck.pitch) * 10.0);
-				j = (float)((double)j - Math.cos((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
-				h = (float)((double)h - Math.sin((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
+				i += MathHelper.sin(this.neck.pitch) * 10.0F;
+				j -= MathHelper.cos(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0F;
+				h -= MathHelper.sin(this.neck.yaw) * MathHelper.cos(this.neck.pitch) * 10.0F;
 				this.neck.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			}
 

@@ -8,9 +8,9 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 		super(registryKey, lifecycle);
 	}
 
-	public abstract <V extends T> V set(int rawId, RegistryKey<T> key, V entry, Lifecycle lifecycle);
+	public abstract RegistryEntry<T> set(int rawId, RegistryKey<T> key, T value, Lifecycle lifecycle);
 
-	public abstract <V extends T> V add(RegistryKey<T> key, V entry, Lifecycle lifecycle);
+	public abstract RegistryEntry<T> add(RegistryKey<T> key, T entry, Lifecycle lifecycle);
 
 	/**
 	 * If the given key is already present in the registry, replaces the entry associated with the given
@@ -21,7 +21,7 @@ public abstract class MutableRegistry<T> extends Registry<T> {
 	 * {@code rawId} is present, then this method gives the entry this raw ID. Otherwise, uses the
 	 * next available ID.
 	 */
-	public abstract <V extends T> V replace(OptionalInt rawId, RegistryKey<T> key, V newEntry, Lifecycle lifecycle);
+	public abstract RegistryEntry<T> replace(OptionalInt rawId, RegistryKey<T> key, T newEntry, Lifecycle lifecycle);
 
 	public abstract boolean isEmpty();
 }

@@ -25,7 +25,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class JungleTempleGenerator extends ShiftableStructurePiece {
 	public static final int field_34727 = 12;
-	public static final int field_34728 = 15;
+	public static final int DEPTH = 15;
 	private boolean placedMainChest;
 	private boolean placedHiddenChest;
 	private boolean placedTrap1;

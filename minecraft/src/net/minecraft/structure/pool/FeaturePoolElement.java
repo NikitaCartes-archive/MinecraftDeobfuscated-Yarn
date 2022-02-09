@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -28,10 +28,10 @@ public class FeaturePoolElement extends StructurePoolElement {
 		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
 				.apply(instance, FeaturePoolElement::new)
 	);
-	private final Supplier<PlacedFeature> feature;
+	private final RegistryEntry<PlacedFeature> feature;
 	private final NbtCompound nbt;
 
-	protected FeaturePoolElement(Supplier<PlacedFeature> feature, StructurePool.Projection projection) {
+	protected FeaturePoolElement(RegistryEntry<PlacedFeature> feature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = feature;
 		this.nbt = this.createDefaultJigsawNbt();
@@ -82,7 +82,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		Random random,
 		boolean keepJigsaws
 	) {
-		return ((PlacedFeature)this.feature.get()).generateUnregistered(world, chunkGenerator, random, pos);
+		return this.feature.value().generateUnregistered(world, chunkGenerator, random, pos);
 	}
 
 	@Override
@@ -91,6 +91,6 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Feature[" + this.feature.get() + "]";
+		return "Feature[" + this.feature + "]";
 	}
 }

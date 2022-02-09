@@ -19,23 +19,26 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen extends Screen {
 	private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen parent;
-	private final Consumer<Biome> onDone;
+	private final Consumer<RegistryEntry<Biome>> onDone;
 	final Registry<Biome> biomeRegistry;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
-	Biome biome;
+	RegistryEntry<Biome> biome;
 	private ButtonWidget confirmButton;
 
-	public CustomizeBuffetLevelScreen(Screen parent, DynamicRegistryManager registryManager, Consumer<Biome> onDone, Biome biome) {
+	public CustomizeBuffetLevelScreen(
+		Screen parent, DynamicRegistryManager registryManager, Consumer<RegistryEntry<Biome>> onDone, RegistryEntry<Biome> registryEntry
+	) {
 		super(new TranslatableText("createWorld.customize.buffet.title"));
 		this.parent = parent;
 		this.onDone = onDone;
-		this.biome = biome;
+		this.biome = registryEntry;
 		this.biomeRegistry = registryManager.get(Registry.BIOME_KEY);
 	}
 
@@ -91,9 +94,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			);
 			Collator collator = Collator.getInstance(Locale.getDefault());
 			CustomizeBuffetLevelScreen.this.biomeRegistry
-				.getEntries()
-				.stream()
-				.map(entry -> new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem((Biome)entry.getValue()))
+				.streamEntries()
+				.map(reference -> new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(reference))
 				.sorted(Comparator.comparing(biome -> biome.text.getString(), collator))
 				.forEach(entry -> this.addEntry(entry));
 		}
@@ -114,12 +116,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		class BuffetBiomeItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
-			final Biome biome;
+			final RegistryEntry.Reference<Biome> biome;
 			final Text text;
 
-			public BuffetBiomeItem(Biome biome) {
-				this.biome = biome;
-				Identifier identifier = CustomizeBuffetLevelScreen.this.biomeRegistry.getId(biome);
+			public BuffetBiomeItem(RegistryEntry.Reference<Biome> reference) {
+				this.biome = reference;
+				Identifier identifier = reference.registryKey().getValue();
 				String string = "biome." + identifier.getNamespace() + "." + identifier.getPath();
 				if (Language.getInstance().hasTranslation(string)) {
 					this.text = new TranslatableText(string);

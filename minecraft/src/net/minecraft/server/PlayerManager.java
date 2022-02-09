@@ -70,6 +70,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -112,7 +113,7 @@ public abstract class PlayerManager {
 	private final Map<UUID, PlayerAdvancementTracker> advancementTrackers = Maps.<UUID, PlayerAdvancementTracker>newHashMap();
 	private final WorldSaveHandler saveHandler;
 	private boolean whitelistEnabled;
-	private final DynamicRegistryManager.Impl registryManager;
+	private final DynamicRegistryManager.Immutable registryManager;
 	protected final int maxPlayers;
 	private int viewDistance;
 	private int simulationDistance;
@@ -120,7 +121,7 @@ public abstract class PlayerManager {
 	private static final boolean field_29791 = false;
 	private int latencyUpdateTimer;
 
-	public PlayerManager(MinecraftServer server, DynamicRegistryManager.Impl registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
+	public PlayerManager(MinecraftServer server, DynamicRegistryManager.Immutable registryManager, WorldSaveHandler saveHandler, int maxPlayers) {
 		this.server = server;
 		this.registryManager = registryManager;
 		this.maxPlayers = maxPlayers;
@@ -171,7 +172,7 @@ public abstract class PlayerManager {
 				player.interactionManager.getPreviousGameMode(),
 				this.server.getWorldRegistryKeys(),
 				this.registryManager,
-				serverWorld2.getDimension(),
+				serverWorld2.method_40134(),
 				serverWorld2.getRegistryKey(),
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
@@ -190,7 +191,7 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
 		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager().toPacket(this.registryManager)));
+		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -479,7 +480,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.world.getDimension(),
+					serverPlayerEntity.world.method_40134(),
 					serverPlayerEntity.world.getRegistryKey(),
 					BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
@@ -887,7 +888,7 @@ public abstract class PlayerManager {
 			playerAdvancementTracker.reload(this.server.getAdvancementLoader());
 		}
 
-		this.sendToAll(new SynchronizeTagsS2CPacket(this.server.getTagManager().toPacket(this.registryManager)));
+		this.sendToAll(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
 		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values());
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {

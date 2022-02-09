@@ -1,22 +1,16 @@
 package net.minecraft.tag;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -33,31 +27,20 @@ import net.minecraft.util.JsonHelper;
  * <p>Its entries' iteration may be ordered
  * or unordered, depending on the configuration from the tag builder.
  */
-public interface Tag<T> {
-	static <T> Codec<Tag<T>> codec(Supplier<TagGroup<T>> groupGetter) {
-		return Identifier.CODEC
-			.flatXmap(
-				id -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getTag(id))
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown tag: " + id)),
-				tag -> (DataResult)Optional.ofNullable(((TagGroup)groupGetter.get()).getUncheckedTagId(tag))
-						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown tag: " + tag))
-			);
+public class Tag<T> {
+	private static final Tag<?> EMPTY = new Tag(List.of());
+	final List<T> values;
+
+	public Tag(Collection<T> values) {
+		this.values = List.copyOf(values);
 	}
 
-	boolean contains(T entry);
-
-	List<T> values();
-
-	default Optional<T> getRandom(Random random) {
-		List<T> list = this.values();
-		int i = list.size();
-		return i > 0 ? Optional.of(list.get(random.nextInt(i))) : Optional.empty();
+	public List<T> values() {
+		return this.values;
 	}
 
-	static <T> Tag<T> of(Set<T> values) {
-		return SetTag.of(values);
+	public static <T> Tag<T> empty() {
+		return (Tag<T>)EMPTY;
 	}
 
 	/**
@@ -65,7 +48,7 @@ public interface Tag<T> {
 	 * mutable form of a tag.
 	 */
 	public static class Builder {
-		private final List<Tag.TrackedEntry> entries = Lists.<Tag.TrackedEntry>newArrayList();
+		private final List<Tag.TrackedEntry> entries = new ArrayList();
 
 		public static Tag.Builder create() {
 			return new Tag.Builder();
@@ -98,15 +81,15 @@ public interface Tag<T> {
 
 		public <T> Either<Collection<Tag.TrackedEntry>, Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
 			ImmutableSet.Builder<T> builder = ImmutableSet.builder();
-			List<Tag.TrackedEntry> list = Lists.<Tag.TrackedEntry>newArrayList();
+			List<Tag.TrackedEntry> list = new ArrayList();
 
 			for (Tag.TrackedEntry trackedEntry : this.entries) {
-				if (!trackedEntry.getEntry().resolve(tagGetter, objectGetter, builder::add)) {
+				if (!trackedEntry.entry().resolve(tagGetter, objectGetter, builder::add)) {
 					list.add(trackedEntry);
 				}
 			}
 
-			return list.isEmpty() ? Either.right(Tag.of(builder.build())) : Either.left(list);
+			return list.isEmpty() ? Either.right(new Tag<>(builder.build())) : Either.left(list);
 		}
 
 		public Stream<Tag.TrackedEntry> streamEntries() {
@@ -123,7 +106,7 @@ public interface Tag<T> {
 
 		public Tag.Builder read(JsonObject json, String source) {
 			JsonArray jsonArray = JsonHelper.getArray(json, "values");
-			List<Tag.Entry> list = Lists.<Tag.Entry>newArrayList();
+			List<Tag.Entry> list = new ArrayList();
 
 			for (JsonElement jsonElement : jsonArray) {
 				list.add(resolveEntry(jsonElement));
@@ -163,7 +146,7 @@ public interface Tag<T> {
 			JsonArray jsonArray = new JsonArray();
 
 			for (Tag.TrackedEntry trackedEntry : this.entries) {
-				trackedEntry.getEntry().addToJson(jsonArray);
+				trackedEntry.entry().addToJson(jsonArray);
 			}
 
 			jsonObject.addProperty("replace", false);
@@ -183,14 +166,10 @@ public interface Tag<T> {
 		default void forEachGroupId(Consumer<Identifier> consumer) {
 		}
 
-		boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest);
+		boolean canAdd(Predicate<Identifier> objectExistsTest, Predicate<Identifier> tagExistsTest);
 	}
 
-	public interface Identified<T> extends Tag<T> {
-		Identifier getId();
-	}
-
-	public static class ObjectEntry implements Tag.Entry {
+	static class ObjectEntry implements Tag.Entry {
 		private final Identifier id;
 
 		public ObjectEntry(Identifier id) {
@@ -214,8 +193,8 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
-			return existenceTest.test(this.id);
+		public boolean canAdd(Predicate<Identifier> objectExistsTest, Predicate<Identifier> tagExistsTest) {
+			return objectExistsTest.test(this.id);
 		}
 
 		public String toString() {
@@ -223,7 +202,7 @@ public interface Tag<T> {
 		}
 	}
 
-	public static class OptionalObjectEntry implements Tag.Entry {
+	static class OptionalObjectEntry implements Tag.Entry {
 		private final Identifier id;
 
 		public OptionalObjectEntry(Identifier id) {
@@ -249,7 +228,7 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+		public boolean canAdd(Predicate<Identifier> objectExistsTest, Predicate<Identifier> tagExistsTest) {
 			return true;
 		}
 
@@ -258,7 +237,7 @@ public interface Tag<T> {
 		}
 	}
 
-	public static class OptionalTagEntry implements Tag.Entry {
+	static class OptionalTagEntry implements Tag.Entry {
 		private final Identifier id;
 
 		public OptionalTagEntry(Identifier id) {
@@ -269,7 +248,7 @@ public interface Tag<T> {
 		public <T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector) {
 			Tag<T> tag = (Tag<T>)tagGetter.apply(this.id);
 			if (tag != null) {
-				tag.values().forEach(collector);
+				tag.values.forEach(collector);
 			}
 
 			return true;
@@ -293,12 +272,12 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
+		public boolean canAdd(Predicate<Identifier> objectExistsTest, Predicate<Identifier> tagExistsTest) {
 			return true;
 		}
 	}
 
-	public static class TagEntry implements Tag.Entry {
+	static class TagEntry implements Tag.Entry {
 		private final Identifier id;
 
 		public TagEntry(Identifier id) {
@@ -311,7 +290,7 @@ public interface Tag<T> {
 			if (tag == null) {
 				return false;
 			} else {
-				tag.values().forEach(collector);
+				tag.values.forEach(collector);
 				return true;
 			}
 		}
@@ -326,8 +305,8 @@ public interface Tag<T> {
 		}
 
 		@Override
-		public boolean canAdd(Predicate<Identifier> existenceTest, Predicate<Identifier> duplicationTest) {
-			return duplicationTest.test(this.id);
+		public boolean canAdd(Predicate<Identifier> objectExistsTest, Predicate<Identifier> tagExistsTest) {
+			return tagExistsTest.test(this.id);
 		}
 
 		@Override
@@ -336,22 +315,7 @@ public interface Tag<T> {
 		}
 	}
 
-	public static class TrackedEntry {
-		final Tag.Entry entry;
-		private final String source;
-
-		TrackedEntry(Tag.Entry entry, String source) {
-			this.entry = entry;
-			this.source = source;
-		}
-
-		public Tag.Entry getEntry() {
-			return this.entry;
-		}
-
-		public String getSource() {
-			return this.source;
-		}
+	public static record TrackedEntry(Tag.Entry entry, String source) {
 
 		public String toString() {
 			return this.entry + " (from " + this.source + ")";

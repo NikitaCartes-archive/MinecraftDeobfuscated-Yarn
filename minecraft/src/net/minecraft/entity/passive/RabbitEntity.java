@@ -20,6 +20,7 @@ import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.ai.goal.PowderSnowJumpGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
@@ -49,6 +50,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -92,6 +94,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
+		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.world));
 		this.goalSelector.add(1, new RabbitEntity.EscapeDangerGoal(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
 		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
@@ -368,11 +371,11 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private int chooseType(WorldAccess world) {
-		Biome biome = world.getBiome(this.getBlockPos());
+		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		int i = this.random.nextInt(100);
-		if (biome.getPrecipitation() == Biome.Precipitation.SNOW) {
+		if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
 			return i < 80 ? 1 : 3;
-		} else if (biome.getCategory() == Biome.Category.DESERT) {
+		} else if (Biome.getCategory(registryEntry) == Biome.Category.DESERT) {
 			return 4;
 		} else {
 			return i < 50 ? 0 : (i < 90 ? 5 : 2);

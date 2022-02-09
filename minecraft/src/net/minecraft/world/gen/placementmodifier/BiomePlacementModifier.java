@@ -23,7 +23,7 @@ public class BiomePlacementModifier extends AbstractConditionalPlacementModifier
 	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
 		PlacedFeature placedFeature = (PlacedFeature)context.getPlacedFeature()
 			.orElseThrow(() -> new IllegalStateException("Tried to biome check an unregistered feature"));
-		Biome biome = context.getWorld().getBiome(pos);
+		Biome biome = context.getWorld().getBiome(pos).value();
 		return biome.getGenerationSettings().isFeatureAllowed(placedFeature);
 	}
 

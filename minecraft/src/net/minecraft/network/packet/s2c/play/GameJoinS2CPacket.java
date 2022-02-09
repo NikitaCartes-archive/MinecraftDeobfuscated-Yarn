@@ -8,6 +8,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -19,8 +20,8 @@ public record GameJoinS2CPacket(
 	GameMode gameMode,
 	@Nullable GameMode previousGameMode,
 	Set<RegistryKey<World>> dimensionIds,
-	DynamicRegistryManager.Impl registryManager,
-	DimensionType dimensionType,
+	DynamicRegistryManager.Immutable registryManager,
+	RegistryEntry<DimensionType> dimensionType,
 	RegistryKey<World> dimensionId,
 	long sha256Seed,
 	int maxPlayers,
@@ -38,8 +39,8 @@ public record GameJoinS2CPacket(
 			GameMode.byId(buf.readByte()),
 			GameMode.getOrNull(buf.readByte()),
 			buf.readCollection(Sets::newHashSetWithExpectedSize, b -> RegistryKey.of(Registry.WORLD_KEY, b.readIdentifier())),
-			buf.decode(DynamicRegistryManager.Impl.CODEC),
-			(DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get(),
+			buf.decode(DynamicRegistryManager.CODEC).toImmutable(),
+			buf.decode(DimensionType.REGISTRY_CODEC),
 			RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()),
 			buf.readLong(),
 			buf.readVarInt(),
@@ -59,8 +60,8 @@ public record GameJoinS2CPacket(
 		buf.writeByte(this.gameMode.getId());
 		buf.writeByte(GameMode.getId(this.previousGameMode));
 		buf.writeCollection(this.dimensionIds, (b, dimension) -> b.writeIdentifier(dimension.getValue()));
-		buf.encode(DynamicRegistryManager.Impl.CODEC, this.registryManager);
-		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.dimensionType);
+		buf.encode(DynamicRegistryManager.CODEC, this.registryManager);
+		buf.encode(DimensionType.REGISTRY_CODEC, this.dimensionType);
 		buf.writeIdentifier(this.dimensionId.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeVarInt(this.maxPlayers);

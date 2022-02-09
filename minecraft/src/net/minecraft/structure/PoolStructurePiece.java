@@ -3,6 +3,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.nbt.NbtCompound;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.dynamic.RegistryOps;
-import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -46,16 +46,16 @@ public class PoolStructurePiece extends StructurePiece {
 		this.structureManager = context.structureManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
-		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, context.resourceManager(), context.registryManager());
+		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
-			.parse(registryOps, nbt.getCompound("pool_element"))
+			.parse(dynamicOps, nbt.getCompound("pool_element"))
 			.resultOrPartial(LOGGER::error)
 			.orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
 		this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
 		NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);
 		this.junctions.clear();
-		nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(registryOps, nbtElement))));
+		nbtList.forEach(junctionTag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<>(dynamicOps, junctionTag))));
 	}
 
 	@Override
@@ -64,16 +64,16 @@ public class PoolStructurePiece extends StructurePiece {
 		nbt.putInt("PosY", this.pos.getY());
 		nbt.putInt("PosZ", this.pos.getZ());
 		nbt.putInt("ground_level_delta", this.groundLevelDelta);
-		RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, context.registryManager());
+		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());
 		StructurePoolElement.CODEC
-			.encodeStart(registryReadingOps, this.poolElement)
+			.encodeStart(dynamicOps, this.poolElement)
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("pool_element", nbtElement));
 		nbt.putString("rotation", this.rotation.name());
 		NbtList nbtList = new NbtList();
 
 		for (JigsawJunction jigsawJunction : this.junctions) {
-			nbtList.add(jigsawJunction.serialize(registryReadingOps).getValue());
+			nbtList.add(jigsawJunction.serialize(dynamicOps).getValue());
 		}
 
 		nbt.put("junctions", nbtList);

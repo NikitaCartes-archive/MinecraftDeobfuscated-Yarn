@@ -1,8 +1,12 @@
 package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +19,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -37,7 +42,6 @@ import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
@@ -47,12 +51,15 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.SaveProperties;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
+import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.lwjgl.glfw.GLFW;
@@ -68,6 +75,7 @@ public class CreateWorldScreen extends Screen {
 	private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
 	private static final Text RESULT_FOLDER_TEXT = new TranslatableText("selectWorld.resultFolder");
 	private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
+	@Nullable
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
 	String saveDirectoryName;
@@ -97,42 +105,41 @@ public class CreateWorldScreen extends Screen {
 	private GameRules gameRules = new GameRules();
 	public final MoreOptionsDialog moreOptionsDialog;
 
-	public CreateWorldScreen(
-		@Nullable Screen parent,
-		LevelInfo levelInfo,
-		GeneratorOptions generatorOptions,
-		@Nullable Path dataPackTempDir,
-		DataPackSettings dataPackSettings,
-		DynamicRegistryManager.Impl registryManager
-	) {
-		this(
-			parent,
-			dataPackSettings,
-			new MoreOptionsDialog(registryManager, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
-		);
-		this.levelName = levelInfo.getLevelName();
-		this.cheatsEnabled = levelInfo.areCommandsAllowed();
-		this.tweakedCheats = true;
-		this.currentDifficulty = levelInfo.getDifficulty();
-		this.gameRules.setAllValues(levelInfo.getGameRules(), null);
-		if (levelInfo.isHardcore()) {
-			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
-		} else if (levelInfo.getGameMode().isSurvivalLike()) {
-			this.currentMode = CreateWorldScreen.Mode.SURVIVAL;
-		} else if (levelInfo.getGameMode().isCreative()) {
-			this.currentMode = CreateWorldScreen.Mode.CREATIVE;
-		}
-
-		this.dataPackTempDir = dataPackTempDir;
-	}
-
 	public static CreateWorldScreen create(@Nullable Screen parent) {
-		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
+		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 		return new CreateWorldScreen(
 			parent,
 			DataPackSettings.SAFE_MODE,
-			new MoreOptionsDialog(impl, GeneratorOptions.getDefaultOptions(impl), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
+			new MoreOptionsDialog(immutable, GeneratorOptions.getDefaultOptions(immutable), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
 		);
+	}
+
+	public static CreateWorldScreen create(@Nullable Screen parent, class_6904 source, @Nullable Path path) {
+		SaveProperties saveProperties = source.worldData();
+		LevelInfo levelInfo = saveProperties.getLevelInfo();
+		GeneratorOptions generatorOptions = saveProperties.getGeneratorOptions();
+		DynamicRegistryManager.Immutable immutable = source.registryAccess();
+		DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
+		CreateWorldScreen createWorldScreen = new CreateWorldScreen(
+			parent,
+			dataPackSettings,
+			new MoreOptionsDialog(immutable, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
+		);
+		createWorldScreen.levelName = levelInfo.getLevelName();
+		createWorldScreen.cheatsEnabled = levelInfo.areCommandsAllowed();
+		createWorldScreen.tweakedCheats = true;
+		createWorldScreen.currentDifficulty = levelInfo.getDifficulty();
+		createWorldScreen.gameRules.setAllValues(levelInfo.getGameRules(), null);
+		if (levelInfo.isHardcore()) {
+			createWorldScreen.currentMode = CreateWorldScreen.Mode.HARDCORE;
+		} else if (levelInfo.getGameMode().isSurvivalLike()) {
+			createWorldScreen.currentMode = CreateWorldScreen.Mode.SURVIVAL;
+		} else if (levelInfo.getGameMode().isCreative()) {
+			createWorldScreen.currentMode = CreateWorldScreen.Mode.CREATIVE;
+		}
+
+		createWorldScreen.dataPackTempDir = path;
+		return createWorldScreen;
 	}
 
 	private CreateWorldScreen(@Nullable Screen parent, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
@@ -265,24 +272,21 @@ public class CreateWorldScreen extends Screen {
 		if (this.copyTempDirDataPacks()) {
 			this.clearTempResources();
 			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
-			LevelInfo levelInfo;
-			if (generatorOptions.isDebugWorld()) {
-				GameRules gameRules = new GameRules();
-				gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
-				levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataPackSettings.SAFE_MODE);
-			} else {
-				levelInfo = new LevelInfo(
-					this.levelNameField.getText().trim(),
-					this.currentMode.defaultGameMode,
-					this.hardcore,
-					this.getDifficulty(),
-					this.cheatsEnabled && !this.hardcore,
-					this.gameRules,
-					this.dataPackSettings
-				);
-			}
-
+			LevelInfo levelInfo = this.createLevelInfo(generatorOptions.isDebugWorld());
 			this.client.createWorld(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
+		}
+	}
+
+	private LevelInfo createLevelInfo(boolean debugWorld) {
+		String string = this.levelNameField.getText().trim();
+		if (debugWorld) {
+			GameRules gameRules = new GameRules();
+			gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
+			return new LevelInfo(string, GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataPackSettings.SAFE_MODE);
+		} else {
+			return new LevelInfo(
+				string, this.currentMode.defaultGameMode, this.hardcore, this.getDifficulty(), this.cheatsEnabled && !this.hardcore, this.gameRules, this.dataPackSettings
+			);
 		}
 	}
 
@@ -452,11 +456,23 @@ public class CreateWorldScreen extends Screen {
 			this.dataPackSettings = dataPackSettings;
 		} else {
 			this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
-			ServerResourceManager.reload(
-					dataPackManager.createResourcePacks(),
-					this.moreOptionsDialog.getRegistryManager(),
-					CommandManager.RegistrationEnvironment.INTEGRATED,
-					2,
+			class_6904.method_40431(
+					new class_6904.class_6906(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false),
+					() -> dataPackSettings,
+					(resourceManager, dataPackSettingsx) -> {
+						DynamicRegistryManager dynamicRegistryManager = this.moreOptionsDialog.getRegistryManager();
+						DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
+						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
+						DynamicOps<JsonElement> dynamicOps2 = RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, resourceManager);
+						DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
+							.encodeStart(dynamicOps, this.moreOptionsDialog.getGeneratorOptions(this.hardcore))
+							.flatMap(json -> GeneratorOptions.CODEC.parse(dynamicOps2, json));
+						GeneratorOptions generatorOptions = dataResult.getOrThrow(
+							false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)
+						);
+						LevelInfo levelInfo = this.createLevelInfo(generatorOptions.isDebugWorld());
+						return Pair.of(new LevelProperties(levelInfo, generatorOptions, dataResult.lifecycle()), mutable.toImmutable());
+					},
 					Util.getMainWorkerExecutor(),
 					this.client
 				)

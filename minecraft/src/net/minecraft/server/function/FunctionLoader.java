@@ -20,7 +20,6 @@ import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagGroup;
 import net.minecraft.tag.TagGroupLoader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
@@ -53,7 +52,7 @@ public class FunctionLoader implements ResourceReloader {
 	private static final int EXTENSION_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
 	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
-	private volatile TagGroup<CommandFunction> tags = TagGroup.createEmpty();
+	private volatile Map<Identifier, Tag<CommandFunction>> tags = Map.of();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
 
@@ -65,12 +64,12 @@ public class FunctionLoader implements ResourceReloader {
 		return this.functions;
 	}
 
-	public TagGroup<CommandFunction> getTags() {
-		return this.tags;
+	public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
+		return (Tag<CommandFunction>)this.tags.getOrDefault(id, Tag.empty());
 	}
 
-	public Tag<CommandFunction> getTagOrEmpty(Identifier id) {
-		return this.tags.getTagOrEmpty(id);
+	public Iterable<Identifier> getTags() {
+		return this.tags.keySet();
 	}
 
 	public FunctionLoader(int level, CommandDispatcher<ServerCommandSource> commandDispatcher) {

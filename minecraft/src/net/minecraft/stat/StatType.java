@@ -23,7 +23,7 @@ public class StatType<T> implements Iterable<Stat<T>> {
 	}
 
 	public Stat<T> getOrCreateStat(T key, StatFormatter formatter) {
-		return (Stat<T>)this.stats.computeIfAbsent(key, object -> new Stat<>(this, (T)object, formatter));
+		return (Stat<T>)this.stats.computeIfAbsent(key, value -> new Stat<>(this, (T)value, formatter));
 	}
 
 	public Registry<T> getRegistry() {

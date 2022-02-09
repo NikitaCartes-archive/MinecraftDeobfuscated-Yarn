@@ -317,7 +317,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return ItemTags.AXOLOTL_TEMPT_ITEMS.contains(stack.getItem());
+		return stack.isIn(ItemTags.AXOLOTL_TEMPT_ITEMS);
 	}
 
 	@Override

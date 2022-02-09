@@ -27,21 +27,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.StructurePresence;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.StructureConfig;
+import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import org.slf4j.Logger;
@@ -182,119 +177,8 @@ public class StructureFeature<C extends FeatureConfig> {
 	/**
 	 * {@return a block position for feature location}
 	 */
-	public BlockPos getLocatedPos(ChunkPos chunkPos) {
-		return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
-	}
-
-	/**
-	 * Tries to find the closest structure of this type near a given block.
-	 * <p>
-	 * This method relies on the given world generation settings (seed and placement configuration)
-	 * to match the time at which the structure was generated, otherwise it will not be found.
-	 * <p>
-	 * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
-	 * 
-	 * @return {@code null} if no structure could be found within the given search radius
-	 * 
-	 * @param searchRadius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
-	 */
-	@Nullable
-	public BlockPos locateStructure(
-		WorldView world,
-		StructureAccessor structureAccessor,
-		BlockPos searchStartPos,
-		int searchRadius,
-		boolean skipExistingChunks,
-		long worldSeed,
-		StructureConfig config
-	) {
-		int i = config.getSpacing();
-		int j = ChunkSectionPos.getSectionCoord(searchStartPos.getX());
-		int k = ChunkSectionPos.getSectionCoord(searchStartPos.getZ());
-
-		for (int l = 0; l <= searchRadius; l++) {
-			for (int m = -l; m <= l; m++) {
-				boolean bl = m == -l || m == l;
-
-				for (int n = -l; n <= l; n++) {
-					boolean bl2 = n == -l || n == l;
-					if (bl || bl2) {
-						int o = j + i * m;
-						int p = k + i * n;
-						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, o, p);
-						StructurePresence structurePresence = structureAccessor.getStructurePresence(chunkPos, this, skipExistingChunks);
-						if (structurePresence != StructurePresence.START_NOT_PRESENT) {
-							if (!skipExistingChunks && structurePresence == StructurePresence.START_PRESENT) {
-								return this.getLocatedPos(chunkPos);
-							}
-
-							Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
-							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
-							if (structureStart != null && structureStart.hasChildren()) {
-								if (skipExistingChunks && structureStart.isInExistingChunk()) {
-									structureAccessor.incrementReferences(structureStart);
-									return this.getLocatedPos(structureStart.getPos());
-								}
-
-								if (!skipExistingChunks) {
-									return this.getLocatedPos(structureStart.getPos());
-								}
-							}
-
-							if (l == 0) {
-								break;
-							}
-						}
-					}
-				}
-
-				if (l == 0) {
-					break;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * If true, this structure's start position will be uniformly distributed within
-	 * a placement grid cell. If false, the structure's starting point will be biased
-	 * towards the center of the cell.
-	 */
-	protected boolean isUniformDistribution() {
-		return true;
-	}
-
-	/**
-	 * Determines the cell of the structure placement grid a chunk belongs to, and
-	 * returns the chunk within that cell, that this structure will actually be placed at.
-	 * 
-	 * <p>If the {@link StructureConfig} uses a separation setting greater than 0, the
-	 * placement will be constrained to [0, spacing - separation] within the grid cell.
-	 * If a non-uniform distribution is used for placement, then this also moves
-	 * the center towards the origin.
-	 * 
-	 * @see #isUniformDistribution()
-	 */
-	public final ChunkPos getStartChunk(StructureConfig config, long seed, int x, int z) {
-		int i = config.getSpacing();
-		int j = config.getSeparation();
-		int k = Math.floorDiv(x, i);
-		int l = Math.floorDiv(z, i);
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setRegionSeed(seed, k, l, config.getSalt());
-		int m;
-		int n;
-		if (this.isUniformDistribution()) {
-			m = chunkRandom.nextInt(i - j);
-			n = chunkRandom.nextInt(i - j);
-		} else {
-			m = (chunkRandom.nextInt(i - j) + chunkRandom.nextInt(i - j)) / 2;
-			n = (chunkRandom.nextInt(i - j) + chunkRandom.nextInt(i - j)) / 2;
-		}
-
-		return new ChunkPos(k * i + m, l * i + n);
+	public static BlockPos getLocatedPos(RandomSpreadStructurePlacement randomSpreadStructurePlacement, ChunkPos chunkPos) {
+		return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ()).add(randomSpreadStructurePlacement.locateOffset());
 	}
 
 	/**
@@ -311,29 +195,28 @@ public class StructureFeature<C extends FeatureConfig> {
 		long worldSeed,
 		ChunkPos pos,
 		int structureReferences,
-		StructureConfig structureConfig,
-		C config,
-		HeightLimitView world,
-		Predicate<Biome> biomePredicate
+		C featureConfig,
+		HeightLimitView heightLimitView,
+		Predicate<RegistryEntry<Biome>> predicate
 	) {
-		ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, pos.x, pos.z);
-		if (pos.x == chunkPos.x && pos.z == chunkPos.z) {
-			Optional<StructurePiecesGenerator<C>> optional = this.piecesGenerator
-				.createGenerator(
-					new StructureGeneratorFactory.Context<>(chunkGenerator, biomeSource, worldSeed, pos, config, world, biomePredicate, structureManager, registryManager)
+		Optional<StructurePiecesGenerator<C>> optional = this.piecesGenerator
+			.createGenerator(
+				new StructureGeneratorFactory.Context<>(
+					chunkGenerator, biomeSource, worldSeed, pos, featureConfig, heightLimitView, predicate, structureManager, registryManager
+				)
+			);
+		if (optional.isPresent()) {
+			StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
+			chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
+			((StructurePiecesGenerator)optional.get())
+				.generatePieces(
+					structurePiecesCollector,
+					new StructurePiecesGenerator.Context<>(featureConfig, chunkGenerator, structureManager, pos, heightLimitView, chunkRandom, worldSeed)
 				);
-			if (optional.isPresent()) {
-				StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-				ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-				chunkRandom.setCarverSeed(worldSeed, pos.x, pos.z);
-				((StructurePiecesGenerator)optional.get())
-					.generatePieces(
-						structurePiecesCollector, new StructurePiecesGenerator.Context<>(config, chunkGenerator, structureManager, pos, world, chunkRandom, worldSeed)
-					);
-				StructureStart<C> structureStart = new StructureStart<>(this, pos, structureReferences, structurePiecesCollector.toList());
-				if (structureStart.hasChildren()) {
-					return structureStart;
-				}
+			StructureStart<C> structureStart = new StructureStart<>(this, pos, structureReferences, structurePiecesCollector.toList());
+			if (structureStart.hasChildren()) {
+				return structureStart;
 			}
 		}
 
@@ -349,7 +232,7 @@ public class StructureFeature<C extends FeatureConfig> {
 		ChunkPos pos,
 		C config,
 		HeightLimitView world,
-		Predicate<Biome> biomePredicate
+		Predicate<RegistryEntry<Biome>> biomePredicate
 	) {
 		return this.piecesGenerator
 			.createGenerator(
