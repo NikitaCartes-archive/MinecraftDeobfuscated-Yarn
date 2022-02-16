@@ -27,6 +27,8 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 	boolean contains(RegistryEntry<T> entry);
 
+	boolean method_40560(Registry<T> registry);
+
 	@SafeVarargs
 	static <T> RegistryEntryList.Direct<T> of(RegistryEntry<T>... entries) {
 		return new RegistryEntryList.Direct<>(List.of(entries));
@@ -109,14 +111,21 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		public RegistryEntry<T> get(int index) {
 			return (RegistryEntry<T>)this.getEntries().get(index);
 		}
+
+		@Override
+		public boolean method_40560(Registry<T> registry) {
+			return true;
+		}
 	}
 
 	public static class Named<T> extends RegistryEntryList.ListBacked<T> {
+		private final Registry<T> field_36633;
 		private final TagKey<T> tag;
 		private List<RegistryEntry<T>> entries = List.of();
 
-		Named(TagKey<T> tag) {
-			this.tag = tag;
+		Named(Registry<T> registry, TagKey<T> tagKey) {
+			this.field_36633 = registry;
+			this.tag = tagKey;
 		}
 
 		void copyOf(List<RegistryEntry<T>> entries) {
@@ -144,6 +153,11 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 		public String toString() {
 			return "NamedSet(" + this.tag + ")[" + this.entries + "]";
+		}
+
+		@Override
+		public boolean method_40560(Registry<T> registry) {
+			return this.field_36633 == registry;
 		}
 	}
 }

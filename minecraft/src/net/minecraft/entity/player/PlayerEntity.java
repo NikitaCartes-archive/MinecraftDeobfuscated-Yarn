@@ -838,7 +838,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (this.isDead()) {
 				return false;
 			} else {
-				this.dropShoulderEntities();
+				if (!this.world.isClient) {
+					this.dropShoulderEntities();
+				}
+
 				if (source.isScaledWithDifficulty()) {
 					if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
 						amount = 0.0F;

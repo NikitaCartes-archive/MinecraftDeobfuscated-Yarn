@@ -1,6 +1,5 @@
 package net.minecraft.data.server;
 
-import java.nio.file.Path;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataGenerator;
@@ -10,7 +9,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemTagProvider extends AbstractTagProvider<Item> {
@@ -190,11 +188,6 @@ public class ItemTagProvider extends AbstractTagProvider<Item> {
 		Tag.Builder builder = this.getTagBuilder(itemTag);
 		Tag.Builder builder2 = (Tag.Builder)this.blockTags.apply(blockTag);
 		builder2.streamEntries().forEach(builder::add);
-	}
-
-	@Override
-	protected Path getOutput(Identifier id) {
-		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/items/" + id.getPath() + ".json");
 	}
 
 	@Override

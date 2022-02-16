@@ -29,20 +29,24 @@ public record class_6904(
 	public static CompletableFuture<class_6904> method_40431(
 		class_6904.class_6906 arg, class_6904.class_6905 arg2, class_6904.class_6907 arg3, Executor executor, Executor executor2
 	) {
-		DataPackSettings dataPackSettings = (DataPackSettings)arg2.get();
-		DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(arg.packRepository(), dataPackSettings, arg.safeMode());
-		List<ResourcePack> list = arg.packRepository().createResourcePacks();
-		LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, list);
-		Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = arg3.get(lifecycledResourceManager, dataPackSettings2);
-		SaveProperties saveProperties = pair.getFirst();
-		DynamicRegistryManager.Immutable immutable = pair.getSecond();
-		return ServerResourceManager.reload(lifecycledResourceManager, immutable, arg.commandSelection(), arg.functionCompilationLevel(), executor, executor2)
-			.whenComplete((serverResourceManager, throwable) -> {
-				if (throwable != null) {
-					lifecycledResourceManager.close();
-				}
-			})
-			.thenApply(serverResourceManager -> new class_6904(lifecycledResourceManager, serverResourceManager, immutable, saveProperties));
+		try {
+			DataPackSettings dataPackSettings = (DataPackSettings)arg2.get();
+			DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(arg.packRepository(), dataPackSettings, arg.safeMode());
+			List<ResourcePack> list = arg.packRepository().createResourcePacks();
+			LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, list);
+			Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = arg3.get(lifecycledResourceManager, dataPackSettings2);
+			SaveProperties saveProperties = pair.getFirst();
+			DynamicRegistryManager.Immutable immutable = pair.getSecond();
+			return ServerResourceManager.reload(lifecycledResourceManager, immutable, arg.commandSelection(), arg.functionCompilationLevel(), executor, executor2)
+				.whenComplete((serverResourceManager, throwable) -> {
+					if (throwable != null) {
+						lifecycledResourceManager.close();
+					}
+				})
+				.thenApply(serverResourceManager -> new class_6904(lifecycledResourceManager, serverResourceManager, immutable, saveProperties));
+		} catch (Exception var12) {
+			return CompletableFuture.failedFuture(var12);
+		}
 	}
 
 	public void close() {

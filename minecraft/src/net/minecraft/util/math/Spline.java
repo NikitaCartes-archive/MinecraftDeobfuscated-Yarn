@@ -22,6 +22,10 @@ public interface Spline<C> extends ToFloatFunction<C> {
 	@Debug
 	String getDebugString();
 
+	float method_40435();
+
+	float method_40436();
+
 	static <C> Codec<Spline<C>> createCodec(Codec<ToFloatFunction<C>> locationFunctionCodec) {
 		MutableObject<Codec<Spline<C>>> mutableObject = new MutableObject<>();
 
@@ -139,6 +143,16 @@ public interface Spline<C> extends ToFloatFunction<C> {
 		public String getDebugString() {
 			return String.format("k=%.3f", this.value);
 		}
+
+		@Override
+		public float method_40435() {
+			return this.value;
+		}
+
+		@Override
+		public float method_40436() {
+			return this.value;
+		}
 	}
 
 	@Debug
@@ -203,6 +217,16 @@ public interface Spline<C> extends ToFloatFunction<C> {
 					.mapToObj(value -> String.format(Locale.ROOT, "%.3f", value))
 					.collect(Collectors.joining(", "))
 				+ "]";
+		}
+
+		@Override
+		public float method_40435() {
+			return (float)this.values().stream().mapToDouble(Spline::method_40435).min().orElseThrow();
+		}
+
+		@Override
+		public float method_40436() {
+			return (float)this.values().stream().mapToDouble(Spline::method_40436).max().orElseThrow();
 		}
 	}
 }

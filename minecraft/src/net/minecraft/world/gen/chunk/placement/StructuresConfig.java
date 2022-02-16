@@ -2,22 +2,14 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableMultimap.Builder;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
@@ -67,18 +59,9 @@ public class StructuresConfig {
 		.put(StructureFeature.STRONGHOLD, STRONGHOLD_PLACEMENT)
 		.build();
 	private final Map<StructureFeature<?>, StructurePlacement> placements;
-	private final ImmutableMap<StructureFeature<?>, ImmutableMultimap<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>>> configuredStructures;
 
 	public StructuresConfig(Map<StructureFeature<?>, StructurePlacement> placements) {
 		this.placements = placements;
-		HashMap<StructureFeature<?>, Builder<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>>> hashMap = new HashMap();
-		ConfiguredStructureFeatures.registerAll(
-			(structureFeature, registryKey, registryKey2) -> ((Builder)hashMap.computeIfAbsent(structureFeature, feature -> ImmutableMultimap.builder()))
-					.put(registryKey, registryKey2)
-		);
-		this.configuredStructures = (ImmutableMap)hashMap.entrySet()
-			.stream()
-			.collect(ImmutableMap.toImmutableMap(Entry::getKey, entry -> ((Builder)entry.getValue()).build()));
 	}
 
 	/**
@@ -102,9 +85,5 @@ public class StructuresConfig {
 	@Nullable
 	public StructurePlacement getForType(StructureFeature<?> structureType) {
 		return (StructurePlacement)this.placements.get(structureType);
-	}
-
-	public ImmutableMultimap<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>> getConfiguredStructureFeature(StructureFeature<?> feature) {
-		return this.configuredStructures.getOrDefault(feature, ImmutableMultimap.of());
 	}
 }

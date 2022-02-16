@@ -65,7 +65,7 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.hole();
 		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.biome(BiomeKeys.FROZEN_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN);
 		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.steepSlope();
-		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition7, GRASS_BLOCK), DIRT);
+		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition8, GRASS_BLOCK), DIRT);
 		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, SANDSTONE), SAND);
 		MaterialRules.MaterialRule materialRule3 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, STONE), GRAVEL);
 		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH);

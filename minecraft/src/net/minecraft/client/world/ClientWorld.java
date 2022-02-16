@@ -22,7 +22,6 @@ import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.particle.FireworksSparkParticle;
-import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
@@ -801,11 +800,6 @@ public class ClientWorld extends World {
 
 	public int getSimulationDistance() {
 		return this.simulationDistance;
-	}
-
-	@Override
-	public boolean shouldRemoveEntityLater(Entity.RemovalReason reason) {
-		return reason == Entity.RemovalReason.DISCARDED && this.client.options.chunkBuilderMode != ChunkBuilderMode.NEARBY;
 	}
 
 	@Environment(EnvType.CLIENT)

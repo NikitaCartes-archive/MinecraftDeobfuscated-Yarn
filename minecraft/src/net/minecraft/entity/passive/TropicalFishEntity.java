@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import java.util.Locale;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -247,6 +248,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 
 	public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
 		return world.getFluidState(pos.down()).isIn(FluidTags.WATER)
+			&& world.getBlockState(pos.up()).isOf(Blocks.WATER)
 			&& (world.getBiome(pos).matchesKey(BiomeKeys.LUSH_CAVES) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
 	}
 

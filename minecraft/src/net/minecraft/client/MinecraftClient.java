@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
@@ -374,7 +375,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final SplashTextResourceSupplier splashTextLoader;
 	private final VideoWarningManager videoWarningManager;
 	private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(
-		REGIONAL_COMPLIANCIES_ID, country -> Locale.getDefault().getISO3Country().equals(country)
+		REGIONAL_COMPLIANCIES_ID, MinecraftClient::method_40189
 	);
 	private final MinecraftSessionService sessionService;
 	private final UserApiService userApiService;
@@ -657,6 +658,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
 		} else {
 			this.setScreen(new TitleScreen(true));
+		}
+	}
+
+	private static boolean method_40189(Object country) {
+		try {
+			return Locale.getDefault().getISO3Country().equals(country);
+		} catch (MissingResourceException var2) {
+			return false;
 		}
 	}
 
@@ -1179,7 +1188,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				currentFps,
 				(double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : this.options.maxFps,
 				this.options.enableVsync ? " vsync" : "",
-				this.options.graphicsMode.toString(),
+				this.options.graphicsMode,
 				this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"),
 				this.options.biomeBlendRadius
 			);
