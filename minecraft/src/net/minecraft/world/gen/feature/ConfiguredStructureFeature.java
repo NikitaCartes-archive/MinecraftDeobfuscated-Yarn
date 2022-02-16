@@ -28,10 +28,12 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	);
 	public final F feature;
 	public final FC config;
+	public final RegistryEntryList<Biome> field_36629;
 
-	public ConfiguredStructureFeature(F feature, FC config) {
+	public ConfiguredStructureFeature(F feature, FC config, RegistryEntryList<Biome> registryEntryList) {
 		this.feature = feature;
 		this.config = config;
+		this.field_36629 = registryEntryList;
 	}
 
 	/**
@@ -52,5 +54,9 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 			.tryPlaceStart(
 				registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, structureReferences, this.config, heightLimitView, predicate
 			);
+	}
+
+	public RegistryEntryList<Biome> method_40549() {
+		return this.field_36629;
 	}
 }

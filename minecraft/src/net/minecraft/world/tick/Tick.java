@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.TickPriority;
 
-record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
+public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 	private static final String TYPE_NBT_KEY = "i";
 	private static final String X_NBT_KEY = "x";
 	private static final String Y_NBT_KEY = "y";
@@ -37,13 +37,19 @@ record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
 
 		for (int i = 0; i < tickList.size(); i++) {
 			NbtCompound nbtCompound = tickList.getCompound(i);
-			((Optional)nameToTypeFunction.apply(nbtCompound.getString("i"))).ifPresent(type -> {
-				BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
-				if (ChunkPos.toLong(blockPos) == l) {
-					tickConsumer.accept(new Tick<>(type, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p"))));
+			method_40559(nbtCompound, nameToTypeFunction).ifPresent(tick -> {
+				if (ChunkPos.toLong(tick.pos()) == l) {
+					tickConsumer.accept(tick);
 				}
 			});
 		}
+	}
+
+	public static <T> Optional<Tick<T>> method_40559(NbtCompound nbtCompound, Function<String, Optional<T>> function) {
+		return ((Optional)function.apply(nbtCompound.getString("i"))).map(object -> {
+			BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
+			return new Tick<>(object, blockPos, nbtCompound.getInt("t"), TickPriority.byIndex(nbtCompound.getInt("p")));
+		});
 	}
 
 	private static NbtCompound toNbt(String type, BlockPos pos, int delay, TickPriority priority) {

@@ -312,7 +312,10 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			return false;
 		} else {
 			Entity entity = source.getAttacker();
-			this.setSitting(false);
+			if (!this.world.isClient) {
+				this.setSitting(false);
+			}
+
 			if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
 				amount = (amount + 1.0F) / 2.0F;
 			}

@@ -5,6 +5,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
@@ -31,8 +32,10 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import org.slf4j.Logger;
 
 public abstract class ScreenHandler {
+	private static Logger field_36534 = LogUtils.getLogger();
 	/**
 	 * A special slot index value ({@value}) indicating that the player has clicked outside the main panel
 	 * of a screen. Used for dropping the cursor stack.
@@ -111,6 +114,10 @@ public abstract class ScreenHandler {
 		if (i < expectedCount) {
 			throw new IllegalArgumentException("Container data count " + i + " is smaller than expected " + expectedCount);
 		}
+	}
+
+	public boolean method_40442(int i) {
+		return i == -1 || i == -999 || i < this.slots.size();
 	}
 
 	protected Slot addSlot(Slot slot) {
@@ -276,8 +283,12 @@ public abstract class ScreenHandler {
 		this.previousTrackedStacks.set(slot, stack.copy());
 	}
 
-	public void setPreviousTrackedSlotMutable(int slot, ItemStack stack) {
-		this.previousTrackedStacks.set(slot, stack);
+	public void setPreviousTrackedSlotMutable(int slot, ItemStack itemStack) {
+		if (slot >= 0 && slot < this.previousTrackedStacks.size()) {
+			this.previousTrackedStacks.set(slot, itemStack);
+		} else {
+			field_36534.debug("Incorrect slot index: {} available slots: {}", slot, this.previousTrackedStacks.size());
+		}
 	}
 
 	public void setPreviousCursorStack(ItemStack stack) {

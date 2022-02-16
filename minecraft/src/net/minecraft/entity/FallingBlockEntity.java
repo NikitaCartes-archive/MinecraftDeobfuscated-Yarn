@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 
 public class FallingBlockEntity extends Entity {
 	private static final Logger field_36333 = LogUtils.getLogger();
-	private static final int field_35672 = 50;
 	private BlockState block = Blocks.SAND.getDefaultState();
 	public int timeFalling;
 	public boolean dropItem = true;
@@ -51,7 +50,6 @@ public class FallingBlockEntity extends Entity {
 	private boolean hurtEntities;
 	private int fallHurtMax = 40;
 	private float fallHurtAmount;
-	private long discardTime;
 	@Nullable
 	public NbtCompound blockEntityData;
 	protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
@@ -121,10 +119,6 @@ public class FallingBlockEntity extends Entity {
 	public void tick() {
 		if (this.block.isAir()) {
 			this.discard();
-		} else if (this.world.isClient && this.discardTime > 0L) {
-			if (System.currentTimeMillis() >= this.discardTime) {
-				super.setRemoved(Entity.RemovalReason.DISCARDED);
-			}
 		} else {
 			Block block = this.block.getBlock();
 			this.timeFalling++;
@@ -220,15 +214,6 @@ public class FallingBlockEntity extends Entity {
 			}
 
 			this.setVelocity(this.getVelocity().multiply(0.98));
-		}
-	}
-
-	@Override
-	public void setRemoved(Entity.RemovalReason reason) {
-		if (this.world.shouldRemoveEntityLater(reason)) {
-			this.discardTime = System.currentTimeMillis() + 50L;
-		} else {
-			super.setRemoved(reason);
 		}
 	}
 

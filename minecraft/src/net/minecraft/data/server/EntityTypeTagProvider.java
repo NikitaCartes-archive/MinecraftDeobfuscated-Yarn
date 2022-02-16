@@ -1,10 +1,8 @@
 package net.minecraft.data.server;
 
-import java.nio.file.Path;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.tag.EntityTypeTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class EntityTypeTagProvider extends AbstractTagProvider<EntityType<?>> {
@@ -36,11 +34,6 @@ public class EntityTypeTagProvider extends AbstractTagProvider<EntityType<?>> {
 		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(EntityType.DROWNED, EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_IMMUNE_ENTITY_TYPES).add(EntityType.STRAY, EntityType.POLAR_BEAR, EntityType.SNOW_GOLEM, EntityType.WITHER);
 		this.getOrCreateTagBuilder(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES).add(EntityType.STRIDER, EntityType.BLAZE, EntityType.MAGMA_CUBE);
-	}
-
-	@Override
-	protected Path getOutput(Identifier id) {
-		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/entity_types/" + id.getPath() + ".json");
 	}
 
 	@Override

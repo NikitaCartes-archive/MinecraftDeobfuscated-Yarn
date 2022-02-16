@@ -247,6 +247,8 @@ public class ItemEntity extends Entity {
 			return false;
 		} else if (!this.getStack().getItem().damage(source)) {
 			return false;
+		} else if (this.world.isClient) {
+			return true;
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);

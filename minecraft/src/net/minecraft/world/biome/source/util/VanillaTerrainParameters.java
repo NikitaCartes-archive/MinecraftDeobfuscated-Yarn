@@ -359,8 +359,8 @@ public final class VanillaTerrainParameters {
 		return this.peakSpline.apply(point);
 	}
 
-	public VanillaTerrainParameters.NoisePoint createNoisePoint(float continentalnessNoise, float erosionNoise, float weirdnessNoise) {
-		return new VanillaTerrainParameters.NoisePoint(continentalnessNoise, erosionNoise, getNormalizedWeirdness(weirdnessNoise), weirdnessNoise);
+	public static VanillaTerrainParameters.NoisePoint createNoisePoint(float f, float g, float h) {
+		return new VanillaTerrainParameters.NoisePoint(f, g, getNormalizedWeirdness(h), h);
 	}
 
 	public static float getNormalizedWeirdness(float weirdness) {

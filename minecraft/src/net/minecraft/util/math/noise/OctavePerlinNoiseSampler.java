@@ -25,6 +25,7 @@ public class OctavePerlinNoiseSampler {
 	private final DoubleList amplitudes;
 	private final double persistence;
 	private final double lacunarity;
+	private final double field_36632;
 
 	@Deprecated
 	public static OctavePerlinNoiseSampler createLegacy(AbstractRandom random, IntStream intStream) {
@@ -127,6 +128,11 @@ public class OctavePerlinNoiseSampler {
 
 		this.lacunarity = Math.pow(2.0, (double)(-j));
 		this.persistence = Math.pow(2.0, (double)(i - 1)) / (Math.pow(2.0, (double)i) - 1.0);
+		this.field_36632 = this.method_40557(2.0);
+	}
+
+	protected double method_40555() {
+		return this.field_36632;
 	}
 
 	private static void skipCalls(AbstractRandom random) {
@@ -157,6 +163,26 @@ public class OctavePerlinNoiseSampler {
 		}
 
 		return d;
+	}
+
+	public double method_40556(double d) {
+		return this.method_40557(d + 2.0);
+	}
+
+	private double method_40557(double d) {
+		double e = 0.0;
+		double f = this.persistence;
+
+		for (int i = 0; i < this.octaveSamplers.length; i++) {
+			PerlinNoiseSampler perlinNoiseSampler = this.octaveSamplers[i];
+			if (perlinNoiseSampler != null) {
+				e += this.amplitudes.getDouble(i) * d * f;
+			}
+
+			f /= 2.0;
+		}
+
+		return e;
 	}
 
 	@Nullable

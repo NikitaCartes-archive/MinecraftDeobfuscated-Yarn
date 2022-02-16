@@ -7,7 +7,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
@@ -19,17 +21,27 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class FlatChunkGenerator extends ChunkGenerator {
 	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
+		instance -> instance.group(
+					RegistryOps.createRegistryCodec(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).forGetter(flatChunkGenerator -> flatChunkGenerator.field_36536),
+					FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig)
+				)
 				.apply(instance, instance.stable(FlatChunkGenerator::new))
 	);
 	private final FlatChunkGeneratorConfig config;
 
-	public FlatChunkGenerator(FlatChunkGeneratorConfig config) {
-		super(new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()), config.getStructuresConfig(), 0L);
-		this.config = config;
+	public FlatChunkGenerator(Registry<ConfiguredStructureFeature<?, ?>> registry, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+		super(
+			registry,
+			new FixedBiomeSource(flatChunkGeneratorConfig.createBiome()),
+			new FixedBiomeSource(flatChunkGeneratorConfig.getBiome()),
+			flatChunkGeneratorConfig.getStructuresConfig(),
+			0L
+		);
+		this.config = flatChunkGeneratorConfig;
 	}
 
 	@Override
@@ -113,8 +125,12 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
+	public void method_40450(List<String> list, BlockPos blockPos) {
+	}
+
+	@Override
 	public MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler() {
-		return (i, j, k) -> MultiNoiseUtil.createNoiseValuePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		return MultiNoiseUtil.method_40443();
 	}
 
 	@Override

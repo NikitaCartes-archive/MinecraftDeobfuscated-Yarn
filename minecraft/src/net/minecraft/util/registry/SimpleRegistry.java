@@ -1,7 +1,10 @@
 package net.minecraft.util.registry;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -14,20 +17,24 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.Validate;
+import org.slf4j.Logger;
 
 public class SimpleRegistry<T> extends MutableRegistry<T> {
+	private static final Logger field_36635 = LogUtils.getLogger();
 	private final ObjectList<RegistryEntry.Reference<T>> rawIdToEntry = new ObjectArrayList<>(256);
 	private final Object2IntMap<T> entryToRawId = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> object2IntOpenCustomHashMap.defaultReturnValue(-1)
@@ -44,7 +51,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Nullable
 	private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
 	@Nullable
-	private List<RegistryEntry<T>> randomEntries;
+	private List<RegistryEntry.Reference<T>> field_36634;
 	private int nextId;
 
 	public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction) {
@@ -54,6 +61,14 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		if (valueToEntryFunction != null) {
 			this.unfrozenValueToEntry = new IdentityHashMap();
 		}
+	}
+
+	private List<RegistryEntry.Reference<T>> method_40561() {
+		if (this.field_36634 == null) {
+			this.field_36634 = this.rawIdToEntry.stream().filter(Objects::nonNull).toList();
+		}
+
+		return this.field_36634;
 	}
 
 	private void assertNotFrozen(RegistryKey<T> key) {
@@ -73,7 +88,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		Validate.notNull(value);
 		this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
 		this.entryToRawId.put(value, rawId);
-		this.randomEntries = null;
+		this.field_36634 = null;
 		if (checkDuplicateKeys && this.keyToEntry.containsKey(key)) {
 			Util.error("Adding duplicate key '" + key + "' to registry");
 		}
@@ -155,14 +170,13 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Nullable
 	@Override
 	public T get(@Nullable RegistryKey<T> key) {
-		RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.keyToEntry.get(key);
-		return getValue(reference);
+		return getValue((RegistryEntry.Reference<T>)this.keyToEntry.get(key));
 	}
 
 	@Nullable
 	@Override
 	public T get(int index) {
-		return (T)(index >= 0 && index < this.rawIdToEntry.size() ? ((RegistryEntry.Reference)this.rawIdToEntry.get(index)).value() : null);
+		return index >= 0 && index < this.rawIdToEntry.size() ? getValue((RegistryEntry.Reference<T>)this.rawIdToEntry.get(index)) : null;
 	}
 
 	@Override
@@ -203,11 +217,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	public Iterator<T> iterator() {
-		return this.rawIdToEntry.stream().mapMulti((entry, valueConsumer) -> {
-			if (entry != null) {
-				valueConsumer.accept(entry.value());
-			}
-		}).iterator();
+		return Iterators.transform(this.method_40561().iterator(), RegistryEntry::value);
 	}
 
 	@Nullable
@@ -234,7 +244,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public Stream<RegistryEntry.Reference<T>> streamEntries() {
-		return this.keyToEntry.values().stream();
+		return this.method_40561().stream();
 	}
 
 	@Override
@@ -251,13 +261,17 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	public RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag) {
 		RegistryEntryList.Named<T> named = (RegistryEntryList.Named<T>)this.tagToEntryList.get(tag);
 		if (named == null) {
-			named = new RegistryEntryList.Named<>(tag);
+			named = this.method_40562(tag);
 			Map<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap(this.tagToEntryList);
 			map.put(tag, named);
 			this.tagToEntryList = map;
 		}
 
 		return named;
+	}
+
+	private RegistryEntryList.Named<T> method_40562(TagKey<T> tagKey) {
+		return new RegistryEntryList.Named<>(this, tagKey);
 	}
 
 	@Override
@@ -272,11 +286,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Override
 	public Optional<RegistryEntry<T>> getRandom(Random random) {
-		if (this.randomEntries == null) {
-			this.randomEntries = List.copyOf(this.keyToEntry.values());
-		}
-
-		return Util.getRandomOrEmpty(this.randomEntries, random);
+		return Util.getRandomOrEmpty(this.method_40561(), random).map(RegistryEntry::upcast);
 	}
 
 	@Override
@@ -292,7 +302,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Override
 	public Registry<T> freeze() {
 		this.frozen = true;
-		List<RegistryKey<T>> list = this.keyToEntry
+		List<Identifier> list = this.idToEntry
 			.entrySet()
 			.stream()
 			.filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue())
@@ -348,8 +358,17 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 				((List)map.get(reference)).add(tag);
 			}
 		});
+		Set<TagKey<T>> set = Sets.<TagKey<T>>difference(this.tagToEntryList.keySet(), tagEntries.keySet());
+		if (!set.isEmpty()) {
+			field_36635.warn(
+				"Not all defined tags for registry {} are present in data pack: {}",
+				this.getKey(),
+				set.stream().map(tagKey -> tagKey.id().toString()).sorted().collect(Collectors.joining(", "))
+			);
+		}
+
 		Map<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap(this.tagToEntryList);
-		tagEntries.forEach((tag, entries) -> ((RegistryEntryList.Named)map2.computeIfAbsent(tag, RegistryEntryList.Named::new)).copyOf(entries));
+		tagEntries.forEach((tagKey, list) -> ((RegistryEntryList.Named)map2.computeIfAbsent(tagKey, this::method_40562)).copyOf(list));
 		map.forEach(RegistryEntry.Reference::setTags);
 		this.tagToEntryList = map2;
 	}

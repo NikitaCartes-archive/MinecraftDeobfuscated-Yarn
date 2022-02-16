@@ -17,6 +17,8 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6910;
+import net.minecraft.class_6953;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -43,7 +45,6 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.event.listener.GameEventDispatcher;
-import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.BlendingData;
@@ -357,8 +358,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(
-		NoiseColumnSampler noiseColumnSampler,
-		Supplier<ChunkNoiseSampler.ColumnSampler> columnSampler,
+		class_6953 noiseColumnSampler,
+		Supplier<class_6910> columnSampler,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender

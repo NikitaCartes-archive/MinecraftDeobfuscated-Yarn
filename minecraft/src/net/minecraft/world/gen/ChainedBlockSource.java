@@ -2,21 +2,16 @@ package net.minecraft.world.gen;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.class_6910;
 import net.minecraft.block.BlockState;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 
-public class ChainedBlockSource implements BlockSource {
-	private final List<BlockSource> samplers;
-
-	public ChainedBlockSource(List<BlockSource> samplers) {
-		this.samplers = samplers;
-	}
-
+public record ChainedBlockSource(List<ChunkNoiseSampler.BlockStateSampler> samplers) implements ChunkNoiseSampler.BlockStateSampler {
 	@Nullable
 	@Override
-	public BlockState apply(ChunkNoiseSampler chunkNoiseSampler, int i, int j, int k) {
-		for (BlockSource blockSource : this.samplers) {
-			BlockState blockState = blockSource.apply(chunkNoiseSampler, i, j, k);
+	public BlockState sample(class_6910.class_6912 arg) {
+		for (ChunkNoiseSampler.BlockStateSampler blockStateSampler : this.samplers) {
+			BlockState blockState = blockStateSampler.sample(arg);
 			if (blockState != null) {
 				return blockState;
 			}

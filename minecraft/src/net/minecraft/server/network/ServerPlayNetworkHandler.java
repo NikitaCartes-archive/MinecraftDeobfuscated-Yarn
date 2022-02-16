@@ -1343,20 +1343,25 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			if (this.player.isSpectator()) {
 				this.player.currentScreenHandler.syncState();
 			} else {
-				boolean bl = packet.getRevision() != this.player.currentScreenHandler.getRevision();
-				this.player.currentScreenHandler.disableSyncing();
-				this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
-
-				for (Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
-					this.player.currentScreenHandler.setPreviousTrackedSlotMutable(entry.getIntKey(), (ItemStack)entry.getValue());
-				}
-
-				this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
-				this.player.currentScreenHandler.enableSyncing();
-				if (bl) {
-					this.player.currentScreenHandler.updateToClient();
+				int i = packet.getSlot();
+				if (!this.player.currentScreenHandler.method_40442(i)) {
+					LOGGER.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.player.getName(), i, this.player.currentScreenHandler.slots.size());
 				} else {
-					this.player.currentScreenHandler.sendContentUpdates();
+					boolean bl = packet.getRevision() != this.player.currentScreenHandler.getRevision();
+					this.player.currentScreenHandler.disableSyncing();
+					this.player.currentScreenHandler.onSlotClick(i, packet.getButton(), packet.getActionType(), this.player);
+
+					for (Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
+						this.player.currentScreenHandler.setPreviousTrackedSlotMutable(entry.getIntKey(), (ItemStack)entry.getValue());
+					}
+
+					this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
+					this.player.currentScreenHandler.enableSyncing();
+					if (bl) {
+						this.player.currentScreenHandler.updateToClient();
+					} else {
+						this.player.currentScreenHandler.sendContentUpdates();
+					}
 				}
 			}
 		}
@@ -1381,8 +1386,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
-			this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
-			this.player.currentScreenHandler.sendContentUpdates();
+			boolean bl = this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
+			if (bl) {
+				this.player.currentScreenHandler.sendContentUpdates();
+			}
 		}
 	}
 

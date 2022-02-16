@@ -181,6 +181,8 @@ public class ExperienceOrbEntity extends Entity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
+		} else if (this.world.isClient) {
+			return true;
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);

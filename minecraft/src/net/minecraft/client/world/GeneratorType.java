@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -29,6 +30,7 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 @Environment(EnvType.CLIENT)
 public abstract class GeneratorType {
@@ -42,7 +44,8 @@ public abstract class GeneratorType {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
 			Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-			return new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(registry));
+			Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+			return new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry));
 		}
 	};
 	public static final GeneratorType LARGE_BIOMES = new GeneratorType("large_biomes") {
@@ -66,7 +69,7 @@ public abstract class GeneratorType {
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-			return new DebugChunkGenerator(registryManager.get(Registry.BIOME_KEY));
+			return new DebugChunkGenerator(registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY), registryManager.get(Registry.BIOME_KEY));
 		}
 	};
 	public static final List<GeneratorType> VALUES = Lists.<GeneratorType>newArrayList(
@@ -76,17 +79,20 @@ public abstract class GeneratorType {
 		Optional.of(FLAT),
 		(screen, generatorOptions) -> {
 			ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
-			Registry<Biome> registry = screen.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
+			DynamicRegistryManager dynamicRegistryManager = screen.moreOptionsDialog.getRegistryManager();
+			Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
+			Registry<ConfiguredStructureFeature<?, ?>> registry2 = dynamicRegistryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+			Registry<DimensionType> registry3 = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
 			return new CustomizeFlatLevelScreen(
 				screen,
-				config -> screen.moreOptionsDialog
+				flatChunkGeneratorConfig -> screen.moreOptionsDialog
 						.setGeneratorOptions(
 							new GeneratorOptions(
 								generatorOptions.getSeed(),
 								generatorOptions.shouldGenerateStructures(),
 								generatorOptions.hasBonusChest(),
 								GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
-									screen.moreOptionsDialog.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensions(), new FlatChunkGenerator(config)
+									registry3, generatorOptions.getDimensions(), new FlatChunkGenerator(registry2, flatChunkGeneratorConfig)
 								)
 							)
 						),
@@ -105,11 +111,12 @@ public abstract class GeneratorType {
 	private final Text displayName;
 
 	static NoiseChunkGenerator createNoiseChunkGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
+		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
+		Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = registryManager.get(Registry.NOISE_WORLDGEN);
+		Registry<ChunkGeneratorSettings> registry4 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		return new NoiseChunkGenerator(
-			registryManager.get(Registry.NOISE_WORLDGEN),
-			new FixedBiomeSource(registryManager.get(Registry.BIOME_KEY).getOrCreateEntry(BiomeKeys.PLAINS)),
-			seed,
-			registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrCreateEntry(settingsKey)
+			registry3, registry2, new FixedBiomeSource(registry.getOrCreateEntry(BiomeKeys.PLAINS)), seed, registry4.getOrCreateEntry(settingsKey)
 		);
 	}
 
@@ -122,8 +129,9 @@ public abstract class GeneratorType {
 	) {
 		BiomeSource biomeSource = new FixedBiomeSource(registryEntry);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-		Registry<ChunkGeneratorSettings> registry2 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-		RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry2.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
+		Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+		RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry3.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
 		return new GeneratorOptions(
 			generatorOptions.getSeed(),
 			generatorOptions.shouldGenerateStructures(),
@@ -131,7 +139,7 @@ public abstract class GeneratorType {
 			GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
 				registry,
 				generatorOptions.getDimensions(),
-				new NoiseChunkGenerator(registryManager.get(Registry.NOISE_WORLDGEN), biomeSource, generatorOptions.getSeed(), registryEntry2)
+				new NoiseChunkGenerator(registryManager.get(Registry.NOISE_WORLDGEN), registry2, biomeSource, generatorOptions.getSeed(), registryEntry2)
 			)
 		);
 	}
@@ -140,6 +148,7 @@ public abstract class GeneratorType {
 		return (RegistryEntry<Biome>)generatorOptions.getChunkGenerator()
 			.getBiomeSource()
 			.getBiomes()
+			.stream()
 			.findFirst()
 			.orElse(dynamicRegistryManager.get(Registry.BIOME_KEY).getOrCreateEntry(BiomeKeys.PLAINS));
 	}

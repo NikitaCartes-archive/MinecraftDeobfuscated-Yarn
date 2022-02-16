@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -28,12 +29,16 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.placement.StructuresConfig;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class DebugChunkGenerator extends ChunkGenerator {
-	public static final Codec<DebugChunkGenerator> CODEC = RegistryOps.createRegistryCodec(Registry.BIOME_KEY)
-		.<DebugChunkGenerator>xmap(DebugChunkGenerator::new, DebugChunkGenerator::getBiomeRegistry)
-		.stable()
-		.codec();
+	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					RegistryOps.createRegistryCodec(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.field_36536),
+					RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry)
+				)
+				.apply(instance, instance.stable(DebugChunkGenerator::new))
+	);
 	private static final int field_31467 = 2;
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
 		.flatMap(block -> block.getStateManager().getStates().stream())
@@ -46,10 +51,9 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	public static final int field_31466 = 60;
 	private final Registry<Biome> biomeRegistry;
 
-	public DebugChunkGenerator(Registry<Biome> biomeRegistry) {
-		super(new FixedBiomeSource(biomeRegistry.getOrCreateEntry(BiomeKeys.PLAINS)), new StructuresConfig(false));
-		this.biomeRegistry = biomeRegistry;
-		this.method_40145();
+	public DebugChunkGenerator(Registry<ConfiguredStructureFeature<?, ?>> registry, Registry<Biome> registry2) {
+		super(registry, new FixedBiomeSource(registry2.getOrCreateEntry(BiomeKeys.PLAINS)), new StructuresConfig(false));
+		this.biomeRegistry = registry2;
 	}
 
 	public Registry<Biome> getBiomeRegistry() {
@@ -103,6 +107,10 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		return new VerticalBlockSample(0, new BlockState[0]);
 	}
 
+	@Override
+	public void method_40450(List<String> list, BlockPos blockPos) {
+	}
+
 	public static BlockState getBlockState(int x, int z) {
 		BlockState blockState = AIR;
 		if (x > 0 && z > 0 && x % 2 != 0 && z % 2 != 0) {
@@ -121,7 +129,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 
 	@Override
 	public MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler() {
-		return (i, j, k) -> MultiNoiseUtil.createNoiseValuePoint(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		return MultiNoiseUtil.method_40443();
 	}
 
 	@Override

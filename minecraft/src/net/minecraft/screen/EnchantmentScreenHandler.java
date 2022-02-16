@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,6 +20,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 public class EnchantmentScreenHandler extends ScreenHandler {
@@ -91,35 +94,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				this.context.run((world, pos) -> {
 					int ix = 0;
 
-					for (int j = -1; j <= 1; j++) {
-						for (int k = -1; k <= 1; k++) {
-							if ((j != 0 || k != 0) && world.isAir(pos.add(k, 0, j)) && world.isAir(pos.add(k, 1, j))) {
-								if (world.getBlockState(pos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
-									ix++;
-								}
-
-								if (world.getBlockState(pos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
-									ix++;
-								}
-
-								if (k != 0 && j != 0) {
-									if (world.getBlockState(pos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
-										ix++;
-									}
-
-									if (world.getBlockState(pos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
-										ix++;
-									}
-
-									if (world.getBlockState(pos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
-										ix++;
-									}
-
-									if (world.getBlockState(pos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
-										ix++;
-									}
-								}
-							}
+					for (BlockPos blockPos : EnchantingTableBlock.field_36535) {
+						if (EnchantingTableBlock.method_40445(world, pos, blockPos)) {
+							ix++;
 						}
 					}
 
@@ -159,60 +136,65 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 
 	@Override
 	public boolean onButtonClick(PlayerEntity player, int id) {
-		ItemStack itemStack = this.inventory.getStack(0);
-		ItemStack itemStack2 = this.inventory.getStack(1);
-		int i = id + 1;
-		if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.getAbilities().creativeMode) {
-			return false;
-		} else if (this.enchantmentPower[id] <= 0
-			|| itemStack.isEmpty()
-			|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.getAbilities().creativeMode) {
-			return false;
-		} else {
-			this.context.run((world, pos) -> {
-				ItemStack itemStack3 = itemStack;
-				List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
-				if (!list.isEmpty()) {
-					player.applyEnchantmentCosts(itemStack, i);
-					boolean bl = itemStack.isOf(Items.BOOK);
-					if (bl) {
-						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-						NbtCompound nbtCompound = itemStack.getNbt();
-						if (nbtCompound != null) {
-							itemStack3.setNbt(nbtCompound.copy());
-						}
-
-						this.inventory.setStack(0, itemStack3);
-					}
-
-					for (int k = 0; k < list.size(); k++) {
-						EnchantmentLevelEntry enchantmentLevelEntry = (EnchantmentLevelEntry)list.get(k);
+		if (id >= 0 && id < this.enchantmentPower.length) {
+			ItemStack itemStack = this.inventory.getStack(0);
+			ItemStack itemStack2 = this.inventory.getStack(1);
+			int i = id + 1;
+			if ((itemStack2.isEmpty() || itemStack2.getCount() < i) && !player.getAbilities().creativeMode) {
+				return false;
+			} else if (this.enchantmentPower[id] <= 0
+				|| itemStack.isEmpty()
+				|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.getAbilities().creativeMode) {
+				return false;
+			} else {
+				this.context.run((world, pos) -> {
+					ItemStack itemStack3 = itemStack;
+					List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
+					if (!list.isEmpty()) {
+						player.applyEnchantmentCosts(itemStack, i);
+						boolean bl = itemStack.isOf(Items.BOOK);
 						if (bl) {
-							EnchantedBookItem.addEnchantment(itemStack3, enchantmentLevelEntry);
-						} else {
-							itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
+							itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
+							NbtCompound nbtCompound = itemStack.getNbt();
+							if (nbtCompound != null) {
+								itemStack3.setNbt(nbtCompound.copy());
+							}
+
+							this.inventory.setStack(0, itemStack3);
 						}
-					}
 
-					if (!player.getAbilities().creativeMode) {
-						itemStack2.decrement(i);
-						if (itemStack2.isEmpty()) {
-							this.inventory.setStack(1, ItemStack.EMPTY);
+						for (int k = 0; k < list.size(); k++) {
+							EnchantmentLevelEntry enchantmentLevelEntry = (EnchantmentLevelEntry)list.get(k);
+							if (bl) {
+								EnchantedBookItem.addEnchantment(itemStack3, enchantmentLevelEntry);
+							} else {
+								itemStack3.addEnchantment(enchantmentLevelEntry.enchantment, enchantmentLevelEntry.level);
+							}
 						}
-					}
 
-					player.incrementStat(Stats.ENCHANT_ITEM);
-					if (player instanceof ServerPlayerEntity) {
-						Criteria.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
-					}
+						if (!player.getAbilities().creativeMode) {
+							itemStack2.decrement(i);
+							if (itemStack2.isEmpty()) {
+								this.inventory.setStack(1, ItemStack.EMPTY);
+							}
+						}
 
-					this.inventory.markDirty();
-					this.seed.set(player.getEnchantmentTableSeed());
-					this.onContentChanged(this.inventory);
-					world.playSound(null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
-				}
-			});
-			return true;
+						player.incrementStat(Stats.ENCHANT_ITEM);
+						if (player instanceof ServerPlayerEntity) {
+							Criteria.ENCHANTED_ITEM.trigger((ServerPlayerEntity)player, itemStack3, i);
+						}
+
+						this.inventory.markDirty();
+						this.seed.set(player.getEnchantmentTableSeed());
+						this.onContentChanged(this.inventory);
+						world.playSound(null, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+					}
+				});
+				return true;
+			}
+		} else {
+			Util.error(player.getName() + " pressed invalid button id: " + id);
+			return false;
 		}
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_6910;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.BlockTags;
@@ -23,7 +24,6 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
-import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
@@ -36,12 +36,12 @@ import org.apache.commons.lang3.mutable.MutableObject;
 public class Blender {
 	private static final Blender NO_BLENDING = new Blender(new Long2ObjectOpenHashMap(), new Long2ObjectOpenHashMap()) {
 		@Override
-		public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
-			return terrainNoisePoint;
+		public Blender.class_6956 method_39340(int i, int j) {
+			return new Blender.class_6956(1.0, 0.0);
 		}
 
 		@Override
-		public double method_39338(int i, int j, int k, double d) {
+		public double method_39338(class_6910.class_6912 arg, double d) {
 			return d;
 		}
 
@@ -57,8 +57,6 @@ public class Blender {
 	private static final int field_35503 = BiomeCoords.toChunk(field_35502 + 3);
 	private static final int field_35504 = 2;
 	private static final int field_35505 = BiomeCoords.toChunk(5);
-	private static final double field_35506 = 10.0;
-	private static final double field_35507 = 0.0;
 	private static final double field_36222 = (double)BlendingData.OLD_HEIGHT_LIMIT.getHeight() / 2.0;
 	private static final double field_36223 = (double)BlendingData.OLD_HEIGHT_LIMIT.getBottomY() + field_36222;
 	private static final double field_36224 = 8.0;
@@ -100,12 +98,12 @@ public class Blender {
 		this.field_36344 = long2ObjectOpenHashMap2;
 	}
 
-	public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
+	public Blender.class_6956 method_39340(int i, int j) {
 		int k = BiomeCoords.fromBlock(i);
 		int l = BiomeCoords.fromBlock(j);
 		double d = this.method_39562(k, 0, l, BlendingData::method_39344);
 		if (d != Double.MAX_VALUE) {
-			return new TerrainNoisePoint(method_39337(d), 10.0, 0.0);
+			return new Blender.class_6956(0.0, method_39337(d));
 		} else {
 			MutableDouble mutableDouble = new MutableDouble(0.0);
 			MutableDouble mutableDouble2 = new MutableDouble(0.0);
@@ -128,15 +126,12 @@ public class Blender {
 						)
 				);
 			if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
-				return terrainNoisePoint;
+				return new Blender.class_6956(1.0, 0.0);
 			} else {
 				double e = mutableDouble2.doubleValue() / mutableDouble.doubleValue();
 				double f = MathHelper.clamp(mutableDouble3.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
 				f = 3.0 * f * f - 2.0 * f * f * f;
-				double g = MathHelper.lerp(f, method_39337(e), terrainNoisePoint.offset());
-				double h = MathHelper.lerp(f, 10.0, terrainNoisePoint.factor());
-				double m = MathHelper.lerp(f, 0.0, terrainNoisePoint.peaks());
-				return new TerrainNoisePoint(g, h, m);
+				return new Blender.class_6956(f, method_39337(e));
 			}
 		}
 	}
@@ -148,11 +143,11 @@ public class Blender {
 		return 1.0 * (32.0 * (f - 128.0) - 3.0 * (f - 120.0) * g + 3.0 * g * g) / (128.0 * (32.0 - 3.0 * g));
 	}
 
-	public double method_39338(int i, int j, int k, double d) {
-		int l = BiomeCoords.fromBlock(i);
-		int m = j / 8;
-		int n = BiomeCoords.fromBlock(k);
-		double e = this.method_39562(l, m, n, BlendingData::method_39345);
+	public double method_39338(class_6910.class_6912 arg, double d) {
+		int i = BiomeCoords.fromBlock(arg.blockX());
+		int j = arg.blockY() / 8;
+		int k = BiomeCoords.fromBlock(arg.blockZ());
+		double e = this.method_39562(i, j, k, BlendingData::method_39345);
 		if (e != Double.MAX_VALUE) {
 			return e;
 		} else {
@@ -162,8 +157,8 @@ public class Blender {
 			this.field_36344
 				.forEach(
 					(long_, blendingData) -> blendingData.method_39346(
-							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), m - 1, m + 1, (lx, mx, nx, dx) -> {
-								double ex = MathHelper.magnitude((double)(l - lx), (double)((m - mx) * 2), (double)(n - nx));
+							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), j - 1, j + 1, (l, m, n, dx) -> {
+								double ex = MathHelper.magnitude((double)(i - l), (double)((j - m) * 2), (double)(k - n));
 								if (!(ex > 2.0)) {
 									if (ex < mutableDouble3.doubleValue()) {
 										mutableDouble3.setValue(ex);
@@ -369,5 +364,8 @@ public class Blender {
 
 	public interface class_6831 {
 		double getDistance(double d, double e, double f);
+	}
+
+	public static record class_6956(double alpha, double blendingOffset) {
 	}
 }

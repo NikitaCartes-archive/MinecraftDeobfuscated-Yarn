@@ -9,7 +9,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,11 +24,8 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
-import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
-import net.minecraft.world.gen.NoiseColumnSampler;
-import net.minecraft.world.gen.chunk.Blender;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
 	/**
@@ -112,19 +108,6 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
 		float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
 		double d = (double)VanillaTerrainParameters.getNormalizedWeirdness(m);
-		DecimalFormat decimalFormat = new DecimalFormat("0.000");
-		info.add(
-			"Multinoise C: "
-				+ decimalFormat.format((double)f)
-				+ " E: "
-				+ decimalFormat.format((double)g)
-				+ " T: "
-				+ decimalFormat.format((double)h)
-				+ " H: "
-				+ decimalFormat.format((double)l)
-				+ " W: "
-				+ decimalFormat.format((double)m)
-		);
 		VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
 		info.add(
 			"Biome builder PV: "
@@ -138,19 +121,6 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 				+ " H: "
 				+ vanillaBiomeParameters.getHumidityDescription((double)l)
 		);
-		if (noiseSampler instanceof NoiseColumnSampler noiseColumnSampler) {
-			TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g, Blender.getNoBlending());
-			info.add(
-				"Terrain PV: "
-					+ decimalFormat.format(d)
-					+ " O: "
-					+ decimalFormat.format(terrainNoisePoint.offset())
-					+ " F: "
-					+ decimalFormat.format(terrainNoisePoint.factor())
-					+ " JA: "
-					+ decimalFormat.format(terrainNoisePoint.peaks())
-			);
-		}
 	}
 
 	static record Instance(MultiNoiseBiomeSource.Preset preset, Registry<Biome> biomeRegistry) {

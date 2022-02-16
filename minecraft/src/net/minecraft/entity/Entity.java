@@ -3274,7 +3274,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public void setRemoved(Entity.RemovalReason reason) {
+	public final void setRemoved(Entity.RemovalReason reason) {
 		if (this.removalReason == null) {
 			this.removalReason = reason;
 		}

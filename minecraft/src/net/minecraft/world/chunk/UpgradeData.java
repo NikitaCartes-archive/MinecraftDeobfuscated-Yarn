@@ -9,7 +9,9 @@ import java.util.EnumSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,18 +22,24 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EightWayDirection;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.tick.Tick;
 import org.slf4j.Logger;
 
 public class UpgradeData {
@@ -40,12 +48,14 @@ public class UpgradeData {
 	private static final String INDICES_KEY = "Indices";
 	private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
 	private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
+	private final List<Tick<Block>> field_36538 = Lists.<Tick<Block>>newArrayList();
+	private final List<Tick<Fluid>> field_36539 = Lists.<Tick<Fluid>>newArrayList();
 	private final int[][] centerIndicesToUpgrade;
 	static final Map<Block, UpgradeData.Logic> BLOCK_TO_LOGIC = new IdentityHashMap();
 	static final Set<UpgradeData.Logic> CALLBACK_LOGICS = Sets.<UpgradeData.Logic>newHashSet();
 
-	private UpgradeData(HeightLimitView world) {
-		this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
+	private UpgradeData(HeightLimitView heightLimitView) {
+		this.centerIndicesToUpgrade = new int[heightLimitView.countVerticalSections()][];
 	}
 
 	public UpgradeData(NbtCompound nbt, HeightLimitView world) {
@@ -68,6 +78,21 @@ public class UpgradeData {
 				this.sidesToUpgrade.add(eightWayDirection);
 			}
 		}
+
+		method_40456(
+			nbt, "neighbor_block_ticks", stringx -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(stringx)).or(() -> Optional.of(Blocks.AIR)), this.field_36538
+		);
+		method_40456(
+			nbt, "neighbor_fluid_ticks", stringx -> Registry.FLUID.getOrEmpty(Identifier.tryParse(stringx)).or(() -> Optional.of(Fluids.EMPTY)), this.field_36539
+		);
+	}
+
+	private static <T> void method_40456(NbtCompound nbtCompound, String string, Function<String, Optional<T>> function, List<Tick<T>> list) {
+		if (nbtCompound.contains(string, NbtElement.LIST_TYPE)) {
+			for (NbtElement nbtElement : nbtCompound.getList(string, NbtElement.COMPOUND_TYPE)) {
+				Tick.method_40559((NbtCompound)nbtElement, function).ifPresent(list::add);
+			}
+		}
 	}
 
 	public void upgrade(WorldChunk chunk) {
@@ -78,6 +103,14 @@ public class UpgradeData {
 		}
 
 		World world = chunk.getWorld();
+		this.field_36538.forEach(tick -> {
+			Block block = tick.type() == Blocks.AIR ? world.getBlockState(tick.pos()).getBlock() : (Block)tick.type();
+			world.createAndScheduleBlockTick(tick.pos(), block, tick.delay(), tick.priority());
+		});
+		this.field_36539.forEach(tick -> {
+			Fluid fluid = tick.type() == Fluids.EMPTY ? world.getFluidState(tick.pos()).getFluid() : (Fluid)tick.type();
+			world.createAndScheduleFluidTick(tick.pos(), fluid, tick.delay(), tick.priority());
+		});
 		CALLBACK_LOGICS.forEach(logic -> logic.postUpdate(world));
 	}
 
@@ -194,6 +227,18 @@ public class UpgradeData {
 		}
 
 		nbtCompound.putByte("Sides", (byte)ix);
+		if (!this.field_36538.isEmpty()) {
+			NbtList nbtList = new NbtList();
+			this.field_36538.forEach(tick -> nbtList.add(tick.toNbt(block -> Registry.BLOCK.getId(block).toString())));
+			nbtCompound.put("neighbor_block_ticks", nbtList);
+		}
+
+		if (!this.field_36539.isEmpty()) {
+			NbtList nbtList = new NbtList();
+			this.field_36539.forEach(tick -> nbtList.add(tick.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
+			nbtCompound.put("neighbor_fluid_ticks", nbtList);
+		}
+
 		return nbtCompound;
 	}
 

@@ -405,7 +405,10 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			this.setSitting(false);
+			if (!this.world.isClient) {
+				this.setSitting(false);
+			}
+
 			return super.damage(source, amount);
 		}
 	}

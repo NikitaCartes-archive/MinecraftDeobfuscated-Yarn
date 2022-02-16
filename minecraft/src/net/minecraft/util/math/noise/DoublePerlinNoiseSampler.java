@@ -18,6 +18,7 @@ public class DoublePerlinNoiseSampler {
 	private final double amplitude;
 	private final OctavePerlinNoiseSampler firstSampler;
 	private final OctavePerlinNoiseSampler secondSampler;
+	private final double field_36631;
 
 	@Deprecated
 	public static DoublePerlinNoiseSampler createLegacy(AbstractRandom random, DoublePerlinNoiseSampler.NoiseParameters parameters) {
@@ -59,6 +60,11 @@ public class DoublePerlinNoiseSampler {
 		}
 
 		this.amplitude = 0.16666666666666666 / createAmplitude(j - i);
+		this.field_36631 = (this.firstSampler.method_40555() + this.secondSampler.method_40555()) * this.amplitude;
+	}
+
+	public double method_40554() {
+		return this.field_36631;
 	}
 
 	private static double createAmplitude(int octaves) {

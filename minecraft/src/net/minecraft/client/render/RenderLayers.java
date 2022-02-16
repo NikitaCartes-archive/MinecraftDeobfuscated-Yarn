@@ -286,10 +286,10 @@ public class RenderLayers {
 		map.put(Blocks.BUBBLE_COLUMN, renderLayer4);
 		map.put(Blocks.TINTED_GLASS, renderLayer4);
 	});
-	private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.<Fluid, RenderLayer>newHashMap(), hashMap -> {
+	private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.<Fluid, RenderLayer>newHashMap(), map -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();
-		hashMap.put(Fluids.FLOWING_WATER, renderLayer);
-		hashMap.put(Fluids.WATER, renderLayer);
+		map.put(Fluids.FLOWING_WATER, renderLayer);
+		map.put(Fluids.WATER, renderLayer);
 	});
 	private static boolean fancyGraphicsOrBetter;
 

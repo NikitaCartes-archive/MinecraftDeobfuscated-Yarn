@@ -566,6 +566,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return (List<RegistryKey<Biome>>)MultiNoiseBiomeSource.Preset.OVERWORLD
 			.getBiomeSource(BuiltinRegistries.BIOME)
 			.getBiomes()
+			.stream()
 			.flatMap(biomeEntry -> biomeEntry.getKey().stream())
 			.collect(Collectors.toList());
 	}

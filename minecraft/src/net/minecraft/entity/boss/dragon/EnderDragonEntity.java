@@ -512,7 +512,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
+		if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns() && !this.world.isClient) {
 			this.damagePart(this.body, source, amount);
 		}
 

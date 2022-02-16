@@ -1101,8 +1101,4 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public long getTickOrder() {
 		return this.tickOrder++;
 	}
-
-	public boolean shouldRemoveEntityLater(Entity.RemovalReason reason) {
-		return false;
-	}
 }

@@ -35,6 +35,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -70,7 +71,8 @@ public class TestServer extends MinecraftServer {
 						(resourceManager, dataPackSettings) -> {
 							DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 							Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
-							Registry<DimensionType> registry2 = immutable.get(Registry.DIMENSION_TYPE_KEY);
+							Registry<ConfiguredStructureFeature<?, ?>> registry2 = immutable.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+							Registry<DimensionType> registry3 = immutable.get(Registry.DIMENSION_TYPE_KEY);
 							SaveProperties saveProperties = new LevelProperties(
 								TEST_LEVEL,
 								new GeneratorOptions(
@@ -78,7 +80,9 @@ public class TestServer extends MinecraftServer {
 									false,
 									false,
 									GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
-										registry2, DimensionType.createDefaultDimensionOptions(immutable, 0L), new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(registry))
+										registry3,
+										DimensionType.createDefaultDimensionOptions(immutable, 0L),
+										new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry))
 									)
 								),
 								Lifecycle.stable()

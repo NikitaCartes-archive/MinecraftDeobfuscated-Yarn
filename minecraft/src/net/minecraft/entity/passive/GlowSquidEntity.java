@@ -97,7 +97,11 @@ public class GlowSquidEntity extends SquidEntity {
 		return this.dataTracker.get(DARK_TICKS_REMAINING);
 	}
 
-	public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
-		return world.getBlockState(pos).isOf(Blocks.WATER) && pos.getY() <= world.getSeaLevel() - 33;
+	public static boolean canSpawn(
+		EntityType<? extends LivingEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason reason, BlockPos blockPos, Random random
+	) {
+		return blockPos.getY() <= serverWorldAccess.getSeaLevel() - 33
+			&& serverWorldAccess.getBaseLightLevel(blockPos, 0) == 0
+			&& serverWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER);
 	}
 }

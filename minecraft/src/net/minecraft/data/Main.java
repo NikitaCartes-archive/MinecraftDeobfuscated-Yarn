@@ -9,6 +9,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6957;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
@@ -80,6 +81,7 @@ public class Main {
 			dataGenerator.addProvider(new AdvancementProvider(dataGenerator));
 			dataGenerator.addProvider(new LootTableProvider(dataGenerator));
 			dataGenerator.addProvider(new GameEventTagProvider(dataGenerator));
+			dataGenerator.addProvider(new class_6957(dataGenerator));
 		}
 
 		if (includeDev) {

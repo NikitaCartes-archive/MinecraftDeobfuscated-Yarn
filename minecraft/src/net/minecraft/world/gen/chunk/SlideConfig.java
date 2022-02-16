@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 
-public class SlideConfig {
+public record SlideConfig(double target, int size, int offset) {
 	public static final Codec<SlideConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.DOUBLE.fieldOf("target").forGetter(slideConfig -> slideConfig.target),
@@ -14,22 +14,13 @@ public class SlideConfig {
 				)
 				.apply(instance, SlideConfig::new)
 	);
-	private final double target;
-	private final int size;
-	private final int offset;
 
-	public SlideConfig(double target, int size, int offset) {
-		this.target = target;
-		this.size = size;
-		this.offset = offset;
-	}
-
-	public double method_38414(double d, int i) {
+	public double method_38414(double d, double e) {
 		if (this.size <= 0) {
 			return d;
 		} else {
-			double e = (double)(i - this.offset) / (double)this.size;
-			return MathHelper.clampedLerp(this.target, d, e);
+			double f = (e - (double)this.offset) / (double)this.size;
+			return MathHelper.clampedLerp(this.target, d, f);
 		}
 	}
 }

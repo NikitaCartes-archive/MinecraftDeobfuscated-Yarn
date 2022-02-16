@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,12 +24,15 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -115,12 +119,14 @@ public class StructureFeature<C extends FeatureConfig> {
 		this(configCodec, piecesGenerator, PostPlacementProcessor.EMPTY);
 	}
 
-	public StructureFeature(Codec<C> configCodec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
-		this.codec = configCodec.fieldOf("config")
-			.<ConfiguredStructureFeature<C, StructureFeature<C>>>xmap(
-				config -> new ConfiguredStructureFeature<>(this, (C)config), configuredFeature -> configuredFeature.config
-			)
-			.codec();
+	public StructureFeature(Codec<C> codec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
+		this.codec = RecordCodecBuilder.create(
+			instance -> instance.group(
+						codec.fieldOf("config").forGetter(configuredStructureFeature -> configuredStructureFeature.config),
+						RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes").forGetter(ConfiguredStructureFeature::method_40549)
+					)
+					.apply(instance, (featureConfig, registryEntryList) -> new ConfiguredStructureFeature<>(this, (C)featureConfig, registryEntryList))
+		);
 		this.piecesGenerator = piecesGenerator;
 		this.postProcessor = postPlacementProcessor;
 	}
@@ -170,8 +176,8 @@ public class StructureFeature<C extends FeatureConfig> {
 		return this.codec;
 	}
 
-	public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config) {
-		return new ConfiguredStructureFeature<>(this, config);
+	public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> tagKey) {
+		return new ConfiguredStructureFeature<>(this, config, BuiltinRegistries.BIOME.getOrCreateEntryList(tagKey));
 	}
 
 	/**

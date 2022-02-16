@@ -151,8 +151,8 @@ public abstract class BiomeSource implements BiomeSupplier {
 
 	public abstract BiomeSource withSeed(long seed);
 
-	public Stream<RegistryEntry<Biome>> getBiomes() {
-		return this.biomes.stream();
+	public Set<RegistryEntry<Biome>> getBiomes() {
+		return this.biomes;
 	}
 
 	public Set<RegistryEntry<Biome>> getBiomesInArea(int x, int y, int z, int radius, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler) {
