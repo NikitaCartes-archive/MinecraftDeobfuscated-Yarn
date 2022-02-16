@@ -174,7 +174,9 @@ extends WaterCreatureEntity {
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (super.damage(source, amount) && this.getAttacker() != null) {
-            this.squirt();
+            if (!this.world.isClient) {
+                this.squirt();
+            }
             return true;
         }
         return false;

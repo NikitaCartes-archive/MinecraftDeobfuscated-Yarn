@@ -599,8 +599,7 @@ extends RealmsScreen {
     }
 
     void removeServer(RealmsServer serverData) {
-        REALMS_DATA_FETCHER.removeItem(serverData);
-        this.realmsServers.remove(serverData);
+        this.realmsServers = REALMS_DATA_FETCHER.removeItem(serverData);
         this.realmSelectionList.children().removeIf(child -> {
             RealmsServer realmsServer2 = child.getRealmsServer();
             return realmsServer2 != null && realmsServer2.id == realmsServer.id;

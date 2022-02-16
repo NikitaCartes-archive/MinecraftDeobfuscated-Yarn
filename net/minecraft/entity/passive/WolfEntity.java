@@ -314,7 +314,9 @@ implements Angerable {
             return false;
         }
         Entity entity = source.getAttacker();
-        this.setSitting(false);
+        if (!this.world.isClient) {
+            this.setSitting(false);
+        }
         if (entity != null && !(entity instanceof PlayerEntity) && !(entity instanceof PersistentProjectileEntity)) {
             amount = (amount + 1.0f) / 2.0f;
         }

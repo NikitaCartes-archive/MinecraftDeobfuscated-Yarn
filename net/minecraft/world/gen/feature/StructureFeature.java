@@ -7,9 +7,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -25,13 +27,17 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -95,7 +101,7 @@ public class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
     public static final int field_31518 = 8;
-    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
+    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)codec.fieldOf("config")).forGetter(configuredStructureFeature -> configuredStructureFeature.config), ((MapCodec)RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes")).forGetter(ConfiguredStructureFeature::method_40549)).apply((Applicative<ConfiguredStructureFeature, ?>)instance, (featureConfig, registryEntryList) -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig, (RegistryEntryList<Biome>)registryEntryList)));
     private final StructureGeneratorFactory<C> piecesGenerator;
     private final PostPlacementProcessor postProcessor;
 
@@ -109,8 +115,7 @@ public class StructureFeature<C extends FeatureConfig> {
         this(configCodec, piecesGenerator, PostPlacementProcessor.EMPTY);
     }
 
-    public StructureFeature(Codec<C> configCodec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
-        this.codec = ((MapCodec)configCodec.fieldOf("config")).xmap(config -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)config), configuredFeature -> configuredFeature.config).codec();
+    public StructureFeature(Codec<C> codec, StructureGeneratorFactory<C> piecesGenerator, PostPlacementProcessor postPlacementProcessor) {
         this.piecesGenerator = piecesGenerator;
         this.postProcessor = postPlacementProcessor;
     }
@@ -156,8 +161,8 @@ public class StructureFeature<C extends FeatureConfig> {
         return this.codec;
     }
 
-    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config) {
-        return new ConfiguredStructureFeature<C, StructureFeature>(this, config);
+    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> tagKey) {
+        return new ConfiguredStructureFeature<C, StructureFeature>(this, config, BuiltinRegistries.BIOME.getOrCreateEntryList(tagKey));
     }
 
     /**

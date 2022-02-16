@@ -10,7 +10,6 @@ import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.MarginedStructureFeature;
 
@@ -21,7 +20,7 @@ extends MarginedStructureFeature<DefaultFeatureConfig> {
     }
 
     private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
-        return context.validBiome().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())));
+        return true;
     }
 
     private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {

@@ -36,6 +36,7 @@ import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class DimensionType {
     public static final int SIZE_BITS_Y = BlockPos.SIZE_BITS_Y;
@@ -177,10 +178,11 @@ public class DimensionType {
         SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
         Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
         Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-        Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-        Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = registryManager.get(Registry.NOISE_WORLDGEN);
-        ((MutableRegistry)mutableRegistry).add(DimensionOptions.NETHER, new DimensionOptions(registry.getOrCreateEntry(THE_NETHER_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, registry3.getOrCreateEntry(ChunkGeneratorSettings.NETHER))), Lifecycle.stable());
-        ((MutableRegistry)mutableRegistry).add(DimensionOptions.END, new DimensionOptions(registry.getOrCreateEntry(THE_END_REGISTRY_KEY), new NoiseChunkGenerator(registry4, (BiomeSource)new TheEndBiomeSource(registry2, seed), seed, registry3.getOrCreateEntry(ChunkGeneratorSettings.END))), Lifecycle.stable());
+        Registry<ConfiguredStructureFeature<?, ?>> registry3 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        Registry<ChunkGeneratorSettings> registry4 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
+        Registry<DoublePerlinNoiseSampler.NoiseParameters> registry5 = registryManager.get(Registry.NOISE_WORLDGEN);
+        ((MutableRegistry)mutableRegistry).add(DimensionOptions.NETHER, new DimensionOptions(registry.getOrCreateEntry(THE_NETHER_REGISTRY_KEY), new NoiseChunkGenerator(registry5, registry3, (BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.NETHER))), Lifecycle.stable());
+        ((MutableRegistry)mutableRegistry).add(DimensionOptions.END, new DimensionOptions(registry.getOrCreateEntry(THE_END_REGISTRY_KEY), new NoiseChunkGenerator(registry5, registry3, (BiomeSource)new TheEndBiomeSource(registry2, seed), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.END))), Lifecycle.stable());
         return mutableRegistry;
     }
 

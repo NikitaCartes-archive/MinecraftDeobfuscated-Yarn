@@ -27,10 +27,12 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
     public static final Codec<RegistryEntryList<ConfiguredStructureFeature<?, ?>>> REGISTRY_ELEMENT_CODEC = RegistryCodecs.entryList(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC);
     public final F feature;
     public final FC config;
+    public final RegistryEntryList<Biome> field_36629;
 
-    public ConfiguredStructureFeature(F feature, FC config) {
+    public ConfiguredStructureFeature(F feature, FC config, RegistryEntryList<Biome> registryEntryList) {
         this.feature = feature;
         this.config = config;
+        this.field_36629 = registryEntryList;
     }
 
     /**
@@ -38,6 +40,10 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
      */
     public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, int structureReferences, HeightLimitView heightLimitView, Predicate<RegistryEntry<Biome>> predicate) {
         return ((StructureFeature)this.feature).tryPlaceStart(registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, structureReferences, this.config, heightLimitView, predicate);
+    }
+
+    public RegistryEntryList<Biome> method_40549() {
+        return this.field_36629;
     }
 }
 

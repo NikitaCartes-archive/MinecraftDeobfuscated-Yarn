@@ -1044,10 +1044,6 @@ AutoCloseable {
         return this.tickOrder++;
     }
 
-    public boolean shouldRemoveEntityLater(Entity.RemovalReason reason) {
-        return false;
-    }
-
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ);

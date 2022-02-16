@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
@@ -107,28 +109,9 @@ extends ScreenHandler {
                 this.context.run((world, pos) -> {
                     int j;
                     int i = 0;
-                    for (j = -1; j <= 1; ++j) {
-                        for (int k = -1; k <= 1; ++k) {
-                            if (j == 0 && k == 0 || !world.isAir(pos.add(k, 0, j)) || !world.isAir(pos.add(k, 1, j))) continue;
-                            if (world.getBlockState(pos.add(k * 2, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
-                                ++i;
-                            }
-                            if (world.getBlockState(pos.add(k * 2, 1, j * 2)).isOf(Blocks.BOOKSHELF)) {
-                                ++i;
-                            }
-                            if (k == 0 || j == 0) continue;
-                            if (world.getBlockState(pos.add(k * 2, 0, j)).isOf(Blocks.BOOKSHELF)) {
-                                ++i;
-                            }
-                            if (world.getBlockState(pos.add(k * 2, 1, j)).isOf(Blocks.BOOKSHELF)) {
-                                ++i;
-                            }
-                            if (world.getBlockState(pos.add(k, 0, j * 2)).isOf(Blocks.BOOKSHELF)) {
-                                ++i;
-                            }
-                            if (!world.getBlockState(pos.add(k, 1, j * 2)).isOf(Blocks.BOOKSHELF)) continue;
-                            ++i;
-                        }
+                    for (BlockPos blockPos : EnchantingTableBlock.field_36535) {
+                        if (!EnchantingTableBlock.method_40445(world, pos, blockPos)) continue;
+                        ++i;
                     }
                     this.random.setSeed(this.seed.get());
                     for (j = 0; j < 3; ++j) {
@@ -153,6 +136,10 @@ extends ScreenHandler {
 
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
+        if (id < 0 || id >= this.enchantmentPower.length) {
+            Util.error(player.getName() + " pressed invalid button id: " + id);
+            return false;
+        }
         ItemStack itemStack = this.inventory.getStack(0);
         ItemStack itemStack2 = this.inventory.getStack(1);
         int i = id + 1;

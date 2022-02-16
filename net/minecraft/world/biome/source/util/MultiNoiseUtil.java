@@ -18,11 +18,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import net.minecraft.class_6910;
+import net.minecraft.class_6916;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.gen.NoiseColumnSampler;
 import org.jetbrains.annotations.Nullable;
 
 public class MultiNoiseUtil {
@@ -51,8 +52,13 @@ public class MultiNoiseUtil {
         return (float)l / 10000.0f;
     }
 
-    public static BlockPos findFittestPosition(List<NoiseHypercube> noises, NoiseColumnSampler sampler) {
-        return new FittestPositionFinder(noises, (NoiseColumnSampler)sampler).bestResult.location();
+    public static MultiNoiseSampler method_40443() {
+        class_6910 lv = class_6916.method_40479();
+        return new MultiNoiseSampler(lv, lv, lv, lv, lv, lv, List.of());
+    }
+
+    public static BlockPos findFittestPosition(List<NoiseHypercube> noises, MultiNoiseSampler sampler) {
+        return new FittestPositionFinder(noises, (MultiNoiseSampler)sampler).bestResult.location();
     }
 
     public record NoiseValuePoint(long temperatureNoise, long humidityNoise, long continentalnessNoise, long erosionNoise, long depth, long weirdnessNoise) {
@@ -128,16 +134,33 @@ public class MultiNoiseUtil {
         }
     }
 
+    public record MultiNoiseSampler(class_6910 temperature, class_6910 humidity, class_6910 continentalness, class_6910 erosion, class_6910 depth, class_6910 weirdness, List<NoiseHypercube> spawnTarget) {
+        public NoiseValuePoint sample(int x, int y, int z) {
+            int i = BiomeCoords.toBlock(x);
+            int j = BiomeCoords.toBlock(y);
+            int k = BiomeCoords.toBlock(z);
+            class_6910.class_6914 lv = new class_6910.class_6914(i, j, k);
+            return MultiNoiseUtil.createNoiseValuePoint((float)this.temperature.method_40464(lv), (float)this.humidity.method_40464(lv), (float)this.continentalness.method_40464(lv), (float)this.erosion.method_40464(lv), (float)this.depth.method_40464(lv), (float)this.weirdness.method_40464(lv));
+        }
+
+        public BlockPos findBestSpawnPosition() {
+            if (this.spawnTarget.isEmpty()) {
+                return BlockPos.ORIGIN;
+            }
+            return MultiNoiseUtil.findFittestPosition(this.spawnTarget, this);
+        }
+    }
+
     static class FittestPositionFinder {
         Result bestResult;
 
-        FittestPositionFinder(List<NoiseHypercube> noises, NoiseColumnSampler sampler) {
+        FittestPositionFinder(List<NoiseHypercube> noises, MultiNoiseSampler sampler) {
             this.bestResult = FittestPositionFinder.calculateFitness(noises, sampler, 0, 0);
             this.findFittest(noises, sampler, 2048.0f, 512.0f);
             this.findFittest(noises, sampler, 512.0f, 32.0f);
         }
 
-        private void findFittest(List<NoiseHypercube> noises, NoiseColumnSampler sampler, float maxDistance, float step) {
+        private void findFittest(List<NoiseHypercube> noises, MultiNoiseSampler sampler, float maxDistance, float step) {
             float f = 0.0f;
             float g = step;
             BlockPos blockPos = this.bestResult.location();
@@ -154,7 +177,7 @@ public class MultiNoiseUtil {
             }
         }
 
-        private static Result calculateFitness(List<NoiseHypercube> noises, NoiseColumnSampler sampler, int x, int z) {
+        private static Result calculateFitness(List<NoiseHypercube> noises, MultiNoiseSampler sampler, int x, int z) {
             double d = MathHelper.square(2500.0);
             int i = 2;
             long l = (long)((double)MathHelper.square(10000.0f) * Math.pow((double)(MathHelper.square((long)x) + MathHelper.square((long)z)) / d, 2.0));
@@ -168,14 +191,6 @@ public class MultiNoiseUtil {
         }
 
         record Result(BlockPos location, long fitness) {
-        }
-    }
-
-    public static interface MultiNoiseSampler {
-        public NoiseValuePoint sample(int var1, int var2, int var3);
-
-        default public BlockPos findBestSpawnPosition() {
-            return BlockPos.ORIGIN;
         }
     }
 

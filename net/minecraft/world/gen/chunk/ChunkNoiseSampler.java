@@ -3,86 +3,176 @@
  */
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.longs.Long2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_6910;
+import net.minecraft.class_6916;
+import net.minecraft.class_6953;
+import net.minecraft.class_6954;
+import net.minecraft.class_6955;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.util.TerrainNoisePoint;
+import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.NoiseColumnSampler;
+import net.minecraft.world.gen.ChainedBlockSource;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import org.jetbrains.annotations.Nullable;
 
-public class ChunkNoiseSampler {
-    private final NoiseColumnSampler field_36272;
-    final GenerationShapeConfig generationShapeConfig;
+public class ChunkNoiseSampler
+implements class_6910.class_6911,
+class_6910.class_6912 {
+    private final GenerationShapeConfig generationShapeConfig;
     final int horizontalSize;
     final int height;
     final int minimumY;
-    final int x;
-    final int z;
-    private final int biomeX;
-    private final int biomeZ;
+    private final int x;
+    private final int z;
+    final int biomeX;
+    final int biomeZ;
     final List<NoiseInterpolator> interpolators;
-    private final NoiseColumnSampler.class_6747[][] field_35486;
+    final List<class_6949> field_36581;
+    private final Map<class_6910, class_6910> field_36582 = new HashMap<class_6910, class_6910>();
     private final Long2IntMap field_36273 = new Long2IntOpenHashMap();
     private final AquiferSampler aquiferSampler;
-    private final BlockStateSampler initialNoiseBlockStateSampler;
-    private final BlockStateSampler oreVeinSampler;
+    private final class_6910 field_36583;
+    private final BlockStateSampler field_36584;
     private final Blender blender;
+    private final class_6951 field_36585;
+    private final class_6951 field_36586;
+    private long field_36587 = ChunkPos.MARKER;
+    private Blender.class_6956 field_36588 = new Blender.class_6956(1.0, 0.0);
+    final int field_36589;
+    final int field_36590;
+    final int field_36591;
+    boolean field_36592;
+    boolean field_36593;
+    private int field_36594;
+    int field_36572;
+    private int field_36573;
+    int field_36574;
+    int field_36575;
+    int field_36576;
+    long field_36577;
+    long field_36578;
+    int field_36579;
+    private final class_6910.class_6911 field_36580 = new class_6910.class_6911(){
 
-    public static ChunkNoiseSampler create(Chunk chunk, NoiseColumnSampler noiseColumnSampler, Supplier<ColumnSampler> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+        @Override
+        public class_6910.class_6912 method_40477(int i) {
+            ChunkNoiseSampler.this.field_36572 = (i + ChunkNoiseSampler.this.minimumY) * ChunkNoiseSampler.this.field_36591;
+            ++ChunkNoiseSampler.this.field_36577;
+            ChunkNoiseSampler.this.field_36575 = 0;
+            ChunkNoiseSampler.this.field_36579 = i;
+            return ChunkNoiseSampler.this;
+        }
+
+        @Override
+        public void method_40478(double[] ds, class_6910 arg) {
+            for (int i = 0; i < ChunkNoiseSampler.this.height + 1; ++i) {
+                ChunkNoiseSampler.this.field_36572 = (i + ChunkNoiseSampler.this.minimumY) * ChunkNoiseSampler.this.field_36591;
+                ++ChunkNoiseSampler.this.field_36577;
+                ChunkNoiseSampler.this.field_36575 = 0;
+                ChunkNoiseSampler.this.field_36579 = i;
+                ds[i] = arg.method_40464(ChunkNoiseSampler.this);
+            }
+        }
+    };
+
+    public static ChunkNoiseSampler create(Chunk chunk, class_6953 arg, Supplier<class_6910> supplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
         ChunkPos chunkPos = chunk.getPos();
         GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
         int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
         int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
         int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
         int l = MathHelper.floorDiv(j - i, generationShapeConfig.verticalBlockSize());
-        return new ChunkNoiseSampler(16 / generationShapeConfig.horizontalBlockSize(), l, k, noiseColumnSampler, chunkPos.getStartX(), chunkPos.getStartZ(), supplier.get(), chunkGeneratorSettings, fluidLevelSampler, blender);
+        return new ChunkNoiseSampler(16 / generationShapeConfig.horizontalBlockSize(), l, k, arg, chunkPos.getStartX(), chunkPos.getStartZ(), supplier.get(), chunkGeneratorSettings, fluidLevelSampler, blender);
     }
 
-    public static ChunkNoiseSampler create(int minimumY, int i2, int horizontalSize, int verticalNoiseResolution, NoiseColumnSampler noiseColumnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler) {
-        return new ChunkNoiseSampler(1, verticalNoiseResolution, horizontalSize, noiseColumnSampler, minimumY, i2, (i, j, k) -> 0.0, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending());
+    public static ChunkNoiseSampler create(int minimumY, int i, int horizontalSize, int verticalNoiseResolution, class_6953 arg, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler) {
+        return new ChunkNoiseSampler(1, verticalNoiseResolution, horizontalSize, arg, minimumY, i, class_6916.method_40479(), chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending());
     }
 
-    private ChunkNoiseSampler(int horizontalNoiseResolution, int verticalNoiseResolution, int horizontalSize, NoiseColumnSampler noiseColumnSampler, int minimumY, int minimumZ, ColumnSampler columnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+    private ChunkNoiseSampler(int horizontalNoiseResolution, int verticalNoiseResolution, int horizontalSize, class_6953 arg, int minimumY, int minimumZ, class_6910 arg22, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+        int j;
+        int i;
         this.generationShapeConfig = chunkGeneratorSettings.getGenerationShapeConfig();
         this.horizontalSize = horizontalNoiseResolution;
         this.height = verticalNoiseResolution;
         this.minimumY = horizontalSize;
-        this.field_36272 = noiseColumnSampler;
-        int i = this.generationShapeConfig.horizontalBlockSize();
-        this.x = Math.floorDiv(minimumY, i);
-        this.z = Math.floorDiv(minimumZ, i);
+        this.field_36590 = this.generationShapeConfig.horizontalBlockSize();
+        this.field_36591 = this.generationShapeConfig.verticalBlockSize();
+        this.x = Math.floorDiv(minimumY, this.field_36590);
+        this.z = Math.floorDiv(minimumZ, this.field_36590);
         this.interpolators = Lists.newArrayList();
+        this.field_36581 = Lists.newArrayList();
         this.biomeX = BiomeCoords.fromBlock(minimumY);
         this.biomeZ = BiomeCoords.fromBlock(minimumZ);
-        int j = BiomeCoords.fromBlock(horizontalNoiseResolution * i);
-        this.field_35486 = new NoiseColumnSampler.class_6747[j + 1][];
+        this.field_36589 = BiomeCoords.fromBlock(horizontalNoiseResolution * this.field_36590);
         this.blender = blender;
-        for (int k = 0; k <= j; ++k) {
-            int l = this.biomeX + k;
-            this.field_35486[k] = new NoiseColumnSampler.class_6747[j + 1];
-            for (int m = 0; m <= j; ++m) {
-                int n = this.biomeZ + m;
-                this.field_35486[k][m] = noiseColumnSampler.method_39330(l, n, blender);
+        this.field_36585 = new class_6951(new class_6946(), false);
+        this.field_36586 = new class_6951(new class_6947(), false);
+        for (i = 0; i <= this.field_36589; ++i) {
+            j = this.biomeX + i;
+            int k = BiomeCoords.toBlock(j);
+            for (int l = 0; l <= this.field_36589; ++l) {
+                int m = this.biomeZ + l;
+                int n = BiomeCoords.toBlock(m);
+                Blender.class_6956 lv = blender.method_39340(k, n);
+                this.field_36585.field_36613[i][l] = lv.alpha();
+                this.field_36586.field_36613[i][l] = lv.blendingOffset();
             }
         }
-        this.aquiferSampler = noiseColumnSampler.createAquiferSampler(this, minimumY, minimumZ, horizontalSize, verticalNoiseResolution, fluidLevelSampler, chunkGeneratorSettings.hasAquifers());
-        this.initialNoiseBlockStateSampler = noiseColumnSampler.createInitialNoiseBlockStateSampler(this, columnSampler, chunkGeneratorSettings.hasNoodleCaves());
-        this.oreVeinSampler = noiseColumnSampler.createOreVeinSampler(this, chunkGeneratorSettings.hasOreVeins());
+        if (!chunkGeneratorSettings.hasAquifers()) {
+            this.aquiferSampler = AquiferSampler.seaLevel(fluidLevelSampler);
+        } else {
+            i = ChunkSectionPos.getSectionCoord(minimumY);
+            j = ChunkSectionPos.getSectionCoord(minimumZ);
+            this.aquiferSampler = AquiferSampler.aquifer(this, new ChunkPos(i, j), arg.barrierNoise(), arg.fluidLevelFloodednessNoise(), arg.fluidLevelSpreadNoise(), arg.lavaNoise(), arg.aquiferPositionalRandomFactory(), horizontalSize * this.field_36591, verticalNoiseResolution * this.field_36591, fluidLevelSampler);
+        }
+        ImmutableList.Builder builder = ImmutableList.builder();
+        class_6910 lv2 = class_6916.method_40510(class_6916.method_40486(arg.fullNoise(), arg22)).method_40469(this::method_40529);
+        builder.add(arg2 -> this.aquiferSampler.apply(arg2, lv2.method_40464(arg2)));
+        if (chunkGeneratorSettings.hasOreVeins()) {
+            builder.add(class_6955.method_40548(arg.veinToggle().method_40469(this::method_40529), arg.veinRidged().method_40469(this::method_40529), arg.veinGap().method_40469(this::method_40529), arg.oreVeinsPositionalRandomFactory()));
+        }
+        this.field_36584 = new ChainedBlockSource((List<BlockStateSampler>)((Object)builder.build()));
+        this.field_36583 = arg.initialDensityNoJaggedness().method_40469(this::method_40529);
     }
 
-    public NoiseColumnSampler.class_6747 createMultiNoisePoint(int x, int z) {
-        return this.field_35486[x - this.biomeX][z - this.biomeZ];
+    protected MultiNoiseUtil.MultiNoiseSampler method_40531(class_6953 arg) {
+        return new MultiNoiseUtil.MultiNoiseSampler(arg.temperature().method_40469(this::method_40529), arg.humidity().method_40469(this::method_40529), arg.continentalness().method_40469(this::method_40529), arg.erosion().method_40469(this::method_40529), arg.depth().method_40469(this::method_40529), arg.weirdness().method_40469(this::method_40529), arg.spawnTarget());
+    }
+
+    @Nullable
+    protected BlockState method_40536() {
+        return this.field_36584.sample(this);
+    }
+
+    @Override
+    public int blockX() {
+        return this.field_36594 + this.field_36574;
+    }
+
+    @Override
+    public int blockY() {
+        return this.field_36572 + this.field_36575;
+    }
+
+    @Override
+    public int blockZ() {
+        return this.field_36573 + this.field_36576;
     }
 
     public int method_39900(int i, int j) {
@@ -92,43 +182,107 @@ public class ChunkNoiseSampler {
     private int method_39899(long l) {
         int i = ChunkPos.getPackedX(l);
         int j = ChunkPos.getPackedZ(l);
-        int k = i - this.biomeX;
-        int m = j - this.biomeZ;
-        int n = this.field_35486.length;
-        TerrainNoisePoint terrainNoisePoint = k >= 0 && m >= 0 && k < n && m < n ? this.field_35486[k][m].terrainInfo() : this.field_36272.method_39330(i, j, this.blender).terrainInfo();
-        return this.field_36272.method_38383(BiomeCoords.toBlock(i), BiomeCoords.toBlock(j), terrainNoisePoint);
+        return (int)class_6954.method_40543(this.generationShapeConfig, this.field_36583, BiomeCoords.toBlock(i), BiomeCoords.toBlock(j));
     }
 
-    protected NoiseInterpolator createNoiseInterpolator(ColumnSampler columnSampler) {
-        return new NoiseInterpolator(columnSampler);
-    }
-
+    @Override
     public Blender getBlender() {
         return this.blender;
     }
 
+    private void method_40532(boolean bl, int i) {
+        this.field_36594 = i * this.field_36590;
+        this.field_36574 = 0;
+        for (int j = 0; j < this.horizontalSize + 1; ++j) {
+            int k = this.z + j;
+            this.field_36573 = k * this.field_36590;
+            this.field_36576 = 0;
+            ++this.field_36578;
+            for (NoiseInterpolator noiseInterpolator : this.interpolators) {
+                double[] ds = (bl ? noiseInterpolator.startNoiseBuffer : noiseInterpolator.endNoiseBuffer)[j];
+                noiseInterpolator.method_40470(ds, this.field_36580);
+            }
+        }
+        ++this.field_36578;
+    }
+
     public void sampleStartNoise() {
-        this.interpolators.forEach(interpolator -> interpolator.sampleStartNoise());
+        if (this.field_36592) {
+            throw new IllegalStateException("Staring interpolation twice");
+        }
+        this.field_36592 = true;
+        this.field_36577 = 0L;
+        this.method_40532(true, this.x);
     }
 
     public void sampleEndNoise(int x) {
-        this.interpolators.forEach(interpolator -> interpolator.sampleEndNoise(x));
+        this.method_40532(false, this.x + x + 1);
+        this.field_36594 = (this.x + x) * this.field_36590;
+    }
+
+    @Override
+    public ChunkNoiseSampler method_40477(int i) {
+        int j = Math.floorMod(i, this.field_36590);
+        int k = Math.floorDiv(i, this.field_36590);
+        int l = Math.floorMod(k, this.field_36590);
+        int m = this.field_36591 - 1 - Math.floorDiv(k, this.field_36590);
+        this.field_36574 = l;
+        this.field_36575 = m;
+        this.field_36576 = j;
+        this.field_36579 = i;
+        return this;
+    }
+
+    @Override
+    public void method_40478(double[] ds, class_6910 arg) {
+        this.field_36579 = 0;
+        for (int i = this.field_36591 - 1; i >= 0; --i) {
+            this.field_36575 = i;
+            for (int j = 0; j < this.field_36590; ++j) {
+                this.field_36574 = j;
+                int k = 0;
+                while (k < this.field_36590) {
+                    this.field_36576 = k++;
+                    ds[this.field_36579++] = arg.method_40464(this);
+                }
+            }
+        }
     }
 
     public void sampleNoiseCorners(int noiseY, int noiseZ) {
         this.interpolators.forEach(interpolator -> interpolator.sampleNoiseCorners(noiseY, noiseZ));
+        this.field_36593 = true;
+        this.field_36572 = (noiseY + this.minimumY) * this.field_36591;
+        this.field_36573 = (this.z + noiseZ) * this.field_36590;
+        ++this.field_36578;
+        for (class_6949 lv : this.field_36581) {
+            lv.field_36603.method_40470(lv.field_36604, this);
+        }
+        ++this.field_36578;
+        this.field_36593 = false;
     }
 
-    public void sampleNoiseY(double deltaY) {
-        this.interpolators.forEach(interpolator -> interpolator.sampleNoiseY(deltaY));
+    public void sampleNoiseY(int i, double d) {
+        this.field_36575 = i - this.field_36572;
+        this.interpolators.forEach(interpolator -> interpolator.sampleNoiseY(d));
     }
 
-    public void sampleNoiseX(double deltaX) {
-        this.interpolators.forEach(interpolator -> interpolator.sampleNoiseX(deltaX));
+    public void sampleNoiseX(int i, double d) {
+        this.field_36574 = i - this.field_36594;
+        this.interpolators.forEach(interpolator -> interpolator.sampleNoiseX(d));
     }
 
-    public void sampleNoise(double deltaZ) {
-        this.interpolators.forEach(interpolator -> interpolator.sampleNoise(deltaZ));
+    public void sampleNoise(int i, double d) {
+        this.field_36576 = i - this.field_36573;
+        ++this.field_36577;
+        this.interpolators.forEach(interpolator -> interpolator.sampleNoise(d));
+    }
+
+    public void method_40537() {
+        if (!this.field_36592) {
+            throw new IllegalStateException("Staring interpolation twice");
+        }
+        this.field_36592 = false;
     }
 
     public void swapBuffers() {
@@ -139,32 +293,167 @@ public class ChunkNoiseSampler {
         return this.aquiferSampler;
     }
 
-    @Nullable
-    protected BlockState sampleInitialNoiseBlockState(int x, int y, int z) {
-        return this.initialNoiseBlockStateSampler.sample(x, y, z);
+    Blender.class_6956 method_40535(int i, int j) {
+        Blender.class_6956 lv;
+        long l = ChunkPos.toLong(i, j);
+        if (this.field_36587 == l) {
+            return this.field_36588;
+        }
+        this.field_36587 = l;
+        this.field_36588 = lv = this.blender.method_39340(i, j);
+        return lv;
     }
 
-    @Nullable
-    protected BlockState sampleOreVeins(int x, int y, int z) {
-        return this.oreVeinSampler.sample(x, y, z);
+    protected class_6910 method_40529(class_6910 arg) {
+        return this.field_36582.computeIfAbsent(arg, this::method_40533);
     }
 
-    @FunctionalInterface
-    public static interface ColumnSampler {
-        public double calculateNoise(int var1, int var2, int var3);
+    private class_6910 method_40533(class_6910 arg) {
+        if (arg instanceof class_6916.class_6927) {
+            class_6916.class_6927 lv = (class_6916.class_6927)arg;
+            return switch (lv.type()) {
+                default -> throw new IncompatibleClassChangeError();
+                case class_6916.class_6927.class_6928.INTERPOLATED -> new NoiseInterpolator(lv.function());
+                case class_6916.class_6927.class_6928.FLAT_CACHE -> new class_6951(lv.function(), true);
+                case class_6916.class_6927.class_6928.CACHE2D -> new class_6948(lv.function());
+                case class_6916.class_6927.class_6928.CACHE_ONCE -> new class_6950(lv.function());
+                case class_6916.class_6927.class_6928.CACHE_ALL_IN_CELL -> new class_6949(lv.function());
+            };
+        }
+        if (this.blender != Blender.getNoBlending()) {
+            if (arg == class_6916.class_6919.INSTANCE) {
+                return this.field_36585;
+            }
+            if (arg == class_6916.class_6921.INSTANCE) {
+                return this.field_36586;
+            }
+        }
+        return arg;
+    }
+
+    @Override
+    public /* synthetic */ class_6910.class_6912 method_40477(int i) {
+        return this.method_40477(i);
+    }
+
+    class class_6951
+    implements class_6952 {
+        private final class_6910 field_36612;
+        final double[][] field_36613;
+
+        class_6951(class_6910 arg, boolean bl) {
+            this.field_36612 = arg;
+            this.field_36613 = new double[ChunkNoiseSampler.this.field_36589 + 1][ChunkNoiseSampler.this.field_36589 + 1];
+            if (bl) {
+                for (int i = 0; i <= ChunkNoiseSampler.this.field_36589; ++i) {
+                    int j = ChunkNoiseSampler.this.biomeX + i;
+                    int k = BiomeCoords.toBlock(j);
+                    for (int l = 0; l <= ChunkNoiseSampler.this.field_36589; ++l) {
+                        int m = ChunkNoiseSampler.this.biomeZ + l;
+                        int n = BiomeCoords.toBlock(m);
+                        this.field_36613[i][l] = arg.method_40464(new class_6910.class_6914(k, 0, n));
+                    }
+                }
+            }
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            int i = BiomeCoords.fromBlock(arg.blockX());
+            int j = BiomeCoords.fromBlock(arg.blockZ());
+            int k = i - ChunkNoiseSampler.this.biomeX;
+            int l = j - ChunkNoiseSampler.this.biomeZ;
+            int m = this.field_36613.length;
+            if (k >= 0 && l >= 0 && k < m && l < m) {
+                return this.field_36613[k][l];
+            }
+            return this.field_36612.method_40464(arg);
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            arg.method_40478(ds, this);
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return this.field_36612;
+        }
+    }
+
+    class class_6946
+    implements class_6952 {
+        class_6946() {
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return class_6916.class_6919.INSTANCE;
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            return ChunkNoiseSampler.this.method_40535(arg.blockX(), arg.blockZ()).alpha();
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            arg.method_40478(ds, this);
+        }
+
+        @Override
+        public double minValue() {
+            return 0.0;
+        }
+
+        @Override
+        public double maxValue() {
+            return 1.0;
+        }
+    }
+
+    class class_6947
+    implements class_6952 {
+        class_6947() {
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return class_6916.class_6921.INSTANCE;
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            return ChunkNoiseSampler.this.method_40535(arg.blockX(), arg.blockZ()).blendingOffset();
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            arg.method_40478(ds, this);
+        }
+
+        @Override
+        public double minValue() {
+            return Double.NEGATIVE_INFINITY;
+        }
+
+        @Override
+        public double maxValue() {
+            return Double.POSITIVE_INFINITY;
+        }
     }
 
     @FunctionalInterface
     public static interface BlockStateSampler {
         @Nullable
-        public BlockState sample(int var1, int var2, int var3);
+        public BlockState sample(class_6910.class_6912 var1);
     }
 
     public class NoiseInterpolator
-    implements ValueSampler {
-        private double[][] startNoiseBuffer;
-        private double[][] endNoiseBuffer;
-        private final ColumnSampler columnSampler;
+    implements class_6952 {
+        double[][] startNoiseBuffer;
+        double[][] endNoiseBuffer;
+        private final class_6910 columnSampler;
         private double x0y0z0;
         private double x0y0z1;
         private double x1y0z0;
@@ -181,7 +470,7 @@ public class ChunkNoiseSampler {
         private double z1;
         private double result;
 
-        NoiseInterpolator(ColumnSampler columnSampler) {
+        NoiseInterpolator(class_6910 columnSampler) {
             this.columnSampler = columnSampler;
             this.startNoiseBuffer = this.createBuffer(ChunkNoiseSampler.this.height, ChunkNoiseSampler.this.horizontalSize);
             this.endNoiseBuffer = this.createBuffer(ChunkNoiseSampler.this.height, ChunkNoiseSampler.this.horizontalSize);
@@ -196,28 +485,6 @@ public class ChunkNoiseSampler {
                 ds[k] = new double[j];
             }
             return ds;
-        }
-
-        void sampleStartNoise() {
-            this.sampleNoise(this.startNoiseBuffer, ChunkNoiseSampler.this.x);
-        }
-
-        void sampleEndNoise(int x) {
-            this.sampleNoise(this.endNoiseBuffer, ChunkNoiseSampler.this.x + x + 1);
-        }
-
-        private void sampleNoise(double[][] buffer, int noiseX) {
-            int i = ChunkNoiseSampler.this.generationShapeConfig.horizontalBlockSize();
-            int j = ChunkNoiseSampler.this.generationShapeConfig.verticalBlockSize();
-            for (int k = 0; k < ChunkNoiseSampler.this.horizontalSize + 1; ++k) {
-                int l = ChunkNoiseSampler.this.z + k;
-                for (int m = 0; m < ChunkNoiseSampler.this.height + 1; ++m) {
-                    double d;
-                    int n = m + ChunkNoiseSampler.this.minimumY;
-                    int o = n * j;
-                    buffer[k][m] = d = this.columnSampler.calculateNoise(noiseX * i, o, l * i);
-                }
-            }
         }
 
         void sampleNoiseCorners(int noiseY, int noiseZ) {
@@ -248,8 +515,31 @@ public class ChunkNoiseSampler {
         }
 
         @Override
-        public double sample() {
+        public double method_40464(class_6910.class_6912 arg) {
+            if (arg != ChunkNoiseSampler.this) {
+                return this.columnSampler.method_40464(arg);
+            }
+            if (!ChunkNoiseSampler.this.field_36592) {
+                throw new IllegalStateException("Trying to sample interpolator outside the interpolation loop");
+            }
+            if (ChunkNoiseSampler.this.field_36593) {
+                return MathHelper.lerp3((double)ChunkNoiseSampler.this.field_36574 / (double)ChunkNoiseSampler.this.field_36590, (double)ChunkNoiseSampler.this.field_36575 / (double)ChunkNoiseSampler.this.field_36591, (double)ChunkNoiseSampler.this.field_36576 / (double)ChunkNoiseSampler.this.field_36590, this.x0y0z0, this.x1y0z0, this.x0y1z0, this.x1y1z0, this.x0y0z1, this.x1y0z1, this.x0y1z1, this.x1y1z1);
+            }
             return this.result;
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            if (ChunkNoiseSampler.this.field_36593) {
+                arg.method_40478(ds, this);
+                return;
+            }
+            this.method_40538().method_40470(ds, arg);
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return this.columnSampler;
         }
 
         private void swapBuffers() {
@@ -259,14 +549,149 @@ public class ChunkNoiseSampler {
         }
     }
 
-    @FunctionalInterface
-    public static interface ValueSampler {
-        public double sample();
+    class class_6949
+    implements class_6952 {
+        final class_6910 field_36603;
+        final double[] field_36604;
+
+        class_6949(class_6910 arg) {
+            this.field_36603 = arg;
+            this.field_36604 = new double[ChunkNoiseSampler.this.field_36590 * ChunkNoiseSampler.this.field_36590 * ChunkNoiseSampler.this.field_36591];
+            ChunkNoiseSampler.this.field_36581.add(this);
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            if (arg != ChunkNoiseSampler.this) {
+                return this.field_36603.method_40464(arg);
+            }
+            if (!ChunkNoiseSampler.this.field_36592) {
+                throw new IllegalStateException("Trying to sample interpolator outside the interpolation loop");
+            }
+            int i = ChunkNoiseSampler.this.field_36574;
+            int j = ChunkNoiseSampler.this.field_36575;
+            int k = ChunkNoiseSampler.this.field_36576;
+            if (i >= 0 && j >= 0 && k >= 0 && i < ChunkNoiseSampler.this.field_36590 && j < ChunkNoiseSampler.this.field_36591 && k < ChunkNoiseSampler.this.field_36590) {
+                return this.field_36604[((ChunkNoiseSampler.this.field_36591 - 1 - j) * ChunkNoiseSampler.this.field_36590 + i) * ChunkNoiseSampler.this.field_36590 + k];
+            }
+            return this.field_36603.method_40464(arg);
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            arg.method_40478(ds, this);
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return this.field_36603;
+        }
     }
 
-    @FunctionalInterface
-    public static interface ValueSamplerFactory {
-        public ValueSampler create(ChunkNoiseSampler var1);
+    static class class_6948
+    implements class_6952 {
+        private final class_6910 field_36599;
+        private long field_36600 = ChunkPos.MARKER;
+        private double field_36601;
+
+        class_6948(class_6910 arg) {
+            this.field_36599 = arg;
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            double d;
+            int j;
+            int i = arg.blockX();
+            long l = ChunkPos.toLong(i, j = arg.blockZ());
+            if (this.field_36600 == l) {
+                return this.field_36601;
+            }
+            this.field_36600 = l;
+            this.field_36601 = d = this.field_36599.method_40464(arg);
+            return d;
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            this.field_36599.method_40470(ds, arg);
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return this.field_36599;
+        }
+    }
+
+    class class_6950
+    implements class_6952 {
+        private final class_6910 field_36606;
+        private long field_36607;
+        private long field_36608;
+        private double field_36609;
+        @Nullable
+        private double[] field_36610;
+
+        class_6950(class_6910 arg) {
+            this.field_36606 = arg;
+        }
+
+        @Override
+        public double method_40464(class_6910.class_6912 arg) {
+            double d;
+            if (arg != ChunkNoiseSampler.this) {
+                return this.field_36606.method_40464(arg);
+            }
+            if (this.field_36610 != null && this.field_36608 == ChunkNoiseSampler.this.field_36578) {
+                return this.field_36610[ChunkNoiseSampler.this.field_36579];
+            }
+            if (this.field_36607 == ChunkNoiseSampler.this.field_36577) {
+                return this.field_36609;
+            }
+            this.field_36607 = ChunkNoiseSampler.this.field_36577;
+            this.field_36609 = d = this.field_36606.method_40464(arg);
+            return d;
+        }
+
+        @Override
+        public void method_40470(double[] ds, class_6910.class_6911 arg) {
+            if (this.field_36610 != null && this.field_36608 == ChunkNoiseSampler.this.field_36578) {
+                System.arraycopy(this.field_36610, 0, ds, 0, ds.length);
+                return;
+            }
+            this.method_40538().method_40470(ds, arg);
+            if (this.field_36610 != null && this.field_36610.length == ds.length) {
+                System.arraycopy(ds, 0, this.field_36610, 0, ds.length);
+            } else {
+                this.field_36610 = (double[])ds.clone();
+            }
+            this.field_36608 = ChunkNoiseSampler.this.field_36578;
+        }
+
+        @Override
+        public class_6910 method_40538() {
+            return this.field_36606;
+        }
+    }
+
+    static interface class_6952
+    extends class_6910 {
+        public class_6910 method_40538();
+
+        @Override
+        default public class_6910 method_40469(class_6910.class_6915 arg) {
+            return this.method_40538().method_40469(arg);
+        }
+
+        @Override
+        default public double minValue() {
+            return this.method_40538().minValue();
+        }
+
+        @Override
+        default public double maxValue() {
+            return this.method_40538().maxValue();
+        }
     }
 }
 

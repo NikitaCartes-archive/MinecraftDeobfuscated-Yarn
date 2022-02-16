@@ -5,15 +5,15 @@ package net.minecraft.util.math.noise;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.stream.IntStream;
+import net.minecraft.class_6910;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
-import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public class InterpolatedNoiseSampler
-implements ChunkNoiseSampler.ColumnSampler {
+implements class_6910.class_6913 {
     private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
     private final OctavePerlinNoiseSampler upperInterpolatedNoise;
     private final OctavePerlinNoiseSampler interpolationNoise;
@@ -23,6 +23,7 @@ implements ChunkNoiseSampler.ColumnSampler {
     private final double yMainScale;
     private final int cellWidth;
     private final int cellHeight;
+    private final double field_36630;
 
     private InterpolatedNoiseSampler(OctavePerlinNoiseSampler lowerInterpolatedNoise, OctavePerlinNoiseSampler upperInterpolatedNoise, OctavePerlinNoiseSampler interpolationNoise, NoiseSamplingConfig config, int cellWidth, int cellHeight) {
         this.lowerInterpolatedNoise = lowerInterpolatedNoise;
@@ -34,6 +35,7 @@ implements ChunkNoiseSampler.ColumnSampler {
         this.yMainScale = this.yScale / config.getYFactor();
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
+        this.field_36630 = lowerInterpolatedNoise.method_40556(this.yScale);
     }
 
     public InterpolatedNoiseSampler(AbstractRandom random, NoiseSamplingConfig config, int cellWidth, int cellHeight) {
@@ -41,19 +43,19 @@ implements ChunkNoiseSampler.ColumnSampler {
     }
 
     @Override
-    public double calculateNoise(int i, int j, int k) {
-        int l = Math.floorDiv(i, this.cellWidth);
-        int m = Math.floorDiv(j, this.cellHeight);
-        int n = Math.floorDiv(k, this.cellWidth);
+    public double method_40464(class_6910.class_6912 arg) {
+        int i = Math.floorDiv(arg.blockX(), this.cellWidth);
+        int j = Math.floorDiv(arg.blockY(), this.cellHeight);
+        int k = Math.floorDiv(arg.blockZ(), this.cellWidth);
         double d = 0.0;
         double e = 0.0;
         double f = 0.0;
         boolean bl = true;
         double g = 1.0;
-        for (int o = 0; o < 8; ++o) {
-            PerlinNoiseSampler perlinNoiseSampler = this.interpolationNoise.getOctave(o);
+        for (int l = 0; l < 8; ++l) {
+            PerlinNoiseSampler perlinNoiseSampler = this.interpolationNoise.getOctave(l);
             if (perlinNoiseSampler != null) {
-                f += perlinNoiseSampler.sample(OctavePerlinNoiseSampler.maintainPrecision((double)l * this.xzMainScale * g), OctavePerlinNoiseSampler.maintainPrecision((double)m * this.yMainScale * g), OctavePerlinNoiseSampler.maintainPrecision((double)n * this.xzMainScale * g), this.yMainScale * g, (double)m * this.yMainScale * g) / g;
+                f += perlinNoiseSampler.sample(OctavePerlinNoiseSampler.maintainPrecision((double)i * this.xzMainScale * g), OctavePerlinNoiseSampler.maintainPrecision((double)j * this.yMainScale * g), OctavePerlinNoiseSampler.maintainPrecision((double)k * this.xzMainScale * g), this.yMainScale * g, (double)j * this.yMainScale * g) / g;
             }
             g /= 2.0;
         }
@@ -61,21 +63,31 @@ implements ChunkNoiseSampler.ColumnSampler {
         boolean bl2 = h >= 1.0;
         boolean bl3 = h <= 0.0;
         g = 1.0;
-        for (int p = 0; p < 16; ++p) {
+        for (int m = 0; m < 16; ++m) {
             PerlinNoiseSampler perlinNoiseSampler2;
-            double q = OctavePerlinNoiseSampler.maintainPrecision((double)l * this.xzScale * g);
-            double r = OctavePerlinNoiseSampler.maintainPrecision((double)m * this.yScale * g);
-            double s = OctavePerlinNoiseSampler.maintainPrecision((double)n * this.xzScale * g);
-            double t = this.yScale * g;
-            if (!bl2 && (perlinNoiseSampler2 = this.lowerInterpolatedNoise.getOctave(p)) != null) {
-                d += perlinNoiseSampler2.sample(q, r, s, t, (double)m * t) / g;
+            double n = OctavePerlinNoiseSampler.maintainPrecision((double)i * this.xzScale * g);
+            double o = OctavePerlinNoiseSampler.maintainPrecision((double)j * this.yScale * g);
+            double p = OctavePerlinNoiseSampler.maintainPrecision((double)k * this.xzScale * g);
+            double q = this.yScale * g;
+            if (!bl2 && (perlinNoiseSampler2 = this.lowerInterpolatedNoise.getOctave(m)) != null) {
+                d += perlinNoiseSampler2.sample(n, o, p, q, (double)j * q) / g;
             }
-            if (!bl3 && (perlinNoiseSampler2 = this.upperInterpolatedNoise.getOctave(p)) != null) {
-                e += perlinNoiseSampler2.sample(q, r, s, t, (double)m * t) / g;
+            if (!bl3 && (perlinNoiseSampler2 = this.upperInterpolatedNoise.getOctave(m)) != null) {
+                e += perlinNoiseSampler2.sample(n, o, p, q, (double)j * q) / g;
             }
             g /= 2.0;
         }
         return MathHelper.clampedLerp(d / 512.0, e / 512.0, h) / 128.0;
+    }
+
+    @Override
+    public double minValue() {
+        return -this.maxValue();
+    }
+
+    @Override
+    public double maxValue() {
+        return this.field_36630;
     }
 
     @VisibleForTesting

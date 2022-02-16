@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,6 +32,8 @@ extends Iterable<RegistryEntry<T>> {
     public RegistryEntry<T> get(int var1);
 
     public boolean contains(RegistryEntry<T> var1);
+
+    public boolean method_40560(Registry<T> var1);
 
     @SafeVarargs
     public static <T> Direct<T> of(RegistryEntry<T> ... entries) {
@@ -85,11 +88,13 @@ extends Iterable<RegistryEntry<T>> {
 
     public static class Named<T>
     extends ListBacked<T> {
+        private final Registry<T> field_36633;
         private final TagKey<T> tag;
         private List<RegistryEntry<T>> entries = List.of();
 
-        Named(TagKey<T> tag) {
-            this.tag = tag;
+        Named(Registry<T> registry, TagKey<T> tagKey) {
+            this.field_36633 = registry;
+            this.tag = tagKey;
         }
 
         void copyOf(List<RegistryEntry<T>> entries) {
@@ -117,6 +122,11 @@ extends Iterable<RegistryEntry<T>> {
 
         public String toString() {
             return "NamedSet(" + this.tag + ")[" + this.entries + "]";
+        }
+
+        @Override
+        public boolean method_40560(Registry<T> registry) {
+            return this.field_36633 == registry;
         }
     }
 
@@ -153,6 +163,11 @@ extends Iterable<RegistryEntry<T>> {
         @Override
         public RegistryEntry<T> get(int index) {
             return this.getEntries().get(index);
+        }
+
+        @Override
+        public boolean method_40560(Registry<T> registry) {
+            return true;
         }
     }
 }

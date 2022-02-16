@@ -22,6 +22,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_6910;
+import net.minecraft.class_6953;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
@@ -49,7 +51,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.event.listener.GameEventDispatcher;
-import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.BlendingData;
@@ -346,7 +347,7 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseColumnSampler noiseColumnSampler, Supplier<ChunkNoiseSampler.ColumnSampler> columnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(class_6953 noiseColumnSampler, Supplier<class_6910> columnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
         if (this.chunkNoiseSampler == null) {
             this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, columnSampler, chunkGeneratorSettings, fluidLevelSampler, blender);
         }

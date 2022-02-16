@@ -146,12 +146,14 @@ extends ProjectileEntity {
         this.scheduleVelocityUpdate();
         Entity entity = source.getAttacker();
         if (entity != null) {
-            Vec3d vec3d = entity.getRotationVector();
-            this.setVelocity(vec3d);
-            this.powerX = vec3d.x * 0.1;
-            this.powerY = vec3d.y * 0.1;
-            this.powerZ = vec3d.z * 0.1;
-            this.setOwner(entity);
+            if (!this.world.isClient) {
+                Vec3d vec3d = entity.getRotationVector();
+                this.setVelocity(vec3d);
+                this.powerX = vec3d.x * 0.1;
+                this.powerY = vec3d.y * 0.1;
+                this.powerZ = vec3d.z * 0.1;
+                this.setOwner(entity);
+            }
             return true;
         }
         return false;

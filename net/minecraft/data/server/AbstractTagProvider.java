@@ -25,8 +25,10 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
+import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import org.slf4j.Logger;
 
 public abstract class AbstractTagProvider<T>
@@ -71,7 +73,10 @@ implements DataProvider {
         });
     }
 
-    protected abstract Path getOutput(Identifier var1);
+    private Path getOutput(Identifier id) {
+        RegistryKey<Registry<T>> registryKey = this.registry.getKey();
+        return this.root.getOutput().resolve("data/" + id.getNamespace() + "/" + TagManagerLoader.getPath(registryKey) + "/" + id.getPath() + ".json");
+    }
 
     protected ObjectBuilder<T> getOrCreateTagBuilder(TagKey<T> tag) {
         Tag.Builder builder = this.getTagBuilder(tag);
@@ -95,6 +100,14 @@ implements DataProvider {
 
         public ObjectBuilder<T> add(T element) {
             this.builder.add(this.registry.getId(element), this.source);
+            return this;
+        }
+
+        @SafeVarargs
+        public final ObjectBuilder<T> method_40565(RegistryKey<T> ... registryKeys) {
+            for (RegistryKey<T> registryKey : registryKeys) {
+                this.builder.add(registryKey.getValue(), this.source);
+            }
             return this;
         }
 

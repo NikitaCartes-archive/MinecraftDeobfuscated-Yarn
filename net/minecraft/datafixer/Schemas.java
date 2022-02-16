@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_6909;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
@@ -618,6 +619,7 @@ public class Schemas {
         Schema schema150 = builder.addSchema(2842, Schema2842::new);
         builder.addFixer(new ChunkLevelTagRenameFix(schema150));
         Schema schema151 = builder.addSchema(2843, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new class_6909(schema151));
         builder.addFixer(new BiomeRenameFix(schema151, false, "Remove Deep Warm Ocean", Map.of("minecraft:deep_warm_ocean", "minecraft:warm_ocean")));
         Schema schema152 = builder.addSchema(2846, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new AdvancementRenameFix(schema152, false, "Rename some C&C part 2 advancements", Schemas.replacing(ImmutableMap.of("minecraft:husbandry/play_jukebox_in_meadows", "minecraft:adventure/play_jukebox_in_meadows", "minecraft:adventure/caves_and_cliff", "minecraft:adventure/fall_from_world_height", "minecraft:adventure/ride_strider_in_overworld_lava", "minecraft:nether/ride_strider_in_overworld_lava"))));

@@ -37,7 +37,7 @@ extends EntityRenderer<FallingBlockEntity> {
             return;
         }
         World world = fallingBlockEntity.getWorld();
-        if (blockState.getRenderType() == BlockRenderType.INVISIBLE) {
+        if (blockState == world.getBlockState(fallingBlockEntity.getBlockPos()) || blockState.getRenderType() == BlockRenderType.INVISIBLE) {
             return;
         }
         matrixStack.push();

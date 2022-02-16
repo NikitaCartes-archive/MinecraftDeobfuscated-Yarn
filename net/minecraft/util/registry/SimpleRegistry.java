@@ -3,8 +3,11 @@
  */
 package net.minecraft.util.registry;
 
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
@@ -17,11 +20,13 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -33,9 +38,11 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class SimpleRegistry<T>
 extends MutableRegistry<T> {
+    private static final Logger field_36635 = LogUtils.getLogger();
     private final ObjectList<RegistryEntry.Reference<T>> rawIdToEntry = new ObjectArrayList<RegistryEntry.Reference<T>>(256);
     private final Object2IntMap<T> entryToRawId = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> object2IntOpenCustomHashMap.defaultReturnValue(-1));
     private final Map<Identifier, RegistryEntry.Reference<T>> idToEntry = new HashMap<Identifier, RegistryEntry.Reference<T>>();
@@ -50,7 +57,7 @@ extends MutableRegistry<T> {
     @Nullable
     private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
     @Nullable
-    private List<RegistryEntry<T>> randomEntries;
+    private List<RegistryEntry.Reference<T>> field_36634;
     private int nextId;
 
     public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction) {
@@ -60,6 +67,13 @@ extends MutableRegistry<T> {
         if (valueToEntryFunction != null) {
             this.unfrozenValueToEntry = new IdentityHashMap<T, RegistryEntry.Reference<T>>();
         }
+    }
+
+    private List<RegistryEntry.Reference<T>> method_40561() {
+        if (this.field_36634 == null) {
+            this.field_36634 = this.rawIdToEntry.stream().filter(Objects::nonNull).toList();
+        }
+        return this.field_36634;
     }
 
     private void assertNotFrozen(RegistryKey<T> key) {
@@ -80,7 +94,7 @@ extends MutableRegistry<T> {
         Validate.notNull(value);
         this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
         this.entryToRawId.put(value, rawId);
-        this.randomEntries = null;
+        this.field_36634 = null;
         if (checkDuplicateKeys && this.keyToEntry.containsKey(key2)) {
             Util.error("Adding duplicate key '" + key2 + "' to registry");
         }
@@ -156,8 +170,7 @@ extends MutableRegistry<T> {
     @Override
     @Nullable
     public T get(@Nullable RegistryKey<T> key) {
-        RegistryEntry.Reference<T> reference = this.keyToEntry.get(key);
-        return SimpleRegistry.getValue(reference);
+        return SimpleRegistry.getValue(this.keyToEntry.get(key));
     }
 
     @Override
@@ -166,7 +179,7 @@ extends MutableRegistry<T> {
         if (index < 0 || index >= this.rawIdToEntry.size()) {
             return null;
         }
-        return ((RegistryEntry.Reference)this.rawIdToEntry.get(index)).value();
+        return SimpleRegistry.getValue((RegistryEntry.Reference)this.rawIdToEntry.get(index));
     }
 
     @Override
@@ -210,11 +223,7 @@ extends MutableRegistry<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return this.rawIdToEntry.stream().mapMulti((entry, valueConsumer) -> {
-            if (entry != null) {
-                valueConsumer.accept(entry.value());
-            }
-        }).iterator();
+        return Iterators.transform(this.method_40561().iterator(), RegistryEntry::value);
     }
 
     @Override
@@ -241,7 +250,7 @@ extends MutableRegistry<T> {
 
     @Override
     public Stream<RegistryEntry.Reference<T>> streamEntries() {
-        return this.keyToEntry.values().stream();
+        return this.method_40561().stream();
     }
 
     @Override
@@ -258,12 +267,16 @@ extends MutableRegistry<T> {
     public RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag) {
         RegistryEntryList.Named<T> named = this.tagToEntryList.get(tag);
         if (named == null) {
-            named = new RegistryEntryList.Named<T>(tag);
+            named = this.method_40562(tag);
             IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>>(this.tagToEntryList);
             map.put(tag, named);
             this.tagToEntryList = map;
         }
         return named;
+    }
+
+    private RegistryEntryList.Named<T> method_40562(TagKey<T> tagKey) {
+        return new RegistryEntryList.Named<T>(this, tagKey);
     }
 
     @Override
@@ -278,10 +291,7 @@ extends MutableRegistry<T> {
 
     @Override
     public Optional<RegistryEntry<T>> getRandom(Random random) {
-        if (this.randomEntries == null) {
-            this.randomEntries = List.copyOf(this.keyToEntry.values());
-        }
-        return Util.getRandomOrEmpty(this.randomEntries, random);
+        return Util.getRandomOrEmpty(this.method_40561(), random).map(RegistryEntry::upcast);
     }
 
     @Override
@@ -297,7 +307,7 @@ extends MutableRegistry<T> {
     @Override
     public Registry<T> freeze() {
         this.frozen = true;
-        List<RegistryKey> list = this.keyToEntry.entrySet().stream().filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue()).map(Map.Entry::getKey).sorted().toList();
+        List<Identifier> list = this.idToEntry.entrySet().stream().filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue()).map(Map.Entry::getKey).sorted().toList();
         if (!list.isEmpty()) {
             throw new IllegalStateException("Unbound values in registry: " + list);
         }
@@ -344,8 +354,12 @@ extends MutableRegistry<T> {
                 throw new IllegalStateException("Found direct holder " + registryEntry + " value in tag " + tag);
             }
         });
-        IdentityHashMap map2 = new IdentityHashMap(this.tagToEntryList);
-        tagEntries.forEach((? super K tag, ? super V entries) -> map2.computeIfAbsent((TagKey)tag, RegistryEntryList.Named::new).copyOf(entries));
+        Sets.SetView<TagKey<T>> set = Sets.difference(this.tagToEntryList.keySet(), tagEntries.keySet());
+        if (!set.isEmpty()) {
+            field_36635.warn("Not all defined tags for registry {} are present in data pack: {}", (Object)this.getKey(), (Object)set.stream().map(tagKey -> tagKey.id().toString()).sorted().collect(Collectors.joining(", ")));
+        }
+        IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>>(this.tagToEntryList);
+        tagEntries.forEach((? super K tagKey, ? super V list) -> map2.computeIfAbsent((TagKey<T>)tagKey, this::method_40562).copyOf(list));
         map.forEach(RegistryEntry.Reference::setTags);
         this.tagToEntryList = map2;
     }

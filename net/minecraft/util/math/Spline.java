@@ -28,6 +28,10 @@ extends ToFloatFunction<C> {
     @Debug
     public String getDebugString();
 
+    public float method_40435();
+
+    public float method_40436();
+
     public static <C> Codec<Spline<C>> createCodec(Codec<ToFloatFunction<C>> locationFunctionCodec) {
         record Serialized<C>(float location, Spline<C> value, float derivative) {
         }
@@ -81,6 +85,16 @@ extends ToFloatFunction<C> {
         @Override
         public String getDebugString() {
             return String.format("k=%.3f", Float.valueOf(this.value));
+        }
+
+        @Override
+        public float method_40435() {
+            return this.value;
+        }
+
+        @Override
+        public float method_40436() {
+            return this.value;
         }
     }
 
@@ -165,6 +179,16 @@ extends ToFloatFunction<C> {
 
         private String format(float[] values) {
             return "[" + IntStream.range(0, values.length).mapToDouble(index -> values[index]).mapToObj(value -> String.format(Locale.ROOT, "%.3f", value)).collect(Collectors.joining(", ")) + "]";
+        }
+
+        @Override
+        public float method_40435() {
+            return (float)this.values().stream().mapToDouble(Spline::method_40435).min().orElseThrow();
+        }
+
+        @Override
+        public float method_40436() {
+            return (float)this.values().stream().mapToDouble(Spline::method_40436).max().orElseThrow();
         }
     }
 }

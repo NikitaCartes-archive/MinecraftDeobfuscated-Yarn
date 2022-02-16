@@ -3,13 +3,11 @@
  */
 package net.minecraft.data.server;
 
-import java.nio.file.Path;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.server.AbstractTagProvider;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class BlockTagProvider
@@ -126,7 +124,7 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
         this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);
         this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.MOSS_REPLACEABLE).add(Blocks.CLAY).add(Blocks.GRAVEL).add(Blocks.SAND);
-        this.getOrCreateTagBuilder(BlockTags.AZALEA_ROOT_REPLACEABLE).addTag(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.TERRACOTTA).add(Blocks.RED_SAND).add(Blocks.SNOW_BLOCK).add(Blocks.POWDER_SNOW);
+        this.getOrCreateTagBuilder(BlockTags.AZALEA_ROOT_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.DIRT).addTag(BlockTags.TERRACOTTA).add(Blocks.RED_SAND).add(Blocks.CLAY).add(Blocks.GRAVEL).add(Blocks.SAND).add(Blocks.SNOW_BLOCK).add(Blocks.POWDER_SNOW);
         this.getOrCreateTagBuilder(BlockTags.SMALL_DRIPLEAF_PLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
         this.getOrCreateTagBuilder(BlockTags.BIG_DRIPLEAF_PLACEABLE).addTag(BlockTags.SMALL_DRIPLEAF_PLACEABLE).addTag(BlockTags.DIRT).add(Blocks.FARMLAND);
         this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
@@ -153,11 +151,6 @@ extends AbstractTagProvider<Block> {
         this.getOrCreateTagBuilder(BlockTags.TERRACOTTA).add((Block[])new Block[]{Blocks.TERRACOTTA, Blocks.WHITE_TERRACOTTA, Blocks.ORANGE_TERRACOTTA, Blocks.MAGENTA_TERRACOTTA, Blocks.LIGHT_BLUE_TERRACOTTA, Blocks.YELLOW_TERRACOTTA, Blocks.LIME_TERRACOTTA, Blocks.PINK_TERRACOTTA, Blocks.GRAY_TERRACOTTA, Blocks.LIGHT_GRAY_TERRACOTTA, Blocks.CYAN_TERRACOTTA, Blocks.PURPLE_TERRACOTTA, Blocks.BLUE_TERRACOTTA, Blocks.BROWN_TERRACOTTA, Blocks.GREEN_TERRACOTTA, Blocks.RED_TERRACOTTA, Blocks.BLACK_TERRACOTTA});
         this.getOrCreateTagBuilder(BlockTags.AZALEA_GROWS_ON).addTag(BlockTags.DIRT).addTag(BlockTags.SAND).addTag(BlockTags.TERRACOTTA).add(Blocks.SNOW_BLOCK).add(Blocks.POWDER_SNOW);
         this.getOrCreateTagBuilder(BlockTags.REPLACEABLE_PLANTS).add((Block[])new Block[]{Blocks.GRASS, Blocks.FERN, Blocks.DEAD_BUSH, Blocks.VINE, Blocks.GLOW_LICHEN, Blocks.SUNFLOWER, Blocks.LILAC, Blocks.ROSE_BUSH, Blocks.PEONY, Blocks.TALL_GRASS, Blocks.LARGE_FERN, Blocks.HANGING_ROOTS});
-    }
-
-    @Override
-    protected Path getOutput(Identifier id) {
-        return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/blocks/" + id.getPath() + ".json");
     }
 
     @Override

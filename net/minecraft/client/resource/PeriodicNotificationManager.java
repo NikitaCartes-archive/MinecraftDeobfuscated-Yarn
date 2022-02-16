@@ -147,8 +147,8 @@ implements AutoCloseable {
             for (Entry entry : this.entries) {
                 long o;
                 long n;
-                if (m < entry.delay || (n = l / entry.period) == (o = m / entry.period)) continue;
-                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, new TranslatableText(entry.title, o), new TranslatableText(entry.message, o)));
+                if (l < entry.delay || (n = l / entry.period) == (o = m / entry.period)) continue;
+                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, new TranslatableText(entry.title, n), new TranslatableText(entry.message, n)));
                 return;
             }
         }
@@ -156,6 +156,12 @@ implements AutoCloseable {
 
     @Environment(value=EnvType.CLIENT)
     public record Entry(long delay, long period, String title, String message) {
+        public Entry(long l, long m, String string, String string2) {
+            this.delay = l != 0L ? l : m;
+            this.period = m;
+            this.title = string;
+            this.message = string2;
+        }
     }
 }
 

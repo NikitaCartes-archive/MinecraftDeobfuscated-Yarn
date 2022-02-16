@@ -102,7 +102,7 @@ implements Consumer<Consumer<Advancement>> {
     }
 
     private List<RegistryKey<Biome>> getOverworldBiomes() {
-        return MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes().flatMap(biomeEntry -> biomeEntry.getKey().stream()).collect(Collectors.toList());
+        return MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes().stream().flatMap(biomeEntry -> biomeEntry.getKey().stream()).collect(Collectors.toList());
     }
 
     private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {

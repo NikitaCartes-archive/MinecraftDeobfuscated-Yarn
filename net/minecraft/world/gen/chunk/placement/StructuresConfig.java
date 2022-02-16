@@ -5,23 +5,17 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.SpreadType;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,13 +38,9 @@ public class StructuresConfig {
     public static final ConcentricRingsStructurePlacement STRONGHOLD_PLACEMENT = new ConcentricRingsStructurePlacement(32, 3, 128);
     public static final ImmutableMap<StructureFeature<?>, StructurePlacement> DEFAULT_PLACEMENTS_WITH_STRONGHOLD = ImmutableMap.builder().putAll(DEFAULT_PLACEMENTS).put(StructureFeature.STRONGHOLD, STRONGHOLD_PLACEMENT).build();
     private final Map<StructureFeature<?>, StructurePlacement> placements;
-    private final ImmutableMap<StructureFeature<?>, ImmutableMultimap<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>>> configuredStructures;
 
     public StructuresConfig(Map<StructureFeature<?>, StructurePlacement> placements) {
         this.placements = placements;
-        HashMap hashMap = new HashMap();
-        ConfiguredStructureFeatures.registerAll((structureFeature, registryKey, registryKey2) -> hashMap.computeIfAbsent(structureFeature, feature -> ImmutableMultimap.builder()).put(registryKey, registryKey2));
-        this.configuredStructures = hashMap.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ((ImmutableMultimap.Builder)entry.getValue()).build()));
     }
 
     /**
@@ -74,10 +64,6 @@ public class StructuresConfig {
     @Nullable
     public StructurePlacement getForType(StructureFeature<?> structureType) {
         return this.placements.get(structureType);
-    }
-
-    public ImmutableMultimap<RegistryKey<ConfiguredStructureFeature<?, ?>>, RegistryKey<Biome>> getConfiguredStructureFeature(StructureFeature<?> feature) {
-        return this.configuredStructures.getOrDefault(feature, ImmutableMultimap.of());
     }
 }
 

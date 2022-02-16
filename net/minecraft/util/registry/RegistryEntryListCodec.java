@@ -72,7 +72,12 @@ implements Codec<RegistryEntryList<E>> {
 
     @Override
     public <T> DataResult<T> encode(RegistryEntryList<E> registryEntryList, DynamicOps<T> dynamicOps, T object) {
-        if (dynamicOps instanceof RegistryOps) {
+        RegistryOps registryOps;
+        Optional optional;
+        if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registry)).isPresent()) {
+            if (!registryEntryList.method_40560(optional.get())) {
+                return DataResult.error("HolderSet " + registryEntryList + " is not valid in current registry set");
+            }
             return this.entryListStorageCodec.encode(registryEntryList.getStorage().mapRight(List::copyOf), dynamicOps, object);
         }
         return this.encodeDirect(registryEntryList, dynamicOps, object);

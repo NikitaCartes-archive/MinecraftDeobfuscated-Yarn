@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -379,7 +380,7 @@ implements WindowEventHandler {
     private final FontManager fontManager;
     private final SplashTextResourceSupplier splashTextLoader;
     private final VideoWarningManager videoWarningManager;
-    private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(REGIONAL_COMPLIANCIES_ID, country -> Locale.getDefault().getISO3Country().equals(country));
+    private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(REGIONAL_COMPLIANCIES_ID, MinecraftClient::method_40189);
     private final MinecraftSessionService sessionService;
     private final UserApiService userApiService;
     private final PlayerSkinProvider skinProvider;
@@ -627,6 +628,14 @@ implements WindowEventHandler {
             ConnectScreen.connect(new TitleScreen(), this, new ServerAddress(string, i), null);
         } else {
             this.setScreen(new TitleScreen(true));
+        }
+    }
+
+    private static boolean method_40189(Object country) {
+        try {
+            return Locale.getDefault().getISO3Country().equals(country);
+        } catch (MissingResourceException missingResourceException) {
+            return false;
         }
     }
 
@@ -1078,7 +1087,7 @@ implements WindowEventHandler {
         this.profiler.push("fpsUpdate");
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             currentFps = this.fpsCounter;
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", currentFps, (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps), this.options.enableVsync ? " vsync" : "", this.options.graphicsMode.toString(), this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.biomeBlendRadius);
+            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d", new Object[]{currentFps, (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps), this.options.enableVsync ? " vsync" : "", this.options.graphicsMode, this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.biomeBlendRadius});
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
         }

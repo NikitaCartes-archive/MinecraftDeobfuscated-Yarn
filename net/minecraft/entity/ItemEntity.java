@@ -250,6 +250,9 @@ extends Entity {
         if (!this.getStack().getItem().damage(source)) {
             return false;
         }
+        if (this.world.isClient) {
+            return true;
+        }
         this.scheduleVelocityUpdate();
         this.health = (int)((float)this.health - amount);
         this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());

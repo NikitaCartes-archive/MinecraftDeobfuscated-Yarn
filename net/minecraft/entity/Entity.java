@@ -3102,7 +3102,7 @@ CommandOutput {
     }
 
     @Override
-    public void setRemoved(RemovalReason reason) {
+    public final void setRemoved(RemovalReason reason) {
         if (this.removalReason == null) {
             this.removalReason = reason;
         }

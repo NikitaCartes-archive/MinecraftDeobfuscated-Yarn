@@ -741,7 +741,9 @@ extends LivingEntity {
         if (this.isDead()) {
             return false;
         }
-        this.dropShoulderEntities();
+        if (!this.world.isClient) {
+            this.dropShoulderEntities();
+        }
         if (source.isScaledWithDifficulty()) {
             if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
                 amount = 0.0f;

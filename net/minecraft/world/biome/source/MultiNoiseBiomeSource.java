@@ -12,7 +12,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -30,11 +29,8 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
-import net.minecraft.world.biome.source.util.TerrainNoisePoint;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
-import net.minecraft.world.gen.NoiseColumnSampler;
-import net.minecraft.world.gen.chunk.Blender;
 
 public class MultiNoiseBiomeSource
 extends BiomeSource {
@@ -96,16 +92,8 @@ extends BiomeSource {
         float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
         float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
         double d = VanillaTerrainParameters.getNormalizedWeirdness(m);
-        DecimalFormat decimalFormat = new DecimalFormat("0.000");
-        info.add("Multinoise C: " + decimalFormat.format(f) + " E: " + decimalFormat.format(g) + " T: " + decimalFormat.format(h) + " H: " + decimalFormat.format(l) + " W: " + decimalFormat.format(m));
         VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
         info.add("Biome builder PV: " + VanillaBiomeParameters.getWeirdnessDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
-        if (!(noiseSampler instanceof NoiseColumnSampler)) {
-            return;
-        }
-        NoiseColumnSampler noiseColumnSampler = (NoiseColumnSampler)noiseSampler;
-        TerrainNoisePoint terrainNoisePoint = noiseColumnSampler.createTerrainNoisePoint(pos.getX(), pos.getZ(), f, m, g, Blender.getNoBlending());
-        info.add("Terrain PV: " + decimalFormat.format(d) + " O: " + decimalFormat.format(terrainNoisePoint.offset()) + " F: " + decimalFormat.format(terrainNoisePoint.factor()) + " JA: " + decimalFormat.format(terrainNoisePoint.peaks()));
     }
 
     record Instance(Preset preset, Registry<Biome> biomeRegistry) {
