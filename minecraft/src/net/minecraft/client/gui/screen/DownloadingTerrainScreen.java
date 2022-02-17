@@ -10,6 +10,10 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
 	private static final Text TEXT = new TranslatableText("multiplayer.downloadingTerrain");
+	private static final long field_36961 = 2000L;
+	private boolean field_36962 = false;
+	private boolean field_36963 = false;
+	private final long field_36964 = System.currentTimeMillis();
 
 	public DownloadingTerrainScreen() {
 		super(NarratorManager.EMPTY);
@@ -25,6 +29,21 @@ public class DownloadingTerrainScreen extends Screen {
 		this.renderBackgroundTexture(0);
 		drawCenteredText(matrices, this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void tick() {
+		if ((this.field_36963 || System.currentTimeMillis() > this.field_36964 + 2000L) && this.client.worldRenderer.method_40942(this.client.player.getBlockPos())) {
+			this.onClose();
+		}
+
+		if (this.field_36962) {
+			this.field_36963 = true;
+		}
+	}
+
+	public void method_40910() {
+		this.field_36962 = true;
 	}
 
 	@Override

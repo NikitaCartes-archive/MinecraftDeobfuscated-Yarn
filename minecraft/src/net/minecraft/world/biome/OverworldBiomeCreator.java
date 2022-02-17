@@ -9,6 +9,7 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.MiscPlacedFeatures;
 import net.minecraft.world.gen.feature.OceanPlacedFeatures;
@@ -795,6 +796,27 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addDefaultVegetation(builder2);
 		DefaultBiomeFeatures.addDripstone(builder2);
 		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_DRIPSTONE_CAVES);
+		return createBiome(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.8F, 0.4F, builder, builder2, musicSound);
+	}
+
+	public static Biome method_40984() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder();
+		builder2.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE);
+		builder2.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CAVE_EXTRA_UNDERGROUND);
+		builder2.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
+		DefaultBiomeFeatures.addAmethystGeodes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2, true);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addPlainsFeatures(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.method_40982(builder2);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_DEEP_DARK);
 		return createBiome(Biome.Precipitation.RAIN, Biome.Category.UNDERGROUND, 0.8F, 0.4F, builder, builder2, musicSound);
 	}
 }

@@ -19,7 +19,7 @@ public class NavigationConditions {
 	}
 
 	public static boolean isHeightInvalid(BlockPos pos, PathAwareEntity entity) {
-		return pos.getY() < entity.world.getBottomY() || pos.getY() > entity.world.getTopY();
+		return pos.getY() < entity.getWorld().getBottomY() || pos.getY() > entity.getWorld().getTopY();
 	}
 
 	public static boolean isPositionTargetOutOfWalkRange(boolean posTargetInRange, PathAwareEntity entity, BlockPos pos) {

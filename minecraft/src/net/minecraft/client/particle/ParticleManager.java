@@ -125,7 +125,10 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
-		this.registerFactory(ParticleTypes.SOUL, SoulParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.SculkSoulFactory::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE, SculkChargeParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, SculkChargePopParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SOUL, SoulParticle.SoulFactory::new);
 		this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);
 		this.registerFactory(ParticleTypes.HAPPY_VILLAGER, SuspendParticle.HappyVillagerFactory::new);
@@ -178,6 +181,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.WAX_OFF, GlowParticle.WaxOffFactory::new);
 		this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
 		this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
+		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

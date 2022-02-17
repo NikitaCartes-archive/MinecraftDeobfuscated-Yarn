@@ -31,7 +31,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public abstract Chunk getChunk(int x, int z, ChunkStatus leastStatus, boolean create);
 
-	public abstract void tick(BooleanSupplier shouldKeepTicking);
+	public abstract void tick(BooleanSupplier shouldKeepTicking, boolean bl);
 
 	public abstract String getDebugString();
 

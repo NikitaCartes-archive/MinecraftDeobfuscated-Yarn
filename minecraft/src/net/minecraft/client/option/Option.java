@@ -135,6 +135,20 @@ public abstract class Option {
 		},
 		client -> client.textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200)
 	);
+	private static final Text DARKNESS_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.darknessEffectScale.tooltip");
+	public static final DoubleOption DARKNESS_EFFECT_SCALE = new DoubleOption(
+		"options.darknessEffectScale",
+		0.0,
+		1.0,
+		0.0F,
+		gameOptions -> Math.pow((double)gameOptions.darknessEffectScale, 2.0),
+		(gameOptions, darknessEffectScale) -> gameOptions.darknessEffectScale = (float)Math.sqrt(darknessEffectScale),
+		(gameOptions, option) -> {
+			double d = option.getRatio(option.get(gameOptions));
+			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+		},
+		client -> client.textRenderer.wrapLines(DARKNESS_EFFECT_SCALE_TOOLTIP, 200)
+	);
 	private static final Text DISTORTION_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.screenEffectScale.tooltip");
 	public static final DoubleOption DISTORTION_EFFECT_SCALE = new DoubleOption(
 		"options.screenEffectScale",
@@ -143,9 +157,9 @@ public abstract class Option {
 		0.0F,
 		gameOptions -> (double)gameOptions.distortionEffectScale,
 		(gameOptions, distortionEffectScale) -> gameOptions.distortionEffectScale = distortionEffectScale.floatValue(),
-		(gameOptions, option) -> {
-			double d = option.getRatio(option.get(gameOptions));
-			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+		(gameOptions, distortionEffectScale) -> {
+			double d = distortionEffectScale.getRatio(distortionEffectScale.get(gameOptions));
+			return d == 0.0 ? distortionEffectScale.getGenericLabel(ScreenTexts.OFF) : distortionEffectScale.getPercentLabel(d);
 		},
 		client -> client.textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200)
 	);

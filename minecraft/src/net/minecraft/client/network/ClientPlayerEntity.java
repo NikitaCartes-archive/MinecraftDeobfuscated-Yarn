@@ -17,6 +17,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DeathScreen;
+import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.screen.ingame.CommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -35,6 +36,7 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -93,6 +95,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private static final float field_32674 = 0.6F;
 	private static final double field_32675 = 0.35;
 	private static final double MAX_SOFT_COLLISION_RADIANS = 0.13962634F;
+	private static final double field_36995 = 0.3;
 	public final ClientPlayNetworkHandler networkHandler;
 	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
@@ -686,7 +689,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& !this.isSwimming()
 			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-		this.input.tick(this.shouldSlowDown());
+		double d = MathHelper.clamp(0.3 + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0, 1.0);
+		this.input.tick(this.shouldSlowDown(), d);
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.movementSideways *= 0.2F;
@@ -851,7 +855,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
 		if (this.inNetherPortal) {
-			if (this.client.currentScreen != null && !this.client.currentScreen.shouldPause() && !(this.client.currentScreen instanceof DeathScreen)) {
+			if (this.client.currentScreen != null
+				&& !this.client.currentScreen.shouldPause()
+				&& !(this.client.currentScreen instanceof DeathScreen)
+				&& !(this.client.currentScreen instanceof DownloadingTerrainScreen)) {
 				if (this.client.currentScreen instanceof HandledScreen) {
 					this.closeHandledScreen();
 				}

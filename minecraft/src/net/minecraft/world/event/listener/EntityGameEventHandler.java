@@ -33,7 +33,7 @@ public class EntityGameEventHandler {
 	}
 
 	public void onEntitySetPos(World world) {
-		Optional<BlockPos> optional = this.listener.getPositionSource().getPos(world);
+		Optional<BlockPos> optional = this.listener.getPositionSource().getPos(world).map(BlockPos::new);
 		if (optional.isPresent()) {
 			long l = ChunkSectionPos.fromBlockPos(((BlockPos)optional.get()).asLong());
 			if (this.sectionPos == null || this.sectionPos.asLong() != l) {

@@ -1,7 +1,9 @@
 package net.minecraft.network.packet.s2c.play;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -15,6 +17,8 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private final byte amplifier;
 	private final int duration;
 	private final byte flags;
+	@Nullable
+	private final StatusEffectInstance.FactorCalculationData field_37037;
 
 	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
 		this.entityId = entityId;
@@ -40,6 +44,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		}
 
 		this.flags = b;
+		this.field_37037 = (StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().orElse(null);
 	}
 
 	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
@@ -48,6 +53,17 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
+		boolean bl = buf.readBoolean();
+		if (bl) {
+			NbtCompound nbtCompound = buf.readNbt();
+			if (nbtCompound == null) {
+				throw new RuntimeException("Can't read factor data in update mob effect packet for [EffectId: " + this.effectId + ", EntityId:" + this.entityId + "]");
+			}
+
+			this.field_37037 = StatusEffectInstance.FactorCalculationData.fromNbt(nbtCompound);
+		} else {
+			this.field_37037 = null;
+		}
 	}
 
 	@Override
@@ -57,6 +73,11 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
+		buf.writeBoolean(this.field_37037 != null);
+		if (this.field_37037 != null) {
+			NbtCompound nbtCompound = new NbtCompound();
+			buf.writeNbt(this.field_37037.writeNbt(nbtCompound));
+		}
 	}
 
 	public boolean isPermanent() {
@@ -93,5 +114,10 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	public boolean shouldShowIcon() {
 		return (this.flags & 4) == 4;
+	}
+
+	@Nullable
+	public StatusEffectInstance.FactorCalculationData method_40997() {
+		return this.field_37037;
 	}
 }

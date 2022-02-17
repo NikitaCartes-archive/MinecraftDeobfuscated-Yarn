@@ -22,6 +22,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
+import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -60,7 +61,6 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -146,6 +146,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public final PlayerScreenHandler playerScreenHandler;
 	public ScreenHandler currentScreenHandler;
 	protected HungerManager hungerManager = new HungerManager();
+	protected SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager();
 	protected int abilityResyncCountdown;
 	public float prevStrideDistance;
 	public float strideDistance;
@@ -251,6 +252,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateCapeAngles();
 		if (!this.world.isClient) {
 			this.hungerManager.update(this);
+			this.sculkShriekerWarningManager.tick();
 			this.incrementStat(Stats.PLAY_TIME);
 			this.incrementStat(Stats.TOTAL_WORLD_TIME);
 			if (this.isAlive()) {
@@ -762,6 +764,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.setScore(nbt.getInt("Score"));
 		this.hungerManager.readNbt(nbt);
+		this.sculkShriekerWarningManager.readNbt(nbt);
 		this.abilities.readNbt(nbt);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
@@ -790,6 +793,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		nbt.putInt("XpSeed", this.enchantmentTableSeed);
 		nbt.putInt("Score", this.getScore());
 		this.hungerManager.writeNbt(nbt);
+		this.sculkShriekerWarningManager.writeNbt(nbt);
 		this.abilities.writeNbt(nbt);
 		nbt.put("EnderItems", this.enderChestInventory.toNbtList());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -852,7 +856,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void takeShieldHit(LivingEntity attacker) {
 		super.takeShieldHit(attacker);
-		if (attacker.getMainHandStack().getItem() instanceof AxeItem) {
+		if (attacker.disablesShield()) {
 			this.disableShield(true);
 		}
 	}
@@ -1729,6 +1733,10 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.hungerManager.addExhaustion(exhaustion);
 			}
 		}
+	}
+
+	public SculkShriekerWarningManager getSculkShriekerWarningManager() {
+		return this.sculkShriekerWarningManager;
 	}
 
 	public HungerManager getHungerManager() {

@@ -27,7 +27,8 @@ public class AccessibilityOptionsScreen extends NarratorOptionsScreen {
 		Option.DISTORTION_EFFECT_SCALE,
 		Option.FOV_EFFECT_SCALE,
 		Option.MONOCHROME_LOGO,
-		Option.HIDE_LIGHTNING_FLASHES
+		Option.HIDE_LIGHTNING_FLASHES,
+		Option.DARKNESS_EFFECT_SCALE
 	};
 	private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
 

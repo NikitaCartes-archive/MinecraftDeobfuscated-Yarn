@@ -34,7 +34,7 @@ public final class NetworkIoStatistics {
 	}
 
 	public double getBytesPerSecond() {
-		return (double)this.combinedStatistics.totalCount / (double)this.duration.getSeconds();
+		return (double)this.combinedStatistics.totalSize / (double)this.duration.getSeconds();
 	}
 
 	public long getTotalCount() {

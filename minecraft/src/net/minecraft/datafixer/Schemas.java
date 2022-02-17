@@ -204,6 +204,7 @@ import net.minecraft.datafixer.schema.Schema2707;
 import net.minecraft.datafixer.schema.Schema2831;
 import net.minecraft.datafixer.schema.Schema2832;
 import net.minecraft.datafixer.schema.Schema2842;
+import net.minecraft.datafixer.schema.Schema3066;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -820,6 +821,10 @@ public class Schemas {
 		);
 		Schema schema152 = builder.addSchema(2852, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema152));
+		Schema schema153 = builder.addSchema(3066, Schema3066::new);
+		builder.addFixer(new ChoiceTypesFix(schema153, "Added Sculk Catalyst", TypeReferences.BLOCK_ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema153, "Added Warden", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema153, "Added Sculk Shrieker", TypeReferences.BLOCK_ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

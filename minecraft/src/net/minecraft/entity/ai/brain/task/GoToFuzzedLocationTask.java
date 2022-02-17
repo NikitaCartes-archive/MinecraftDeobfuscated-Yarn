@@ -8,14 +8,15 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
-public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
+public class GoToFuzzedLocationTask<E extends MobEntity> extends Task<E> {
+	private final MemoryModuleType<BlockPos> memoryModuleType;
 	private final int completionRange;
 	private final float speed;
 
-	public GoToCelebrateTask(int completionRange, float speed) {
+	public GoToFuzzedLocationTask(MemoryModuleType<BlockPos> memoryModuleType, int completionRange, float speed) {
 		super(
 			ImmutableMap.of(
-				MemoryModuleType.CELEBRATE_LOCATION,
+				memoryModuleType,
 				MemoryModuleState.VALUE_PRESENT,
 				MemoryModuleType.ATTACK_TARGET,
 				MemoryModuleState.VALUE_ABSENT,
@@ -25,12 +26,13 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 				MemoryModuleState.REGISTERED
 			)
 		);
+		this.memoryModuleType = memoryModuleType;
 		this.completionRange = completionRange;
 		this.speed = speed;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		BlockPos blockPos = getCelebrateLocation(mobEntity);
+		BlockPos blockPos = this.getCelebrateLocation(mobEntity);
 		boolean bl = blockPos.isWithinDistance(mobEntity.getBlockPos(), (double)this.completionRange);
 		if (!bl) {
 			LookTargetUtil.walkTowards(mobEntity, fuzz(mobEntity, blockPos), this.speed, this.completionRange);
@@ -46,7 +48,7 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 		return random.nextInt(3) - 1;
 	}
 
-	private static BlockPos getCelebrateLocation(MobEntity entity) {
-		return (BlockPos)entity.getBrain().getOptionalMemory(MemoryModuleType.CELEBRATE_LOCATION).get();
+	private BlockPos getCelebrateLocation(MobEntity entity) {
+		return (BlockPos)entity.getBrain().getOptionalMemory(this.memoryModuleType).get();
 	}
 }

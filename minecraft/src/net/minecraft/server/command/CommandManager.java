@@ -116,6 +116,7 @@ public class CommandManager {
 		TimeCommand.register(this.dispatcher);
 		TitleCommand.register(this.dispatcher);
 		TriggerCommand.register(this.dispatcher);
+		WardenSpawnTrackerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
 		if (FlightProfiler.INSTANCE.isAvailable()) {

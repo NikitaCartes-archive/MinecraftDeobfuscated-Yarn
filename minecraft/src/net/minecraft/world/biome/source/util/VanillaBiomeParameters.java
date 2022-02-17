@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -49,6 +50,7 @@ public final class VanillaBiomeParameters {
 	private final MultiNoiseUtil.ParameterRange NON_FROZEN_TEMPERATURE_PARAMETERS = MultiNoiseUtil.ParameterRange.combine(
 		this.TEMPERATURE_PARAMETERS[1], this.TEMPERATURE_PARAMETERS[4]
 	);
+	private final MultiNoiseUtil.ParameterRange DEEP_DARK_CONTINENTALNESS = MultiNoiseUtil.ParameterRange.of(0.825F, 1.5F);
 	private final MultiNoiseUtil.ParameterRange MUSHROOM_FIELDS_CONTINENTALNESS = MultiNoiseUtil.ParameterRange.of(-1.2F, -1.05F);
 	private final MultiNoiseUtil.ParameterRange DEEP_OCEAN_CONTINENTALNESS = MultiNoiseUtil.ParameterRange.of(-1.05F, -0.455F);
 	private final MultiNoiseUtil.ParameterRange OCEAN_CONTINENTALNESS = MultiNoiseUtil.ParameterRange.of(-0.455F, -0.19F);
@@ -837,7 +839,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.DEFAULT_PARAMETER,
 			this.DEFAULT_PARAMETER,
-			MultiNoiseUtil.ParameterRange.of(0.8F, 1.0F),
+			MultiNoiseUtil.ParameterRange.of(0.8F, 0.825F),
 			this.DEFAULT_PARAMETER,
 			this.DEFAULT_PARAMETER,
 			0.0F,
@@ -852,6 +854,20 @@ public final class VanillaBiomeParameters {
 			this.DEFAULT_PARAMETER,
 			0.0F,
 			BiomeKeys.LUSH_CAVES
+		);
+		parameters.accept(
+			Pair.of(
+				MultiNoiseUtil.createNoiseHypercube(
+					this.DEFAULT_PARAMETER,
+					this.DEFAULT_PARAMETER,
+					this.DEEP_DARK_CONTINENTALNESS,
+					this.DEFAULT_PARAMETER,
+					MultiNoiseUtil.ParameterRange.of(0.7F, 1.0F),
+					this.DEFAULT_PARAMETER,
+					0.0F
+				),
+				BiomeKeys.DEEP_DARK
+			)
 		);
 	}
 
@@ -891,7 +907,7 @@ public final class VanillaBiomeParameters {
 
 	private RegistryKey<Biome> getBadlandsBiome(int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (humidity < 2) {
-			return weirdness.max() < 0L ? BiomeKeys.ERODED_BADLANDS : BiomeKeys.BADLANDS;
+			return weirdness.max() < 0L ? BiomeKeys.BADLANDS : BiomeKeys.ERODED_BADLANDS;
 		} else {
 			return humidity < 3 ? BiomeKeys.BADLANDS : BiomeKeys.WOODED_BADLANDS;
 		}
@@ -942,11 +958,13 @@ public final class VanillaBiomeParameters {
 				MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(0.0F), weirdness, offset), biome
 			)
 		);
-		parameters.accept(
-			Pair.of(
-				MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(1.0F), weirdness, offset), biome
-			)
-		);
+		if (continentalness.max() <= this.DEEP_DARK_CONTINENTALNESS.min()) {
+			parameters.accept(
+				Pair.of(
+					MultiNoiseUtil.createNoiseHypercube(temperature, humidity, continentalness, erosion, MultiNoiseUtil.ParameterRange.of(1.0F), weirdness, offset), biome
+				)
+			);
+		}
 	}
 
 	private void writeCaveBiomeParameters(
@@ -1018,5 +1036,49 @@ public final class VanillaBiomeParameters {
 		}
 
 		return "?";
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] getTemperatureParameters() {
+		return this.TEMPERATURE_PARAMETERS;
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] getHumidityParameters() {
+		return this.HUMIDITY_PARAMETERS;
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] getErosionParameters() {
+		return this.EROSION_PARAMETERS;
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] getContinentalnessParameters() {
+		return new MultiNoiseUtil.ParameterRange[]{
+			this.MUSHROOM_FIELDS_CONTINENTALNESS,
+			this.DEEP_OCEAN_CONTINENTALNESS,
+			this.OCEAN_CONTINENTALNESS,
+			this.SHORE_CONTINENTALNESS,
+			this.NEAR_INLAND_CONTINENTALNESS,
+			this.MID_INLAND_CONTINENTALNESS,
+			this.FAR_INLAND_CONTINENTALNESS
+		};
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
+		return new MultiNoiseUtil.ParameterRange[]{
+			MultiNoiseUtil.ParameterRange.of(-2.0F, VanillaTerrainParameters.getNormalizedWeirdness(0.05F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.05F), VanillaTerrainParameters.getNormalizedWeirdness(0.26666668F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.26666668F), VanillaTerrainParameters.getNormalizedWeirdness(0.4F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.4F), VanillaTerrainParameters.getNormalizedWeirdness(0.56666666F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.56666666F), 2.0F)
+		};
+	}
+
+	@Debug
+	public MultiNoiseUtil.ParameterRange[] method_40748() {
+		return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0F, 0.0F), MultiNoiseUtil.ParameterRange.of(0.0F, 2.0F)};
 	}
 }

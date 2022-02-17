@@ -52,11 +52,15 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<VegetationPatchFeatureConfig> VEGETATION_PATCH = register(
 		"vegetation_patch", new VegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
 	);
+	public static final Feature<SculkPatchFeatureConfig> SCULK_PATCH = register("sculk_patch", new SculkPatchFeature(SculkPatchFeatureConfig.CODEC));
+	public static final Feature<CentralBlockScatteredFeatureConfig> CENTRAL_BLOCK_SCATTERED_FEATURES = register(
+		"central_block_scattered_features", new CentralBlockScatteredFeature(CentralBlockScatteredFeatureConfig.CODEC)
+	);
 	public static final Feature<VegetationPatchFeatureConfig> WATERLOGGED_VEGETATION_PATCH = register(
 		"waterlogged_vegetation_patch", new WaterloggedVegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RootSystemFeatureConfig> ROOT_SYSTEM = register("root_system", new RootSystemFeature(RootSystemFeatureConfig.CODEC));
-	public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
+	public static final Feature<LichenFeatureConfig> GLOW_LICHEN = register("glow_lichen", new GlowLichenFeature(LichenFeatureConfig.CODEC));
 	public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = register(
 		"underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC)
 	);

@@ -34,6 +34,11 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, UndergroundPlacedFeatures.GLOW_LICHEN);
 	}
 
+	public static void method_40982(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, UndergroundPlacedFeatures.field_37034);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, UndergroundPlacedFeatures.field_37035);
+	}
+
 	public static void addDripstone(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.LOCAL_MODIFICATIONS, UndergroundPlacedFeatures.LARGE_DRIPSTONE);
 		builder.feature(GenerationStep.Feature.UNDERGROUND_DECORATION, UndergroundPlacedFeatures.DRIPSTONE_CLUSTER);

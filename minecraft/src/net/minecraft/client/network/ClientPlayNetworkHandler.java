@@ -219,7 +219,6 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
-import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
@@ -229,7 +228,6 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPac
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourcePackSource;
@@ -269,7 +267,6 @@ import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
-import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -294,7 +291,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final MinecraftClient client;
 	private ClientWorld world;
 	private ClientWorld.Properties worldProperties;
-	private boolean positionLookSetup;
 	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
@@ -420,17 +416,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		entity.setPitch(0.0F);
 		entity.setId(packet.getId());
 		this.world.addEntity(packet.getId(), entity);
-	}
-
-	@Override
-	public void onVibration(VibrationS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		Vibration vibration = packet.getVibration();
-		BlockPos blockPos = vibration.getOrigin();
-		this.world
-			.addImportantParticle(
-				new VibrationParticleEffect(vibration), true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0
-			);
 	}
 
 	@Override
@@ -611,10 +596,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
 			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.getYaw(), playerEntity.getPitch(), false));
-		if (!this.positionLookSetup) {
-			this.positionLookSetup = true;
-			this.client.setScreen(null);
-		}
 	}
 
 	@Override
@@ -676,7 +657,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			LightingProvider lightingProvider = this.world.getLightingProvider();
 
 			for(int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
-				this.world.scheduleBlockRenders(packet.getX(), i, packet.getZ());
 				lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
 			}
 
@@ -835,6 +815,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerSpawnPosition(PlayerSpawnPositionS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.world.setSpawnPos(packet.getPos(), packet.getAngle());
+		Screen var3 = this.client.currentScreen;
+		if (var3 instanceof DownloadingTerrainScreen downloadingTerrainScreen) {
+			downloadingTerrainScreen.method_40910();
+		}
 	}
 
 	@Override
@@ -920,7 +904,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		DimensionType dimensionType = packet.getDimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
-		this.positionLookSetup = false;
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			Map<String, MapState> map = this.world.getMapStates();
@@ -1352,7 +1335,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			StatusEffect statusEffect = StatusEffect.byRawId(packet.getEffectId());
 			if (statusEffect != null) {
 				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(
-					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
+					statusEffect,
+					packet.getDuration(),
+					packet.getAmplifier(),
+					packet.isAmbient(),
+					packet.shouldShowParticles(),
+					packet.shouldShowIcon(),
+					null,
+					Optional.ofNullable(packet.method_40997())
 				);
 				statusEffectInstance.setPermanent(packet.isPermanent());
 				((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
@@ -1975,8 +1965,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ab);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
 				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
-				BlockPos blockPos8 = packetByteBuf.readBlockPos();
-				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, blockPos8);
+				Vec3d vec3d = new Vec3d(packetByteBuf.readDouble(), packetByteBuf.readDouble(), packetByteBuf.readDouble());
+				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, vec3d);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
 				Identifier identifier2 = packetByteBuf.readIdentifier();
 				PositionSource positionSource = ((PositionSourceType)Registry.POSITION_SOURCE_TYPE

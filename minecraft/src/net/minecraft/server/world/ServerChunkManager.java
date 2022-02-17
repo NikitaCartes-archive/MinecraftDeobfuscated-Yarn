@@ -45,11 +45,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.NbtScannable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class ServerChunkManager extends ChunkManager {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
 	private final ChunkTicketManager ticketManager;
 	final ServerWorld world;
@@ -329,12 +326,15 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void tick(BooleanSupplier shouldKeepTicking) {
+	public void tick(BooleanSupplier shouldKeepTicking, boolean bl) {
 		this.world.getProfiler().push("purge");
 		this.ticketManager.purge();
 		this.tick();
 		this.world.getProfiler().swap("chunks");
-		this.tickChunks();
+		if (bl) {
+			this.tickChunks();
+		}
+
 		this.world.getProfiler().swap("unload");
 		this.threadedAnvilChunkStorage.tick(shouldKeepTicking);
 		this.world.getProfiler().pop();
@@ -476,9 +476,7 @@ public class ServerChunkManager extends ChunkManager {
 	 * the player's position in its entity tracker.
 	 */
 	public void updatePosition(ServerPlayerEntity player) {
-		if (player.isRemoved()) {
-			LOGGER.info("Skipping update from removed player '{}'", player);
-		} else {
+		if (!player.isRemoved()) {
 			this.threadedAnvilChunkStorage.updatePosition(player);
 		}
 	}
@@ -533,6 +531,10 @@ public class ServerChunkManager extends ChunkManager {
 	@Debug
 	public SpawnHelper.Info getSpawnInfo() {
 		return this.spawnInfo;
+	}
+
+	public void method_40578() {
+		this.ticketManager.method_40576();
 	}
 
 	static record ChunkWithHolder(WorldChunk chunk, ChunkHolder holder) {

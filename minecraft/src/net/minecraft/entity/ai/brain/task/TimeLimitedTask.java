@@ -63,7 +63,7 @@ public class TimeLimitedTask<E extends LivingEntity> extends Task<E> {
 	}
 
 	private void resetTimeLeft(ServerWorld world) {
-		this.timeLeft = this.timeRange.get(world.random);
+		this.timeLeft = this.timeRange.get(world.getRandom());
 	}
 
 	@Override

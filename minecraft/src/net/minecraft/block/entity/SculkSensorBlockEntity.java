@@ -11,15 +11,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.event.listener.VibrationListener;
 
-public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorListener.Callback {
-	private final SculkSensorListener listener;
+public class SculkSensorBlockEntity extends BlockEntity implements VibrationListener.Callback {
+	private final VibrationListener listener;
 	private int lastVibrationFrequency;
 
 	public SculkSensorBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SENSOR, pos, state);
-		this.listener = new SculkSensorListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this);
+		this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorLi
 		nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
 	}
 
-	public SculkSensorListener getEventListener() {
+	public VibrationListener getEventListener() {
 		return this.listener;
 	}
 
@@ -43,18 +43,18 @@ public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorLi
 	}
 
 	@Override
-	public boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
-		boolean bl = event == GameEvent.BLOCK_DESTROY && pos.equals(this.getPos());
-		boolean bl2 = event == GameEvent.BLOCK_PLACE && pos.equals(this.getPos());
-		return !bl && !bl2 && SculkSensorBlock.isInactive(this.getCachedState());
+	public boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity) {
+		return !pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
+			? SculkSensorBlock.isInactive(this.getCachedState())
+			: false;
 	}
 
 	@Override
-	public void accept(World world, GameEventListener listener, GameEvent event, int distance) {
+	public void accept(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, int delay) {
 		BlockState blockState = this.getCachedState();
 		if (!world.isClient() && SculkSensorBlock.isInactive(blockState)) {
 			this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
-			SculkSensorBlock.setActive(world, this.pos, blockState, getPower(distance, listener.getRange()));
+			SculkSensorBlock.setActive(sourceEntity, world, this.pos, blockState, getPower(delay, listener.getRange()));
 		}
 	}
 

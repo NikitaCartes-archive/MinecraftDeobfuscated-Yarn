@@ -10,20 +10,20 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2865;
+	public static final int WORLD_VERSION = 3066;
 	@Deprecated
-	public static final String CURRENT_SERIES = "main";
+	public static final String CURRENT_SERIES = "deep_dark_preview";
 	@Deprecated
-	public static final String VERSION_NAME = "1.18.1";
+	public static final String VERSION_NAME = "1.19-deep-dark-experimental-1";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.18.1";
+	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
-	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 757;
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 857;
 	@Deprecated
-	public static final int field_29736 = 64;
-	public static final int SNBT_TOO_OLD_THRESHOLD = 2830;
+	public static final int field_29736 = 69;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 3065;
 	private static final int field_29708 = 30;
 	@Deprecated
 	public static final int RESOURCE_PACK_VERSION = 8;
@@ -74,6 +74,7 @@ public class SharedConstants {
 	public static final boolean field_29699 = false;
 	public static final boolean field_29700 = false;
 	public static final boolean field_33554 = false;
+	public static final boolean field_36636 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
@@ -173,7 +174,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 757;
+		return 1073741893;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

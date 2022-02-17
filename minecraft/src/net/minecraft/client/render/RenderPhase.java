@@ -104,6 +104,7 @@ public abstract class RenderPhase {
 	);
 	protected static final RenderPhase.Shader ENTITY_TRANSLUCENT_CULL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityTranslucentCullShader);
 	protected static final RenderPhase.Shader ENTITY_TRANSLUCENT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityTranslucentShader);
+	protected static final RenderPhase.Shader field_37001 = new RenderPhase.Shader(GameRenderer::method_40941);
 	protected static final RenderPhase.Shader ENTITY_SMOOTH_CUTOUT_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntitySmoothCutoutShader);
 	protected static final RenderPhase.Shader BEACON_BEAM_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeBeaconBeamShader);
 	protected static final RenderPhase.Shader ENTITY_DECAL_SHADER = new RenderPhase.Shader(GameRenderer::getRenderTypeEntityDecalShader);

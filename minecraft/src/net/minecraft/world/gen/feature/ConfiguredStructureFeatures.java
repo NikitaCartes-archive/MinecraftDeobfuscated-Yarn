@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.google.common.collect.ImmutableSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import net.minecraft.structure.AncientCityData;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.DesertVillageData;
 import net.minecraft.structure.PillagerOutpostGenerator;
@@ -76,6 +77,9 @@ public class ConfiguredStructureFeatures {
 	);
 	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> BASTION_REMNANT = register(
 		"bastion_remnant", StructureFeature.BASTION_REMNANT.configure(new StructurePoolFeatureConfig(() -> BastionRemnantGenerator.STRUCTURE_POOLS, 6))
+	);
+	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> ANCIENT_CITY = register(
+		"ancient_city", StructureFeature.ANCIENT_CITY.configure(new StructurePoolFeatureConfig(() -> AncientCityData.CITY_CENTER, 7))
 	);
 	private static final ConfiguredStructureFeature<StructurePoolFeatureConfig, ? extends StructureFeature<StructurePoolFeatureConfig>> VILLAGE_PLAINS = register(
 		"village_plains", StructureFeature.VILLAGE.configure(new StructurePoolFeatureConfig(() -> PlainsVillageData.STRUCTURE_POOLS, 6))
@@ -274,6 +278,7 @@ public class ConfiguredStructureFeatures {
 		register(registrar, VILLAGE_SNOWY, BiomeKeys.SNOWY_PLAINS);
 		register(registrar, VILLAGE_TAIGA, BiomeKeys.TAIGA);
 		register(registrar, MANSION, BiomeKeys.DARK_FOREST);
+		register(registrar, ANCIENT_CITY, BiomeKeys.DEEP_DARK);
 		register(registrar, FORTRESS, set11);
 		register(registrar, NETHER_FOSSIL, BiomeKeys.SOUL_SAND_VALLEY);
 		register(registrar, BASTION_REMNANT, BiomeKeys.CRIMSON_FOREST);

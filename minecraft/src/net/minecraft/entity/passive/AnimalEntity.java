@@ -140,14 +140,14 @@ public abstract class AnimalEntity extends PassiveEntity {
 			if (!this.world.isClient && i == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 				return ActionResult.SUCCESS;
 			}
 
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp((int)((float)(-i / 20) * 0.1F), true);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 				return ActionResult.success(this.world.isClient);
 			}
 

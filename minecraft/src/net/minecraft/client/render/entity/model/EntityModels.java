@@ -181,6 +181,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.VEX, VexEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.VILLAGER, texturedModelData17);
 		builder.put(EntityModelLayers.VINDICATOR, texturedModelData8);
+		builder.put(EntityModelLayers.WARDEN, WardenEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WANDERING_TRADER, texturedModelData17);
 		builder.put(EntityModelLayers.WITCH, WitchEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WITHER, WitherEntityModel.getTexturedModelData(Dilation.NONE));

@@ -29,7 +29,7 @@ import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.ForgetAngryAtTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
-import net.minecraft.entity.ai.brain.task.GoToCelebrateTask;
+import net.minecraft.entity.ai.brain.task.GoToFuzzedLocationTask;
 import net.minecraft.entity.ai.brain.task.GoToRememberedPositionTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.HuntFinishTask;
@@ -191,8 +191,8 @@ public class PiglinBrain {
 				makeGoToSoulFireTask(),
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
-				new ConditionalTask((Predicate)(piglinEntity -> !piglinEntity.isDancing()), new GoToCelebrateTask(2, 1.0F)),
-				new ConditionalTask(PiglinEntity::isDancing, new GoToCelebrateTask(4, 0.6F)),
+				new ConditionalTask((Predicate)(piglinEntity -> !piglinEntity.isDancing()), new GoToFuzzedLocationTask(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0F)),
+				new ConditionalTask(PiglinEntity::isDancing, new GoToFuzzedLocationTask(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6F)),
 				new RandomTask(
 					ImmutableList.of(Pair.of(new FollowMobTask(EntityType.PIGLIN, 8.0F), 1), Pair.of(new StrollTask(0.6F, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1))
 				)

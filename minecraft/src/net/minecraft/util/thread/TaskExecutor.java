@@ -141,6 +141,10 @@ public class TaskExecutor<T> implements SampleableExecutor, MessageListener<T>, 
 		return this.queue.getSize();
 	}
 
+	public boolean method_40589() {
+		return this.isUnpaused() && !this.queue.isEmpty();
+	}
+
 	public String toString() {
 		return this.name + " " + this.stateFlags.get() + " " + this.queue.isEmpty();
 	}

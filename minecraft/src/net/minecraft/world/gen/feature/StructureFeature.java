@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_7001;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -105,7 +106,10 @@ public class StructureFeature<C extends FeatureConfig> {
 	public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = register(
 		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
+	public static final StructureFeature<StructurePoolFeatureConfig> ANCIENT_CITY = register(
+		"Ancient_City", new class_7001(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION
+	);
+	public static final List<StructureFeature<?>> LAND_MODIFYING_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD, ANCIENT_CITY);
 	public static final int field_31518 = 8;
 	private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec;
 	private final StructureGeneratorFactory<C> piecesGenerator;

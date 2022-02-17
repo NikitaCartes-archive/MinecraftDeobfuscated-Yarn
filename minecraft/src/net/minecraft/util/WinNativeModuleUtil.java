@@ -53,7 +53,12 @@ public class WinNativeModuleUtil {
 			IntByReference intByReference = new IntByReference();
 			int i = Version.INSTANCE.GetFileVersionInfoSize(path, intByReference);
 			if (i == 0) {
-				throw new Win32Exception(Native.getLastError());
+				int j = Native.getLastError();
+				if (j != 1813 && j != 1812) {
+					throw new Win32Exception(j);
+				} else {
+					return Optional.empty();
+				}
 			} else {
 				Pointer pointer = new Memory((long)i);
 				if (!Version.INSTANCE.GetFileVersionInfo(path, 0, i, pointer)) {
@@ -66,12 +71,12 @@ public class WinNativeModuleUtil {
 					if (!optionalInt.isPresent()) {
 						return Optional.empty();
 					} else {
-						int j = optionalInt.getAsInt();
-						int k = j & 65535;
-						int l = (j & -65536) >> 16;
-						String string = queryString(pointer, getStringFileInfoPath("FileDescription", k, l), intByReference2);
-						String string2 = queryString(pointer, getStringFileInfoPath("CompanyName", k, l), intByReference2);
-						String string3 = queryString(pointer, getStringFileInfoPath("FileVersion", k, l), intByReference2);
+						int k = optionalInt.getAsInt();
+						int l = k & 65535;
+						int m = (k & -65536) >> 16;
+						String string = queryString(pointer, getStringFileInfoPath("FileDescription", l, m), intByReference2);
+						String string2 = queryString(pointer, getStringFileInfoPath("CompanyName", l, m), intByReference2);
+						String string3 = queryString(pointer, getStringFileInfoPath("FileVersion", l, m), intByReference2);
 						return Optional.of(new WinNativeModuleUtil.NativeModuleInfo(string, string3, string2));
 					}
 				}

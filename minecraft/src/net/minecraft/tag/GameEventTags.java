@@ -6,6 +6,7 @@ import net.minecraft.world.event.GameEvent;
 public class GameEventTags {
 	protected static final RequiredTagList<GameEvent> REQUIRED_TAGS = RequiredTagListRegistry.register(Registry.GAME_EVENT_KEY, "tags/game_events");
 	public static final Tag.Identified<GameEvent> VIBRATIONS = register("vibrations");
+	public static final Tag.Identified<GameEvent> WARDEN_EVENTS_CAN_LISTEN = register("warden_events_can_listen");
 	public static final Tag.Identified<GameEvent> IGNORE_VIBRATIONS_SNEAKING = register("ignore_vibrations_sneaking");
 
 	private static Tag.Identified<GameEvent> register(String id) {
