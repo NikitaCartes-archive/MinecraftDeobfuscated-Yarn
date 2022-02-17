@@ -112,6 +112,10 @@ public class LookTargetUtil {
 		return d <= source.squaredAttackRange(target);
 	}
 
+	public static boolean method_40617(LivingEntity livingEntity, LivingEntity livingEntity2, int i) {
+		return livingEntity.isInRange(livingEntity2, (double)i);
+	}
+
 	/**
 	 * Checks if an entity can be a new attack target for the source entity.
 	 * 

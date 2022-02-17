@@ -245,6 +245,8 @@ public class RenderLayers {
 		map.put(Blocks.SMALL_DRIPLEAF, renderLayer3);
 		map.put(Blocks.HANGING_ROOTS, renderLayer3);
 		map.put(Blocks.SCULK_SENSOR, renderLayer3);
+		map.put(Blocks.SCULK_VEIN, renderLayer3);
+		map.put(Blocks.SCULK_SHRIEKER, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);
 		map.put(Blocks.NETHER_PORTAL, renderLayer4);

@@ -4,9 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtType;
@@ -18,16 +15,16 @@ import net.minecraft.nbt.NbtType;
 public class SelectiveNbtCollector extends NbtCollector {
 	private int queriesLeft;
 	private final Set<NbtType<?>> allPossibleTypes;
-	private final Deque<SelectiveNbtCollector.Tree> selectionStack = new ArrayDeque();
+	private final Deque<Tree> selectionStack = new ArrayDeque();
 
-	public SelectiveNbtCollector(SelectiveNbtCollector.Query... queries) {
+	public SelectiveNbtCollector(Query... queries) {
 		this.queriesLeft = queries.length;
 		Builder<NbtType<?>> builder = ImmutableSet.builder();
-		SelectiveNbtCollector.Tree tree = new SelectiveNbtCollector.Tree(1);
+		Tree tree = Tree.create();
 
-		for (SelectiveNbtCollector.Query query : queries) {
+		for (Query query : queries) {
 			tree.add(query);
-			builder.add(query.type);
+			builder.add(query.type());
 		}
 
 		this.selectionStack.push(tree);
@@ -42,7 +39,7 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.NestedResult visitSubNbtType(NbtType<?> type) {
-		SelectiveNbtCollector.Tree tree = (SelectiveNbtCollector.Tree)this.selectionStack.element();
+		Tree tree = (Tree)this.selectionStack.element();
 		if (this.getDepth() > tree.depth()) {
 			return super.visitSubNbtType(type);
 		} else if (this.queriesLeft <= 0) {
@@ -54,15 +51,15 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.NestedResult startSubNbt(NbtType<?> type, String key) {
-		SelectiveNbtCollector.Tree tree = (SelectiveNbtCollector.Tree)this.selectionStack.element();
+		Tree tree = (Tree)this.selectionStack.element();
 		if (this.getDepth() > tree.depth()) {
 			return super.startSubNbt(type, key);
-		} else if (tree.fieldsToGet.remove(key, type)) {
+		} else if (tree.selectedFields().remove(key, type)) {
 			this.queriesLeft--;
 			return super.startSubNbt(type, key);
 		} else {
 			if (type == NbtCompound.TYPE) {
-				SelectiveNbtCollector.Tree tree2 = (SelectiveNbtCollector.Tree)tree.fieldsToRecurse.get(key);
+				Tree tree2 = (Tree)tree.fieldsToRecurse().get(key);
 				if (tree2 != null) {
 					this.selectionStack.push(tree2);
 					return super.startSubNbt(type, key);
@@ -75,7 +72,7 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	@Override
 	public NbtScanner.Result endNested() {
-		if (this.getDepth() == ((SelectiveNbtCollector.Tree)this.selectionStack.element()).depth()) {
+		if (this.getDepth() == ((Tree)this.selectionStack.element()).depth()) {
 			this.selectionStack.pop();
 		}
 
@@ -84,37 +81,5 @@ public class SelectiveNbtCollector extends NbtCollector {
 
 	public int getQueriesLeft() {
 		return this.queriesLeft;
-	}
-
-	public static record Query(List<String> path, NbtType<?> type, String key) {
-
-		public Query(NbtType<?> type, String key) {
-			this(List.of(), type, key);
-		}
-
-		public Query(String path, NbtType<?> type, String key) {
-			this(List.of(path), type, key);
-		}
-
-		public Query(String path1, String path2, NbtType<?> type, String key) {
-			this(List.of(path1, path2), type, key);
-		}
-	}
-
-	static record Tree(int depth, Map<String, NbtType<?>> fieldsToGet, Map<String, SelectiveNbtCollector.Tree> fieldsToRecurse) {
-
-		public Tree(int depth) {
-			this(depth, new HashMap(), new HashMap());
-		}
-
-		public void add(SelectiveNbtCollector.Query query) {
-			if (this.depth <= query.path.size()) {
-				((SelectiveNbtCollector.Tree)this.fieldsToRecurse
-						.computeIfAbsent((String)query.path.get(this.depth - 1), path -> new SelectiveNbtCollector.Tree(this.depth + 1)))
-					.add(query);
-			} else {
-				this.fieldsToGet.put(query.key, query.type);
-			}
-		}
 	}
 }

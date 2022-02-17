@@ -458,7 +458,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			BlockEntityTickInvoker blockEntityTickInvoker = (BlockEntityTickInvoker)iterator.next();
 			if (blockEntityTickInvoker.isRemoved()) {
 				iterator.remove();
-			} else if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEntityTickInvoker.getPos()))) {
+			} else if (this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) {
 				blockEntityTickInvoker.tick();
 			}
 		}
@@ -484,6 +484,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public boolean shouldTickBlocksInChunk(long chunkPos) {
 		return true;
+	}
+
+	public boolean shouldTickBlockPos(BlockPos pos) {
+		return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
 	}
 
 	public Explosion createExplosion(@Nullable Entity entity, double x, double y, double z, float power, Explosion.DestructionType destructionType) {
@@ -935,26 +939,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	protected abstract EntityLookup<Entity> getEntityLookup();
-
-	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
-		int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
-		int j = ChunkSectionPos.getSectionCoord(pos.getZ() - range);
-		int k = ChunkSectionPos.getSectionCoord(pos.getX() + range);
-		int l = ChunkSectionPos.getSectionCoord(pos.getZ() + range);
-		int m = ChunkSectionPos.getSectionCoord(pos.getY() - range);
-		int n = ChunkSectionPos.getSectionCoord(pos.getY() + range);
-
-		for (int o = i; o <= k; o++) {
-			for (int p = j; p <= l; p++) {
-				Chunk chunk = this.getChunkManager().getWorldChunk(o, p);
-				if (chunk != null) {
-					for (int q = m; q <= n; q++) {
-						chunk.getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
-					}
-				}
-			}
-		}
-	}
 
 	@Override
 	public long getTickOrder() {

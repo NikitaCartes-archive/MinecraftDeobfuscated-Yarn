@@ -134,6 +134,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.event.GameEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -563,6 +564,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void onDeath(DamageSource source) {
+		this.emitGameEvent(GameEvent.ENTITY_DYING);
 		boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();

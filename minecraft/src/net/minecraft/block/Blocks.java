@@ -140,29 +140,33 @@ public class Blocks {
 	public static final Block GRAVEL = register(
 		"gravel", new GravelBlock(AbstractBlock.Settings.of(Material.AGGREGATE, MapColor.STONE_GRAY).strength(0.6F).sounds(BlockSoundGroup.GRAVEL))
 	);
-	public static final Block GOLD_ORE = register("gold_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F)));
+	public static final Block GOLD_ORE = register(
+		"gold_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F))
+	);
 	public static final Block DEEPSLATE_GOLD_ORE = register(
 		"deepslate_gold_ore",
-		new OreBlock(AbstractBlock.Settings.copy(GOLD_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		new ExperienceDroppingBlock(AbstractBlock.Settings.copy(GOLD_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
-	public static final Block IRON_ORE = register("iron_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F)));
+	public static final Block IRON_ORE = register(
+		"iron_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F))
+	);
 	public static final Block DEEPSLATE_IRON_ORE = register(
 		"deepslate_iron_ore",
-		new OreBlock(AbstractBlock.Settings.copy(IRON_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		new ExperienceDroppingBlock(AbstractBlock.Settings.copy(IRON_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block COAL_ORE = register(
-		"coal_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(0, 2))
+		"coal_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(0, 2))
 	);
 	public static final Block DEEPSLATE_COAL_ORE = register(
 		"deepslate_coal_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.copy(COAL_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
 			UniformIntProvider.create(0, 2)
 		)
 	);
 	public static final Block NETHER_GOLD_ORE = register(
 		"nether_gold_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_GOLD_ORE),
 			UniformIntProvider.create(0, 1)
 		)
@@ -241,11 +245,11 @@ public class Blocks {
 		)
 	);
 	public static final Block LAPIS_ORE = register(
-		"lapis_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(2, 5))
+		"lapis_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(2, 5))
 	);
 	public static final Block DEEPSLATE_LAPIS_ORE = register(
 		"deepslate_lapis_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.copy(LAPIS_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
 			UniformIntProvider.create(2, 5)
 		)
@@ -499,11 +503,11 @@ public class Blocks {
 		"redstone_wire", new RedstoneWireBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().breakInstantly())
 	);
 	public static final Block DIAMOND_ORE = register(
-		"diamond_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
+		"diamond_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
 	);
 	public static final Block DEEPSLATE_DIAMOND_ORE = register(
 		"deepslate_diamond_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.copy(DIAMOND_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
 			UniformIntProvider.create(3, 7)
 		)
@@ -706,7 +710,7 @@ public class Blocks {
 				.strength(0.1F)
 				.requiresTool()
 				.sounds(BlockSoundGroup.SNOW)
-				.blockVision((blockStatex, blockView, blockPos) -> (Integer)blockStatex.get(SnowBlock.LAYERS) >= 8)
+				.blockVision((state, world, pos) -> (Integer)state.get(SnowBlock.LAYERS) >= 8)
 		)
 	);
 	public static final Block ICE = register(
@@ -1023,11 +1027,11 @@ public class Blocks {
 	);
 	public static final Block SANDSTONE_STAIRS = register("sandstone_stairs", new StairsBlock(SANDSTONE.getDefaultState(), AbstractBlock.Settings.copy(SANDSTONE)));
 	public static final Block EMERALD_ORE = register(
-		"emerald_ore", new OreBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
+		"emerald_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.0F, 3.0F), UniformIntProvider.create(3, 7))
 	);
 	public static final Block DEEPSLATE_EMERALD_ORE = register(
 		"deepslate_emerald_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.copy(EMERALD_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE),
 			UniformIntProvider.create(3, 7)
 		)
@@ -1231,7 +1235,7 @@ public class Blocks {
 	);
 	public static final Block NETHER_QUARTZ_ORE = register(
 		"nether_quartz_ore",
-		new OreBlock(
+		new ExperienceDroppingBlock(
 			AbstractBlock.Settings.of(Material.STONE, MapColor.DARK_RED).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.NETHER_ORE),
 			UniformIntProvider.create(2, 5)
 		)
@@ -3002,11 +3006,11 @@ public class Blocks {
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
-		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockStatex -> 2))
+		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(state -> 2))
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",
-		new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(blockStatex -> 1))
+		new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(state -> 1))
 	);
 	public static final Block TUFF = register(
 		"tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_GRAY).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5F, 6.0F))
@@ -3035,10 +3039,24 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN)
 				.strength(1.5F)
 				.sounds(BlockSoundGroup.SCULK_SENSOR)
-				.luminance(blockStatex -> 1)
+				.luminance(state -> 1)
 				.emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE),
 			8
 		)
+	);
+	public static final Block SCULK = register("sculk", new SculkBlock(AbstractBlock.Settings.of(Material.SCULK).strength(0.6F).sounds(BlockSoundGroup.SCULK)));
+	public static final Block SCULK_VEIN = register(
+		"sculk_vein", new SculkVeinBlock(AbstractBlock.Settings.of(Material.SCULK).requiresTool().noCollision().strength(0.2F).sounds(BlockSoundGroup.SCULK_VEIN))
+	);
+	public static final Block SCULK_CATALYST = register(
+		"sculk_catalyst",
+		new SculkCatalystBlock(
+			AbstractBlock.Settings.of(Material.SCULK).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_CATALYST).luminance(state -> 6)
+		)
+	);
+	public static final Block SCULK_SHRIEKER = register(
+		"sculk_shrieker",
+		new SculkShriekerBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.BLACK).strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_SHRIEKER))
 	);
 	public static final Block OXIDIZED_COPPER = register(
 		"oxidized_copper",
@@ -3068,10 +3086,10 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER)
 		)
 	);
-	public static final Block COPPER_ORE = register("copper_ore", new OreBlock(AbstractBlock.Settings.copy(IRON_ORE)));
+	public static final Block COPPER_ORE = register("copper_ore", new ExperienceDroppingBlock(AbstractBlock.Settings.copy(IRON_ORE)));
 	public static final Block DEEPSLATE_COPPER_ORE = register(
 		"deepslate_copper_ore",
-		new OreBlock(AbstractBlock.Settings.copy(COPPER_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
+		new ExperienceDroppingBlock(AbstractBlock.Settings.copy(COPPER_ORE).mapColor(MapColor.DEEPSLATE_GRAY).strength(4.5F, 3.0F).sounds(BlockSoundGroup.DEEPSLATE))
 	);
 	public static final Block OXIDIZED_CUT_COPPER = register(
 		"oxidized_cut_copper", new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, AbstractBlock.Settings.copy(OXIDIZED_COPPER))
@@ -3273,6 +3291,10 @@ public class Blocks {
 	);
 	public static final Block POTTED_FLOWERING_AZALEA_BUSH = register(
 		"potted_flowering_azalea_bush", new FlowerPotBlock(FLOWERING_AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
+	);
+	public static final Block REINFORCED_DEEPSLATE = register(
+		"reinforced_deepslate",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.DEEPSLATE).strength(55.0F, 1200.0F).dropsNothing())
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {

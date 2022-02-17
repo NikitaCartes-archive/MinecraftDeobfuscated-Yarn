@@ -113,9 +113,9 @@ public class AxolotlBrain {
 	private static void addPlayDeadActivities(Brain<AxolotlEntity> brain) {
 		brain.setTaskList(
 			Activity.PLAY_DEAD,
-			ImmutableList.of(Pair.of(0, new PlayDeadTask()), Pair.of(1, new ForgetTask<>(AxolotlBrain::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS))),
-			ImmutableSet.of(Pair.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT)),
-			ImmutableSet.of(MemoryModuleType.PLAY_DEAD_TICKS)
+			0,
+			ImmutableList.of(new PlayDeadTask(), new ForgetTask<>(AxolotlBrain::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS)),
+			MemoryModuleType.PLAY_DEAD_TICKS
 		);
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft.structure.pool;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.structure.AncientCityData;
 import net.minecraft.structure.BastionRemnantGenerator;
 import net.minecraft.structure.PillagerOutpostGenerator;
 import net.minecraft.structure.VillageGenerator;
@@ -23,6 +24,7 @@ public class StructurePools {
 		BastionRemnantGenerator.init();
 		PillagerOutpostGenerator.init();
 		VillageGenerator.init();
+		AncientCityData.init();
 		return INVALID;
 	}
 

@@ -1993,6 +1993,11 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.SMITHING_TABLE, Models.CUBE.upload(Blocks.SMITHING_TABLE, texture, this.modelCollector)));
 	}
 
+	private void method_40976(Block block, Block block2, Block block3, BiFunction<Block, Block, Texture> biFunction) {
+		Texture texture = (Texture)biFunction.apply(block2, block3);
+		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, texture, this.modelCollector)));
+	}
+
 	private void registerCubeWithCustomTexture(Block block, Block otherTextureSource, BiFunction<Block, Block, Texture> textureFactory) {
 		Texture texture = (Texture)textureFactory.apply(block, otherTextureSource);
 		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, texture, this.modelCollector)));
@@ -2825,6 +2830,14 @@ public class BlockStateModelGenerator {
 			);
 	}
 
+	private void method_40975() {
+		Identifier identifier = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
+		Identifier identifier2 = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
+		this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(createBooleanModelMap(Properties.SHRIEKING, identifier2, identifier)));
+	}
+
 	private void registerScaffolding() {
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCAFFOLDING, "_stable");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCAFFOLDING, "_unstable");
@@ -3291,6 +3304,29 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
 	}
 
+	private void method_40978() {
+		Identifier identifier = Texture.getSubId(Blocks.SCULK_CATALYST, "_bottom");
+		Texture texture = new Texture()
+			.put(TextureKey.BOTTOM, identifier)
+			.put(TextureKey.TOP, Texture.getSubId(Blocks.SCULK_CATALYST, "_top"))
+			.put(TextureKey.SIDE, Texture.getSubId(Blocks.SCULK_CATALYST, "_side"));
+		Texture texture2 = new Texture()
+			.put(TextureKey.BOTTOM, identifier)
+			.put(TextureKey.TOP, Texture.getSubId(Blocks.SCULK_CATALYST, "_top_bloom"))
+			.put(TextureKey.SIDE, Texture.getSubId(Blocks.SCULK_CATALYST, "_side_bloom"));
+		Identifier identifier2 = Models.CUBE_BOTTOM_TOP.upload(Blocks.SCULK_CATALYST, "", texture, this.modelCollector);
+		Identifier identifier3 = Models.CUBE_BOTTOM_TOP.upload(Blocks.SCULK_CATALYST, "_bloom", texture2, this.modelCollector);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.SCULK_CATALYST)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.BLOOM)
+							.register(boolean_ -> BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier3 : identifier2))
+					)
+			);
+		this.registerParentedItemModel(Items.SCULK_CATALYST, identifier2);
+	}
+
 	private void registerMagmaBlock() {
 		this.blockStateCollector
 			.accept(
@@ -3554,6 +3590,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.RAW_IRON_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_COPPER_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_GOLD_BLOCK);
+		this.registerMirrorable(Blocks.SCULK);
 		this.registerPetrifiedOakSlab();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);
@@ -3613,9 +3650,11 @@ public class BlockStateModelGenerator {
 		this.registerTurtleEgg();
 		this.registerWallPlant(Blocks.VINE);
 		this.registerWallPlant(Blocks.GLOW_LICHEN);
+		this.registerWallPlant(Blocks.SCULK_VEIN);
 		this.registerMagmaBlock();
 		this.registerJigsaw();
 		this.registerSculkSensor();
+		this.method_40975();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -3641,6 +3680,7 @@ public class BlockStateModelGenerator {
 		this.registerRotatable(Blocks.SAND);
 		this.registerRotatable(Blocks.RED_SAND);
 		this.registerMirrorable(Blocks.BEDROCK);
+		this.method_40976(Blocks.REINFORCED_DEEPSLATE, Blocks.REINFORCED_DEEPSLATE, Blocks.REINFORCED_DEEPSLATE, Texture::method_40979);
 		this.registerAxisRotated(Blocks.HAY_BLOCK, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.PURPUR_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
@@ -4020,6 +4060,7 @@ public class BlockStateModelGenerator {
 		this.registerCooker(Blocks.SMOKER, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerRedstone();
 		this.registerRespawnAnchor();
+		this.method_40978();
 		this.registerInfested(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
 		this.registerInfested(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
 		this.registerInfested(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);

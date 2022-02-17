@@ -66,7 +66,6 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -116,7 +115,6 @@ import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
@@ -308,7 +306,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		profiler.swap("raid");
 		this.raidManager.tick();
 		profiler.swap("chunkSource");
-		this.getChunkManager().tick(shouldKeepTicking);
+		this.getChunkManager().tick(shouldKeepTicking, true);
 		profiler.swap("blockEvents");
 		this.processSyncedBlockEvents();
 		this.inBlockTick = false;
@@ -903,8 +901,26 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
-		this.emitGameEvent(entity, event, pos, event.getRange());
+	public void emitGameEvent(@Nullable Entity sourceEntity, GameEvent event, Vec3d pos) {
+		int i = event.getRange();
+		BlockPos blockPos = new BlockPos(pos);
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
+		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
+		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
+		int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
+		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
+		int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+
+		for (int p = j; p <= m; p++) {
+			for (int q = l; q <= o; q++) {
+				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
+				if (chunk != null) {
+					for (int r = k; r <= n; r++) {
+						chunk.getGameEventDispatcher(r).dispatch(event, sourceEntity, pos);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -987,7 +1003,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		while (!this.syncedBlockEventQueue.isEmpty()) {
 			BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
-			if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEvent.pos()))) {
+			if (this.shouldTickBlockPos(blockEvent.pos())) {
 				if (this.processBlockEvent(blockEvent)) {
 					this.server
 						.getPlayerManager()
@@ -1034,13 +1050,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public StructureManager getStructureManager() {
 		return this.server.getStructureManager();
-	}
-
-	public void sendVibrationPacket(Vibration vibration) {
-		BlockPos blockPos = vibration.getOrigin();
-		VibrationS2CPacket vibrationS2CPacket = new VibrationS2CPacket(vibration);
-		this.players
-			.forEach(player -> this.sendToPlayerIfNearby(player, false, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), vibrationS2CPacket));
 	}
 
 	public <T extends ParticleEffect> int spawnParticles(
@@ -1594,7 +1603,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public boolean shouldTickEntity(BlockPos pos) {
-		return this.entityManager.shouldTick(pos);
+		return this.entityManager.shouldTick(pos) && this.chunkManager.threadedAnvilChunkStorage.getTicketManager().shouldTickEntities(ChunkPos.toLong(pos));
+	}
+
+	public boolean method_40579(BlockPos blockPos) {
+		return this.entityManager.shouldTick(blockPos);
 	}
 
 	public boolean shouldTickEntity(ChunkPos pos) {
@@ -1637,6 +1650,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
 					ServerWorld.this.dragonParts.put(enderDragonPart.getId(), enderDragonPart);
 				}
+			}
+
+			EntityGameEventHandler entityGameEventHandler = entity.getGameEventHandler();
+			if (entityGameEventHandler != null) {
+				entityGameEventHandler.onEntitySetPos(entity.world);
 			}
 		}
 

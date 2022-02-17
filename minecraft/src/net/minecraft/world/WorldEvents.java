@@ -494,4 +494,10 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.item.AxeItem#useOnBlock(net.minecraft.item.ItemUsageContext) AxeItem#useOnBlock}
 	 */
 	public static final int BLOCK_SCRAPED = 3005;
+	/**
+	 * Sculk... charges? Sculk is weird.
+	 * <br>Spawns sculk charge particles.
+	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.World, net.minecraft.util.math.BlockPos, java.util.Random) SculkSpreadManager#tick}
+	 */
+	public static final int SCULK_CHARGE = 3006;
 }

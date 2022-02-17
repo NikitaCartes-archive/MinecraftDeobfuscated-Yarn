@@ -60,10 +60,14 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
-		while (!this.unsavedElements.isEmpty() && shouldKeepTicking.getAsBoolean()) {
+		while (this.method_40827() && shouldKeepTicking.getAsBoolean()) {
 			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
 			this.save(chunkPos);
 		}
+	}
+
+	public boolean method_40827() {
+		return !this.unsavedElements.isEmpty();
 	}
 
 	@Nullable
@@ -211,7 +215,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	public void saveChunk(ChunkPos pos) {
-		if (!this.unsavedElements.isEmpty()) {
+		if (this.method_40827()) {
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				long l = chunkSectionPosAsLong(pos, i);
 				if (this.unsavedElements.contains(l)) {

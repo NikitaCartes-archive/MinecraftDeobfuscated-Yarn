@@ -586,6 +586,42 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_SENSOR_HIT,
 		SoundEvents.BLOCK_SCULK_SENSOR_FALL
 	);
+	public static final BlockSoundGroup SCULK_CATALYST = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCULK_CATALYST_BREAK,
+		SoundEvents.BLOCK_SCULK_CATALYST_STEP,
+		SoundEvents.BLOCK_SCULK_CATALYST_PLACE,
+		SoundEvents.BLOCK_SCULK_CATALYST_HIT,
+		SoundEvents.BLOCK_SCULK_CATALYST_FALL
+	);
+	public static final BlockSoundGroup SCULK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCULK_BREAK,
+		SoundEvents.BLOCK_SCULK_STEP,
+		SoundEvents.BLOCK_SCULK_PLACE,
+		SoundEvents.BLOCK_SCULK_HIT,
+		SoundEvents.BLOCK_SCULK_FALL
+	);
+	public static final BlockSoundGroup SCULK_VEIN = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCULK_VEIN_BREAK,
+		SoundEvents.BLOCK_SCULK_VEIN_STEP,
+		SoundEvents.BLOCK_SCULK_VEIN_PLACE,
+		SoundEvents.BLOCK_SCULK_VEIN_HIT,
+		SoundEvents.BLOCK_SCULK_VEIN_FALL
+	);
+	public static final BlockSoundGroup SCULK_SHRIEKER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCULK_SHRIEKER_BREAK,
+		SoundEvents.BLOCK_SCULK_SHRIEKER_STEP,
+		SoundEvents.BLOCK_SCULK_SHRIEKER_PLACE,
+		SoundEvents.BLOCK_SCULK_SHRIEKER_HIT,
+		SoundEvents.BLOCK_SCULK_SHRIEKER_FALL
+	);
 	public static final BlockSoundGroup GLOW_LICHEN = new BlockSoundGroup(
 		1.0F,
 		1.0F,

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -101,9 +103,21 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Boolean> ATE_RECENTLY = register("ate_recently");
 	public static final MemoryModuleType<BlockPos> NEAREST_REPELLENT = register("nearest_repellent");
 	public static final MemoryModuleType<Boolean> PACIFIED = register("pacified");
+	public static final MemoryModuleType<Unit> RECENT_PROJECTILE = register("recent_projectile", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<BlockPos> DISTURBANCE_LOCATION = register("disturbance_location");
+	public static final MemoryModuleType<LivingEntity> ROAR_TARGET = register("roar_target");
+	public static final MemoryModuleType<Boolean> IS_SNIFFING = register("is_sniffing", Codec.BOOL);
+	public static final MemoryModuleType<Long> LAST_DISTURBANCE = register("last_disturbance", Codec.LONG);
+	public static final MemoryModuleType<Unit> IN_VIBRATION_COOLDOWN = register("in_vibration_cooldown", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Boolean> IS_EMERGING = register("is_emerging", Codec.BOOL);
+	public static final MemoryModuleType<Boolean> IS_DIGGING = register("is_digging", Codec.BOOL);
+	public static final MemoryModuleType<Long> LAST_SNIFF = register("last_sniff", Codec.LONG);
+	public static final MemoryModuleType<Long> LAST_ROAR = register("last_roar", Codec.LONG);
+	public static final MemoryModuleType<Long> CURRENT_ROAR_STARTED = register("current_roar_started", Codec.LONG);
 	private final Optional<Codec<Memory<U>>> codec;
 
-	private MemoryModuleType(Optional<Codec<U>> codec) {
+	@VisibleForTesting
+	public MemoryModuleType(Optional<Codec<U>> codec) {
 		this.codec = codec.map(Memory::createCodec);
 	}
 

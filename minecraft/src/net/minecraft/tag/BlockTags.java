@@ -86,6 +86,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> SOUL_SPEED_BLOCKS = register("soul_speed_blocks");
 	public static final Tag.Identified<Block> WALL_POST_OVERRIDE = register("wall_post_override");
 	public static final Tag.Identified<Block> CLIMBABLE = register("climbable");
+	public static final Tag.Identified<Block> FALL_DAMAGE_RESETTING = register("fall_damage_resetting");
 	public static final Tag.Identified<Block> SHULKER_BOXES = register("shulker_boxes");
 	public static final Tag.Identified<Block> HOGLIN_REPELLENTS = register("hoglin_repellents");
 	public static final Tag.Identified<Block> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
@@ -126,6 +127,11 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> FEATURES_CANNOT_REPLACE = register("features_cannot_replace");
 	public static final Tag.Identified<Block> LAVA_POOL_STONE_CANNOT_REPLACE = register("lava_pool_stone_cannot_replace");
 	public static final Tag.Identified<Block> GEODE_INVALID_BLOCKS = register("geode_invalid_blocks");
+	public static final Tag.Identified<Block> SCULK_REPLACEABLE = register("sculk_replaceable");
+	public static final Tag.Identified<Block> SCULK_REPLACEABLE_WORLD_GEN = register("sculk_replaceable_world_gen");
+	public static final Tag.Identified<Block> SKIP_OCCLUDE_VIBRATION_WHEN_ABOVE = register("skip_occlude_vibration_when_above");
+	public static final Tag.Identified<Block> DEEPSLATE_BLOCKS = register("deepslate_blocks");
+	public static final Tag.Identified<Block> ANCIENT_CITY_REPLACEABLES = register("ancient_city_replaceables");
 	public static final Tag.Identified<Block> ANIMALS_SPAWNABLE_ON = register("animals_spawnable_on");
 	public static final Tag.Identified<Block> AXOLOTLS_SPAWNABLE_ON = register("axolotls_spawnable_on");
 	public static final Tag.Identified<Block> GOATS_SPAWNABLE_ON = register("goats_spawnable_on");

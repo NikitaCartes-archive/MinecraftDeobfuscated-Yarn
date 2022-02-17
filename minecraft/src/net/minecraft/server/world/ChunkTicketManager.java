@@ -2,6 +2,7 @@ package net.minecraft.server.world;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
@@ -312,6 +313,38 @@ public abstract class ChunkTicketManager {
 	@VisibleForTesting
 	SimulationDistanceLevelPropagator getSimulationDistanceTracker() {
 		return this.simulationDistanceTracker;
+	}
+
+	public void method_40576() {
+		ImmutableSet<ChunkTicketType<?>> immutableSet = ImmutableSet.of(ChunkTicketType.UNKNOWN, ChunkTicketType.POST_TELEPORT, ChunkTicketType.LIGHT);
+		ObjectIterator<Entry<SortedArraySet<ChunkTicket<?>>>> objectIterator = this.ticketsByPosition.long2ObjectEntrySet().fastIterator();
+
+		while (objectIterator.hasNext()) {
+			Entry<SortedArraySet<ChunkTicket<?>>> entry = (Entry<SortedArraySet<ChunkTicket<?>>>)objectIterator.next();
+			Iterator<ChunkTicket<?>> iterator = ((SortedArraySet)entry.getValue()).iterator();
+			boolean bl = false;
+
+			while (iterator.hasNext()) {
+				ChunkTicket<?> chunkTicket = (ChunkTicket<?>)iterator.next();
+				if (!immutableSet.contains(chunkTicket.getType())) {
+					iterator.remove();
+					bl = true;
+					this.simulationDistanceTracker.remove(entry.getLongKey(), chunkTicket);
+				}
+			}
+
+			if (bl) {
+				this.distanceFromTicketTracker.updateLevel(entry.getLongKey(), getLevel((SortedArraySet<ChunkTicket<?>>)entry.getValue()), false);
+			}
+
+			if (((SortedArraySet)entry.getValue()).isEmpty()) {
+				objectIterator.remove();
+			}
+		}
+	}
+
+	public boolean hasTickets() {
+		return !this.ticketsByPosition.isEmpty();
 	}
 
 	class DistanceFromNearestPlayerTracker extends ChunkPosDistanceLevelPropagator {

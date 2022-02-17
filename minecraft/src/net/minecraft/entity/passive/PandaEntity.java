@@ -391,7 +391,7 @@ public class PandaEntity extends AnimalEntity {
 				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
 					if (!this.world.isClient) {
 						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-						this.emitGameEvent(GameEvent.EAT, this.getCameraBlockPos());
+						this.emitGameEvent(GameEvent.EAT);
 					}
 
 					this.setScared(false);
@@ -613,11 +613,11 @@ public class PandaEntity extends AnimalEntity {
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 			} else {
 				if (this.world.isClient || this.isScared() || this.isTouchingWater()) {
 					return ActionResult.PASS;

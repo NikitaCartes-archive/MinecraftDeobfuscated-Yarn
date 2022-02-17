@@ -122,11 +122,12 @@ public class UndergroundConfiguredFeatures {
 	public static final ConfiguredFeature<UnderwaterMagmaFeatureConfig, ?> UNDERWATER_MAGMA = ConfiguredFeatures.register(
 		"underwater_magma", Feature.UNDERWATER_MAGMA.configure(new UnderwaterMagmaFeatureConfig(5, 1, 0.5F))
 	);
-	public static final ConfiguredFeature<GlowLichenFeatureConfig, ?> GLOW_LICHEN = ConfiguredFeatures.register(
+	public static final ConfiguredFeature<LichenFeatureConfig, ?> GLOW_LICHEN = ConfiguredFeatures.register(
 		"glow_lichen",
 		Feature.GLOW_LICHEN
 			.configure(
-				new GlowLichenFeatureConfig(
+				new LichenFeatureConfig(
+					Blocks.GLOW_LICHEN.getDefaultState(),
 					20,
 					false,
 					true,
@@ -381,6 +382,93 @@ public class UndergroundConfiguredFeatures {
 					16,
 					0.05,
 					1
+				)
+			)
+	);
+	public static final ConfiguredFeature<SimpleBlockFeatureConfig, ?> SCULK_GROWTHS = ConfiguredFeatures.register(
+		"sculk_growths",
+		Feature.SIMPLE_BLOCK
+			.configure(
+				new SimpleBlockFeatureConfig(
+					new WeightedBlockStateProvider(
+						DataPool.<BlockState>builder().add(Blocks.SCULK_SENSOR.getDefaultState(), 3).add(Blocks.SCULK_SHRIEKER.getDefaultState(), 1)
+					)
+				)
+			)
+	);
+	public static final ConfiguredFeature<SculkPatchFeatureConfig, ?> SCULK_PATCH_LARGE = ConfiguredFeatures.register(
+		"sculk_patch_large",
+		Feature.SCULK_PATCH
+			.configure(
+				new SculkPatchFeatureConfig(
+					BlockTags.SCULK_REPLACEABLE_WORLD_GEN.getId(),
+					BlockStateProvider.of(Blocks.SCULK.getDefaultState()),
+					() -> SCULK_GROWTHS,
+					0.04F,
+					VerticalSurfaceType.FLOOR,
+					5,
+					UniformIntProvider.create(4, 5)
+				)
+			)
+	);
+	public static final ConfiguredFeature<SculkPatchFeatureConfig, ?> SCULK_PATCH = ConfiguredFeatures.register(
+		"sculk_patch",
+		Feature.SCULK_PATCH
+			.configure(
+				new SculkPatchFeatureConfig(
+					BlockTags.SCULK_REPLACEABLE_WORLD_GEN.getId(),
+					BlockStateProvider.of(Blocks.SCULK.getDefaultState()),
+					() -> SCULK_GROWTHS,
+					0.035F,
+					VerticalSurfaceType.FLOOR,
+					5,
+					UniformIntProvider.create(2, 3)
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> SCULK_VEINS = ConfiguredFeatures.register(
+		"sculk_veins",
+		Feature.GLOW_LICHEN
+			.configure(
+				new LichenFeatureConfig(
+					Blocks.SCULK_VEIN.getDefaultState(),
+					20,
+					true,
+					true,
+					true,
+					0.8F,
+					ImmutableList.of(
+						Blocks.STONE,
+						Blocks.ANDESITE,
+						Blocks.DIORITE,
+						Blocks.GRANITE,
+						Blocks.DRIPSTONE_BLOCK,
+						Blocks.CALCITE,
+						Blocks.TUFF,
+						Blocks.DEEPSLATE,
+						Blocks.DEEPSLATE_BRICKS,
+						Blocks.DEEPSLATE_TILES,
+						Blocks.COBBLED_DEEPSLATE,
+						Blocks.POLISHED_DEEPSLATE,
+						Blocks.CHISELED_DEEPSLATE
+					)
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> SCULK_CATALYST_WITH_PATCHES = ConfiguredFeatures.register(
+		"sculk_catalyst_with_patches",
+		Feature.CENTRAL_BLOCK_SCATTERED_FEATURES
+			.configure(
+				new CentralBlockScatteredFeatureConfig(
+					BlockTags.SCULK_REPLACEABLE_WORLD_GEN.getId(),
+					BlockStateProvider.of(Blocks.SCULK_CATALYST.getDefaultState()),
+					() -> SCULK_PATCH,
+					() -> SCULK_PATCH_LARGE,
+					VerticalSurfaceType.FLOOR,
+					13,
+					3,
+					7,
+					14
 				)
 			)
 	);

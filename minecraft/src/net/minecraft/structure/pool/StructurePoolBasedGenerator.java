@@ -47,7 +47,8 @@ public class StructurePoolBasedGenerator {
 		StructurePoolBasedGenerator.PieceFactory pieceFactory,
 		BlockPos pos,
 		boolean bl,
-		boolean bl2
+		boolean bl2,
+		int i
 	) {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
@@ -74,27 +75,26 @@ public class StructurePoolBasedGenerator {
 				structurePoolElement.getBoundingBox(structureManager, pos, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
-			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
-			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
-			int k;
+			int j = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
+			int k = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
+			int l;
 			if (bl2) {
-				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+				l = pos.getY() + chunkGenerator.getHeightOnGround(j, k, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			} else {
-				k = pos.getY();
+				l = pos.getY();
 			}
 
-			if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
+			if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(j), BiomeCoords.fromBlock(l), BiomeCoords.fromBlock(k)))) {
 				return Optional.empty();
 			} else {
-				int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-				poolStructurePiece.translate(0, k - l, 0);
+				int m = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+				poolStructurePiece.translate(0, l - m, 0);
 				return Optional.of(
 					(StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
 						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 						list.add(poolStructurePiece);
 						if (structurePoolFeatureConfig.getSize() > 0) {
-							int lx = 80;
-							Box box = new Box((double)(i - 80), (double)(k - 80), (double)(j - 80), (double)(i + 80 + 1), (double)(k + 80 + 1), (double)(j + 80 + 1));
+							Box box = new Box((double)(j - i), (double)(l - i), (double)(k - i), (double)(j + i + 1), (double)(l + i + 1), (double)(k + i + 1));
 							StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
 								registry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, chunkRandom
 							);
@@ -204,7 +204,7 @@ public class StructurePoolBasedGenerator {
 			BlockBox blockBox = piece.getBoundingBox();
 			int i = blockBox.getMinY();
 
-			label137:
+			label148:
 			for (Structure.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(
 				this.structureManager, blockPos, blockRotation, this.random
 			)) {
@@ -298,7 +298,11 @@ public class StructurePoolBasedGenerator {
 											mutableObject2.setValue(VoxelShapes.combine(mutableObject2.getValue(), VoxelShapes.cuboid(Box.from(blockBox4)), BooleanBiFunction.ONLY_FIRST));
 											int r = piece.getGroundLevelDelta();
 											int s;
-											if (bl3) {
+											if (bl3
+												&& !identifier.getPath().equals("ancient_city/structures")
+												&& !identifier.getPath().equals("ancient_city/walls")
+												&& !identifier.getPath().equals("ancient_city/city_center")
+												&& !identifier.getPath().equals("ancient_city/city_center/walls")) {
 												s = r - o;
 											} else {
 												s = structurePoolElement2.getGroundLevelDelta();
@@ -325,7 +329,7 @@ public class StructurePoolBasedGenerator {
 											if (minY + 1 <= this.maxSize) {
 												this.structurePieces.addLast(new StructurePoolBasedGenerator.ShapedPoolStructurePiece(poolStructurePiece, mutableObject2, minY + 1));
 											}
-											continue label137;
+											continue label148;
 										}
 									}
 								}

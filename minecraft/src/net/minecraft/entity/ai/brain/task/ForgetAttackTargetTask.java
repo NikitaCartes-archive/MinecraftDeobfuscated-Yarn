@@ -14,13 +14,19 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private static final int REMEMBER_TIME = 200;
 	private final Predicate<LivingEntity> alternativeCondition;
 	private final Consumer<E> forgetCallback;
+	private final boolean field_36709;
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, Consumer<E> forgetCallback) {
+	public ForgetAttackTargetTask(Predicate<LivingEntity> predicate, Consumer<E> consumer, boolean bl) {
 		super(
 			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
 		);
-		this.alternativeCondition = condition;
-		this.forgetCallback = forgetCallback;
+		this.alternativeCondition = predicate;
+		this.forgetCallback = consumer;
+		this.field_36709 = bl;
+	}
+
+	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, Consumer<E> forgetCallback) {
+		this(condition, forgetCallback, true);
 	}
 
 	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativeCondition) {
@@ -41,7 +47,7 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 		LivingEntity livingEntity = this.getAttackTarget(mobEntity);
 		if (!mobEntity.canTarget(livingEntity)) {
 			this.forgetAttackTarget(mobEntity);
-		} else if (cannotReachTarget(mobEntity)) {
+		} else if (this.field_36709 && cannotReachTarget(mobEntity)) {
 			this.forgetAttackTarget(mobEntity);
 		} else if (this.isAttackTargetDead(mobEntity)) {
 			this.forgetAttackTarget(mobEntity);

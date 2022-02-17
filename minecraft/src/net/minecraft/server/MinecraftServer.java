@@ -43,6 +43,7 @@ import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -650,6 +651,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (serverWorld != null) {
 				serverWorld.savingDisabled = false;
 			}
+		}
+
+		while (this.worlds.values().stream().anyMatch(serverWorldx -> serverWorldx.getChunkManager().threadedAnvilChunkStorage.method_40573())) {
+			this.timeReference = Util.getMeasuringTimeMs() + 1L;
+
+			for (ServerWorld serverWorldx : this.getWorlds()) {
+				serverWorldx.getChunkManager().method_40578();
+				serverWorldx.getChunkManager().tick(() -> true, false);
+			}
+
+			this.runTasksTillTickEnd();
 		}
 
 		this.save(false, true, false);
@@ -1363,6 +1375,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	@Override
 	public boolean shouldExecuteAsync() {
 		return super.shouldExecuteAsync() && !this.isStopped();
+	}
+
+	@Override
+	public void method_40588(Runnable runnable) {
+		if (this.isStopped()) {
+			throw new RejectedExecutionException("Server already shutting down");
+		} else {
+			super.method_40588(runnable);
+		}
 	}
 
 	@Override

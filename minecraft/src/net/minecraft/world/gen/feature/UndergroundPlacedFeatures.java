@@ -192,4 +192,28 @@ public class UndergroundPlacedFeatures {
 				BiomePlacementModifier.of()
 			)
 	);
+	public static final PlacedFeature field_37034 = PlacedFeatures.register(
+		"sculk_veins",
+		UndergroundConfiguredFeatures.SCULK_VEINS
+			.withPlacement(
+				CountPlacementModifier.of(UniformIntProvider.create(200, 700)),
+				PlacedFeatures.BOTTOM_TO_120_RANGE,
+				SquarePlacementModifier.of(),
+				SurfaceThresholdFilterPlacementModifier.of(Heightmap.Type.OCEAN_FLOOR_WG, Integer.MIN_VALUE, -13),
+				BiomePlacementModifier.of()
+			)
+	);
+	public static final PlacedFeature field_37035 = PlacedFeatures.register(
+		"sculk_catalyst_with_patches",
+		UndergroundConfiguredFeatures.SCULK_CATALYST_WITH_PATCHES
+			.withPlacement(
+				CountPlacementModifier.of(40),
+				SquarePlacementModifier.of(),
+				PlacedFeatures.BOTTOM_TO_120_RANGE,
+				RarityFilterPlacementModifier.of(3),
+				EnvironmentScanPlacementModifier.of(Direction.DOWN, BlockPredicate.solid(), BlockPredicate.IS_AIR, 12),
+				RandomOffsetPlacementModifier.vertically(ConstantIntProvider.create(1)),
+				BiomePlacementModifier.of()
+			)
+	);
 }

@@ -46,6 +46,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
@@ -115,7 +116,7 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void sendGameEvent(World world, GameEvent event, BlockPos pos) {
+	public static void sendGameEvent(World world, GameEvent event, Vec3d pos) {
 	}
 
 	public static void sendGameEventListener(World world, GameEventListener eventListener) {

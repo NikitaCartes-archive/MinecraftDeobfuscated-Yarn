@@ -248,6 +248,17 @@ public class Texture {
 		return new Texture().put(TextureKey.TOP, getSubId(top, "_top"));
 	}
 
+	public static Texture method_40979(Block block, Block block2) {
+		return new Texture()
+			.put(TextureKey.PARTICLE, getSubId(block2, "_top"))
+			.put(TextureKey.UP, getSubId(block2, "_top"))
+			.put(TextureKey.DOWN, getSubId(block, "_bottom"))
+			.put(TextureKey.NORTH, getSubId(block, "_side"))
+			.put(TextureKey.EAST, getSubId(block, "_side"))
+			.put(TextureKey.SOUTH, getSubId(block, "_side"))
+			.put(TextureKey.WEST, getSubId(block, "_side"));
+	}
+
 	public static Texture frontSideWithCustomBottom(Block block, Block bottom) {
 		return new Texture()
 			.put(TextureKey.PARTICLE, getSubId(block, "_front"))

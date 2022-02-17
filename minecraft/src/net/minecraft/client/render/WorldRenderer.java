@@ -78,6 +78,7 @@ import net.minecraft.item.MusicDiscItem;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -107,6 +108,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
@@ -817,19 +819,16 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		double d = this.client.player.getX();
 		double e = this.client.player.getY();
 		double f = this.client.player.getZ();
-		double g = d - this.lastCameraChunkUpdateX;
-		double h = e - this.lastCameraChunkUpdateY;
-		double i = f - this.lastCameraChunkUpdateZ;
-		int j = ChunkSectionPos.getSectionCoord(d);
-		int k = ChunkSectionPos.getSectionCoord(e);
-		int l = ChunkSectionPos.getSectionCoord(f);
-		if (this.cameraChunkX != j || this.cameraChunkY != k || this.cameraChunkZ != l || g * g + h * h + i * i > 16.0) {
+		int i = ChunkSectionPos.getSectionCoord(d);
+		int j = ChunkSectionPos.getSectionCoord(e);
+		int k = ChunkSectionPos.getSectionCoord(f);
+		if (this.cameraChunkX != i || this.cameraChunkY != j || this.cameraChunkZ != k) {
 			this.lastCameraChunkUpdateX = d;
 			this.lastCameraChunkUpdateY = e;
 			this.lastCameraChunkUpdateZ = f;
-			this.cameraChunkX = j;
-			this.cameraChunkY = k;
-			this.cameraChunkZ = l;
+			this.cameraChunkX = i;
+			this.cameraChunkY = j;
+			this.cameraChunkZ = k;
 			this.chunks.updateCameraPosition(d, f);
 		}
 
@@ -837,10 +836,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		this.world.getProfiler().swap("cull");
 		this.client.getProfiler().swap("culling");
 		BlockPos blockPos = camera.getBlockPos();
-		double m = Math.floor(vec3d.x / 8.0);
-		double n = Math.floor(vec3d.y / 8.0);
-		double o = Math.floor(vec3d.z / 8.0);
-		this.field_34810 = this.field_34810 || m != this.lastCameraX || n != this.lastCameraY || o != this.lastCameraZ;
+		double g = Math.floor(vec3d.x / 8.0);
+		double h = Math.floor(vec3d.y / 8.0);
+		double l = Math.floor(vec3d.z / 8.0);
+		this.field_34810 = this.field_34810 || g != this.lastCameraX || h != this.lastCameraY || l != this.lastCameraZ;
 		this.field_34811.updateAndGet(lx -> {
 			if (lx > 0L && System.currentTimeMillis() > lx) {
 				this.field_34810 = true;
@@ -849,9 +848,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				return lx;
 			}
 		});
-		this.lastCameraX = m;
-		this.lastCameraY = n;
-		this.lastCameraZ = o;
+		this.lastCameraX = g;
+		this.lastCameraY = h;
+		this.lastCameraZ = l;
 		this.client.getProfiler().swap("update");
 		boolean bl = this.client.chunkCullingEnabled;
 		if (spectator && this.world.getBlockState(blockPos).isOpaqueFullCube(this.world, blockPos)) {
@@ -892,12 +891,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.client.getProfiler().pop();
 			}
 
-			double p = Math.floor((double)(camera.getPitch() / 2.0F));
-			double q = Math.floor((double)(camera.getYaw() / 2.0F));
-			if (this.field_34809.compareAndSet(true, false) || p != this.lastCameraPitch || q != this.lastCameraYaw) {
+			double m = Math.floor((double)(camera.getPitch() / 2.0F));
+			double n = Math.floor((double)(camera.getYaw() / 2.0F));
+			if (this.field_34809.compareAndSet(true, false) || m != this.lastCameraPitch || n != this.lastCameraYaw) {
 				this.applyFrustum(new Frustum(frustum).method_38557(8));
-				this.lastCameraPitch = p;
-				this.lastCameraYaw = q;
+				this.lastCameraPitch = m;
+				this.lastCameraYaw = n;
 			}
 		}
 
@@ -905,16 +904,20 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	private void applyFrustum(Frustum frustum) {
-		this.client.getProfiler().push("apply_frustum");
-		this.chunkInfos.clear();
+		if (!MinecraftClient.getInstance().isOnThread()) {
+			throw new IllegalStateException("applyFrustum called from wrong thread: " + Thread.currentThread().getName());
+		} else {
+			this.client.getProfiler().push("apply_frustum");
+			this.chunkInfos.clear();
 
-		for (WorldRenderer.ChunkInfo chunkInfo : ((WorldRenderer.class_6600)this.field_34817.get()).field_34819) {
-			if (frustum.isVisible(chunkInfo.chunk.boundingBox)) {
-				this.chunkInfos.add(chunkInfo);
+			for (WorldRenderer.ChunkInfo chunkInfo : ((WorldRenderer.class_6600)this.field_34817.get()).field_34819) {
+				if (frustum.isVisible(chunkInfo.chunk.getBoundingBox())) {
+					this.chunkInfos.add(chunkInfo);
+				}
 			}
-		}
 
-		this.client.getProfiler().pop();
+			this.client.getProfiler().pop();
+		}
 	}
 
 	private void method_38549(Camera camera, Queue<WorldRenderer.ChunkInfo> queue) {
@@ -968,28 +971,19 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			WorldRenderer.ChunkInfo chunkInfo = (WorldRenderer.ChunkInfo)queue.poll();
 			ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
 			linkedHashSet.add(chunkInfo);
-			Direction direction = Direction.getFacing(
-				(float)(builtChunk.getOrigin().getX() - blockPos.getX()),
-				(float)(builtChunk.getOrigin().getY() - blockPos.getY()),
-				(float)(builtChunk.getOrigin().getZ() - blockPos.getZ())
-			);
 			boolean bl2 = Math.abs(builtChunk.getOrigin().getX() - blockPos.getX()) > 60
 				|| Math.abs(builtChunk.getOrigin().getY() - blockPos.getY()) > 60
 				|| Math.abs(builtChunk.getOrigin().getZ() - blockPos.getZ()) > 60;
 
-			for (Direction direction2 : DIRECTIONS) {
-				ChunkBuilder.BuiltChunk builtChunk2 = this.getAdjacentChunk(blockPos, builtChunk, direction2);
-				if (builtChunk2 == null) {
-					if (!this.method_38553(blockPos, builtChunk)) {
-						this.field_34811.set(System.currentTimeMillis() + 500L);
-					}
-				} else if (!bl || !chunkInfo.canCull(direction2.getOpposite())) {
+			for (Direction direction : DIRECTIONS) {
+				ChunkBuilder.BuiltChunk builtChunk2 = this.getAdjacentChunk(blockPos, builtChunk, direction);
+				if (builtChunk2 != null && (!bl || !chunkInfo.canCull(direction.getOpposite()))) {
 					if (bl && chunkInfo.hasAnyDirection()) {
 						ChunkBuilder.ChunkData chunkData = builtChunk.getData();
 						boolean bl3 = false;
 
 						for (int j = 0; j < DIRECTIONS.length; j++) {
-							if (chunkInfo.hasDirection(j) && chunkData.isVisibleThrough(DIRECTIONS[j].getOpposite(), direction2)) {
+							if (chunkInfo.hasDirection(j) && chunkData.isVisibleThrough(DIRECTIONS[j].getOpposite(), direction)) {
 								bl3 = true;
 								break;
 							}
@@ -1000,24 +994,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						}
 					}
 
-					if (bl && bl2 && chunkInfo.hasAnyDirection() && !chunkInfo.hasDirection(direction.ordinal())) {
-						ChunkBuilder.BuiltChunk builtChunk3 = this.getAdjacentChunk(blockPos, builtChunk, direction.getOpposite());
-						if (builtChunk3 == null) {
-							continue;
-						}
-
-						WorldRenderer.ChunkInfo chunkInfo2 = chunkInfoList.getInfo(builtChunk3);
-						if (chunkInfo2 == null) {
-							continue;
-						}
-					}
-
 					if (bl && bl2) {
 						BlockPos blockPos3 = builtChunk2.getOrigin();
 						BlockPos blockPos4 = blockPos3.add(
-							(direction2.getAxis() == Direction.Axis.X ? blockPos2.getX() <= blockPos3.getX() : blockPos2.getX() >= blockPos3.getX()) ? 0 : 16,
-							(direction2.getAxis() == Direction.Axis.Y ? blockPos2.getY() <= blockPos3.getY() : blockPos2.getY() >= blockPos3.getY()) ? 0 : 16,
-							(direction2.getAxis() == Direction.Axis.Z ? blockPos2.getZ() <= blockPos3.getZ() : blockPos2.getZ() >= blockPos3.getZ()) ? 0 : 16
+							(direction.getAxis() == Direction.Axis.X ? blockPos2.getX() <= blockPos3.getX() : blockPos2.getX() >= blockPos3.getX()) ? 0 : 16,
+							(direction.getAxis() == Direction.Axis.Y ? blockPos2.getY() <= blockPos3.getY() : blockPos2.getY() >= blockPos3.getY()) ? 0 : 16,
+							(direction.getAxis() == Direction.Axis.Z ? blockPos2.getZ() <= blockPos3.getZ() : blockPos2.getZ() >= blockPos3.getZ()) ? 0 : 16
 						);
 						Vec3d vec3d2 = new Vec3d((double)blockPos4.getX(), (double)blockPos4.getY(), (double)blockPos4.getZ());
 						Vec3d vec3d3 = vec3d.subtract(vec3d2).normalize().multiply(field_34814);
@@ -1029,8 +1011,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 								break;
 							}
 
-							ChunkBuilder.BuiltChunk builtChunk4 = this.chunks.getRenderedChunk(new BlockPos(vec3d2.x, vec3d2.y, vec3d2.z));
-							if (builtChunk4 == null || chunkInfoList.getInfo(builtChunk4) == null) {
+							ChunkBuilder.BuiltChunk builtChunk3 = this.chunks.getRenderedChunk(new BlockPos(vec3d2.x, vec3d2.y, vec3d2.z));
+							if (builtChunk3 == null || chunkInfoList.getInfo(builtChunk3) == null) {
 								bl4 = false;
 								break;
 							}
@@ -1041,18 +1023,18 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						}
 					}
 
-					WorldRenderer.ChunkInfo chunkInfo3 = chunkInfoList.getInfo(builtChunk2);
-					if (chunkInfo3 != null) {
-						chunkInfo3.addDirection(direction2);
+					WorldRenderer.ChunkInfo chunkInfo2 = chunkInfoList.getInfo(builtChunk2);
+					if (chunkInfo2 != null) {
+						chunkInfo2.addDirection(direction);
 					} else if (!builtChunk2.shouldBuild()) {
 						if (!this.method_38553(blockPos, builtChunk)) {
 							this.field_34811.set(System.currentTimeMillis() + 500L);
 						}
 					} else {
-						WorldRenderer.ChunkInfo chunkInfo2 = new WorldRenderer.ChunkInfo(builtChunk2, direction2, chunkInfo.propagationLevel + 1);
-						chunkInfo2.updateCullingState(chunkInfo.cullingState, direction2);
-						queue.add(chunkInfo2);
-						chunkInfoList.setInfo(builtChunk2, chunkInfo2);
+						WorldRenderer.ChunkInfo chunkInfo3 = new WorldRenderer.ChunkInfo(builtChunk2, direction, chunkInfo.propagationLevel + 1);
+						chunkInfo3.updateCullingState(chunkInfo.cullingState, direction);
+						queue.add(chunkInfo3);
+						chunkInfoList.setInfo(builtChunk2, chunkInfo3);
 					}
 				}
 			}
@@ -1163,9 +1145,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionShader);
-		this.renderSky(matrices, positionMatrix, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3));
+		this.renderSky(matrices, positionMatrix, tickDelta, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3, tickDelta));
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3, tickDelta);
 		profiler.swap("terrain_setup");
 		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
 		profiler.swap("compilechunks");
@@ -1203,6 +1185,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		for (Entity entity : this.world.getEntities()) {
 			if ((this.entityRenderDispatcher.shouldRender(entity, frustum, d, e, f) || entity.hasPassengerDeep(this.client.player))
+				&& this.method_40942(entity.getBlockPos())
 				&& (
 					entity != camera.getFocusedEntity()
 						|| camera.isThirdPerson()
@@ -2930,7 +2913,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 1501:
 				this.world.playSound(pos, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 
-				for (int ix = 0; ix < 8; ix++) {
+				for (int jx = 0; jx < 8; jx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.LARGE_SMOKE, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -2941,21 +2924,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world
 					.playSound(pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 
-				for (int ix = 0; ix < 5; ix++) {
-					double s = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
-					double d = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
-					double e = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
-					this.world.addParticle(ParticleTypes.SMOKE, s, d, e, 0.0, 0.0, 0.0);
+				for (int jx = 0; jx < 5; jx++) {
+					double ah = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
+					double ai = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
+					double aj = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
+					this.world.addParticle(ParticleTypes.SMOKE, ah, ai, aj, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1503:
 				this.world.playSound(pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 
-				for (int ix = 0; ix < 16; ix++) {
-					double s = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					double d = (double)pos.getY() + 0.8125;
-					double e = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					this.world.addParticle(ParticleTypes.SMOKE, s, d, e, 0.0, 0.0, 0.0);
+				for (int jx = 0; jx < 16; jx++) {
+					double ah = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					double ai = (double)pos.getY() + 0.8125;
+					double aj = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					this.world.addParticle(ParticleTypes.SMOKE, ah, ai, aj, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1504:
@@ -2968,19 +2951,19 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 2000:
 				Direction direction = Direction.byId(data);
 				int ix = direction.getOffsetX();
-				int j = direction.getOffsetY();
+				int jx = direction.getOffsetY();
 				int k = direction.getOffsetZ();
 				double d = (double)pos.getX() + (double)ix * 0.6 + 0.5;
-				double e = (double)pos.getY() + (double)j * 0.6 + 0.5;
+				double e = (double)pos.getY() + (double)jx * 0.6 + 0.5;
 				double f = (double)pos.getZ() + (double)k * 0.6 + 0.5;
 
 				for (int l = 0; l < 10; l++) {
 					double g = random.nextDouble() * 0.2 + 0.01;
 					double h = d + (double)ix * 0.01 + (random.nextDouble() - 0.5) * (double)k * 0.5;
-					double m = e + (double)j * 0.01 + (random.nextDouble() - 0.5) * (double)j * 0.5;
+					double m = e + (double)jx * 0.01 + (random.nextDouble() - 0.5) * (double)jx * 0.5;
 					double n = f + (double)k * 0.01 + (random.nextDouble() - 0.5) * (double)ix * 0.5;
 					double o = (double)ix * g + random.nextGaussian() * 0.01;
-					double p = (double)j * g + random.nextGaussian() * 0.01;
+					double p = (double)jx * g + random.nextGaussian() * 0.01;
 					double q = (double)k * g + random.nextGaussian() * 0.01;
 					this.addParticle(ParticleTypes.SMOKE, h, m, n, o, p, q);
 				}
@@ -3071,17 +3054,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				BoneMealItem.createParticles(this.world, pos, data);
 				break;
 			case 2006:
-				for (int i = 0; i < 200; i++) {
-					float v = random.nextFloat() * 4.0F;
-					float w = random.nextFloat() * (float) (Math.PI * 2);
-					double d = (double)(MathHelper.cos(w) * v);
-					double e = 0.01 + random.nextDouble() * 0.5;
-					double f = (double)(MathHelper.sin(w) * v);
+				for (int j = 0; j < 200; j++) {
+					float w = random.nextFloat() * 4.0F;
+					float ae = random.nextFloat() * (float) (Math.PI * 2);
+					double ai = (double)(MathHelper.cos(ae) * w);
+					double aj = 0.01 + random.nextDouble() * 0.5;
+					double ak = (double)(MathHelper.sin(ae) * w);
 					Particle particle2 = this.spawnParticle(
-						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + d * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + f * 0.1, d, e, f
+						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + ai * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + ak * 0.1, ai, aj, ak
 					);
 					if (particle2 != null) {
-						particle2.move(v);
+						particle2.move(w);
 					}
 				}
 
@@ -3093,7 +3076,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 2009:
-				for (int ix = 0; ix < 8; ix++) {
+				for (int jx = 0; jx < 8; jx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -3131,6 +3114,57 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				break;
 			case 3005:
 				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
+				break;
+			case 3006:
+				int i = data >> 6;
+				if (i > 0) {
+					if (random.nextFloat() < (float)i * 0.2F) {
+						float v = 0.15F + 0.05F * (float)i * (float)i * random.nextFloat();
+						float w = 0.4F * (float)i - 0.2F * random.nextFloat();
+						this.world.playSound(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, v, w, false);
+					}
+
+					int jx = data & 63;
+					IntProvider intProvider = UniformIntProvider.create(0, i);
+					Supplier<Vec3d> supplier = () -> new Vec3d(
+							MathHelper.nextDouble(random, -0.005, 0.005), MathHelper.nextDouble(random, -0.005, 0.005), MathHelper.nextDouble(random, -0.005, 0.005)
+						);
+					if (jx == 0) {
+						for (Direction direction2 : Direction.values()) {
+							float ac = direction2 == Direction.DOWN ? (float) Math.PI : 0.0F;
+							double y = direction2 != Direction.UP && direction2 != Direction.DOWN ? 0.57 : 0.65;
+							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ac), intProvider, direction2, supplier, y);
+						}
+					} else {
+						for (Direction direction3 : Direction.unpack((byte)data)) {
+							float ad = direction3 == Direction.UP ? (float) Math.PI : 0.0F;
+							double f = 0.35;
+							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ad), intProvider, direction3, supplier, 0.35);
+						}
+					}
+				} else {
+					this.world.playSound(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+					boolean bl = this.world.getBlockState(pos).isFullCube(this.world, pos);
+					int k = bl ? 40 : 20;
+					float ae = bl ? 0.45F : 0.25F;
+					float af = 0.07F;
+
+					for (int t = 0; t < k; t++) {
+						float ad = 2.0F * random.nextFloat() - 1.0F;
+						float ag = 2.0F * random.nextFloat() - 1.0F;
+						float ac = 2.0F * random.nextFloat() - 1.0F;
+						this.world
+							.addParticle(
+								ParticleTypes.SCULK_CHARGE_POP,
+								(double)pos.getX() + 0.5 + (double)(ad * ae),
+								(double)pos.getY() + 0.5 + (double)(ag * ae),
+								(double)pos.getZ() + 0.5 + (double)(ac * ae),
+								(double)(ad * 0.07F),
+								(double)(ag * 0.07F),
+								(double)(ac * 0.07F)
+							);
+					}
+				}
 		}
 	}
 
@@ -3197,6 +3231,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 			return i << 20 | j << 4;
 		}
+	}
+
+	public boolean method_40942(BlockPos blockPos) {
+		ChunkBuilder.BuiltChunk builtChunk = this.chunks.getRenderedChunk(blockPos);
+		return builtChunk != null && builtChunk.data.get() != ChunkBuilder.ChunkData.EMPTY;
 	}
 
 	@Nullable

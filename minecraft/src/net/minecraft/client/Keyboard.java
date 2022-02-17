@@ -488,7 +488,8 @@ public class Keyboard {
 					GlfwUtil.makeJvmCrash();
 				}
 
-				CrashReport crashReport = new CrashReport("Manually triggered debug crash", new Throwable());
+				String string = "Manually triggered debug crash";
+				CrashReport crashReport = new CrashReport("Manually triggered debug crash", new Throwable("Manually triggered debug crash"));
 				CrashReportSection crashReportSection = crashReport.addElement("Manual crash details");
 				WinNativeModuleUtil.addDetailTo(crashReportSection);
 				throw new CrashException(crashReport);

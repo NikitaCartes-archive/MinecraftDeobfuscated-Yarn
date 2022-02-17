@@ -526,7 +526,7 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	public boolean bypassesSteppingEffects() {
-		return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+		return this.isInSneakingPose() || super.bypassesSteppingEffects();
 	}
 
 	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

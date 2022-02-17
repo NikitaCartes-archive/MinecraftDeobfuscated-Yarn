@@ -349,6 +349,30 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				)
 		);
 		biConsumer.accept(
+			LootTables.ANCIENT_CITY_CHEST,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(UniformLootNumberProvider.create(2.0F, 6.0F))
+						.with(ItemEntry.builder(Items.BOOK).weight(2).apply(new EnchantRandomlyLootFunction.Builder().add(Enchantments.SWIFT_SNEAK)))
+						.with(ItemEntry.builder(Items.SCULK_CATALYST).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
+						.with(ItemEntry.builder(Items.NAME_TAG).weight(2))
+						.with(ItemEntry.builder(Items.SCULK_SENSOR).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(
+							ItemEntry.builder(Items.POTION)
+								.weight(7)
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F)))
+								.apply(SetPotionLootFunction.builder(Potions.STRONG_HEALING))
+						)
+						.with(ItemEntry.builder(Items.BOOK).weight(10).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.SCULK).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 10.0F))))
+						.with(ItemEntry.builder(Items.BOOK).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 10.0F))))
+						.with(ItemEntry.builder(Items.CANDLE).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 4.0F))))
+						.with(ItemEntry.builder(Items.SNOWBALL).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
+						.with(ItemEntry.builder(Items.BONE).weight(25).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
+				)
+		);
+		biConsumer.accept(
 			LootTables.DESERT_PYRAMID_CHEST,
 			LootTable.builder()
 				.pool(

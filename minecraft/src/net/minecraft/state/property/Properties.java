@@ -156,6 +156,8 @@ public class Properties {
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
 	public static final BooleanProperty VINE_END = BooleanProperty.of("vine_end");
 	public static final BooleanProperty BERRIES = BooleanProperty.of("berries");
+	public static final BooleanProperty BLOOM = BooleanProperty.of("bloom");
+	public static final BooleanProperty SHRIEKING = BooleanProperty.of("shrieking");
 	/**
 	 *  A property that specifies the axis a block is oriented to.
 	 * 

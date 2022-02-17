@@ -432,6 +432,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public Pool<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
 		if (!accessor.hasStructureReferences(pos)) {
 			return super.getEntitySpawnList(biome, accessor, group, pos);
+		} else if (accessor.getStructureContaining(pos, StructureFeature.ANCIENT_CITY).hasChildren()) {
+			return SpawnSettings.EMPTY_ENTRY_POOL;
 		} else {
 			if (accessor.getStructureContaining(pos, StructureFeature.SWAMP_HUT).hasChildren()) {
 				if (group == SpawnGroup.MONSTER) {

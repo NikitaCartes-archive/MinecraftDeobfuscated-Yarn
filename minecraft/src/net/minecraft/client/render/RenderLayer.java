@@ -191,6 +191,27 @@ public abstract class RenderLayer extends RenderPhase {
 			);
 		})
 	);
+	private static final BiFunction<Identifier, Boolean, RenderLayer> field_37002 = Util.memoize(
+		(BiFunction<Identifier, Boolean, RenderLayer>)((identifier, boolean_) -> {
+			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+				.shader(field_37001)
+				.texture(new RenderPhase.Texture(identifier, false, false))
+				.transparency(TRANSLUCENT_TRANSPARENCY)
+				.cull(DISABLE_CULLING)
+				.writeMaskState(COLOR_MASK)
+				.overlay(ENABLE_OVERLAY_COLOR)
+				.build(boolean_);
+			return of(
+				"entity_translucent_emissive",
+				VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+				VertexFormat.DrawMode.QUADS,
+				256,
+				true,
+				true,
+				multiPhaseParameters
+			);
+		})
+	);
 	private static final Function<Identifier, RenderLayer> ENTITY_SMOOTH_CUTOUT = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
 			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
@@ -706,6 +727,14 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityTranslucent(Identifier texture) {
 		return getEntityTranslucent(texture, true);
+	}
+
+	public static RenderLayer method_40947(Identifier identifier, boolean bl) {
+		return (RenderLayer)field_37002.apply(identifier, bl);
+	}
+
+	public static RenderLayer method_40948(Identifier identifier) {
+		return method_40947(identifier, true);
 	}
 
 	public static RenderLayer getEntitySmoothCutout(Identifier texture) {

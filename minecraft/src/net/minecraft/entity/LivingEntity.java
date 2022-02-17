@@ -34,6 +34,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.FrostWalkerEnchantment;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
@@ -61,6 +62,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
@@ -236,6 +238,7 @@ public abstract class LivingEntity extends Entity {
 	private float leaningPitch;
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
+	private boolean experienceDroppingDisabled;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
 		super(entityType, world);
@@ -262,6 +265,10 @@ public abstract class LivingEntity extends Entity {
 
 	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
 		return this.createBrainProfile().deserialize(dynamic);
+	}
+
+	public <U> U getMemory(MemoryModuleType<U> type) {
+		return (U)this.getBrain().getOptionalMemory(type).get();
 	}
 
 	@Override
@@ -1364,6 +1371,7 @@ public abstract class LivingEntity extends Entity {
 				this.wakeUp();
 			}
 
+			this.emitGameEvent(GameEvent.ENTITY_DYING);
 			if (!this.world.isClient && this.hasCustomName()) {
 				LOGGER.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
 			}
@@ -1434,6 +1442,10 @@ public abstract class LivingEntity extends Entity {
 	protected void dropInventory() {
 	}
 
+	public int getXpToDrop() {
+		return this.getXpToDrop(this.attackingPlayer);
+	}
+
 	/**
 	 * Drops experience when this entity is killed.
 	 * 
@@ -1443,6 +1455,7 @@ public abstract class LivingEntity extends Entity {
 	 */
 	protected void dropXp() {
 		if (this.world instanceof ServerWorld
+			&& !this.isExperienceDroppingDisabled()
 			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
 			ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getXpToDrop(this.attackingPlayer));
 		}
@@ -1499,6 +1512,14 @@ public abstract class LivingEntity extends Entity {
 
 	private SoundEvent getFallSound(int distance) {
 		return distance > 4 ? this.getFallSounds().big() : this.getFallSounds().small();
+	}
+
+	public void disableExperienceDropping() {
+		this.experienceDroppingDisabled = true;
+	}
+
+	public boolean isExperienceDroppingDisabled() {
+		return this.experienceDroppingDisabled;
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {
@@ -1670,7 +1691,7 @@ public abstract class LivingEntity extends Entity {
 				this.setHealth(h - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
-				this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGED);
 			}
 		}
 	}
@@ -2159,7 +2180,7 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				this.setVelocity(vec3d.multiply((double)f, 0.8F, (double)f));
-				Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
+				Vec3d vec3d2 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
 				this.setVelocity(vec3d2);
 				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + e, vec3d2.z)) {
 					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
@@ -2170,7 +2191,7 @@ public abstract class LivingEntity extends Entity {
 				this.move(MovementType.SELF, this.getVelocity());
 				if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
 					this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
-					Vec3d vec3d3 = this.method_26317(d, bl, this.getVelocity());
+					Vec3d vec3d3 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
 					this.setVelocity(vec3d3);
 				} else {
 					this.setVelocity(this.getVelocity().multiply(0.5));
@@ -2284,18 +2305,18 @@ public abstract class LivingEntity extends Entity {
 		return vec3d;
 	}
 
-	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
+	public Vec3d applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion) {
 		if (!this.hasNoGravity() && !this.isSprinting()) {
-			double e;
-			if (bl && Math.abs(vec3d.y - 0.005) >= 0.003 && Math.abs(vec3d.y - d / 16.0) < 0.003) {
-				e = -0.003;
+			double d;
+			if (falling && Math.abs(motion.y - 0.005) >= 0.003 && Math.abs(motion.y - gravity / 16.0) < 0.003) {
+				d = -0.003;
 			} else {
-				e = vec3d.y - d / 16.0;
+				d = motion.y - gravity / 16.0;
 			}
 
-			return new Vec3d(vec3d.x, e, vec3d.z);
+			return new Vec3d(motion.x, d, motion.z);
 		} else {
-			return vec3d;
+			return motion;
 		}
 	}
 
@@ -3159,7 +3180,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public boolean isInSwimmingPose() {
-		return super.isInSwimmingPose() || !this.isFallFlying() && this.getPose() == EntityPose.FALL_FLYING;
+		return super.isInSwimmingPose() || !this.isFallFlying() && this.isInPose(EntityPose.FALL_FLYING);
 	}
 
 	public int getRoll() {
@@ -3496,6 +3517,10 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(
 			(double)((float)packet.getVelocityX() / 8000.0F), (double)((float)packet.getVelocityY() / 8000.0F), (double)((float)packet.getVelocityZ() / 8000.0F)
 		);
+	}
+
+	public boolean disablesShield() {
+		return this.getMainHandStack().getItem() instanceof AxeItem;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

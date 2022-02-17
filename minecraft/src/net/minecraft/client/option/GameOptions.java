@@ -338,6 +338,7 @@ public class GameOptions {
 	public double fov = 70.0;
 	public float distortionEffectScale = 1.0F;
 	public float fovEffectScale = 1.0F;
+	public float darknessEffectScale = 1.0F;
 	public double gamma;
 	public int guiScale;
 	public ParticlesMode particles = ParticlesMode.ALL;

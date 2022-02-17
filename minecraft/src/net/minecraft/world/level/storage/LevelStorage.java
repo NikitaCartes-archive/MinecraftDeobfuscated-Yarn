@@ -32,6 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7043;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
@@ -39,6 +40,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.scanner.Query;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
@@ -76,6 +78,7 @@ public class LevelStorage {
 	private static final ImmutableList<String> GENERATOR_OPTION_KEYS = ImmutableList.of(
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
+	private static final String field_36943 = "Data";
 	final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
@@ -183,18 +186,19 @@ public class LevelStorage {
 	@Nullable
 	private static DataPackSettings readDataPackSettings(File file, DataFixer dataFixer) {
 		try {
-			NbtCompound nbtCompound = NbtIo.readCompressed(file);
-			NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-			nbtCompound2.remove("Player");
-			int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
-			Dynamic<NbtElement> dynamic = dataFixer.update(
-				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
-			);
-			return (DataPackSettings)dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
-		} catch (Exception var6) {
-			LOGGER.error("Exception reading {}", file, var6);
-			return null;
+			if (method_40890(file) instanceof NbtCompound nbtCompound) {
+				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
+				Dynamic<NbtElement> dynamic = dataFixer.update(
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
+				);
+				return (DataPackSettings)dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
+			}
+		} catch (Exception var7) {
+			LOGGER.error("Exception reading {}", file, var7);
 		}
+
+		return null;
 	}
 
 	static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
@@ -222,32 +226,41 @@ public class LevelStorage {
 	BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
 		return (filex, dataFixer) -> {
 			try {
-				NbtCompound nbtCompound = NbtIo.readCompressed(filex);
-				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-				nbtCompound2.remove("Player");
-				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
-				Dynamic<NbtElement> dynamic = dataFixer.update(
-					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
-				);
-				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
-				int j = saveVersionInfo.getLevelFormatVersion();
-				if (j != 19132 && j != 19133) {
-					return null;
+				if (method_40890(filex) instanceof NbtCompound nbtCompound) {
+					NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+					int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
+					Dynamic<NbtElement> dynamic = dataFixer.update(
+						DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
+					);
+					SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
+					int j = saveVersionInfo.getLevelFormatVersion();
+					if (j == 19132 || j == 19133) {
+						boolean bl2 = j != this.getCurrentVersion();
+						File file3 = new File(file, "icon.png");
+						DataPackSettings dataPackSettings = (DataPackSettings)dynamic.get("DataPacks")
+							.result()
+							.map(LevelStorage::parseDataPackSettings)
+							.orElse(DataPackSettings.SAFE_MODE);
+						LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
+						return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, locked, file3);
+					}
 				} else {
-					boolean bl2 = j != this.getCurrentVersion();
-					File file3 = new File(file, "icon.png");
-					DataPackSettings dataPackSettings = (DataPackSettings)dynamic.get("DataPacks")
-						.result()
-						.map(LevelStorage::parseDataPackSettings)
-						.orElse(DataPackSettings.SAFE_MODE);
-					LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-					return new LevelSummary(levelInfo, saveVersionInfo, file.getName(), bl2, locked, file3);
+					LOGGER.warn("Invalid root tag in {}", filex);
 				}
-			} catch (Exception var15) {
-				LOGGER.error("Exception reading {}", filex, var15);
+
+				return null;
+			} catch (Exception var16) {
+				LOGGER.error("Exception reading {}", filex, var16);
 				return null;
 			}
 		};
+	}
+
+	@Nullable
+	private static NbtElement method_40890(File file) throws IOException {
+		class_7043 lv = new class_7043(new Query("Data", NbtCompound.TYPE, "Player"), new Query("Data", NbtCompound.TYPE, "WorldGenSettings"));
+		NbtIo.method_40992(file, lv);
+		return lv.getRoot();
 	}
 
 	public boolean isLevelNameValid(String name) {

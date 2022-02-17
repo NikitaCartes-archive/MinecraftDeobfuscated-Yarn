@@ -236,4 +236,7 @@ public class EntityModelPartNames {
 	 * The key of a right gills model part, whose value is {@value}.
 	 */
 	public static final String RIGHT_GILLS = "right_gills";
+	public static final String field_36985 = "right_tendril";
+	public static final String field_36986 = "left_tendril";
+	public static final String field_36987 = "bone";
 }

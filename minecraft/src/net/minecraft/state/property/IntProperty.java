@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public class IntProperty extends Property<Integer> {
 	private final ImmutableSet<Integer> values;
+	private final int field_36888;
+	private final int field_36889;
 
 	protected IntProperty(String name, int min, int max) {
 		super(name, Integer.class);
@@ -22,6 +24,8 @@ public class IntProperty extends Property<Integer> {
 		} else if (max <= min) {
 			throw new IllegalArgumentException("Max value of " + name + " must be greater than min (" + min + ")");
 		} else {
+			this.field_36888 = min;
+			this.field_36889 = max;
 			Set<Integer> set = Sets.<Integer>newHashSet();
 
 			for (int i = min; i <= max; i++) {
@@ -75,7 +79,7 @@ public class IntProperty extends Property<Integer> {
 	public Optional<Integer> parse(String name) {
 		try {
 			Integer integer = Integer.valueOf(name);
-			return this.values.contains(integer) ? Optional.of(integer) : Optional.empty();
+			return integer >= this.field_36888 && integer <= this.field_36889 ? Optional.of(integer) : Optional.empty();
 		} catch (NumberFormatException var3) {
 			return Optional.empty();
 		}

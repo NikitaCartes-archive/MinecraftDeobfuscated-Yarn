@@ -338,6 +338,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Override
 	public void onEatingGrass() {
+		this.emitGameEvent(GameEvent.EAT);
 		this.setSheared(false);
 		if (this.isBaby()) {
 			this.growUp(60);

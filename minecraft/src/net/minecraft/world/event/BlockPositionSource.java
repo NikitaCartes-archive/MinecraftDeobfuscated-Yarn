@@ -5,6 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BlockPositionSource implements PositionSource {
@@ -18,13 +19,17 @@ public class BlockPositionSource implements PositionSource {
 		this(Optional.of(pos));
 	}
 
-	public BlockPositionSource(Optional<BlockPos> pos) {
-		this.pos = pos;
+	BlockPositionSource(Optional<BlockPos> pos) {
+		if (pos.isEmpty()) {
+			throw new IllegalStateException("Not allowed to be optional");
+		} else {
+			this.pos = pos;
+		}
 	}
 
 	@Override
-	public Optional<BlockPos> getPos(World world) {
-		return this.pos;
+	public Optional<Vec3d> getPos(World world) {
+		return this.pos.map(Vec3d::ofCenter);
 	}
 
 	@Override

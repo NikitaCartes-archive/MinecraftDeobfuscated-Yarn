@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.chunk;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 public class Blender {
-	private static final Blender NO_BLENDING = new Blender(null, List.of(), List.of()) {
+	private static final Blender NO_BLENDING = new Blender(new Long2ObjectOpenHashMap(), new Long2ObjectOpenHashMap()) {
 		@Override
 		public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
 			return terrainNoisePoint;
@@ -60,9 +61,8 @@ public class Blender {
 	private static final double field_36222 = (double)BlendingData.OLD_HEIGHT_LIMIT.getHeight() / 2.0;
 	private static final double field_36223 = (double)BlendingData.OLD_HEIGHT_LIMIT.getBottomY() + field_36222;
 	private static final double field_36224 = 8.0;
-	private final ChunkRegion chunkRegion;
-	private final List<Blender.ChunkBlendingData> field_35509;
-	private final List<Blender.ChunkBlendingData> field_35510;
+	private final Long2ObjectOpenHashMap<BlendingData> field_36897;
+	private final Long2ObjectOpenHashMap<BlendingData> field_36898;
 
 	public static Blender getNoBlending() {
 		return NO_BLENDING;
@@ -72,8 +72,8 @@ public class Blender {
 		if (chunkRegion == null) {
 			return NO_BLENDING;
 		} else {
-			List<Blender.ChunkBlendingData> list = Lists.<Blender.ChunkBlendingData>newArrayList();
-			List<Blender.ChunkBlendingData> list2 = Lists.<Blender.ChunkBlendingData>newArrayList();
+			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
+			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
 			ChunkPos chunkPos = chunkRegion.getCenterPos();
 
 			for (int i = -field_35503; i <= field_35503; i++) {
@@ -82,23 +82,21 @@ public class Blender {
 					int l = chunkPos.z + j;
 					BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, k, l);
 					if (blendingData != null) {
-						Blender.ChunkBlendingData chunkBlendingData = new Blender.ChunkBlendingData(k, l, blendingData);
-						list.add(chunkBlendingData);
+						long2ObjectOpenHashMap.put(ChunkPos.toLong(k, l), blendingData);
 						if (i >= -field_35505 && i <= field_35505 && j >= -field_35505 && j <= field_35505) {
-							list2.add(chunkBlendingData);
+							long2ObjectOpenHashMap2.put(ChunkPos.toLong(k, l), blendingData);
 						}
 					}
 				}
 			}
 
-			return list.isEmpty() && list2.isEmpty() ? NO_BLENDING : new Blender(chunkRegion, list, list2);
+			return long2ObjectOpenHashMap.isEmpty() && long2ObjectOpenHashMap2.isEmpty() ? NO_BLENDING : new Blender(long2ObjectOpenHashMap, long2ObjectOpenHashMap2);
 		}
 	}
 
-	Blender(ChunkRegion chunkRegion, List<Blender.ChunkBlendingData> list, List<Blender.ChunkBlendingData> list2) {
-		this.chunkRegion = chunkRegion;
-		this.field_35509 = list;
-		this.field_35510 = list2;
+	Blender(Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap, Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2) {
+		this.field_36897 = long2ObjectOpenHashMap;
+		this.field_36898 = long2ObjectOpenHashMap2;
 	}
 
 	public TerrainNoisePoint method_39340(int i, int j, TerrainNoisePoint terrainNoisePoint) {
@@ -111,23 +109,23 @@ public class Blender {
 			MutableDouble mutableDouble = new MutableDouble(0.0);
 			MutableDouble mutableDouble2 = new MutableDouble(0.0);
 			MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
+			this.field_36897
+				.forEach(
+					(long_, blendingData) -> blendingData.method_39351(
+							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (kx, lx, dx) -> {
+								double ex = MathHelper.hypot((double)(k - kx), (double)(l - lx));
+								if (!(ex > (double)field_35502)) {
+									if (ex < mutableDouble3.doubleValue()) {
+										mutableDouble3.setValue(ex);
+									}
 
-			for (Blender.ChunkBlendingData chunkBlendingData : this.field_35509) {
-				chunkBlendingData.blendingData
-					.method_39351(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), (kx, lx, dx) -> {
-						double e = MathHelper.hypot((double)(k - kx), (double)(l - lx));
-						if (!(e > (double)field_35502)) {
-							if (e < mutableDouble3.doubleValue()) {
-								mutableDouble3.setValue(e);
+									double fx = 1.0 / (ex * ex * ex * ex);
+									mutableDouble2.add(dx * fx);
+									mutableDouble.add(fx);
+								}
 							}
-
-							double fx = 1.0 / (e * e * e * e);
-							mutableDouble2.add(dx * fx);
-							mutableDouble.add(fx);
-						}
-					});
-			}
-
+						)
+				);
 			if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
 				return terrainNoisePoint;
 			} else {
@@ -160,23 +158,23 @@ public class Blender {
 			MutableDouble mutableDouble = new MutableDouble(0.0);
 			MutableDouble mutableDouble2 = new MutableDouble(0.0);
 			MutableDouble mutableDouble3 = new MutableDouble(Double.POSITIVE_INFINITY);
+			this.field_36898
+				.forEach(
+					(long_, blendingData) -> blendingData.method_39346(
+							BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), m - 1, m + 1, (lx, mx, nx, dx) -> {
+								double ex = MathHelper.magnitude((double)(l - lx), (double)((m - mx) * 2), (double)(n - nx));
+								if (!(ex > 2.0)) {
+									if (ex < mutableDouble3.doubleValue()) {
+										mutableDouble3.setValue(ex);
+									}
 
-			for (Blender.ChunkBlendingData chunkBlendingData : this.field_35510) {
-				chunkBlendingData.blendingData
-					.method_39346(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), m - 1, m + 1, (lx, mx, nx, dx) -> {
-						double ex = MathHelper.magnitude((double)(l - lx), (double)((m - mx) * 2), (double)(n - nx));
-						if (!(ex > 2.0)) {
-							if (ex < mutableDouble3.doubleValue()) {
-								mutableDouble3.setValue(ex);
+									double fx = 1.0 / (ex * ex * ex * ex);
+									mutableDouble2.add(dx * fx);
+									mutableDouble.add(fx);
+								}
 							}
-
-							double f = 1.0 / (ex * ex * ex * ex);
-							mutableDouble2.add(dx * f);
-							mutableDouble.add(f);
-						}
-					});
-			}
-
+						)
+				);
 			if (mutableDouble3.doubleValue() == Double.POSITIVE_INFINITY) {
 				return d;
 			} else {
@@ -213,48 +211,42 @@ public class Blender {
 	}
 
 	private double method_39565(Blender.class_6781 arg, int i, int j, int k, int l, int m) {
-		BlendingData blendingData = BlendingData.getBlendingData(this.chunkRegion, i, j);
+		BlendingData blendingData = this.field_36897.get(ChunkPos.toLong(i, j));
 		return blendingData != null ? arg.get(blendingData, k - BiomeCoords.fromChunk(i), l, m - BiomeCoords.fromChunk(j)) : Double.MAX_VALUE;
 	}
 
 	public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
 		return (x, y, z, noise) -> {
-			Biome biome = this.blendBiome(x, y, z);
+			Biome biome = this.blendBiome(x, z);
 			return biome == null ? biomeSupplier.getBiome(x, y, z, noise) : biome;
 		};
 	}
 
 	@Nullable
-	private Biome blendBiome(int x, int y, int z) {
+	private Biome blendBiome(int x, int z) {
 		double d = (double)x + field_35681.sample((double)x, 0.0, (double)z) * 12.0;
 		double e = (double)z + field_35681.sample((double)z, (double)x, 0.0) * 12.0;
 		MutableDouble mutableDouble = new MutableDouble(Double.POSITIVE_INFINITY);
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		MutableObject<ChunkPos> mutableObject = new MutableObject<>();
-
-		for (Blender.ChunkBlendingData chunkBlendingData : this.field_35509) {
-			chunkBlendingData.blendingData.method_39351(BiomeCoords.fromChunk(chunkBlendingData.chunkX), BiomeCoords.fromChunk(chunkBlendingData.chunkZ), (i, j, f) -> {
-				double g = MathHelper.hypot(d - (double)i, e - (double)j);
-				if (!(g > (double)field_35502)) {
-					if (g < mutableDouble.doubleValue()) {
-						mutableObject.setValue(new ChunkPos(chunkBlendingData.chunkX, chunkBlendingData.chunkZ));
-						mutable.set(i, BiomeCoords.fromBlock(MathHelper.floor(f)), j);
-						mutableDouble.setValue(g);
-					}
-				}
-			});
-		}
-
+		MutableObject<Biome> mutableObject = new MutableObject<>();
+		this.field_36897
+			.forEach(
+				(long_, blendingData) -> blendingData.method_40835(
+						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (i, j, biome) -> {
+							double fx = MathHelper.hypot(d - (double)i, e - (double)j);
+							if (!(fx > (double)field_35502)) {
+								if (fx < mutableDouble.doubleValue()) {
+									mutableObject.setValue(biome);
+									mutableDouble.setValue(fx);
+								}
+							}
+						}
+					)
+			);
 		if (mutableDouble.doubleValue() == Double.POSITIVE_INFINITY) {
 			return null;
 		} else {
 			double f = MathHelper.clamp(mutableDouble.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
-			if (f > 0.5) {
-				return null;
-			} else {
-				Chunk chunk = this.chunkRegion.getChunk(mutableObject.getValue().x, mutableObject.getValue().z);
-				return chunk.getBiomeForNoiseGen(Math.min(mutable.getX() & 3, 3), mutable.getY(), Math.min(mutable.getZ() & 3, 3));
-			}
+			return f > 0.5 ? null : mutableObject.getValue();
 		}
 	}
 
@@ -368,9 +360,6 @@ public class Blender {
 		double k = Math.abs(e) - h;
 		double l = Math.abs(f) - i;
 		return MathHelper.magnitude(Math.max(0.0, j), Math.max(0.0, k), Math.max(0.0, l));
-	}
-
-	static record ChunkBlendingData(int chunkX, int chunkZ, BlendingData blendingData) {
 	}
 
 	interface class_6781 {

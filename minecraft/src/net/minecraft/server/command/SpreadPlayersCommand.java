@@ -7,6 +7,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.Dynamic4CommandExceptionType;
 import java.util.Collection;
 import java.util.Locale;
@@ -35,6 +36,9 @@ public class SpreadPlayersCommand {
 	);
 	private static final Dynamic4CommandExceptionType FAILED_ENTITIES_EXCEPTION = new Dynamic4CommandExceptionType(
 		(pilesCount, x, z, maxSpreadDistance) -> new TranslatableText("commands.spreadplayers.failed.entities", pilesCount, x, z, maxSpreadDistance)
+	);
+	private static final Dynamic2CommandExceptionType field_36637 = new Dynamic2CommandExceptionType(
+		(object, object2) -> new TranslatableText("commands.spreadplayers.failed.invalid.height", object, object2)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -67,7 +71,7 @@ public class SpreadPlayersCommand {
 										.then(
 											CommandManager.literal("under")
 												.then(
-													CommandManager.argument("maxHeight", IntegerArgumentType.integer(0))
+													CommandManager.argument("maxHeight", IntegerArgumentType.integer())
 														.then(
 															CommandManager.argument("respectTeams", BoolArgumentType.bool())
 																.then(
@@ -96,21 +100,27 @@ public class SpreadPlayersCommand {
 	private static int execute(
 		ServerCommandSource source, Vec2f center, float spreadDistance, float maxRange, int maxY, boolean respectTeams, Collection<? extends Entity> players
 	) throws CommandSyntaxException {
-		Random random = new Random();
-		double d = (double)(center.x - maxRange);
-		double e = (double)(center.y - maxRange);
-		double f = (double)(center.x + maxRange);
-		double g = (double)(center.y + maxRange);
-		SpreadPlayersCommand.Pile[] piles = makePiles(random, respectTeams ? getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
-		spread(center, (double)spreadDistance, source.getWorld(), random, d, e, f, g, maxY, piles, respectTeams);
-		double h = getMinDistance(players, source.getWorld(), piles, maxY, respectTeams);
-		source.sendFeedback(
-			new TranslatableText(
-				"commands.spreadplayers.success." + (respectTeams ? "teams" : "entities"), piles.length, center.x, center.y, String.format(Locale.ROOT, "%.2f", h)
-			),
-			true
-		);
-		return piles.length;
+		ServerWorld serverWorld = source.getWorld();
+		int i = serverWorld.getBottomY();
+		if (maxY < i) {
+			throw field_36637.create(maxY, i);
+		} else {
+			Random random = new Random();
+			double d = (double)(center.x - maxRange);
+			double e = (double)(center.y - maxRange);
+			double f = (double)(center.x + maxRange);
+			double g = (double)(center.y + maxRange);
+			SpreadPlayersCommand.Pile[] piles = makePiles(random, respectTeams ? getPileCountRespectingTeams(players) : players.size(), d, e, f, g);
+			spread(center, (double)spreadDistance, serverWorld, random, d, e, f, g, maxY, piles, respectTeams);
+			double h = getMinDistance(players, serverWorld, piles, maxY, respectTeams);
+			source.sendFeedback(
+				new TranslatableText(
+					"commands.spreadplayers.success." + (respectTeams ? "teams" : "entities"), piles.length, center.x, center.y, String.format(Locale.ROOT, "%.2f", h)
+				),
+				true
+			);
+			return piles.length;
+		}
 	}
 
 	private static int getPileCountRespectingTeams(Collection<? extends Entity> entities) {

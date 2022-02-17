@@ -58,6 +58,7 @@ public class StructuresConfig {
 		.put(StructureFeature.BASTION_REMNANT, new StructureConfig(27, 4, 30084232))
 		.put(StructureFeature.FORTRESS, new StructureConfig(27, 4, 30084232))
 		.put(StructureFeature.NETHER_FOSSIL, new StructureConfig(2, 1, 14357921))
+		.put(StructureFeature.ANCIENT_CITY, new StructureConfig(24, 8, 20083232))
 		.build();
 	/**
 	 * Default placement settings for the stronghold.

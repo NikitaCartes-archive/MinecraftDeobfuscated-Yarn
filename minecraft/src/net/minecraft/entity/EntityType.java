@@ -54,6 +54,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.StrayEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
@@ -532,6 +533,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
 		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
+	);
+	public static final EntityType<WardenEntity> WARDEN = register(
+		"warden", EntityType.Builder.<WardenEntity>create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(10)
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)

@@ -176,6 +176,7 @@ public class EntityRenderers {
 		register(EntityType.VEX, VexEntityRenderer::new);
 		register(EntityType.VILLAGER, VillagerEntityRenderer::new);
 		register(EntityType.VINDICATOR, VindicatorEntityRenderer::new);
+		register(EntityType.WARDEN, WardenEntityRenderer::new);
 		register(EntityType.WANDERING_TRADER, WanderingTraderEntityRenderer::new);
 		register(EntityType.WITCH, WitchEntityRenderer::new);
 		register(EntityType.WITHER, WitherEntityRenderer::new);

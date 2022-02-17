@@ -404,6 +404,17 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		profiler.pop();
 	}
 
+	public boolean method_40573() {
+		return this.lightingProvider.hasUpdates()
+			|| !this.chunksToUnload.isEmpty()
+			|| !this.currentChunkHolders.isEmpty()
+			|| this.pointOfInterestStorage.method_40827()
+			|| !this.unloadedChunks.isEmpty()
+			|| !this.unloadTaskQueue.isEmpty()
+			|| this.chunkTaskPrioritySystem.method_40575()
+			|| this.ticketManager.hasTickets();
+	}
+
 	private void unloadChunks(BooleanSupplier shouldKeepTicking) {
 		LongIterator longIterator = this.unloadedChunks.iterator();
 

@@ -89,6 +89,10 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 		}
 	}
 
+	public void method_40588(Runnable runnable) {
+		this.execute(runnable);
+	}
+
 	protected void cancelTasks() {
 		this.tasks.clear();
 	}

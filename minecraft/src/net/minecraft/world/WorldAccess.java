@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.OrderedTick;
@@ -85,17 +86,9 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 		this.syncWorldEvent(null, eventId, pos, data);
 	}
 
-	void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos);
+	void emitGameEvent(@Nullable Entity sourceEntity, GameEvent event, Vec3d pos);
 
-	default void emitGameEvent(GameEvent event, BlockPos pos) {
-		this.emitGameEvent(null, event, pos);
-	}
-
-	default void emitGameEvent(GameEvent event, Entity emitter) {
-		this.emitGameEvent(null, event, emitter.getBlockPos());
-	}
-
-	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {
-		this.emitGameEvent(entity, event, emitter.getBlockPos());
+	default void emitGameEvent(@Nullable Entity sourceEntity, GameEvent event, BlockPos pos) {
+		this.emitGameEvent(sourceEntity, event, Vec3d.ofCenter(pos));
 	}
 }

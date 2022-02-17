@@ -1029,7 +1029,11 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.CALCITE);
 		this.addDrop(Blocks.TUFF);
 		this.addDrop(Blocks.TINTED_GLASS);
-		this.addDrop(Blocks.SCULK_SENSOR);
+		this.addDropWithSilkTouch(Blocks.SCULK_SENSOR);
+		this.addDropWithSilkTouch(Blocks.SCULK);
+		this.addDropWithSilkTouch(Blocks.SCULK_CATALYST);
+		this.addDropWithSilkTouch(Blocks.SCULK_VEIN);
+		this.addDropWithSilkTouch(Blocks.SCULK_SHRIEKER);
 		this.addDrop(Blocks.COPPER_BLOCK);
 		this.addDrop(Blocks.EXPOSED_COPPER);
 		this.addDrop(Blocks.WEATHERED_COPPER);

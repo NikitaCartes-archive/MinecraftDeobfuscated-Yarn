@@ -28,6 +28,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.client.render.BufferBuilder;
@@ -635,6 +636,12 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public void applyNarratorModeChangeDelay() {
 		this.setScreenNarrationDelay(NARRATOR_MODE_CHANGE_DELAY, false);
+	}
+
+	protected static void method_40911(ClickableWidget... clickableWidgets) {
+		for (ClickableWidget clickableWidget : clickableWidgets) {
+			clickableWidget.visible = false;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

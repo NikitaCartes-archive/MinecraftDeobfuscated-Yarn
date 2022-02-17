@@ -649,7 +649,11 @@ public class Items {
 	public static final Item LEVER = register(Blocks.LEVER, ItemGroup.REDSTONE);
 	public static final Item LIGHTNING_ROD = register(Blocks.LIGHTNING_ROD, ItemGroup.REDSTONE);
 	public static final Item DAYLIGHT_DETECTOR = register(Blocks.DAYLIGHT_DETECTOR, ItemGroup.REDSTONE);
-	public static final Item SCULK_SENSOR = register(Blocks.SCULK_SENSOR, createEmptyOptional(ItemGroup.REDSTONE));
+	public static final Item SCULK_SENSOR = register(Blocks.SCULK_SENSOR, ItemGroup.REDSTONE);
+	public static final Item SCULK = register(Blocks.SCULK, ItemGroup.REDSTONE);
+	public static final Item SCULK_VEIN = register(Blocks.SCULK_VEIN, ItemGroup.REDSTONE);
+	public static final Item SCULK_CATALYST = register(Blocks.SCULK_CATALYST, ItemGroup.REDSTONE);
+	public static final Item SCULK_SHRIEKER = register(Blocks.SCULK_SHRIEKER, ItemGroup.REDSTONE);
 	public static final Item TRIPWIRE_HOOK = register(Blocks.TRIPWIRE_HOOK, ItemGroup.REDSTONE);
 	public static final Item TRAPPED_CHEST = register(Blocks.TRAPPED_CHEST, ItemGroup.REDSTONE);
 	public static final Item TNT = register(Blocks.TNT, ItemGroup.REDSTONE);
@@ -1233,6 +1237,9 @@ public class Items {
 	public static final Item VINDICATOR_SPAWN_EGG = register(
 		"vindicator_spawn_egg", new SpawnEggItem(EntityType.VINDICATOR, 9804699, 2580065, new Item.Settings().group(ItemGroup.MISC))
 	);
+	public static final Item WARDEN_SPAWN_EGG = register(
+		"warden_spawn_egg", new SpawnEggItem(EntityType.WARDEN, 1001033, 3790560, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item WANDERING_TRADER_SPAWN_EGG = register(
 		"wandering_trader_spawn_egg", new SpawnEggItem(EntityType.WANDERING_TRADER, 4547222, 15377456, new Item.Settings().group(ItemGroup.MISC))
 	);
@@ -1543,6 +1550,7 @@ public class Items {
 	public static final Item LARGE_AMETHYST_BUD = register(Blocks.LARGE_AMETHYST_BUD, ItemGroup.DECORATIONS);
 	public static final Item AMETHYST_CLUSTER = register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
 	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
+	public static final Item REINFORCED_DEEPSLATE = register(Blocks.REINFORCED_DEEPSLATE, ItemGroup.DECORATIONS);
 
 	private static <T> Optional<T> createEmptyOptional(T of) {
 		return Optional.empty();

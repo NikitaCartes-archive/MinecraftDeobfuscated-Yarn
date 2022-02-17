@@ -169,7 +169,7 @@ public class ClientWorld extends World {
 		this.getWorldBorder().tick();
 		this.tickTime();
 		this.getProfiler().push("blocks");
-		this.chunkManager.tick(shouldKeepTicking);
+		this.chunkManager.tick(shouldKeepTicking, true);
 		this.getProfiler().pop();
 	}
 
@@ -773,7 +773,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+	public void emitGameEvent(@Nullable Entity sourceEntity, GameEvent event, Vec3d pos) {
 	}
 
 	public Map<String, MapState> getMapStates() {

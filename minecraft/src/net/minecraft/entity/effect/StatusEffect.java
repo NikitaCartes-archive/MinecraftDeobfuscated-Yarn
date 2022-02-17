@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +25,7 @@ public class StatusEffect {
 	private final int color;
 	@Nullable
 	private String translationKey;
+	private Supplier<StatusEffectInstance.FactorCalculationData> factorCalculationDataSupplier = () -> null;
 
 	@Nullable
 	public static StatusEffect byRawId(int rawId) {
@@ -37,6 +39,10 @@ public class StatusEffect {
 	protected StatusEffect(StatusEffectCategory category, int color) {
 		this.category = category;
 		this.color = color;
+	}
+
+	public Supplier<StatusEffectInstance.FactorCalculationData> getFactorCalculationDataSupplier() {
+		return this.factorCalculationDataSupplier;
 	}
 
 	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
@@ -129,6 +135,11 @@ public class StatusEffect {
 	public StatusEffect addAttributeModifier(EntityAttribute attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
 		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(uuid), this::getTranslationKey, amount, operation);
 		this.attributeModifiers.put(attribute, entityAttributeModifier);
+		return this;
+	}
+
+	public StatusEffect setFactorCalculationDataSupplier(Supplier<StatusEffectInstance.FactorCalculationData> factorCalculationDataSupplier) {
+		this.factorCalculationDataSupplier = factorCalculationDataSupplier;
 		return this;
 	}
 

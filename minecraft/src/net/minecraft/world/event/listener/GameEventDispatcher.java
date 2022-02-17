@@ -2,7 +2,7 @@ package net.minecraft.world.event.listener;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 
 /**
@@ -27,7 +27,7 @@ public interface GameEventDispatcher {
 		}
 
 		@Override
-		public void dispatch(GameEvent event, @Nullable Entity entity, BlockPos pos) {
+		public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos) {
 		}
 	};
 
@@ -55,7 +55,7 @@ public interface GameEventDispatcher {
 	 * 
 	 * @param event the event
 	 * @param entity an entity related to the event
-	 * @param pos the block position of the event
+	 * @param pos the position of the event
 	 */
-	void dispatch(GameEvent event, @Nullable Entity entity, BlockPos pos);
+	void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos);
 }

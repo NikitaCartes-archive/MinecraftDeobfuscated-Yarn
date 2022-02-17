@@ -7,8 +7,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
@@ -81,6 +84,22 @@ public class LightmapTextureManager implements AutoCloseable {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
+	private float getDarknessFactor(float delta) {
+		if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS)) {
+			StatusEffectInstance statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS);
+			if (statusEffectInstance != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
+				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(delta);
+			}
+		}
+
+		return 0.0F;
+	}
+
+	private float getDarkness(LivingEntity entity, float factor, float delta) {
+		float f = 0.45F * factor;
+		return Math.max(0.0F, MathHelper.cos(((float)entity.age - delta) * (float) Math.PI * 0.025F) * f);
+	}
+
 	public void update(float delta) {
 		if (this.dirty) {
 			this.dirty = false;
@@ -95,66 +114,77 @@ public class LightmapTextureManager implements AutoCloseable {
 					g = f * 0.95F + 0.05F;
 				}
 
-				float h = this.client.player.getUnderwaterVisibility();
-				float i;
+				float h = this.getDarknessFactor(delta) * this.client.options.darknessEffectScale;
+				float i = this.getDarkness(this.client.player, h, delta) * this.client.options.darknessEffectScale;
+				float j = this.client.player.getUnderwaterVisibility();
+				float k;
 				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-					i = GameRenderer.getNightVisionStrength(this.client.player, delta);
-				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
-					i = h;
+					k = GameRenderer.getNightVisionStrength(this.client.player, delta);
+				} else if (j > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
+					k = j;
 				} else {
-					i = 0.0F;
+					k = 0.0F;
 				}
 
 				Vec3f vec3f = new Vec3f(f, f, 1.0F);
 				vec3f.lerp(new Vec3f(1.0F, 1.0F, 1.0F), 0.35F);
-				float j = this.flickerIntensity + 1.5F;
+				float l = this.flickerIntensity + 1.5F;
 				Vec3f vec3f2 = new Vec3f();
 
-				for (int k = 0; k < 16; k++) {
-					for (int l = 0; l < 16; l++) {
-						float m = this.getBrightness(clientWorld, k) * g;
-						float n = this.getBrightness(clientWorld, l) * j;
-						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
-						float q = n * (n * n * 0.6F + 0.4F);
-						vec3f2.set(n, p, q);
-						if (clientWorld.getDimensionEffects().shouldBrightenLighting()) {
+				for (int m = 0; m < 16; m++) {
+					for (int n = 0; n < 16; n++) {
+						float o = this.getBrightness(clientWorld, m) * g;
+						float p = this.getBrightness(clientWorld, n) * l;
+						float r = p * ((p * 0.6F + 0.4F) * 0.6F + 0.4F);
+						float s = p * (p * p * 0.6F + 0.4F);
+						vec3f2.set(p, r, s);
+						boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
+						if (bl) {
 							vec3f2.lerp(new Vec3f(0.99F, 1.12F, 1.0F), 0.25F);
+							vec3f2.clamp(0.0F, 1.0F);
 						} else {
 							Vec3f vec3f3 = vec3f.copy();
-							vec3f3.scale(m);
+							vec3f3.scale(o);
 							vec3f2.add(vec3f3);
 							vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
-								float r = this.renderer.getSkyDarkness(delta);
+								float t = this.renderer.getSkyDarkness(delta);
 								Vec3f vec3f4 = vec3f2.copy();
 								vec3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
-								vec3f2.lerp(vec3f4, r);
+								vec3f2.lerp(vec3f4, t);
 							}
 						}
 
-						vec3f2.clamp(0.0F, 1.0F);
-						if (i > 0.0F) {
-							float s = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()));
-							if (s < 1.0F) {
-								float r = 1.0F / s;
+						if (k > 0.0F) {
+							float u = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()));
+							if (u < 1.0F) {
+								float t = 1.0F / u;
 								Vec3f vec3f4 = vec3f2.copy();
-								vec3f4.scale(r);
-								vec3f2.lerp(vec3f4, i);
+								vec3f4.scale(t);
+								vec3f2.lerp(vec3f4, k);
 							}
 						}
 
-						float s = (float)this.client.options.gamma;
+						if (!bl) {
+							if (i > 0.0F) {
+								vec3f2.add(-i, -i, -i);
+							}
+
+							vec3f2.clamp(0.0F, 1.0F);
+						}
+
+						float u = (float)this.client.options.gamma;
 						Vec3f vec3f5 = vec3f2.copy();
 						vec3f5.modify(this::easeOutQuart);
-						vec3f2.lerp(vec3f5, s);
+						vec3f2.lerp(vec3f5, Math.max(0.0F, u - h));
 						vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
 						vec3f2.clamp(0.0F, 1.0F);
 						vec3f2.scale(255.0F);
-						int t = 255;
-						int u = (int)vec3f2.getX();
-						int v = (int)vec3f2.getY();
-						int w = (int)vec3f2.getZ();
-						this.image.setColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
+						int v = 255;
+						int w = (int)vec3f2.getX();
+						int x = (int)vec3f2.getY();
+						int y = (int)vec3f2.getZ();
+						this.image.setColor(n, m, 0xFF000000 | y << 16 | x << 8 | w);
 					}
 				}
 

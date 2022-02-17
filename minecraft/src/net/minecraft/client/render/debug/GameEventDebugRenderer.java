@@ -50,9 +50,9 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			this.entries.clear();
 			this.listeners.clear();
 		} else {
-			BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
+			Vec3d vec3d = new Vec3d(cameraX, 0.0, cameraZ);
 			this.entries.removeIf(GameEventDebugRenderer.Entry::hasExpired);
-			this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos));
+			this.listeners.removeIf(listener -> listener.isTooFar(world, vec3d));
 			RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
 			RenderSystem.enableBlend();
@@ -62,18 +62,18 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener : this.listeners) {
 				listener.getPos(world)
 					.ifPresent(
-						pos -> {
-							int ix = pos.getX() - listener.getRange();
-							int jx = pos.getY() - listener.getRange();
-							int k = pos.getZ() - listener.getRange();
-							int l = pos.getX() + listener.getRange();
-							int m = pos.getY() + listener.getRange();
-							int n = pos.getZ() + listener.getRange();
+						vec3dx -> {
+							double gx = vec3dx.getX() - (double)listener.getRange();
+							double hx = vec3dx.getY() - (double)listener.getRange();
+							double ix = vec3dx.getZ() - (double)listener.getRange();
+							double jx = vec3dx.getX() + (double)listener.getRange();
+							double k = vec3dx.getY() + (double)listener.getRange();
+							double l = vec3dx.getZ() + (double)listener.getRange();
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.method_22983(
 								matrices,
 								vertexConsumer,
-								VoxelShapes.cuboid(new Box((double)ix, (double)jx, (double)k, (double)l, (double)m, (double)n)),
+								VoxelShapes.cuboid(new Box(gx, hx, ix, jx, k, l)),
 								-cameraX,
 								-cameraY,
 								-cameraZ,
@@ -98,12 +98,12 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.drawBox(
 								bufferBuilder,
-								(double)((float)pos.getX() - 0.25F) - cameraX,
-								(double)pos.getY() - cameraY,
-								(double)((float)pos.getZ() - 0.25F) - cameraZ,
-								(double)((float)pos.getX() + 0.25F) - cameraX,
-								(double)pos.getY() - cameraY + 1.0,
-								(double)((float)pos.getZ() + 0.25F) - cameraZ,
+								pos.getX() - 0.25 - cameraX,
+								pos.getY() - cameraY,
+								pos.getZ() - 0.25 - cameraZ,
+								pos.getX() + 0.25 - cameraX,
+								pos.getY() - cameraY + 1.0,
+								pos.getZ() + 0.25 - cameraZ,
 								vec3f.getX(),
 								vec3f.getY(),
 								vec3f.getZ(),
@@ -121,22 +121,22 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world).ifPresent(pos -> {
-					DebugRenderer.drawString("Listener Origin", (double)pos.getX(), (double)((float)pos.getY() + 1.8F), (double)pos.getZ(), -1, 0.025F);
-					DebugRenderer.drawString(new BlockPos(pos).toString(), (double)pos.getX(), (double)((float)pos.getY() + 1.5F), (double)pos.getZ(), -6959665, 0.025F);
+					DebugRenderer.drawString("Listener Origin", pos.getX(), pos.getY() + 1.8F, pos.getZ(), -1, 0.025F);
+					DebugRenderer.drawString(new BlockPos(pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025F);
 				});
 			}
 
 			for (GameEventDebugRenderer.Entry entry : this.entries) {
-				Vec3d vec3d = entry.pos;
+				Vec3d vec3d2 = entry.pos;
 				double d = 0.2F;
-				double e = vec3d.x - 0.2F;
-				double f = vec3d.y - 0.2F;
-				double g = vec3d.z - 0.2F;
-				double h = vec3d.x + 0.2F;
-				double i = vec3d.y + 0.2F + 0.5;
-				double j = vec3d.z + 0.2F;
+				double e = vec3d2.x - 0.2F;
+				double f = vec3d2.y - 0.2F;
+				double g = vec3d2.z - 0.2F;
+				double h = vec3d2.x + 0.2F;
+				double i = vec3d2.y + 0.2F + 0.5;
+				double j = vec3d2.z + 0.2F;
 				drawBoxIfCameraReady(new Box(e, f, g, h, i, j), 1.0F, 1.0F, 1.0F, 0.2F);
-				DebugRenderer.drawString(entry.event.getId(), vec3d.x, vec3d.y + 0.85F, vec3d.z, -7564911, 0.0075F);
+				DebugRenderer.drawString(entry.event.getId(), vec3d2.x, vec3d2.y + 0.85F, vec3d2.z, -7564911, 0.0075F);
 			}
 
 			RenderSystem.depthMask(true);
@@ -155,8 +155,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public void addEvent(GameEvent event, BlockPos pos) {
-		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), event, Vec3d.ofBottomCenter(pos)));
+	public void addEvent(GameEvent event, Vec3d pos) {
+		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), event, pos));
 	}
 
 	public void addListener(PositionSource positionSource, int range) {
@@ -164,16 +164,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Entry {
-		public final long startingMs;
-		public final GameEvent event;
-		public final Vec3d pos;
-
-		public Entry(long startingMs, GameEvent event, Vec3d pos) {
-			this.startingMs = startingMs;
-			this.event = event;
-			this.pos = pos;
-		}
+	static record Entry(long startingMs, GameEvent event, Vec3d pos) {
 
 		public boolean hasExpired() {
 			return Util.getMeasuringTimeMs() - this.startingMs > 3000L;
@@ -190,12 +181,11 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			this.range = range;
 		}
 
-		public boolean isTooFar(World world, BlockPos pos) {
-			Optional<BlockPos> optional = this.positionSource.getPos(world);
-			return !optional.isPresent() || ((BlockPos)optional.get()).getSquaredDistance(pos) <= 1024.0;
+		public boolean isTooFar(World world, Vec3d to) {
+			return this.positionSource.getPos(world).filter(from -> from.squaredDistanceTo(to) <= 1024.0).isPresent();
 		}
 
-		public Optional<BlockPos> getPos(World world) {
+		public Optional<Vec3d> getPos(World world) {
 			return this.positionSource.getPos(world);
 		}
 
@@ -210,7 +200,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		@Override
-		public boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
+		public boolean listen(World world, GameEvent event, @Nullable Entity sourceEntity, Vec3d pos) {
 			return false;
 		}
 	}

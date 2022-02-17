@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class JigsawBlock extends Block implements BlockEntityProvider, OperatorBlock {
+public class JigsawBlock extends OrientationBlock implements BlockEntityProvider, OperatorBlock {
 	public static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
 
 	protected JigsawBlock(AbstractBlock.Settings settings) {

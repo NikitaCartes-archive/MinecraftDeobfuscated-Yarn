@@ -217,7 +217,7 @@ public class DoorBlock extends Block {
 		if (!this.getDefaultState().isOf(block) && bl != (Boolean)state.get(POWERED)) {
 			if (bl != (Boolean)state.get(OPEN)) {
 				this.playOpenCloseSound(world, pos, bl);
-				world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+				world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 			}
 
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);

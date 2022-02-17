@@ -5,9 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -102,6 +106,38 @@ public enum Direction implements StringIdentifiable {
 		Vector4f vector4f = new Vector4f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ(), 0.0F);
 		vector4f.transform(matrix);
 		return getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+	}
+
+	public static Collection<Direction> shuffle(Random random) {
+		List<Direction> list = (List<Direction>)Arrays.stream(values()).collect(Collectors.toList());
+		Collections.shuffle(list, random);
+		return list;
+	}
+
+	public static Stream<Direction> stream() {
+		return Stream.of(ALL);
+	}
+
+	public static Collection<Direction> unpack(byte directions) {
+		List<Direction> list = new ArrayList(6);
+
+		for (Direction direction : values()) {
+			if ((directions & (byte)(2 << direction.ordinal() >> 1)) > 0) {
+				list.add(direction);
+			}
+		}
+
+		return list;
+	}
+
+	public static byte pack(Collection<Direction> directions) {
+		byte b = 0;
+
+		for (Direction direction : directions) {
+			b = (byte)(b | 2 << direction.ordinal() >> 1);
+		}
+
+		return b;
 	}
 
 	public Quaternion getRotationQuaternion() {

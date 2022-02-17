@@ -195,7 +195,12 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> type) {
-		return ((Optional)this.memories.get(type)).map(Memory::getValue);
+		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
+		if (optional == null) {
+			throw new IllegalStateException("Unregistered memory fetched: " + type);
+		} else {
+			return optional.map(Memory::getValue);
+		}
 	}
 
 	public <U> long getMemory(MemoryModuleType<U> type) {
@@ -329,14 +334,14 @@ public class Brain<E extends LivingEntity> {
 		this.setTaskList(activity, this.indexTaskList(begin, list));
 	}
 
+	public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks) {
+		this.setTaskList(activity, indexedTasks, ImmutableSet.of(), Sets.<MemoryModuleType<?>>newHashSet());
+	}
+
 	public void setTaskList(Activity activity, int begin, ImmutableList<? extends Task<? super E>> tasks, MemoryModuleType<?> memoryType) {
 		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> set = ImmutableSet.of(Pair.of(memoryType, MemoryModuleState.VALUE_PRESENT));
 		Set<MemoryModuleType<?>> set2 = ImmutableSet.of(memoryType);
 		this.setTaskList(activity, this.indexTaskList(begin, tasks), set, set2);
-	}
-
-	public void setTaskList(Activity activity, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks) {
-		this.setTaskList(activity, indexedTasks, ImmutableSet.of(), Sets.<MemoryModuleType<?>>newHashSet());
 	}
 
 	public void setTaskList(
@@ -403,10 +408,11 @@ public class Brain<E extends LivingEntity> {
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
 			if (((Optional)entry.getValue()).isPresent()) {
 				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
-				memory.tick();
 				if (memory.isExpired()) {
 					this.forget((MemoryModuleType)entry.getKey());
 				}
+
+				memory.tick();
 			}
 		}
 	}

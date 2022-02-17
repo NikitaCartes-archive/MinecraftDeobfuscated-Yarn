@@ -36,6 +36,10 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 		this.controlActor = new TaskExecutor<>(new TaskQueue.Prioritized(4), executor, "sorter");
 	}
 
+	public boolean method_40575() {
+		return this.controlActor.method_40589() || this.queues.values().stream().anyMatch(LevelPrioritizedQueue::method_40574);
+	}
+
 	public static <T> ChunkTaskPrioritySystem.Task<T> createTask(Function<MessageListener<Unit>, T> taskFunction, long pos, IntSupplier lastLevelUpdatedToProvider) {
 		return new ChunkTaskPrioritySystem.Task<>(taskFunction, pos, lastLevelUpdatedToProvider);
 	}

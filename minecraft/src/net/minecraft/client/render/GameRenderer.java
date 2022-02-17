@@ -195,6 +195,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	private static Shader renderTypeEntityTranslucentShader;
 	@Nullable
+	private static Shader field_37000;
+	@Nullable
 	private static Shader renderTypeEntitySmoothCutoutShader;
 	@Nullable
 	private static Shader renderTypeBeaconBeamShader;
@@ -487,6 +489,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				Pair.of(
 					new Shader(manager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
 					shader -> renderTypeEntityTranslucentShader = shader
+				)
+			);
+			list2.add(
+				Pair.of(
+					new Shader(manager, "rendertype_entity_translucent_emissive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL), shader -> field_37000 = shader
 				)
 			);
 			list2.add(
@@ -1331,6 +1338,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	public static Shader getRenderTypeEntityTranslucentShader() {
 		return renderTypeEntityTranslucentShader;
+	}
+
+	@Nullable
+	public static Shader method_40941() {
+		return field_37000;
 	}
 
 	@Nullable

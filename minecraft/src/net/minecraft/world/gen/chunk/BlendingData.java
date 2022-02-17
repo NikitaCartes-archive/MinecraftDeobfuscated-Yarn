@@ -25,6 +25,7 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 
@@ -69,6 +70,7 @@ public class BlendingData {
 	private final boolean oldNoise;
 	private boolean field_35690;
 	private final double[] heights;
+	private final Biome[] field_36899;
 	private final transient double[][] field_35693;
 	private final transient double[] field_35694;
 	private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
@@ -93,6 +95,7 @@ public class BlendingData {
 		this.heights = (double[])optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
 		this.field_35693 = new double[field_35518][];
 		this.field_35694 = new double[field_35688 * field_35688];
+		this.field_36899 = new Biome[field_35518];
 	}
 
 	public boolean usesOldNoise() {
@@ -180,6 +183,9 @@ public class BlendingData {
 		}
 
 		this.field_35693[index] = method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
+		this.field_36899[index] = chunk.getBiomeForNoiseGen(
+			BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(MathHelper.floor(this.heights[index])), BiomeCoords.fromBlock(z)
+		);
 	}
 
 	private static int getSurfaceHeight(Chunk chunk, int x, int z) {
@@ -284,8 +290,17 @@ public class BlendingData {
 		}
 	}
 
+	protected void method_40835(int i, int j, BlendingData.class_7000 arg) {
+		for (int k = 0; k < this.field_36899.length; k++) {
+			Biome biome = this.field_36899[k];
+			if (biome != null) {
+				arg.consume(i + method_39343(k), j + method_39352(k), biome);
+			}
+		}
+	}
+
 	protected void method_39351(int i, int j, BlendingData.class_6751 arg) {
-		for (int k = 0; k < this.field_35693.length; k++) {
+		for (int k = 0; k < this.heights.length; k++) {
 			double d = this.heights[k];
 			if (d != Double.MAX_VALUE) {
 				arg.consume(i + method_39343(k), j + method_39352(k), d);
@@ -309,26 +324,10 @@ public class BlendingData {
 				}
 			}
 		}
-
-		if (m >= k && m <= l) {
-			for (int px = 0; px < this.field_35694.length; px++) {
-				int t = this.method_39568(px);
-				int q = this.method_39577(px);
-				arg.consume(t, m, q, this.field_35694[px] * 0.1);
-			}
-		}
 	}
 
 	private int method_39569(int i, int j) {
 		return i * field_35688 + j;
-	}
-
-	private int method_39568(int i) {
-		return i / field_35688;
-	}
-
-	private int method_39577(int i) {
-		return i % field_35688;
 	}
 
 	private static int method_39576() {
@@ -379,5 +378,9 @@ public class BlendingData {
 
 	protected interface class_6751 {
 		void consume(int i, int j, double d);
+	}
+
+	protected interface class_7000 {
+		void consume(int i, int j, Biome biome);
 	}
 }

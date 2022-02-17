@@ -33,6 +33,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class EnchantmentHelper {
 	private static final String ID_KEY = "id";
 	private static final String LEVEL_KEY = "lvl";
+	private static final double field_36823 = 0.15;
 
 	public static NbtCompound createNbt(@Nullable Identifier id, int lvl) {
 		NbtCompound nbtCompound = new NbtCompound();
@@ -220,6 +221,10 @@ public class EnchantmentHelper {
 		}
 	}
 
+	public static double getSwiftSneakSpeedBoost(LivingEntity entity) {
+		return (double)getEquipmentLevel(Enchantments.SWIFT_SNEAK, entity) * 0.15;
+	}
+
 	public static int getKnockback(LivingEntity entity) {
 		return getEquipmentLevel(Enchantments.KNOCKBACK, entity);
 	}
@@ -262,6 +267,10 @@ public class EnchantmentHelper {
 
 	public static boolean hasSoulSpeed(LivingEntity entity) {
 		return getEquipmentLevel(Enchantments.SOUL_SPEED, entity) > 0;
+	}
+
+	public static boolean method_40739(LivingEntity livingEntity) {
+		return getEquipmentLevel(Enchantments.SWIFT_SNEAK, livingEntity) > 0;
 	}
 
 	public static boolean hasBindingCurse(ItemStack stack) {

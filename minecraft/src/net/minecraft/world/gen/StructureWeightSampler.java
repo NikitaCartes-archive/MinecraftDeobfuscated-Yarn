@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -87,7 +88,9 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 			if (structureWeightType == StructureWeightType.BURY) {
 				d += getMagnitudeWeight(l, m, n);
 			} else if (structureWeightType == StructureWeightType.BEARD) {
-				d += getStructureWeight(l, m, n) * 0.8;
+				d += this.method_40831(structurePiece, i, j, k, 1.0F, 5.0F) * 0.8;
+			} else if (structureWeightType == StructureWeightType.BEARD_AND_SHAVE) {
+				d += this.method_40831(structurePiece, i, j, k, 1.0F, 5.0F) * 0.8;
 			}
 		}
 
@@ -137,5 +140,27 @@ public class StructureWeightSampler implements ChunkNoiseSampler.ColumnSampler {
 		double g = Math.pow(Math.E, -(f / 16.0 + d / 16.0));
 		double h = -e * MathHelper.fastInverseSqrt(f / 2.0 + d / 2.0) / 2.0;
 		return h * g;
+	}
+
+	private double method_40831(StructurePiece structurePiece, int i, int j, int k, float f, float g) {
+		BlockBox blockBox = structurePiece.getBoundingBox();
+		int l = blockBox.getMinY();
+		if (j > blockBox.getMaxY()) {
+			l = blockBox.getMaxY();
+		} else if (j > l) {
+			l = j;
+		}
+
+		int m = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
+		int n = j - l;
+		int o = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
+		Vec3d vec3d = new Vec3d((double)blockBox.getCenter().getX(), (double)l, (double)blockBox.getCenter().getZ());
+		Vec3d vec3d2 = new Vec3d((double)i, (double)j, (double)k).subtract(vec3d);
+		double d = vec3d2.length();
+		double e = j > blockBox.getMinY() ? (double)g : (double)f;
+		double h = Math.max((double)blockBox.getBlockCountX() * 0.5, (double)blockBox.getBlockCountZ() * 0.5);
+		double p = h + e;
+		double q = d <= p && p > 0.0 ? 1.5 - d / p : 0.0;
+		return calculateStructureWeight(m, n, o) * q;
 	}
 }
