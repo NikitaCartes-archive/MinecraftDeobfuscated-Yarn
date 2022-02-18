@@ -5,6 +5,9 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.class_6954;
+import net.minecraft.class_7059;
+import net.minecraft.class_7072;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.structure.processor.StructureProcessorList;
@@ -23,6 +26,7 @@ import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.slf4j.Logger;
 
 /**
@@ -47,19 +51,21 @@ public class BuiltinRegistries {
 	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
 		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
 	);
+	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
 	public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeatures::getDefault
 	);
-	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
+	public static final Registry<class_7059> field_37231 = addRegistry(Registry.STRUCTURE_SET_WORLDGEN, class_7072::method_41182);
 	public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = addRegistry(
 		Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS
 	);
 	public static final Registry<StructurePool> STRUCTURE_POOL = addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
 	public static final Registry<Biome> BIOME = addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
+	public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = addRegistry(Registry.NOISE_WORLDGEN, BuiltinNoiseParameters::init);
+	public static final Registry<NoiseType> field_37232 = addRegistry(Registry.DENSITY_FUNCTION_WORLDGEN, class_6954::method_41100);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance
 	);
-	public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = addRegistry(Registry.NOISE_WORLDGEN, BuiltinNoiseParameters::init);
 	public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER = DynamicRegistryManager.of(REGISTRIES);
 
 	private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {

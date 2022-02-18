@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6909;
+import net.minecraft.class_7046;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
@@ -139,6 +139,7 @@ import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
 import net.minecraft.datafixer.fix.StructureSettingsFlattenFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
+import net.minecraft.datafixer.fix.TicksInWrongChunkFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
@@ -804,7 +805,7 @@ public class Schemas {
 		Schema schema150 = builder.addSchema(2842, Schema2842::new);
 		builder.addFixer(new ChunkLevelTagRenameFix(schema150));
 		Schema schema151 = builder.addSchema(2843, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new class_6909(schema151));
+		builder.addFixer(new TicksInWrongChunkFix(schema151));
 		builder.addFixer(new BiomeRenameFix(schema151, false, "Remove Deep Warm Ocean", Map.of("minecraft:deep_warm_ocean", "minecraft:warm_ocean")));
 		Schema schema152 = builder.addSchema(2846, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
@@ -828,6 +829,8 @@ public class Schemas {
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema153));
 		Schema schema154 = builder.addSchema(2967, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StructureSettingsFlattenFix(schema154));
+		Schema schema155 = builder.addSchema(2970, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new class_7046(schema155));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

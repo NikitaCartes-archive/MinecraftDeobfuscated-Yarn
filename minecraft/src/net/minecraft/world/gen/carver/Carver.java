@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_6910;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,6 +22,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
@@ -212,7 +212,7 @@ public abstract class Carver<C extends CarverConfig> {
 		if (pos.getY() <= config.lavaLevel.getY(context)) {
 			return LAVA.getBlockState();
 		} else {
-			BlockState blockState = sampler.apply(new class_6910.class_6914(pos.getX(), pos.getY(), pos.getZ()), 0.0);
+			BlockState blockState = sampler.apply(new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
 			if (blockState == null) {
 				return isDebug(config) ? config.debugConfig.getBarrierState() : null;
 			} else {

@@ -6,7 +6,7 @@ public class ShipwreckFeatureConfig implements FeatureConfig {
 	public static final Codec<ShipwreckFeatureConfig> CODEC = Codec.BOOL
 		.fieldOf("is_beached")
 		.orElse(false)
-		.<ShipwreckFeatureConfig>xmap(ShipwreckFeatureConfig::new, shipwreckFeatureConfig -> shipwreckFeatureConfig.isBeached)
+		.<ShipwreckFeatureConfig>xmap(ShipwreckFeatureConfig::new, config -> config.isBeached)
 		.codec();
 	public final boolean isBeached;
 

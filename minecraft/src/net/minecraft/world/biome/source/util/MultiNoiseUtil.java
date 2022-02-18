@@ -14,12 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_6910;
 import net.minecraft.class_6916;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.gen.noise.NoiseType;
 
 public class MultiNoiseUtil {
 	private static final boolean field_34477 = false;
@@ -75,8 +75,8 @@ public class MultiNoiseUtil {
 	}
 
 	public static MultiNoiseUtil.MultiNoiseSampler method_40443() {
-		class_6910 lv = class_6916.method_40479();
-		return new MultiNoiseUtil.MultiNoiseSampler(lv, lv, lv, lv, lv, lv, List.of());
+		NoiseType noiseType = class_6916.method_40479();
+		return new MultiNoiseUtil.MultiNoiseSampler(noiseType, noiseType, noiseType, noiseType, noiseType, noiseType, List.of());
 	}
 
 	public static BlockPos findFittestPosition(List<MultiNoiseUtil.NoiseHypercube> noises, MultiNoiseUtil.MultiNoiseSampler sampler) {
@@ -187,26 +187,26 @@ public class MultiNoiseUtil {
 	}
 
 	public static record MultiNoiseSampler(
-		class_6910 temperature,
-		class_6910 humidity,
-		class_6910 continentalness,
-		class_6910 erosion,
-		class_6910 depth,
-		class_6910 weirdness,
+		NoiseType temperature,
+		NoiseType humidity,
+		NoiseType continentalness,
+		NoiseType erosion,
+		NoiseType depth,
+		NoiseType weirdness,
 		List<MultiNoiseUtil.NoiseHypercube> spawnTarget
 	) {
 		public MultiNoiseUtil.NoiseValuePoint sample(int x, int y, int z) {
 			int i = BiomeCoords.toBlock(x);
 			int j = BiomeCoords.toBlock(y);
 			int k = BiomeCoords.toBlock(z);
-			class_6910.class_6914 lv = new class_6910.class_6914(i, j, k);
+			NoiseType.UnblendedNoisePos unblendedNoisePos = new NoiseType.UnblendedNoisePos(i, j, k);
 			return MultiNoiseUtil.createNoiseValuePoint(
-				(float)this.temperature.method_40464(lv),
-				(float)this.humidity.method_40464(lv),
-				(float)this.continentalness.method_40464(lv),
-				(float)this.erosion.method_40464(lv),
-				(float)this.depth.method_40464(lv),
-				(float)this.weirdness.method_40464(lv)
+				(float)this.temperature.sample(unblendedNoisePos),
+				(float)this.humidity.sample(unblendedNoisePos),
+				(float)this.continentalness.sample(unblendedNoisePos),
+				(float)this.erosion.sample(unblendedNoisePos),
+				(float)this.depth.sample(unblendedNoisePos),
+				(float)this.weirdness.sample(unblendedNoisePos)
 			);
 		}
 

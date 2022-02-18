@@ -8,16 +8,16 @@ import net.minecraft.util.registry.RegistryEntryList;
 public class SimpleRandomFeatureConfig implements FeatureConfig {
 	public static final Codec<SimpleRandomFeatureConfig> CODEC = Codecs.nonEmptyEntryList(PlacedFeature.LIST_CODEC)
 		.fieldOf("features")
-		.<SimpleRandomFeatureConfig>xmap(SimpleRandomFeatureConfig::new, simpleRandomFeatureConfig -> simpleRandomFeatureConfig.features)
+		.<SimpleRandomFeatureConfig>xmap(SimpleRandomFeatureConfig::new, config -> config.features)
 		.codec();
 	public final RegistryEntryList<PlacedFeature> features;
 
-	public SimpleRandomFeatureConfig(RegistryEntryList<PlacedFeature> registryEntryList) {
-		this.features = registryEntryList;
+	public SimpleRandomFeatureConfig(RegistryEntryList<PlacedFeature> features) {
+		this.features = features;
 	}
 
 	@Override
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
-		return this.features.stream().flatMap(registryEntry -> ((PlacedFeature)registryEntry.value()).getDecoratedFeatures());
+		return this.features.stream().flatMap(feature -> ((PlacedFeature)feature.value()).getDecoratedFeatures());
 	}
 }

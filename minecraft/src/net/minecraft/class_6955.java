@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -21,11 +22,11 @@ public final class class_6955 {
 	private class_6955() {
 	}
 
-	public static ChunkNoiseSampler.BlockStateSampler method_40548(class_6910 arg, class_6910 arg2, class_6910 arg3, RandomDeriver randomDeriver) {
+	public static ChunkNoiseSampler.BlockStateSampler method_40548(NoiseType noiseType, NoiseType noiseType2, NoiseType noiseType3, RandomDeriver randomDeriver) {
 		BlockState blockState = null;
-		return arg4 -> {
-			double d = arg.method_40464(arg4);
-			int i = arg4.blockY();
+		return noisePos -> {
+			double d = noiseType.sample(noisePos);
+			int i = noisePos.blockY();
 			class_6955.VeinType veinType = d > 0.0 ? class_6955.VeinType.COPPER : class_6955.VeinType.IRON;
 			double e = Math.abs(d);
 			int j = veinType.maxY - i;
@@ -36,14 +37,14 @@ public final class class_6955 {
 				if (e + f < 0.4F) {
 					return blockState;
 				} else {
-					AbstractRandom abstractRandom = randomDeriver.createRandom(arg4.blockX(), i, arg4.blockZ());
+					AbstractRandom abstractRandom = randomDeriver.createRandom(noisePos.blockX(), i, noisePos.blockZ());
 					if (abstractRandom.nextFloat() > 0.7F) {
 						return blockState;
-					} else if (arg2.method_40464(arg4) >= 0.0) {
+					} else if (noiseType2.sample(noisePos) >= 0.0) {
 						return blockState;
 					} else {
 						double g = MathHelper.clampedLerpFromProgress(e, 0.4F, 0.6F, 0.1F, 0.3F);
-						if ((double)abstractRandom.nextFloat() < g && arg3.method_40464(arg4) > -0.3F) {
+						if ((double)abstractRandom.nextFloat() < g && noiseType3.sample(noisePos) > -0.3F) {
 							return abstractRandom.nextFloat() < 0.02F ? veinType.rawBlock : veinType.ore;
 						} else {
 							return veinType.stone;

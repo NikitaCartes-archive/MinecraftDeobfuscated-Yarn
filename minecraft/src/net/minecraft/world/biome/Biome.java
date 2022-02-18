@@ -53,7 +53,7 @@ public final class Biome {
 					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
 					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects)
 				)
-				.apply(instance, (weather, category, biomeEffects) -> new Biome(weather, category, biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
+				.apply(instance, (weather, category, effects) -> new Biome(weather, category, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
 	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
 	public static final Codec<RegistryEntryList<Biome>> field_26750 = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
@@ -290,7 +290,7 @@ public final class Biome {
 		@Nullable
 		private GenerationSettings generationSettings;
 
-		public static Biome.Builder method_40137(Biome biome) {
+		public static Biome.Builder copy(Biome biome) {
 			return new Biome.Builder()
 				.precipitation(biome.getPrecipitation())
 				.category(biome.getCategory())

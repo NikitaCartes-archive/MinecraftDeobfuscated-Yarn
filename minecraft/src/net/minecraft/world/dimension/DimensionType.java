@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
+import net.minecraft.class_7059;
 import net.minecraft.block.Block;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
@@ -29,7 +30,6 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class DimensionType {
 	public static final int SIZE_BITS_Y = BlockPos.SIZE_BITS_Y;
@@ -295,7 +295,7 @@ public class DimensionType {
 		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-		Registry<ConfiguredStructureFeature<?, ?>> registry3 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<class_7059> registry3 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 		Registry<ChunkGeneratorSettings> registry4 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry5 = registryManager.get(Registry.NOISE_WORLDGEN);
 		mutableRegistry.add(
@@ -303,7 +303,7 @@ public class DimensionType {
 			new DimensionOptions(
 				registry.getOrCreateEntry(THE_NETHER_REGISTRY_KEY),
 				new NoiseChunkGenerator(
-					registry5, registry3, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.NETHER)
+					registry3, registry5, MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(registry2, bl), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.NETHER)
 				)
 			),
 			Lifecycle.stable()
@@ -312,7 +312,7 @@ public class DimensionType {
 			DimensionOptions.END,
 			new DimensionOptions(
 				registry.getOrCreateEntry(THE_END_REGISTRY_KEY),
-				new NoiseChunkGenerator(registry5, registry3, new TheEndBiomeSource(registry2, seed), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.END))
+				new NoiseChunkGenerator(registry3, registry5, new TheEndBiomeSource(registry2, seed), seed, registry4.getOrCreateEntry(ChunkGeneratorSettings.END))
 			),
 			Lifecycle.stable()
 		);

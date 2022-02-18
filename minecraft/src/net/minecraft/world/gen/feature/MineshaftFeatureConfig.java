@@ -6,8 +6,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class MineshaftFeatureConfig implements FeatureConfig {
 	public static final Codec<MineshaftFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.probability),
-					MineshaftFeature.Type.CODEC.fieldOf("type").forGetter(mineshaftFeatureConfig -> mineshaftFeatureConfig.type)
+					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(config -> config.probability),
+					MineshaftFeature.Type.CODEC.fieldOf("type").forGetter(config -> config.type)
 				)
 				.apply(instance, MineshaftFeatureConfig::new)
 	);

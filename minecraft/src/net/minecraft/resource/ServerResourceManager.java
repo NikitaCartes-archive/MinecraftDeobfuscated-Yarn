@@ -111,7 +111,7 @@ public class ServerResourceManager {
 		Map<TagKey<T>, List<RegistryEntry<T>>> map = (Map<TagKey<T>, List<RegistryEntry<T>>>)registryTags.tags()
 			.entrySet()
 			.stream()
-			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.intern(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));
+			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));
 		dynamicRegistryManager.get(registryKey).populateTags(map);
 	}
 }

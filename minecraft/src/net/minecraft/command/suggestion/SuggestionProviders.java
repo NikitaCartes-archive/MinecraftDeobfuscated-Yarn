@@ -28,17 +28,9 @@ public class SuggestionProviders {
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = register(
 		new Identifier("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
 	);
-	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_BIOMES = register(
-		new Identifier("available_biomes"),
-		(context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRegistryManager().get(Registry.BIOME_KEY).getIds(), builder)
-	);
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_FEATURES = register(
 		new Identifier("available_features"),
 		(context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY).getIds(), builder)
-	);
-	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_STRUCTURES = register(
-		new Identifier("available_structures"),
-		(context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRegistryManager().get(Registry.STRUCTURE_FEATURE_KEY).getIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),

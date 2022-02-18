@@ -70,7 +70,7 @@ public class ItemStringReader {
 			this.suggestions = this::suggestTag;
 			this.reader.expect('#');
 			this.cursor = this.reader.getCursor();
-			this.id = TagKey.intern(Registry.ITEM_KEY, Identifier.fromCommandInput(this.reader));
+			this.id = TagKey.of(Registry.ITEM_KEY, Identifier.fromCommandInput(this.reader));
 		}
 	}
 

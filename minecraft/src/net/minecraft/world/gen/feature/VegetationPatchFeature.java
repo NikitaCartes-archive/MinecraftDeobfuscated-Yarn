@@ -25,7 +25,7 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		VegetationPatchFeatureConfig vegetationPatchFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
-		Predicate<BlockState> predicate = blockState -> blockState.isIn(vegetationPatchFeatureConfig.replaceable);
+		Predicate<BlockState> predicate = state -> state.isIn(vegetationPatchFeatureConfig.replaceable);
 		int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
 		int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
 		Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);

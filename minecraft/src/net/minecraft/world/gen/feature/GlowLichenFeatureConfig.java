@@ -14,12 +14,12 @@ import net.minecraft.util.registry.RegistryEntryList;
 public class GlowLichenFeatureConfig implements FeatureConfig {
 	public static final Codec<GlowLichenFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.intRange(1, 64).fieldOf("search_range").orElse(10).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.searchRange),
-					Codec.BOOL.fieldOf("can_place_on_floor").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnFloor),
-					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnCeiling),
-					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.placeOnWalls),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spreading").orElse(0.5F).forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.spreadChance),
-					RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_be_placed_on").forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.canPlaceOn)
+					Codec.intRange(1, 64).fieldOf("search_range").orElse(10).forGetter(config -> config.searchRange),
+					Codec.BOOL.fieldOf("can_place_on_floor").orElse(false).forGetter(config -> config.placeOnFloor),
+					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(config -> config.placeOnCeiling),
+					Codec.BOOL.fieldOf("can_place_on_wall").orElse(false).forGetter(config -> config.placeOnWalls),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spreading").orElse(0.5F).forGetter(config -> config.spreadChance),
+					RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_be_placed_on").forGetter(config -> config.canPlaceOn)
 				)
 				.apply(instance, GlowLichenFeatureConfig::new)
 	);
@@ -32,14 +32,14 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 	public final List<Direction> directions;
 
 	public GlowLichenFeatureConfig(
-		int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, RegistryEntryList<Block> registryEntryList
+		int searchRange, boolean placeOnFloor, boolean placeOnCeiling, boolean placeOnWalls, float spreadChance, RegistryEntryList<Block> canPlaceOn
 	) {
 		this.searchRange = searchRange;
 		this.placeOnFloor = placeOnFloor;
 		this.placeOnCeiling = placeOnCeiling;
 		this.placeOnWalls = placeOnWalls;
 		this.spreadChance = spreadChance;
-		this.canPlaceOn = registryEntryList;
+		this.canPlaceOn = canPlaceOn;
 		List<Direction> list = Lists.<Direction>newArrayList();
 		if (placeOnCeiling) {
 			list.add(Direction.UP);

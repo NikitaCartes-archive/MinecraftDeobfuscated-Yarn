@@ -54,7 +54,7 @@ public class FluidPredicate {
 			TagKey<Fluid> tagKey = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tagKey = TagKey.intern(Registry.FLUID_KEY, identifier2);
+				tagKey = TagKey.of(Registry.FLUID_KEY, identifier2);
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));

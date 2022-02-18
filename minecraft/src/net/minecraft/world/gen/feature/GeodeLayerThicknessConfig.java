@@ -7,10 +7,10 @@ public class GeodeLayerThicknessConfig {
 	private static final Codec<Double> RANGE = Codec.doubleRange(0.01, 50.0);
 	public static final Codec<GeodeLayerThicknessConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RANGE.fieldOf("filling").orElse(1.7).forGetter(geodeLayerThicknessConfig -> geodeLayerThicknessConfig.filling),
-					RANGE.fieldOf("inner_layer").orElse(2.2).forGetter(geodeLayerThicknessConfig -> geodeLayerThicknessConfig.innerLayer),
-					RANGE.fieldOf("middle_layer").orElse(3.2).forGetter(geodeLayerThicknessConfig -> geodeLayerThicknessConfig.middleLayer),
-					RANGE.fieldOf("outer_layer").orElse(4.2).forGetter(geodeLayerThicknessConfig -> geodeLayerThicknessConfig.outerLayer)
+					RANGE.fieldOf("filling").orElse(1.7).forGetter(config -> config.filling),
+					RANGE.fieldOf("inner_layer").orElse(2.2).forGetter(config -> config.innerLayer),
+					RANGE.fieldOf("middle_layer").orElse(3.2).forGetter(config -> config.middleLayer),
+					RANGE.fieldOf("outer_layer").orElse(4.2).forGetter(config -> config.outerLayer)
 				)
 				.apply(instance, GeodeLayerThicknessConfig::new)
 	);

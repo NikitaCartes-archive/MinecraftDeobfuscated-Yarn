@@ -147,8 +147,8 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			);
 	}
 
-	private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> registryEntry) {
-		return registryEntry.value().isCold(pos);
+	private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> biome) {
+		return biome.value().isCold(pos);
 	}
 
 	private static int getFloorHeight(

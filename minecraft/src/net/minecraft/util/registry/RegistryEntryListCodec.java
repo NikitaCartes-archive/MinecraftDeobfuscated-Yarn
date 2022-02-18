@@ -74,7 +74,7 @@ public class RegistryEntryListCodec<E> implements Codec<RegistryEntryList<E>> {
 		if (dynamicOps instanceof RegistryOps<T> registryOps) {
 			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
 			if (optional.isPresent()) {
-				if (!registryEntryList.method_40560((Registry<E>)optional.get())) {
+				if (!registryEntryList.isOf((Registry<E>)optional.get())) {
 					return DataResult.error("HolderSet " + registryEntryList + " is not valid in current registry set");
 				}
 

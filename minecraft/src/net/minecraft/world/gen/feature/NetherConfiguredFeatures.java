@@ -35,7 +35,7 @@ public class NetherConfiguredFeatures {
 		Feature.NETHERRACK_REPLACE_BLOBS,
 		new ReplaceBlobsFeatureConfig(Blocks.NETHERRACK.getDefaultState(), Blocks.BLACKSTONE.getDefaultState(), UniformIntProvider.create(3, 7))
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> GLOWSTONE_EXTRA = ConfiguredFeatures.method_40364(
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> GLOWSTONE_EXTRA = ConfiguredFeatures.register(
 		"glowstone_extra", Feature.GLOWSTONE_BLOB
 	);
 	public static final WeightedBlockStateProvider CRIMSON_FOREST_VEGETATION_PROVIDER = new WeightedBlockStateProvider(
@@ -75,7 +75,7 @@ public class NetherConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<TwistingVinesFeatureConfig, ?>> TWISTING_VINES_BONEMEAL = ConfiguredFeatures.register(
 		"twisting_vines_bonemeal", Feature.TWISTING_VINES, new TwistingVinesFeatureConfig(3, 1, 2)
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> WEEPING_VINES = ConfiguredFeatures.method_40364(
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> WEEPING_VINES = ConfiguredFeatures.register(
 		"weeping_vines", Feature.WEEPING_VINES
 	);
 	public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_CRIMSON_ROOTS = ConfiguredFeatures.register(
@@ -83,7 +83,7 @@ public class NetherConfiguredFeatures {
 		Feature.RANDOM_PATCH,
 		ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.CRIMSON_ROOTS)))
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BASALT_PILLAR = ConfiguredFeatures.method_40364(
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BASALT_PILLAR = ConfiguredFeatures.register(
 		"basalt_pillar", Feature.BASALT_PILLAR
 	);
 	public static final RegistryEntry<ConfiguredFeature<SpringFeatureConfig, ?>> SPRING_LAVA_NETHER = ConfiguredFeatures.register(

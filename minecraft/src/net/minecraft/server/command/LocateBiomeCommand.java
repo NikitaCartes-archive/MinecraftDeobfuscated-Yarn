@@ -3,12 +3,12 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_7066;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
@@ -23,21 +23,19 @@ public class LocateBiomeCommand {
 			CommandManager.literal("locatebiome")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("biome", IdentifierArgumentType.identifier())
-						.suggests(SuggestionProviders.AVAILABLE_BIOMES)
-						.executes(context -> execute(context.getSource(), IdentifierArgumentType.getBiomeEntry(context, "biome")))
+					CommandManager.argument("biome", class_7066.method_41170(Registry.BIOME_KEY))
+						.executes(context -> execute(context.getSource(), class_7066.method_41165(context, "biome")))
 				)
 		);
 	}
 
-	private static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<Biome> biomeEntry) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, class_7066.class_7068<Biome> arg) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		BlockPos blockPos2 = source.getWorld().locateBiome(RegistryKey.of(Registry.BIOME_KEY, biomeEntry.id()), blockPos, 6400, 8);
-		String string = biomeEntry.id().toString();
-		if (blockPos2 == null) {
-			throw NOT_FOUND_EXCEPTION.create(string);
+		Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(arg, blockPos, 6400, 8);
+		if (pair == null) {
+			throw NOT_FOUND_EXCEPTION.create(arg.method_41176());
 		} else {
-			return LocateCommand.sendCoordinates(source, string, blockPos, blockPos2, "commands.locatebiome.success");
+			return LocateCommand.sendCoordinates(source, arg, blockPos, pair, "commands.locatebiome.success");
 		}
 	}
 }

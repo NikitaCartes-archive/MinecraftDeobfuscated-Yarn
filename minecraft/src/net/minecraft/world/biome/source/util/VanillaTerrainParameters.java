@@ -18,31 +18,22 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
-public final class VanillaTerrainParameters {
+public record VanillaTerrainParameters(
+	@Debug Spline<VanillaTerrainParameters.NoisePoint> offsetSpline,
+	@Debug Spline<VanillaTerrainParameters.NoisePoint> factorSpline,
+	@Debug Spline<VanillaTerrainParameters.NoisePoint> peakSpline
+) {
 	private static final Codec<Spline<VanillaTerrainParameters.NoisePoint>> field_35457 = Spline.createCodec(VanillaTerrainParameters.LocationFunction.field_35464);
 	public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					field_35457.fieldOf("offset").forGetter(VanillaTerrainParameters::getOffsetSpline),
-					field_35457.fieldOf("factor").forGetter(VanillaTerrainParameters::getFactorSpline),
+					field_35457.fieldOf("offset").forGetter(VanillaTerrainParameters::offsetSpline),
+					field_35457.fieldOf("factor").forGetter(VanillaTerrainParameters::factorSpline),
 					field_35457.fieldOf("jaggedness").forGetter(vanillaTerrainParameters -> vanillaTerrainParameters.peakSpline)
 				)
 				.apply(instance, VanillaTerrainParameters::new)
 	);
 	private static final float OFFSET_VALUE_OFFSET = -0.50375F;
 	private static final ToFloatFunction<Float> field_35673 = float_ -> float_;
-	private final Spline<VanillaTerrainParameters.NoisePoint> offsetSpline;
-	private final Spline<VanillaTerrainParameters.NoisePoint> factorSpline;
-	private final Spline<VanillaTerrainParameters.NoisePoint> peakSpline;
-
-	public VanillaTerrainParameters(
-		Spline<VanillaTerrainParameters.NoisePoint> offsetSpline,
-		Spline<VanillaTerrainParameters.NoisePoint> factorSpline,
-		Spline<VanillaTerrainParameters.NoisePoint> peakSpline
-	) {
-		this.offsetSpline = offsetSpline;
-		this.factorSpline = factorSpline;
-		this.peakSpline = peakSpline;
-	}
 
 	private static float method_39534(float f) {
 		return f < 0.0F ? f : f * 2.0F;
@@ -330,21 +321,6 @@ public final class VanillaTerrainParameters {
 				)
 			);
 		}
-	}
-
-	@Debug
-	public Spline<VanillaTerrainParameters.NoisePoint> getOffsetSpline() {
-		return this.offsetSpline;
-	}
-
-	@Debug
-	public Spline<VanillaTerrainParameters.NoisePoint> getFactorSpline() {
-		return this.factorSpline;
-	}
-
-	@Debug
-	public Spline<VanillaTerrainParameters.NoisePoint> getPeakSpline() {
-		return this.peakSpline;
 	}
 
 	public float getOffset(VanillaTerrainParameters.NoisePoint point) {

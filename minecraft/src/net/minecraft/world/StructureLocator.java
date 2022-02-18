@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.DataFixTypes;
@@ -23,10 +22,10 @@ import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -52,8 +51,8 @@ public class StructureLocator {
 	private final BiomeSource biomeSource;
 	private final long seed;
 	private final DataFixer dataFixer;
-	private final Long2ObjectMap<Object2IntMap<StructureFeature<?>>> cachedFeaturesByChunkPos = new Long2ObjectOpenHashMap<>();
-	private final Map<StructureFeature<?>, Long2BooleanMap> generationPossibilityByFeature = new HashMap();
+	private final Long2ObjectMap<Object2IntMap<ConfiguredStructureFeature<?, ?>>> cachedFeaturesByChunkPos = new Long2ObjectOpenHashMap<>();
+	private final Map<ConfiguredStructureFeature<?, ?>, Long2BooleanMap> generationPossibilityByFeature = new HashMap();
 
 	public StructureLocator(
 		NbtScannable chunkIoWorker,
@@ -79,26 +78,19 @@ public class StructureLocator {
 		this.configuredStructureFeatureRegistry = registryManager.getManaged(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
 	}
 
-	public <F extends StructureFeature<?>> StructurePresence getStructurePresence(ChunkPos pos, F feature, boolean skipExistingChunk) {
-		long l = pos.toLong();
-		Object2IntMap<StructureFeature<?>> object2IntMap = this.cachedFeaturesByChunkPos.get(l);
+	public StructurePresence getStructurePresence(ChunkPos chunkPos, ConfiguredStructureFeature<?, ?> configuredStructureFeature, boolean skipExistingChunk) {
+		long l = chunkPos.toLong();
+		Object2IntMap<ConfiguredStructureFeature<?, ?>> object2IntMap = this.cachedFeaturesByChunkPos.get(l);
 		if (object2IntMap != null) {
-			return this.getStructurePresence(object2IntMap, feature, skipExistingChunk);
+			return this.getStructurePresence(object2IntMap, configuredStructureFeature, skipExistingChunk);
 		} else {
-			StructurePresence structurePresence = this.getStructurePresence(pos, feature, skipExistingChunk, l);
+			StructurePresence structurePresence = this.getStructurePresence(chunkPos, configuredStructureFeature, skipExistingChunk, l);
 			if (structurePresence != null) {
 				return structurePresence;
 			} else {
-				boolean bl = ((Long2BooleanMap)this.generationPossibilityByFeature.computeIfAbsent(feature, featurex -> new Long2BooleanOpenHashMap()))
-					.computeIfAbsent(l, (Long2BooleanFunction)(posx -> {
-						for (RegistryEntry.Reference<ConfiguredStructureFeature<?, ?>> reference : this.chunkGenerator.method_40447(feature)) {
-							if (this.isGenerationPossible(pos, reference.value())) {
-								return true;
-							}
-						}
-
-						return false;
-					}));
+				boolean bl = ((Long2BooleanMap)this.generationPossibilityByFeature
+						.computeIfAbsent(configuredStructureFeature, configuredStructureFeaturex -> new Long2BooleanOpenHashMap()))
+					.computeIfAbsent(l, (Long2BooleanFunction)(lx -> this.isGenerationPossible(chunkPos, configuredStructureFeature)));
 				return !bl ? StructurePresence.START_NOT_PRESENT : StructurePresence.CHUNK_LOAD_NEEDED;
 			}
 		}
@@ -120,12 +112,14 @@ public class StructureLocator {
 				pos,
 				feature.config,
 				this.world,
-				feature.method_40549()::contains
+				feature.getBiomes()::contains
 			);
 	}
 
 	@Nullable
-	private StructurePresence getStructurePresence(ChunkPos pos, StructureFeature<?> feature, boolean skipExistingChunk, long posLong) {
+	private StructurePresence getStructurePresence(
+		ChunkPos pos, ConfiguredStructureFeature<?, ?> configuredStructureFeature, boolean skipExistingChunk, long posLong
+	) {
 		SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
 			new NbtScanQuery(NbtInt.TYPE, "DataVersion"),
 			new NbtScanQuery("Level", "Structures", NbtCompound.TYPE, "Starts"),
@@ -156,19 +150,19 @@ public class StructureLocator {
 					return StructurePresence.CHUNK_LOAD_NEEDED;
 				}
 
-				Object2IntMap<StructureFeature<?>> object2IntMap = this.collectStructuresAndReferences(nbtCompound2);
+				Object2IntMap<ConfiguredStructureFeature<?, ?>> object2IntMap = this.collectStructuresAndReferences(nbtCompound2);
 				if (object2IntMap == null) {
 					return null;
 				} else {
 					this.cache(posLong, object2IntMap);
-					return this.getStructurePresence(object2IntMap, feature, skipExistingChunk);
+					return this.getStructurePresence(object2IntMap, configuredStructureFeature, skipExistingChunk);
 				}
 			}
 		}
 	}
 
 	@Nullable
-	private Object2IntMap<StructureFeature<?>> collectStructuresAndReferences(NbtCompound nbt) {
+	private Object2IntMap<ConfiguredStructureFeature<?, ?>> collectStructuresAndReferences(NbtCompound nbt) {
 		if (!nbt.contains("structures", NbtElement.COMPOUND_TYPE)) {
 			return null;
 		} else {
@@ -180,18 +174,21 @@ public class StructureLocator {
 				if (nbtCompound2.isEmpty()) {
 					return Object2IntMaps.emptyMap();
 				} else {
-					Object2IntMap<StructureFeature<?>> object2IntMap = new Object2IntOpenHashMap<>();
+					Object2IntMap<ConfiguredStructureFeature<?, ?>> object2IntMap = new Object2IntOpenHashMap<>();
+					Registry<ConfiguredStructureFeature<?, ?>> registry = this.registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
 
 					for (String string : nbtCompound2.getKeys()) {
-						String string2 = string.toLowerCase(Locale.ROOT);
-						StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string2);
-						if (structureFeature != null) {
-							NbtCompound nbtCompound3 = nbtCompound2.getCompound(string);
-							if (!nbtCompound3.isEmpty()) {
-								String string3 = nbtCompound3.getString("id");
-								if (!"INVALID".equals(string3)) {
-									int i = nbtCompound3.getInt("references");
-									object2IntMap.put(structureFeature, i);
+						Identifier identifier = Identifier.tryParse(string);
+						if (identifier != null) {
+							ConfiguredStructureFeature<?, ?> configuredStructureFeature = registry.get(identifier);
+							if (configuredStructureFeature != null) {
+								NbtCompound nbtCompound3 = nbtCompound2.getCompound(string);
+								if (!nbtCompound3.isEmpty()) {
+									String string2 = nbtCompound3.getString("id");
+									if (!"INVALID".equals(string2)) {
+										int i = nbtCompound3.getInt("references");
+										object2IntMap.put(configuredStructureFeature, i);
+									}
 								}
 							}
 						}
@@ -203,40 +200,40 @@ public class StructureLocator {
 		}
 	}
 
-	private static Object2IntMap<StructureFeature<?>> createMapIfEmpty(Object2IntMap<StructureFeature<?>> map) {
+	private static Object2IntMap<ConfiguredStructureFeature<?, ?>> createMapIfEmpty(Object2IntMap<ConfiguredStructureFeature<?, ?>> map) {
 		return map.isEmpty() ? Object2IntMaps.emptyMap() : map;
 	}
 
 	private StructurePresence getStructurePresence(
-		Object2IntMap<StructureFeature<?>> referencesByStructure, StructureFeature<?> feature, boolean skipExistingChunk
+		Object2IntMap<ConfiguredStructureFeature<?, ?>> referencesByStructure, ConfiguredStructureFeature<?, ?> configuredStructureFeature, boolean skipExistingChunk
 	) {
-		int i = referencesByStructure.getOrDefault(feature, -1);
+		int i = referencesByStructure.getOrDefault(configuredStructureFeature, -1);
 		return i == -1 || skipExistingChunk && i != 0 ? StructurePresence.START_NOT_PRESENT : StructurePresence.START_PRESENT;
 	}
 
-	public void cache(ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> structureStarts) {
+	public void cache(ChunkPos pos, Map<ConfiguredStructureFeature<?, ?>, StructureStart> structureStarts) {
 		long l = pos.toLong();
-		Object2IntMap<StructureFeature<?>> object2IntMap = new Object2IntOpenHashMap<>();
-		structureStarts.forEach((start, structureStart) -> {
+		Object2IntMap<ConfiguredStructureFeature<?, ?>> object2IntMap = new Object2IntOpenHashMap<>();
+		structureStarts.forEach((configuredStructureFeature, structureStart) -> {
 			if (structureStart.hasChildren()) {
-				object2IntMap.put(start, structureStart.getReferences());
+				object2IntMap.put(configuredStructureFeature, structureStart.getReferences());
 			}
 		});
 		this.cache(l, object2IntMap);
 	}
 
-	private void cache(long pos, Object2IntMap<StructureFeature<?>> referencesByStructure) {
+	private void cache(long pos, Object2IntMap<ConfiguredStructureFeature<?, ?>> referencesByStructure) {
 		this.cachedFeaturesByChunkPos.put(pos, createMapIfEmpty(referencesByStructure));
 		this.generationPossibilityByFeature.values().forEach(generationPossibilityByChunkPos -> generationPossibilityByChunkPos.remove(pos));
 	}
 
-	public void incrementReferences(ChunkPos pos, StructureFeature<?> feature) {
+	public void incrementReferences(ChunkPos pos, ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
 		this.cachedFeaturesByChunkPos.compute(pos.toLong(), (posx, referencesByStructure) -> {
 			if (referencesByStructure == null || referencesByStructure.isEmpty()) {
 				referencesByStructure = new Object2IntOpenHashMap();
 			}
 
-			referencesByStructure.computeInt(feature, (featurex, references) -> references == null ? 1 : references + 1);
+			referencesByStructure.computeInt(configuredStructureFeature, (configuredStructureFeaturexx, references) -> references == null ? 1 : references + 1);
 			return referencesByStructure;
 		});
 	}

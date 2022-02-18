@@ -8,17 +8,17 @@ import net.minecraft.util.registry.RegistryEntry;
 public class RandomBooleanFeatureConfig implements FeatureConfig {
 	public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					PlacedFeature.REGISTRY_CODEC.fieldOf("feature_true").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue),
-					PlacedFeature.REGISTRY_CODEC.fieldOf("feature_false").forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)
+					PlacedFeature.REGISTRY_CODEC.fieldOf("feature_true").forGetter(config -> config.featureTrue),
+					PlacedFeature.REGISTRY_CODEC.fieldOf("feature_false").forGetter(config -> config.featureFalse)
 				)
 				.apply(instance, RandomBooleanFeatureConfig::new)
 	);
 	public final RegistryEntry<PlacedFeature> featureTrue;
 	public final RegistryEntry<PlacedFeature> featureFalse;
 
-	public RandomBooleanFeatureConfig(RegistryEntry<PlacedFeature> registryEntry, RegistryEntry<PlacedFeature> registryEntry2) {
-		this.featureTrue = registryEntry;
-		this.featureFalse = registryEntry2;
+	public RandomBooleanFeatureConfig(RegistryEntry<PlacedFeature> featureTrue, RegistryEntry<PlacedFeature> featureFalse) {
+		this.featureTrue = featureTrue;
+		this.featureFalse = featureFalse;
 	}
 
 	@Override

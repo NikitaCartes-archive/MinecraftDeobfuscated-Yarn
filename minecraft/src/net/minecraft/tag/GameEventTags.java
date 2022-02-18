@@ -9,6 +9,6 @@ public class GameEventTags {
 	public static final TagKey<GameEvent> IGNORE_VIBRATIONS_SNEAKING = register("ignore_vibrations_sneaking");
 
 	private static TagKey<GameEvent> register(String id) {
-		return TagKey.intern(Registry.GAME_EVENT_KEY, new Identifier(id));
+		return TagKey.of(Registry.GAME_EVENT_KEY, new Identifier(id));
 	}
 }

@@ -48,14 +48,14 @@ public class UpgradeData {
 	private static final String INDICES_KEY = "Indices";
 	private static final EightWayDirection[] EIGHT_WAYS = EightWayDirection.values();
 	private final EnumSet<EightWayDirection> sidesToUpgrade = EnumSet.noneOf(EightWayDirection.class);
-	private final List<Tick<Block>> field_36538 = Lists.<Tick<Block>>newArrayList();
-	private final List<Tick<Fluid>> field_36539 = Lists.<Tick<Fluid>>newArrayList();
+	private final List<Tick<Block>> blockTicks = Lists.<Tick<Block>>newArrayList();
+	private final List<Tick<Fluid>> fluidTicks = Lists.<Tick<Fluid>>newArrayList();
 	private final int[][] centerIndicesToUpgrade;
 	static final Map<Block, UpgradeData.Logic> BLOCK_TO_LOGIC = new IdentityHashMap();
 	static final Set<UpgradeData.Logic> CALLBACK_LOGICS = Sets.<UpgradeData.Logic>newHashSet();
 
-	private UpgradeData(HeightLimitView heightLimitView) {
-		this.centerIndicesToUpgrade = new int[heightLimitView.countVerticalSections()][];
+	private UpgradeData(HeightLimitView world) {
+		this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
 	}
 
 	public UpgradeData(NbtCompound nbt, HeightLimitView world) {
@@ -79,18 +79,14 @@ public class UpgradeData {
 			}
 		}
 
-		method_40456(
-			nbt, "neighbor_block_ticks", stringx -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(stringx)).or(() -> Optional.of(Blocks.AIR)), this.field_36538
-		);
-		method_40456(
-			nbt, "neighbor_fluid_ticks", stringx -> Registry.FLUID.getOrEmpty(Identifier.tryParse(stringx)).or(() -> Optional.of(Fluids.EMPTY)), this.field_36539
-		);
+		addNeighborTicks(nbt, "neighbor_block_ticks", id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Blocks.AIR)), this.blockTicks);
+		addNeighborTicks(nbt, "neighbor_fluid_ticks", id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)).or(() -> Optional.of(Fluids.EMPTY)), this.fluidTicks);
 	}
 
-	private static <T> void method_40456(NbtCompound nbtCompound, String string, Function<String, Optional<T>> function, List<Tick<T>> list) {
-		if (nbtCompound.contains(string, NbtElement.LIST_TYPE)) {
-			for (NbtElement nbtElement : nbtCompound.getList(string, NbtElement.COMPOUND_TYPE)) {
-				Tick.method_40559((NbtCompound)nbtElement, function).ifPresent(list::add);
+	private static <T> void addNeighborTicks(NbtCompound nbt, String key, Function<String, Optional<T>> nameToType, List<Tick<T>> ticks) {
+		if (nbt.contains(key, NbtElement.LIST_TYPE)) {
+			for (NbtElement nbtElement : nbt.getList(key, NbtElement.COMPOUND_TYPE)) {
+				Tick.fromNbt((NbtCompound)nbtElement, nameToType).ifPresent(ticks::add);
 			}
 		}
 	}
@@ -103,11 +99,11 @@ public class UpgradeData {
 		}
 
 		World world = chunk.getWorld();
-		this.field_36538.forEach(tick -> {
+		this.blockTicks.forEach(tick -> {
 			Block block = tick.type() == Blocks.AIR ? world.getBlockState(tick.pos()).getBlock() : (Block)tick.type();
 			world.createAndScheduleBlockTick(tick.pos(), block, tick.delay(), tick.priority());
 		});
-		this.field_36539.forEach(tick -> {
+		this.fluidTicks.forEach(tick -> {
 			Fluid fluid = tick.type() == Fluids.EMPTY ? world.getFluidState(tick.pos()).getFluid() : (Fluid)tick.type();
 			world.createAndScheduleFluidTick(tick.pos(), fluid, tick.delay(), tick.priority());
 		});
@@ -227,15 +223,15 @@ public class UpgradeData {
 		}
 
 		nbtCompound.putByte("Sides", (byte)ix);
-		if (!this.field_36538.isEmpty()) {
+		if (!this.blockTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.field_36538.forEach(tick -> nbtList.add(tick.toNbt(block -> Registry.BLOCK.getId(block).toString())));
+			this.blockTicks.forEach(tick2 -> nbtList.add(tick2.toNbt(block -> Registry.BLOCK.getId(block).toString())));
 			nbtCompound.put("neighbor_block_ticks", nbtList);
 		}
 
-		if (!this.field_36539.isEmpty()) {
+		if (!this.fluidTicks.isEmpty()) {
 			NbtList nbtList = new NbtList();
-			this.field_36539.forEach(tick -> nbtList.add(tick.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
+			this.fluidTicks.forEach(tick2 -> nbtList.add(tick2.toNbt(fluid -> Registry.FLUID.getId(fluid).toString())));
 			nbtCompound.put("neighbor_fluid_ticks", nbtList);
 		}
 
@@ -390,12 +386,12 @@ public class UpgradeData {
 			this(false, blocks);
 		}
 
-		BuiltinLogic(boolean bl, Block... blocks) {
+		BuiltinLogic(boolean addCallback, Block... blocks) {
 			for (Block block : blocks) {
 				UpgradeData.BLOCK_TO_LOGIC.put(block, this);
 			}
 
-			if (bl) {
+			if (addCallback) {
 				UpgradeData.CALLBACK_LOGICS.add(this);
 			}
 		}

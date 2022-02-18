@@ -6,11 +6,11 @@ import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.class_7045;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -35,13 +35,14 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class TradeOffers {
 	private static final int DEFAULT_MAX_USES = 12;
@@ -325,12 +326,12 @@ public class TradeOffers {
 						2,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10),
-							new TradeOffers.SellMapFactory(13, StructureFeature.MONUMENT, MapIcon.Type.MONUMENT, 12, 5)
+							new TradeOffers.SellMapFactory(13, class_7045.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
 							new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20),
-							new TradeOffers.SellMapFactory(14, StructureFeature.MANSION, MapIcon.Type.MANSION, 12, 10)
+							new TradeOffers.SellMapFactory(14, class_7045.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
 						},
 						4,
 						new TradeOffers.Factory[]{
@@ -910,17 +911,19 @@ public class TradeOffers {
 
 	static class SellMapFactory implements TradeOffers.Factory {
 		private final int price;
-		private final StructureFeature<?> structure;
+		private final TagKey<ConfiguredStructureFeature<?, ?>> structure;
+		private final String field_37051;
 		private final MapIcon.Type iconType;
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, StructureFeature<?> feature, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, TagKey<ConfiguredStructureFeature<?, ?>> tagKey, String string, MapIcon.Type type, int i, int j) {
 			this.price = price;
-			this.structure = feature;
-			this.iconType = iconType;
-			this.maxUses = maxUses;
-			this.experience = experience;
+			this.structure = tagKey;
+			this.field_37051 = string;
+			this.iconType = type;
+			this.maxUses = i;
+			this.experience = j;
 		}
 
 		@Nullable
@@ -934,7 +937,7 @@ public class TradeOffers {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
 					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
-					itemStack.setCustomName(new TranslatableText("filled_map." + this.structure.getName().toLowerCase(Locale.ROOT)));
+					itemStack.setCustomName(new TranslatableText(this.field_37051));
 					return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
 				} else {
 					return null;

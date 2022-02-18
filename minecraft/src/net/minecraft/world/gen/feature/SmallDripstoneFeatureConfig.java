@@ -6,22 +6,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class SmallDripstoneFeatureConfig implements FeatureConfig {
 	public static final Codec<SmallDripstoneFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("chance_of_taller_dripstone")
-						.orElse(0.2F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfTallerDripstone),
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("chance_of_directional_spread")
-						.orElse(0.7F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfDirectionalSpread),
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("chance_of_spread_radius2")
-						.orElse(0.5F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfSpreadRadius2),
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("chance_of_spread_radius3")
-						.orElse(0.5F)
-						.forGetter(smallDripstoneFeatureConfig -> smallDripstoneFeatureConfig.chanceOfSpreadRadius3)
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_taller_dripstone").orElse(0.2F).forGetter(config -> config.chanceOfTallerDripstone),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_directional_spread").orElse(0.7F).forGetter(config -> config.chanceOfDirectionalSpread),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spread_radius2").orElse(0.5F).forGetter(config -> config.chanceOfSpreadRadius2),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance_of_spread_radius3").orElse(0.5F).forGetter(config -> config.chanceOfSpreadRadius3)
 				)
 				.apply(instance, SmallDripstoneFeatureConfig::new)
 	);

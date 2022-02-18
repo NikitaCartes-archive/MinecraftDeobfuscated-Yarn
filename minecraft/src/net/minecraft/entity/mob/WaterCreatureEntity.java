@@ -74,12 +74,9 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 		return false;
 	}
 
-	public static boolean canSpawn(EntityType<? extends WaterCreatureEntity> type, WorldAccess worldAccess, SpawnReason reason, BlockPos blockPos, Random random) {
-		int i = worldAccess.getSeaLevel();
+	public static boolean canSpawn(EntityType<? extends WaterCreatureEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+		int i = world.getSeaLevel();
 		int j = i - 13;
-		return blockPos.getY() >= j
-			&& blockPos.getY() <= i
-			&& worldAccess.getFluidState(blockPos.down()).isIn(FluidTags.WATER)
-			&& worldAccess.getBlockState(blockPos.up()).isOf(Blocks.WATER);
+		return pos.getY() >= j && pos.getY() <= i && world.getFluidState(pos.down()).isIn(FluidTags.WATER) && world.getBlockState(pos.up()).isOf(Blocks.WATER);
 	}
 }

@@ -15,11 +15,11 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		super(codec);
 	}
 
-	protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutable) {
+	protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutablePos) {
 		for (int i = 0; i < height; i++) {
-			mutable.set(pos).move(Direction.UP, i);
-			if (!world.getBlockState(mutable).isOpaqueFullCube(world, mutable)) {
-				this.setBlockState(world, mutable, config.stemProvider.getBlockState(random, pos));
+			mutablePos.set(pos).move(Direction.UP, i);
+			if (!world.getBlockState(mutablePos).isOpaqueFullCube(world, mutablePos)) {
+				this.setBlockState(world, mutablePos, config.stemProvider.getBlockState(random, pos));
 			}
 		}
 	}
@@ -33,7 +33,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		return i;
 	}
 
-	protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+	protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutablePos, HugeMushroomFeatureConfig config) {
 		int i = pos.getY();
 		if (i >= world.getBottomY() + 1 && i + height + 1 < world.getTopY()) {
 			BlockState blockState = world.getBlockState(pos.down());
@@ -45,7 +45,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 
 					for (int l = -k; l <= k; l++) {
 						for (int m = -k; m <= k; m++) {
-							BlockState blockState2 = world.getBlockState(mutable.set(pos, l, j, m));
+							BlockState blockState2 = world.getBlockState(mutablePos.set(pos, l, j, m));
 							if (!blockState2.isAir() && !blockState2.isIn(BlockTags.LEAVES)) {
 								return false;
 							}

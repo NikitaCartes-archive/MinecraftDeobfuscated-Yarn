@@ -8,29 +8,21 @@ import net.minecraft.util.math.intprovider.IntProvider;
 public class DripstoneClusterFeatureConfig implements FeatureConfig {
 	public static final Codec<DripstoneClusterFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.intRange(1, 512)
-						.fieldOf("floor_to_ceiling_search_range")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.floorToCeilingSearchRange),
-					IntProvider.createValidatingCodec(1, 128).fieldOf("height").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.height),
-					IntProvider.createValidatingCodec(1, 128).fieldOf("radius").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.radius),
-					Codec.intRange(0, 64)
-						.fieldOf("max_stalagmite_stalactite_height_diff")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.maxStalagmiteStalactiteHeightDiff),
-					Codec.intRange(1, 64).fieldOf("height_deviation").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.heightDeviation),
-					IntProvider.createValidatingCodec(0, 128)
-						.fieldOf("dripstone_block_layer_thickness")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.dripstoneBlockLayerThickness),
-					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("density").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.density),
-					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("wetness").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.wetness),
+					Codec.intRange(1, 512).fieldOf("floor_to_ceiling_search_range").forGetter(config -> config.floorToCeilingSearchRange),
+					IntProvider.createValidatingCodec(1, 128).fieldOf("height").forGetter(config -> config.height),
+					IntProvider.createValidatingCodec(1, 128).fieldOf("radius").forGetter(config -> config.radius),
+					Codec.intRange(0, 64).fieldOf("max_stalagmite_stalactite_height_diff").forGetter(config -> config.maxStalagmiteStalactiteHeightDiff),
+					Codec.intRange(1, 64).fieldOf("height_deviation").forGetter(config -> config.heightDeviation),
+					IntProvider.createValidatingCodec(0, 128).fieldOf("dripstone_block_layer_thickness").forGetter(config -> config.dripstoneBlockLayerThickness),
+					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("density").forGetter(config -> config.density),
+					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("wetness").forGetter(config -> config.wetness),
 					Codec.floatRange(0.0F, 1.0F)
 						.fieldOf("chance_of_dripstone_column_at_max_distance_from_center")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.chanceOfDripstoneColumnAtMaxDistanceFromCenter),
+						.forGetter(config -> config.chanceOfDripstoneColumnAtMaxDistanceFromCenter),
 					Codec.intRange(1, 64)
 						.fieldOf("max_distance_from_edge_affecting_chance_of_dripstone_column")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.maxDistanceFromCenterAffectingChanceOfDripstoneColumn),
-					Codec.intRange(1, 64)
-						.fieldOf("max_distance_from_center_affecting_height_bias")
-						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.maxDistanceFromCenterAffectingHeightBias)
+						.forGetter(config -> config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn),
+					Codec.intRange(1, 64).fieldOf("max_distance_from_center_affecting_height_bias").forGetter(config -> config.maxDistanceFromCenterAffectingHeightBias)
 				)
 				.apply(instance, DripstoneClusterFeatureConfig::new)
 	);

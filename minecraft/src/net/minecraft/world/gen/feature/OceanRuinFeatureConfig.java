@@ -6,9 +6,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class OceanRuinFeatureConfig implements FeatureConfig {
 	public static final Codec<OceanRuinFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					OceanRuinFeature.BiomeType.CODEC.fieldOf("biome_temp").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.biomeType),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("large_probability").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.largeProbability),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("cluster_probability").forGetter(oceanRuinFeatureConfig -> oceanRuinFeatureConfig.clusterProbability)
+					OceanRuinFeature.BiomeType.CODEC.fieldOf("biome_temp").forGetter(config -> config.biomeType),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("large_probability").forGetter(config -> config.largeProbability),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("cluster_probability").forGetter(config -> config.clusterProbability)
 				)
 				.apply(instance, OceanRuinFeatureConfig::new)
 	);

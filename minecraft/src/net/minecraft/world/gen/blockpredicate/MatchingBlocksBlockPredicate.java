@@ -17,9 +17,9 @@ class MatchingBlocksBlockPredicate extends OffsetPredicate {
 				.apply(instance, MatchingBlocksBlockPredicate::new)
 	);
 
-	public MatchingBlocksBlockPredicate(Vec3i offset, RegistryEntryList<Block> registryEntryList) {
+	public MatchingBlocksBlockPredicate(Vec3i offset, RegistryEntryList<Block> blocks) {
 		super(offset);
-		this.blocks = registryEntryList;
+		this.blocks = blocks;
 	}
 
 	@Override

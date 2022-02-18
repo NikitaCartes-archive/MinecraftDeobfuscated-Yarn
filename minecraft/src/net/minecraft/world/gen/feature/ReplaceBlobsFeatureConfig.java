@@ -8,9 +8,9 @@ import net.minecraft.util.math.intprovider.IntProvider;
 public class ReplaceBlobsFeatureConfig implements FeatureConfig {
 	public static final Codec<ReplaceBlobsFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.CODEC.fieldOf("target").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.target),
-					BlockState.CODEC.fieldOf("state").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.state),
-					IntProvider.createValidatingCodec(0, 12).fieldOf("radius").forGetter(replaceBlobsFeatureConfig -> replaceBlobsFeatureConfig.radius)
+					BlockState.CODEC.fieldOf("target").forGetter(config -> config.target),
+					BlockState.CODEC.fieldOf("state").forGetter(config -> config.state),
+					IntProvider.createValidatingCodec(0, 12).fieldOf("radius").forGetter(config -> config.radius)
 				)
 				.apply(instance, ReplaceBlobsFeatureConfig::new)
 	);

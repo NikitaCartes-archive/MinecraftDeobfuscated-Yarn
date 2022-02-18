@@ -103,6 +103,10 @@ public class RegistryKey<T> {
 		return this.value;
 	}
 
+	public Identifier method_41185() {
+		return this.registry;
+	}
+
 	/**
 	 * Creates a function that converts an identifier to a registry key for the
 	 * registry that {@code registry} refers to in the root registry.

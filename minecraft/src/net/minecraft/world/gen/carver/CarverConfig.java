@@ -11,11 +11,11 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 public class CarverConfig extends ProbabilityConfig {
 	public static final MapCodec<CarverConfig> CONFIG_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(carverConfig -> carverConfig.probability),
-					HeightProvider.CODEC.fieldOf("y").forGetter(carverConfig -> carverConfig.y),
-					FloatProvider.VALUE_CODEC.fieldOf("yScale").forGetter(carverConfig -> carverConfig.yScale),
-					YOffset.OFFSET_CODEC.fieldOf("lava_level").forGetter(carverConfig -> carverConfig.lavaLevel),
-					CarverDebugConfig.CODEC.optionalFieldOf("debug_settings", CarverDebugConfig.DEFAULT).forGetter(carverConfig -> carverConfig.debugConfig)
+					Codec.floatRange(0.0F, 1.0F).fieldOf("probability").forGetter(config -> config.probability),
+					HeightProvider.CODEC.fieldOf("y").forGetter(config -> config.y),
+					FloatProvider.VALUE_CODEC.fieldOf("yScale").forGetter(config -> config.yScale),
+					YOffset.OFFSET_CODEC.fieldOf("lava_level").forGetter(config -> config.lavaLevel),
+					CarverDebugConfig.CODEC.optionalFieldOf("debug_settings", CarverDebugConfig.DEFAULT).forGetter(config -> config.debugConfig)
 				)
 				.apply(instance, CarverConfig::new)
 	);

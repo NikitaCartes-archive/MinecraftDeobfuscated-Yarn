@@ -13,20 +13,16 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class VegetationPatchFeatureConfig implements FeatureConfig {
 	public static final Codec<VegetationPatchFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("replaceable").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.replaceable),
-					BlockStateProvider.TYPE_CODEC.fieldOf("ground_state").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.groundState),
-					PlacedFeature.REGISTRY_CODEC.fieldOf("vegetation_feature").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.vegetationFeature),
-					VerticalSurfaceType.CODEC.fieldOf("surface").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.surface),
-					IntProvider.createValidatingCodec(1, 128).fieldOf("depth").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.depth),
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("extra_bottom_block_chance")
-						.forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.extraBottomBlockChance),
-					Codec.intRange(1, 256).fieldOf("vertical_range").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.verticalRange),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("vegetation_chance").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.vegetationChance),
-					IntProvider.VALUE_CODEC.fieldOf("xz_radius").forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.horizontalRadius),
-					Codec.floatRange(0.0F, 1.0F)
-						.fieldOf("extra_edge_column_chance")
-						.forGetter(vegetationPatchFeatureConfig -> vegetationPatchFeatureConfig.extraEdgeColumnChance)
+					TagKey.stringCodec(Registry.BLOCK_KEY).fieldOf("replaceable").forGetter(config -> config.replaceable),
+					BlockStateProvider.TYPE_CODEC.fieldOf("ground_state").forGetter(config -> config.groundState),
+					PlacedFeature.REGISTRY_CODEC.fieldOf("vegetation_feature").forGetter(config -> config.vegetationFeature),
+					VerticalSurfaceType.CODEC.fieldOf("surface").forGetter(config -> config.surface),
+					IntProvider.createValidatingCodec(1, 128).fieldOf("depth").forGetter(config -> config.depth),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("extra_bottom_block_chance").forGetter(config -> config.extraBottomBlockChance),
+					Codec.intRange(1, 256).fieldOf("vertical_range").forGetter(config -> config.verticalRange),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("vegetation_chance").forGetter(config -> config.vegetationChance),
+					IntProvider.VALUE_CODEC.fieldOf("xz_radius").forGetter(config -> config.horizontalRadius),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("extra_edge_column_chance").forGetter(config -> config.extraEdgeColumnChance)
 				)
 				.apply(instance, VegetationPatchFeatureConfig::new)
 	);
@@ -42,9 +38,9 @@ public class VegetationPatchFeatureConfig implements FeatureConfig {
 	public final float extraEdgeColumnChance;
 
 	public VegetationPatchFeatureConfig(
-		TagKey<Block> tagKey,
+		TagKey<Block> replaceable,
 		BlockStateProvider groundState,
-		RegistryEntry<PlacedFeature> registryEntry,
+		RegistryEntry<PlacedFeature> vegetationFeature,
 		VerticalSurfaceType surface,
 		IntProvider depth,
 		float extraBottomBlockChance,
@@ -53,9 +49,9 @@ public class VegetationPatchFeatureConfig implements FeatureConfig {
 		IntProvider horizontalRadius,
 		float extraEdgeColumnChance
 	) {
-		this.replaceable = tagKey;
+		this.replaceable = replaceable;
 		this.groundState = groundState;
-		this.vegetationFeature = registryEntry;
+		this.vegetationFeature = vegetationFeature;
 		this.surface = surface;
 		this.depth = depth;
 		this.extraBottomBlockChance = extraBottomBlockChance;

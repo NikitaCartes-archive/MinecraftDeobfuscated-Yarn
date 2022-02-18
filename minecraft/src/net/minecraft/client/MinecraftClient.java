@@ -1940,10 +1940,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 						.encodeStart(dynamicOps, generatorOptions)
 						.setLifecycle(Lifecycle.stable())
 						.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(dynamicOps2, jsonElement));
-					GeneratorOptions generatorOptions2 = (GeneratorOptions)dataResult.resultOrPartial(
-							Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)
-						)
-						.orElse(generatorOptions);
+					GeneratorOptions generatorOptions2 = dataResult.getOrThrow(
+						false, Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)
+					);
 					return Pair.of(new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle()), mutable.toImmutable());
 				},
 			false,

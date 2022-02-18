@@ -11,8 +11,8 @@ public class RavineCarverConfig extends CarverConfig {
 	public static final Codec<RavineCarverConfig> RAVINE_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					CarverConfig.CONFIG_CODEC.forGetter(ravineCarverConfig -> ravineCarverConfig),
-					FloatProvider.VALUE_CODEC.fieldOf("vertical_rotation").forGetter(ravineCarverConfig -> ravineCarverConfig.verticalRotation),
-					RavineCarverConfig.Shape.CODEC.fieldOf("shape").forGetter(ravineCarverConfig -> ravineCarverConfig.shape)
+					FloatProvider.VALUE_CODEC.fieldOf("vertical_rotation").forGetter(config -> config.verticalRotation),
+					RavineCarverConfig.Shape.CODEC.fieldOf("shape").forGetter(config -> config.shape)
 				)
 				.apply(instance, RavineCarverConfig::new)
 	);

@@ -12,7 +12,7 @@ public class MatchingBlockTagPredicate extends OffsetPredicate {
 	final TagKey<Block> tag;
 	public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(
 		instance -> registerOffsetField(instance)
-				.and(TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag").forGetter(matchingBlockTagPredicate -> matchingBlockTagPredicate.tag))
+				.and(TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag").forGetter(predicate -> predicate.tag))
 				.apply(instance, MatchingBlockTagPredicate::new)
 	);
 

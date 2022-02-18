@@ -28,7 +28,7 @@ public class VegetationConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<ProbabilityConfig, ?>> BAMBOO_SOME_PODZOL = ConfiguredFeatures.register(
 		"bamboo_some_podzol", Feature.BAMBOO, new ProbabilityConfig(0.2F)
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VINES = ConfiguredFeatures.method_40364("vines", Feature.VINES);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VINES = ConfiguredFeatures.register("vines", Feature.VINES);
 	public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_BROWN_MUSHROOM = ConfiguredFeatures.register(
 		"patch_brown_mushroom",
 		Feature.RANDOM_PATCH,

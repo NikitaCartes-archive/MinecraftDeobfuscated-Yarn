@@ -8,11 +8,7 @@ import net.minecraft.world.StructureWorldAccess;
 
 public class InsideWorldBoundsBlockPredicate implements BlockPredicate {
 	public static final Codec<InsideWorldBoundsBlockPredicate> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Vec3i.createOffsetCodec(16)
-						.optionalFieldOf("offset", BlockPos.ORIGIN)
-						.forGetter(insideWorldBoundsBlockPredicate -> insideWorldBoundsBlockPredicate.offset)
-				)
+		instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset))
 				.apply(instance, InsideWorldBoundsBlockPredicate::new)
 	);
 	private final Vec3i offset;

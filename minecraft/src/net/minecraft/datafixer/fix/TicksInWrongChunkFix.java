@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
-public class class_6909 extends DataFix {
-	public class_6909(Schema schema) {
+public class TicksInWrongChunkFix extends DataFix {
+	public TicksInWrongChunkFix(Schema schema) {
 		super(schema, false);
 	}
 

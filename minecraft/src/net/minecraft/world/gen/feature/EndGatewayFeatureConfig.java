@@ -8,8 +8,7 @@ import net.minecraft.util.math.BlockPos;
 public class EndGatewayFeatureConfig implements FeatureConfig {
 	public static final Codec<EndGatewayFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockPos.CODEC.optionalFieldOf("exit").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exitPos),
-					Codec.BOOL.fieldOf("exact").forGetter(endGatewayFeatureConfig -> endGatewayFeatureConfig.exact)
+					BlockPos.CODEC.optionalFieldOf("exit").forGetter(config -> config.exitPos), Codec.BOOL.fieldOf("exact").forGetter(config -> config.exact)
 				)
 				.apply(instance, EndGatewayFeatureConfig::new)
 	);

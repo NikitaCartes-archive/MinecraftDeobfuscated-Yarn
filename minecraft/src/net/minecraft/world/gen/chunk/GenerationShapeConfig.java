@@ -8,6 +8,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.world.biome.source.util.VanillaTerrainParametersCreator;
 import net.minecraft.world.dimension.DimensionType;
 
 public record GenerationShapeConfig(
@@ -42,6 +43,58 @@ public record GenerationShapeConfig(
 					.apply(instance, GenerationShapeConfig::new)
 		)
 		.comapFlatMap(GenerationShapeConfig::checkHeight, Function.identity());
+	static final GenerationShapeConfig field_37138 = create(
+		0,
+		128,
+		new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
+		new SlideConfig(0.9375, 3, 0),
+		new SlideConfig(2.5, 4, -1),
+		1,
+		2,
+		false,
+		false,
+		false,
+		VanillaTerrainParametersCreator.createNetherParameters()
+	);
+	static final GenerationShapeConfig field_37139 = create(
+		0,
+		128,
+		new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
+		new SlideConfig(-23.4375, 64, -46),
+		new SlideConfig(-0.234375, 7, 1),
+		2,
+		1,
+		true,
+		false,
+		false,
+		VanillaTerrainParametersCreator.createEndParameters()
+	);
+	static final GenerationShapeConfig field_37140 = create(
+		-64,
+		192,
+		new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
+		new SlideConfig(0.9375, 3, 0),
+		new SlideConfig(2.5, 4, -1),
+		1,
+		2,
+		false,
+		false,
+		false,
+		VanillaTerrainParametersCreator.createCavesParameters()
+	);
+	static final GenerationShapeConfig field_37141 = create(
+		0,
+		256,
+		new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
+		new SlideConfig(-23.4375, 64, -46),
+		new SlideConfig(-0.234375, 7, 1),
+		2,
+		1,
+		false,
+		false,
+		false,
+		VanillaTerrainParametersCreator.createFloatingIslandsParameters()
+	);
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
 		if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
@@ -73,6 +126,22 @@ public record GenerationShapeConfig(
 			throw new IllegalStateException(partialResult.message());
 		});
 		return generationShapeConfig;
+	}
+
+	static GenerationShapeConfig method_41126(boolean bl, boolean bl2) {
+		return create(
+			-64,
+			384,
+			new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0),
+			new SlideConfig(-0.078125, 2, bl ? 0 : 8),
+			new SlideConfig(bl ? 0.4 : 0.1171875, 3, 0),
+			1,
+			2,
+			false,
+			bl,
+			bl2,
+			VanillaTerrainParametersCreator.createSurfaceParameters(bl)
+		);
 	}
 
 	public int verticalBlockSize() {

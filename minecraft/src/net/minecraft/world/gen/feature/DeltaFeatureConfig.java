@@ -8,10 +8,10 @@ import net.minecraft.util.math.intprovider.IntProvider;
 public class DeltaFeatureConfig implements FeatureConfig {
 	public static final Codec<DeltaFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockState.CODEC.fieldOf("contents").forGetter(deltaFeatureConfig -> deltaFeatureConfig.contents),
-					BlockState.CODEC.fieldOf("rim").forGetter(deltaFeatureConfig -> deltaFeatureConfig.rim),
-					IntProvider.createValidatingCodec(0, 16).fieldOf("size").forGetter(deltaFeatureConfig -> deltaFeatureConfig.size),
-					IntProvider.createValidatingCodec(0, 16).fieldOf("rim_size").forGetter(deltaFeatureConfig -> deltaFeatureConfig.rimSize)
+					BlockState.CODEC.fieldOf("contents").forGetter(config -> config.contents),
+					BlockState.CODEC.fieldOf("rim").forGetter(config -> config.rim),
+					IntProvider.createValidatingCodec(0, 16).fieldOf("size").forGetter(config -> config.size),
+					IntProvider.createValidatingCodec(0, 16).fieldOf("rim_size").forGetter(config -> config.rimSize)
 				)
 				.apply(instance, DeltaFeatureConfig::new)
 	);

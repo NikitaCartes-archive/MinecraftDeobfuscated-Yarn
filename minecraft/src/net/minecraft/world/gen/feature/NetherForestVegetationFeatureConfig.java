@@ -8,11 +8,9 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 public class NetherForestVegetationFeatureConfig extends BlockPileFeatureConfig {
 	public static final Codec<NetherForestVegetationFeatureConfig> VEGETATION_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockStateProvider.TYPE_CODEC
-						.fieldOf("state_provider")
-						.forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.stateProvider),
-					Codecs.POSITIVE_INT.fieldOf("spread_width").forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.spreadWidth),
-					Codecs.POSITIVE_INT.fieldOf("spread_height").forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.spreadHeight)
+					BlockStateProvider.TYPE_CODEC.fieldOf("state_provider").forGetter(config -> config.stateProvider),
+					Codecs.POSITIVE_INT.fieldOf("spread_width").forGetter(config -> config.spreadWidth),
+					Codecs.POSITIVE_INT.fieldOf("spread_height").forGetter(config -> config.spreadHeight)
 				)
 				.apply(instance, NetherForestVegetationFeatureConfig::new)
 	);

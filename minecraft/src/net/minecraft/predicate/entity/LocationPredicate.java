@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import org.slf4j.Logger;
 
 public class LocationPredicate {
@@ -42,7 +42,7 @@ public class LocationPredicate {
 	@Nullable
 	private final RegistryKey<Biome> biome;
 	@Nullable
-	private final StructureFeature<?> feature;
+	private final RegistryKey<ConfiguredStructureFeature<?, ?>> feature;
 	@Nullable
 	private final RegistryKey<World> dimension;
 	@Nullable
@@ -56,7 +56,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange y,
 		NumberRange.FloatRange z,
 		@Nullable RegistryKey<Biome> biome,
-		@Nullable StructureFeature<?> feature,
+		@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey,
 		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
 		LightPredicate light,
@@ -67,7 +67,7 @@ public class LocationPredicate {
 		this.y = y;
 		this.z = z;
 		this.biome = biome;
-		this.feature = feature;
+		this.feature = registryKey;
 		this.dimension = dimension;
 		this.smokey = smokey;
 		this.light = light;
@@ -105,13 +105,13 @@ public class LocationPredicate {
 		);
 	}
 
-	public static LocationPredicate feature(StructureFeature<?> feature) {
+	public static LocationPredicate feature(RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			null,
-			feature,
+			registryKey,
 			null,
 			null,
 			LightPredicate.ANY,
@@ -139,7 +139,7 @@ public class LocationPredicate {
 			BlockPos blockPos = new BlockPos(x, y, z);
 			boolean bl = world.canSetBlock(blockPos);
 			if (this.biome == null || bl && world.getBiome(blockPos).matchesKey(this.biome)) {
-				if (this.feature == null || bl && world.getStructureAccessor().getStructureContaining(blockPos, this.feature).hasChildren()) {
+				if (this.feature == null || bl && world.getStructureAccessor().method_41034(blockPos, this.feature).hasChildren()) {
 					if (this.smokey == null || bl && this.smokey == CampfireBlock.isLitCampfireInRange(world, blockPos)) {
 						if (!this.light.test(world, blockPos)) {
 							return false;
@@ -176,7 +176,7 @@ public class LocationPredicate {
 			}
 
 			if (this.feature != null) {
-				jsonObject.addProperty("feature", this.feature.getName());
+				jsonObject.addProperty("feature", this.feature.getValue().toString());
 			}
 
 			if (this.biome != null) {
@@ -208,13 +208,17 @@ public class LocationPredicate {
 					.map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier))
 					.orElse(null)
 				: null;
-			StructureFeature<?> structureFeature = jsonObject.has("feature")
-				? (StructureFeature)StructureFeature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature"))
+			RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey2 = jsonObject.has("feature")
+				? (RegistryKey)Identifier.CODEC
+					.parse(JsonOps.INSTANCE, jsonObject.get("feature"))
+					.resultOrPartial(LOGGER::error)
+					.map(identifier -> RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, identifier))
+					.orElse(null)
 				: null;
-			RegistryKey<Biome> registryKey2 = null;
+			RegistryKey<Biome> registryKey3 = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				registryKey2 = RegistryKey.of(Registry.BIOME_KEY, identifier);
+				registryKey3 = RegistryKey.of(Registry.BIOME_KEY, identifier);
 			}
 
 			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;
@@ -222,7 +226,7 @@ public class LocationPredicate {
 			BlockPredicate blockPredicate = BlockPredicate.fromJson(jsonObject.get("block"));
 			FluidPredicate fluidPredicate = FluidPredicate.fromJson(jsonObject.get("fluid"));
 			return new LocationPredicate(
-				floatRange, floatRange2, floatRange3, registryKey2, structureFeature, registryKey, boolean_, lightPredicate, blockPredicate, fluidPredicate
+				floatRange, floatRange2, floatRange3, registryKey3, registryKey2, registryKey, boolean_, lightPredicate, blockPredicate, fluidPredicate
 			);
 		} else {
 			return ANY;
@@ -236,7 +240,7 @@ public class LocationPredicate {
 		@Nullable
 		private RegistryKey<Biome> biome;
 		@Nullable
-		private StructureFeature<?> feature;
+		private RegistryKey<ConfiguredStructureFeature<?, ?>> feature;
 		@Nullable
 		private RegistryKey<World> dimension;
 		@Nullable
@@ -269,8 +273,8 @@ public class LocationPredicate {
 			return this;
 		}
 
-		public LocationPredicate.Builder feature(@Nullable StructureFeature<?> feature) {
-			this.feature = feature;
+		public LocationPredicate.Builder feature(@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
+			this.feature = registryKey;
 			return this;
 		}
 

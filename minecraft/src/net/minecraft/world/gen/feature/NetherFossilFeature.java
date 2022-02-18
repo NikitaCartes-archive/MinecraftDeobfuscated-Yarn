@@ -16,7 +16,7 @@ import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
-public class NetherFossilFeature extends MarginedStructureFeature<RangeFeatureConfig> {
+public class NetherFossilFeature extends StructureFeature<RangeFeatureConfig> {
 	public NetherFossilFeature(Codec<RangeFeatureConfig> configCodec) {
 		super(configCodec, NetherFossilFeature::addPieces);
 	}

@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_7059;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
@@ -35,6 +36,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.slf4j.Logger;
 
 /**
@@ -58,11 +60,13 @@ public interface DynamicRegistryManager {
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
 		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC, ConfiguredFeature.NETWORK_CODEC);
 		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
+		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC, ConfiguredStructureFeature.field_37142);
+		register(builder, Registry.STRUCTURE_SET_WORLDGEN, class_7059.field_37195);
 		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
 		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
 		register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
 		register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
+		register(builder, Registry.DENSITY_FUNCTION_WORLDGEN, NoiseType.field_37057);
 		return builder.build();
 	});
 	Codec<DynamicRegistryManager> CODEC = createCodec();
@@ -183,7 +187,7 @@ public interface DynamicRegistryManager {
 
 			@Override
 			public Stream<DynamicRegistryManager.Entry<?>> streamManagedRegistries() {
-				return registries.getEntries().stream().map(DynamicRegistryManager.Entry::of);
+				return registries.getEntrySet().stream().map(DynamicRegistryManager.Entry::of);
 			}
 		};
 	}
@@ -194,7 +198,7 @@ public interface DynamicRegistryManager {
 
 		for (java.util.Map.Entry<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> entry : INFOS.entrySet()) {
 			if (!((RegistryKey)entry.getKey()).equals(Registry.DIMENSION_TYPE_KEY)) {
-				addEntriesToLoad(mutable, impl, (DynamicRegistryManager.Info)entry.getValue());
+				addEntriesToLoad(impl, (DynamicRegistryManager.Info)entry.getValue());
 			}
 		}
 
@@ -202,26 +206,15 @@ public interface DynamicRegistryManager {
 		return DimensionType.addRegistryDefaults(mutable);
 	}
 
-	private static <E> void addEntriesToLoad(DynamicRegistryManager.Mutable registryManager, EntryLoader.Impl entryLoader, DynamicRegistryManager.Info<E> info) {
+	private static <E> void addEntriesToLoad(EntryLoader.Impl impl, DynamicRegistryManager.Info<E> info) {
 		RegistryKey<? extends Registry<E>> registryKey = info.registry();
 		Registry<E> registry = BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER.get(registryKey);
-		MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
 
-		for (java.util.Map.Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
+		for (java.util.Map.Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
 			RegistryKey<E> registryKey2 = (RegistryKey<E>)entry.getKey();
 			E object = (E)entry.getValue();
-			if (!shouldSkipLoading(registryKey)) {
-				entryLoader.add(
-					BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object)
-				);
-			} else {
-				mutableRegistry.set(registry.getRawId(object), registryKey2, object, registry.getEntryLifecycle(object));
-			}
+			impl.add(BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
 		}
-	}
-
-	static <E> boolean shouldSkipLoading(RegistryKey<? extends Registry<E>> registryRef) {
-		return registryRef.equals(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 	}
 
 	/**

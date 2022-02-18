@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.class_6904;
+import net.minecraft.class_7059;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
@@ -35,7 +36,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -71,7 +71,7 @@ public class TestServer extends MinecraftServer {
 						(resourceManager, dataPackSettings) -> {
 							DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 							Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
-							Registry<ConfiguredStructureFeature<?, ?>> registry2 = immutable.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+							Registry<class_7059> registry2 = immutable.get(Registry.STRUCTURE_SET_WORLDGEN);
 							Registry<DimensionType> registry3 = immutable.get(Registry.DIMENSION_TYPE_KEY);
 							SaveProperties saveProperties = new LevelProperties(
 								TEST_LEVEL,

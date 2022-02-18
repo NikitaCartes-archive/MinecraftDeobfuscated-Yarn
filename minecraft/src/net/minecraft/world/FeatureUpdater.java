@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -17,7 +18,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 public class FeatureUpdater {
 	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
@@ -39,6 +39,26 @@ public class FeatureUpdater {
 		hashMap.put("TeJP", "Jungle_Pyramid");
 		hashMap.put("TeSH", "Swamp_Hut");
 	});
+	private static final Set<String> field_37194 = Set.of(
+		"pillager_outpost",
+		"mineshaft",
+		"mansion",
+		"jungle_pyramid",
+		"desert_pyramid",
+		"igloo",
+		"ruined_portal",
+		"shipwreck",
+		"swamp_hut",
+		"stronghold",
+		"monument",
+		"ocean_ruin",
+		"fortress",
+		"endcity",
+		"buried_treasure",
+		"village",
+		"nether_fossil",
+		"bastion_remnant"
+	);
 	private final boolean needsUpdate;
 	private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkNbt = Maps.<String, Long2ObjectMap<NbtCompound>>newHashMap();
 	private final Map<String, ChunkUpdateState> updateStates = Maps.<String, ChunkUpdateState>newHashMap();
@@ -79,8 +99,8 @@ public class FeatureUpdater {
 		NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
 
 		for (String string : this.field_17659) {
-			StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-			if (!nbtCompound3.contains(string, NbtElement.LONG_ARRAY_TYPE) && structureFeature != null) {
+			boolean bl = field_37194.contains(string.toLowerCase(Locale.ROOT));
+			if (!nbtCompound3.contains(string, NbtElement.LONG_ARRAY_TYPE) && bl) {
 				int i = 8;
 				LongList longList = new LongArrayList();
 

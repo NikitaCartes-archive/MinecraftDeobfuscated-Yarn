@@ -20,8 +20,8 @@ public class StructurePoolFeatureConfig implements FeatureConfig {
 	private final RegistryEntry<StructurePool> startPool;
 	private final int size;
 
-	public StructurePoolFeatureConfig(RegistryEntry<StructurePool> registryEntry, int size) {
-		this.startPool = registryEntry;
+	public StructurePoolFeatureConfig(RegistryEntry<StructurePool> startPool, int size) {
+		this.startPool = startPool;
 		this.size = size;
 	}
 

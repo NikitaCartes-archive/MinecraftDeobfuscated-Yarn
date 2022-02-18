@@ -655,7 +655,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			this.world.getProfiler().pop();
 			this.world.getProfiler().push("rest");
-			this.horizontalCollision = !MathHelper.approximatelyEquals(movement.x, vec3d.x) || !MathHelper.approximatelyEquals(movement.z, vec3d.z);
+			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
+			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
+			this.horizontalCollision = bl || bl2;
 			this.verticalCollision = movement.y != vec3d.y;
 			this.field_36331 = this.verticalCollision && movement.y < 0.0;
 			if (this.horizontalCollision) {
@@ -671,13 +673,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			if (this.isRemoved()) {
 				this.world.getProfiler().pop();
 			} else {
-				Vec3d vec3d2 = this.getVelocity();
-				if (movement.x != vec3d.x) {
-					this.setVelocity(0.0, vec3d2.y, vec3d2.z);
-				}
-
-				if (movement.z != vec3d.z) {
-					this.setVelocity(vec3d2.x, vec3d2.y, 0.0);
+				if (this.horizontalCollision) {
+					Vec3d vec3d2 = this.getVelocity();
+					this.setVelocity(bl ? 0.0 : vec3d2.x, vec3d2.y, bl2 ? 0.0 : vec3d2.z);
 				}
 
 				Block block = blockState.getBlock();
@@ -1952,12 +1950,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public Vec3d getHandPosOffset(Item item) {
-		if (this instanceof PlayerEntity playerEntity) {
-			boolean bl = playerEntity.getOffHandStack().isOf(item);
+		if (!(this instanceof PlayerEntity playerEntity)) {
+			return Vec3d.ZERO;
+		} else {
+			boolean bl = playerEntity.getOffHandStack().isOf(item) && !playerEntity.getMainHandStack().isOf(item);
 			Arm arm = bl ? playerEntity.getMainArm().getOpposite() : playerEntity.getMainArm();
 			return this.getRotationVector(0.0F, this.getYaw() + (float)(arm == Arm.RIGHT ? 80 : -80)).multiply(0.5);
-		} else {
-			return Vec3d.ZERO;
 		}
 	}
 

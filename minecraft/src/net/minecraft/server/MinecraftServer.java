@@ -425,7 +425,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
 		}
 
-		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
 				RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());

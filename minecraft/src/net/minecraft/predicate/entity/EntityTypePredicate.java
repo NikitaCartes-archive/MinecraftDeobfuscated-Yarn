@@ -35,7 +35,7 @@ public abstract class EntityTypePredicate {
 			String string = JsonHelper.asString(json, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
-				return new EntityTypePredicate.Tagged(TagKey.intern(Registry.ENTITY_TYPE_KEY, identifier));
+				return new EntityTypePredicate.Tagged(TagKey.of(Registry.ENTITY_TYPE_KEY, identifier));
 			} else {
 				Identifier identifier = new Identifier(string);
 				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE

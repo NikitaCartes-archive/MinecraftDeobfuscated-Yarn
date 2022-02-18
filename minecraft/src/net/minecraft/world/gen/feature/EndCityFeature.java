@@ -59,11 +59,11 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 							.getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()))
 					)
 				? Optional.empty()
-				: Optional.of((StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
+				: Optional.of((StructurePiecesGenerator<>)(collector, contextx) -> {
 					BlockRotation blockRotation = BlockRotation.random(contextx.random());
 					List<StructurePiece> list = Lists.<StructurePiece>newArrayList();
 					EndCityGenerator.addPieces(contextx.structureManager(), blockPos, blockRotation, list, contextx.random());
-					list.forEach(structurePiecesCollector::addPiece);
+					list.forEach(collector::addPiece);
 				});
 		}
 	}

@@ -14,15 +14,15 @@ import net.minecraft.world.gen.trunk.TrunkPlacer;
 public class TreeFeatureConfig implements FeatureConfig {
 	public static final Codec<TreeFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					BlockStateProvider.TYPE_CODEC.fieldOf("trunk_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkProvider),
-					TrunkPlacer.TYPE_CODEC.fieldOf("trunk_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.trunkPlacer),
-					BlockStateProvider.TYPE_CODEC.fieldOf("foliage_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.foliageProvider),
-					FoliagePlacer.TYPE_CODEC.fieldOf("foliage_placer").forGetter(treeFeatureConfig -> treeFeatureConfig.foliagePlacer),
-					BlockStateProvider.TYPE_CODEC.fieldOf("dirt_provider").forGetter(treeFeatureConfig -> treeFeatureConfig.dirtProvider),
-					FeatureSize.TYPE_CODEC.fieldOf("minimum_size").forGetter(treeFeatureConfig -> treeFeatureConfig.minimumSize),
-					TreeDecorator.TYPE_CODEC.listOf().fieldOf("decorators").forGetter(treeFeatureConfig -> treeFeatureConfig.decorators),
-					Codec.BOOL.fieldOf("ignore_vines").orElse(false).forGetter(treeFeatureConfig -> treeFeatureConfig.ignoreVines),
-					Codec.BOOL.fieldOf("force_dirt").orElse(false).forGetter(treeFeatureConfig -> treeFeatureConfig.forceDirt)
+					BlockStateProvider.TYPE_CODEC.fieldOf("trunk_provider").forGetter(config -> config.trunkProvider),
+					TrunkPlacer.TYPE_CODEC.fieldOf("trunk_placer").forGetter(config -> config.trunkPlacer),
+					BlockStateProvider.TYPE_CODEC.fieldOf("foliage_provider").forGetter(config -> config.foliageProvider),
+					FoliagePlacer.TYPE_CODEC.fieldOf("foliage_placer").forGetter(config -> config.foliagePlacer),
+					BlockStateProvider.TYPE_CODEC.fieldOf("dirt_provider").forGetter(config -> config.dirtProvider),
+					FeatureSize.TYPE_CODEC.fieldOf("minimum_size").forGetter(config -> config.minimumSize),
+					TreeDecorator.TYPE_CODEC.listOf().fieldOf("decorators").forGetter(config -> config.decorators),
+					Codec.BOOL.fieldOf("ignore_vines").orElse(false).forGetter(config -> config.ignoreVines),
+					Codec.BOOL.fieldOf("force_dirt").orElse(false).forGetter(config -> config.forceDirt)
 				)
 				.apply(instance, TreeFeatureConfig::new)
 	);

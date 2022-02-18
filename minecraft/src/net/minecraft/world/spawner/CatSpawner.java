@@ -10,8 +10,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -51,7 +54,9 @@ public class CatSpawner implements Spawner {
 								return this.spawnInHouse(world, blockPos);
 							}
 
-							if (world.getStructureAccessor().getStructureContaining(blockPos, StructureFeature.SWAMP_HUT).hasChildren()) {
+							Registry<ConfiguredStructureFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+							if (ChunkGenerator.method_41049(registry, StructureFeature.SWAMP_HUT)
+								.anyMatch(configuredStructureFeature -> world.getStructureAccessor().getStructureContaining(blockPos, configuredStructureFeature).hasChildren())) {
 								return this.spawnInSwampHut(world, blockPos);
 							}
 						}

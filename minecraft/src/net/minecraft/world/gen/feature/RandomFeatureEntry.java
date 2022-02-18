@@ -11,16 +11,16 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class RandomFeatureEntry {
 	public static final Codec<RandomFeatureEntry> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(randomFeatureEntry -> randomFeatureEntry.feature),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("chance").forGetter(randomFeatureEntry -> randomFeatureEntry.chance)
+					PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(config -> config.feature),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("chance").forGetter(config -> config.chance)
 				)
 				.apply(instance, RandomFeatureEntry::new)
 	);
 	public final RegistryEntry<PlacedFeature> feature;
 	public final float chance;
 
-	public RandomFeatureEntry(RegistryEntry<PlacedFeature> registryEntry, float chance) {
-		this.feature = registryEntry;
+	public RandomFeatureEntry(RegistryEntry<PlacedFeature> feature, float chance) {
+		this.feature = feature;
 		this.chance = chance;
 	}
 

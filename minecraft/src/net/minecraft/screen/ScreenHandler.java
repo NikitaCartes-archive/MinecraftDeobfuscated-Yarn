@@ -35,7 +35,7 @@ import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 public abstract class ScreenHandler {
-	private static Logger field_36534 = LogUtils.getLogger();
+	private static Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * A special slot index value ({@value}) indicating that the player has clicked outside the main panel
 	 * of a screen. Used for dropping the cursor stack.
@@ -116,8 +116,8 @@ public abstract class ScreenHandler {
 		}
 	}
 
-	public boolean method_40442(int i) {
-		return i == -1 || i == -999 || i < this.slots.size();
+	public boolean isValid(int slot) {
+		return slot == -1 || slot == -999 || slot < this.slots.size();
 	}
 
 	protected Slot addSlot(Slot slot) {
@@ -283,11 +283,11 @@ public abstract class ScreenHandler {
 		this.previousTrackedStacks.set(slot, stack.copy());
 	}
 
-	public void setPreviousTrackedSlotMutable(int slot, ItemStack itemStack) {
+	public void setPreviousTrackedSlotMutable(int slot, ItemStack stack) {
 		if (slot >= 0 && slot < this.previousTrackedStacks.size()) {
-			this.previousTrackedStacks.set(slot, itemStack);
+			this.previousTrackedStacks.set(slot, stack);
 		} else {
-			field_36534.debug("Incorrect slot index: {} available slots: {}", slot, this.previousTrackedStacks.size());
+			LOGGER.debug("Incorrect slot index: {} available slots: {}", slot, this.previousTrackedStacks.size());
 		}
 	}
 

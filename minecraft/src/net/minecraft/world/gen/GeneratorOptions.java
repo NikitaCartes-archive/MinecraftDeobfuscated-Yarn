@@ -1,9 +1,7 @@
 package net.minecraft.world.gen;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -11,15 +9,13 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.class_7059;
+import net.minecraft.server.dedicated.ServerPropertiesHandler;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
@@ -39,7 +35,6 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -78,19 +73,19 @@ public class GeneratorOptions {
 		return DimensionOptions.hasDefaultSettings(this.seed, this.options);
 	}
 
-	public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Registry<DimensionOptions> registry) {
-		this(seed, generateStructures, bonusChest, registry, Optional.empty());
-		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
+	public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Registry<DimensionOptions> options) {
+		this(seed, generateStructures, bonusChest, options, Optional.empty());
+		DimensionOptions dimensionOptions = options.get(DimensionOptions.OVERWORLD);
 		if (dimensionOptions == null) {
 			throw new IllegalStateException("Overworld settings missing");
 		}
 	}
 
-	private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Registry<DimensionOptions> registry, Optional<String> legacyCustomOptions) {
+	private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, Registry<DimensionOptions> options, Optional<String> legacyCustomOptions) {
 		this.seed = seed;
 		this.generateStructures = generateStructures;
 		this.bonusChest = bonusChest;
-		this.options = registry;
+		this.options = options;
 		this.legacyCustomOptions = legacyCustomOptions;
 	}
 
@@ -136,11 +131,11 @@ public class GeneratorOptions {
 
 	public static NoiseChunkGenerator createGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settings, boolean bl) {
 		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-		Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<class_7059> registry2 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = registryManager.get(Registry.NOISE_WORLDGEN);
 		return new NoiseChunkGenerator(
-			registry4, registry2, MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(registry, bl), seed, registry3.getOrCreateEntry(settings)
+			registry2, registry4, MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(registry, bl), seed, registry3.getOrCreateEntry(settings)
 		);
 	}
 
@@ -157,25 +152,25 @@ public class GeneratorOptions {
 	}
 
 	public static Registry<DimensionOptions> getRegistryWithReplacedOverworldGenerator(
-		Registry<DimensionType> dimensionTypeRegistry, Registry<DimensionOptions> registry, ChunkGenerator overworldGenerator
+		Registry<DimensionType> dimensionTypeRegistry, Registry<DimensionOptions> options, ChunkGenerator overworldGenerator
 	) {
-		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
+		DimensionOptions dimensionOptions = options.get(DimensionOptions.OVERWORLD);
 		RegistryEntry<DimensionType> registryEntry = dimensionOptions == null
 			? dimensionTypeRegistry.getOrCreateEntry(DimensionType.OVERWORLD_REGISTRY_KEY)
 			: dimensionOptions.getDimensionTypeSupplier();
-		return getRegistryWithReplacedOverworld(registry, registryEntry, overworldGenerator);
+		return getRegistryWithReplacedOverworld(options, registryEntry, overworldGenerator);
 	}
 
 	public static Registry<DimensionOptions> getRegistryWithReplacedOverworld(
-		Registry<DimensionOptions> registry, RegistryEntry<DimensionType> registryEntry, ChunkGenerator overworldGenerator
+		Registry<DimensionOptions> options, RegistryEntry<DimensionType> dimensionType, ChunkGenerator overworldGenerator
 	) {
 		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
-		mutableRegistry.add(DimensionOptions.OVERWORLD, new DimensionOptions(registryEntry, overworldGenerator), Lifecycle.stable());
+		mutableRegistry.add(DimensionOptions.OVERWORLD, new DimensionOptions(dimensionType, overworldGenerator), Lifecycle.stable());
 
-		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
+		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : options.getEntrySet()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 			if (registryKey != DimensionOptions.OVERWORLD) {
-				mutableRegistry.add(registryKey, (DimensionOptions)entry.getValue(), registry.getEntryLifecycle((DimensionOptions)entry.getValue()));
+				mutableRegistry.add(registryKey, (DimensionOptions)entry.getValue(), options.getEntryLifecycle((DimensionOptions)entry.getValue()));
 			}
 		}
 
@@ -197,7 +192,7 @@ public class GeneratorOptions {
 
 	public ImmutableSet<RegistryKey<World>> getWorlds() {
 		return (ImmutableSet<RegistryKey<World>>)this.getDimensions()
-			.getEntries()
+			.getEntrySet()
 			.stream()
 			.map(Entry::getKey)
 			.map(GeneratorOptions::toWorldKey)
@@ -236,29 +231,19 @@ public class GeneratorOptions {
 		return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.options);
 	}
 
-	public static GeneratorOptions fromProperties(DynamicRegistryManager registryManager, Properties properties) {
-		String string = MoreObjects.firstNonNull((String)properties.get("generator-settings"), "");
-		properties.put("generator-settings", string);
-		String string2 = MoreObjects.firstNonNull((String)properties.get("level-seed"), "");
-		properties.put("level-seed", string2);
-		String string3 = (String)properties.get("generate-structures");
-		boolean bl = string3 == null || Boolean.parseBoolean(string3);
-		properties.put("generate-structures", Objects.toString(bl));
-		String string4 = (String)properties.get("level-type");
-		String string5 = (String)Optional.ofNullable(string4).map(stringx -> stringx.toLowerCase(Locale.ROOT)).orElse("default");
-		properties.put("level-type", string5);
-		long l = parseSeed(string2).orElse(new Random().nextLong());
+	public static GeneratorOptions fromProperties(DynamicRegistryManager registryManager, ServerPropertiesHandler.class_7044 arg) {
+		long l = parseSeed(arg.levelSeed()).orElse(new Random().nextLong());
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-		Registry<ConfiguredStructureFeature<?, ?>> registry3 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<class_7059> registry3 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 		Registry<DimensionOptions> registry4 = DimensionType.createDefaultDimensionOptions(registryManager, l);
-		switch (string5) {
+		String var8 = arg.levelType();
+		switch (var8) {
 			case "flat":
-				JsonObject jsonObject = !string.isEmpty() ? JsonHelper.deserialize(string) : new JsonObject();
-				Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, jsonObject);
+				Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, arg.generatorSettings());
 				return new GeneratorOptions(
 					l,
-					bl,
+					arg.generateStructures(),
 					false,
 					getRegistryWithReplacedOverworldGenerator(
 						registry,
@@ -273,17 +258,27 @@ public class GeneratorOptions {
 					)
 				);
 			case "debug_all_block_states":
-				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, registry4, new DebugChunkGenerator(registry3, registry2)));
+				return new GeneratorOptions(
+					l, arg.generateStructures(), false, getRegistryWithReplacedOverworldGenerator(registry, registry4, new DebugChunkGenerator(registry3, registry2))
+				);
 			case "amplified":
 				return new GeneratorOptions(
-					l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.AMPLIFIED))
+					l,
+					arg.generateStructures(),
+					false,
+					getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.AMPLIFIED))
 				);
 			case "largebiomes":
 				return new GeneratorOptions(
-					l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.LARGE_BIOMES))
+					l,
+					arg.generateStructures(),
+					false,
+					getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.LARGE_BIOMES))
 				);
 			default:
-				return new GeneratorOptions(l, bl, false, getRegistryWithReplacedOverworldGenerator(registry, registry4, createOverworldGenerator(registryManager, l)));
+				return new GeneratorOptions(
+					l, arg.generateStructures(), false, getRegistryWithReplacedOverworldGenerator(registry, registry4, createOverworldGenerator(registryManager, l))
+				);
 		}
 	}
 
@@ -294,7 +289,7 @@ public class GeneratorOptions {
 			MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
 			long m = seed.getAsLong();
 
-			for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : this.options.getEntries()) {
+			for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : this.options.getEntrySet()) {
 				RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
 				mutableRegistry.add(
 					registryKey,

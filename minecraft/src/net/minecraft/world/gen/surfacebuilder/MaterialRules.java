@@ -189,6 +189,22 @@ public class MaterialRules {
 
 			return new BiomePredicate();
 		}
+
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else {
+				return object instanceof MaterialRules.BiomeMaterialCondition biomeMaterialCondition ? this.field_36414.equals(biomeMaterialCondition.field_36414) : false;
+			}
+		}
+
+		public int hashCode() {
+			return this.field_36414.hashCode();
+		}
+
+		public String toString() {
+			return "BiomeConditionSource[biomes=" + this.field_36414 + "]";
+		}
 	}
 
 	static record BlockMaterialRule(BlockState resultState, MaterialRules.SimpleBlockStateRule rule) implements MaterialRules.MaterialRule {

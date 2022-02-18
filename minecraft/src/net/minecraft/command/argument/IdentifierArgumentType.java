@@ -20,9 +20,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
@@ -39,14 +37,8 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("item_modifier.unknown", id)
 	);
-	private static final DynamicCommandExceptionType UNKNOWN_BIOME_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locatebiome.invalid", id)
-	);
 	private static final DynamicCommandExceptionType UNKNOWN_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("commands.placefeature.invalid", id)
-	);
-	private static final DynamicCommandExceptionType UNKNOWN_STRUCTURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locate.invalid", id)
 	);
 
 	public static IdentifierArgumentType identifier() {
@@ -109,20 +101,10 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return new IdentifierArgumentType.RegistryEntry<>(identifier, object);
 	}
 
-	public static IdentifierArgumentType.RegistryEntry<Biome> getBiomeEntry(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		return getFromRegistry(context, argumentName, Registry.BIOME_KEY, UNKNOWN_BIOME_EXCEPTION);
-	}
-
 	public static IdentifierArgumentType.RegistryEntry<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(
 		CommandContext<ServerCommandSource> context, String argumentName
 	) throws CommandSyntaxException {
 		return getFromRegistry(context, argumentName, Registry.CONFIGURED_FEATURE_KEY, UNKNOWN_FEATURE_EXCEPTION);
-	}
-
-	public static IdentifierArgumentType.RegistryEntry<StructureFeature<?>> getStructureFeatureEntry(
-		CommandContext<ServerCommandSource> context, String argumentName
-	) throws CommandSyntaxException {
-		return getFromRegistry(context, argumentName, Registry.STRUCTURE_FEATURE_KEY, UNKNOWN_STRUCTURE_EXCEPTION);
 	}
 
 	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {

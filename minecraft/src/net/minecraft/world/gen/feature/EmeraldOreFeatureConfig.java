@@ -9,7 +9,7 @@ import net.minecraft.structure.rule.BlockStateMatchRuleTest;
 
 public class EmeraldOreFeatureConfig implements FeatureConfig {
 	public static final Codec<EmeraldOreFeatureConfig> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(emeraldOreFeatureConfig -> emeraldOreFeatureConfig.targets))
+		instance -> instance.group(Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(config -> config.targets))
 				.apply(instance, EmeraldOreFeatureConfig::new)
 	);
 	public final List<OreFeatureConfig.Target> targets;

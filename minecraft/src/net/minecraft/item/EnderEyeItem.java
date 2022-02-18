@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import net.minecraft.class_7045;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,7 +23,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 public class EnderEyeItem extends Item {
 	public EnderEyeItem(Item.Settings settings) {
@@ -70,11 +70,8 @@ public class EnderEyeItem extends Item {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			user.setCurrentHand(hand);
-			if (world instanceof ServerWorld) {
-				BlockPos blockPos = ((ServerWorld)world)
-					.getChunkManager()
-					.getChunkGenerator()
-					.locateStructure((ServerWorld)world, StructureFeature.STRONGHOLD, user.getBlockPos(), 100, false);
+			if (world instanceof ServerWorld serverWorld) {
+				BlockPos blockPos = serverWorld.locateStructure(class_7045.EYE_OF_ENDER_LOCATED, user.getBlockPos(), 100, false);
 				if (blockPos != null) {
 					EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					eyeOfEnderEntity.setItem(itemStack);

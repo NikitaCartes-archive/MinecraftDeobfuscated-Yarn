@@ -127,8 +127,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		}
 
 		@SafeVarargs
-		public final AbstractTagProvider.ObjectBuilder<T> method_40565(RegistryKey<T>... registryKeys) {
-			for (RegistryKey<T> registryKey : registryKeys) {
+		public final AbstractTagProvider.ObjectBuilder<T> add(RegistryKey<T>... keys) {
+			for (RegistryKey<T> registryKey : keys) {
 				this.builder.add(registryKey.getValue(), this.source);
 			}
 

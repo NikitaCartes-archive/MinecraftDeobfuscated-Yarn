@@ -13,7 +13,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class DeltaFeature extends Feature<DeltaFeatureConfig> {
-	private static final ImmutableList<Block> BLOCKS = ImmutableList.of(
+	private static final ImmutableList<Block> CANNOT_REPLACE_BLOCKS = ImmutableList.of(
 		Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER
 	);
 	private static final Direction[] DIRECTIONS = Direction.values();
@@ -64,7 +64,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		BlockState blockState = world.getBlockState(pos);
 		if (blockState.isOf(config.getContents().getBlock())) {
 			return false;
-		} else if (BLOCKS.contains(blockState.getBlock())) {
+		} else if (CANNOT_REPLACE_BLOCKS.contains(blockState.getBlock())) {
 			return false;
 		} else {
 			for (Direction direction : DIRECTIONS) {

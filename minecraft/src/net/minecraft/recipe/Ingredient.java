@@ -161,7 +161,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			TagKey<Item> tagKey = TagKey.intern(Registry.ITEM_KEY, identifier);
+			TagKey<Item> tagKey = TagKey.of(Registry.ITEM_KEY, identifier);
 			return new Ingredient.TagEntry(tagKey);
 		} else {
 			throw new JsonParseException("An ingredient entry needs either a tag or an item");

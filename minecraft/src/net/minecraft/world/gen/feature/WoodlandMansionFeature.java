@@ -53,10 +53,10 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			return Optional.empty();
 		} else {
 			BlockPos blockPos = new BlockPos(context.chunkPos().getCenterX(), m + 1, context.chunkPos().getCenterZ());
-			return Optional.of((StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
+			return Optional.of((StructurePiecesGenerator<>)(collector, contextx) -> {
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
 				WoodlandMansionGenerator.addPieces(contextx.structureManager(), blockPos, blockRotation, list, chunkRandom);
-				list.forEach(structurePiecesCollector::addPiece);
+				list.forEach(collector::addPiece);
 			});
 		}
 	}

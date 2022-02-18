@@ -5,9 +5,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import net.minecraft.class_7059;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -21,27 +21,18 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class FlatChunkGenerator extends ChunkGenerator {
 	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					RegistryOps.createRegistryCodec(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).forGetter(flatChunkGenerator -> flatChunkGenerator.field_36536),
-					FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig)
-				)
+		instance -> method_41042(instance)
+				.and(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
 				.apply(instance, instance.stable(FlatChunkGenerator::new))
 	);
 	private final FlatChunkGeneratorConfig config;
 
-	public FlatChunkGenerator(Registry<ConfiguredStructureFeature<?, ?>> registry, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
-		super(
-			registry,
-			new FixedBiomeSource(flatChunkGeneratorConfig.createBiome()),
-			new FixedBiomeSource(flatChunkGeneratorConfig.getBiome()),
-			flatChunkGeneratorConfig.getStructuresConfig(),
-			0L
-		);
-		this.config = flatChunkGeneratorConfig;
+	public FlatChunkGenerator(Registry<class_7059> structureFeatureRegistry, FlatChunkGeneratorConfig config) {
+		super(structureFeatureRegistry, config.method_41139(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()), 0L);
+		this.config = config;
 	}
 
 	@Override
@@ -68,7 +59,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	protected RegistryEntry<Biome> method_40149(RegistryEntry<Biome> registryEntry) {
+	protected RegistryEntry<Biome> filterBiome(RegistryEntry<Biome> biome) {
 		return this.config.getBiome();
 	}
 
@@ -125,7 +116,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void method_40450(List<String> list, BlockPos blockPos) {
+	public void getDebugHudText(List<String> text, BlockPos pos) {
 	}
 
 	@Override

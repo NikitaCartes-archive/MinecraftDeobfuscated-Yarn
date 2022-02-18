@@ -17,9 +17,9 @@ class MatchingFluidsBlockPredicate extends OffsetPredicate {
 				.apply(instance, MatchingFluidsBlockPredicate::new)
 	);
 
-	public MatchingFluidsBlockPredicate(Vec3i offset, RegistryEntryList<Fluid> registryEntryList) {
+	public MatchingFluidsBlockPredicate(Vec3i offset, RegistryEntryList<Fluid> fluids) {
 		super(offset);
-		this.fluids = registryEntryList;
+		this.fluids = fluids;
 	}
 
 	@Override

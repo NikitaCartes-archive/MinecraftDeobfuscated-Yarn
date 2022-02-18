@@ -275,7 +275,7 @@ public class EntitySelectorOptions {
 					}
 
 					if (reader.readTagCharacter()) {
-						TagKey<EntityType<?>> tagKey = TagKey.intern(Registry.ENTITY_TYPE_KEY, Identifier.fromCommandInput(reader.getReader()));
+						TagKey<EntityType<?>> tagKey = TagKey.of(Registry.ENTITY_TYPE_KEY, Identifier.fromCommandInput(reader.getReader()));
 						reader.setPredicate(entity -> entity.getType().isIn(tagKey) != bl);
 					} else {
 						Identifier identifier = Identifier.fromCommandInput(reader.getReader());

@@ -10,7 +10,7 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class MiscConfiguredFeatures {
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> ICE_SPIKE = ConfiguredFeatures.method_40364("ice_spike", Feature.ICE_SPIKE);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> ICE_SPIKE = ConfiguredFeatures.register("ice_spike", Feature.ICE_SPIKE);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> ICE_PATCH = ConfiguredFeatures.register(
 		"ice_patch",
 		Feature.ICE_PATCH,
@@ -38,7 +38,7 @@ public class MiscConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<SingleStateFeatureConfig, ?>> ICEBERG_BLUE = ConfiguredFeatures.register(
 		"iceberg_blue", Feature.ICEBERG, new SingleStateFeatureConfig(Blocks.BLUE_ICE.getDefaultState())
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BLUE_ICE = ConfiguredFeatures.method_40364("blue_ice", Feature.BLUE_ICE);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BLUE_ICE = ConfiguredFeatures.register("blue_ice", Feature.BLUE_ICE);
 	public static final RegistryEntry<ConfiguredFeature<LakeFeature.Config, ?>> LAKE_LAVA = ConfiguredFeatures.register(
 		"lake_lava",
 		Feature.LAKE,
@@ -65,14 +65,14 @@ public class MiscConfiguredFeatures {
 			Blocks.SAND.getDefaultState(), UniformIntProvider.create(2, 6), 2, List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState())
 		)
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> FREEZE_TOP_LAYER = ConfiguredFeatures.method_40364(
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> FREEZE_TOP_LAYER = ConfiguredFeatures.register(
 		"freeze_top_layer", Feature.FREEZE_TOP_LAYER
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BONUS_CHEST = ConfiguredFeatures.method_40364("bonus_chest", Feature.BONUS_CHEST);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VOID_START_PLATFORM = ConfiguredFeatures.method_40364(
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BONUS_CHEST = ConfiguredFeatures.register("bonus_chest", Feature.BONUS_CHEST);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VOID_START_PLATFORM = ConfiguredFeatures.register(
 		"void_start_platform", Feature.VOID_START_PLATFORM
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> DESERT_WELL = ConfiguredFeatures.method_40364("desert_well", Feature.DESERT_WELL);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> DESERT_WELL = ConfiguredFeatures.register("desert_well", Feature.DESERT_WELL);
 	public static final RegistryEntry<ConfiguredFeature<SpringFeatureConfig, ?>> SPRING_LAVA_OVERWORLD = ConfiguredFeatures.register(
 		"spring_lava_overworld",
 		Feature.SPRING_FEATURE,

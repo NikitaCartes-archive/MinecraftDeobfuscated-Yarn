@@ -3,7 +3,7 @@ package net.minecraft.world.gen;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
-import net.minecraft.class_6910;
+import net.minecraft.class_6916;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.StructurePiece;
@@ -14,12 +14,12 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.noise.NoiseType;
 
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
-public class StructureWeightSampler implements class_6910.class_6913 {
+public class StructureWeightSampler implements class_6916.class_7050 {
 	public static final int field_31461 = 12;
 	private static final int field_31462 = 24;
 	private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
@@ -42,42 +42,38 @@ public class StructureWeightSampler implements class_6910.class_6913 {
 		int j = chunkPos.getStartZ();
 		this.junctions = new ObjectArrayList<>(32);
 		this.pieces = new ObjectArrayList<>(10);
-
-		for (StructureFeature<?> structureFeature : StructureFeature.LAND_MODIFYING_STRUCTURES) {
-			structureAccessor.getStructureStarts(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
-				for (StructurePiece structurePiece : start.getChildren()) {
-					if (structurePiece.intersectsChunk(chunkPos, 12)) {
-						if (structurePiece instanceof PoolStructurePiece) {
-							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
-							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
-							if (projection == StructurePool.Projection.RIGID) {
-								this.pieces.add(poolStructurePiece);
-							}
-
-							for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-								int k = jigsawJunction.getSourceX();
-								int l = jigsawJunction.getSourceZ();
-								if (k > i - 12 && l > j - 12 && k < i + 15 + 12 && l < j + 15 + 12) {
-									this.junctions.add(jigsawJunction);
-								}
-							}
-						} else {
-							this.pieces.add(structurePiece);
+		structureAccessor.method_41035(ChunkSectionPos.from(chunk), configuredStructureFeature -> configuredStructureFeature.field_37144).forEach(start -> {
+			for (StructurePiece structurePiece : start.getChildren()) {
+				if (structurePiece.intersectsChunk(chunkPos, 12)) {
+					if (structurePiece instanceof PoolStructurePiece) {
+						PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+						StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
+						if (projection == StructurePool.Projection.RIGID) {
+							this.pieces.add(poolStructurePiece);
 						}
+
+						for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
+							int k = jigsawJunction.getSourceX();
+							int l = jigsawJunction.getSourceZ();
+							if (k > i - 12 && l > j - 12 && k < i + 15 + 12 && l < j + 15 + 12) {
+								this.junctions.add(jigsawJunction);
+							}
+						}
+					} else {
+						this.pieces.add(structurePiece);
 					}
 				}
-			});
-		}
-
+			}
+		});
 		this.pieceIterator = this.pieces.iterator();
 		this.junctionIterator = this.junctions.iterator();
 	}
 
 	@Override
-	public double method_40464(class_6910.class_6912 arg) {
-		int i = arg.blockX();
-		int j = arg.blockY();
-		int k = arg.blockZ();
+	public double sample(NoiseType.NoisePos pos) {
+		int i = pos.blockX();
+		int j = pos.blockY();
+		int k = pos.blockZ();
 		double d = 0.0;
 
 		while (this.pieceIterator.hasNext()) {

@@ -6,34 +6,29 @@ import java.util.function.Function;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.dimension.DimensionType;
 
-public abstract class YOffset {
-	public static final Codec<YOffset> OFFSET_CODEC = Codecs.xor(YOffset.Fixed.CODEC, Codecs.xor(YOffset.AboveBottom.CODEC, YOffset.BelowTop.CODEC))
+public interface YOffset {
+	Codec<YOffset> OFFSET_CODEC = Codecs.xor(YOffset.Fixed.CODEC, Codecs.xor(YOffset.AboveBottom.CODEC, YOffset.BelowTop.CODEC))
 		.xmap(YOffset::fromEither, YOffset::map);
-	private static final YOffset BOTTOM = aboveBottom(0);
-	private static final YOffset TOP = belowTop(0);
-	private final int offset;
+	YOffset BOTTOM = aboveBottom(0);
+	YOffset TOP = belowTop(0);
 
-	protected YOffset(int offset) {
-		this.offset = offset;
-	}
-
-	public static YOffset fixed(int offset) {
+	static YOffset fixed(int offset) {
 		return new YOffset.Fixed(offset);
 	}
 
-	public static YOffset aboveBottom(int offset) {
+	static YOffset aboveBottom(int offset) {
 		return new YOffset.AboveBottom(offset);
 	}
 
-	public static YOffset belowTop(int offset) {
+	static YOffset belowTop(int offset) {
 		return new YOffset.BelowTop(offset);
 	}
 
-	public static YOffset getBottom() {
+	static YOffset getBottom() {
 		return BOTTOM;
 	}
 
-	public static YOffset getTop() {
+	static YOffset getTop() {
 		return TOP;
 	}
 
@@ -47,69 +42,53 @@ public abstract class YOffset {
 			: Either.right(yOffset instanceof YOffset.AboveBottom ? Either.left((YOffset.AboveBottom)yOffset) : Either.right((YOffset.BelowTop)yOffset));
 	}
 
-	protected int getOffset() {
-		return this.offset;
-	}
+	int getY(HeightContext context);
 
-	public abstract int getY(HeightContext context);
-
-	static final class AboveBottom extends YOffset {
+	public static record AboveBottom(int offset) implements YOffset {
 		public static final Codec<YOffset.AboveBottom> CODEC = Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT)
 			.fieldOf("above_bottom")
-			.<YOffset.AboveBottom>xmap(YOffset.AboveBottom::new, YOffset::getOffset)
+			.<YOffset.AboveBottom>xmap(YOffset.AboveBottom::new, YOffset.AboveBottom::offset)
 			.codec();
-
-		protected AboveBottom(int i) {
-			super(i);
-		}
 
 		@Override
 		public int getY(HeightContext context) {
-			return context.getMinY() + this.getOffset();
+			return context.getMinY() + this.offset;
 		}
 
 		public String toString() {
-			return this.getOffset() + " above bottom";
+			return this.offset + " above bottom";
 		}
 	}
 
-	static final class BelowTop extends YOffset {
+	public static record BelowTop(int offset) implements YOffset {
 		public static final Codec<YOffset.BelowTop> CODEC = Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT)
 			.fieldOf("below_top")
-			.<YOffset.BelowTop>xmap(YOffset.BelowTop::new, YOffset::getOffset)
+			.<YOffset.BelowTop>xmap(YOffset.BelowTop::new, YOffset.BelowTop::offset)
 			.codec();
-
-		protected BelowTop(int i) {
-			super(i);
-		}
 
 		@Override
 		public int getY(HeightContext context) {
-			return context.getHeight() - 1 + context.getMinY() - this.getOffset();
+			return context.getHeight() - 1 + context.getMinY() - this.offset;
 		}
 
 		public String toString() {
-			return this.getOffset() + " below top";
+			return this.offset + " below top";
 		}
 	}
 
-	static final class Fixed extends YOffset {
+	public static record Fixed(int y) implements YOffset {
 		public static final Codec<YOffset.Fixed> CODEC = Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT)
 			.fieldOf("absolute")
-			.<YOffset.Fixed>xmap(YOffset.Fixed::new, YOffset::getOffset)
+			.<YOffset.Fixed>xmap(YOffset.Fixed::new, YOffset.Fixed::y)
 			.codec();
-
-		protected Fixed(int i) {
-			super(i);
-		}
 
 		@Override
 		public int getY(HeightContext context) {
-			return this.getOffset();
+			return this.y;
 		}
 
 		public String toString() {
-			return this.getOffset() + " absolute";
+			return this.y + " absolute";
 		}
 	}
 }

@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos;
 public class EndSpikeFeatureConfig implements FeatureConfig {
 	public static final Codec<EndSpikeFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.BOOL.fieldOf("crystal_invulnerable").orElse(false).forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.crystalInvulnerable),
-					EndSpikeFeature.Spike.CODEC.listOf().fieldOf("spikes").forGetter(endSpikeFeatureConfig -> endSpikeFeatureConfig.spikes),
-					BlockPos.CODEC.optionalFieldOf("crystal_beam_target").forGetter(endSpikeFeatureConfig -> Optional.ofNullable(endSpikeFeatureConfig.crystalBeamTarget))
+					Codec.BOOL.fieldOf("crystal_invulnerable").orElse(false).forGetter(config -> config.crystalInvulnerable),
+					EndSpikeFeature.Spike.CODEC.listOf().fieldOf("spikes").forGetter(config -> config.spikes),
+					BlockPos.CODEC.optionalFieldOf("crystal_beam_target").forGetter(config -> Optional.ofNullable(config.crystalBeamTarget))
 				)
 				.apply(instance, EndSpikeFeatureConfig::new)
 	);

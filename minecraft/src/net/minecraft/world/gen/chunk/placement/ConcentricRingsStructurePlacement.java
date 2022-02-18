@@ -2,6 +2,7 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -17,7 +18,8 @@ public record ConcentricRingsStructurePlacement(int distance, int spread, int co
 
 	@Override
 	public boolean isStartChunk(ChunkGenerator chunkGenerator, int x, int z) {
-		return chunkGenerator.getConcentricRingsStartChunks(this).contains(new ChunkPos(x, z));
+		List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this);
+		return list == null ? false : list.contains(new ChunkPos(x, z));
 	}
 
 	@Override

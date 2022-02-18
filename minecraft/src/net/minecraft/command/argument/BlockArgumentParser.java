@@ -319,7 +319,7 @@ public class BlockArgumentParser {
 			this.suggestions = this::suggestIdentifiers;
 			this.reader.expect('#');
 			this.cursorPos = this.reader.getCursor();
-			this.tagId = TagKey.intern(Registry.BLOCK_KEY, Identifier.fromCommandInput(this.reader));
+			this.tagId = TagKey.of(Registry.BLOCK_KEY, Identifier.fromCommandInput(this.reader));
 		}
 	}
 

@@ -28,8 +28,8 @@ import net.minecraft.world.World;
 
 public class EnchantingTableBlock extends BlockWithEntity {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
-	public static final List<BlockPos> field_36535 = BlockPos.stream(-2, 0, -2, 2, 1, 2)
-		.filter(blockPos -> Math.abs(blockPos.getX()) == 2 || Math.abs(blockPos.getZ()) == 2)
+	public static final List<BlockPos> BOOKSHELF_OFFSETS = BlockPos.stream(-2, 0, -2, 2, 1, 2)
+		.filter(pos -> Math.abs(pos.getX()) == 2 || Math.abs(pos.getZ()) == 2)
 		.map(BlockPos::toImmutable)
 		.toList();
 
@@ -37,9 +37,9 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		super(settings);
 	}
 
-	public static boolean method_40445(World world, BlockPos blockPos, BlockPos blockPos2) {
-		return world.getBlockState(blockPos.add(blockPos2)).isOf(Blocks.BOOKSHELF)
-			&& world.isAir(blockPos.add(blockPos2.getX() / 2, blockPos2.getY(), blockPos2.getZ() / 2));
+	public static boolean canAccessBookshelf(World world, BlockPos tablePos, BlockPos bookshelfOffset) {
+		return world.getBlockState(tablePos.add(bookshelfOffset)).isOf(Blocks.BOOKSHELF)
+			&& world.isAir(tablePos.add(bookshelfOffset.getX() / 2, bookshelfOffset.getY(), bookshelfOffset.getZ() / 2));
 	}
 
 	@Override
@@ -56,8 +56,8 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		super.randomDisplayTick(state, world, pos, random);
 
-		for (BlockPos blockPos : field_36535) {
-			if (random.nextInt(16) == 0 && method_40445(world, pos, blockPos)) {
+		for (BlockPos blockPos : BOOKSHELF_OFFSETS) {
+			if (random.nextInt(16) == 0 && canAccessBookshelf(world, pos, blockPos)) {
 				world.addParticle(
 					ParticleTypes.ENCHANT,
 					(double)pos.getX() + 0.5,

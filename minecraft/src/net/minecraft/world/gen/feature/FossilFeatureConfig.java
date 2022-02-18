@@ -11,11 +11,11 @@ import net.minecraft.util.registry.RegistryEntry;
 public class FossilFeatureConfig implements FeatureConfig {
 	public static final Codec<FossilFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.CODEC.listOf().fieldOf("fossil_structures").forGetter(fossilFeatureConfig -> fossilFeatureConfig.fossilStructures),
-					Identifier.CODEC.listOf().fieldOf("overlay_structures").forGetter(fossilFeatureConfig -> fossilFeatureConfig.overlayStructures),
-					StructureProcessorType.REGISTRY_CODEC.fieldOf("fossil_processors").forGetter(fossilFeatureConfig -> fossilFeatureConfig.fossilProcessors),
-					StructureProcessorType.REGISTRY_CODEC.fieldOf("overlay_processors").forGetter(fossilFeatureConfig -> fossilFeatureConfig.overlayProcessors),
-					Codec.intRange(0, 7).fieldOf("max_empty_corners_allowed").forGetter(fossilFeatureConfig -> fossilFeatureConfig.maxEmptyCorners)
+					Identifier.CODEC.listOf().fieldOf("fossil_structures").forGetter(config -> config.fossilStructures),
+					Identifier.CODEC.listOf().fieldOf("overlay_structures").forGetter(config -> config.overlayStructures),
+					StructureProcessorType.REGISTRY_CODEC.fieldOf("fossil_processors").forGetter(config -> config.fossilProcessors),
+					StructureProcessorType.REGISTRY_CODEC.fieldOf("overlay_processors").forGetter(config -> config.overlayProcessors),
+					Codec.intRange(0, 7).fieldOf("max_empty_corners_allowed").forGetter(config -> config.maxEmptyCorners)
 				)
 				.apply(instance, FossilFeatureConfig::new)
 	);
@@ -28,8 +28,8 @@ public class FossilFeatureConfig implements FeatureConfig {
 	public FossilFeatureConfig(
 		List<Identifier> fossilStructures,
 		List<Identifier> overlayStructures,
-		RegistryEntry<StructureProcessorList> registryEntry,
-		RegistryEntry<StructureProcessorList> registryEntry2,
+		RegistryEntry<StructureProcessorList> fossilProcessors,
+		RegistryEntry<StructureProcessorList> overlayProcessors,
 		int maxEmptyCorners
 	) {
 		if (fossilStructures.isEmpty()) {
@@ -39,8 +39,8 @@ public class FossilFeatureConfig implements FeatureConfig {
 		} else {
 			this.fossilStructures = fossilStructures;
 			this.overlayStructures = overlayStructures;
-			this.fossilProcessors = registryEntry;
-			this.overlayProcessors = registryEntry2;
+			this.fossilProcessors = fossilProcessors;
+			this.overlayProcessors = overlayProcessors;
 			this.maxEmptyCorners = maxEmptyCorners;
 		}
 	}

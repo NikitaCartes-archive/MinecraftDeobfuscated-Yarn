@@ -150,7 +150,7 @@ public class TagGroupLoader<T> {
 									collection -> LOGGER.error(
 											"Couldn't load tag {} as it is missing following references: {}",
 											identifierx,
-											collection.stream().map(Objects::toString).collect(Collectors.joining(","))
+											collection.stream().map(Objects::toString).collect(Collectors.joining(", "))
 										)
 								)
 								.ifRight(tag -> map.put(identifierx, tag))

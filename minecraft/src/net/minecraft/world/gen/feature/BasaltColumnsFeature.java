@@ -14,7 +14,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
-	private static final ImmutableList<Block> BLOCKS = ImmutableList.of(
+	private static final ImmutableList<Block> CANNOT_REPLACE_BLOCKS = ImmutableList.of(
 		Blocks.LAVA,
 		Blocks.BEDROCK,
 		Blocks.MAGMA_BLOCK,
@@ -114,7 +114,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		} else {
 			BlockState blockState = world.getBlockState(mutablePos.move(Direction.DOWN));
 			mutablePos.move(Direction.UP);
-			return !blockState.isAir() && !BLOCKS.contains(blockState.getBlock());
+			return !blockState.isAir() && !CANNOT_REPLACE_BLOCKS.contains(blockState.getBlock());
 		}
 	}
 
@@ -123,7 +123,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		while (mutablePos.getY() < world.getTopY() && distance > 0) {
 			distance--;
 			BlockState blockState = world.getBlockState(mutablePos);
-			if (BLOCKS.contains(blockState.getBlock())) {
+			if (CANNOT_REPLACE_BLOCKS.contains(blockState.getBlock())) {
 				return null;
 			}
 

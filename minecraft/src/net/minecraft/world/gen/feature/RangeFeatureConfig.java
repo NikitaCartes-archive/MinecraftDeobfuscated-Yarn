@@ -6,8 +6,7 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public class RangeFeatureConfig implements FeatureConfig {
 	public static final Codec<RangeFeatureConfig> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(HeightProvider.CODEC.fieldOf("height").forGetter(rangeFeatureConfig -> rangeFeatureConfig.heightProvider))
-				.apply(instance, RangeFeatureConfig::new)
+		instance -> instance.group(HeightProvider.CODEC.fieldOf("height").forGetter(config -> config.heightProvider)).apply(instance, RangeFeatureConfig::new)
 	);
 	public final HeightProvider heightProvider;
 

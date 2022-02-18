@@ -4,6 +4,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_7045;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -61,7 +62,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 public class DolphinEntity extends WaterCreatureEntity {
 	private static final TrackedData<BlockPos> TREASURE_POS = DataTracker.registerData(DolphinEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
@@ -418,22 +418,13 @@ public class DolphinEntity extends WaterCreatureEntity {
 				this.noPathToStructure = false;
 				this.dolphin.getNavigation().stop();
 				BlockPos blockPos = this.dolphin.getBlockPos();
-				StructureFeature<?> structureFeature = (double)serverWorld.random.nextFloat() >= 0.5 ? StructureFeature.OCEAN_RUIN : StructureFeature.SHIPWRECK;
-				BlockPos blockPos2 = serverWorld.locateStructure(structureFeature, blockPos, 50, false);
-				if (blockPos2 == null) {
-					StructureFeature<?> structureFeature2 = structureFeature.equals(StructureFeature.OCEAN_RUIN) ? StructureFeature.SHIPWRECK : StructureFeature.OCEAN_RUIN;
-					BlockPos blockPos3 = serverWorld.locateStructure(structureFeature2, blockPos, 50, false);
-					if (blockPos3 == null) {
-						this.noPathToStructure = true;
-						return;
-					}
-
-					this.dolphin.setTreasurePos(blockPos3);
-				} else {
+				BlockPos blockPos2 = serverWorld.locateStructure(class_7045.DOLPHIN_LOCATED, blockPos, 50, false);
+				if (blockPos2 != null) {
 					this.dolphin.setTreasurePos(blockPos2);
+					serverWorld.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
+				} else {
+					this.noPathToStructure = true;
 				}
-
-				serverWorld.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
 			}
 		}
 

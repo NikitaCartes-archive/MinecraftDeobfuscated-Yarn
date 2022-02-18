@@ -94,8 +94,8 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				this.context.run((world, pos) -> {
 					int ix = 0;
 
-					for (BlockPos blockPos : EnchantingTableBlock.field_36535) {
-						if (EnchantingTableBlock.method_40445(world, pos, blockPos)) {
+					for (BlockPos blockPos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
+						if (EnchantingTableBlock.canAccessBookshelf(world, pos, blockPos)) {
 							ix++;
 						}
 					}

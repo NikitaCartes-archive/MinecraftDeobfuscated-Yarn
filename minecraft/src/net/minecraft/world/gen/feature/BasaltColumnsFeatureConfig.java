@@ -7,8 +7,8 @@ import net.minecraft.util.math.intprovider.IntProvider;
 public class BasaltColumnsFeatureConfig implements FeatureConfig {
 	public static final Codec<BasaltColumnsFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					IntProvider.createValidatingCodec(0, 3).fieldOf("reach").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.reach),
-					IntProvider.createValidatingCodec(1, 10).fieldOf("height").forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.height)
+					IntProvider.createValidatingCodec(0, 3).fieldOf("reach").forGetter(config -> config.reach),
+					IntProvider.createValidatingCodec(1, 10).fieldOf("height").forGetter(config -> config.height)
 				)
 				.apply(instance, BasaltColumnsFeatureConfig::new)
 	);

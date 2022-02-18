@@ -10,9 +10,9 @@ import net.minecraft.structure.rule.RuleTest;
 public class OreFeatureConfig implements FeatureConfig {
 	public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(oreFeatureConfig -> oreFeatureConfig.targets),
-					Codec.intRange(0, 64).fieldOf("size").forGetter(oreFeatureConfig -> oreFeatureConfig.size),
-					Codec.floatRange(0.0F, 1.0F).fieldOf("discard_chance_on_air_exposure").forGetter(oreFeatureConfig -> oreFeatureConfig.discardOnAirChance)
+					Codec.list(OreFeatureConfig.Target.CODEC).fieldOf("targets").forGetter(config -> config.targets),
+					Codec.intRange(0, 64).fieldOf("size").forGetter(config -> config.size),
+					Codec.floatRange(0.0F, 1.0F).fieldOf("discard_chance_on_air_exposure").forGetter(config -> config.discardOnAirChance)
 				)
 				.apply(instance, OreFeatureConfig::new)
 	);

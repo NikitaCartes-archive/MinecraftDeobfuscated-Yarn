@@ -3,6 +3,7 @@ package net.minecraft.server.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.DataFixer;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -79,7 +80,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructureStart;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CsvWriter;
@@ -101,6 +102,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -133,7 +135,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -1214,20 +1216,31 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * 
 	 * @see ChunkGenerator#locateStructure
 	 * 
-	 * @param feature the structure feature to search for
 	 * @param pos the position to start the searching at
 	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(StructureFeature<?> feature, BlockPos pos, int radius, boolean skipExistingChunks) {
-		return !this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()
-			? null
-			: this.getChunkManager().getChunkGenerator().locateStructure(this, feature, pos, radius, skipExistingChunks);
+	public BlockPos locateStructure(TagKey<ConfiguredStructureFeature<?, ?>> tagKey, BlockPos pos, int radius, boolean skipExistingChunks) {
+		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
+			return null;
+		} else {
+			Optional<RegistryEntryList.Named<ConfiguredStructureFeature<?, ?>>> optional = this.getRegistryManager()
+				.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)
+				.getEntryList(tagKey);
+			if (optional.isEmpty()) {
+				return null;
+			} else {
+				Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = this.getChunkManager()
+					.getChunkGenerator()
+					.locateStructure(this, (RegistryEntryList<ConfiguredStructureFeature<?, ?>>)optional.get(), pos, radius, skipExistingChunks);
+				return pair != null ? pair.getFirst() : null;
+			}
+		}
 	}
 
 	@Nullable
-	public BlockPos locateBiome(RegistryKey<Biome> biomeKey, BlockPos pos, int radius, int blockCheckInterval) {
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> predicate, BlockPos pos, int radius, int blockCheckInterval) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
@@ -1237,7 +1250,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				pos.getZ(),
 				radius,
 				blockCheckInterval,
-				entry -> entry.matchesKey(biomeKey),
+				predicate,
 				this.random,
 				true,
 				this.getChunkManager().getChunkGenerator().getMultiNoiseSampler()
@@ -1637,11 +1650,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	public EnderDragonFight getEnderDragonFight() {
 		return this.enderDragonFight;
-	}
-
-	@Override
-	public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.getStructureAccessor().getStructureStarts(pos, feature);
 	}
 
 	@Override

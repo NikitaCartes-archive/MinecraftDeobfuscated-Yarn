@@ -55,7 +55,7 @@ public class RegistryCodecs {
 
 	public static <E> Codec<Registry<E>> dynamicRegistry(RegistryKey<? extends Registry<E>> registryRef, Lifecycle lifecycle, Codec<E> elementCodec) {
 		Codec<Map<RegistryKey<E>, E>> codec = registryMap(registryRef, elementCodec);
-		Encoder<Registry<E>> encoder = codec.comap(registry -> ImmutableMap.copyOf(registry.getEntries()));
+		Encoder<Registry<E>> encoder = codec.comap(registry -> ImmutableMap.copyOf(registry.getEntrySet()));
 		return Codec.of(encoder, createRegistryDecoder(registryRef, elementCodec, codec, lifecycle), "DataPackRegistryCodec for " + registryRef);
 	}
 
