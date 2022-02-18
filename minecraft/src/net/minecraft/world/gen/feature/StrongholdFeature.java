@@ -8,7 +8,7 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 
-public class StrongholdFeature extends MarginedStructureFeature<DefaultFeatureConfig> {
+public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 	public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
 		super(configCodec, StructureGeneratorFactory.simple(StrongholdFeature::canGenerate, StrongholdFeature::addPieces));
 	}

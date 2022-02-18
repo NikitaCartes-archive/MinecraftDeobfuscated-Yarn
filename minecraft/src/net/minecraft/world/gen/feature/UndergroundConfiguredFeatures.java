@@ -30,9 +30,7 @@ import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class UndergroundConfiguredFeatures {
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> MONSTER_ROOM = ConfiguredFeatures.method_40364(
-		"monster_room", Feature.MONSTER_ROOM
-	);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> MONSTER_ROOM = ConfiguredFeatures.register("monster_room", Feature.MONSTER_ROOM);
 	private static final List<Identifier> FOSSIL_IDS = List.of(
 		new Identifier("fossil/spine_1"),
 		new Identifier("fossil/spine_2"),

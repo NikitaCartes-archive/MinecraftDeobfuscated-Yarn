@@ -12,24 +12,24 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2969;
+	public static final int WORLD_VERSION = 2971;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "22w07a";
+	public static final String VERSION_NAME = "1.18.2-pre1";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.18.2";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 758;
 	@Deprecated
-	public static final int field_29736 = 68;
+	public static final int field_29736 = 70;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 2965;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = true;
 	@Deprecated
 	public static final int RESOURCE_PACK_VERSION = 8;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 8;
+	public static final int DATA_PACK_VERSION = 9;
 	public static final String DATA_VERSION_KEY = "DataVersion";
 	public static final boolean field_33712 = false;
 	public static final boolean field_29743 = false;
@@ -91,7 +91,6 @@ public class SharedConstants {
 	public static final boolean field_29717 = false;
 	public static final boolean field_29718 = false;
 	public static final boolean field_33555 = false;
-	public static final boolean field_33640 = false;
 	public static final boolean field_35438 = false;
 	public static final boolean field_35439 = false;
 	public static final int DEFAULT_PORT = 25565;
@@ -174,7 +173,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741892;
+		return 1073741894;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7059;
 import net.minecraft.client.gui.screen.CustomizeBuffetLevelScreen;
 import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,7 +31,6 @@ import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 @Environment(EnvType.CLIENT)
 public abstract class GeneratorType {
@@ -44,7 +44,7 @@ public abstract class GeneratorType {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
 			Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-			Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+			Registry<class_7059> registry2 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 			return new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry));
 		}
 	};
@@ -69,7 +69,7 @@ public abstract class GeneratorType {
 	private static final GeneratorType DEBUG_ALL_BLOCK_STATES = new GeneratorType("debug_all_block_states") {
 		@Override
 		protected ChunkGenerator getChunkGenerator(DynamicRegistryManager registryManager, long seed) {
-			return new DebugChunkGenerator(registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY), registryManager.get(Registry.BIOME_KEY));
+			return new DebugChunkGenerator(registryManager.get(Registry.STRUCTURE_SET_WORLDGEN), registryManager.get(Registry.BIOME_KEY));
 		}
 	};
 	public static final List<GeneratorType> VALUES = Lists.<GeneratorType>newArrayList(
@@ -81,7 +81,7 @@ public abstract class GeneratorType {
 			ChunkGenerator chunkGenerator = generatorOptions.getChunkGenerator();
 			DynamicRegistryManager dynamicRegistryManager = screen.moreOptionsDialog.getRegistryManager();
 			Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
-			Registry<ConfiguredStructureFeature<?, ?>> registry2 = dynamicRegistryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+			Registry<class_7059> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 			Registry<DimensionType> registry3 = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
 			return new CustomizeFlatLevelScreen(
 				screen,
@@ -112,11 +112,11 @@ public abstract class GeneratorType {
 
 	static NoiseChunkGenerator createNoiseChunkGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
 		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-		Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<class_7059> registry2 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = registryManager.get(Registry.NOISE_WORLDGEN);
 		Registry<ChunkGeneratorSettings> registry4 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		return new NoiseChunkGenerator(
-			registry3, registry2, new FixedBiomeSource(registry.getOrCreateEntry(BiomeKeys.PLAINS)), seed, registry4.getOrCreateEntry(settingsKey)
+			registry2, registry3, new FixedBiomeSource(registry.getOrCreateEntry(BiomeKeys.PLAINS)), seed, registry4.getOrCreateEntry(settingsKey)
 		);
 	}
 
@@ -129,7 +129,7 @@ public abstract class GeneratorType {
 	) {
 		BiomeSource biomeSource = new FixedBiomeSource(registryEntry);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-		Registry<ConfiguredStructureFeature<?, ?>> registry2 = registryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		Registry<class_7059> registry2 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
 		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry3.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
 		return new GeneratorOptions(
@@ -139,7 +139,7 @@ public abstract class GeneratorType {
 			GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
 				registry,
 				generatorOptions.getDimensions(),
-				new NoiseChunkGenerator(registryManager.get(Registry.NOISE_WORLDGEN), registry2, biomeSource, generatorOptions.getSeed(), registryEntry2)
+				new NoiseChunkGenerator(registry2, registryManager.get(Registry.NOISE_WORLDGEN), biomeSource, generatorOptions.getSeed(), registryEntry2)
 			)
 		);
 	}

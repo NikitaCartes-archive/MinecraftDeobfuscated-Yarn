@@ -26,7 +26,7 @@ public class OceanConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<SimpleBlockFeatureConfig, ?>> SEAGRASS_SIMPLE = ConfiguredFeatures.register(
 		"seagrass_simple", Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SEAGRASS))
 	);
-	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> KELP = ConfiguredFeatures.method_40364("kelp", Feature.KELP);
+	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> KELP = ConfiguredFeatures.register("kelp", Feature.KELP);
 	public static final RegistryEntry<ConfiguredFeature<SimpleRandomFeatureConfig, ?>> WARM_OCEAN_VEGETATION = ConfiguredFeatures.register(
 		"warm_ocean_vegetation",
 		Feature.SIMPLE_RANDOM_SELECTOR,

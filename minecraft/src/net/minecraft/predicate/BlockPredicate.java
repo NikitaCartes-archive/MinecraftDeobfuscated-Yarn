@@ -81,7 +81,7 @@ public class BlockPredicate {
 			TagKey<Block> tagKey = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tagKey = TagKey.intern(Registry.BLOCK_KEY, identifier2);
+				tagKey = TagKey.of(Registry.BLOCK_KEY, identifier2);
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));

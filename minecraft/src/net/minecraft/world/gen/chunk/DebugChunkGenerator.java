@@ -4,10 +4,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import net.minecraft.class_7059;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,15 +31,11 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.placement.StructuresConfig;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class DebugChunkGenerator extends ChunkGenerator {
 	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(
-					RegistryOps.createRegistryCodec(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.field_36536),
-					RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry)
-				)
+		instance -> method_41042(instance)
+				.and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry))
 				.apply(instance, instance.stable(DebugChunkGenerator::new))
 	);
 	private static final int field_31467 = 2;
@@ -52,8 +50,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	public static final int field_31466 = 60;
 	private final Registry<Biome> biomeRegistry;
 
-	public DebugChunkGenerator(Registry<ConfiguredStructureFeature<?, ?>> registry, Registry<Biome> registry2) {
-		super(registry, new FixedBiomeSource(registry2.getOrCreateEntry(BiomeKeys.PLAINS)), new StructuresConfig(false));
+	public DebugChunkGenerator(Registry<class_7059> registry, Registry<Biome> registry2) {
+		super(registry, Optional.empty(), new FixedBiomeSource(registry2.getOrCreateEntry(BiomeKeys.PLAINS)));
 		this.biomeRegistry = registry2;
 	}
 
@@ -109,7 +107,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void method_40450(List<String> list, BlockPos blockPos) {
+	public void getDebugHudText(List<String> text, BlockPos pos) {
 	}
 
 	public static BlockState getBlockState(int x, int z) {

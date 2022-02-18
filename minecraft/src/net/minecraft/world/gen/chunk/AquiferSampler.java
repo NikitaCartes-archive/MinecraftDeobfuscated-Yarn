@@ -2,7 +2,6 @@ package net.minecraft.world.gen.chunk;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
-import net.minecraft.class_6910;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -10,6 +9,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import org.apache.commons.lang3.mutable.MutableDouble;
@@ -18,24 +18,24 @@ public interface AquiferSampler {
 	static AquiferSampler aquifer(
 		ChunkNoiseSampler chunkNoiseSampler,
 		ChunkPos chunkPos,
-		class_6910 arg,
-		class_6910 arg2,
-		class_6910 arg3,
-		class_6910 arg4,
+		NoiseType noiseType,
+		NoiseType noiseType2,
+		NoiseType noiseType3,
+		NoiseType noiseType4,
 		RandomDeriver randomDeriver,
 		int minY,
 		int height,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
-		return new AquiferSampler.Impl(chunkNoiseSampler, chunkPos, arg, arg2, arg3, arg4, randomDeriver, minY, height, fluidLevelSampler);
+		return new AquiferSampler.Impl(chunkNoiseSampler, chunkPos, noiseType, noiseType2, noiseType3, noiseType4, randomDeriver, minY, height, fluidLevelSampler);
 	}
 
 	static AquiferSampler seaLevel(AquiferSampler.FluidLevelSampler fluidLevelSampler) {
 		return new AquiferSampler() {
 			@Nullable
 			@Override
-			public BlockState apply(class_6910.class_6912 arg, double d) {
-				return d > 0.0 ? null : fluidLevelSampler.getFluidLevel(arg.blockX(), arg.blockY(), arg.blockZ()).getBlockState(arg.blockY());
+			public BlockState apply(NoiseType.NoisePos noisePos, double d) {
+				return d > 0.0 ? null : fluidLevelSampler.getFluidLevel(noisePos.blockX(), noisePos.blockY(), noisePos.blockZ()).getBlockState(noisePos.blockY());
 			}
 
 			@Override
@@ -46,7 +46,7 @@ public interface AquiferSampler {
 	}
 
 	@Nullable
-	BlockState apply(class_6910.class_6912 arg, double d);
+	BlockState apply(NoiseType.NoisePos noisePos, double d);
 
 	boolean needsFluidTick();
 
@@ -81,10 +81,10 @@ public interface AquiferSampler {
 		private static final int field_36220 = 11;
 		private static final double field_36221 = maxDistance(MathHelper.square(10), MathHelper.square(12));
 		private final ChunkNoiseSampler chunkNoiseSampler;
-		private final class_6910 barrierNoise;
-		private final class_6910 fluidLevelFloodednessNoise;
-		private final class_6910 fluidLevelSpreadNoise;
-		private final class_6910 fluidTypeNoise;
+		private final NoiseType barrierNoise;
+		private final NoiseType fluidLevelFloodednessNoise;
+		private final NoiseType fluidLevelSpreadNoise;
+		private final NoiseType fluidTypeNoise;
 		private final RandomDeriver randomDeriver;
 		private final AquiferSampler.FluidLevel[] waterLevels;
 		private final long[] blockPositions;
@@ -102,20 +102,20 @@ public interface AquiferSampler {
 		Impl(
 			ChunkNoiseSampler chunkNoiseSampler,
 			ChunkPos chunkPos,
-			class_6910 arg,
-			class_6910 arg2,
-			class_6910 arg3,
-			class_6910 arg4,
+			NoiseType noiseType,
+			NoiseType noiseType2,
+			NoiseType noiseType3,
+			NoiseType noiseType4,
 			RandomDeriver randomDeriver,
 			int minY,
 			int height,
 			AquiferSampler.FluidLevelSampler fluidLevelSampler
 		) {
 			this.chunkNoiseSampler = chunkNoiseSampler;
-			this.barrierNoise = arg;
-			this.fluidLevelFloodednessNoise = arg2;
-			this.fluidLevelSpreadNoise = arg3;
-			this.fluidTypeNoise = arg4;
+			this.barrierNoise = noiseType;
+			this.fluidLevelFloodednessNoise = noiseType2;
+			this.fluidLevelSpreadNoise = noiseType3;
+			this.fluidTypeNoise = noiseType4;
 			this.randomDeriver = randomDeriver;
 			this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
 			this.fluidLevelSampler = fluidLevelSampler;
@@ -142,10 +142,10 @@ public interface AquiferSampler {
 
 		@Nullable
 		@Override
-		public BlockState apply(class_6910.class_6912 arg, double d) {
-			int i = arg.blockX();
-			int j = arg.blockY();
-			int k = arg.blockZ();
+		public BlockState apply(NoiseType.NoisePos noisePos, double d) {
+			int i = noisePos.blockX();
+			int j = noisePos.blockY();
+			int k = noisePos.blockZ();
 			if (d > 0.0) {
 				this.needsFluidTick = false;
 				return null;
@@ -218,7 +218,7 @@ public interface AquiferSampler {
 					} else {
 						MutableDouble mutableDouble = new MutableDouble(Double.NaN);
 						AquiferSampler.FluidLevel fluidLevel3 = this.getWaterLevel(s);
-						double f = e * this.calculateDensity(arg, mutableDouble, fluidLevel2, fluidLevel3);
+						double f = e * this.calculateDensity(noisePos, mutableDouble, fluidLevel2, fluidLevel3);
 						if (d + f > 0.0) {
 							this.needsFluidTick = false;
 							return null;
@@ -226,7 +226,7 @@ public interface AquiferSampler {
 							AquiferSampler.FluidLevel fluidLevel4 = this.getWaterLevel(t);
 							double g = maxDistance(o, q);
 							if (g > 0.0) {
-								double h = e * g * this.calculateDensity(arg, mutableDouble, fluidLevel2, fluidLevel4);
+								double h = e * g * this.calculateDensity(noisePos, mutableDouble, fluidLevel2, fluidLevel4);
 								if (d + h > 0.0) {
 									this.needsFluidTick = false;
 									return null;
@@ -235,7 +235,7 @@ public interface AquiferSampler {
 
 							double h = maxDistance(p, q);
 							if (h > 0.0) {
-								double ah = e * h * this.calculateDensity(arg, mutableDouble, fluidLevel3, fluidLevel4);
+								double ah = e * h * this.calculateDensity(noisePos, mutableDouble, fluidLevel3, fluidLevel4);
 								if (d + ah > 0.0) {
 									this.needsFluidTick = false;
 									return null;
@@ -261,9 +261,9 @@ public interface AquiferSampler {
 		}
 
 		private double calculateDensity(
-			class_6910.class_6912 arg, MutableDouble mutableDouble, AquiferSampler.FluidLevel fluidLevel, AquiferSampler.FluidLevel fluidLevel2
+			NoiseType.NoisePos noisePos, MutableDouble mutableDouble, AquiferSampler.FluidLevel fluidLevel, AquiferSampler.FluidLevel fluidLevel2
 		) {
-			int i = arg.blockY();
+			int i = noisePos.blockY();
 			BlockState blockState = fluidLevel.getBlockState(i);
 			BlockState blockState2 = fluidLevel2.getBlockState(i);
 			if ((!blockState.isOf(Blocks.LAVA) || !blockState2.isOf(Blocks.WATER)) && (!blockState.isOf(Blocks.WATER) || !blockState2.isOf(Blocks.LAVA))) {
@@ -303,7 +303,7 @@ public interface AquiferSampler {
 					if (!(q < -2.0) && !(q > 2.0)) {
 						double s = mutableDouble.getValue();
 						if (Double.isNaN(s)) {
-							double t = this.barrierNoise.method_40464(arg);
+							double t = this.barrierNoise.sample(noisePos);
 							mutableDouble.setValue(t);
 							r = t;
 						} else {
@@ -387,7 +387,7 @@ public interface AquiferSampler {
 			int s = l + 8 - j;
 			int t = 64;
 			double d = bl ? MathHelper.clampedLerpFromProgress((double)s, 0.0, 64.0, 1.0, 0.0) : 0.0;
-			double e = MathHelper.clamp(this.fluidLevelFloodednessNoise.method_40464(new class_6910.class_6914(i, j, k)), -1.0, 1.0);
+			double e = MathHelper.clamp(this.fluidLevelFloodednessNoise.sample(new NoiseType.UnblendedNoisePos(i, j, k)), -1.0, 1.0);
 			double f = MathHelper.lerpFromProgress(d, 1.0, 0.0, -0.3, 0.8);
 			if (e > f) {
 				return fluidLevel;
@@ -403,7 +403,7 @@ public interface AquiferSampler {
 					int y = Math.floorDiv(k, 16);
 					int z = x * 40 + 20;
 					int aa = 10;
-					double h = this.fluidLevelSpreadNoise.method_40464(new class_6910.class_6914(w, x, y)) * 10.0;
+					double h = this.fluidLevelSpreadNoise.sample(new NoiseType.UnblendedNoisePos(w, x, y)) * 10.0;
 					int ab = MathHelper.roundDownToMultiple(h, 3);
 					int ac = z + ab;
 					int ad = Math.min(l, ac);
@@ -413,7 +413,7 @@ public interface AquiferSampler {
 						int ag = Math.floorDiv(i, 64);
 						int ah = Math.floorDiv(j, 40);
 						int ai = Math.floorDiv(k, 64);
-						double aj = this.fluidTypeNoise.method_40464(new class_6910.class_6914(ag, ah, ai));
+						double aj = this.fluidTypeNoise.sample(new NoiseType.UnblendedNoisePos(ag, ah, ai));
 						if (Math.abs(aj) > 0.3) {
 							return new AquiferSampler.FluidLevel(ad, Blocks.LAVA.getDefaultState());
 						}

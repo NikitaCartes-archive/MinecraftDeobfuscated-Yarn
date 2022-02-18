@@ -406,7 +406,7 @@ public class EnderDragonFight {
 			}
 		}
 
-		endPortalFeature.method_40163(FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
+		endPortalFeature.generateIfValid(FeatureConfig.DEFAULT, this.world, this.world.getChunkManager().getChunkGenerator(), new Random(), this.exitPortalLocation);
 	}
 
 	private EnderDragonEntity createDragon() {

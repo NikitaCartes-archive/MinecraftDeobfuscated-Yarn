@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7066;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
@@ -39,7 +40,7 @@ public class ArgumentTypes {
 		} else if (ID_MAP.containsKey(identifier)) {
 			throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
 		} else {
-			ArgumentTypes.Entry<T> entry = new ArgumentTypes.Entry<>(argClass, serializer, identifier);
+			ArgumentTypes.Entry<T> entry = new ArgumentTypes.Entry<>(serializer, identifier);
 			CLASS_MAP.put(argClass, entry);
 			ID_MAP.put(identifier, entry);
 		}
@@ -85,10 +86,15 @@ public class ArgumentTypes {
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
 		register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer(UuidArgumentType::uuid));
+		register("resource_or_tag", method_41181(class_7066.class), new class_7066.class_7069());
 		if (SharedConstants.isDevelopment) {
 			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::testFunction));
 			register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer(TestClassArgumentType::testClass));
 		}
+	}
+
+	private static <T extends ArgumentType<?>> Class<T> method_41181(Class<? super T> class_) {
+		return (Class<T>)class_;
 	}
 
 	@Nullable
@@ -209,14 +215,12 @@ public class ArgumentTypes {
 	}
 
 	static class Entry<T extends ArgumentType<?>> {
-		public final Class<T> argClass;
 		public final ArgumentSerializer<T> serializer;
 		public final Identifier id;
 
-		Entry(Class<T> argClass, ArgumentSerializer<T> serializer, Identifier id) {
-			this.argClass = argClass;
-			this.serializer = serializer;
-			this.id = id;
+		Entry(ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
+			this.serializer = argumentSerializer;
+			this.id = identifier;
 		}
 	}
 }

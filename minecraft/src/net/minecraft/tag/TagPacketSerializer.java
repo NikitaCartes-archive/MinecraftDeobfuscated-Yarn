@@ -47,7 +47,7 @@ public class TagPacketSerializer {
 		RegistryKey<? extends Registry<T>> registryKey, Registry<T> registry, TagPacketSerializer.Serialized serialized, TagPacketSerializer.Loader<T> loader
 	) {
 		serialized.contents.forEach((tagId, rawIds) -> {
-			TagKey<T> tagKey = TagKey.intern(registryKey, tagId);
+			TagKey<T> tagKey = TagKey.of(registryKey, tagId);
 			List<RegistryEntry<T>> list = rawIds.intStream().mapToObj(registry::getEntry).flatMap(Optional::stream).toList();
 			loader.accept(tagKey, list);
 		});

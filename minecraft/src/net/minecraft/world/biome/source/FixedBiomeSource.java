@@ -2,6 +2,7 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 
 	@Nullable
 	@Override
-	public BlockPos locateBiome(
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(
 		int x,
 		int y,
 		int z,
@@ -59,7 +60,9 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
 		if (predicate.test(this.biome)) {
-			return bl ? new BlockPos(x, y, z) : new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
+			return bl
+				? Pair.of(new BlockPos(x, y, z), this.biome)
+				: Pair.of(new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1)), this.biome);
 		} else {
 			return null;
 		}

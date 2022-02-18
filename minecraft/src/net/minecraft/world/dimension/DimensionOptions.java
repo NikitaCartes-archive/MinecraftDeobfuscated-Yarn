@@ -59,7 +59,7 @@ public final class DimensionOptions {
 			}
 		}
 
-		for(Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
+		for(Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
 			RegistryKey<DimensionOptions> registryKey2 = (RegistryKey)entry.getKey();
 			if (!BASE_DIMENSIONS.contains(registryKey2)) {
 				mutableRegistry.add(registryKey2, (DimensionOptions)entry.getValue(), registry.getEntryLifecycle((DimensionOptions)entry.getValue()));

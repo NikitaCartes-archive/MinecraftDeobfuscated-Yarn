@@ -1,13 +1,19 @@
 package net.minecraft.util.math.noise;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.Codec;
 import java.util.stream.IntStream;
-import net.minecraft.class_6910;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
+import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
-public class InterpolatedNoiseSampler implements class_6910.class_6913 {
+public class InterpolatedNoiseSampler implements NoiseType.class_6913 {
+	public static final InterpolatedNoiseSampler field_37205 = new InterpolatedNoiseSampler(
+		new Xoroshiro128PlusPlusRandom(0L), new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), 4, 8
+	);
+	public static final Codec<InterpolatedNoiseSampler> field_37206 = Codec.unit(field_37205);
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
@@ -30,10 +36,10 @@ public class InterpolatedNoiseSampler implements class_6910.class_6913 {
 		this.lowerInterpolatedNoise = lowerInterpolatedNoise;
 		this.upperInterpolatedNoise = upperInterpolatedNoise;
 		this.interpolationNoise = interpolationNoise;
-		this.xzScale = 684.412 * config.getXZScale();
-		this.yScale = 684.412 * config.getYScale();
-		this.xzMainScale = this.xzScale / config.getXZFactor();
-		this.yMainScale = this.yScale / config.getYFactor();
+		this.xzScale = 684.412 * config.xzScale();
+		this.yScale = 684.412 * config.yScale();
+		this.xzMainScale = this.xzScale / config.xzFactor();
+		this.yMainScale = this.yScale / config.yFactor();
 		this.cellWidth = cellWidth;
 		this.cellHeight = cellHeight;
 		this.field_36630 = lowerInterpolatedNoise.method_40556(this.yScale);
@@ -51,10 +57,10 @@ public class InterpolatedNoiseSampler implements class_6910.class_6913 {
 	}
 
 	@Override
-	public double method_40464(class_6910.class_6912 arg) {
-		int i = Math.floorDiv(arg.blockX(), this.cellWidth);
-		int j = Math.floorDiv(arg.blockY(), this.cellHeight);
-		int k = Math.floorDiv(arg.blockZ(), this.cellWidth);
+	public double sample(NoiseType.NoisePos pos) {
+		int i = Math.floorDiv(pos.blockX(), this.cellWidth);
+		int j = Math.floorDiv(pos.blockY(), this.cellHeight);
+		int k = Math.floorDiv(pos.blockZ(), this.cellWidth);
 		double d = 0.0;
 		double e = 0.0;
 		double f = 0.0;
@@ -137,5 +143,10 @@ public class InterpolatedNoiseSampler implements class_6910.class_6913 {
 				)
 			)
 			.append('}');
+	}
+
+	@Override
+	public Codec<? extends NoiseType> method_41062() {
+		return field_37206;
 	}
 }

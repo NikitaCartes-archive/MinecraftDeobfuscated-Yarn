@@ -138,8 +138,8 @@ public class LevelStorage {
 					boolean bl;
 					try {
 						bl = SessionLock.isLocked(file.toPath());
-					} catch (Exception var10) {
-						LOGGER.warn("Failed to read {} lock", file, var10);
+					} catch (Exception var11) {
+						LOGGER.warn("Failed to read {} lock", file, var11);
 						continue;
 					}
 
@@ -153,6 +153,9 @@ public class LevelStorage {
 						System.gc();
 						LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", file);
 						throw var9;
+					} catch (StackOverflowError var10) {
+						LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of stack trying to read summary of {}", file);
+						throw var10;
 					}
 				}
 			}

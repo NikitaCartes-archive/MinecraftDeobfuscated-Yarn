@@ -23,8 +23,8 @@ public record ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>>
 	public static final Codec<RegistryEntry<ConfiguredFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_KEY, CODEC);
 	public static final Codec<RegistryEntryList<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.entryList(Registry.CONFIGURED_FEATURE_KEY, CODEC);
 
-	public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
-		return this.feature.method_40163(this.config, structureWorldAccess, chunkGenerator, random, origin);
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
+		return this.feature.generateIfValid(this.config, world, chunkGenerator, random, origin);
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {

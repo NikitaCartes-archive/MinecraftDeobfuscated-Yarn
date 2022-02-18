@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -31,6 +32,10 @@ public interface MultilineText {
 		@Override
 		public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
 			return y;
+		}
+
+		@Override
+		public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
 		}
 
 		@Override
@@ -124,6 +129,14 @@ public interface MultilineText {
 			}
 
 			@Override
+			public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
+				int n = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+				if (n > 0) {
+					DrawableHelper.fill(matrixStack, i - n / 2 - l, j - l, i + n / 2 + l, j + lines.size() * k + l, m);
+				}
+			}
+
+			@Override
 			public int count() {
 				return lines.size();
 			}
@@ -137,6 +150,8 @@ public interface MultilineText {
 	int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color);
 
 	int draw(MatrixStack matrices, int x, int y, int lineHeight, int color);
+
+	void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m);
 
 	int count();
 

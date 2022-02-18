@@ -81,6 +81,6 @@ public final class ItemTags {
 	}
 
 	private static TagKey<Item> register(String id) {
-		return TagKey.intern(Registry.ITEM_KEY, new Identifier(id));
+		return TagKey.of(Registry.ITEM_KEY, new Identifier(id));
 	}
 }

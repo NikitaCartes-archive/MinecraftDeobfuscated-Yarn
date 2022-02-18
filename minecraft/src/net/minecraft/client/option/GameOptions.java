@@ -135,6 +135,7 @@ public class GameOptions {
 	public boolean sneakToggled;
 	public boolean sprintToggled;
 	public boolean skipMultiplayerWarning;
+	public boolean field_37208;
 	public boolean hideMatchedNames = true;
 	public boolean showAutosaveIndicator = true;
 	/**
@@ -454,6 +455,7 @@ public class GameOptions {
 		this.rawMouseInput = visitor.visitBoolean("rawMouseInput", this.rawMouseInput);
 		this.glDebugVerbosity = visitor.visitInt("glDebugVerbosity", this.glDebugVerbosity);
 		this.skipMultiplayerWarning = visitor.visitBoolean("skipMultiplayerWarning", this.skipMultiplayerWarning);
+		this.field_37208 = visitor.visitBoolean("skipRealms32bitWarning", this.field_37208);
 		this.hideMatchedNames = visitor.visitBoolean("hideMatchedNames", this.hideMatchedNames);
 		this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
 		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);

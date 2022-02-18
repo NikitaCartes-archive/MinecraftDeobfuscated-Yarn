@@ -27,7 +27,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 	boolean contains(RegistryEntry<T> entry);
 
-	boolean method_40560(Registry<T> registry);
+	boolean isOf(Registry<T> registry);
 
 	@SafeVarargs
 	static <T> RegistryEntryList.Direct<T> of(RegistryEntry<T>... entries) {
@@ -113,19 +113,19 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		}
 
 		@Override
-		public boolean method_40560(Registry<T> registry) {
+		public boolean isOf(Registry<T> registry) {
 			return true;
 		}
 	}
 
 	public static class Named<T> extends RegistryEntryList.ListBacked<T> {
-		private final Registry<T> field_36633;
+		private final Registry<T> registry;
 		private final TagKey<T> tag;
 		private List<RegistryEntry<T>> entries = List.of();
 
-		Named(Registry<T> registry, TagKey<T> tagKey) {
-			this.field_36633 = registry;
-			this.tag = tagKey;
+		Named(Registry<T> registry, TagKey<T> tag) {
+			this.registry = registry;
+			this.tag = tag;
 		}
 
 		void copyOf(List<RegistryEntry<T>> entries) {
@@ -156,8 +156,8 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		}
 
 		@Override
-		public boolean method_40560(Registry<T> registry) {
-			return this.field_36633 == registry;
+		public boolean isOf(Registry<T> registry) {
+			return this.registry == registry;
 		}
 	}
 }
