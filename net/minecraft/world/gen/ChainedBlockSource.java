@@ -5,17 +5,17 @@ package net.minecraft.world.gen;
 
 import java.util.List;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6910;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.jetbrains.annotations.Nullable;
 
 public record ChainedBlockSource(List<ChunkNoiseSampler.BlockStateSampler> samplers) implements ChunkNoiseSampler.BlockStateSampler
 {
     @Override
     @Nullable
-    public BlockState sample(class_6910.class_6912 arg) {
+    public BlockState sample(NoiseType.NoisePos pos) {
         for (ChunkNoiseSampler.BlockStateSampler blockStateSampler : this.samplers) {
-            BlockState blockState = blockStateSampler.sample(arg);
+            BlockState blockState = blockStateSampler.sample(pos);
             if (blockState == null) continue;
             return blockState;
         }

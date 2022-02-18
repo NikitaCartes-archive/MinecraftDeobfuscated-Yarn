@@ -16,7 +16,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,10 +25,10 @@ import org.jetbrains.annotations.Nullable;
  * chunk generation. It contains a definition of its pieces and is associated
  * with the chunk that the structure originates from.
  */
-public final class StructureStart<C extends FeatureConfig> {
+public final class StructureStart {
     public static final String INVALID = "INVALID";
-    public static final StructureStart<?> DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new StructurePiecesList(List.of()));
-    private final StructureFeature<C> feature;
+    public static final StructureStart DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new StructurePiecesList(List.of()));
+    private final ConfiguredStructureFeature<?, ?> feature;
     private final StructurePiecesList children;
     private final ChunkPos pos;
     /**
@@ -44,8 +44,8 @@ public final class StructureStart<C extends FeatureConfig> {
     @Nullable
     private volatile BlockBox boundingBox;
 
-    public StructureStart(StructureFeature<C> feature, ChunkPos pos, int references, StructurePiecesList children) {
-        this.feature = feature;
+    public StructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, ChunkPos pos, int references, StructurePiecesList children) {
+        this.feature = configuredStructureFeature;
         this.pos = pos;
         this.references = references;
         this.children = children;
@@ -54,7 +54,7 @@ public final class StructureStart<C extends FeatureConfig> {
     public BlockBox getBoundingBox() {
         BlockBox blockBox = this.boundingBox;
         if (blockBox == null) {
-            this.boundingBox = blockBox = this.feature.calculateBoundingBox(this.children.getBoundingBox());
+            this.boundingBox = blockBox = this.feature.method_41129(this.children.getBoundingBox());
         }
         return blockBox;
     }
@@ -71,7 +71,7 @@ public final class StructureStart<C extends FeatureConfig> {
             if (!structurePiece.getBoundingBox().intersects(chunkBox)) continue;
             structurePiece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, blockPos2);
         }
-        this.feature.getPostProcessor().afterPlace(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, this.children);
+        ((StructureFeature)this.feature.feature).getPostProcessor().afterPlace(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, this.children);
     }
 
     public NbtCompound toNbt(StructureContext context, ChunkPos chunkPos) {
@@ -80,7 +80,7 @@ public final class StructureStart<C extends FeatureConfig> {
             nbtCompound.putString("id", INVALID);
             return nbtCompound;
         }
-        nbtCompound.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
+        nbtCompound.putString("id", context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).getId(this.feature).toString());
         nbtCompound.putInt("ChunkX", chunkPos.x);
         nbtCompound.putInt("ChunkZ", chunkPos.z);
         nbtCompound.putInt("references", this.references);
@@ -112,7 +112,7 @@ public final class StructureStart<C extends FeatureConfig> {
         return 1;
     }
 
-    public StructureFeature<?> getFeature() {
+    public ConfiguredStructureFeature<?, ?> getFeature() {
         return this.feature;
     }
 

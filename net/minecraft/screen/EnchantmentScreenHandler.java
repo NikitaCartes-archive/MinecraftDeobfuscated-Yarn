@@ -109,8 +109,8 @@ extends ScreenHandler {
                 this.context.run((world, pos) -> {
                     int j;
                     int i = 0;
-                    for (BlockPos blockPos : EnchantingTableBlock.field_36535) {
-                        if (!EnchantingTableBlock.method_40445(world, pos, blockPos)) continue;
+                    for (BlockPos blockPos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
+                        if (!EnchantingTableBlock.canAccessBookshelf(world, pos, blockPos)) continue;
                         ++i;
                     }
                     this.random.setSeed(this.seed.get());

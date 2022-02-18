@@ -17,8 +17,6 @@ import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherFortressFeature
 extends StructureFeature<DefaultFeatureConfig> {
@@ -29,11 +27,6 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     private static boolean canGenerate(StructureGeneratorFactory.Context<DefaultFeatureConfig> context) {
-        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
-        if (chunkRandom.nextInt(5) >= 2) {
-            return false;
-        }
         return context.validBiome().test(context.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(64), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())));
     }
 

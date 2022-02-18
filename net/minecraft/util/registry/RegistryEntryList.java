@@ -33,7 +33,7 @@ extends Iterable<RegistryEntry<T>> {
 
     public boolean contains(RegistryEntry<T> var1);
 
-    public boolean method_40560(Registry<T> var1);
+    public boolean isOf(Registry<T> var1);
 
     @SafeVarargs
     public static <T> Direct<T> of(RegistryEntry<T> ... entries) {
@@ -88,13 +88,13 @@ extends Iterable<RegistryEntry<T>> {
 
     public static class Named<T>
     extends ListBacked<T> {
-        private final Registry<T> field_36633;
+        private final Registry<T> registry;
         private final TagKey<T> tag;
         private List<RegistryEntry<T>> entries = List.of();
 
-        Named(Registry<T> registry, TagKey<T> tagKey) {
-            this.field_36633 = registry;
-            this.tag = tagKey;
+        Named(Registry<T> registry, TagKey<T> tag) {
+            this.registry = registry;
+            this.tag = tag;
         }
 
         void copyOf(List<RegistryEntry<T>> entries) {
@@ -125,8 +125,8 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
-        public boolean method_40560(Registry<T> registry) {
-            return this.field_36633 == registry;
+        public boolean isOf(Registry<T> registry) {
+            return this.registry == registry;
         }
     }
 
@@ -166,7 +166,7 @@ extends Iterable<RegistryEntry<T>> {
         }
 
         @Override
-        public boolean method_40560(Registry<T> registry) {
+        public boolean isOf(Registry<T> registry) {
             return true;
         }
     }

@@ -91,7 +91,7 @@ public class ServerResourceManager {
 
     private static <T> void method_40422(DynamicRegistryManager dynamicRegistryManager, TagManagerLoader.RegistryTags<T> registryTags) {
         RegistryKey registryKey = registryTags.key();
-        Map map = registryTags.tags().entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> TagKey.intern(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));
+        Map map = registryTags.tags().entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));
         dynamicRegistryManager.get(registryKey).populateTags(map);
     }
 }

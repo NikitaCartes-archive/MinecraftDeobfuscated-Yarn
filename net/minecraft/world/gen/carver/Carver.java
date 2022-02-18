@@ -12,7 +12,6 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6910;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -36,6 +35,7 @@ import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
 import net.minecraft.world.gen.chunk.AquiferSampler;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,7 +146,7 @@ public abstract class Carver<C extends CarverConfig> {
         if (pos.getY() <= ((CarverConfig)config).lavaLevel.getY(context)) {
             return LAVA.getBlockState();
         }
-        BlockState blockState = sampler.apply(new class_6910.class_6914(pos.getX(), pos.getY(), pos.getZ()), 0.0);
+        BlockState blockState = sampler.apply(new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
         if (blockState == null) {
             return Carver.isDebug(config) ? ((CarverConfig)config).debugConfig.getBarrierState() : null;
         }

@@ -409,7 +409,7 @@ AutoCloseable {
         if (this.saveProperties.getCustomBossEvents() != null) {
             this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
         }
-        for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntries()) {
+        for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
             if (registryKey == DimensionOptions.OVERWORLD) continue;
             RegistryKey<World> registryKey2 = RegistryKey.of(Registry.WORLD_KEY, registryKey.getValue());

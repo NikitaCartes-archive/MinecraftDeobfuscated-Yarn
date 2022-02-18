@@ -113,8 +113,8 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         });
     }
 
-    private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> registryEntry) {
-        return registryEntry.value().isCold(pos);
+    private static boolean isColdAt(BlockPos pos, RegistryEntry<Biome> biome) {
+        return biome.value().isCold(pos);
     }
 
     private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {

@@ -57,7 +57,7 @@ import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 
 public class UndergroundConfiguredFeatures {
-    public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> MONSTER_ROOM = ConfiguredFeatures.method_40364("monster_room", Feature.MONSTER_ROOM);
+    public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> MONSTER_ROOM = ConfiguredFeatures.register("monster_room", Feature.MONSTER_ROOM);
     private static final List<Identifier> FOSSIL_IDS = List.of(new Identifier("fossil/spine_1"), new Identifier("fossil/spine_2"), new Identifier("fossil/spine_3"), new Identifier("fossil/spine_4"), new Identifier("fossil/skull_1"), new Identifier("fossil/skull_2"), new Identifier("fossil/skull_3"), new Identifier("fossil/skull_4"));
     private static final List<Identifier> COAL_FOSSIL_IDS = List.of(new Identifier("fossil/spine_1_coal"), new Identifier("fossil/spine_2_coal"), new Identifier("fossil/spine_3_coal"), new Identifier("fossil/spine_4_coal"), new Identifier("fossil/skull_1_coal"), new Identifier("fossil/skull_2_coal"), new Identifier("fossil/skull_3_coal"), new Identifier("fossil/skull_4_coal"));
     public static final RegistryEntry<ConfiguredFeature<FossilFeatureConfig, ?>> FOSSIL_COAL = ConfiguredFeatures.register("fossil_coal", Feature.FOSSIL, new FossilFeatureConfig(FOSSIL_IDS, COAL_FOSSIL_IDS, StructureProcessorLists.FOSSIL_ROT, StructureProcessorLists.FOSSIL_COAL, 4));

@@ -147,7 +147,7 @@ public final class BlockTags {
     }
 
     private static TagKey<Block> register(String id) {
-        return TagKey.intern(Registry.BLOCK_KEY, new Identifier(id));
+        return TagKey.of(Registry.BLOCK_KEY, new Identifier(id));
     }
 }
 

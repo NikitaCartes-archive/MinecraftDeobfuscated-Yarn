@@ -68,9 +68,12 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
@@ -417,6 +420,8 @@ extends TameableEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        ServerWorld serverWorld;
+        Registry<ConfiguredStructureFeature<?, ?>> registry;
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
@@ -424,7 +429,7 @@ extends TameableEntity {
             this.setCatType(this.random.nextInt(10));
         }
         ServerWorld world2 = world.toServerWorld();
-        if (world2 instanceof ServerWorld && world2.getStructureAccessor().getStructureContaining(this.getBlockPos(), StructureFeature.SWAMP_HUT).hasChildren()) {
+        if (world2 instanceof ServerWorld && ChunkGenerator.method_41049(registry = (serverWorld = world2).getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY), StructureFeature.SWAMP_HUT).anyMatch(configuredStructureFeature -> serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), (ConfiguredStructureFeature<?, ?>)configuredStructureFeature).hasChildren())) {
             this.setCatType(ALL_BLACK_TYPE);
             this.setPersistent();
         }

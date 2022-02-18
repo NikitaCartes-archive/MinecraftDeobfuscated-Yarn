@@ -7,43 +7,51 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_7066;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class LocateCommand {
     private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.locate.failed", object));
+    private static final DynamicCommandExceptionType field_37038 = new DynamicCommandExceptionType(object -> new TranslatableText("commands.locate.invalid", object));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("structure", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.AVAILABLE_STRUCTURES).executes(commandContext -> LocateCommand.execute((ServerCommandSource)commandContext.getSource(), IdentifierArgumentType.getStructureFeatureEntry(commandContext, "structure")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("structure", class_7066.method_41170(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)).executes(commandContext -> LocateCommand.execute((ServerCommandSource)commandContext.getSource(), class_7066.method_41171(commandContext, "structure")))));
     }
 
-    private static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<StructureFeature<?>> structureFeatureEntry) throws CommandSyntaxException {
-        StructureFeature<?> structureFeature = structureFeatureEntry.resource();
+    private static int execute(ServerCommandSource source, class_7066.class_7068<ConfiguredStructureFeature<?, ?>> arg) throws CommandSyntaxException {
+        Registry<ConfiguredStructureFeature<?, ?>> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        RegistryEntryList registryEntryList = (RegistryEntryList)arg.method_41173().map(registryKey -> registry.getEntry((RegistryKey<ConfiguredStructureFeature<?, ?>>)registryKey).map(registryEntry -> RegistryEntryList.of(registryEntry)), registry::getEntryList).orElseThrow(() -> field_37038.create(arg.method_41176()));
         BlockPos blockPos = new BlockPos(source.getPosition());
-        BlockPos blockPos2 = source.getWorld().locateStructure(structureFeature, blockPos, 100, false);
-        Identifier identifier = structureFeatureEntry.id();
-        if (blockPos2 == null) {
-            throw FAILED_EXCEPTION.create(identifier);
+        ServerWorld serverWorld = source.getWorld();
+        Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = serverWorld.getChunkManager().getChunkGenerator().locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
+        if (pair == null) {
+            throw FAILED_EXCEPTION.create(arg.method_41176());
         }
-        return LocateCommand.sendCoordinates(source, identifier.toString(), blockPos, blockPos2, "commands.locate.success");
+        return LocateCommand.sendCoordinates(source, arg, blockPos, pair, "commands.locate.success");
     }
 
-    public static int sendCoordinates(ServerCommandSource source, String structure, BlockPos sourcePos, BlockPos structurePos, String successMessage) {
-        int i = MathHelper.floor(LocateCommand.getDistance(sourcePos.getX(), sourcePos.getZ(), structurePos.getX(), structurePos.getZ()));
-        MutableText text = Texts.bracketed(new TranslatableText("chat.coordinates", structurePos.getX(), "~", structurePos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + structurePos.getX() + " ~ " + structurePos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
-        source.sendFeedback(new TranslatableText(successMessage, structure, text, i), false);
+    public static int sendCoordinates(ServerCommandSource source, class_7066.class_7068<?> arg, BlockPos blockPos, Pair<BlockPos, ? extends RegistryEntry<?>> pair, String successMessage) {
+        BlockPos blockPos2 = pair.getFirst();
+        String string = arg.method_41173().map(registryKey -> registryKey.getValue().toString(), tagKey -> "#" + tagKey.id() + " (" + ((RegistryEntry)pair.getSecond()).getKey().map(registryKey -> registryKey.getValue().toString()).orElse("[unregistered]") + ")");
+        int i = MathHelper.floor(LocateCommand.getDistance(blockPos.getX(), blockPos.getZ(), blockPos2.getX(), blockPos2.getZ()));
+        MutableText text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
+        source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);
         return i;
     }
 

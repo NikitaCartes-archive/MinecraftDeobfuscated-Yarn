@@ -55,7 +55,7 @@ public final class DimensionOptions {
             if (dimensionOptions == null) continue;
             ((MutableRegistry)mutableRegistry).add(registryKey, dimensionOptions, registry.getEntryLifecycle(dimensionOptions));
         }
-        for (Map.Entry entry : registry.getEntries()) {
+        for (Map.Entry entry : registry.getEntrySet()) {
             RegistryKey registryKey2 = (RegistryKey)entry.getKey();
             if (BASE_DIMENSIONS.contains(registryKey2)) continue;
             ((MutableRegistry)mutableRegistry).add(registryKey2, (DimensionOptions)entry.getValue(), registry.getEntryLifecycle((DimensionOptions)entry.getValue()));

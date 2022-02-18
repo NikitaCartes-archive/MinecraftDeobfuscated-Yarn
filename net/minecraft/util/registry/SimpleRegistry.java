@@ -57,7 +57,7 @@ extends MutableRegistry<T> {
     @Nullable
     private Map<T, RegistryEntry.Reference<T>> unfrozenValueToEntry;
     @Nullable
-    private List<RegistryEntry.Reference<T>> field_36634;
+    private List<RegistryEntry.Reference<T>> cachedEntries;
     private int nextId;
 
     public SimpleRegistry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, @Nullable Function<T, RegistryEntry.Reference<T>> valueToEntryFunction) {
@@ -69,11 +69,11 @@ extends MutableRegistry<T> {
         }
     }
 
-    private List<RegistryEntry.Reference<T>> method_40561() {
-        if (this.field_36634 == null) {
-            this.field_36634 = this.rawIdToEntry.stream().filter(Objects::nonNull).toList();
+    private List<RegistryEntry.Reference<T>> getEntries() {
+        if (this.cachedEntries == null) {
+            this.cachedEntries = this.rawIdToEntry.stream().filter(Objects::nonNull).toList();
         }
-        return this.field_36634;
+        return this.cachedEntries;
     }
 
     private void assertNotFrozen(RegistryKey<T> key) {
@@ -94,7 +94,7 @@ extends MutableRegistry<T> {
         Validate.notNull(value);
         this.rawIdToEntry.size(Math.max(this.rawIdToEntry.size(), rawId + 1));
         this.entryToRawId.put(value, rawId);
-        this.field_36634 = null;
+        this.cachedEntries = null;
         if (checkDuplicateKeys && this.keyToEntry.containsKey(key2)) {
             Util.error("Adding duplicate key '" + key2 + "' to registry");
         }
@@ -223,7 +223,7 @@ extends MutableRegistry<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return Iterators.transform(this.method_40561().iterator(), RegistryEntry::value);
+        return Iterators.transform(this.getEntries().iterator(), RegistryEntry::value);
     }
 
     @Override
@@ -244,13 +244,13 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Set<Map.Entry<RegistryKey<T>, T>> getEntries() {
+    public Set<Map.Entry<RegistryKey<T>, T>> getEntrySet() {
         return Collections.unmodifiableSet(Maps.transformValues(this.keyToEntry, RegistryEntry::value).entrySet());
     }
 
     @Override
     public Stream<RegistryEntry.Reference<T>> streamEntries() {
-        return this.method_40561().stream();
+        return this.getEntries().stream();
     }
 
     @Override
@@ -267,7 +267,7 @@ extends MutableRegistry<T> {
     public RegistryEntryList.Named<T> getOrCreateEntryList(TagKey<T> tag) {
         RegistryEntryList.Named<T> named = this.tagToEntryList.get(tag);
         if (named == null) {
-            named = this.method_40562(tag);
+            named = this.createNamedEntryList(tag);
             IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>> map = new IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>>(this.tagToEntryList);
             map.put(tag, named);
             this.tagToEntryList = map;
@@ -275,8 +275,8 @@ extends MutableRegistry<T> {
         return named;
     }
 
-    private RegistryEntryList.Named<T> method_40562(TagKey<T> tagKey) {
-        return new RegistryEntryList.Named<T>(this, tagKey);
+    private RegistryEntryList.Named<T> createNamedEntryList(TagKey<T> tag) {
+        return new RegistryEntryList.Named<T>(this, tag);
     }
 
     @Override
@@ -291,7 +291,7 @@ extends MutableRegistry<T> {
 
     @Override
     public Optional<RegistryEntry<T>> getRandom(Random random) {
-        return Util.getRandomOrEmpty(this.method_40561(), random).map(RegistryEntry::upcast);
+        return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
     }
 
     @Override
@@ -356,10 +356,10 @@ extends MutableRegistry<T> {
         });
         Sets.SetView<TagKey<T>> set = Sets.difference(this.tagToEntryList.keySet(), tagEntries.keySet());
         if (!set.isEmpty()) {
-            field_36635.warn("Not all defined tags for registry {} are present in data pack: {}", (Object)this.getKey(), (Object)set.stream().map(tagKey -> tagKey.id().toString()).sorted().collect(Collectors.joining(", ")));
+            field_36635.warn("Not all defined tags for registry {} are present in data pack: {}", (Object)this.getKey(), (Object)set.stream().map(tag -> tag.id().toString()).sorted().collect(Collectors.joining(", ")));
         }
         IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>> map2 = new IdentityHashMap<TagKey<T>, RegistryEntryList.Named<T>>(this.tagToEntryList);
-        tagEntries.forEach((? super K tagKey, ? super V list) -> map2.computeIfAbsent((TagKey<T>)tagKey, this::method_40562).copyOf(list));
+        tagEntries.forEach((? super K tag, ? super V entries) -> map2.computeIfAbsent((TagKey<T>)tag, this::createNamedEntryList).copyOf(entries));
         map.forEach(RegistryEntry.Reference::setTags);
         this.tagToEntryList = map2;
     }

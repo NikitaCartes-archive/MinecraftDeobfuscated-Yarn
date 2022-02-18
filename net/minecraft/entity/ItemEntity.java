@@ -172,10 +172,10 @@ extends Entity {
         if (!this.canMerge()) {
             return;
         }
-        List<ItemEntity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntity -> itemEntity != this && itemEntity.canMerge());
-        for (ItemEntity itemEntity2 : list) {
-            if (!itemEntity2.canMerge()) continue;
-            this.tryMerge(itemEntity2);
+        List<ItemEntity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), otherItemEntity -> otherItemEntity != this && otherItemEntity.canMerge());
+        for (ItemEntity itemEntity : list) {
+            if (!itemEntity.canMerge()) continue;
+            this.tryMerge(itemEntity);
             if (!this.isRemoved()) continue;
             break;
         }

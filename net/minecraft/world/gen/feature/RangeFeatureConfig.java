@@ -12,7 +12,7 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public class RangeFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RangeFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)HeightProvider.CODEC.fieldOf("height")).forGetter(rangeFeatureConfig -> rangeFeatureConfig.heightProvider)).apply((Applicative<RangeFeatureConfig, ?>)instance, RangeFeatureConfig::new));
+    public static final Codec<RangeFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)HeightProvider.CODEC.fieldOf("height")).forGetter(config -> config.heightProvider)).apply((Applicative<RangeFeatureConfig, ?>)instance, RangeFeatureConfig::new));
     public final HeightProvider heightProvider;
 
     public RangeFeatureConfig(HeightProvider heightProvider) {

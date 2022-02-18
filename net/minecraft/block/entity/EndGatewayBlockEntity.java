@@ -281,7 +281,7 @@ extends EndPortalBlockEntity {
     }
 
     private static void createPortal(ServerWorld world, BlockPos pos, EndGatewayFeatureConfig config) {
-        Feature.END_GATEWAY.method_40163(config, world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
+        Feature.END_GATEWAY.generateIfValid(config, world, world.getChunkManager().getChunkGenerator(), new Random(), pos);
     }
 
     @Override

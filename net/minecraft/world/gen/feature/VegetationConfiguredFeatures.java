@@ -42,7 +42,7 @@ import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 public class VegetationConfiguredFeatures {
     public static final RegistryEntry<ConfiguredFeature<ProbabilityConfig, ?>> BAMBOO_NO_PODZOL = ConfiguredFeatures.register("bamboo_no_podzol", Feature.BAMBOO, new ProbabilityConfig(0.0f));
     public static final RegistryEntry<ConfiguredFeature<ProbabilityConfig, ?>> BAMBOO_SOME_PODZOL = ConfiguredFeatures.register("bamboo_some_podzol", Feature.BAMBOO, new ProbabilityConfig(0.2f));
-    public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VINES = ConfiguredFeatures.method_40364("vines", Feature.VINES);
+    public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VINES = ConfiguredFeatures.register("vines", Feature.VINES);
     public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_BROWN_MUSHROOM = ConfiguredFeatures.register("patch_brown_mushroom", Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.BROWN_MUSHROOM))));
     public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_RED_MUSHROOM = ConfiguredFeatures.register("patch_red_mushroom", Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.RED_MUSHROOM))));
     public static final RegistryEntry<ConfiguredFeature<RandomPatchFeatureConfig, ?>> PATCH_SUNFLOWER = ConfiguredFeatures.register("patch_sunflower", Feature.RANDOM_PATCH, ConfiguredFeatures.createRandomPatchFeatureConfig(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.SUNFLOWER))));

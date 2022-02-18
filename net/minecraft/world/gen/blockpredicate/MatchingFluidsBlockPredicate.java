@@ -21,9 +21,9 @@ extends OffsetPredicate {
     private final RegistryEntryList<Fluid> fluids;
     public static final Codec<MatchingFluidsBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingFluidsBlockPredicate.registerOffsetField(instance).and(((MapCodec)RegistryCodecs.entryList(Registry.FLUID_KEY).fieldOf("fluids")).forGetter(predicate -> predicate.fluids)).apply((Applicative<MatchingFluidsBlockPredicate, ?>)instance, MatchingFluidsBlockPredicate::new));
 
-    public MatchingFluidsBlockPredicate(Vec3i offset, RegistryEntryList<Fluid> registryEntryList) {
+    public MatchingFluidsBlockPredicate(Vec3i offset, RegistryEntryList<Fluid> fluids) {
         super(offset);
-        this.fluids = registryEntryList;
+        this.fluids = fluids;
     }
 
     @Override

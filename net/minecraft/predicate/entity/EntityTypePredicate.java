@@ -41,7 +41,7 @@ public abstract class EntityTypePredicate {
         String string = JsonHelper.asString(json, "type");
         if (string.startsWith("#")) {
             Identifier identifier = new Identifier(string.substring(1));
-            return new Tagged(TagKey.intern(Registry.ENTITY_TYPE_KEY, identifier));
+            return new Tagged(TagKey.of(Registry.ENTITY_TYPE_KEY, identifier));
         }
         Identifier identifier = new Identifier(string);
         EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));

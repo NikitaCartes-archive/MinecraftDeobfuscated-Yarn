@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class BasaltColumnsFeatureConfig
 implements FeatureConfig {
-    public static final Codec<BasaltColumnsFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)IntProvider.createValidatingCodec(0, 3).fieldOf("reach")).forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.reach), ((MapCodec)IntProvider.createValidatingCodec(1, 10).fieldOf("height")).forGetter(basaltColumnsFeatureConfig -> basaltColumnsFeatureConfig.height)).apply((Applicative<BasaltColumnsFeatureConfig, ?>)instance, BasaltColumnsFeatureConfig::new));
+    public static final Codec<BasaltColumnsFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)IntProvider.createValidatingCodec(0, 3).fieldOf("reach")).forGetter(config -> config.reach), ((MapCodec)IntProvider.createValidatingCodec(1, 10).fieldOf("height")).forGetter(config -> config.height)).apply((Applicative<BasaltColumnsFeatureConfig, ?>)instance, BasaltColumnsFeatureConfig::new));
     private final IntProvider reach;
     private final IntProvider height;
 

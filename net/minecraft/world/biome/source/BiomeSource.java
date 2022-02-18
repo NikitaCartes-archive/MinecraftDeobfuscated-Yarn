@@ -7,6 +7,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -50,18 +51,18 @@ public abstract class BiomeSource
 implements BiomeSupplier {
     public static final Codec<BiomeSource> CODEC;
     private final Set<RegistryEntry<Biome>> biomes;
-    private final Supplier<List<class_6827>> field_34469;
+    private final Supplier<List<IndexedFeatures>> indexedFeaturesSupplier;
 
-    protected BiomeSource(Stream<RegistryEntry<Biome>> stream) {
-        this(stream.distinct().toList());
+    protected BiomeSource(Stream<RegistryEntry<Biome>> biomeStream) {
+        this(biomeStream.distinct().toList());
     }
 
     protected BiomeSource(List<RegistryEntry<Biome>> biomes) {
         this.biomes = new ObjectLinkedOpenHashSet<RegistryEntry<Biome>>(biomes);
-        this.field_34469 = Suppliers.memoize(() -> this.method_39525(biomes.stream().map(RegistryEntry::value).toList(), true));
+        this.indexedFeaturesSupplier = Suppliers.memoize(() -> this.method_39525(biomes.stream().map(RegistryEntry::value).toList(), true));
     }
 
-    private List<class_6827> method_39525(List<Biome> biomes, boolean bl) {
+    private List<IndexedFeatures> method_39525(List<Biome> biomes, boolean bl) {
         record class_6543(int featureIndex, int step, PlacedFeature feature) {
         }
         ArrayList<class_6543> list;
@@ -126,7 +127,7 @@ implements BiomeSupplier {
             for (int n = 0; n < m; ++n) {
                 object2IntMap2.put((PlacedFeature)list4.get(n), n);
             }
-            builder.add(new class_6827(list4, object2IntMap2));
+            builder.add(new IndexedFeatures(list4, object2IntMap2));
         }
         return builder.build();
     }
@@ -164,18 +165,18 @@ implements BiomeSupplier {
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
     }
 
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         int n;
         int i = BiomeCoords.fromBlock(x);
         int j = BiomeCoords.fromBlock(z);
         int k = BiomeCoords.fromBlock(radius);
         int l = BiomeCoords.fromBlock(y);
-        BlockPos blockPos = null;
+        Pair<BlockPos, RegistryEntry<Biome>> pair = null;
         int m = 0;
         for (int o = n = bl ? 0 : k; o <= k; o += blockCheckInterval) {
             int p;
@@ -185,24 +186,26 @@ implements BiomeSupplier {
                 for (int q = -o; q <= o; q += blockCheckInterval) {
                     int s;
                     int r;
+                    RegistryEntry<Biome> registryEntry;
                     if (bl) {
                         boolean bl3;
                         boolean bl4 = bl3 = Math.abs(q) == o;
                         if (!bl3 && !bl2) continue;
                     }
-                    if (!predicate.test(this.getBiome(r = i + q, l, s = j + p, noiseSampler))) continue;
-                    if (blockPos == null || random.nextInt(m + 1) == 0) {
-                        blockPos = new BlockPos(BiomeCoords.toBlock(r), y, BiomeCoords.toBlock(s));
+                    if (!predicate.test(registryEntry = this.getBiome(r = i + q, l, s = j + p, noiseSampler))) continue;
+                    if (pair == null || random.nextInt(m + 1) == 0) {
+                        BlockPos blockPos = new BlockPos(BiomeCoords.toBlock(r), y, BiomeCoords.toBlock(s));
                         if (bl) {
-                            return blockPos;
+                            return Pair.of(blockPos, registryEntry);
                         }
+                        pair = Pair.of(blockPos, registryEntry);
                     }
                     ++m;
                 }
                 p += blockCheckInterval;
             }
         }
-        return blockPos;
+        return pair;
     }
 
     @Override
@@ -211,8 +214,8 @@ implements BiomeSupplier {
     public void addDebugInfo(List<String> info, BlockPos pos, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
     }
 
-    public List<class_6827> method_38115() {
-        return this.field_34469.get();
+    public List<IndexedFeatures> getIndexedFeatures() {
+        return this.indexedFeaturesSupplier.get();
     }
 
     static {
@@ -223,7 +226,7 @@ implements BiomeSupplier {
         CODEC = Registry.BIOME_SOURCE.getCodec().dispatchStable(BiomeSource::getCodec, Function.identity());
     }
 
-    public record class_6827(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
+    public record IndexedFeatures(List<PlacedFeature> features, ToIntFunction<PlacedFeature> indexMapping) {
     }
 }
 

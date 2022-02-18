@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
@@ -20,7 +21,6 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.ChunkUpdateState;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class FeatureUpdater {
@@ -43,6 +43,7 @@ public class FeatureUpdater {
         hashMap.put("TeJP", "Jungle_Pyramid");
         hashMap.put("TeSH", "Swamp_Hut");
     });
+    private static final Set<String> field_37194 = Set.of("pillager_outpost", "mineshaft", "mansion", "jungle_pyramid", "desert_pyramid", "igloo", "ruined_portal", "shipwreck", "swamp_hut", "stronghold", "monument", "ocean_ruin", "fortress", "endcity", "buried_treasure", "village", "nether_fossil", "bastion_remnant");
     private final boolean needsUpdate;
     private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkNbt = Maps.newHashMap();
     private final Map<String, ChunkUpdateState> updateStates = Maps.newHashMap();
@@ -78,8 +79,8 @@ public class FeatureUpdater {
         NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
         NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
         for (String string : this.field_17659) {
-            StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-            if (nbtCompound3.contains(string, 12) || structureFeature == null) continue;
+            boolean bl = field_37194.contains(string.toLowerCase(Locale.ROOT));
+            if (nbtCompound3.contains(string, 12) || !bl) continue;
             int i = 8;
             LongArrayList longList = new LongArrayList();
             for (int j = chunkPos.x - 8; j <= chunkPos.x + 8; ++j) {

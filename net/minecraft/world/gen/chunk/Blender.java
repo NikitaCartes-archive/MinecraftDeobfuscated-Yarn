@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6910;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +31,7 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
+import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -46,7 +46,7 @@ public class Blender {
         }
 
         @Override
-        public double method_39338(class_6910.class_6912 arg, double d) {
+        public double method_39338(NoiseType.NoisePos noisePos, double d) {
             return d;
         }
 
@@ -137,11 +137,11 @@ public class Blender {
         return 1.0 * (32.0 * (f - 128.0) - 3.0 * (f - 120.0) * g + 3.0 * g * g) / (128.0 * (32.0 - 3.0 * g));
     }
 
-    public double method_39338(class_6910.class_6912 arg, double d) {
+    public double method_39338(NoiseType.NoisePos noisePos, double d) {
         int k;
         int j;
-        int i = BiomeCoords.fromBlock(arg.blockX());
-        double e = this.method_39562(i, j = arg.blockY() / 8, k = BiomeCoords.fromBlock(arg.blockZ()), BlendingData::method_39345);
+        int i = BiomeCoords.fromBlock(noisePos.blockX());
+        double e = this.method_39562(i, j = noisePos.blockY() / 8, k = BiomeCoords.fromBlock(noisePos.blockZ()), BlendingData::method_39345);
         if (e != Double.MAX_VALUE) {
             return e;
         }

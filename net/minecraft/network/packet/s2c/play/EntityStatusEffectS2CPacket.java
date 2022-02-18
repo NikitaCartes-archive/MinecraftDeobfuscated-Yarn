@@ -15,14 +15,14 @@ implements Packet<ClientPlayPacketListener> {
     private static final int SHOW_PARTICLES_MASK = 2;
     private static final int SHOW_ICON_MASK = 4;
     private final int entityId;
-    private final byte effectId;
+    private final int effectId;
     private final byte amplifier;
     private final int duration;
     private final byte flags;
 
     public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
         this.entityId = entityId;
-        this.effectId = (byte)(StatusEffect.getRawId(effect.getEffectType()) & 0xFF);
+        this.effectId = StatusEffect.getRawId(effect.getEffectType());
         this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
         this.duration = effect.getDuration() > Short.MAX_VALUE ? Short.MAX_VALUE : effect.getDuration();
         byte b = 0;
@@ -40,7 +40,7 @@ implements Packet<ClientPlayPacketListener> {
 
     public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
         this.entityId = buf.readVarInt();
-        this.effectId = buf.readByte();
+        this.effectId = buf.readVarInt();
         this.amplifier = buf.readByte();
         this.duration = buf.readVarInt();
         this.flags = buf.readByte();
@@ -49,7 +49,7 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
-        buf.writeByte(this.effectId);
+        buf.writeVarInt(this.effectId);
         buf.writeByte(this.amplifier);
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
@@ -68,7 +68,7 @@ implements Packet<ClientPlayPacketListener> {
         return this.entityId;
     }
 
-    public byte getEffectId() {
+    public int getEffectId() {
         return this.effectId;
     }
 

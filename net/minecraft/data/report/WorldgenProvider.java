@@ -56,7 +56,7 @@ implements DataProvider {
     }
 
     private static <E, T extends Registry<E>> void writeRegistryEntries(Path path, DataCache cache, DynamicOps<JsonElement> json, RegistryKey<? extends T> registryKey, T registry, Encoder<E> encoder) {
-        for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
+        for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
             Path path2 = WorldgenProvider.getPath(path, registryKey.getValue(), entry.getKey().getValue());
             WorldgenProvider.writeToPath(path2, cache, json, encoder, entry.getValue());
         }

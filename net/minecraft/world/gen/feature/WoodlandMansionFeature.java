@@ -58,10 +58,10 @@ extends StructureFeature<DefaultFeatureConfig> {
             return Optional.empty();
         }
         BlockPos blockPos = new BlockPos(context2.chunkPos().getCenterX(), m + 1, context2.chunkPos().getCenterZ());
-        return Optional.of((structurePiecesCollector, context) -> {
+        return Optional.of((collector, context) -> {
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, chunkRandom);
-            list.forEach(structurePiecesCollector::addPiece);
+            list.forEach(collector::addPiece);
         });
     }
 

@@ -18,7 +18,7 @@ public class HasSturdyFacePredicate
 implements BlockPredicate {
     private final Vec3i offset;
     private final Direction face;
-    public static final Codec<HasSturdyFacePredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(hasSturdyFacePredicate -> hasSturdyFacePredicate.offset), ((MapCodec)Direction.CODEC.fieldOf("direction")).forGetter(hasSturdyFacePredicate -> hasSturdyFacePredicate.face)).apply((Applicative<HasSturdyFacePredicate, ?>)instance, HasSturdyFacePredicate::new));
+    public static final Codec<HasSturdyFacePredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", Vec3i.ZERO).forGetter(predicate -> predicate.offset), ((MapCodec)Direction.CODEC.fieldOf("direction")).forGetter(predicate -> predicate.face)).apply((Applicative<HasSturdyFacePredicate, ?>)instance, HasSturdyFacePredicate::new));
 
     public HasSturdyFacePredicate(Vec3i offset, Direction face) {
         this.offset = offset;

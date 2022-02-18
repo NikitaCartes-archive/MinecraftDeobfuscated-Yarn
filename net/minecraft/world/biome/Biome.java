@@ -47,7 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 public final class Biome {
     public static final Codec<Biome> CODEC = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects), GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings), SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)).apply((Applicative<Biome, ?>)instance, Biome::new));
-    public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, category, biomeEffects) -> new Biome((Weather)weather, (Category)category, (BiomeEffects)biomeEffects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
+    public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, category, effects) -> new Biome((Weather)weather, (Category)category, (BiomeEffects)effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
     public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
     public static final Codec<RegistryEntryList<Biome>> field_26750 = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
     private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(Integer.valueOf(0)));
@@ -418,7 +418,7 @@ public final class Biome {
         @Nullable
         private GenerationSettings generationSettings;
 
-        public static Builder method_40137(Biome biome) {
+        public static Builder copy(Biome biome) {
             return new Builder().precipitation(biome.getPrecipitation()).category(biome.getCategory()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(biome.getGenerationSettings()).spawnSettings(biome.getSpawnSettings());
         }
 

@@ -13,7 +13,7 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public class NetherForestVegetationFeatureConfig
 extends BlockPileFeatureConfig {
-    public static final Codec<NetherForestVegetationFeatureConfig> VEGETATION_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("state_provider")).forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.stateProvider), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("spread_width")).forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.spreadWidth), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("spread_height")).forGetter(netherForestVegetationFeatureConfig -> netherForestVegetationFeatureConfig.spreadHeight)).apply((Applicative<NetherForestVegetationFeatureConfig, ?>)instance, NetherForestVegetationFeatureConfig::new));
+    public static final Codec<NetherForestVegetationFeatureConfig> VEGETATION_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockStateProvider.TYPE_CODEC.fieldOf("state_provider")).forGetter(config -> config.stateProvider), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("spread_width")).forGetter(config -> config.spreadWidth), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("spread_height")).forGetter(config -> config.spreadHeight)).apply((Applicative<NetherForestVegetationFeatureConfig, ?>)instance, NetherForestVegetationFeatureConfig::new));
     public final int spreadWidth;
     public final int spreadHeight;
 

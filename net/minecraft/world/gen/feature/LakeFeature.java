@@ -15,11 +15,9 @@ import net.minecraft.block.Material;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -43,9 +41,7 @@ extends Feature<Config> {
         if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
             return false;
         }
-        if (!structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).isEmpty()) {
-            return false;
-        }
+        blockPos = blockPos.down(4);
         boolean[] bls = new boolean[2048];
         int i = random.nextInt(4) + 4;
         for (int j = 0; j < i; ++j) {

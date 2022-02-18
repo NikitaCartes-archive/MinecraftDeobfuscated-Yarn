@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class FillLayerFeatureConfig
 implements FeatureConfig {
-    public static final Codec<FillLayerFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.state)).apply((Applicative<FillLayerFeatureConfig, ?>)instance, FillLayerFeatureConfig::new));
+    public static final Codec<FillLayerFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(config -> config.height), ((MapCodec)BlockState.CODEC.fieldOf("state")).forGetter(config -> config.state)).apply((Applicative<FillLayerFeatureConfig, ?>)instance, FillLayerFeatureConfig::new));
     public final int height;
     public final BlockState state;
 

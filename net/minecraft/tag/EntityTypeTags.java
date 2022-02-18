@@ -24,7 +24,7 @@ public final class EntityTypeTags {
     }
 
     private static TagKey<EntityType<?>> register(String id) {
-        return TagKey.intern(Registry.ENTITY_TYPE_KEY, new Identifier(id));
+        return TagKey.of(Registry.ENTITY_TYPE_KEY, new Identifier(id));
     }
 }
 

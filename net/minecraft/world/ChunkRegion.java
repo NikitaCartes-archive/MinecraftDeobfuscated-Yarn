@@ -26,7 +26,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -52,7 +51,6 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.MultiTickScheduler;
 import net.minecraft.world.tick.QueryableTickScheduler;
 import org.jetbrains.annotations.Nullable;
@@ -429,11 +427,6 @@ implements StructureWorldAccess {
 
     public List<PlayerEntity> getPlayers() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public List<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-        return this.structureAccessor.getStructureStarts(pos, feature);
     }
 
     @Override

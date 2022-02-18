@@ -15,13 +15,13 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class RandomBooleanFeatureConfig
 implements FeatureConfig {
-    public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_true")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureTrue), ((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_false")).forGetter(randomBooleanFeatureConfig -> randomBooleanFeatureConfig.featureFalse)).apply((Applicative<RandomBooleanFeatureConfig, ?>)instance, RandomBooleanFeatureConfig::new));
+    public static final Codec<RandomBooleanFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_true")).forGetter(config -> config.featureTrue), ((MapCodec)PlacedFeature.REGISTRY_CODEC.fieldOf("feature_false")).forGetter(config -> config.featureFalse)).apply((Applicative<RandomBooleanFeatureConfig, ?>)instance, RandomBooleanFeatureConfig::new));
     public final RegistryEntry<PlacedFeature> featureTrue;
     public final RegistryEntry<PlacedFeature> featureFalse;
 
-    public RandomBooleanFeatureConfig(RegistryEntry<PlacedFeature> registryEntry, RegistryEntry<PlacedFeature> registryEntry2) {
-        this.featureTrue = registryEntry;
-        this.featureFalse = registryEntry2;
+    public RandomBooleanFeatureConfig(RegistryEntry<PlacedFeature> featureTrue, RegistryEntry<PlacedFeature> featureFalse) {
+        this.featureTrue = featureTrue;
+        this.featureFalse = featureFalse;
     }
 
     @Override

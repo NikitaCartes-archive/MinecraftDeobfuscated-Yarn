@@ -18,7 +18,7 @@ import net.minecraft.world.gen.blockpredicate.OffsetPredicate;
 public class MatchingBlockTagPredicate
 extends OffsetPredicate {
     final TagKey<Block> tag;
-    public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlockTagPredicate.registerOffsetField(instance).and(((MapCodec)TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag")).forGetter(matchingBlockTagPredicate -> matchingBlockTagPredicate.tag)).apply((Applicative<MatchingBlockTagPredicate, ?>)instance, MatchingBlockTagPredicate::new));
+    public static final Codec<MatchingBlockTagPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlockTagPredicate.registerOffsetField(instance).and(((MapCodec)TagKey.identifierCodec(Registry.BLOCK_KEY).fieldOf("tag")).forGetter(predicate -> predicate.tag)).apply((Applicative<MatchingBlockTagPredicate, ?>)instance, MatchingBlockTagPredicate::new));
 
     protected MatchingBlockTagPredicate(Vec3i offset, TagKey<Block> tag) {
         super(offset);

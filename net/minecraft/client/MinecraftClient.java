@@ -1725,7 +1725,7 @@ implements WindowEventHandler {
             RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, registryTracker);
             RegistryOps<JsonElement> dynamicOps2 = RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, resourceManager);
             DataResult dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(dynamicOps2, jsonElement));
-            GeneratorOptions generatorOptions2 = dataResult.resultOrPartial(Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error)).orElse(generatorOptions);
+            GeneratorOptions generatorOptions2 = (GeneratorOptions)dataResult.getOrThrow(false, Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error));
             return Pair.of(new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle()), mutable.toImmutable());
         }, false, WorldLoadAction.CREATE);
     }

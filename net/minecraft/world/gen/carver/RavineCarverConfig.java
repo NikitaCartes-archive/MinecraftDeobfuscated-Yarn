@@ -16,7 +16,7 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public class RavineCarverConfig
 extends CarverConfig {
-    public static final Codec<RavineCarverConfig> RAVINE_CODEC = RecordCodecBuilder.create(instance -> instance.group(CarverConfig.CONFIG_CODEC.forGetter(ravineCarverConfig -> ravineCarverConfig), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("vertical_rotation")).forGetter(ravineCarverConfig -> ravineCarverConfig.verticalRotation), ((MapCodec)Shape.CODEC.fieldOf("shape")).forGetter(ravineCarverConfig -> ravineCarverConfig.shape)).apply((Applicative<RavineCarverConfig, ?>)instance, RavineCarverConfig::new));
+    public static final Codec<RavineCarverConfig> RAVINE_CODEC = RecordCodecBuilder.create(instance -> instance.group(CarverConfig.CONFIG_CODEC.forGetter(ravineCarverConfig -> ravineCarverConfig), ((MapCodec)FloatProvider.VALUE_CODEC.fieldOf("vertical_rotation")).forGetter(config -> config.verticalRotation), ((MapCodec)Shape.CODEC.fieldOf("shape")).forGetter(config -> config.shape)).apply((Applicative<RavineCarverConfig, ?>)instance, RavineCarverConfig::new));
     public final FloatProvider verticalRotation;
     public final Shape shape;
 

@@ -21,9 +21,9 @@ extends OffsetPredicate {
     private final RegistryEntryList<Block> blocks;
     public static final Codec<MatchingBlocksBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> MatchingBlocksBlockPredicate.registerOffsetField(instance).and(((MapCodec)RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("blocks")).forGetter(predicate -> predicate.blocks)).apply((Applicative<MatchingBlocksBlockPredicate, ?>)instance, MatchingBlocksBlockPredicate::new));
 
-    public MatchingBlocksBlockPredicate(Vec3i offset, RegistryEntryList<Block> registryEntryList) {
+    public MatchingBlocksBlockPredicate(Vec3i offset, RegistryEntryList<Block> blocks) {
         super(offset);
-        this.blocks = registryEntryList;
+        this.blocks = blocks;
     }
 
     @Override

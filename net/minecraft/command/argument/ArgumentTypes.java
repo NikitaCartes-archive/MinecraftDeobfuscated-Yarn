@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7066;
 import net.minecraft.command.argument.AngleArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
@@ -84,7 +85,7 @@ public class ArgumentTypes {
         if (ID_MAP.containsKey(identifier)) {
             throw new IllegalArgumentException("'" + identifier + "' is already a registered serializer!");
         }
-        Entry<T> entry = new Entry<T>(argClass, serializer, identifier);
+        Entry<T> entry = new Entry<T>(serializer, identifier);
         CLASS_MAP.put(argClass, entry);
         ID_MAP.put(identifier, entry);
     }
@@ -129,10 +130,15 @@ public class ArgumentTypes {
         ArgumentTypes.register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer<DimensionArgumentType>(DimensionArgumentType::dimension));
         ArgumentTypes.register("time", TimeArgumentType.class, new ConstantArgumentSerializer<TimeArgumentType>(TimeArgumentType::time));
         ArgumentTypes.register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer<UuidArgumentType>(UuidArgumentType::uuid));
+        ArgumentTypes.register("resource_or_tag", ArgumentTypes.method_41181(class_7066.class), new class_7066.class_7069());
         if (SharedConstants.isDevelopment) {
             ArgumentTypes.register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer<TestFunctionArgumentType>(TestFunctionArgumentType::testFunction));
             ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::testClass));
         }
+    }
+
+    private static <T extends ArgumentType<?>> Class<T> method_41181(Class<? super T> class_) {
+        return class_;
     }
 
     @Nullable
@@ -242,14 +248,12 @@ public class ArgumentTypes {
     }
 
     static class Entry<T extends ArgumentType<?>> {
-        public final Class<T> argClass;
         public final ArgumentSerializer<T> serializer;
         public final Identifier id;
 
-        Entry(Class<T> argClass, ArgumentSerializer<T> serializer, Identifier id) {
-            this.argClass = argClass;
-            this.serializer = serializer;
-            this.id = id;
+        Entry(ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
+            this.serializer = argumentSerializer;
+            this.id = identifier;
         }
     }
 }

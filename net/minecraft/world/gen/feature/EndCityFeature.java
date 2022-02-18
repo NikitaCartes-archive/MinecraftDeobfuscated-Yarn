@@ -61,11 +61,11 @@ extends StructureFeature<DefaultFeatureConfig> {
         if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
             return Optional.empty();
         }
-        return Optional.of((structurePiecesCollector, context) -> {
+        return Optional.of((collector, context) -> {
             BlockRotation blockRotation = BlockRotation.random(context.random());
             ArrayList<StructurePiece> list = Lists.newArrayList();
             EndCityGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
-            list.forEach(structurePiecesCollector::addPiece);
+            list.forEach(collector::addPiece);
         });
     }
 }

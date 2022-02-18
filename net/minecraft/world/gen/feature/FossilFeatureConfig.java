@@ -16,14 +16,14 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class FossilFeatureConfig
 implements FeatureConfig {
-    public static final Codec<FossilFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.listOf().fieldOf("fossil_structures")).forGetter(fossilFeatureConfig -> fossilFeatureConfig.fossilStructures), ((MapCodec)Identifier.CODEC.listOf().fieldOf("overlay_structures")).forGetter(fossilFeatureConfig -> fossilFeatureConfig.overlayStructures), ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("fossil_processors")).forGetter(fossilFeatureConfig -> fossilFeatureConfig.fossilProcessors), ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("overlay_processors")).forGetter(fossilFeatureConfig -> fossilFeatureConfig.overlayProcessors), ((MapCodec)Codec.intRange(0, 7).fieldOf("max_empty_corners_allowed")).forGetter(fossilFeatureConfig -> fossilFeatureConfig.maxEmptyCorners)).apply((Applicative<FossilFeatureConfig, ?>)instance, FossilFeatureConfig::new));
+    public static final Codec<FossilFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.listOf().fieldOf("fossil_structures")).forGetter(config -> config.fossilStructures), ((MapCodec)Identifier.CODEC.listOf().fieldOf("overlay_structures")).forGetter(config -> config.overlayStructures), ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("fossil_processors")).forGetter(config -> config.fossilProcessors), ((MapCodec)StructureProcessorType.REGISTRY_CODEC.fieldOf("overlay_processors")).forGetter(config -> config.overlayProcessors), ((MapCodec)Codec.intRange(0, 7).fieldOf("max_empty_corners_allowed")).forGetter(config -> config.maxEmptyCorners)).apply((Applicative<FossilFeatureConfig, ?>)instance, FossilFeatureConfig::new));
     public final List<Identifier> fossilStructures;
     public final List<Identifier> overlayStructures;
     public final RegistryEntry<StructureProcessorList> fossilProcessors;
     public final RegistryEntry<StructureProcessorList> overlayProcessors;
     public final int maxEmptyCorners;
 
-    public FossilFeatureConfig(List<Identifier> fossilStructures, List<Identifier> overlayStructures, RegistryEntry<StructureProcessorList> registryEntry, RegistryEntry<StructureProcessorList> registryEntry2, int maxEmptyCorners) {
+    public FossilFeatureConfig(List<Identifier> fossilStructures, List<Identifier> overlayStructures, RegistryEntry<StructureProcessorList> fossilProcessors, RegistryEntry<StructureProcessorList> overlayProcessors, int maxEmptyCorners) {
         if (fossilStructures.isEmpty()) {
             throw new IllegalArgumentException("Fossil structure lists need at least one entry");
         }
@@ -32,8 +32,8 @@ implements FeatureConfig {
         }
         this.fossilStructures = fossilStructures;
         this.overlayStructures = overlayStructures;
-        this.fossilProcessors = registryEntry;
-        this.overlayProcessors = registryEntry2;
+        this.fossilProcessors = fossilProcessors;
+        this.overlayProcessors = overlayProcessors;
         this.maxEmptyCorners = maxEmptyCorners;
     }
 }

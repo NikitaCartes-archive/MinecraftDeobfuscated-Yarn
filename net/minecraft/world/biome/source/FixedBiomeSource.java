@@ -5,6 +5,7 @@ package net.minecraft.world.biome.source;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Random;
@@ -51,12 +52,12 @@ implements BiomeAccess.Storage {
 
     @Override
     @Nullable
-    public BlockPos locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
+    public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(int x, int y, int z, int radius, int blockCheckInterval, Predicate<RegistryEntry<Biome>> predicate, Random random, boolean bl, MultiNoiseUtil.MultiNoiseSampler noiseSampler) {
         if (predicate.test(this.biome)) {
             if (bl) {
-                return new BlockPos(x, y, z);
+                return Pair.of(new BlockPos(x, y, z), this.biome);
             }
-            return new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1));
+            return Pair.of(new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1)), this.biome);
         }
         return null;
     }

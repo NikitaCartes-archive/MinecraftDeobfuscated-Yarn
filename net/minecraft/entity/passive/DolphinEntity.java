@@ -6,6 +6,7 @@ package net.minecraft.entity.passive;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.class_7045;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -62,8 +63,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class DolphinEntity
@@ -387,9 +386,6 @@ extends WaterCreatureEntity {
             return !new BlockPos((double)blockPos.getX(), this.dolphin.getY(), (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0) && !this.noPathToStructure && this.dolphin.getAir() >= 100;
         }
 
-        /*
-         * Enabled aggressive block sorting
-         */
         @Override
         public void start() {
             if (!(this.dolphin.world instanceof ServerWorld)) {
@@ -399,19 +395,12 @@ extends WaterCreatureEntity {
             this.noPathToStructure = false;
             this.dolphin.getNavigation().stop();
             BlockPos blockPos = this.dolphin.getBlockPos();
-            StructureFeature<FeatureConfig> structureFeature = (double)serverWorld.random.nextFloat() >= 0.5 ? StructureFeature.OCEAN_RUIN : StructureFeature.SHIPWRECK;
-            BlockPos blockPos2 = serverWorld.locateStructure(structureFeature, blockPos, 50, false);
+            BlockPos blockPos2 = serverWorld.locateStructure(class_7045.DOLPHIN_LOCATED, blockPos, 50, false);
             if (blockPos2 == null) {
-                StructureFeature<FeatureConfig> structureFeature2 = structureFeature.equals(StructureFeature.OCEAN_RUIN) ? StructureFeature.SHIPWRECK : StructureFeature.OCEAN_RUIN;
-                BlockPos blockPos3 = serverWorld.locateStructure(structureFeature2, blockPos, 50, false);
-                if (blockPos3 == null) {
-                    this.noPathToStructure = true;
-                    return;
-                }
-                this.dolphin.setTreasurePos(blockPos3);
-            } else {
-                this.dolphin.setTreasurePos(blockPos2);
+                this.noPathToStructure = true;
+                return;
             }
+            this.dolphin.setTreasurePos(blockPos2);
             serverWorld.sendEntityStatus(this.dolphin, (byte)38);
         }
 

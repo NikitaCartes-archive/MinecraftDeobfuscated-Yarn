@@ -7,6 +7,7 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.List;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
@@ -18,7 +19,11 @@ public record ConcentricRingsStructurePlacement(int distance, int spread, int co
 
     @Override
     public boolean isStartChunk(ChunkGenerator chunkGenerator, int x, int z) {
-        return chunkGenerator.getConcentricRingsStartChunks(this).contains(new ChunkPos(x, z));
+        List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this);
+        if (list == null) {
+            return false;
+        }
+        return list.contains(new ChunkPos(x, z));
     }
 
     @Override

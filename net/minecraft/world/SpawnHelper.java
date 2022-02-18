@@ -51,8 +51,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -239,7 +239,7 @@ public final class SpawnHelper {
     }
 
     public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
-        return spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, StructureFeature.FORTRESS).hasChildren();
+        return spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, ConfiguredStructureFeatures.field_26306.value()).hasChildren();
     }
 
     private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {

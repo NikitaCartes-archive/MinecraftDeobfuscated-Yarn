@@ -44,24 +44,24 @@ public class ConfiguredFeatures {
         return new RandomPatchFeatureConfig(tries, 7, 3, feature);
     }
 
-    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC featureConfig, List<Block> list, int i) {
-        return ConfiguredFeatures.createRandomPatchFeatureConfig(i, PlacedFeatures.createEntry(feature, featureConfig, ConfiguredFeatures.createBlockPredicate(list)));
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC config, List<Block> predicateBlocks, int tries) {
+        return ConfiguredFeatures.createRandomPatchFeatureConfig(tries, PlacedFeatures.createEntry(feature, config, ConfiguredFeatures.createBlockPredicate(predicateBlocks)));
     }
 
-    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC featureConfig, List<Block> list) {
-        return ConfiguredFeatures.createRandomPatchFeatureConfig(feature, featureConfig, list, 96);
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC config, List<Block> predicateBlocks) {
+        return ConfiguredFeatures.createRandomPatchFeatureConfig(feature, config, predicateBlocks, 96);
     }
 
-    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC featureConfig) {
-        return ConfiguredFeatures.createRandomPatchFeatureConfig(feature, featureConfig, List.of(), 96);
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RandomPatchFeatureConfig createRandomPatchFeatureConfig(F feature, FC config) {
+        return ConfiguredFeatures.createRandomPatchFeatureConfig(feature, config, List.of(), 96);
     }
 
-    public static RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> method_40364(String string, Feature<DefaultFeatureConfig> feature) {
-        return ConfiguredFeatures.register(string, feature, FeatureConfig.DEFAULT);
+    public static RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> register(String id, Feature<DefaultFeatureConfig> feature) {
+        return ConfiguredFeatures.register(id, feature, FeatureConfig.DEFAULT);
     }
 
-    public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<ConfiguredFeature<FC, ?>> register(String id, F feature, FC featureConfig) {
-        return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_FEATURE, id, new ConfiguredFeature<FC, F>(feature, featureConfig));
+    public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<ConfiguredFeature<FC, ?>> register(String id, F feature, FC config) {
+        return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_FEATURE, id, new ConfiguredFeature<FC, F>(feature, config));
     }
 }
 

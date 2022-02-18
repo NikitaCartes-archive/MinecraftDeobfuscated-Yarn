@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.lang.invoke.LambdaMetafactory;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7064;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
@@ -33,6 +36,8 @@ import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.client.render.GameRenderer;
@@ -41,6 +46,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -75,6 +81,10 @@ extends Screen {
     private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
     private final boolean doBackgroundFade;
     private long backgroundFadeStart;
+    @Nullable
+    private class_7063 field_37209;
+    private RealmsClient field_37210;
+    private boolean field_37211 = false;
 
     public TitleScreen() {
         this(false);
@@ -84,6 +94,7 @@ extends Screen {
         super(new TranslatableText("narrator.screen.title"));
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double)new Random().nextFloat() < 1.0E-4;
+        this.field_37210 = RealmsClient.createRealmsClient();
     }
 
     private boolean areRealmsNotificationsEnabled() {
@@ -94,6 +105,19 @@ extends Screen {
     public void tick() {
         if (this.areRealmsNotificationsEnabled()) {
             this.realmsNotificationGui.tick();
+        }
+        this.method_41158();
+    }
+
+    private void method_41158() {
+        try {
+            if (this.field_37209 != null && !this.client.options.field_37208 && !this.field_37211 && this.field_37209.realmsSubscriptionFuture.getNow(false).booleanValue()) {
+                this.field_37211 = true;
+                this.client.setScreen(new class_7064(this));
+            }
+        } catch (CompletionException completionException) {
+            LOGGER.warn("Failed to retrieve realms subscriptions", completionException);
+            this.field_37211 = true;
         }
     }
 
@@ -135,6 +159,18 @@ extends Screen {
         }
         if (this.areRealmsNotificationsEnabled()) {
             this.realmsNotificationGui.init(this.client, this.width, this.height);
+        }
+        if (!this.client.is64Bit()) {
+            CompletableFuture<Boolean> completableFuture = this.field_37209 != null ? this.field_37209.realmsSubscriptionFuture : CompletableFuture.supplyAsync(this::method_41159, Util.getMainWorkerExecutor());
+            this.field_37209 = new class_7063(MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("title.32bit.deprecation"), 350, 2), this.width / 2, j - 24, completableFuture);
+        }
+    }
+
+    private boolean method_41159() {
+        try {
+            return this.field_37210.listWorlds().servers.stream().anyMatch(realmsServer -> realmsServer.ownerUUID != null && !realmsServer.expired && realmsServer.ownerUUID.equals(this.client.getSession().getUuid()));
+        } catch (RealmsServiceException realmsServiceException) {
+            return false;
         }
     }
 
@@ -257,6 +293,10 @@ extends Screen {
         }
         RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
         TitleScreen.drawTexture(matrices, j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
+        if (this.field_37209 != null) {
+            this.field_37209.label.method_41154(matrices, this.field_37209.x, this.field_37209.y, this.textRenderer.fontHeight, 2, 0x55200000);
+            this.field_37209.label.drawCenterWithShadow(matrices, this.field_37209.x, this.field_37209.y, this.textRenderer.fontHeight, 0xFFFFFF | l);
+        }
         if (this.splashText != null) {
             matrices.push();
             matrices.translate(this.width / 2 + 90, 70.0, 0.0);
@@ -327,6 +367,10 @@ extends Screen {
     private /* synthetic */ void onMultiplayerButtonPressed(ButtonWidget button) {
         Screen screen = this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this);
         this.client.setScreen(screen);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    record class_7063(MultilineText label, int x, int y, CompletableFuture<Boolean> realmsSubscriptionFuture) {
     }
 }
 

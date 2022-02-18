@@ -15,7 +15,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class OreFeatureConfig
 implements FeatureConfig {
-    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(Target.CODEC).fieldOf("targets")).forGetter(oreFeatureConfig -> oreFeatureConfig.targets), ((MapCodec)Codec.intRange(0, 64).fieldOf("size")).forGetter(oreFeatureConfig -> oreFeatureConfig.size), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("discard_chance_on_air_exposure")).forGetter(oreFeatureConfig -> Float.valueOf(oreFeatureConfig.discardOnAirChance))).apply((Applicative<OreFeatureConfig, ?>)instance, OreFeatureConfig::new));
+    public static final Codec<OreFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.list(Target.CODEC).fieldOf("targets")).forGetter(config -> config.targets), ((MapCodec)Codec.intRange(0, 64).fieldOf("size")).forGetter(config -> config.size), ((MapCodec)Codec.floatRange(0.0f, 1.0f).fieldOf("discard_chance_on_air_exposure")).forGetter(config -> Float.valueOf(config.discardOnAirChance))).apply((Applicative<OreFeatureConfig, ?>)instance, OreFeatureConfig::new));
     public final List<Target> targets;
     public final int size;
     public final float discardOnAirChance;

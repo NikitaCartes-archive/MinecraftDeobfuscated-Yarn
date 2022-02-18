@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFix;
@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
-public class class_6909
+public class TicksInWrongChunkFix
 extends DataFix {
-    public class_6909(Schema schema) {
+    public TicksInWrongChunkFix(Schema schema) {
         super(schema, false);
     }
 
@@ -31,8 +31,8 @@ extends DataFix {
                 int i = dynamic.get("xPos").asInt(0);
                 int j = dynamic.get("zPos").asInt(0);
                 Optional optional2 = dynamic.get("fluid_ticks").get().result();
-                dynamic = class_6909.method_40439(dynamic, i, j, optional2, "neighbor_block_ticks");
-                dynamic = class_6909.method_40439(dynamic, i, j, optional2, "neighbor_fluid_ticks");
+                dynamic = TicksInWrongChunkFix.method_40439(dynamic, i, j, optional2, "neighbor_block_ticks");
+                dynamic = TicksInWrongChunkFix.method_40439(dynamic, i, j, optional2, "neighbor_fluid_ticks");
                 return dynamic;
             });
         });

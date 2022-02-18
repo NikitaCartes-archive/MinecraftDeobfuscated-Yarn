@@ -160,7 +160,7 @@ implements Predicate<ItemStack> {
         }
         if (json.has("tag")) {
             Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-            TagKey<Item> tagKey = TagKey.intern(Registry.ITEM_KEY, identifier);
+            TagKey<Item> tagKey = TagKey.of(Registry.ITEM_KEY, identifier);
             return new TagEntry(tagKey);
         }
         throw new JsonParseException("An ingredient entry needs either a tag or an item");

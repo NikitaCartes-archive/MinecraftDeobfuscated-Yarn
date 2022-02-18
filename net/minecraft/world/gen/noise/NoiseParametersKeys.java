@@ -6,6 +6,7 @@ package net.minecraft.world.gen.noise;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -76,7 +77,12 @@ public class NoiseParametersKeys {
     }
 
     public static DoublePerlinNoiseSampler createNoiseSampler(Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, RandomDeriver randomDeriver, RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise) {
-        return DoublePerlinNoiseSampler.create(randomDeriver.createRandom(noise.getValue()), noiseRegistry.getOrThrow(noise));
+        RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry = noiseRegistry.entryOf(noise);
+        return NoiseParametersKeys.method_41127(randomDeriver, registryEntry);
+    }
+
+    public static DoublePerlinNoiseSampler method_41127(RandomDeriver randomDeriver, RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
+        return DoublePerlinNoiseSampler.create(randomDeriver.createRandom(registryEntry.getKey().orElseThrow().getValue()), registryEntry.value());
     }
 }
 

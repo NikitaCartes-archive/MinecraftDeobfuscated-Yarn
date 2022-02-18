@@ -200,8 +200,8 @@ public abstract class Feature<FC extends FeatureConfig> {
         world.setBlockState(pos, state, Block.NOTIFY_ALL);
     }
 
-    public static Predicate<BlockState> notInBlockTagPredicate(TagKey<Block> tagKey) {
-        return state -> !state.isIn(tagKey);
+    public static Predicate<BlockState> notInBlockTagPredicate(TagKey<Block> tag) {
+        return state -> !state.isIn(tag);
     }
 
     protected void setBlockStateIf(StructureWorldAccess world, BlockPos pos, BlockState state, Predicate<BlockState> predicate) {
@@ -212,9 +212,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 
     public abstract boolean generate(FeatureContext<FC> var1);
 
-    public boolean method_40163(FC featureConfig, StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos) {
-        if (structureWorldAccess.isValidForSetBlock(blockPos)) {
-            return this.generate(new FeatureContext<FC>(Optional.empty(), structureWorldAccess, chunkGenerator, random, blockPos, featureConfig));
+    public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+        if (world.isValidForSetBlock(pos)) {
+            return this.generate(new FeatureContext<FC>(Optional.empty(), world, chunkGenerator, random, pos, config));
         }
         return false;
     }

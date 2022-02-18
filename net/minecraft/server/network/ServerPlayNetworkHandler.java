@@ -1292,7 +1292,7 @@ ServerPlayPacketListener {
             return;
         }
         int i = packet.getSlot();
-        if (!this.player.currentScreenHandler.method_40442(i)) {
+        if (!this.player.currentScreenHandler.isValid(i)) {
             LOGGER.debug("Player {} clicked invalid slot index: {}, available slots: {}", this.player.getName(), i, this.player.currentScreenHandler.slots.size());
             return;
         }

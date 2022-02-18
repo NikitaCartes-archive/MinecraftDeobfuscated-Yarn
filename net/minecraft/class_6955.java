@@ -5,9 +5,9 @@ package net.minecraft;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_6910;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -25,11 +25,11 @@ public final class class_6955 {
     private class_6955() {
     }
 
-    protected static ChunkNoiseSampler.BlockStateSampler method_40548(class_6910 arg, class_6910 arg2, class_6910 arg3, RandomDeriver randomDeriver) {
+    protected static ChunkNoiseSampler.BlockStateSampler method_40548(NoiseType noiseType, NoiseType noiseType2, NoiseType noiseType3, RandomDeriver randomDeriver) {
         BlockState blockState = null;
-        return arg4 -> {
-            double d = arg.method_40464(arg4);
-            int i = arg4.blockY();
+        return noisePos -> {
+            double d = noiseType.sample(noisePos);
+            int i = noisePos.blockY();
             VeinType veinType = d > 0.0 ? VeinType.COPPER : VeinType.IRON;
             double e = Math.abs(d);
             int j = veinType.maxY - i;
@@ -42,15 +42,15 @@ public final class class_6955 {
             if (e + f < (double)0.4f) {
                 return blockState;
             }
-            AbstractRandom abstractRandom = randomDeriver.createRandom(arg4.blockX(), i, arg4.blockZ());
+            AbstractRandom abstractRandom = randomDeriver.createRandom(noisePos.blockX(), i, noisePos.blockZ());
             if (abstractRandom.nextFloat() > 0.7f) {
                 return blockState;
             }
-            if (arg2.method_40464(arg4) >= 0.0) {
+            if (noiseType2.sample(noisePos) >= 0.0) {
                 return blockState;
             }
             double g = MathHelper.clampedLerpFromProgress(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
-            if ((double)abstractRandom.nextFloat() < g && arg3.method_40464(arg4) > (double)-0.3f) {
+            if ((double)abstractRandom.nextFloat() < g && noiseType3.sample(noisePos) > (double)-0.3f) {
                 return abstractRandom.nextFloat() < 0.02f ? veinType.rawBlock : veinType.ore;
             }
             return veinType.stone;

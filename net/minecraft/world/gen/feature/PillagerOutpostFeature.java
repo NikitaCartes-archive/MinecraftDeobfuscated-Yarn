@@ -4,53 +4,31 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.entity.EntityType;
+import net.minecraft.class_7057;
 import net.minecraft.structure.StructureGeneratorFactory;
-import net.minecraft.util.collection.Pool;
-import net.minecraft.util.collection.Weighted;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.biome.SpawnSettings;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.feature.JigsawFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class PillagerOutpostFeature
 extends JigsawFeature {
-    public static final Pool<SpawnSettings.SpawnEntry> MONSTER_SPAWNS = Pool.of((Weighted[])new SpawnSettings.SpawnEntry[]{new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)});
-
     public PillagerOutpostFeature(Codec<StructurePoolFeatureConfig> configCodec) {
         super(configCodec, 0, true, true, PillagerOutpostFeature::canGenerate);
     }
 
     private static boolean canGenerate(StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context) {
-        int i = context.chunkPos().x >> 4;
-        int j = context.chunkPos().z >> 4;
+        ChunkPos chunkPos = context.chunkPos();
+        int i = chunkPos.x >> 4;
+        int j = chunkPos.z >> 4;
         ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
         chunkRandom.setSeed((long)(i ^ j << 4) ^ context.seed());
         chunkRandom.nextInt();
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !PillagerOutpostFeature.isVillageNearby(context.chunkGenerator(), context.seed(), context.chunkPos());
-    }
-
-    private static boolean isVillageNearby(ChunkGenerator chunkGenerator, long seed, ChunkPos chunkPos) {
-        StructurePlacement structurePlacement = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
-        if (structurePlacement != null) {
-            int i = chunkPos.x;
-            int j = chunkPos.z;
-            for (int k = i - 10; k <= i + 10; ++k) {
-                for (int l = j - 10; l <= j + 10; ++l) {
-                    if (!structurePlacement.isStartChunk(chunkGenerator, k, l)) continue;
-                    return true;
-                }
-            }
-        }
-        return false;
+        return !context.chunkGenerator().method_41053(class_7057.VILLAGES, chunkPos.x, chunkPos.z, 10);
     }
 }
 

@@ -16,13 +16,13 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
-import net.minecraft.world.gen.feature.MarginedStructureFeature;
 import net.minecraft.world.gen.feature.RangeFeatureConfig;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class NetherFossilFeature
-extends MarginedStructureFeature<RangeFeatureConfig> {
+extends StructureFeature<RangeFeatureConfig> {
     public NetherFossilFeature(Codec<RangeFeatureConfig> configCodec) {
         super(configCodec, NetherFossilFeature::addPieces);
     }

@@ -55,7 +55,7 @@ public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
         long l = pos.toLong();
         for (int i = 0; i < tickList.size(); ++i) {
             NbtCompound nbtCompound = tickList.getCompound(i);
-            Tick.method_40559(nbtCompound, nameToTypeFunction).ifPresent(tick -> {
+            Tick.fromNbt(nbtCompound, nameToTypeFunction).ifPresent(tick -> {
                 if (ChunkPos.toLong(tick.pos()) == l) {
                     tickConsumer.accept((Tick)tick);
                 }
@@ -63,10 +63,10 @@ public record Tick<T>(T type, BlockPos pos, int delay, TickPriority priority) {
         }
     }
 
-    public static <T> Optional<Tick<T>> method_40559(NbtCompound nbtCompound, Function<String, Optional<T>> function) {
-        return function.apply(nbtCompound.getString(TYPE_NBT_KEY)).map(object -> {
-            BlockPos blockPos = new BlockPos(nbtCompound.getInt(X_NBT_KEY), nbtCompound.getInt(Y_NBT_KEY), nbtCompound.getInt(Z_NBT_KEY));
-            return new Tick<Object>(object, blockPos, nbtCompound.getInt(DELAY_NBT_KEY), TickPriority.byIndex(nbtCompound.getInt(PRIORITY_NBT_KEY)));
+    public static <T> Optional<Tick<T>> fromNbt(NbtCompound nbt, Function<String, Optional<T>> nameToType) {
+        return nameToType.apply(nbt.getString(TYPE_NBT_KEY)).map(type -> {
+            BlockPos blockPos = new BlockPos(nbt.getInt(X_NBT_KEY), nbt.getInt(Y_NBT_KEY), nbt.getInt(Z_NBT_KEY));
+            return new Tick<Object>(type, blockPos, nbt.getInt(DELAY_NBT_KEY), TickPriority.byIndex(nbt.getInt(PRIORITY_NBT_KEY)));
         });
     }
 

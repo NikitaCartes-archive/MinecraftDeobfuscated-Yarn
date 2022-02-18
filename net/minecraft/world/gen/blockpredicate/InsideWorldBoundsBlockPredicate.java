@@ -14,7 +14,7 @@ import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 
 public class InsideWorldBoundsBlockPredicate
 implements BlockPredicate {
-    public static final Codec<InsideWorldBoundsBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(insideWorldBoundsBlockPredicate -> insideWorldBoundsBlockPredicate.offset)).apply((Applicative<InsideWorldBoundsBlockPredicate, ?>)instance, InsideWorldBoundsBlockPredicate::new));
+    public static final Codec<InsideWorldBoundsBlockPredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(Vec3i.createOffsetCodec(16).optionalFieldOf("offset", BlockPos.ORIGIN).forGetter(predicate -> predicate.offset)).apply((Applicative<InsideWorldBoundsBlockPredicate, ?>)instance, InsideWorldBoundsBlockPredicate::new));
     private final Vec3i offset;
 
     public InsideWorldBoundsBlockPredicate(Vec3i offset) {

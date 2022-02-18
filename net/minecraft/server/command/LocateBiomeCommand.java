@@ -7,15 +7,15 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.class_7066;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.LocateCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
@@ -24,17 +24,16 @@ public class LocateBiomeCommand {
     private static final int BLOCK_CHECK_INTERVAL = 8;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("biome", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.AVAILABLE_BIOMES).executes(context -> LocateBiomeCommand.execute((ServerCommandSource)context.getSource(), IdentifierArgumentType.getBiomeEntry(context, "biome")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("biome", class_7066.method_41170(Registry.BIOME_KEY)).executes(context -> LocateBiomeCommand.execute((ServerCommandSource)context.getSource(), class_7066.method_41165(context, "biome")))));
     }
 
-    private static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<Biome> biomeEntry) throws CommandSyntaxException {
+    private static int execute(ServerCommandSource source, class_7066.class_7068<Biome> arg) throws CommandSyntaxException {
         BlockPos blockPos = new BlockPos(source.getPosition());
-        BlockPos blockPos2 = source.getWorld().locateBiome(RegistryKey.of(Registry.BIOME_KEY, biomeEntry.id()), blockPos, 6400, 8);
-        String string = biomeEntry.id().toString();
-        if (blockPos2 == null) {
-            throw NOT_FOUND_EXCEPTION.create(string);
+        Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(arg, blockPos, 6400, 8);
+        if (pair == null) {
+            throw NOT_FOUND_EXCEPTION.create(arg.method_41176());
         }
-        return LocateCommand.sendCoordinates(source, string, blockPos, blockPos2, "commands.locatebiome.success");
+        return LocateCommand.sendCoordinates(source, arg, blockPos, pair, "commands.locatebiome.success");
     }
 }
 

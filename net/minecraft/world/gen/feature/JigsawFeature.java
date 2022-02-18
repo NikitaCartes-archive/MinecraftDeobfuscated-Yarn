@@ -11,14 +11,14 @@ import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.feature.MarginedStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
 
 public class JigsawFeature
-extends MarginedStructureFeature<StructurePoolFeatureConfig> {
-    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean modifyBoundingBox, boolean surface, Predicate<StructureGeneratorFactory.Context<StructurePoolFeatureConfig>> predicate) {
+extends StructureFeature<StructurePoolFeatureConfig> {
+    public JigsawFeature(Codec<StructurePoolFeatureConfig> codec, int structureStartY, boolean modifyBoundingBox, boolean surface, Predicate<StructureGeneratorFactory.Context<StructurePoolFeatureConfig>> contextPredicate) {
         super(codec, context -> {
-            if (!predicate.test(context)) {
+            if (!contextPredicate.test(context)) {
                 return Optional.empty();
             }
             BlockPos blockPos = new BlockPos(context.chunkPos().getStartX(), structureStartY, context.chunkPos().getStartZ());

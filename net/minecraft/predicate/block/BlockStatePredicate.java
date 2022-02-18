@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockStatePredicate
 implements Predicate<BlockState> {
-    public static final Predicate<BlockState> ANY = blockState -> true;
+    public static final Predicate<BlockState> ANY = state -> true;
     private final StateManager<Block, BlockState> manager;
     private final Map<Property<?>, Predicate<Object>> propertyTests = Maps.newHashMap();
 

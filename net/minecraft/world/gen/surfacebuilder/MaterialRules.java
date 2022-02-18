@@ -298,6 +298,25 @@ public class MaterialRules {
             return new BiomePredicate();
         }
 
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object instanceof BiomeMaterialCondition) {
+                BiomeMaterialCondition biomeMaterialCondition = (BiomeMaterialCondition)object;
+                return this.field_36414.equals(biomeMaterialCondition.field_36414);
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return this.field_36414.hashCode();
+        }
+
+        public String toString() {
+            return "BiomeConditionSource[biomes=" + this.field_36414 + "]";
+        }
+
         @Override
         public /* synthetic */ Object apply(Object context) {
             return this.apply((MaterialRuleContext)context);

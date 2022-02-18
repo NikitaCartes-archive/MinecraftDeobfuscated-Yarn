@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import net.minecraft.SharedConstants;
@@ -38,6 +37,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
@@ -59,6 +59,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -155,7 +156,7 @@ public class ChunkSerializer {
         Heightmap.populateHeightmaps(chunk, enumSet);
         NbtCompound nbtCompound3 = nbt.getCompound("structures");
         chunk.setStructureStarts(ChunkSerializer.readStructureStarts(StructureContext.from(world), nbtCompound3, world.getSeed()));
-        chunk.setStructureReferences(ChunkSerializer.readStructureReferences(chunkPos, nbtCompound3));
+        chunk.setStructureReferences(ChunkSerializer.readStructureReferences(world.getRegistryManager(), chunkPos, nbtCompound3));
         if (nbt.getBoolean("shouldSave")) {
             chunk.setNeedsSaving(true);
         }
@@ -337,52 +338,60 @@ public class ChunkSerializer {
         return nbtList.isEmpty() ? null : nbtList;
     }
 
-    private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<StructureFeature<?>, StructureStart<?>> starts, Map<StructureFeature<?>, LongSet> references) {
+    private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<ConfiguredStructureFeature<?, ?>, StructureStart> starts, Map<ConfiguredStructureFeature<?, ?>, LongSet> references) {
         NbtCompound nbtCompound = new NbtCompound();
         NbtCompound nbtCompound2 = new NbtCompound();
-        for (Map.Entry<StructureFeature<?>, StructureStart<?>> entry : starts.entrySet()) {
-            nbtCompound2.put(entry.getKey().getName(), entry.getValue().toNbt(context, pos));
+        Registry<ConfiguredStructureFeature<?, ?>> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        for (Map.Entry<ConfiguredStructureFeature<?, ?>, StructureStart> entry : starts.entrySet()) {
+            Identifier identifier = registry.getId(entry.getKey());
+            nbtCompound2.put(identifier.toString(), entry.getValue().toNbt(context, pos));
         }
         nbtCompound.put("starts", nbtCompound2);
         NbtCompound nbtCompound3 = new NbtCompound();
-        for (Map.Entry<StructureFeature<?>, LongSet> entry2 : references.entrySet()) {
-            nbtCompound3.put(entry2.getKey().getName(), new NbtLongArray(entry2.getValue()));
+        for (Map.Entry<ConfiguredStructureFeature<?, ?>, LongSet> entry2 : references.entrySet()) {
+            if (entry2.getValue().isEmpty()) continue;
+            Identifier identifier2 = registry.getId(entry2.getKey());
+            nbtCompound3.put(identifier2.toString(), new NbtLongArray(entry2.getValue()));
         }
         nbtCompound.put("References", nbtCompound3);
         return nbtCompound;
     }
 
-    private static Map<StructureFeature<?>, StructureStart<?>> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
-        HashMap<StructureFeature<?>, StructureStart<?>> map = Maps.newHashMap();
+    private static Map<ConfiguredStructureFeature<?, ?>, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
+        HashMap<ConfiguredStructureFeature<?, ?>, StructureStart> map = Maps.newHashMap();
+        Registry<ConfiguredStructureFeature<?, ?>> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
         NbtCompound nbtCompound = nbt.getCompound("starts");
         for (String string : nbtCompound.getKeys()) {
-            String string2 = string.toLowerCase(Locale.ROOT);
-            StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string2);
-            if (structureFeature == null) {
-                LOGGER.error("Unknown structure start: {}", (Object)string2);
+            Identifier identifier = Identifier.tryParse(string);
+            ConfiguredStructureFeature<?, ?> configuredStructureFeature = registry.get(identifier);
+            if (configuredStructureFeature == null) {
+                LOGGER.error("Unknown structure start: {}", (Object)identifier);
                 continue;
             }
-            StructureStart<?> structureStart = StructureFeature.readStructureStart(context, nbtCompound.getCompound(string), worldSeed);
+            StructureStart structureStart = StructureFeature.readStructureStart(context, nbtCompound.getCompound(string), worldSeed);
             if (structureStart == null) continue;
-            map.put(structureFeature, structureStart);
+            map.put(configuredStructureFeature, structureStart);
         }
         return map;
     }
 
-    private static Map<StructureFeature<?>, LongSet> readStructureReferences(ChunkPos pos, NbtCompound nbt) {
-        HashMap<StructureFeature<?>, LongSet> map = Maps.newHashMap();
-        NbtCompound nbtCompound = nbt.getCompound("References");
-        for (String string : nbtCompound.getKeys()) {
-            String string2 = string.toLowerCase(Locale.ROOT);
-            StructureFeature structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get(string2);
-            if (structureFeature == null) {
-                LOGGER.warn("Found reference to unknown structure '{}' in chunk {}, discarding", (Object)string2, (Object)pos);
+    private static Map<ConfiguredStructureFeature<?, ?>, LongSet> readStructureReferences(DynamicRegistryManager dynamicRegistryManager, ChunkPos chunkPos, NbtCompound nbtCompound) {
+        HashMap<ConfiguredStructureFeature<?, ?>, LongSet> map = Maps.newHashMap();
+        Registry<ConfiguredStructureFeature<?, ?>> registry = dynamicRegistryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        NbtCompound nbtCompound2 = nbtCompound.getCompound("References");
+        for (String string : nbtCompound2.getKeys()) {
+            Identifier identifier = Identifier.tryParse(string);
+            ConfiguredStructureFeature<?, ?> configuredStructureFeature = registry.get(identifier);
+            if (configuredStructureFeature == null) {
+                LOGGER.warn("Found reference to unknown structure '{}' in chunk {}, discarding", (Object)identifier, (Object)chunkPos);
                 continue;
             }
-            map.put(structureFeature, new LongOpenHashSet(Arrays.stream(nbtCompound.getLongArray(string)).filter(packedPos -> {
+            long[] ls = nbtCompound2.getLongArray(string);
+            if (ls.length == 0) continue;
+            map.put(configuredStructureFeature, new LongOpenHashSet(Arrays.stream(ls).filter(packedPos -> {
                 ChunkPos chunkPos2 = new ChunkPos(packedPos);
-                if (chunkPos2.getChebyshevDistance(pos) > 8) {
-                    LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string2, chunkPos2, pos);
+                if (chunkPos2.getChebyshevDistance(chunkPos) > 8) {
+                    LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", identifier, chunkPos2, chunkPos);
                     return false;
                 }
                 return true;

@@ -3,10 +3,13 @@
  */
 package net.minecraft.server.dedicated;
 
+import com.google.gson.JsonObject;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -68,6 +71,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
+    private final class_7044 field_37039 = new class_7044(this.getString("level-seed", ""), this.get("generator-settings", JsonHelper::deserialize, new JsonObject()), this.parseBoolean("generate-structures", true), this.get("level-type", string -> string.toLowerCase(Locale.ROOT), "default"));
     @Nullable
     private GeneratorOptions generatorOptions;
 
@@ -88,7 +92,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 
     public GeneratorOptions getGeneratorOptions(DynamicRegistryManager registryManager) {
         if (this.generatorOptions == null) {
-            this.generatorOptions = GeneratorOptions.fromProperties(registryManager, this.properties);
+            this.generatorOptions = GeneratorOptions.fromProperties(registryManager, this.field_37039);
         }
         return this.generatorOptions;
     }
@@ -96,6 +100,9 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     @Override
     protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager registryManager, Properties properties) {
         return this.create(registryManager, properties);
+    }
+
+    public record class_7044(String levelSeed, JsonObject generatorSettings, boolean generateStructures, String levelType) {
     }
 }
 

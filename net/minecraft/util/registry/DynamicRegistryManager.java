@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import net.minecraft.class_7059;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
@@ -43,6 +44,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.noise.NoiseType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -67,11 +69,13 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC, ConfiguredFeature.NETWORK_CODEC);
         DynamicRegistryManager.register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC, ConfiguredStructureFeature.field_37142);
+        DynamicRegistryManager.register(builder, Registry.STRUCTURE_SET_WORLDGEN, class_7059.field_37195);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
         DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
+        DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_WORLDGEN, NoiseType.field_37057);
         return builder.build();
     });
     public static final Codec<DynamicRegistryManager> CODEC = DynamicRegistryManager.createCodec();
@@ -173,7 +177,7 @@ public interface DynamicRegistryManager {
 
             @Override
             public Stream<Entry<?>> streamManagedRegistries() {
-                return registries.getEntries().stream().map(Entry::of);
+                return registries.getEntrySet().stream().map(Entry::of);
             }
         };
     }
@@ -183,29 +187,20 @@ public interface DynamicRegistryManager {
         EntryLoader.Impl impl = new EntryLoader.Impl();
         for (Map.Entry<RegistryKey<Registry<?>>, Info<?>> entry : INFOS.entrySet()) {
             if (entry.getKey().equals(Registry.DIMENSION_TYPE_KEY)) continue;
-            DynamicRegistryManager.addEntriesToLoad(mutable, impl, entry.getValue());
+            DynamicRegistryManager.addEntriesToLoad(impl, entry.getValue());
         }
         RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, impl);
         return DimensionType.addRegistryDefaults(mutable);
     }
 
-    private static <E> void addEntriesToLoad(Mutable registryManager, EntryLoader.Impl entryLoader, Info<E> info) {
+    private static <E> void addEntriesToLoad(EntryLoader.Impl impl, Info<E> info) {
         RegistryKey<Registry<E>> registryKey = info.registry();
         Registry<E> registry = BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER.get(registryKey);
-        MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
-        for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
+        for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
             RegistryKey<E> registryKey2 = entry.getKey();
             E object = entry.getValue();
-            if (!DynamicRegistryManager.shouldSkipLoading(registryKey)) {
-                entryLoader.add(BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
-                continue;
-            }
-            mutableRegistry.set(registry.getRawId(object), registryKey2, object, registry.getEntryLifecycle(object));
+            impl.add(BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
         }
-    }
-
-    public static <E> boolean shouldSkipLoading(RegistryKey<? extends Registry<E>> registryRef) {
-        return registryRef.equals(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
     }
 
     /**

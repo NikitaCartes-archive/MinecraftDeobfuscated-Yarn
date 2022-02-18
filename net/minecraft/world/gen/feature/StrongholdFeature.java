@@ -11,10 +11,10 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.MarginedStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class StrongholdFeature
-extends MarginedStructureFeature<DefaultFeatureConfig> {
+extends StructureFeature<DefaultFeatureConfig> {
     public StrongholdFeature(Codec<DefaultFeatureConfig> configCodec) {
         super(configCodec, StructureGeneratorFactory.simple(StrongholdFeature::canGenerate, StrongholdFeature::addPieces));
     }

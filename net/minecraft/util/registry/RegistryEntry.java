@@ -5,6 +5,7 @@ package net.minecraft.util.registry;
 
 import com.mojang.datafixers.util.Either;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -212,6 +213,24 @@ public interface RegistryEntry<T> {
 
         public String toString() {
             return "Reference{" + this.registryKey + "=" + this.value + "}";
+        }
+
+        public boolean equals(Object object) {
+            if (this == object) {
+                return true;
+            }
+            if (object instanceof Reference) {
+                Reference reference = (Reference)object;
+                if (this.registryKey == null || reference.registryKey == null || this.value == null || reference.value == null) {
+                    return false;
+                }
+                return this.registry.getKey().equals(reference.registry.getKey()) && this.referenceType == reference.referenceType && this.registryKey.equals(reference.registryKey) && this.value.equals(reference.value);
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return Objects.hash(new Object[]{this.registry.getKey(), this.referenceType, this.registryKey, this.value});
         }
 
         static enum Type {
