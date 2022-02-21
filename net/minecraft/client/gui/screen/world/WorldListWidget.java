@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -45,6 +44,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -353,13 +353,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public void recreate() {
             this.openReadingWorldScreen();
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                 class_6904 lv = this.client.method_40186(session, false);){
-                GeneratorOptions generatorOptions = lv.worldData().getGeneratorOptions();
+                 SaveLoader saveLoader = this.client.createSaveLoader(session, false);){
+                GeneratorOptions generatorOptions = saveLoader.saveProperties().getGeneratorOptions();
                 Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
                 if (generatorOptions.isLegacyCustomizedType()) {
-                    this.client.setScreen(new ConfirmScreen(bl -> this.client.setScreen(bl ? CreateWorldScreen.create(this.screen, lv, path) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+                    this.client.setScreen(new ConfirmScreen(bl -> this.client.setScreen(bl ? CreateWorldScreen.create(this.screen, saveLoader, path) : this.screen), new TranslatableText("selectWorld.recreate.customized.title"), new TranslatableText("selectWorld.recreate.customized.text"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
                 } else {
-                    this.client.setScreen(CreateWorldScreen.create(this.screen, lv, path));
+                    this.client.setScreen(CreateWorldScreen.create(this.screen, saveLoader, path));
                 }
             } catch (Exception exception) {
                 LOGGER.error("Unable to recreate world", exception);

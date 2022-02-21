@@ -28,9 +28,11 @@ extends ToFloatFunction<C> {
     @Debug
     public String getDebugString();
 
-    public float method_40435();
+    public float min();
 
-    public float method_40436();
+    public float max();
+
+    public Spline<C> method_41187(class_7073<C> var1);
 
     public static <C> Codec<Spline<C>> createCodec(Codec<ToFloatFunction<C>> locationFunctionCodec) {
         record Serialized<C>(float location, Spline<C> value, float derivative) {
@@ -88,13 +90,18 @@ extends ToFloatFunction<C> {
         }
 
         @Override
-        public float method_40435() {
+        public float min() {
             return this.value;
         }
 
         @Override
-        public float method_40436() {
+        public float max() {
             return this.value;
+        }
+
+        @Override
+        public Spline<C> method_41187(class_7073<C> arg) {
+            return this;
         }
     }
 
@@ -182,14 +189,23 @@ extends ToFloatFunction<C> {
         }
 
         @Override
-        public float method_40435() {
-            return (float)this.values().stream().mapToDouble(Spline::method_40435).min().orElseThrow();
+        public float min() {
+            return (float)this.values().stream().mapToDouble(Spline::min).min().orElseThrow();
         }
 
         @Override
-        public float method_40436() {
-            return (float)this.values().stream().mapToDouble(Spline::method_40436).max().orElseThrow();
+        public float max() {
+            return (float)this.values().stream().mapToDouble(Spline::max).max().orElseThrow();
         }
+
+        @Override
+        public Spline<C> method_41187(class_7073<C> arg) {
+            return new Implementation<C>(arg.visit(this.locationFunction), this.locations, this.values().stream().map(spline -> spline.method_41187(arg)).toList(), this.derivatives);
+        }
+    }
+
+    public static interface class_7073<C> {
+        public ToFloatFunction<C> visit(ToFloatFunction<C> var1);
     }
 }
 

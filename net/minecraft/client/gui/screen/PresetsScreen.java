@@ -19,8 +19,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_7057;
-import net.minecraft.class_7059;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.CustomizeFlatLevelScreen;
@@ -34,6 +32,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.structure.StructureSet;
+import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -129,14 +129,14 @@ extends Screen {
         return list;
     }
 
-    public static FlatChunkGeneratorConfig parsePresetString(Registry<Biome> biomeRegistry, String preset, FlatChunkGeneratorConfig generatorConfig) {
+    public static FlatChunkGeneratorConfig parsePresetString(Registry<Biome> biomeRegistry, Registry<StructureSet> structureSetRegistry, String preset, FlatChunkGeneratorConfig generatorConfig) {
         Iterator<String> iterator = Splitter.on(';').split(preset).iterator();
         if (!iterator.hasNext()) {
-            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
+            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry, structureSetRegistry);
         }
         List<FlatChunkGeneratorLayer> list = PresetsScreen.parsePresetLayersString(iterator.next());
         if (list.isEmpty()) {
-            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
+            return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry, structureSetRegistry);
         }
         FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.method_41139());
         RegistryKey<Biome> registryKey = BIOME_KEY;
@@ -174,14 +174,16 @@ extends Screen {
         this.listText = new TranslatableText("createWorld.customize.presets.list");
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
-        Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
+        DynamicRegistryManager dynamicRegistryManager = this.parent.parent.moreOptionsDialog.getRegistryManager();
+        Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
+        Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
         this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(this.parent.getConfig()));
         this.config = this.parent.getConfig();
         this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget();
         this.addSelectableChild(this.listWidget);
-        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), button -> {
-            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, this.customPresetField.getText(), this.config);
+        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
+            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, registry2, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.setScreen(this.parent);
         }));
@@ -235,11 +237,11 @@ extends Screen {
         this.selectPresetButton.active = hasSelected || this.customPresetField.getText().length() > 1;
     }
 
-    private static void addPreset(Text presetName, ItemConvertible icon, RegistryKey<Biome> presetBiome, Set<RegistryKey<class_7059>> set, boolean generateStronghold, boolean generateFeatures, FlatChunkGeneratorLayer ... flatChunkGeneratorLayers) {
+    private static void addPreset(Text presetName, ItemConvertible icon, RegistryKey<Biome> presetBiome, Set<RegistryKey<StructureSet>> structureKeys, boolean generateStronghold, boolean generateFeatures, FlatChunkGeneratorLayer ... layers) {
         PRESETS.add(new SuperflatPreset(icon.asItem(), presetName, dynamicRegistryManager -> {
             Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
-            Registry<class_7059> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
-            RegistryEntryList.Direct direct = RegistryEntryList.of(set.stream().flatMap(registryKey -> registry2.getEntry((RegistryKey<class_7059>)registryKey).stream()).collect(Collectors.toList()));
+            Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
+            RegistryEntryList.Direct direct = RegistryEntryList.of(structureKeys.stream().flatMap(structureKey -> registry2.getEntry((RegistryKey<StructureSet>)structureKey).stream()).collect(Collectors.toList()));
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(Optional.of(direct), registry);
             if (generateStronghold) {
                 flatChunkGeneratorConfig.enableFeatures();
@@ -247,8 +249,8 @@ extends Screen {
             if (generateFeatures) {
                 flatChunkGeneratorConfig.enableLakes();
             }
-            for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; --i) {
-                flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
+            for (int i = layers.length - 1; i >= 0; --i) {
+                flatChunkGeneratorConfig.getLayers().add(layers[i]);
             }
             flatChunkGeneratorConfig.setBiome(registry.getOrCreateEntry(presetBiome));
             flatChunkGeneratorConfig.updateLayerBlocks();
@@ -257,13 +259,13 @@ extends Screen {
     }
 
     static {
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.classic_flat"), Blocks.GRASS_BLOCK, BiomeKeys.PLAINS, Set.of(class_7057.VILLAGES), false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(2, Blocks.DIRT), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.tunnelers_dream"), Blocks.STONE, BiomeKeys.WINDSWEPT_HILLS, Set.of(class_7057.MINESHAFTS, class_7057.STRONGHOLDS), true, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(230, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.water_world"), Items.WATER_BUCKET, BiomeKeys.DEEP_OCEAN, Set.of(class_7057.OCEAN_RUINS, class_7057.SHIPWRECKS, class_7057.OCEAN_MONUMENTS), false, false, new FlatChunkGeneratorLayer(90, Blocks.WATER), new FlatChunkGeneratorLayer(5, Blocks.GRAVEL), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(5, Blocks.STONE), new FlatChunkGeneratorLayer(64, Blocks.DEEPSLATE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.overworld"), Blocks.GRASS, BiomeKeys.PLAINS, Set.of(class_7057.VILLAGES, class_7057.MINESHAFTS, class_7057.PILLAGER_OUTPOSTS, class_7057.RUINED_PORTALS, class_7057.STRONGHOLDS), true, true, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.snowy_kingdom"), Blocks.SNOW, BiomeKeys.SNOWY_PLAINS, Set.of(class_7057.VILLAGES, class_7057.IGLOOS), false, false, new FlatChunkGeneratorLayer(1, Blocks.SNOW), new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.bottomless_pit"), Items.FEATHER, BiomeKeys.PLAINS, Set.of(class_7057.VILLAGES), false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE));
-        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.desert"), Blocks.SAND, BiomeKeys.DESERT, Set.of(class_7057.VILLAGES, class_7057.DESERT_PYRAMIDS, class_7057.MINESHAFTS, class_7057.STRONGHOLDS), true, false, new FlatChunkGeneratorLayer(8, Blocks.SAND), new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.classic_flat"), Blocks.GRASS_BLOCK, BiomeKeys.PLAINS, Set.of(StructureSetKeys.VILLAGES), false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(2, Blocks.DIRT), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.tunnelers_dream"), Blocks.STONE, BiomeKeys.WINDSWEPT_HILLS, Set.of(StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS), true, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(230, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.water_world"), Items.WATER_BUCKET, BiomeKeys.DEEP_OCEAN, Set.of(StructureSetKeys.OCEAN_RUINS, StructureSetKeys.SHIPWRECKS, StructureSetKeys.OCEAN_MONUMENTS), false, false, new FlatChunkGeneratorLayer(90, Blocks.WATER), new FlatChunkGeneratorLayer(5, Blocks.GRAVEL), new FlatChunkGeneratorLayer(5, Blocks.DIRT), new FlatChunkGeneratorLayer(5, Blocks.STONE), new FlatChunkGeneratorLayer(64, Blocks.DEEPSLATE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.overworld"), Blocks.GRASS, BiomeKeys.PLAINS, Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.MINESHAFTS, StructureSetKeys.PILLAGER_OUTPOSTS, StructureSetKeys.RUINED_PORTALS, StructureSetKeys.STRONGHOLDS), true, true, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.snowy_kingdom"), Blocks.SNOW, BiomeKeys.SNOWY_PLAINS, Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.IGLOOS), false, false, new FlatChunkGeneratorLayer(1, Blocks.SNOW), new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(59, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.bottomless_pit"), Items.FEATHER, BiomeKeys.PLAINS, Set.of(StructureSetKeys.VILLAGES), false, false, new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK), new FlatChunkGeneratorLayer(3, Blocks.DIRT), new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE));
+        PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.desert"), Blocks.SAND, BiomeKeys.DESERT, Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.DESERT_PYRAMIDS, StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS), true, false, new FlatChunkGeneratorLayer(8, Blocks.SAND), new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.redstone_ready"), Items.REDSTONE, BiomeKeys.DESERT, Set.of(), false, false, new FlatChunkGeneratorLayer(116, Blocks.SANDSTONE), new FlatChunkGeneratorLayer(3, Blocks.STONE), new FlatChunkGeneratorLayer(1, Blocks.BEDROCK));
         PresetsScreen.addPreset(new TranslatableText("createWorld.customize.preset.the_void"), Blocks.BARRIER, BiomeKeys.THE_VOID, Set.of(), true, false, new FlatChunkGeneratorLayer(1, Blocks.AIR));
     }

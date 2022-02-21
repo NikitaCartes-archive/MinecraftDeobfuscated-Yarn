@@ -73,13 +73,13 @@ public final class DimensionOptions {
         if (optional.isEmpty() || optional2.isEmpty() || optional3.isEmpty()) {
             return false;
         }
-        if (!optional.get().getDimensionTypeSupplier().value().equals(DimensionType.OVERWORLD) && optional.get().getDimensionTypeSupplier().value() != DimensionType.OVERWORLD_CAVES) {
+        if (!optional.get().getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_REGISTRY_KEY) && !optional.get().getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY)) {
             return false;
         }
-        if (!optional2.get().getDimensionTypeSupplier().value().equals(DimensionType.THE_NETHER)) {
+        if (!optional2.get().getDimensionTypeSupplier().matchesKey(DimensionType.THE_NETHER_REGISTRY_KEY)) {
             return false;
         }
-        if (!optional3.get().getDimensionTypeSupplier().value().equals(DimensionType.THE_END)) {
+        if (!optional3.get().getDimensionTypeSupplier().matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
             return false;
         }
         if (!(optional2.get().getChunkGenerator() instanceof NoiseChunkGenerator) || !(optional3.get().getChunkGenerator() instanceof NoiseChunkGenerator)) {

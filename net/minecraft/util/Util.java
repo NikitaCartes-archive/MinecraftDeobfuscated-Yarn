@@ -3,6 +3,7 @@
  */
 package net.minecraft.util;
 
+import com.google.common.base.Ticker;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -81,9 +82,16 @@ public class Util {
     private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
     public static LongSupplier nanoTimeSupplier = System::nanoTime;
+    public static final Ticker TICKER = new Ticker(){
+
+        @Override
+        public long read() {
+            return nanoTimeSupplier.getAsLong();
+        }
+    };
     public static final UUID NIL_UUID = new UUID(0L, 0L);
     public static final FileSystemProvider JAR_FILE_SYSTEM_PROVIDER = FileSystemProvider.installedProviders().stream().filter(fileSystemProvider -> fileSystemProvider.getScheme().equalsIgnoreCase("jar")).findFirst().orElseThrow(() -> new IllegalStateException("No jar file system provider found"));
-    private static Consumer<String> missingBreakpointHandler = string -> {};
+    private static Consumer<String> missingBreakpointHandler = message -> {};
 
     public static <K, V> Collector<Map.Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);

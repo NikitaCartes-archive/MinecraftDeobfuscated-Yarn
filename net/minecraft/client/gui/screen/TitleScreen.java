@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7064;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.CubeMapRenderer;
@@ -25,6 +24,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
+import net.minecraft.client.gui.screen.Realms32BitWarningScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -35,6 +35,7 @@ import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RealmsServiceException;
@@ -46,6 +47,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -65,7 +67,7 @@ public class TitleScreen
 extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String DEMO_WORLD_NAME = "Demo_World";
-    public static final String COPYRIGHT = "Copyright Mojang AB. Do not distribute!";
+    public static final Text COPYRIGHT = new LiteralText("Copyright Mojang AB. Do not distribute!");
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -76,15 +78,13 @@ extends Screen {
     private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
     private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
     private Screen realmsNotificationGui;
-    private int copyrightTextWidth;
-    private int copyrightTextX;
     private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
     private final boolean doBackgroundFade;
     private long backgroundFadeStart;
     @Nullable
-    private class_7063 field_37209;
-    private RealmsClient field_37210;
-    private boolean field_37211 = false;
+    private DeprecationNotice deprecationNotice;
+    private RealmsClient realms;
+    private boolean displayedRealms32BitWarning = false;
 
     public TitleScreen() {
         this(false);
@@ -94,7 +94,7 @@ extends Screen {
         super(new TranslatableText("narrator.screen.title"));
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double)new Random().nextFloat() < 1.0E-4;
-        this.field_37210 = RealmsClient.createRealmsClient();
+        this.realms = RealmsClient.createRealmsClient();
     }
 
     private boolean areRealmsNotificationsEnabled() {
@@ -106,18 +106,18 @@ extends Screen {
         if (this.areRealmsNotificationsEnabled()) {
             this.realmsNotificationGui.tick();
         }
-        this.method_41158();
+        this.tryShowRealms32BitWarning();
     }
 
-    private void method_41158() {
+    private void tryShowRealms32BitWarning() {
         try {
-            if (this.field_37209 != null && !this.client.options.field_37208 && !this.field_37211 && this.field_37209.realmsSubscriptionFuture.getNow(false).booleanValue()) {
-                this.field_37211 = true;
-                this.client.setScreen(new class_7064(this));
+            if (this.deprecationNotice != null && !this.client.options.skipRealms32BitWarning && !this.displayedRealms32BitWarning && this.deprecationNotice.realmsSubscriptionFuture.getNow(false).booleanValue()) {
+                this.displayedRealms32BitWarning = true;
+                this.client.setScreen(new Realms32BitWarningScreen(this));
             }
         } catch (CompletionException completionException) {
             LOGGER.warn("Failed to retrieve realms subscriptions", completionException);
-            this.field_37211 = true;
+            this.displayedRealms32BitWarning = true;
         }
     }
 
@@ -140,19 +140,20 @@ extends Screen {
         if (this.splashText == null) {
             this.splashText = this.client.getSplashTextLoader().get();
         }
-        this.copyrightTextWidth = this.textRenderer.getWidth(COPYRIGHT);
-        this.copyrightTextX = this.width - this.copyrightTextWidth - 2;
-        int i = 24;
-        int j = this.height / 4 + 48;
+        int i = this.textRenderer.getWidth(COPYRIGHT);
+        int j = this.width - i - 2;
+        int k = 24;
+        int l = this.height / 4 + 48;
         if (this.client.isDemo()) {
-            this.initWidgetsDemo(j, 24);
+            this.initWidgetsDemo(l, 24);
         } else {
-            this.initWidgetsNormal(j, 24);
+            this.initWidgetsNormal(l, 24);
         }
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, j + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, j + 72 + 12, 98, 20, new TranslatableText("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, j + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, j + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, l + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, l + 72 + 12, 98, 20, new TranslatableText("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
+        this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, Runnables.doNothing())), this.textRenderer));
         this.client.setConnectedToRealms(false);
         if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
             this.realmsNotificationGui = new RealmsNotificationsScreen();
@@ -161,14 +162,14 @@ extends Screen {
             this.realmsNotificationGui.init(this.client, this.width, this.height);
         }
         if (!this.client.is64Bit()) {
-            CompletableFuture<Boolean> completableFuture = this.field_37209 != null ? this.field_37209.realmsSubscriptionFuture : CompletableFuture.supplyAsync(this::method_41159, Util.getMainWorkerExecutor());
-            this.field_37209 = new class_7063(MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("title.32bit.deprecation"), 350, 2), this.width / 2, j - 24, completableFuture);
+            CompletableFuture<Boolean> completableFuture = this.deprecationNotice != null ? this.deprecationNotice.realmsSubscriptionFuture : CompletableFuture.supplyAsync(this::fetchRealmsSubscribed, Util.getMainWorkerExecutor());
+            this.deprecationNotice = new DeprecationNotice(MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture);
         }
     }
 
-    private boolean method_41159() {
+    private boolean fetchRealmsSubscribed() {
         try {
-            return this.field_37210.listWorlds().servers.stream().anyMatch(realmsServer -> realmsServer.ownerUUID != null && !realmsServer.expired && realmsServer.ownerUUID.equals(this.client.getSession().getUuid()));
+            return this.realms.listWorlds().servers.stream().anyMatch(server -> server.ownerUUID != null && !server.expired && server.ownerUUID.equals(this.client.getSession().getUuid()));
         } catch (RealmsServiceException realmsServiceException) {
             return false;
         }
@@ -293,9 +294,9 @@ extends Screen {
         }
         RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
         TitleScreen.drawTexture(matrices, j + 88, 67, 0.0f, 0.0f, 98, 14, 128, 16);
-        if (this.field_37209 != null) {
-            this.field_37209.label.method_41154(matrices, this.field_37209.x, this.field_37209.y, this.textRenderer.fontHeight, 2, 0x55200000);
-            this.field_37209.label.drawCenterWithShadow(matrices, this.field_37209.x, this.field_37209.y, this.textRenderer.fontHeight, 0xFFFFFF | l);
+        if (this.deprecationNotice != null) {
+            this.deprecationNotice.label.fillBackground(matrices, this.deprecationNotice.x, this.deprecationNotice.y, this.textRenderer.fontHeight, 2, 0x55200000);
+            this.deprecationNotice.label.drawCenterWithShadow(matrices, this.deprecationNotice.x, this.deprecationNotice.y, this.textRenderer.fontHeight, 0xFFFFFF | l);
         }
         if (this.splashText != null) {
             matrices.push();
@@ -313,10 +314,6 @@ extends Screen {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
         TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | l);
-        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, COPYRIGHT, this.copyrightTextX, this.height - 10, 0xFFFFFF | l);
-        if (mouseX > this.copyrightTextX && mouseX < this.copyrightTextX + this.copyrightTextWidth && mouseY > this.height - 10 && mouseY < this.height) {
-            TitleScreen.fill(matrices, this.copyrightTextX, this.height - 1, this.copyrightTextX + this.copyrightTextWidth, this.height, 0xFFFFFF | l);
-        }
         for (Element element : this.children()) {
             if (!(element instanceof ClickableWidget)) continue;
             ((ClickableWidget)element).setAlpha(g);
@@ -332,13 +329,7 @@ extends Screen {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        if (this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button)) {
-            return true;
-        }
-        if (mouseX > (double)this.copyrightTextX && mouseX < (double)(this.copyrightTextX + this.copyrightTextWidth) && mouseY > (double)(this.height - 10) && mouseY < (double)this.height) {
-            this.client.setScreen(new CreditsScreen(false, Runnables.doNothing()));
-        }
-        return false;
+        return this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -370,7 +361,7 @@ extends Screen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    record class_7063(MultilineText label, int x, int y, CompletableFuture<Boolean> realmsSubscriptionFuture) {
+    record DeprecationNotice(MultilineText label, int x, int y, CompletableFuture<Boolean> realmsSubscriptionFuture) {
     }
 }
 

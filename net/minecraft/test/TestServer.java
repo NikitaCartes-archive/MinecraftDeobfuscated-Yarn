@@ -12,16 +12,16 @@ import java.net.Proxy;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
-import net.minecraft.class_6904;
-import net.minecraft.class_7059;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.test.GameTestBatch;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.TestFailureLogger;
@@ -67,18 +67,18 @@ extends MinecraftServer {
         if (batches.isEmpty()) {
             throw new IllegalArgumentException("No test batches were given!");
         }
-        class_6904.class_6906 lv = new class_6904.class_6906(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, 4, false);
+        SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, 4, false);
         try {
-            class_6904 lv2 = class_6904.method_40431(lv, () -> DataPackSettings.SAFE_MODE, (resourceManager, dataPackSettings) -> {
+            SaveLoader saveLoader = SaveLoader.ofLoaded(functionLoaderConfig, () -> DataPackSettings.SAFE_MODE, (resourceManager, dataPackSettings) -> {
                 DynamicRegistryManager.Immutable immutable = DynamicRegistryManager.BUILTIN.get();
                 Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
-                Registry<class_7059> registry2 = immutable.get(Registry.STRUCTURE_SET_WORLDGEN);
+                Registry<StructureSet> registry2 = immutable.get(Registry.STRUCTURE_SET_KEY);
                 Registry<DimensionType> registry3 = immutable.get(Registry.DIMENSION_TYPE_KEY);
-                LevelProperties saveProperties = new LevelProperties(TEST_LEVEL, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry3, DimensionType.createDefaultDimensionOptions(immutable, 0L), new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry)))), Lifecycle.stable());
+                LevelProperties saveProperties = new LevelProperties(TEST_LEVEL, new GeneratorOptions(0L, false, false, GeneratorOptions.getRegistryWithReplacedOverworldGenerator(registry3, DimensionType.createDefaultDimensionOptions(immutable, 0L), new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry, registry2)))), Lifecycle.stable());
                 return Pair.of(saveProperties, immutable);
             }, Util.getMainWorkerExecutor(), Runnable::run).get();
-            lv2.method_40428();
-            return new TestServer(thread, session, resourcePackManager, lv2, batches, pos);
+            saveLoader.refresh();
+            return new TestServer(thread, session, resourcePackManager, saveLoader, batches, pos);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load vanilla datapack, bit oops", exception);
             System.exit(-1);
@@ -86,7 +86,7 @@ extends MinecraftServer {
         }
     }
 
-    private TestServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, class_6904 serverResourceManager, Collection<GameTestBatch> batches, BlockPos pos) {
+    private TestServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader serverResourceManager, Collection<GameTestBatch> batches, BlockPos pos) {
         super(serverThread, session, dataPackManager, serverResourceManager, Proxy.NO_PROXY, Schemas.getFixer(), null, null, null, WorldGenerationProgressLogger::new);
         this.batches = Lists.newArrayList(batches);
         this.pos = pos;

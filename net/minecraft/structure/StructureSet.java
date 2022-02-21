@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.structure;
 
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
@@ -18,11 +18,11 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
-public record class_7059(List<class_7060> structures, StructurePlacement placement) {
-    public static final Codec<class_7059> field_37195 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_7060.field_37197.listOf().fieldOf("structures")).forGetter(class_7059::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(class_7059::placement)).apply((Applicative<class_7059, ?>)instance, class_7059::new));
-    public static final Codec<RegistryEntry<class_7059>> field_37196 = RegistryElementCodec.of(Registry.STRUCTURE_SET_WORLDGEN, field_37195);
+public record StructureSet(List<class_7060> structures, StructurePlacement placement) {
+    public static final Codec<StructureSet> field_37195 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_7060.field_37197.listOf().fieldOf("structures")).forGetter(StructureSet::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(StructureSet::placement)).apply((Applicative<StructureSet, ?>)instance, StructureSet::new));
+    public static final Codec<RegistryEntry<StructureSet>> field_37196 = RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, field_37195);
 
-    public class_7059(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry, StructurePlacement structurePlacement) {
+    public StructureSet(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry, StructurePlacement structurePlacement) {
         this(List.of(new class_7060(registryEntry, 1)), structurePlacement);
     }
 

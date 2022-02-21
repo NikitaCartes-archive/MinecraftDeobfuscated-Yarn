@@ -307,9 +307,9 @@ extends MutableRegistry<T> {
     @Override
     public Registry<T> freeze() {
         this.frozen = true;
-        List<Identifier> list = this.idToEntry.entrySet().stream().filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue()).map(Map.Entry::getKey).sorted().toList();
+        List<Identifier> list = this.keyToEntry.entrySet().stream().filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue()).map(entry -> ((RegistryKey)entry.getKey()).getValue()).sorted().toList();
         if (!list.isEmpty()) {
-            throw new IllegalStateException("Unbound values in registry: " + list);
+            throw new IllegalStateException("Unbound values in registry " + this.getKey() + ": " + list);
         }
         if (this.unfrozenValueToEntry != null) {
             List<RegistryEntry.Reference> list2 = this.unfrozenValueToEntry.values().stream().filter(entry -> !entry.hasKeyAndValue()).toList();

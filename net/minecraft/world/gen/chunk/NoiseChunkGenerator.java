@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_7059;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -61,8 +61,8 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseRouter;
-import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
@@ -83,11 +83,11 @@ extends ChunkGenerator {
     private final SurfaceBuilder surfaceBuilder;
     private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
 
-    public NoiseChunkGenerator(Registry<class_7059> noiseRegistry, Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry, BiomeSource biomeSource, long seed, RegistryEntry<ChunkGeneratorSettings> settings) {
+    public NoiseChunkGenerator(Registry<StructureSet> noiseRegistry, Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry, BiomeSource biomeSource, long seed, RegistryEntry<ChunkGeneratorSettings> settings) {
         this(noiseRegistry, structuresRegistry, biomeSource, biomeSource, seed, settings);
     }
 
-    private NoiseChunkGenerator(Registry<class_7059> noiseRegistry, Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry, BiomeSource populationSource, BiomeSource biomeSource, long seed, RegistryEntry<ChunkGeneratorSettings> settings) {
+    private NoiseChunkGenerator(Registry<StructureSet> noiseRegistry, Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry, BiomeSource populationSource, BiomeSource biomeSource, long seed, RegistryEntry<ChunkGeneratorSettings> settings) {
         super(noiseRegistry, Optional.empty(), populationSource, biomeSource, seed);
         this.noiseRegistry = structuresRegistry;
         this.seed = seed;
@@ -141,11 +141,11 @@ extends ChunkGenerator {
 
     @Override
     public ChunkGenerator withSeed(long seed) {
-        return new NoiseChunkGenerator((Registry<class_7059>)this.field_37053, this.noiseRegistry, this.populationSource.withSeed(seed), seed, this.settings);
+        return new NoiseChunkGenerator((Registry<StructureSet>)this.field_37053, this.noiseRegistry, this.populationSource.withSeed(seed), seed, this.settings);
     }
 
     public boolean matchesSettings(long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
-        return this.seed == seed && this.settings.value().equals(settingsKey);
+        return this.seed == seed && this.settings.matchesKey(settingsKey);
     }
 
     @Override
@@ -179,7 +179,7 @@ extends ChunkGenerator {
     @Override
     public void getDebugHudText(List<String> text, BlockPos pos) {
         DecimalFormat decimalFormat = new DecimalFormat("0.000");
-        NoiseType.UnblendedNoisePos unblendedNoisePos = new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());
+        DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());
         double d = this.noiseRouter.ridges().sample(unblendedNoisePos);
         text.add("NoiseRouter T: " + decimalFormat.format(this.noiseRouter.temperature().sample(unblendedNoisePos)) + " H: " + decimalFormat.format(this.noiseRouter.humidity().sample(unblendedNoisePos)) + " C: " + decimalFormat.format(this.noiseRouter.continents().sample(unblendedNoisePos)) + " E: " + decimalFormat.format(this.noiseRouter.erosion().sample(unblendedNoisePos)) + " D: " + decimalFormat.format(this.noiseRouter.depth().sample(unblendedNoisePos)) + " W: " + decimalFormat.format(d) + " PV: " + decimalFormat.format(VanillaTerrainParameters.getNormalizedWeirdness((float)d)) + " AS: " + decimalFormat.format(this.noiseRouter.initialDensityWithoutJaggedness().sample(unblendedNoisePos)) + " N: " + decimalFormat.format(this.noiseRouter.finalDensity().sample(unblendedNoisePos)));
     }

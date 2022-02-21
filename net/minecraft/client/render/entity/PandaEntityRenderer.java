@@ -83,7 +83,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
                 matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-o));
             }
         }
-        if ((q = pandaEntity.getScaredAnimationProgress(h)) > 0.0f) {
+        if ((q = pandaEntity.getSittingAnimationProgress(h)) > 0.0f) {
             matrixStack.translate(0.0, 0.8f * q, 0.0);
             matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.getPitch(), pandaEntity.getPitch() + 90.0f)));
             matrixStack.translate(0.0, -1.0f * q, 0.0);

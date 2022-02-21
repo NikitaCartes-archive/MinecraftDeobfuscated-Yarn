@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.server;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
@@ -25,22 +25,22 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 
-public record class_6904(LifecycledResourceManager resourceManager, ServerResourceManager dataPackResources, DynamicRegistryManager.Immutable registryAccess, SaveProperties worldData) implements AutoCloseable
+public record SaveLoader(LifecycledResourceManager resourceManager, ServerResourceManager dataPackResources, DynamicRegistryManager.Immutable dynamicRegistryManager, SaveProperties saveProperties) implements AutoCloseable
 {
-    public static CompletableFuture<class_6904> method_40431(class_6906 arg, class_6905 arg2, class_6907 arg3, Executor executor, Executor executor2) {
+    public static CompletableFuture<SaveLoader> ofLoaded(FunctionLoaderConfig functionLoaderConfig, DataPackSettingsSupplier dataPackSettingsSupplier, SavePropertiesSupplier savePropertiesSupplier, Executor prepareExecutor, Executor applyExecutor) {
         try {
-            DataPackSettings dataPackSettings = (DataPackSettings)arg2.get();
-            DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(arg.packRepository(), dataPackSettings, arg.safeMode());
-            List<ResourcePack> list = arg.packRepository().createResourcePacks();
+            DataPackSettings dataPackSettings = (DataPackSettings)dataPackSettingsSupplier.get();
+            DataPackSettings dataPackSettings2 = MinecraftServer.loadDataPacks(functionLoaderConfig.dataPackManager(), dataPackSettings, functionLoaderConfig.safeMode());
+            List<ResourcePack> list = functionLoaderConfig.dataPackManager().createResourcePacks();
             LifecycledResourceManagerImpl lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, list);
-            Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = arg3.get(lifecycledResourceManager, dataPackSettings2);
+            Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = savePropertiesSupplier.get(lifecycledResourceManager, dataPackSettings2);
             SaveProperties saveProperties = pair.getFirst();
             DynamicRegistryManager.Immutable immutable = pair.getSecond();
-            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, arg.commandSelection(), arg.functionCompilationLevel(), executor, executor2).whenComplete((serverResourceManager, throwable) -> {
+            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, functionLoaderConfig.commandEnvironment(), functionLoaderConfig.functionPermissionLevel(), prepareExecutor, applyExecutor).whenComplete((resourceManager, throwable) -> {
                 if (throwable != null) {
                     lifecycledResourceManager.close();
                 }
-            })).thenApply(serverResourceManager -> new class_6904(lifecycledResourceManager, (ServerResourceManager)serverResourceManager, immutable, saveProperties));
+            })).thenApply(resourceManager -> new SaveLoader(lifecycledResourceManager, (ServerResourceManager)resourceManager, immutable, saveProperties));
         } catch (Exception exception) {
             return CompletableFuture.failedFuture(exception);
         }
@@ -51,14 +51,14 @@ public record class_6904(LifecycledResourceManager resourceManager, ServerResour
         this.resourceManager.close();
     }
 
-    public void method_40428() {
-        this.dataPackResources.method_40421(this.registryAccess);
+    public void refresh() {
+        this.dataPackResources.refresh(this.dynamicRegistryManager);
     }
 
     @FunctionalInterface
-    public static interface class_6905
+    public static interface DataPackSettingsSupplier
     extends Supplier<DataPackSettings> {
-        public static class_6905 loadFromWorld(LevelStorage.Session session) {
+        public static DataPackSettingsSupplier loadFromWorld(LevelStorage.Session session) {
             return () -> {
                 DataPackSettings dataPackSettings = session.getDataPackSettings();
                 if (dataPackSettings == null) {
@@ -69,18 +69,18 @@ public record class_6904(LifecycledResourceManager resourceManager, ServerResour
         }
     }
 
-    public record class_6906(ResourcePackManager packRepository, CommandManager.RegistrationEnvironment commandSelection, int functionCompilationLevel, boolean safeMode) {
+    public record FunctionLoaderConfig(ResourcePackManager dataPackManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel, boolean safeMode) {
     }
 
     @FunctionalInterface
-    public static interface class_6907 {
+    public static interface SavePropertiesSupplier {
         public Pair<SaveProperties, DynamicRegistryManager.Immutable> get(ResourceManager var1, DataPackSettings var2);
 
-        public static class_6907 loadFromWorld(LevelStorage.Session session) {
+        public static SavePropertiesSupplier loadFromWorld(LevelStorage.Session session) {
             return (resourceManager, dataPackSettings) -> {
                 DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
                 RegistryOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-                SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings);
+                SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings, mutable.getRegistryLifecycle());
                 if (saveProperties == null) {
                     throw new IllegalStateException("Failed to load world");
                 }

@@ -10,14 +10,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class InterpolatedNoiseSampler
-implements NoiseType.class_6913 {
+implements DensityFunction.class_6913 {
     public static final InterpolatedNoiseSampler field_37205 = new InterpolatedNoiseSampler(new Xoroshiro128PlusPlusRandom(0L), new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), 4, 8);
-    public static final Codec<InterpolatedNoiseSampler> field_37206 = Codec.unit(field_37205);
+    public static final Codec<InterpolatedNoiseSampler> CODEC = Codec.unit(field_37205);
     private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
     private final OctavePerlinNoiseSampler upperInterpolatedNoise;
     private final OctavePerlinNoiseSampler interpolationNoise;
@@ -47,7 +47,7 @@ implements NoiseType.class_6913 {
     }
 
     @Override
-    public double sample(NoiseType.NoisePos pos) {
+    public double sample(DensityFunction.NoisePos pos) {
         int i = Math.floorDiv(pos.blockX(), this.cellWidth);
         int j = Math.floorDiv(pos.blockY(), this.cellHeight);
         int k = Math.floorDiv(pos.blockZ(), this.cellWidth);
@@ -106,8 +106,8 @@ implements NoiseType.class_6913 {
     }
 
     @Override
-    public Codec<? extends NoiseType> method_41062() {
-        return field_37206;
+    public Codec<? extends DensityFunction> getCodec() {
+        return CODEC;
     }
 }
 

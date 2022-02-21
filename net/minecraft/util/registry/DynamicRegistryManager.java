@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.class_7059;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
@@ -41,10 +41,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import net.minecraft.world.gen.noise.NoiseType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -70,12 +70,12 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC, ConfiguredFeature.NETWORK_CODEC);
         DynamicRegistryManager.register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC, ConfiguredStructureFeature.field_37142);
-        DynamicRegistryManager.register(builder, Registry.STRUCTURE_SET_WORLDGEN, class_7059.field_37195);
+        DynamicRegistryManager.register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.field_37195);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
         DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
-        DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_WORLDGEN, NoiseType.field_37057);
+        DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.field_37057);
         return builder.build();
     });
     public static final Codec<DynamicRegistryManager> CODEC = DynamicRegistryManager.createCodec();
@@ -193,13 +193,13 @@ public interface DynamicRegistryManager {
         return DimensionType.addRegistryDefaults(mutable);
     }
 
-    private static <E> void addEntriesToLoad(EntryLoader.Impl impl, Info<E> info) {
+    private static <E> void addEntriesToLoad(EntryLoader.Impl entryLoader, Info<E> info) {
         RegistryKey<Registry<E>> registryKey = info.registry();
         Registry<E> registry = BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER.get(registryKey);
         for (Map.Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
             RegistryKey<E> registryKey2 = entry.getKey();
             E object = entry.getValue();
-            impl.add(BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
+            entryLoader.add(BuiltinRegistries.DYNAMIC_REGISTRY_MANAGER, registryKey2, info.entryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
         }
     }
 
@@ -239,6 +239,10 @@ public interface DynamicRegistryManager {
 
     default public Immutable toImmutable() {
         return new ImmutableImpl(this.streamManagedRegistries().map(Entry::freeze));
+    }
+
+    default public Lifecycle getRegistryLifecycle() {
+        return this.streamManagedRegistries().map(entry -> entry.value.getLifecycle()).reduce(Lifecycle.stable(), Lifecycle::add);
     }
 
     public record Info<E>(RegistryKey<? extends Registry<E>> registry, Codec<E> entryCodec, @Nullable Codec<E> networkEntryCodec) {
@@ -308,14 +312,6 @@ public interface DynamicRegistryManager {
         }
     }
 
-    public static interface Immutable
-    extends DynamicRegistryManager {
-        @Override
-        default public Immutable toImmutable() {
-            return this;
-        }
-    }
-
     public record Entry<T>(RegistryKey<? extends Registry<T>> key, Registry<T> value) {
         private static <T, R extends Registry<? extends T>> Entry<T> of(Map.Entry<? extends RegistryKey<? extends Registry<?>>, R> entry) {
             return Entry.of(entry.getKey(), (Registry)entry.getValue());
@@ -331,6 +327,14 @@ public interface DynamicRegistryManager {
 
         private Entry<T> freeze() {
             return new Entry<T>(this.key, this.value.freeze());
+        }
+    }
+
+    public static interface Immutable
+    extends DynamicRegistryManager {
+        @Override
+        default public Immutable toImmutable() {
+            return this;
         }
     }
 }

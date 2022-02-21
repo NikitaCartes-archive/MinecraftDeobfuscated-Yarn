@@ -24,7 +24,6 @@ import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -50,6 +49,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -119,11 +119,11 @@ extends Screen {
         return new CreateWorldScreen(parent, DataPackSettings.SAFE_MODE, new MoreOptionsDialog(immutable, GeneratorOptions.getDefaultOptions(immutable), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty()));
     }
 
-    public static CreateWorldScreen create(@Nullable Screen parent, class_6904 source, @Nullable Path path) {
-        SaveProperties saveProperties = source.worldData();
+    public static CreateWorldScreen create(@Nullable Screen parent, SaveLoader source, @Nullable Path path) {
+        SaveProperties saveProperties = source.saveProperties();
         LevelInfo levelInfo = saveProperties.getLevelInfo();
         GeneratorOptions generatorOptions = saveProperties.getGeneratorOptions();
-        DynamicRegistryManager.Immutable immutable = source.registryAccess();
+        DynamicRegistryManager.Immutable immutable = source.dynamicRegistryManager();
         DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
         CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, dataPackSettings, new MoreOptionsDialog(immutable, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed())));
         createWorldScreen.levelName = levelInfo.getLevelName();
@@ -409,7 +409,7 @@ extends Screen {
             return;
         }
         this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
-        ((CompletableFuture)class_6904.method_40431(new class_6904.class_6906(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false), () -> dataPackSettings2, (resourceManager, dataPackSettings) -> {
+        ((CompletableFuture)SaveLoader.ofLoaded(new SaveLoader.FunctionLoaderConfig(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false), () -> dataPackSettings2, (resourceManager, dataPackSettings) -> {
             DynamicRegistryManager dynamicRegistryManager = this.moreOptionsDialog.getRegistryManager();
             DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
             RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
@@ -420,7 +420,7 @@ extends Screen {
             return Pair.of(new LevelProperties(levelInfo, generatorOptions, dataResult.lifecycle()), mutable.toImmutable());
         }, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(serverResourceManager -> {
             this.dataPackSettings = dataPackSettings2;
-            this.moreOptionsDialog.loadDatapacks((class_6904)serverResourceManager);
+            this.moreOptionsDialog.loadDatapacks((SaveLoader)serverResourceManager);
             serverResourceManager.close();
         }, (Executor)this.client)).handle((v, throwable) -> {
             if (throwable != null) {

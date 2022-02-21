@@ -35,7 +35,7 @@ import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
 import net.minecraft.world.gen.carver.RavineCarverConfig;
 import net.minecraft.world.gen.chunk.AquiferSampler;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,7 +146,7 @@ public abstract class Carver<C extends CarverConfig> {
         if (pos.getY() <= ((CarverConfig)config).lavaLevel.getY(context)) {
             return LAVA.getBlockState();
         }
-        BlockState blockState = sampler.apply(new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
+        BlockState blockState = sampler.apply(new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
         if (blockState == null) {
             return Carver.isDebug(config) ? ((CarverConfig)config).debugConfig.getBarrierState() : null;
         }

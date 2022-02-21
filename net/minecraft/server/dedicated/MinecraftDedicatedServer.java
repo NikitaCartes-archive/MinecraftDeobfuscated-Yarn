@@ -27,13 +27,13 @@ import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_6904;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.ServerCommandSource;
@@ -89,12 +89,12 @@ implements DedicatedServer {
     @Nullable
     private final Text resourcePackPrompt;
 
-    public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager resourcePackManager, class_6904 arg, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(serverThread, session, resourcePackManager, arg, Proxy.NO_PROXY, dataFixer, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
-        this.propertiesLoader = serverPropertiesLoader;
+    public MinecraftDedicatedServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, dataFixer, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
+        this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.filterer = TextFilterer.load(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
-        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(serverPropertiesLoader);
+        this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
+        this.resourcePackPrompt = MinecraftDedicatedServer.parseResourcePackPrompt(propertiesLoader);
     }
 
     @Override

@@ -20,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
@@ -160,8 +161,11 @@ extends PersistentState {
         return nbt;
     }
 
-    public static String nameFor(DimensionType dimensionType) {
-        return RAIDS + dimensionType.getSuffix();
+    public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
+        if (dimensionTypeEntry.matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
+            return "raids_end";
+        }
+        return RAIDS;
     }
 
     private int nextId() {

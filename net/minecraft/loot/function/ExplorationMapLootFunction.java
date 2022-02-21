@@ -10,7 +10,6 @@ import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
 import java.util.Locale;
 import java.util.Set;
-import net.minecraft.class_7045;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -25,6 +24,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 public class ExplorationMapLootFunction
 extends ConditionalLootFunction {
     static final Logger LOGGER = LogUtils.getLogger();
-    public static final TagKey<ConfiguredStructureFeature<?, ?>> DEFAULT_DESTINATION = class_7045.ON_TREASURE_MAPS;
+    public static final TagKey<ConfiguredStructureFeature<?, ?>> DEFAULT_DESTINATION = ConfiguredStructureFeatureTags.ON_TREASURE_MAPS;
     public static final String MANSION = "mansion";
     public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
     public static final byte field_31851 = 2;
@@ -49,9 +49,9 @@ extends ConditionalLootFunction {
     final int searchRadius;
     final boolean skipExistingChunks;
 
-    ExplorationMapLootFunction(LootCondition[] conditions, TagKey<ConfiguredStructureFeature<?, ?>> tagKey, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks) {
+    ExplorationMapLootFunction(LootCondition[] conditions, TagKey<ConfiguredStructureFeature<?, ?>> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks) {
         super(conditions);
-        this.destination = tagKey;
+        this.destination = destination;
         this.decoration = decoration;
         this.zoom = zoom;
         this.searchRadius = searchRadius;
@@ -102,8 +102,8 @@ extends ConditionalLootFunction {
             return this;
         }
 
-        public Builder withDestination(TagKey<ConfiguredStructureFeature<?, ?>> tagKey) {
-            this.destination = tagKey;
+        public Builder withDestination(TagKey<ConfiguredStructureFeature<?, ?>> destination) {
+            this.destination = destination;
             return this;
         }
 

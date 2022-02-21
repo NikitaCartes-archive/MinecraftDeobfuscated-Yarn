@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -25,10 +25,10 @@ public final class class_6955 {
     private class_6955() {
     }
 
-    protected static ChunkNoiseSampler.BlockStateSampler method_40548(NoiseType noiseType, NoiseType noiseType2, NoiseType noiseType3, RandomDeriver randomDeriver) {
+    protected static ChunkNoiseSampler.BlockStateSampler method_40548(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3, RandomDeriver randomDeriver) {
         BlockState blockState = null;
         return noisePos -> {
-            double d = noiseType.sample(noisePos);
+            double d = densityFunction.sample(noisePos);
             int i = noisePos.blockY();
             VeinType veinType = d > 0.0 ? VeinType.COPPER : VeinType.IRON;
             double e = Math.abs(d);
@@ -46,11 +46,11 @@ public final class class_6955 {
             if (abstractRandom.nextFloat() > 0.7f) {
                 return blockState;
             }
-            if (noiseType2.sample(noisePos) >= 0.0) {
+            if (densityFunction2.sample(noisePos) >= 0.0) {
                 return blockState;
             }
             double g = MathHelper.clampedLerpFromProgress(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
-            if ((double)abstractRandom.nextFloat() < g && noiseType3.sample(noisePos) > (double)-0.3f) {
+            if ((double)abstractRandom.nextFloat() < g && densityFunction3.sample(noisePos) > (double)-0.3f) {
                 return abstractRandom.nextFloat() < 0.02f ? veinType.rawBlock : veinType.ore;
             }
             return veinType.stone;

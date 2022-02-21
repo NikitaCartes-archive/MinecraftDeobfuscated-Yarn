@@ -14,7 +14,6 @@ import net.minecraft.advancement.criterion.EntityHurtPlayerCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_7058;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
@@ -25,6 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 
 public class StoryTabAdvancementGenerator
 implements Consumer<Consumer<Advancement>> {
@@ -44,7 +44,7 @@ implements Consumer<Consumer<Advancement>> {
         Advancement.Builder.create().parent(advancement6).display(Items.DIAMOND_CHESTPLATE, (Text)new TranslatableText("advancements.story.shiny_gear.title"), (Text)new TranslatableText("advancements.story.shiny_gear.description"), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriterionMerger.OR).criterion("diamond_helmet", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_HELMET)).criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_CHESTPLATE)).criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_LEGGINGS)).criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.DIAMOND_BOOTS)).build(consumer, "story/shiny_gear");
         Advancement advancement10 = Advancement.Builder.create().parent(advancement9).display(Items.FLINT_AND_STEEL, (Text)new TranslatableText("advancements.story.enter_the_nether.title"), (Text)new TranslatableText("advancements.story.enter_the_nether.description"), null, AdvancementFrame.TASK, true, true, false).criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(World.NETHER)).build(consumer, "story/enter_the_nether");
         Advancement.Builder.create().parent(advancement10).display(Items.GOLDEN_APPLE, (Text)new TranslatableText("advancements.story.cure_zombie_villager.title"), (Text)new TranslatableText("advancements.story.cure_zombie_villager.description"), null, AdvancementFrame.GOAL, true, true, false).criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any()).build(consumer, "story/cure_zombie_villager");
-        Advancement advancement11 = Advancement.Builder.create().parent(advancement10).display(Items.ENDER_EYE, (Text)new TranslatableText("advancements.story.follow_ender_eye.title"), (Text)new TranslatableText("advancements.story.follow_ender_eye.description"), null, AdvancementFrame.TASK, true, true, false).criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(class_7058.STRONGHOLD))).build(consumer, "story/follow_ender_eye");
+        Advancement advancement11 = Advancement.Builder.create().parent(advancement10).display(Items.ENDER_EYE, (Text)new TranslatableText("advancements.story.follow_ender_eye.title"), (Text)new TranslatableText("advancements.story.follow_ender_eye.description"), null, AdvancementFrame.TASK, true, true, false).criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.STRONGHOLD))).build(consumer, "story/follow_ender_eye");
         Advancement.Builder.create().parent(advancement11).display(Blocks.END_STONE, (Text)new TranslatableText("advancements.story.enter_the_end.title"), (Text)new TranslatableText("advancements.story.enter_the_end.description"), null, AdvancementFrame.TASK, true, true, false).criterion("entered_end", ChangedDimensionCriterion.Conditions.to(World.END)).build(consumer, "story/enter_the_end");
     }
 

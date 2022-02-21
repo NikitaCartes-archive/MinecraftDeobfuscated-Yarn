@@ -3,7 +3,6 @@
  */
 package net.minecraft.world.biome.source.util;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -19,13 +18,17 @@ import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Spline;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public record VanillaTerrainParameters(Spline<NoisePoint> offsetSpline, Spline<NoisePoint> factorSpline, Spline<NoisePoint> peakSpline) {
     private static final Codec<Spline<NoisePoint>> field_35457 = Spline.createCodec(LocationFunction.field_35464);
+    public static final Codec<Spline<class_7075>> field_37252 = Spline.createCodec(class_7074.field_37253);
     public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)field_35457.fieldOf("offset")).forGetter(VanillaTerrainParameters::offsetSpline), ((MapCodec)field_35457.fieldOf("factor")).forGetter(VanillaTerrainParameters::factorSpline), ((MapCodec)field_35457.fieldOf("jaggedness")).forGetter(vanillaTerrainParameters -> vanillaTerrainParameters.peakSpline)).apply((Applicative<VanillaTerrainParameters, ?>)instance, VanillaTerrainParameters::new));
     private static final float OFFSET_VALUE_OFFSET = -0.50375f;
     private static final ToFloatFunction<Float> field_35673 = float_ -> float_.floatValue();
@@ -249,6 +252,10 @@ public record VanillaTerrainParameters(Spline<NoisePoint> offsetSpline, Spline<N
         return new NoisePoint(f, g, VanillaTerrainParameters.getNormalizedWeirdness(h), h);
     }
 
+    public static class_7075 method_41191(DensityFunction.NoisePos noisePos) {
+        return new class_7075(noisePos);
+    }
+
     public static float getNormalizedWeirdness(float weirdness) {
         return -(Math.abs(Math.abs(weirdness) - 0.6666667f) - 0.33333334f) * 3.0f;
     }
@@ -309,6 +316,37 @@ public record VanillaTerrainParameters(Spline<NoisePoint> offsetSpline, Spline<N
     }
 
     public record NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
+    }
+
+    public record class_7075(DensityFunction.NoisePos context) {
+    }
+
+    public record class_7074(RegistryEntry<DensityFunction> function) implements ToFloatFunction<class_7075>
+    {
+        static final Codec<ToFloatFunction<class_7075>> field_37253 = DensityFunction.REGISTRY_ENTRY_CODEC.flatComapMap(class_7074::new, toFloatFunction -> {
+            DataResult<Object> dataResult;
+            if (toFloatFunction instanceof class_7074) {
+                class_7074 lv = (class_7074)toFloatFunction;
+                dataResult = DataResult.success(lv.function());
+            } else {
+                dataResult = DataResult.error("Not a coordinate resolver: " + toFloatFunction);
+            }
+            return dataResult;
+        });
+
+        @Override
+        public float apply(class_7075 arg) {
+            return (float)this.function.value().sample(arg.context());
+        }
+
+        public class_7074 method_41194(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
+            return new class_7074(new RegistryEntry.Direct<DensityFunction>(this.function.value().method_40469(densityFunctionVisitor)));
+        }
+
+        @Override
+        public /* synthetic */ float apply(Object object) {
+            return this.apply((class_7075)object);
+        }
     }
 }
 

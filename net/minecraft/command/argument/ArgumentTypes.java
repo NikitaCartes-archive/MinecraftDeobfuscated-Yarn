@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7066;
 import net.minecraft.command.argument.AngleArgumentType;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
@@ -45,6 +44,7 @@ import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
 import net.minecraft.command.argument.OperationArgumentType;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
+import net.minecraft.command.argument.RegistryPredicateArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.ScoreboardCriterionArgumentType;
@@ -130,15 +130,15 @@ public class ArgumentTypes {
         ArgumentTypes.register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer<DimensionArgumentType>(DimensionArgumentType::dimension));
         ArgumentTypes.register("time", TimeArgumentType.class, new ConstantArgumentSerializer<TimeArgumentType>(TimeArgumentType::time));
         ArgumentTypes.register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer<UuidArgumentType>(UuidArgumentType::uuid));
-        ArgumentTypes.register("resource_or_tag", ArgumentTypes.method_41181(class_7066.class), new class_7066.class_7069());
+        ArgumentTypes.register("resource_or_tag", ArgumentTypes.upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
         if (SharedConstants.isDevelopment) {
             ArgumentTypes.register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer<TestFunctionArgumentType>(TestFunctionArgumentType::testFunction));
             ArgumentTypes.register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer<TestClassArgumentType>(TestClassArgumentType::testClass));
         }
     }
 
-    private static <T extends ArgumentType<?>> Class<T> method_41181(Class<? super T> class_) {
-        return class_;
+    private static <T extends ArgumentType<?>> Class<T> upcast(Class<? super T> clazz) {
+        return clazz;
     }
 
     @Nullable
@@ -251,9 +251,9 @@ public class ArgumentTypes {
         public final ArgumentSerializer<T> serializer;
         public final Identifier id;
 
-        Entry(ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
-            this.serializer = argumentSerializer;
-            this.id = identifier;
+        Entry(ArgumentSerializer<T> serializer, Identifier id) {
+            this.serializer = serializer;
+            this.id = id;
         }
     }
 }

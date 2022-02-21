@@ -43,12 +43,12 @@ public class LocationPredicate {
     private final BlockPredicate block;
     private final FluidPredicate fluid;
 
-    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable RegistryKey<Biome> biome, @Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
+    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable RegistryKey<Biome> biome, @Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.biome = biome;
-        this.feature = registryKey;
+        this.feature = feature;
         this.dimension = dimension;
         this.smokey = smokey;
         this.light = light;
@@ -64,8 +64,8 @@ public class LocationPredicate {
         return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, dimension, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
-    public static LocationPredicate feature(RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
-        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, registryKey, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
+    public static LocationPredicate feature(RegistryKey<ConfiguredStructureFeature<?, ?>> feature) {
+        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, feature, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
     public static LocationPredicate y(NumberRange.FloatRange y) {
@@ -199,8 +199,8 @@ public class LocationPredicate {
             return this;
         }
 
-        public Builder feature(@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
-            this.feature = registryKey;
+        public Builder feature(@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> feature) {
+            this.feature = feature;
             return this;
         }
 

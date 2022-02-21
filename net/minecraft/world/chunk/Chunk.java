@@ -22,7 +22,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_6916;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
@@ -55,6 +54,7 @@ import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.noise.NoiseRouter;
 import net.minecraft.world.tick.BasicTickScheduler;
@@ -70,7 +70,7 @@ implements BlockView,
 BiomeAccess.Storage,
 StructureHolder {
     private static final Logger field_34548 = LogUtils.getLogger();
-    private static final LongSet field_37052 = new LongOpenHashSet();
+    private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
     protected final ShortList[] postProcessingLists;
     protected volatile boolean needsSaving;
     private volatile boolean lightOn;
@@ -214,7 +214,7 @@ StructureHolder {
 
     @Override
     public LongSet getStructureReferences(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-        return this.structureReferences.getOrDefault(configuredStructureFeature, field_37052);
+        return this.structureReferences.getOrDefault(configuredStructureFeature, EMPTY_STRUCTURE_REFERENCES);
     }
 
     @Override
@@ -348,7 +348,7 @@ StructureHolder {
         return this.heightLimitView.getHeight();
     }
 
-    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseRouter noiseColumnSampler, Supplier<class_6916.class_7050> columnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+    public ChunkNoiseSampler getOrCreateChunkNoiseSampler(NoiseRouter noiseColumnSampler, Supplier<DensityFunctionTypes.class_7050> columnSampler, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
         if (this.chunkNoiseSampler == null) {
             this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, columnSampler, chunkGeneratorSettings, fluidLevelSampler, blender);
         }

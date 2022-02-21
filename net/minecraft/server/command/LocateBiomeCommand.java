@@ -8,7 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.class_7066;
+import net.minecraft.command.argument.RegistryPredicateArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.LocateCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -24,16 +24,16 @@ public class LocateBiomeCommand {
     private static final int BLOCK_CHECK_INTERVAL = 8;
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("biome", class_7066.method_41170(Registry.BIOME_KEY)).executes(context -> LocateBiomeCommand.execute((ServerCommandSource)context.getSource(), class_7066.method_41165(context, "biome")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locatebiome").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("biome", RegistryPredicateArgumentType.registryPredicate(Registry.BIOME_KEY)).executes(context -> LocateBiomeCommand.execute((ServerCommandSource)context.getSource(), RegistryPredicateArgumentType.getBiomePredicate(context, "biome")))));
     }
 
-    private static int execute(ServerCommandSource source, class_7066.class_7068<Biome> arg) throws CommandSyntaxException {
+    private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Biome> biome) throws CommandSyntaxException {
         BlockPos blockPos = new BlockPos(source.getPosition());
-        Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(arg, blockPos, 6400, 8);
+        Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
         if (pair == null) {
-            throw NOT_FOUND_EXCEPTION.create(arg.method_41176());
+            throw NOT_FOUND_EXCEPTION.create(biome.asString());
         }
-        return LocateCommand.sendCoordinates(source, arg, blockPos, pair, "commands.locatebiome.success");
+        return LocateCommand.sendCoordinates(source, biome, blockPos, pair, "commands.locatebiome.success");
     }
 }
 

@@ -57,7 +57,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_6904;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -206,6 +205,7 @@ import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.QueueingWorldGenerationProgressListener;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.sound.MusicSound;
@@ -380,7 +380,7 @@ implements WindowEventHandler {
     private final FontManager fontManager;
     private final SplashTextResourceSupplier splashTextLoader;
     private final VideoWarningManager videoWarningManager;
-    private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(REGIONAL_COMPLIANCIES_ID, MinecraftClient::method_40189);
+    private final PeriodicNotificationManager regionalComplianciesManager = new PeriodicNotificationManager(REGIONAL_COMPLIANCIES_ID, MinecraftClient::isCountrySetTo);
     private final MinecraftSessionService sessionService;
     private final UserApiService userApiService;
     private final PlayerSkinProvider skinProvider;
@@ -631,7 +631,7 @@ implements WindowEventHandler {
         }
     }
 
-    private static boolean method_40189(Object country) {
+    private static boolean isCountrySetTo(Object country) {
         try {
             return Locale.getDefault().getISO3Country().equals(country);
         } catch (MissingResourceException missingResourceException) {
@@ -1716,23 +1716,23 @@ implements WindowEventHandler {
     }
 
     public void startIntegratedServer(String worldName) {
-        this.startIntegratedServer(worldName, class_6904.class_6905::loadFromWorld, class_6904.class_6907::loadFromWorld, false, WorldLoadAction.BACKUP);
+        this.startIntegratedServer(worldName, SaveLoader.DataPackSettingsSupplier::loadFromWorld, SaveLoader.SavePropertiesSupplier::loadFromWorld, false, WorldLoadAction.BACKUP);
     }
 
-    public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager registryTracker, GeneratorOptions generatorOptions) {
+    public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager dynamicRegistryManager, GeneratorOptions generatorOptions) {
         this.startIntegratedServer(worldName, session -> levelInfo::getDataPackSettings, session -> (resourceManager, dataPackSettings) -> {
             DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
-            RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, registryTracker);
+            RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
             RegistryOps<JsonElement> dynamicOps2 = RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, resourceManager);
-            DataResult dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(jsonElement -> GeneratorOptions.CODEC.parse(dynamicOps2, jsonElement));
+            DataResult dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, generatorOptions).setLifecycle(Lifecycle.stable()).flatMap(json -> GeneratorOptions.CODEC.parse(dynamicOps2, json));
             GeneratorOptions generatorOptions2 = (GeneratorOptions)dataResult.getOrThrow(false, Util.addPrefix("Error reading worldgen settings after loading data packs: ", LOGGER::error));
             return Pair.of(new LevelProperties(levelInfo, generatorOptions2, dataResult.lifecycle()), mutable.toImmutable());
         }, false, WorldLoadAction.CREATE);
     }
 
-    private void startIntegratedServer(String worldName, Function<LevelStorage.Session, class_6904.class_6905> function, Function<LevelStorage.Session, class_6904.class_6907> function2, boolean bl, WorldLoadAction worldLoadAction) {
-        boolean bl3;
-        class_6904 lv;
+    private void startIntegratedServer(String worldName, Function<LevelStorage.Session, SaveLoader.DataPackSettingsSupplier> dataPackSettingsSupplierGetter, Function<LevelStorage.Session, SaveLoader.SavePropertiesSupplier> savePropertiesSupplierGetter, boolean safeMode, WorldLoadAction worldLoadAction) {
+        boolean bl2;
+        SaveLoader saveLoader;
         LevelStorage.Session session;
         try {
             session = this.levelStorage.createSession(worldName);
@@ -1744,10 +1744,10 @@ implements WindowEventHandler {
         }
         ResourcePackManager resourcePackManager = MinecraftClient.createServerDataManager(session);
         try {
-            lv = this.method_40183(resourcePackManager, bl, function.apply(session), function2.apply(session));
+            saveLoader = this.createSaveLoader(resourcePackManager, safeMode, dataPackSettingsSupplierGetter.apply(session), savePropertiesSupplierGetter.apply(session));
         } catch (Exception exception) {
             LOGGER.warn("Failed to load datapacks, can't proceed with server load", exception);
-            this.setScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, function, function2, true, worldLoadAction)));
+            this.setScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, dataPackSettingsSupplierGetter, savePropertiesSupplierGetter, true, worldLoadAction)));
             try {
                 resourcePackManager.close();
                 session.close();
@@ -1756,12 +1756,12 @@ implements WindowEventHandler {
             }
             return;
         }
-        SaveProperties saveProperties = lv.worldData();
-        boolean bl2 = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
-        boolean bl4 = bl3 = saveProperties.getLifecycle() != Lifecycle.stable();
-        if (worldLoadAction != WorldLoadAction.NONE && (bl2 || bl3)) {
-            this.showExperimentalWarning(worldLoadAction, worldName, bl2, () -> this.startIntegratedServer(worldName, function, function2, bl, WorldLoadAction.NONE));
-            lv.close();
+        SaveProperties saveProperties = saveLoader.saveProperties();
+        boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
+        boolean bl3 = bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
+        if (worldLoadAction != WorldLoadAction.NONE && (bl || bl2)) {
+            this.showExperimentalWarning(worldLoadAction, worldName, bl, () -> this.startIntegratedServer(worldName, dataPackSettingsSupplierGetter, savePropertiesSupplierGetter, safeMode, WorldLoadAction.NONE));
+            saveLoader.close();
             try {
                 resourcePackManager.close();
                 session.close();
@@ -1773,9 +1773,9 @@ implements WindowEventHandler {
         this.disconnect();
         this.worldGenProgressTracker.set(null);
         try {
-            DynamicRegistryManager.Immutable immutable = lv.registryAccess();
+            DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
             session.backupLevelDataFile(immutable, saveProperties);
-            lv.method_40428();
+            saveLoader.refresh();
             YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.networkProxy);
             MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
             GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
@@ -1783,7 +1783,7 @@ implements WindowEventHandler {
             userCache.setExecutor(this);
             SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
             UserCache.setUseRemote(false);
-            this.server = MinecraftServer.startServer(thread -> new IntegratedServer((Thread)thread, this, session, resourcePackManager, lv, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
+            this.server = MinecraftServer.startServer(thread2 -> new IntegratedServer((Thread)thread2, this, session, resourcePackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
                 return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
@@ -1857,19 +1857,19 @@ implements WindowEventHandler {
         }
     }
 
-    public class_6904 method_40186(LevelStorage.Session session, boolean bl) throws ExecutionException, InterruptedException {
+    public SaveLoader createSaveLoader(LevelStorage.Session session, boolean safeMode) throws ExecutionException, InterruptedException {
         ResourcePackManager resourcePackManager = MinecraftClient.createServerDataManager(session);
-        return this.method_40183(resourcePackManager, bl, class_6904.class_6905.loadFromWorld(session), class_6904.class_6907.loadFromWorld(session));
+        return this.createSaveLoader(resourcePackManager, safeMode, SaveLoader.DataPackSettingsSupplier.loadFromWorld(session), SaveLoader.SavePropertiesSupplier.loadFromWorld(session));
     }
 
-    public class_6904 method_40183(ResourcePackManager resourcePackManager, boolean bl, class_6904.class_6905 arg, class_6904.class_6907 arg2) throws InterruptedException, ExecutionException {
+    public SaveLoader createSaveLoader(ResourcePackManager dataPackManager, boolean safeMode, SaveLoader.DataPackSettingsSupplier dataPackSettingsSupplier, SaveLoader.SavePropertiesSupplier savePropertiesSupplier) throws InterruptedException, ExecutionException {
         try {
-            class_6904.class_6906 lv = new class_6904.class_6906(resourcePackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, bl);
-            CompletableFuture<class_6904> completableFuture = class_6904.method_40431(lv, arg, arg2, Util.getMainWorkerExecutor(), this);
+            SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, safeMode);
+            CompletableFuture<SaveLoader> completableFuture = SaveLoader.ofLoaded(functionLoaderConfig, dataPackSettingsSupplier, savePropertiesSupplier, Util.getMainWorkerExecutor(), this);
             this.runTasks(completableFuture::isDone);
             return completableFuture.get();
         } catch (InterruptedException | ExecutionException exception) {
-            resourcePackManager.close();
+            dataPackManager.close();
             throw exception;
         }
     }
@@ -2148,7 +2148,7 @@ implements WindowEventHandler {
     }
 
     public CompletableFuture<Void> reloadResourcesConcurrently() {
-        return this.submit(this::reloadResources).thenCompose(completableFuture -> completableFuture);
+        return this.submit(this::reloadResources).thenCompose(future -> future);
     }
 
     public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {

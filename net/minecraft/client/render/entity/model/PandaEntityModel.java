@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PandaEntityModel<T extends PandaEntity>
 extends QuadrupedEntityModel<T> {
-    private float scaredAnimationProgress;
+    private float sittingAnimationProgress;
     private float lieOnBackAnimationProgress;
     private float playAnimationProgress;
 
@@ -47,7 +47,7 @@ extends QuadrupedEntityModel<T> {
     @Override
     public void animateModel(T pandaEntity, float f, float g, float h) {
         super.animateModel(pandaEntity, f, g, h);
-        this.scaredAnimationProgress = ((PandaEntity)pandaEntity).getScaredAnimationProgress(h);
+        this.sittingAnimationProgress = ((PandaEntity)pandaEntity).getSittingAnimationProgress(h);
         this.lieOnBackAnimationProgress = ((PandaEntity)pandaEntity).getLieOnBackAnimationProgress(h);
         this.playAnimationProgress = ((PassiveEntity)pandaEntity).isBaby() ? 0.0f : ((PandaEntity)pandaEntity).getRollOverAnimationProgress(h);
     }
@@ -76,9 +76,9 @@ extends QuadrupedEntityModel<T> {
                 this.head.pitch = -0.7853982f + 0.7853982f * l;
             }
         }
-        if (this.scaredAnimationProgress > 0.0f) {
-            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963f, this.scaredAnimationProgress);
-            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.scaredAnimationProgress);
+        if (this.sittingAnimationProgress > 0.0f) {
+            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963f, this.sittingAnimationProgress);
+            this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.sittingAnimationProgress);
             this.rightFrontLeg.roll = -0.27079642f;
             this.leftFrontLeg.roll = 0.27079642f;
             this.rightHindLeg.roll = 0.5707964f;

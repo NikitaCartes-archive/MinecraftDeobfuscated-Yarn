@@ -59,7 +59,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6904;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -84,6 +83,7 @@ import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.ServerNetworkIo;
@@ -282,7 +282,7 @@ AutoCloseable {
     private final Executor workerExecutor;
     @Nullable
     private String serverId;
-    private class_6897 serverResourceManager;
+    private ResourceManagerHolder resourceManagerHolder;
     private final StructureManager structureManager;
     protected final SaveProperties saveProperties;
     private volatile boolean saving;
@@ -300,15 +300,15 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager resourcePackManager, class_6904 arg, Proxy proxy, DataFixer dataFixer, @Nullable MinecraftSessionService minecraftSessionService, @Nullable GameProfileRepository gameProfileRepository, @Nullable UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread serverThread, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, Proxy proxy, DataFixer dataFixer, @Nullable MinecraftSessionService sessionService, @Nullable GameProfileRepository gameProfileRepo, @Nullable UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
-        this.registryManager = arg.registryAccess();
-        this.saveProperties = arg.worldData();
+        this.registryManager = saveLoader.dynamicRegistryManager();
+        this.saveProperties = saveLoader.saveProperties();
         this.proxy = proxy;
-        this.dataPackManager = resourcePackManager;
-        this.serverResourceManager = new class_6897(arg.resourceManager(), arg.dataPackResources());
-        this.sessionService = minecraftSessionService;
-        this.gameProfileRepo = gameProfileRepository;
+        this.dataPackManager = dataPackManager;
+        this.resourceManagerHolder = new ResourceManagerHolder(saveLoader.resourceManager(), saveLoader.dataPackResources());
+        this.sessionService = sessionService;
+        this.gameProfileRepo = gameProfileRepo;
         this.userCache = userCache;
         if (userCache != null) {
             userCache.setExecutor(this);
@@ -318,8 +318,8 @@ AutoCloseable {
         this.session = session;
         this.saveHandler = session.createSaveHandler();
         this.dataFixer = dataFixer;
-        this.commandFunctionManager = new CommandFunctionManager(this, this.serverResourceManager.managers.getFunctionLoader());
-        this.structureManager = new StructureManager(arg.resourceManager(), session, dataFixer);
+        this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.managers.getFunctionLoader());
+        this.structureManager = new StructureManager(saveLoader.resourceManager(), session, dataFixer);
         this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
     }
@@ -616,7 +616,7 @@ AutoCloseable {
             }
         }
         this.saving = false;
-        this.serverResourceManager.close();
+        this.resourceManagerHolder.close();
         try {
             this.session.close();
         } catch (IOException iOException2) {
@@ -1325,7 +1325,7 @@ AutoCloseable {
     }
 
     public ServerAdvancementLoader getAdvancementLoader() {
-        return this.serverResourceManager.managers.getServerAdvancementLoader();
+        return this.resourceManagerHolder.managers.getServerAdvancementLoader();
     }
 
     public CommandFunctionManager getCommandFunctionManager() {
@@ -1339,25 +1339,25 @@ AutoCloseable {
      * A reload has failed when the future is exceptionally completed.
      * @see CompletableFuture
      */
-    public CompletableFuture<Void> reloadResources(Collection<String> collection) {
+    public CompletableFuture<Void> reloadResources(Collection<String> dataPacks) {
         DynamicRegistryManager.Immutable immutable = this.getRegistryManager();
-        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> collection.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(immutableList -> {
-            LifecycledResourceManagerImpl lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, (List<ResourcePack>)immutableList);
-            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this).whenComplete((serverResourceManager, throwable) -> {
+        CompletionStage completableFuture = ((CompletableFuture)CompletableFuture.supplyAsync(() -> dataPacks.stream().map(this.dataPackManager::getProfile).filter(Objects::nonNull).map(ResourcePackProfile::createResourcePack).collect(ImmutableList.toImmutableList()), this).thenCompose(resourcePacks -> {
+            LifecycledResourceManagerImpl lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, (List<ResourcePack>)resourcePacks);
+            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED, this.getFunctionPermissionLevel(), this.workerExecutor, this).whenComplete((resourceManager, throwable) -> {
                 if (throwable != null) {
                     lifecycledResourceManager.close();
                 }
-            })).thenApply(serverResourceManager -> new class_6897(lifecycledResourceManager, (ServerResourceManager)serverResourceManager));
-        })).thenAcceptAsync(arg -> {
-            this.serverResourceManager.close();
-            this.serverResourceManager = arg;
-            this.dataPackManager.setEnabledProfiles(collection);
+            })).thenApply(resourceManager -> new ResourceManagerHolder(lifecycledResourceManager, (ServerResourceManager)resourceManager));
+        })).thenAcceptAsync(resourceManagerHolder -> {
+            this.resourceManagerHolder.close();
+            this.resourceManagerHolder = resourceManagerHolder;
+            this.dataPackManager.setEnabledProfiles(dataPacks);
             this.saveProperties.updateLevelInfo(MinecraftServer.createDataPackSettings(this.dataPackManager));
-            this.serverResourceManager.managers.method_40421(this.getRegistryManager());
+            this.resourceManagerHolder.managers.refresh(this.getRegistryManager());
             this.getPlayerManager().saveAllPlayerData();
             this.getPlayerManager().onDataPacksReloaded();
-            this.commandFunctionManager.setFunctions(this.serverResourceManager.managers.getFunctionLoader());
-            this.structureManager.setResourceManager(this.serverResourceManager.resourceManager);
+            this.commandFunctionManager.setFunctions(this.resourceManagerHolder.managers.getFunctionLoader());
+            this.structureManager.setResourceManager(this.resourceManagerHolder.resourceManager);
         }, (Executor)this);
         if (this.isOnThread()) {
             this.runTasks(((CompletableFuture)completableFuture)::isDone);
@@ -1396,7 +1396,7 @@ AutoCloseable {
     private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager) {
         Collection<String> collection = dataPackManager.getEnabledNames();
         ImmutableList<String> list = ImmutableList.copyOf(collection);
-        List list2 = dataPackManager.getNames().stream().filter(string -> !collection.contains(string)).collect(ImmutableList.toImmutableList());
+        List list2 = dataPackManager.getNames().stream().filter(name -> !collection.contains(name)).collect(ImmutableList.toImmutableList());
         return new DataPackSettings(list, list2);
     }
 
@@ -1422,7 +1422,7 @@ AutoCloseable {
      * The command manager is responsible for parsing and dispatching commands.
      */
     public CommandManager getCommandManager() {
-        return this.serverResourceManager.managers.getCommandManager();
+        return this.resourceManagerHolder.managers.getCommandManager();
     }
 
     /**
@@ -1447,7 +1447,7 @@ AutoCloseable {
     public abstract boolean shouldBroadcastConsoleToOps();
 
     public RecipeManager getRecipeManager() {
-        return this.serverResourceManager.managers.getRecipeManager();
+        return this.resourceManagerHolder.managers.getRecipeManager();
     }
 
     public ServerScoreboard getScoreboard() {
@@ -1462,15 +1462,15 @@ AutoCloseable {
     }
 
     public LootManager getLootManager() {
-        return this.serverResourceManager.managers.getLootManager();
+        return this.resourceManagerHolder.managers.getLootManager();
     }
 
     public LootConditionManager getPredicateManager() {
-        return this.serverResourceManager.managers.getLootConditionManager();
+        return this.resourceManagerHolder.managers.getLootConditionManager();
     }
 
     public LootFunctionManager getItemModifierManager() {
-        return this.serverResourceManager.managers.getLootFunctionManager();
+        return this.resourceManagerHolder.managers.getLootFunctionManager();
     }
 
     public GameRules getGameRules() {
@@ -1702,7 +1702,7 @@ AutoCloseable {
     }
 
     public ResourceManager getResourceManager() {
-        return this.serverResourceManager.resourceManager;
+        return this.resourceManagerHolder.resourceManager;
     }
 
     @Nullable
@@ -1746,7 +1746,7 @@ AutoCloseable {
         return this.createTask(runnable);
     }
 
-    record class_6897(LifecycledResourceManager resourceManager, ServerResourceManager managers) implements AutoCloseable
+    record ResourceManagerHolder(LifecycledResourceManager resourceManager, ServerResourceManager managers) implements AutoCloseable
     {
         @Override
         public void close() {

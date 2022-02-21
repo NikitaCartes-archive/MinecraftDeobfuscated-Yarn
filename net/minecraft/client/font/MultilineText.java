@@ -40,7 +40,7 @@ public interface MultilineText {
         }
 
         @Override
-        public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
+        public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
         }
 
         @Override
@@ -107,10 +107,10 @@ public interface MultilineText {
             }
 
             @Override
-            public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
-                int n = lines.stream().mapToInt(line -> line.width).max().orElse(0);
-                if (n > 0) {
-                    DrawableHelper.fill(matrixStack, i - n / 2 - l, j - l, i + n / 2 + l, j + lines.size() * k + l, m);
+            public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
+                int i = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+                if (i > 0) {
+                    DrawableHelper.fill(matrices, centerX - i / 2 - padding, centerY - padding, centerX + i / 2 + padding, centerY + lines.size() * lineHeight + padding, color);
                 }
             }
 
@@ -129,7 +129,7 @@ public interface MultilineText {
 
     public int draw(MatrixStack var1, int var2, int var3, int var4, int var5);
 
-    public void method_41154(MatrixStack var1, int var2, int var3, int var4, int var5, int var6);
+    public void fillBackground(MatrixStack var1, int var2, int var3, int var4, int var5, int var6);
 
     public int count();
 

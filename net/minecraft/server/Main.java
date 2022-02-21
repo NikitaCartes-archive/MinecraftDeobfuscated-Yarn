@@ -25,7 +25,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6904;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -37,6 +36,7 @@ import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.dedicated.EulaReader;
@@ -87,7 +87,7 @@ public class Main {
         OptionSpecBuilder optionSpec14 = optionParser.accepts("jfrProfile");
         NonOptionArgumentSpec<String> optionSpec15 = optionParser.nonOptions();
         try {
-            class_6904 lv2;
+            SaveLoader saveLoader;
             boolean bl;
             OptionSet optionSet = optionParser.parse(args);
             if (optionSet.has(optionSpec8)) {
@@ -138,8 +138,8 @@ public class Main {
             }
             ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
-                class_6904.class_6906 lv = new class_6904.class_6906(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl);
-                lv2 = class_6904.method_40431(lv, () -> {
+                SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl);
+                saveLoader = SaveLoader.ofLoaded(functionLoaderConfig, () -> {
                     DataPackSettings dataPackSettings = session.getDataPackSettings();
                     return dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings;
                 }, (resourceManager, dataPackSettings) -> {
@@ -147,7 +147,7 @@ public class Main {
                     LevelInfo levelInfo;
                     DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
                     RegistryOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-                    SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings);
+                    SaveProperties saveProperties = session.readLevelProperties(dynamicOps, dataPackSettings, mutable.getRegistryLifecycle());
                     if (saveProperties != null) {
                         return Pair.of(saveProperties, mutable.toImmutable());
                     }
@@ -167,17 +167,17 @@ public class Main {
                 resourcePackManager.close();
                 return;
             }
-            lv2.method_40428();
-            DynamicRegistryManager.Immutable immutable = lv2.registryAccess();
+            saveLoader.refresh();
+            DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
             serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
-            SaveProperties saveProperties = lv2.worldData();
+            SaveProperties saveProperties = saveLoader.saveProperties();
             if (optionSet.has(optionSpec5)) {
                 Main.forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions());
             }
             session.backupLevelDataFile(immutable, saveProperties);
             final MinecraftDedicatedServer minecraftDedicatedServer = MinecraftServer.startServer(thread -> {
                 boolean bl;
-                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, lv2, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
+                MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer((Thread)thread, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), minecraftSessionService, gameProfileRepository, userCache, WorldGenerationProgressLogger::new);
                 minecraftDedicatedServer.setSinglePlayerName((String)optionSet.valueOf(optionSpec9));
                 minecraftDedicatedServer.setServerPort((Integer)optionSet.valueOf(optionSpec12));
                 minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));

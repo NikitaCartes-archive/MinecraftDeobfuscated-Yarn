@@ -11,7 +11,6 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Map;
 import java.util.function.Predicate;
-import net.minecraft.class_7061;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -33,6 +32,7 @@ import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.GenerationStep;
@@ -91,7 +91,7 @@ public class StructureFeature<C extends FeatureConfig> {
     public static final StructureFeature<RangeFeatureConfig> NETHER_FOSSIL = StructureFeature.register("nether_fossil", new NetherFossilFeature(RangeFeatureConfig.CODEC), GenerationStep.Feature.UNDERGROUND_DECORATION);
     public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = StructureFeature.register("bastion_remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES);
     public static final int field_31518 = 8;
-    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)configCodec.fieldOf("config")).forGetter(configuredStructureFeature -> configuredStructureFeature.config), ((MapCodec)RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes")).forGetter(ConfiguredStructureFeature::getBiomes), Codec.BOOL.optionalFieldOf("adapt_noise", false).forGetter(configuredStructureFeature -> configuredStructureFeature.field_37144), Codec.simpleMap(SpawnGroup.CODEC, class_7061.field_37198, StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawn_overrides").forGetter(configuredStructureFeature -> configuredStructureFeature.field_37143)).apply((Applicative<ConfiguredStructureFeature, ?>)instance, (featureConfig, registryEntryList, boolean_, map) -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig, (RegistryEntryList<Biome>)registryEntryList, (boolean)boolean_, (Map<SpawnGroup, class_7061>)map)));
+    private final Codec<ConfiguredStructureFeature<C, StructureFeature<C>>> codec = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)configCodec.fieldOf("config")).forGetter(configuredStructureFeature -> configuredStructureFeature.config), ((MapCodec)RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes")).forGetter(ConfiguredStructureFeature::getBiomes), Codec.BOOL.optionalFieldOf("adapt_noise", false).forGetter(configuredStructureFeature -> configuredStructureFeature.field_37144), Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values())).fieldOf("spawn_overrides").forGetter(configuredStructureFeature -> configuredStructureFeature.field_37143)).apply((Applicative<ConfiguredStructureFeature, ?>)instance, (featureConfig, registryEntryList, boolean_, map) -> new ConfiguredStructureFeature<FeatureConfig, StructureFeature>(this, (FeatureConfig)featureConfig, (RegistryEntryList<Biome>)registryEntryList, (boolean)boolean_, (Map<SpawnGroup, StructureSpawns>)map)));
     private final StructureGeneratorFactory<C> piecesGenerator;
     private final PostPlacementProcessor postProcessor;
 
@@ -152,19 +152,19 @@ public class StructureFeature<C extends FeatureConfig> {
     }
 
     public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> biomeTag) {
-        return this.method_41134(config, biomeTag, false);
+        return this.configure(config, biomeTag, false);
     }
 
-    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> method_41134(C featureConfig, TagKey<Biome> tagKey, boolean bl) {
-        return new ConfiguredStructureFeature<C, StructureFeature>(this, featureConfig, BuiltinRegistries.BIOME.getOrCreateEntryList(tagKey), bl, Map.of());
+    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> biomeTag, boolean bl) {
+        return new ConfiguredStructureFeature<C, StructureFeature>(this, config, BuiltinRegistries.BIOME.getOrCreateEntryList(biomeTag), bl, Map.of());
     }
 
-    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> method_41133(C featureConfig, TagKey<Biome> tagKey, Map<SpawnGroup, class_7061> map) {
-        return new ConfiguredStructureFeature<C, StructureFeature>(this, featureConfig, BuiltinRegistries.BIOME.getOrCreateEntryList(tagKey), false, map);
+    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> biomeTag, Map<SpawnGroup, StructureSpawns> map) {
+        return new ConfiguredStructureFeature<C, StructureFeature>(this, config, BuiltinRegistries.BIOME.getOrCreateEntryList(biomeTag), false, map);
     }
 
-    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> method_41135(C featureConfig, TagKey<Biome> tagKey, boolean bl, Map<SpawnGroup, class_7061> map) {
-        return new ConfiguredStructureFeature<C, StructureFeature>(this, featureConfig, BuiltinRegistries.BIOME.getOrCreateEntryList(tagKey), bl, map);
+    public ConfiguredStructureFeature<C, ? extends StructureFeature<C>> configure(C config, TagKey<Biome> biomeTag, boolean bl, Map<SpawnGroup, StructureSpawns> map) {
+        return new ConfiguredStructureFeature<C, StructureFeature>(this, config, BuiltinRegistries.BIOME.getOrCreateEntryList(biomeTag), bl, map);
     }
 
     /**

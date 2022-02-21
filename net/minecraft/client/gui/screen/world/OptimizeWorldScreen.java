@@ -10,12 +10,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -44,20 +44,20 @@ extends Screen {
 
     @Nullable
     public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
-        class_6904 lv = client.method_40186(storageSession, false);
+        SaveLoader saveLoader = client.createSaveLoader(storageSession, false);
         try {
-            SaveProperties saveProperties = lv.worldData();
-            storageSession.backupLevelDataFile(lv.registryAccess(), saveProperties);
+            SaveProperties saveProperties = saveLoader.saveProperties();
+            storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
             OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
-            if (lv != null) {
-                lv.close();
+            if (saveLoader != null) {
+                saveLoader.close();
             }
             return optimizeWorldScreen;
         } catch (Throwable throwable) {
             try {
-                if (lv != null) {
+                if (saveLoader != null) {
                     try {
-                        lv.close();
+                        saveLoader.close();
                     } catch (Throwable throwable2) {
                         throwable.addSuppressed(throwable2);
                     }

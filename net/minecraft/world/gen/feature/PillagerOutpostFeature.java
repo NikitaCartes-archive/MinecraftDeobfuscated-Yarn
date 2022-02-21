@@ -4,8 +4,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_7057;
 import net.minecraft.structure.StructureGeneratorFactory;
+import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.feature.JigsawFeature;
 import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
@@ -28,7 +28,7 @@ extends JigsawFeature {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !context.chunkGenerator().method_41053(class_7057.VILLAGES, chunkPos.x, chunkPos.z, 10);
+        return !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, chunkPos.x, chunkPos.z, 10);
     }
 }
 

@@ -27,7 +27,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l) {
         ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        if (!pandaEntity.isScared() || pandaEntity.isScaredByThunderstorm()) {
+        if (!pandaEntity.isSitting() || pandaEntity.isScaredByThunderstorm()) {
             return;
         }
         float m = -0.6f;
