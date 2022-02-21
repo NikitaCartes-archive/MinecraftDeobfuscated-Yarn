@@ -2,7 +2,6 @@ package net.minecraft.data.server;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import net.minecraft.class_7045;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.effect.StatusEffects;
@@ -24,6 +23,7 @@ import net.minecraft.loot.function.SetStewEffectLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
@@ -571,7 +571,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(Items.MAP)
 								.apply(
 									ExplorationMapLootFunction.builder()
-										.withDestination(class_7045.ON_TREASURE_MAPS)
+										.withDestination(ConfiguredStructureFeatureTags.ON_TREASURE_MAPS)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
@@ -808,7 +808,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.weight(10)
 								.apply(
 									ExplorationMapLootFunction.builder()
-										.withDestination(class_7045.ON_TREASURE_MAPS)
+										.withDestination(ConfiguredStructureFeatureTags.ON_TREASURE_MAPS)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
@@ -840,7 +840,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.weight(5)
 								.apply(
 									ExplorationMapLootFunction.builder()
-										.withDestination(class_7045.ON_TREASURE_MAPS)
+										.withDestination(ConfiguredStructureFeatureTags.ON_TREASURE_MAPS)
 										.withDecoration(MapIcon.Type.RED_X)
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)

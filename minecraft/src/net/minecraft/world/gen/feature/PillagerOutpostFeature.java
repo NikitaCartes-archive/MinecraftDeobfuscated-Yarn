@@ -1,8 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_7057;
 import net.minecraft.structure.StructureGeneratorFactory;
+import net.minecraft.structure.StructureSetKeys;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
@@ -22,7 +22,7 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		if (chunkRandom.nextInt(5) != 0) {
 			return false;
 		} else {
-			return !context.chunkGenerator().method_41053(class_7057.VILLAGES, chunkPos.x, chunkPos.z, 10);
+			return !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, chunkPos.x, chunkPos.z, 10);
 		}
 	}
 }

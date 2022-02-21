@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import net.minecraft.class_7061;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructureManager;
@@ -21,6 +20,7 @@ import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.HeightLimitView;
+import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -45,10 +45,10 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	public final F feature;
 	public final FC config;
 	public final RegistryEntryList<Biome> biomes;
-	public final Map<SpawnGroup, class_7061> field_37143;
+	public final Map<SpawnGroup, StructureSpawns> field_37143;
 	public final boolean field_37144;
 
-	public ConfiguredStructureFeature(F feature, FC config, RegistryEntryList<Biome> biomes, boolean bl, Map<SpawnGroup, class_7061> map) {
+	public ConfiguredStructureFeature(F feature, FC config, RegistryEntryList<Biome> biomes, boolean bl, Map<SpawnGroup, StructureSpawns> map) {
 		this.feature = feature;
 		this.config = config;
 		this.biomes = biomes;

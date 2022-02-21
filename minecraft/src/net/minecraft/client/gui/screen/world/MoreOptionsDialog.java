@@ -18,7 +18,6 @@ import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
@@ -39,6 +38,7 @@ import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -319,9 +319,9 @@ public class MoreOptionsDialog implements Drawable {
 		return this.registryManager;
 	}
 
-	void loadDatapacks(class_6904 arg) {
-		this.generatorOptions = arg.worldData().getGeneratorOptions();
-		this.registryManager = arg.registryAccess();
+	void loadDatapacks(SaveLoader saveLoader) {
+		this.generatorOptions = saveLoader.saveProperties().getGeneratorOptions();
+		this.registryManager = saveLoader.dynamicRegistryManager();
 	}
 
 	public void disableBonusItems() {

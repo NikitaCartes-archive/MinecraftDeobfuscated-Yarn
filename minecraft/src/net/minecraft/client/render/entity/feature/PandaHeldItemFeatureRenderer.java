@@ -22,7 +22,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, PandaEntity pandaEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-		if (pandaEntity.isScared() && !pandaEntity.isScaredByThunderstorm()) {
+		if (pandaEntity.isSitting() && !pandaEntity.isScaredByThunderstorm()) {
 			float m = -0.6F;
 			float n = 1.4F;
 			if (pandaEntity.isEating()) {

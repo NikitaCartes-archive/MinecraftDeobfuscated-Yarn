@@ -4,7 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -22,10 +22,12 @@ public final class class_6955 {
 	private class_6955() {
 	}
 
-	public static ChunkNoiseSampler.BlockStateSampler method_40548(NoiseType noiseType, NoiseType noiseType2, NoiseType noiseType3, RandomDeriver randomDeriver) {
+	public static ChunkNoiseSampler.BlockStateSampler method_40548(
+		DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3, RandomDeriver randomDeriver
+	) {
 		BlockState blockState = null;
 		return noisePos -> {
-			double d = noiseType.sample(noisePos);
+			double d = densityFunction.sample(noisePos);
 			int i = noisePos.blockY();
 			class_6955.VeinType veinType = d > 0.0 ? class_6955.VeinType.COPPER : class_6955.VeinType.IRON;
 			double e = Math.abs(d);
@@ -40,11 +42,11 @@ public final class class_6955 {
 					AbstractRandom abstractRandom = randomDeriver.createRandom(noisePos.blockX(), i, noisePos.blockZ());
 					if (abstractRandom.nextFloat() > 0.7F) {
 						return blockState;
-					} else if (noiseType2.sample(noisePos) >= 0.0) {
+					} else if (densityFunction2.sample(noisePos) >= 0.0) {
 						return blockState;
 					} else {
 						double g = MathHelper.clampedLerpFromProgress(e, 0.4F, 0.6F, 0.1F, 0.3F);
-						if ((double)abstractRandom.nextFloat() < g && noiseType3.sample(noisePos) > -0.3F) {
+						if ((double)abstractRandom.nextFloat() < g && densityFunction3.sample(noisePos) > -0.3F) {
 							return abstractRandom.nextFloat() < 0.02F ? veinType.rawBlock : veinType.ore;
 						} else {
 							return veinType.stone;
@@ -64,8 +66,8 @@ public final class class_6955 {
 		final BlockState ore;
 		final BlockState rawBlock;
 		final BlockState stone;
-		protected final int minY;
-		protected final int maxY;
+		public final int minY;
+		public final int maxY;
 
 		private VeinType(BlockState ore, BlockState rawBlock, BlockState stone, int minY, int maxY) {
 			this.ore = ore;

@@ -9,7 +9,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import org.apache.commons.lang3.mutable.MutableDouble;
@@ -18,23 +18,25 @@ public interface AquiferSampler {
 	static AquiferSampler aquifer(
 		ChunkNoiseSampler chunkNoiseSampler,
 		ChunkPos chunkPos,
-		NoiseType noiseType,
-		NoiseType noiseType2,
-		NoiseType noiseType3,
-		NoiseType noiseType4,
+		DensityFunction densityFunction,
+		DensityFunction densityFunction2,
+		DensityFunction densityFunction3,
+		DensityFunction densityFunction4,
 		RandomDeriver randomDeriver,
 		int minY,
 		int height,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
-		return new AquiferSampler.Impl(chunkNoiseSampler, chunkPos, noiseType, noiseType2, noiseType3, noiseType4, randomDeriver, minY, height, fluidLevelSampler);
+		return new AquiferSampler.Impl(
+			chunkNoiseSampler, chunkPos, densityFunction, densityFunction2, densityFunction3, densityFunction4, randomDeriver, minY, height, fluidLevelSampler
+		);
 	}
 
 	static AquiferSampler seaLevel(AquiferSampler.FluidLevelSampler fluidLevelSampler) {
 		return new AquiferSampler() {
 			@Nullable
 			@Override
-			public BlockState apply(NoiseType.NoisePos noisePos, double d) {
+			public BlockState apply(DensityFunction.NoisePos noisePos, double d) {
 				return d > 0.0 ? null : fluidLevelSampler.getFluidLevel(noisePos.blockX(), noisePos.blockY(), noisePos.blockZ()).getBlockState(noisePos.blockY());
 			}
 
@@ -46,7 +48,7 @@ public interface AquiferSampler {
 	}
 
 	@Nullable
-	BlockState apply(NoiseType.NoisePos noisePos, double d);
+	BlockState apply(DensityFunction.NoisePos noisePos, double d);
 
 	boolean needsFluidTick();
 
@@ -81,10 +83,10 @@ public interface AquiferSampler {
 		private static final int field_36220 = 11;
 		private static final double field_36221 = maxDistance(MathHelper.square(10), MathHelper.square(12));
 		private final ChunkNoiseSampler chunkNoiseSampler;
-		private final NoiseType barrierNoise;
-		private final NoiseType fluidLevelFloodednessNoise;
-		private final NoiseType fluidLevelSpreadNoise;
-		private final NoiseType fluidTypeNoise;
+		private final DensityFunction barrierNoise;
+		private final DensityFunction fluidLevelFloodednessNoise;
+		private final DensityFunction fluidLevelSpreadNoise;
+		private final DensityFunction fluidTypeNoise;
 		private final RandomDeriver randomDeriver;
 		private final AquiferSampler.FluidLevel[] waterLevels;
 		private final long[] blockPositions;
@@ -102,20 +104,20 @@ public interface AquiferSampler {
 		Impl(
 			ChunkNoiseSampler chunkNoiseSampler,
 			ChunkPos chunkPos,
-			NoiseType noiseType,
-			NoiseType noiseType2,
-			NoiseType noiseType3,
-			NoiseType noiseType4,
+			DensityFunction densityFunction,
+			DensityFunction densityFunction2,
+			DensityFunction densityFunction3,
+			DensityFunction densityFunction4,
 			RandomDeriver randomDeriver,
 			int minY,
 			int height,
 			AquiferSampler.FluidLevelSampler fluidLevelSampler
 		) {
 			this.chunkNoiseSampler = chunkNoiseSampler;
-			this.barrierNoise = noiseType;
-			this.fluidLevelFloodednessNoise = noiseType2;
-			this.fluidLevelSpreadNoise = noiseType3;
-			this.fluidTypeNoise = noiseType4;
+			this.barrierNoise = densityFunction;
+			this.fluidLevelFloodednessNoise = densityFunction2;
+			this.fluidLevelSpreadNoise = densityFunction3;
+			this.fluidTypeNoise = densityFunction4;
 			this.randomDeriver = randomDeriver;
 			this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
 			this.fluidLevelSampler = fluidLevelSampler;
@@ -142,7 +144,7 @@ public interface AquiferSampler {
 
 		@Nullable
 		@Override
-		public BlockState apply(NoiseType.NoisePos noisePos, double d) {
+		public BlockState apply(DensityFunction.NoisePos noisePos, double d) {
 			int i = noisePos.blockX();
 			int j = noisePos.blockY();
 			int k = noisePos.blockZ();
@@ -261,7 +263,7 @@ public interface AquiferSampler {
 		}
 
 		private double calculateDensity(
-			NoiseType.NoisePos noisePos, MutableDouble mutableDouble, AquiferSampler.FluidLevel fluidLevel, AquiferSampler.FluidLevel fluidLevel2
+			DensityFunction.NoisePos noisePos, MutableDouble mutableDouble, AquiferSampler.FluidLevel fluidLevel, AquiferSampler.FluidLevel fluidLevel2
 		) {
 			int i = noisePos.blockY();
 			BlockState blockState = fluidLevel.getBlockState(i);
@@ -387,7 +389,7 @@ public interface AquiferSampler {
 			int s = l + 8 - j;
 			int t = 64;
 			double d = bl ? MathHelper.clampedLerpFromProgress((double)s, 0.0, 64.0, 1.0, 0.0) : 0.0;
-			double e = MathHelper.clamp(this.fluidLevelFloodednessNoise.sample(new NoiseType.UnblendedNoisePos(i, j, k)), -1.0, 1.0);
+			double e = MathHelper.clamp(this.fluidLevelFloodednessNoise.sample(new DensityFunction.UnblendedNoisePos(i, j, k)), -1.0, 1.0);
 			double f = MathHelper.lerpFromProgress(d, 1.0, 0.0, -0.3, 0.8);
 			if (e > f) {
 				return fluidLevel;
@@ -403,7 +405,7 @@ public interface AquiferSampler {
 					int y = Math.floorDiv(k, 16);
 					int z = x * 40 + 20;
 					int aa = 10;
-					double h = this.fluidLevelSpreadNoise.sample(new NoiseType.UnblendedNoisePos(w, x, y)) * 10.0;
+					double h = this.fluidLevelSpreadNoise.sample(new DensityFunction.UnblendedNoisePos(w, x, y)) * 10.0;
 					int ab = MathHelper.roundDownToMultiple(h, 3);
 					int ac = z + ab;
 					int ad = Math.min(l, ac);
@@ -413,7 +415,7 @@ public interface AquiferSampler {
 						int ag = Math.floorDiv(i, 64);
 						int ah = Math.floorDiv(j, 40);
 						int ai = Math.floorDiv(k, 64);
-						double aj = this.fluidTypeNoise.sample(new NoiseType.UnblendedNoisePos(ag, ah, ai));
+						double aj = this.fluidTypeNoise.sample(new DensityFunction.UnblendedNoisePos(ag, ah, ai));
 						if (Math.abs(aj) > 0.3) {
 							return new AquiferSampler.FluidLevel(ad, Blocks.LAVA.getDefaultState());
 						}

@@ -8,12 +8,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -46,9 +46,9 @@ public class OptimizeWorldScreen extends Screen {
 	) {
 		try {
 			OptimizeWorldScreen var7;
-			try (class_6904 lv = client.method_40186(storageSession, false)) {
-				SaveProperties saveProperties = lv.worldData();
-				storageSession.backupLevelDataFile(lv.registryAccess(), saveProperties);
+			try (SaveLoader saveLoader = client.createSaveLoader(storageSession, false)) {
+				SaveProperties saveProperties = saveLoader.saveProperties();
+				storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
 				var7 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
 			}
 

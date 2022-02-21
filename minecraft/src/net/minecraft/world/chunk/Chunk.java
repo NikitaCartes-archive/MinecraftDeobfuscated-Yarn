@@ -17,7 +17,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6916;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -49,6 +48,7 @@ import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.noise.NoiseRouter;
 import net.minecraft.world.tick.BasicTickScheduler;
@@ -60,7 +60,7 @@ import org.slf4j.Logger;
  */
 public abstract class Chunk implements BlockView, BiomeAccess.Storage, StructureHolder {
 	private static final Logger field_34548 = LogUtils.getLogger();
-	private static final LongSet field_37052 = new LongOpenHashSet();
+	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
 	protected final ShortList[] postProcessingLists;
 	protected volatile boolean needsSaving;
 	private volatile boolean lightOn;
@@ -219,7 +219,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	@Override
 	public LongSet getStructureReferences(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return (LongSet)this.structureReferences.getOrDefault(configuredStructureFeature, field_37052);
+		return (LongSet)this.structureReferences.getOrDefault(configuredStructureFeature, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override
@@ -360,7 +360,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(
 		NoiseRouter noiseColumnSampler,
-		Supplier<class_6916.class_7050> columnSampler,
+		Supplier<DensityFunctionTypes.class_7050> columnSampler,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender

@@ -15,11 +15,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -51,22 +51,22 @@ public class IntegratedServer extends MinecraftServer {
 		Thread serverThread,
 		MinecraftClient client,
 		LevelStorage.Session session,
-		ResourcePackManager resourcePackManager,
-		class_6904 arg,
-		MinecraftSessionService minecraftSessionService,
-		GameProfileRepository gameProfileRepository,
+		ResourcePackManager dataPackManager,
+		SaveLoader saveLoader,
+		MinecraftSessionService sessionService,
+		GameProfileRepository gameProfileRepo,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
 			serverThread,
 			session,
-			resourcePackManager,
-			arg,
+			dataPackManager,
+			saveLoader,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
-			minecraftSessionService,
-			gameProfileRepository,
+			sessionService,
+			gameProfileRepo,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);

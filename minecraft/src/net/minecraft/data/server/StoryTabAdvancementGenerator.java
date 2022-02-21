@@ -1,7 +1,6 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
-import net.minecraft.class_7058;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.CriterionMerger;
@@ -21,6 +20,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -242,7 +242,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(class_7058.STRONGHOLD)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		Advancement.Builder.create()
 			.parent(advancement11)

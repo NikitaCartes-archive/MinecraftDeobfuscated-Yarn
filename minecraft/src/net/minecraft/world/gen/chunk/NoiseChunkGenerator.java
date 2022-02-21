@@ -15,9 +15,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7059;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -51,8 +51,8 @@ import net.minecraft.world.gen.StructureWeightSampler;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseRouter;
-import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomSeed;
@@ -83,7 +83,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	private final AquiferSampler.FluidLevelSampler fluidLevelSampler;
 
 	public NoiseChunkGenerator(
-		Registry<class_7059> noiseRegistry,
+		Registry<StructureSet> noiseRegistry,
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry,
 		BiomeSource biomeSource,
 		long seed,
@@ -93,7 +93,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	private NoiseChunkGenerator(
-		Registry<class_7059> noiseRegistry,
+		Registry<StructureSet> noiseRegistry,
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> structuresRegistry,
 		BiomeSource populationSource,
 		BiomeSource biomeSource,
@@ -168,7 +168,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	public boolean matchesSettings(long seed, RegistryKey<ChunkGeneratorSettings> settingsKey) {
-		return this.seed == seed && ((ChunkGeneratorSettings)this.settings.value()).equals(settingsKey);
+		return this.seed == seed && this.settings.matchesKey(settingsKey);
 	}
 
 	@Override
@@ -200,7 +200,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	@Override
 	public void getDebugHudText(List<String> text, BlockPos pos) {
 		DecimalFormat decimalFormat = new DecimalFormat("0.000");
-		NoiseType.UnblendedNoisePos unblendedNoisePos = new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());
+		DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ());
 		double d = this.noiseRouter.ridges().sample(unblendedNoisePos);
 		text.add(
 			"NoiseRouter T: "
