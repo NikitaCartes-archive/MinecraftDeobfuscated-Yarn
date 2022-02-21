@@ -20,8 +20,8 @@ public class ServerPropertiesLoader {
 		this.propertiesHandler.saveProperties(this.path);
 	}
 
-	public ServerPropertiesLoader apply(UnaryOperator<ServerPropertiesHandler> unaryOperator) {
-		(this.propertiesHandler = (ServerPropertiesHandler)unaryOperator.apply(this.propertiesHandler)).saveProperties(this.path);
+	public ServerPropertiesLoader apply(UnaryOperator<ServerPropertiesHandler> applier) {
+		(this.propertiesHandler = (ServerPropertiesHandler)applier.apply(this.propertiesHandler)).saveProperties(this.path);
 		return this;
 	}
 }

@@ -9,7 +9,6 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7071;
 import net.minecraft.data.client.ModelProvider;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.data.report.BlockListProvider;
@@ -19,6 +18,7 @@ import net.minecraft.data.report.WorldgenProvider;
 import net.minecraft.data.server.AdvancementProvider;
 import net.minecraft.data.server.BiomeTagProvider;
 import net.minecraft.data.server.BlockTagProvider;
+import net.minecraft.data.server.ConfiguredStructureFeatureTagProvider;
 import net.minecraft.data.server.EntityTypeTagProvider;
 import net.minecraft.data.server.FluidTagProvider;
 import net.minecraft.data.server.GameEventTagProvider;
@@ -83,7 +83,7 @@ public class Main {
 			dataGenerator.addProvider(new LootTableProvider(dataGenerator));
 			dataGenerator.addProvider(new GameEventTagProvider(dataGenerator));
 			dataGenerator.addProvider(new BiomeTagProvider(dataGenerator));
-			dataGenerator.addProvider(new class_7071(dataGenerator));
+			dataGenerator.addProvider(new ConfiguredStructureFeatureTagProvider(dataGenerator));
 		}
 
 		if (includeDev) {

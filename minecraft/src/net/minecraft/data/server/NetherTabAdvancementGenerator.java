@@ -3,7 +3,6 @@ package net.minecraft.data.server;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.function.Consumer;
-import net.minecraft.class_7058;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -48,6 +47,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
@@ -131,7 +131,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(class_7058.FORTRESS)))
+			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -492,7 +492,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(class_7058.BASTION_REMNANT)))
+			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
 		Advancement.Builder.create()
 			.parent(advancement13)

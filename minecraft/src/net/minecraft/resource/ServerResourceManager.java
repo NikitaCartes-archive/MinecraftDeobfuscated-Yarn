@@ -38,9 +38,9 @@ public class ServerResourceManager {
 	private final FunctionLoader functionLoader;
 
 	public ServerResourceManager(
-		DynamicRegistryManager.Immutable immutable, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel
+		DynamicRegistryManager.Immutable dynamicRegistryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel
 	) {
-		this.registryTagManager = new TagManagerLoader(immutable);
+		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
 		this.commandManager = new CommandManager(commandEnvironment);
 		this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
 	}
@@ -87,13 +87,13 @@ public class ServerResourceManager {
 
 	public static CompletableFuture<ServerResourceManager> reload(
 		ResourceManager manager,
-		DynamicRegistryManager.Immutable immutable,
+		DynamicRegistryManager.Immutable dynamicRegistryManager,
 		CommandManager.RegistrationEnvironment commandEnvironment,
 		int functionPermissionLevel,
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		ServerResourceManager serverResourceManager = new ServerResourceManager(immutable, commandEnvironment, functionPermissionLevel);
+		ServerResourceManager serverResourceManager = new ServerResourceManager(dynamicRegistryManager, commandEnvironment, functionPermissionLevel);
 		return SimpleResourceReload.start(
 				manager, serverResourceManager.getResourceReloaders(), prepareExecutor, applyExecutor, COMPLETED_UNIT, LOGGER.isDebugEnabled()
 			)
@@ -101,14 +101,14 @@ public class ServerResourceManager {
 			.thenApply(object -> serverResourceManager);
 	}
 
-	public void method_40421(DynamicRegistryManager dynamicRegistryManager) {
-		this.registryTagManager.getRegistryTags().forEach(registryTags -> method_40422(dynamicRegistryManager, registryTags));
+	public void refresh(DynamicRegistryManager dynamicRegistryManager) {
+		this.registryTagManager.getRegistryTags().forEach(tags -> repopulateTags(dynamicRegistryManager, tags));
 		Blocks.refreshShapeCache();
 	}
 
-	private static <T> void method_40422(DynamicRegistryManager dynamicRegistryManager, TagManagerLoader.RegistryTags<T> registryTags) {
-		RegistryKey<? extends Registry<T>> registryKey = registryTags.key();
-		Map<TagKey<T>, List<RegistryEntry<T>>> map = (Map<TagKey<T>, List<RegistryEntry<T>>>)registryTags.tags()
+	private static <T> void repopulateTags(DynamicRegistryManager dynamicRegistryManager, TagManagerLoader.RegistryTags<T> tags) {
+		RegistryKey<? extends Registry<T>> registryKey = tags.key();
+		Map<TagKey<T>, List<RegistryEntry<T>>> map = (Map<TagKey<T>, List<RegistryEntry<T>>>)tags.tags()
 			.entrySet()
 			.stream()
 			.collect(Collectors.toUnmodifiableMap(entry -> TagKey.of(registryKey, (Identifier)entry.getKey()), entry -> ((Tag)entry.getValue()).values()));

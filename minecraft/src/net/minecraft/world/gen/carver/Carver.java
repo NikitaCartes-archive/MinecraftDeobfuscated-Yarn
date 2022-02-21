@@ -22,7 +22,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.chunk.AquiferSampler;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
@@ -212,7 +212,7 @@ public abstract class Carver<C extends CarverConfig> {
 		if (pos.getY() <= config.lavaLevel.getY(context)) {
 			return LAVA.getBlockState();
 		} else {
-			BlockState blockState = sampler.apply(new NoiseType.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
+			BlockState blockState = sampler.apply(new DensityFunction.UnblendedNoisePos(pos.getX(), pos.getY(), pos.getZ()), 0.0);
 			if (blockState == null) {
 				return isDebug(config) ? config.debugConfig.getBarrierState() : null;
 			} else {

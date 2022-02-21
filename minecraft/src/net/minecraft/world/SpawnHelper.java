@@ -287,7 +287,7 @@ public final class SpawnHelper {
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		return spawnGroup == SpawnGroup.MONSTER
 			&& world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)
-			&& structureAccessor.getStructureAt(pos, ConfiguredStructureFeatures.field_26306.value()).hasChildren();
+			&& structureAccessor.getStructureAt(pos, ConfiguredStructureFeatures.FORTRESS.value()).hasChildren();
 	}
 
 	private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {

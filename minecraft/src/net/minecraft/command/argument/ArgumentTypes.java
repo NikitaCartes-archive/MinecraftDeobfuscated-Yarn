@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7066;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
@@ -86,15 +85,15 @@ public class ArgumentTypes {
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
 		register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer(UuidArgumentType::uuid));
-		register("resource_or_tag", method_41181(class_7066.class), new class_7066.class_7069());
+		register("resource_or_tag", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
 		if (SharedConstants.isDevelopment) {
 			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::testFunction));
 			register("test_class", TestClassArgumentType.class, new ConstantArgumentSerializer(TestClassArgumentType::testClass));
 		}
 	}
 
-	private static <T extends ArgumentType<?>> Class<T> method_41181(Class<? super T> class_) {
-		return (Class<T>)class_;
+	private static <T extends ArgumentType<?>> Class<T> upcast(Class<? super T> clazz) {
+		return (Class<T>)clazz;
 	}
 
 	@Nullable
@@ -218,9 +217,9 @@ public class ArgumentTypes {
 		public final ArgumentSerializer<T> serializer;
 		public final Identifier id;
 
-		Entry(ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
-			this.serializer = argumentSerializer;
-			this.id = identifier;
+		Entry(ArgumentSerializer<T> serializer, Identifier id) {
+			this.serializer = serializer;
+			this.id = id;
 		}
 	}
 }

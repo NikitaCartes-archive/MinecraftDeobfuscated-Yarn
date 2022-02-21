@@ -14,12 +14,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_6916;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.gen.noise.NoiseType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 
 public class MultiNoiseUtil {
 	private static final boolean field_34477 = false;
@@ -75,8 +75,8 @@ public class MultiNoiseUtil {
 	}
 
 	public static MultiNoiseUtil.MultiNoiseSampler method_40443() {
-		NoiseType noiseType = class_6916.method_40479();
-		return new MultiNoiseUtil.MultiNoiseSampler(noiseType, noiseType, noiseType, noiseType, noiseType, noiseType, List.of());
+		DensityFunction densityFunction = DensityFunctionTypes.zero();
+		return new MultiNoiseUtil.MultiNoiseSampler(densityFunction, densityFunction, densityFunction, densityFunction, densityFunction, densityFunction, List.of());
 	}
 
 	public static BlockPos findFittestPosition(List<MultiNoiseUtil.NoiseHypercube> noises, MultiNoiseUtil.MultiNoiseSampler sampler) {
@@ -187,19 +187,19 @@ public class MultiNoiseUtil {
 	}
 
 	public static record MultiNoiseSampler(
-		NoiseType temperature,
-		NoiseType humidity,
-		NoiseType continentalness,
-		NoiseType erosion,
-		NoiseType depth,
-		NoiseType weirdness,
+		DensityFunction temperature,
+		DensityFunction humidity,
+		DensityFunction continentalness,
+		DensityFunction erosion,
+		DensityFunction depth,
+		DensityFunction weirdness,
 		List<MultiNoiseUtil.NoiseHypercube> spawnTarget
 	) {
 		public MultiNoiseUtil.NoiseValuePoint sample(int x, int y, int z) {
 			int i = BiomeCoords.toBlock(x);
 			int j = BiomeCoords.toBlock(y);
 			int k = BiomeCoords.toBlock(z);
-			NoiseType.UnblendedNoisePos unblendedNoisePos = new NoiseType.UnblendedNoisePos(i, j, k);
+			DensityFunction.UnblendedNoisePos unblendedNoisePos = new DensityFunction.UnblendedNoisePos(i, j, k);
 			return MultiNoiseUtil.createNoiseValuePoint(
 				(float)this.temperature.sample(unblendedNoisePos),
 				(float)this.humidity.sample(unblendedNoisePos),

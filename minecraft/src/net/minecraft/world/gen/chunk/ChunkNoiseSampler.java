@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.class_6916;
-import net.minecraft.class_6954;
 import net.minecraft.class_6955;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.ChunkPos;
@@ -22,10 +20,12 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChainedBlockSource;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
+import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
-import net.minecraft.world.gen.noise.NoiseType;
 
-public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoisePos {
+public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFunction.NoisePos {
 	private final GenerationShapeConfig generationShapeConfig;
 	final int horizontalSize;
 	final int height;
@@ -36,15 +36,15 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	final int biomeZ;
 	final List<ChunkNoiseSampler.NoiseInterpolator> interpolators;
 	final List<ChunkNoiseSampler.class_6949> field_36581;
-	private final Map<NoiseType, NoiseType> field_36582 = new HashMap();
+	private final Map<DensityFunction, DensityFunction> field_36582 = new HashMap();
 	private final Long2IntMap field_36273 = new Long2IntOpenHashMap();
 	private final AquiferSampler aquiferSampler;
-	private final NoiseType field_36583;
+	private final DensityFunction field_36583;
 	private final ChunkNoiseSampler.BlockStateSampler blockStateSampler;
 	private final Blender blender;
 	private final ChunkNoiseSampler.class_6951 field_36585;
 	private final ChunkNoiseSampler.class_6951 field_36586;
-	private final class_6916.class_7050 field_37113;
+	private final DensityFunctionTypes.class_7050 field_37113;
 	private long field_36587 = ChunkPos.MARKER;
 	private Blender.class_6956 field_36588 = new Blender.class_6956(1.0, 0.0);
 	final int field_36589;
@@ -61,9 +61,9 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	long field_36577;
 	long field_36578;
 	int field_36579;
-	private final NoiseType.class_6911 field_36580 = new NoiseType.class_6911() {
+	private final DensityFunction.class_6911 field_36580 = new DensityFunction.class_6911() {
 		@Override
-		public NoiseType.NoisePos method_40477(int i) {
+		public DensityFunction.NoisePos method_40477(int i) {
 			ChunkNoiseSampler.this.field_36572 = (i + ChunkNoiseSampler.this.minimumY) * ChunkNoiseSampler.this.verticalBlockSize;
 			ChunkNoiseSampler.this.field_36577++;
 			ChunkNoiseSampler.this.field_36575 = 0;
@@ -72,13 +72,13 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40478(double[] ds, NoiseType noiseType) {
+		public void method_40478(double[] ds, DensityFunction densityFunction) {
 			for (int i = 0; i < ChunkNoiseSampler.this.height + 1; i++) {
 				ChunkNoiseSampler.this.field_36572 = (i + ChunkNoiseSampler.this.minimumY) * ChunkNoiseSampler.this.verticalBlockSize;
 				ChunkNoiseSampler.this.field_36577++;
 				ChunkNoiseSampler.this.field_36575 = 0;
 				ChunkNoiseSampler.this.field_36579 = i;
-				ds[i] = noiseType.sample(ChunkNoiseSampler.this);
+				ds[i] = densityFunction.sample(ChunkNoiseSampler.this);
 			}
 		}
 	};
@@ -86,7 +86,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	public static ChunkNoiseSampler create(
 		Chunk chunk,
 		NoiseRouter noiseRouter,
-		Supplier<class_6916.class_7050> noiseTypeSupplier,
+		Supplier<DensityFunctionTypes.class_7050> noiseTypeSupplier,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender
@@ -104,7 +104,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 			noiseRouter,
 			chunkPos.getStartX(),
 			chunkPos.getStartZ(),
-			(class_6916.class_7050)noiseTypeSupplier.get(),
+			(DensityFunctionTypes.class_7050)noiseTypeSupplier.get(),
 			chunkGeneratorSettings,
 			fluidLevelSampler,
 			blender
@@ -121,7 +121,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		AquiferSampler.FluidLevelSampler fluidLevelSampler
 	) {
 		return new ChunkNoiseSampler(
-			1, height, minimumY, noiseRouter, x, z, class_6916.class_7049.INSTANCE, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending()
+			1, height, minimumY, noiseRouter, x, z, DensityFunctionTypes.Beardifier.INSTANCE, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending()
 		);
 	}
 
@@ -132,7 +132,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		NoiseRouter noiseRouter,
 		int x,
 		int z,
-		class_6916.class_7050 noiseType,
+		DensityFunctionTypes.class_7050 noiseType,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
 		Blender blender
@@ -188,9 +188,11 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		Builder<ChunkNoiseSampler.BlockStateSampler> builder = ImmutableList.builder();
-		NoiseType noiseType2 = class_6916.method_40510(class_6916.method_40486(noiseRouter.finalDensity(), class_6916.class_7049.INSTANCE))
+		DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(
+				DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)
+			)
 			.method_40469(this::method_40529);
-		builder.add(noisePos -> this.aquiferSampler.apply(noisePos, noiseType2.sample(noisePos)));
+		builder.add(noisePos -> this.aquiferSampler.apply(noisePos, densityFunction.sample(noisePos)));
 		if (chunkGeneratorSettings.oreVeins()) {
 			builder.add(
 				class_6955.method_40548(
@@ -245,7 +247,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	private int method_39899(long l) {
 		int i = ChunkPos.getPackedX(l);
 		int j = ChunkPos.getPackedZ(l);
-		return (int)class_6954.method_40543(this.generationShapeConfig, this.field_36583, BiomeCoords.toBlock(i), BiomeCoords.toBlock(j));
+		return (int)DensityFunctions.method_40543(this.generationShapeConfig, this.field_36583, BiomeCoords.toBlock(i), BiomeCoords.toBlock(j));
 	}
 
 	@Override
@@ -300,7 +302,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	}
 
 	@Override
-	public void method_40478(double[] ds, NoiseType noiseType) {
+	public void method_40478(double[] ds, DensityFunction densityFunction) {
 		this.field_36579 = 0;
 
 		for (int i = this.verticalBlockSize - 1; i >= 0; i--) {
@@ -311,7 +313,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 
 				for (int k = 0; k < this.horizontalBlockSize; k++) {
 					this.field_36576 = k;
-					ds[this.field_36579++] = noiseType.sample(this);
+					ds[this.field_36579++] = densityFunction.sample(this);
 				}
 			}
 		}
@@ -376,13 +378,13 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 	}
 
-	protected NoiseType method_40529(NoiseType noiseType) {
-		return (NoiseType)this.field_36582.computeIfAbsent(noiseType, this::method_40533);
+	protected DensityFunction method_40529(DensityFunction densityFunction) {
+		return (DensityFunction)this.field_36582.computeIfAbsent(densityFunction, this::method_40533);
 	}
 
-	private NoiseType method_40533(NoiseType noiseType) {
-		if (noiseType instanceof class_6916.class_6927 lv) {
-			return (NoiseType)(switch (lv.type()) {
+	private DensityFunction method_40533(DensityFunction densityFunction) {
+		if (densityFunction instanceof DensityFunctionTypes.class_6927 lv) {
+			return (DensityFunction)(switch (lv.type()) {
 				case INTERPOLATED -> new ChunkNoiseSampler.NoiseInterpolator(lv.wrapped());
 				case FLAT_CACHE -> new ChunkNoiseSampler.class_6951(lv.wrapped(), true);
 				case CACHE2D -> new ChunkNoiseSampler.class_6948(lv.wrapped());
@@ -391,19 +393,19 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 			});
 		} else {
 			if (this.blender != Blender.getNoBlending()) {
-				if (noiseType == class_6916.class_6919.INSTANCE) {
+				if (densityFunction == DensityFunctionTypes.BlendAlpha.INSTANCE) {
 					return this.field_36585;
 				}
 
-				if (noiseType == class_6916.class_6921.INSTANCE) {
+				if (densityFunction == DensityFunctionTypes.BlendOffset.INSTANCE) {
 					return this.field_36586;
 				}
 			}
 
-			if (noiseType == class_6916.class_7049.INSTANCE) {
+			if (densityFunction == DensityFunctionTypes.Beardifier.INSTANCE) {
 				return this.field_37113;
 			} else {
-				return noiseType instanceof class_6916.class_7051 lv2 ? lv2.function().value() : noiseType;
+				return densityFunction instanceof DensityFunctionTypes.class_7051 lv2 ? lv2.function().value() : densityFunction;
 			}
 		}
 	}
@@ -411,13 +413,13 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 	@FunctionalInterface
 	public interface BlockStateSampler {
 		@Nullable
-		BlockState sample(NoiseType.NoisePos pos);
+		BlockState sample(DensityFunction.NoisePos pos);
 	}
 
-	public class NoiseInterpolator implements class_6916.class_7052, ChunkNoiseSampler.ParentedNoiseType {
+	public class NoiseInterpolator implements DensityFunctionTypes.Wrapper, ChunkNoiseSampler.ParentedNoiseType {
 		double[][] startNoiseBuffer;
 		double[][] endNoiseBuffer;
-		private final NoiseType columnSampler;
+		private final DensityFunction columnSampler;
 		private double x0y0z0;
 		private double x0y0z1;
 		private double x1y0z0;
@@ -434,7 +436,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		private double z1;
 		private double result;
 
-		NoiseInterpolator(NoiseType columnSampler) {
+		NoiseInterpolator(DensityFunction columnSampler) {
 			this.columnSampler = columnSampler;
 			this.startNoiseBuffer = this.createBuffer(ChunkNoiseSampler.this.height, ChunkNoiseSampler.this.horizontalSize);
 			this.endNoiseBuffer = this.createBuffer(ChunkNoiseSampler.this.height, ChunkNoiseSampler.this.horizontalSize);
@@ -481,7 +483,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			if (pos != ChunkNoiseSampler.this) {
 				return this.columnSampler.sample(pos);
 			} else if (!ChunkNoiseSampler.this.field_36592) {
@@ -506,7 +508,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			if (ChunkNoiseSampler.this.field_36593) {
 				arg.method_40478(ds, this);
 			} else {
@@ -515,7 +517,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public NoiseType wrapped() {
+		public DensityFunction wrapped() {
 			return this.columnSampler;
 		}
 
@@ -526,17 +528,17 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public class_6916.class_6927.class_6928 type() {
-			return class_6916.class_6927.class_6928.INTERPOLATED;
+		public DensityFunctionTypes.class_6927.Type type() {
+			return DensityFunctionTypes.class_6927.Type.INTERPOLATED;
 		}
 	}
 
-	interface ParentedNoiseType extends NoiseType {
-		NoiseType wrapped();
+	interface ParentedNoiseType extends DensityFunction {
+		DensityFunction wrapped();
 
 		@Override
-		default NoiseType method_40469(NoiseType.class_6915 arg) {
-			return this.wrapped().method_40469(arg);
+		default DensityFunction method_40469(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
+			return this.wrapped().method_40469(densityFunctionVisitor);
 		}
 
 		@Override
@@ -552,17 +554,17 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 
 	class class_6946 implements ChunkNoiseSampler.ParentedNoiseType {
 		@Override
-		public NoiseType wrapped() {
-			return class_6916.class_6919.INSTANCE;
+		public DensityFunction wrapped() {
+			return DensityFunctionTypes.BlendAlpha.INSTANCE;
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			return ChunkNoiseSampler.this.method_40535(pos.blockX(), pos.blockZ()).alpha();
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			arg.method_40478(ds, this);
 		}
 
@@ -577,24 +579,24 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public Codec<? extends NoiseType> method_41062() {
-			return class_6916.class_6919.field_37079;
+		public Codec<? extends DensityFunction> getCodec() {
+			return DensityFunctionTypes.BlendAlpha.CODEC;
 		}
 	}
 
 	class class_6947 implements ChunkNoiseSampler.ParentedNoiseType {
 		@Override
-		public NoiseType wrapped() {
-			return class_6916.class_6921.INSTANCE;
+		public DensityFunction wrapped() {
+			return DensityFunctionTypes.BlendOffset.INSTANCE;
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			return ChunkNoiseSampler.this.method_40535(pos.blockX(), pos.blockZ()).blendingOffset();
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			arg.method_40478(ds, this);
 		}
 
@@ -609,22 +611,22 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public Codec<? extends NoiseType> method_41062() {
-			return class_6916.class_6921.field_37081;
+		public Codec<? extends DensityFunction> getCodec() {
+			return DensityFunctionTypes.BlendOffset.CODEC;
 		}
 	}
 
-	static class class_6948 implements class_6916.class_7052, ChunkNoiseSampler.ParentedNoiseType {
-		private final NoiseType field_36599;
+	static class class_6948 implements DensityFunctionTypes.Wrapper, ChunkNoiseSampler.ParentedNoiseType {
+		private final DensityFunction field_36599;
 		private long field_36600 = ChunkPos.MARKER;
 		private double field_36601;
 
-		class_6948(NoiseType noiseType) {
-			this.field_36599 = noiseType;
+		class_6948(DensityFunction densityFunction) {
+			this.field_36599 = densityFunction;
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			int i = pos.blockX();
 			int j = pos.blockZ();
 			long l = ChunkPos.toLong(i, j);
@@ -639,27 +641,27 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			this.field_36599.method_40470(ds, arg);
 		}
 
 		@Override
-		public NoiseType wrapped() {
+		public DensityFunction wrapped() {
 			return this.field_36599;
 		}
 
 		@Override
-		public class_6916.class_6927.class_6928 type() {
-			return class_6916.class_6927.class_6928.CACHE2D;
+		public DensityFunctionTypes.class_6927.Type type() {
+			return DensityFunctionTypes.class_6927.Type.CACHE2D;
 		}
 	}
 
-	class class_6949 implements class_6916.class_7052, ChunkNoiseSampler.ParentedNoiseType {
-		final NoiseType field_36603;
+	class class_6949 implements DensityFunctionTypes.Wrapper, ChunkNoiseSampler.ParentedNoiseType {
+		final DensityFunction field_36603;
 		final double[] field_36604;
 
-		class_6949(NoiseType noiseType) {
-			this.field_36603 = noiseType;
+		class_6949(DensityFunction densityFunction) {
+			this.field_36603 = densityFunction;
 			this.field_36604 = new double[ChunkNoiseSampler.this.horizontalBlockSize
 				* ChunkNoiseSampler.this.horizontalBlockSize
 				* ChunkNoiseSampler.this.verticalBlockSize];
@@ -667,7 +669,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			if (pos != ChunkNoiseSampler.this) {
 				return this.field_36603.sample(pos);
 			} else if (!ChunkNoiseSampler.this.field_36592) {
@@ -690,35 +692,35 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			arg.method_40478(ds, this);
 		}
 
 		@Override
-		public NoiseType wrapped() {
+		public DensityFunction wrapped() {
 			return this.field_36603;
 		}
 
 		@Override
-		public class_6916.class_6927.class_6928 type() {
-			return class_6916.class_6927.class_6928.CACHE_ALL_IN_CELL;
+		public DensityFunctionTypes.class_6927.Type type() {
+			return DensityFunctionTypes.class_6927.Type.CACHE_ALL_IN_CELL;
 		}
 	}
 
-	class class_6950 implements class_6916.class_7052, ChunkNoiseSampler.ParentedNoiseType {
-		private final NoiseType field_36606;
+	class class_6950 implements DensityFunctionTypes.Wrapper, ChunkNoiseSampler.ParentedNoiseType {
+		private final DensityFunction field_36606;
 		private long field_36607;
 		private long field_36608;
 		private double field_36609;
 		@Nullable
 		private double[] field_36610;
 
-		class_6950(NoiseType noiseType) {
-			this.field_36606 = noiseType;
+		class_6950(DensityFunction densityFunction) {
+			this.field_36606 = densityFunction;
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			if (pos != ChunkNoiseSampler.this) {
 				return this.field_36606.sample(pos);
 			} else if (this.field_36610 != null && this.field_36608 == ChunkNoiseSampler.this.field_36578) {
@@ -734,7 +736,7 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			if (this.field_36610 != null && this.field_36608 == ChunkNoiseSampler.this.field_36578) {
 				System.arraycopy(this.field_36610, 0, ds, 0, ds.length);
 			} else {
@@ -750,22 +752,22 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public NoiseType wrapped() {
+		public DensityFunction wrapped() {
 			return this.field_36606;
 		}
 
 		@Override
-		public class_6916.class_6927.class_6928 type() {
-			return class_6916.class_6927.class_6928.CACHE_ONCE;
+		public DensityFunctionTypes.class_6927.Type type() {
+			return DensityFunctionTypes.class_6927.Type.CACHE_ONCE;
 		}
 	}
 
-	class class_6951 implements class_6916.class_7052, ChunkNoiseSampler.ParentedNoiseType {
-		private final NoiseType field_36612;
+	class class_6951 implements DensityFunctionTypes.Wrapper, ChunkNoiseSampler.ParentedNoiseType {
+		private final DensityFunction field_36612;
 		final double[][] field_36613;
 
-		class_6951(NoiseType noiseType, boolean bl) {
-			this.field_36612 = noiseType;
+		class_6951(DensityFunction densityFunction, boolean bl) {
+			this.field_36612 = densityFunction;
 			this.field_36613 = new double[ChunkNoiseSampler.this.field_36589 + 1][ChunkNoiseSampler.this.field_36589 + 1];
 			if (bl) {
 				for (int i = 0; i <= ChunkNoiseSampler.this.field_36589; i++) {
@@ -775,14 +777,14 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 					for (int l = 0; l <= ChunkNoiseSampler.this.field_36589; l++) {
 						int m = ChunkNoiseSampler.this.biomeZ + l;
 						int n = BiomeCoords.toBlock(m);
-						this.field_36613[i][l] = noiseType.sample(new NoiseType.UnblendedNoisePos(k, 0, n));
+						this.field_36613[i][l] = densityFunction.sample(new DensityFunction.UnblendedNoisePos(k, 0, n));
 					}
 				}
 			}
 		}
 
 		@Override
-		public double sample(NoiseType.NoisePos pos) {
+		public double sample(DensityFunction.NoisePos pos) {
 			int i = BiomeCoords.fromBlock(pos.blockX());
 			int j = BiomeCoords.fromBlock(pos.blockZ());
 			int k = i - ChunkNoiseSampler.this.biomeX;
@@ -792,18 +794,18 @@ public class ChunkNoiseSampler implements NoiseType.class_6911, NoiseType.NoiseP
 		}
 
 		@Override
-		public void method_40470(double[] ds, NoiseType.class_6911 arg) {
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
 			arg.method_40478(ds, this);
 		}
 
 		@Override
-		public NoiseType wrapped() {
+		public DensityFunction wrapped() {
 			return this.field_36612;
 		}
 
 		@Override
-		public class_6916.class_6927.class_6928 type() {
-			return class_6916.class_6927.class_6928.FLAT_CACHE;
+		public DensityFunctionTypes.class_6927.Type type() {
+			return DensityFunctionTypes.class_6927.Type.FLAT_CACHE;
 		}
 	}
 }

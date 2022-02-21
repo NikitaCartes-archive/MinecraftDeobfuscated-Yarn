@@ -9,8 +9,8 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.function.Function;
-import net.minecraft.class_7059;
 import net.minecraft.block.Block;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -295,7 +295,7 @@ public class DimensionType {
 		MutableRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-		Registry<class_7059> registry3 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
+		Registry<StructureSet> registry3 = registryManager.get(Registry.STRUCTURE_SET_KEY);
 		Registry<ChunkGeneratorSettings> registry4 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry5 = registryManager.get(Registry.NOISE_WORLDGEN);
 		mutableRegistry.add(
@@ -323,11 +323,6 @@ public class DimensionType {
 		double d = fromDimension.getCoordinateScale();
 		double e = toDimension.getCoordinateScale();
 		return d / e;
-	}
-
-	@Deprecated
-	public String getSuffix() {
-		return this.equals(THE_END) ? "_end" : "";
 	}
 
 	public static Path getSaveDirectory(RegistryKey<World> worldRef, Path worldDirectory) {
@@ -430,27 +425,5 @@ public class DimensionType {
 	 */
 	public Identifier getEffects() {
 		return this.effects;
-	}
-
-	public boolean equals(DimensionType dimensionType) {
-		return this == dimensionType
-			? true
-			: this.hasSkyLight == dimensionType.hasSkyLight
-				&& this.hasCeiling == dimensionType.hasCeiling
-				&& this.ultrawarm == dimensionType.ultrawarm
-				&& this.natural == dimensionType.natural
-				&& this.coordinateScale == dimensionType.coordinateScale
-				&& this.hasEnderDragonFight == dimensionType.hasEnderDragonFight
-				&& this.piglinSafe == dimensionType.piglinSafe
-				&& this.bedWorks == dimensionType.bedWorks
-				&& this.respawnAnchorWorks == dimensionType.respawnAnchorWorks
-				&& this.hasRaids == dimensionType.hasRaids
-				&& this.minimumY == dimensionType.minimumY
-				&& this.height == dimensionType.height
-				&& this.logicalHeight == dimensionType.logicalHeight
-				&& Float.compare(dimensionType.ambientLight, this.ambientLight) == 0
-				&& this.fixedTime.equals(dimensionType.fixedTime)
-				&& this.infiniburn.equals(dimensionType.infiniburn)
-				&& this.effects.equals(dimensionType.effects);
 	}
 }

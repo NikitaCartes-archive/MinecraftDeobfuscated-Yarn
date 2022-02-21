@@ -22,8 +22,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
-import net.minecraft.class_6916;
-import net.minecraft.class_7059;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -67,6 +65,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorList;
@@ -97,6 +96,8 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -105,7 +106,6 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 import net.minecraft.world.gen.foliage.FoliagePlacerType;
 import net.minecraft.world.gen.heightprovider.HeightProviderType;
-import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
@@ -230,12 +230,12 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_KEY = createRegistryKey(
 		"worldgen/configured_structure_feature"
 	);
-	public static final RegistryKey<Registry<class_7059>> STRUCTURE_SET_WORLDGEN = createRegistryKey("worldgen/structure_set");
+	public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET_KEY = createRegistryKey("worldgen/structure_set");
 	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
 	public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = createRegistryKey("worldgen/noise");
-	public static final RegistryKey<Registry<NoiseType>> DENSITY_FUNCTION_WORLDGEN = createRegistryKey("worldgen/density_function");
+	public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION_KEY = createRegistryKey("worldgen/density_function");
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, registry -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -259,7 +259,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 		"worldgen/material_condition"
 	);
 	public static final RegistryKey<Registry<Codec<? extends MaterialRules.MaterialRule>>> MATERIAL_RULE_KEY = createRegistryKey("worldgen/material_rule");
-	public static final RegistryKey<Registry<Codec<? extends NoiseType>>> DENSITY_FUNCTION_TYPE_WORLDGEN = createRegistryKey("worldgen/density_function_type");
+	public static final RegistryKey<Registry<Codec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE_KEY = createRegistryKey("worldgen/density_function_type");
 	public static final RegistryKey<Registry<StructureProcessorType<?>>> STRUCTURE_PROCESSOR_KEY = createRegistryKey("worldgen/structure_processor");
 	public static final RegistryKey<Registry<StructurePoolElementType<?>>> STRUCTURE_POOL_ELEMENT_KEY = createRegistryKey("worldgen/structure_pool_element");
 	public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = create(
@@ -279,7 +279,9 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final Registry<Codec<? extends MaterialRules.MaterialRule>> MATERIAL_RULE = create(
 		MATERIAL_RULE_KEY, MaterialRules.MaterialRule::registerAndGetDefault
 	);
-	public static final Registry<Codec<? extends NoiseType>> field_37230 = create(DENSITY_FUNCTION_TYPE_WORLDGEN, class_6916::method_41066);
+	public static final Registry<Codec<? extends DensityFunction>> DENSITY_FUNCTION_TYPE = create(
+		DENSITY_FUNCTION_TYPE_KEY, DensityFunctionTypes::registerAndGetDefault
+	);
 	public static final Registry<StructureProcessorType<?>> STRUCTURE_PROCESSOR = create(STRUCTURE_PROCESSOR_KEY, registry -> StructureProcessorType.BLOCK_IGNORE);
 	public static final Registry<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT = create(
 		STRUCTURE_POOL_ELEMENT_KEY, registry -> StructurePoolElementType.EMPTY_POOL_ELEMENT

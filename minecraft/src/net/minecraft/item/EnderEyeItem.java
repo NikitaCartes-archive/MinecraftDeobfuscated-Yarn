@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import net.minecraft.class_7045;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -71,7 +71,7 @@ public class EnderEyeItem extends Item {
 		} else {
 			user.setCurrentHand(hand);
 			if (world instanceof ServerWorld serverWorld) {
-				BlockPos blockPos = serverWorld.locateStructure(class_7045.EYE_OF_ENDER_LOCATED, user.getBlockPos(), 100, false);
+				BlockPos blockPos = serverWorld.locateStructure(ConfiguredStructureFeatureTags.EYE_OF_ENDER_LOCATED, user.getBlockPos(), 100, false);
 				if (blockPos != null) {
 					EyeOfEnderEntity eyeOfEnderEntity = new EyeOfEnderEntity(world, user.getX(), user.getBodyY(0.5), user.getZ());
 					eyeOfEnderEntity.setItem(itemStack);

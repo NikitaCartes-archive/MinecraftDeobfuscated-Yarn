@@ -72,7 +72,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			}
 		}
 
-		float q = pandaEntity.getScaredAnimationProgress(h);
+		float q = pandaEntity.getSittingAnimationProgress(h);
 		if (q > 0.0F) {
 			matrixStack.translate(0.0, (double)(0.8F * q), 0.0);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.lerp(q, pandaEntity.getPitch(), pandaEntity.getPitch() + 90.0F)));

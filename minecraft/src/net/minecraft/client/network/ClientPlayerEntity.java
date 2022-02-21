@@ -251,7 +251,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			double g = (double)(this.getYaw() - this.lastYaw);
 			double h = (double)(this.getPitch() - this.lastPitch);
 			this.ticksSinceLastPositionPacketSent++;
-			boolean bl3 = d * d + e * e + f * f > 9.0E-4 || this.ticksSinceLastPositionPacketSent >= 20;
+			boolean bl3 = MathHelper.squaredMagnitude(d, e, f) > MathHelper.square(2.0E-4) || this.ticksSinceLastPositionPacketSent >= 20;
 			boolean bl4 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
 				Vec3d vec3d = this.getVelocity();

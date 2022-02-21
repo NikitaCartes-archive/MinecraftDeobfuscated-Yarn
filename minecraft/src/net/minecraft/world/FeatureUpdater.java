@@ -20,24 +20,24 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
 
 public class FeatureUpdater {
-	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
-		hashMap.put("Village", "Village");
-		hashMap.put("Mineshaft", "Mineshaft");
-		hashMap.put("Mansion", "Mansion");
-		hashMap.put("Igloo", "Temple");
-		hashMap.put("Desert_Pyramid", "Temple");
-		hashMap.put("Jungle_Pyramid", "Temple");
-		hashMap.put("Swamp_Hut", "Temple");
-		hashMap.put("Stronghold", "Stronghold");
-		hashMap.put("Monument", "Monument");
-		hashMap.put("Fortress", "Fortress");
-		hashMap.put("EndCity", "EndCity");
+	private static final Map<String, String> OLD_TO_NEW = Util.make(Maps.<String, String>newHashMap(), map -> {
+		map.put("Village", "Village");
+		map.put("Mineshaft", "Mineshaft");
+		map.put("Mansion", "Mansion");
+		map.put("Igloo", "Temple");
+		map.put("Desert_Pyramid", "Temple");
+		map.put("Jungle_Pyramid", "Temple");
+		map.put("Swamp_Hut", "Temple");
+		map.put("Stronghold", "Stronghold");
+		map.put("Monument", "Monument");
+		map.put("Fortress", "Fortress");
+		map.put("EndCity", "EndCity");
 	});
-	private static final Map<String, String> ANCIENT_TO_OLD = Util.make(Maps.<String, String>newHashMap(), hashMap -> {
-		hashMap.put("Iglu", "Igloo");
-		hashMap.put("TeDP", "Desert_Pyramid");
-		hashMap.put("TeJP", "Jungle_Pyramid");
-		hashMap.put("TeSH", "Swamp_Hut");
+	private static final Map<String, String> ANCIENT_TO_OLD = Util.make(Maps.<String, String>newHashMap(), map -> {
+		map.put("Iglu", "Igloo");
+		map.put("TeDP", "Desert_Pyramid");
+		map.put("TeJP", "Jungle_Pyramid");
+		map.put("TeSH", "Swamp_Hut");
 	});
 	private static final Set<String> field_37194 = Set.of(
 		"pillager_outpost",

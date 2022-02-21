@@ -1,7 +1,6 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
-import net.minecraft.class_7058;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -22,6 +21,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(class_7058.END_CITY)))
+			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.END_CITY)))
 			.build(consumer, "end/find_end_city");
 		Advancement.Builder.create()
 			.parent(advancement2)

@@ -8,10 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import net.minecraft.class_7059;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -49,7 +49,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	public static final int field_31466 = 60;
 	private final Registry<Biome> biomeRegistry;
 
-	public DebugChunkGenerator(Registry<class_7059> registry, Registry<Biome> registry2) {
+	public DebugChunkGenerator(Registry<StructureSet> registry, Registry<Biome> registry2) {
 		super(registry, Optional.empty(), new FixedBiomeSource(registry2.getOrCreateEntry(BiomeKeys.PLAINS)));
 		this.biomeRegistry = registry2;
 	}

@@ -302,15 +302,15 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	@Override
 	public Registry<T> freeze() {
 		this.frozen = true;
-		List<Identifier> list = this.idToEntry
+		List<Identifier> list = this.keyToEntry
 			.entrySet()
 			.stream()
 			.filter(entry -> !((RegistryEntry.Reference)entry.getValue()).hasKeyAndValue())
-			.map(Entry::getKey)
+			.map(entry -> ((RegistryKey)entry.getKey()).getValue())
 			.sorted()
 			.toList();
 		if (!list.isEmpty()) {
-			throw new IllegalStateException("Unbound values in registry: " + list);
+			throw new IllegalStateException("Unbound values in registry " + this.getKey() + ": " + list);
 		} else {
 			if (this.unfrozenValueToEntry != null) {
 				List<RegistryEntry.Reference<T>> list2 = this.unfrozenValueToEntry.values().stream().filter(entry -> !entry.hasKeyAndValue()).toList();

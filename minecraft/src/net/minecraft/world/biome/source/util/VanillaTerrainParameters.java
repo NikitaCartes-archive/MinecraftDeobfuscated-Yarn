@@ -1,6 +1,5 @@
 package net.minecraft.world.biome.source.util;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -14,9 +13,12 @@ import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Spline;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
+import org.jetbrains.annotations.VisibleForTesting;
 
 public record VanillaTerrainParameters(
 	@Debug Spline<VanillaTerrainParameters.NoisePoint> offsetSpline,
@@ -24,6 +26,7 @@ public record VanillaTerrainParameters(
 	@Debug Spline<VanillaTerrainParameters.NoisePoint> peakSpline
 ) {
 	private static final Codec<Spline<VanillaTerrainParameters.NoisePoint>> field_35457 = Spline.createCodec(VanillaTerrainParameters.LocationFunction.field_35464);
+	public static final Codec<Spline<VanillaTerrainParameters.class_7075>> field_37252 = Spline.createCodec(VanillaTerrainParameters.class_7074.field_37253);
 	public static final Codec<VanillaTerrainParameters> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					field_35457.fieldOf("offset").forGetter(VanillaTerrainParameters::offsetSpline),
@@ -339,6 +342,10 @@ public record VanillaTerrainParameters(
 		return new VanillaTerrainParameters.NoisePoint(f, g, getNormalizedWeirdness(h), h);
 	}
 
+	public static VanillaTerrainParameters.class_7075 method_41191(DensityFunction.NoisePos noisePos) {
+		return new VanillaTerrainParameters.class_7075(noisePos);
+	}
+
 	public static float getNormalizedWeirdness(float weirdness) {
 		return -(Math.abs(Math.abs(weirdness) - 0.6666667F) - 0.33333334F) * 3.0F;
 	}
@@ -387,5 +394,26 @@ public record VanillaTerrainParameters(
 	}
 
 	public static record NoisePoint(float continentalnessNoise, float erosionNoise, float normalizedWeirdness, float weirdnessNoise) {
+	}
+
+	public static record class_7074(RegistryEntry<DensityFunction> function) implements ToFloatFunction<VanillaTerrainParameters.class_7075> {
+		static final Codec<ToFloatFunction<VanillaTerrainParameters.class_7075>> field_37253 = DensityFunction.REGISTRY_ENTRY_CODEC
+			.flatComapMap(
+				VanillaTerrainParameters.class_7074::new,
+				toFloatFunction -> toFloatFunction instanceof VanillaTerrainParameters.class_7074 lv
+						? DataResult.success(lv.function())
+						: DataResult.error("Not a coordinate resolver: " + toFloatFunction)
+			);
+
+		public float apply(VanillaTerrainParameters.class_7075 arg) {
+			return (float)this.function.value().sample(arg.context());
+		}
+
+		public VanillaTerrainParameters.class_7074 method_41194(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
+			return new VanillaTerrainParameters.class_7074(new RegistryEntry.Direct<>(this.function.value().method_40469(densityFunctionVisitor)));
+		}
+	}
+
+	public static record class_7075(DensityFunction.NoisePos context) {
 	}
 }

@@ -20,6 +20,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
@@ -174,8 +175,8 @@ public class RaidManager extends PersistentState {
 		return nbt;
 	}
 
-	public static String nameFor(DimensionType dimensionType) {
-		return "raids" + dimensionType.getSuffix();
+	public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
+		return dimensionTypeEntry.matchesKey(DimensionType.THE_END_REGISTRY_KEY) ? "raids_end" : "raids";
 	}
 
 	private int nextId() {

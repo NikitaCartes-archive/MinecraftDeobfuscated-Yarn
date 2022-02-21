@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
-import net.minecraft.class_7066;
+import net.minecraft.command.argument.RegistryPredicateArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
@@ -21,55 +21,55 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class LocateCommand {
-	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.locate.failed", object)
-	);
-	private static final DynamicCommandExceptionType field_37038 = new DynamicCommandExceptionType(
-		object -> new TranslatableText("commands.locate.invalid", object)
-	);
+	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.failed", id));
+	private static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.invalid", id));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("locate")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("structure", class_7066.method_41170(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY))
-						.executes(commandContext -> execute(commandContext.getSource(), class_7066.method_41171(commandContext, "structure")))
+					CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY))
+						.executes(context -> execute(context.getSource(), RegistryPredicateArgumentType.getConfiguredStructureFeaturePredicate(context, "structure")))
 				)
 		);
 	}
 
-	private static int execute(ServerCommandSource source, class_7066.class_7068<ConfiguredStructureFeature<?, ?>> arg) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<ConfiguredStructureFeature<?, ?>> structureFeature) throws CommandSyntaxException {
 		Registry<ConfiguredStructureFeature<?, ?>> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-		RegistryEntryList<ConfiguredStructureFeature<?, ?>> registryEntryList = (RegistryEntryList<ConfiguredStructureFeature<?, ?>>)arg.method_41173()
-			.<Optional>map(registryKey -> registry.getEntry(registryKey).map(registryEntry -> RegistryEntryList.of(registryEntry)), registry::getEntryList)
-			.orElseThrow(() -> field_37038.create(arg.method_41176()));
+		RegistryEntryList<ConfiguredStructureFeature<?, ?>> registryEntryList = (RegistryEntryList<ConfiguredStructureFeature<?, ?>>)structureFeature.getKey()
+			.<Optional>map(key -> registry.getEntry(key).map(entry -> RegistryEntryList.of(entry)), registry::getEntryList)
+			.orElseThrow(() -> INVALID_EXCEPTION.create(structureFeature.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
 		Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = serverWorld.getChunkManager()
 			.getChunkGenerator()
 			.locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
 		if (pair == null) {
-			throw FAILED_EXCEPTION.create(arg.method_41176());
+			throw FAILED_EXCEPTION.create(structureFeature.asString());
 		} else {
-			return sendCoordinates(source, arg, blockPos, pair, "commands.locate.success");
+			return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success");
 		}
 	}
 
 	public static int sendCoordinates(
-		ServerCommandSource source, class_7066.class_7068<?> arg, BlockPos blockPos, Pair<BlockPos, ? extends RegistryEntry<?>> pair, String successMessage
+		ServerCommandSource source,
+		RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature,
+		BlockPos currentPos,
+		Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry,
+		String successMessage
 	) {
-		BlockPos blockPos2 = pair.getFirst();
-		String string = arg.method_41173()
+		BlockPos blockPos = structurePosAndEntry.getFirst();
+		String string = structureFeature.getKey()
 			.map(
-				registryKey -> registryKey.getValue().toString(),
-				tagKey -> "#" + tagKey.id() + " (" + (String)pair.getSecond().getKey().map(registryKey -> registryKey.getValue().toString()).orElse("[unregistered]") + ")"
+				key -> key.getValue().toString(),
+				key -> "#" + key.id() + " (" + (String)structurePosAndEntry.getSecond().getKey().map(keyx -> keyx.getValue().toString()).orElse("[unregistered]") + ")"
 			);
-		int i = MathHelper.floor(getDistance(blockPos.getX(), blockPos.getZ(), blockPos2.getX(), blockPos2.getZ()));
-		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos2.getX(), "~", blockPos2.getZ()))
+		int i = MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
+		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), "~", blockPos.getZ()))
 			.styled(
 				style -> style.withColor(Formatting.GREEN)
-						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
+						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 			);
 		source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);

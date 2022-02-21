@@ -34,12 +34,12 @@ public record TagKey<T>(RegistryKey<? extends Registry<T>> registry, Identifier 
 		return (TagKey<T>)INTERNER.intern(new TagKey<>(registry, id));
 	}
 
-	public boolean method_41007(RegistryKey<? extends Registry<?>> registryKey) {
-		return this.registry == registryKey;
+	public boolean isOf(RegistryKey<? extends Registry<?>> registryRef) {
+		return this.registry == registryRef;
 	}
 
-	public <E> Optional<TagKey<E>> method_41008(RegistryKey<? extends Registry<E>> registryKey) {
-		return this.method_41007(registryKey) ? Optional.of(this) : Optional.empty();
+	public <E> Optional<TagKey<E>> tryCast(RegistryKey<? extends Registry<E>> registryRef) {
+		return this.isOf(registryRef) ? Optional.of(this) : Optional.empty();
 	}
 
 	public String toString() {

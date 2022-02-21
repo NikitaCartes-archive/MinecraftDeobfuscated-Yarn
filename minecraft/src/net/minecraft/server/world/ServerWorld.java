@@ -208,6 +208,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.server = server;
 		this.spawners = spawners;
 		this.worldProperties = properties;
+		chunkGenerator.method_41058();
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
 		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
@@ -231,7 +232,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager()
-			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.method_40134()));
 		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
@@ -1221,13 +1222,13 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(TagKey<ConfiguredStructureFeature<?, ?>> tagKey, BlockPos pos, int radius, boolean skipExistingChunks) {
+	public BlockPos locateStructure(TagKey<ConfiguredStructureFeature<?, ?>> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
 			Optional<RegistryEntryList.Named<ConfiguredStructureFeature<?, ?>>> optional = this.getRegistryManager()
 				.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)
-				.getEntryList(tagKey);
+				.getEntryList(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {
@@ -1240,7 +1241,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> predicate, BlockPos pos, int radius, int blockCheckInterval) {
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> biomeEntryPredicate, BlockPos pos, int radius, int blockCheckInterval) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
@@ -1250,7 +1251,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				pos.getZ(),
 				radius,
 				blockCheckInterval,
-				predicate,
+				biomeEntryPredicate,
 				this.random,
 				true,
 				this.getChunkManager().getChunkGenerator().getMultiNoiseSampler()

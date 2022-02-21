@@ -14,8 +14,8 @@ import java.util.OptionalLong;
 import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import net.minecraft.class_7059;
 import net.minecraft.server.dedicated.ServerPropertiesHandler;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
@@ -131,7 +131,7 @@ public class GeneratorOptions {
 
 	public static NoiseChunkGenerator createGenerator(DynamicRegistryManager registryManager, long seed, RegistryKey<ChunkGeneratorSettings> settings, boolean bl) {
 		Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-		Registry<class_7059> registry2 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
+		Registry<StructureSet> registry2 = registryManager.get(Registry.STRUCTURE_SET_KEY);
 		Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
 		Registry<DoublePerlinNoiseSampler.NoiseParameters> registry4 = registryManager.get(Registry.NOISE_WORLDGEN);
 		return new NoiseChunkGenerator(
@@ -231,19 +231,19 @@ public class GeneratorOptions {
 		return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.options);
 	}
 
-	public static GeneratorOptions fromProperties(DynamicRegistryManager registryManager, ServerPropertiesHandler.class_7044 arg) {
-		long l = parseSeed(arg.levelSeed()).orElse(new Random().nextLong());
+	public static GeneratorOptions fromProperties(DynamicRegistryManager registryManager, ServerPropertiesHandler.WorldGenProperties worldGenProperties) {
+		long l = parseSeed(worldGenProperties.levelSeed()).orElse(new Random().nextLong());
 		Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
 		Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
-		Registry<class_7059> registry3 = registryManager.get(Registry.STRUCTURE_SET_WORLDGEN);
+		Registry<StructureSet> registry3 = registryManager.get(Registry.STRUCTURE_SET_KEY);
 		Registry<DimensionOptions> registry4 = DimensionType.createDefaultDimensionOptions(registryManager, l);
-		String var8 = arg.levelType();
+		String var8 = worldGenProperties.levelType();
 		switch (var8) {
 			case "flat":
-				Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, arg.generatorSettings());
+				Dynamic<JsonElement> dynamic = new Dynamic<>(JsonOps.INSTANCE, worldGenProperties.generatorSettings());
 				return new GeneratorOptions(
 					l,
-					arg.generateStructures(),
+					worldGenProperties.generateStructures(),
 					false,
 					getRegistryWithReplacedOverworldGenerator(
 						registry,
@@ -253,31 +253,37 @@ public class GeneratorOptions {
 							(FlatChunkGeneratorConfig)FlatChunkGeneratorConfig.CODEC
 								.parse(dynamic)
 								.resultOrPartial(LOGGER::error)
-								.orElseGet(() -> FlatChunkGeneratorConfig.getDefaultConfig(registry2))
+								.orElseGet(() -> FlatChunkGeneratorConfig.getDefaultConfig(registry2, registry3))
 						)
 					)
 				);
 			case "debug_all_block_states":
 				return new GeneratorOptions(
-					l, arg.generateStructures(), false, getRegistryWithReplacedOverworldGenerator(registry, registry4, new DebugChunkGenerator(registry3, registry2))
+					l,
+					worldGenProperties.generateStructures(),
+					false,
+					getRegistryWithReplacedOverworldGenerator(registry, registry4, new DebugChunkGenerator(registry3, registry2))
 				);
 			case "amplified":
 				return new GeneratorOptions(
 					l,
-					arg.generateStructures(),
+					worldGenProperties.generateStructures(),
 					false,
 					getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.AMPLIFIED))
 				);
 			case "largebiomes":
 				return new GeneratorOptions(
 					l,
-					arg.generateStructures(),
+					worldGenProperties.generateStructures(),
 					false,
 					getRegistryWithReplacedOverworldGenerator(registry, registry4, createGenerator(registryManager, l, ChunkGeneratorSettings.LARGE_BIOMES))
 				);
 			default:
 				return new GeneratorOptions(
-					l, arg.generateStructures(), false, getRegistryWithReplacedOverworldGenerator(registry, registry4, createOverworldGenerator(registryManager, l))
+					l,
+					worldGenProperties.generateStructures(),
+					false,
+					getRegistryWithReplacedOverworldGenerator(registry, registry4, createOverworldGenerator(registryManager, l))
 				);
 		}
 	}

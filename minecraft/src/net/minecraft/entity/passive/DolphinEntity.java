@@ -4,7 +4,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_7045;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -52,6 +51,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.ActionResult;
@@ -418,7 +418,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				this.noPathToStructure = false;
 				this.dolphin.getNavigation().stop();
 				BlockPos blockPos = this.dolphin.getBlockPos();
-				BlockPos blockPos2 = serverWorld.locateStructure(class_7045.DOLPHIN_LOCATED, blockPos, 50, false);
+				BlockPos blockPos2 = serverWorld.locateStructure(ConfiguredStructureFeatureTags.DOLPHIN_LOCATED, blockPos, 50, false);
 				if (blockPos2 != null) {
 					this.dolphin.setTreasurePos(blockPos2);
 					serverWorld.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);

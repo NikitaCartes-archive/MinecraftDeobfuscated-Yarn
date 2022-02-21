@@ -27,8 +27,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
+import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
-import net.minecraft.world.gen.noise.NoiseType;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 import org.apache.commons.lang3.mutable.MutableDouble;
 import org.apache.commons.lang3.mutable.MutableObject;
@@ -41,7 +41,7 @@ public class Blender {
 		}
 
 		@Override
-		public double method_39338(NoiseType.NoisePos noisePos, double d) {
+		public double method_39338(DensityFunction.NoisePos noisePos, double d) {
 			return d;
 		}
 
@@ -143,7 +143,7 @@ public class Blender {
 		return 1.0 * (32.0 * (f - 128.0) - 3.0 * (f - 120.0) * g + 3.0 * g * g) / (128.0 * (32.0 - 3.0 * g));
 	}
 
-	public double method_39338(NoiseType.NoisePos noisePos, double d) {
+	public double method_39338(DensityFunction.NoisePos noisePos, double d) {
 		int i = BiomeCoords.fromBlock(noisePos.blockX());
 		int j = noisePos.blockY() / 8;
 		int k = BiomeCoords.fromBlock(noisePos.blockZ());

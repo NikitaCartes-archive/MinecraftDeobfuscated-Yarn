@@ -76,12 +76,12 @@ public final class DimensionOptions {
 			Optional<DimensionOptions> optional2 = registry.getOrEmpty(NETHER);
 			Optional<DimensionOptions> optional3 = registry.getOrEmpty(END);
 			if (!optional.isEmpty() && !optional2.isEmpty() && !optional3.isEmpty()) {
-				if (!((DimensionOptions)optional.get()).getDimensionTypeSupplier().value().equals(DimensionType.OVERWORLD)
-					&& ((DimensionOptions)optional.get()).getDimensionTypeSupplier().value() != DimensionType.OVERWORLD_CAVES) {
+				if (!((DimensionOptions)optional.get()).getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_REGISTRY_KEY)
+					&& !((DimensionOptions)optional.get()).getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY)) {
 					return false;
-				} else if (!((DimensionOptions)optional2.get()).getDimensionTypeSupplier().value().equals(DimensionType.THE_NETHER)) {
+				} else if (!((DimensionOptions)optional2.get()).getDimensionTypeSupplier().matchesKey(DimensionType.THE_NETHER_REGISTRY_KEY)) {
 					return false;
-				} else if (!((DimensionOptions)optional3.get()).getDimensionTypeSupplier().value().equals(DimensionType.THE_END)) {
+				} else if (!((DimensionOptions)optional3.get()).getDimensionTypeSupplier().matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
 					return false;
 				} else if (((DimensionOptions)optional2.get()).getChunkGenerator() instanceof NoiseChunkGenerator
 					&& ((DimensionOptions)optional3.get()).getChunkGenerator() instanceof NoiseChunkGenerator) {

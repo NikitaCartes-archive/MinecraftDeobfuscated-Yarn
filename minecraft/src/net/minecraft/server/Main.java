@@ -20,7 +20,6 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_6904;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
@@ -142,13 +141,13 @@ public class Main {
 				new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 			);
 
-			class_6904 lv2;
+			SaveLoader saveLoader;
 			try {
-				class_6904.class_6906 lv = new class_6904.class_6906(
+				SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(
 					resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl
 				);
-				lv2 = (class_6904)class_6904.method_40431(
-						lv,
+				saveLoader = (SaveLoader)SaveLoader.ofLoaded(
+						functionLoaderConfig,
 						() -> {
 							DataPackSettings dataPackSettings = session.getDataPackSettings();
 							return dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings;
@@ -156,7 +155,7 @@ public class Main {
 						(resourceManager, dataPackSettings) -> {
 							DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
 							DynamicOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-							SaveProperties savePropertiesx = session.readLevelProperties(dynamicOps, dataPackSettings);
+							SaveProperties savePropertiesx = session.readLevelProperties(dynamicOps, dataPackSettings, mutable.getRegistryLifecycle());
 							if (savePropertiesx != null) {
 								return Pair.of(savePropertiesx, mutable.toImmutable());
 							} else {
@@ -197,10 +196,10 @@ public class Main {
 				return;
 			}
 
-			lv2.method_40428();
-			DynamicRegistryManager.Immutable immutable = lv2.registryAccess();
+			saveLoader.refresh();
+			DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
 			serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
-			SaveProperties saveProperties = lv2.worldData();
+			SaveProperties saveProperties = saveLoader.saveProperties();
 			if (optionSet.has(optionSpec5)) {
 				forceUpgradeWorld(session, Schemas.getFixer(), optionSet.has(optionSpec6), () -> true, saveProperties.getGeneratorOptions());
 			}
@@ -212,7 +211,7 @@ public class Main {
 						threadx,
 						session,
 						resourcePackManager,
-						lv2,
+						saveLoader,
 						serverPropertiesLoader,
 						Schemas.getFixer(),
 						minecraftSessionService,

@@ -933,12 +933,20 @@ public class MathHelper {
 		return mean + (float)random.nextGaussian() * deviation;
 	}
 
+	public static double squaredHypot(double a, double b) {
+		return a * a + b * b;
+	}
+
 	public static double hypot(double a, double b) {
-		return Math.sqrt(a * a + b * b);
+		return Math.sqrt(squaredHypot(a, b));
+	}
+
+	public static double squaredMagnitude(double a, double b, double c) {
+		return a * a + b * b + c * c;
 	}
 
 	public static double magnitude(double a, double b, double c) {
-		return Math.sqrt(a * a + b * b + c * c);
+		return Math.sqrt(squaredMagnitude(a, b, c));
 	}
 
 	/**

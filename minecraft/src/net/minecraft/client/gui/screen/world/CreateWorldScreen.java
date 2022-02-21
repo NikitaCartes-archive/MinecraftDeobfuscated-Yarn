@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_6904;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -43,6 +42,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
+import net.minecraft.server.SaveLoader;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -114,11 +114,11 @@ public class CreateWorldScreen extends Screen {
 		);
 	}
 
-	public static CreateWorldScreen create(@Nullable Screen parent, class_6904 source, @Nullable Path path) {
-		SaveProperties saveProperties = source.worldData();
+	public static CreateWorldScreen create(@Nullable Screen parent, SaveLoader source, @Nullable Path path) {
+		SaveProperties saveProperties = source.saveProperties();
 		LevelInfo levelInfo = saveProperties.getLevelInfo();
 		GeneratorOptions generatorOptions = saveProperties.getGeneratorOptions();
-		DynamicRegistryManager.Immutable immutable = source.registryAccess();
+		DynamicRegistryManager.Immutable immutable = source.dynamicRegistryManager();
 		DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
 		CreateWorldScreen createWorldScreen = new CreateWorldScreen(
 			parent,
@@ -456,8 +456,8 @@ public class CreateWorldScreen extends Screen {
 			this.dataPackSettings = dataPackSettings;
 		} else {
 			this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
-			class_6904.method_40431(
-					new class_6904.class_6906(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false),
+			SaveLoader.ofLoaded(
+					new SaveLoader.FunctionLoaderConfig(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false),
 					() -> dataPackSettings,
 					(resourceManager, dataPackSettingsx) -> {
 						DynamicRegistryManager dynamicRegistryManager = this.moreOptionsDialog.getRegistryManager();

@@ -56,7 +56,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange y,
 		NumberRange.FloatRange z,
 		@Nullable RegistryKey<Biome> biome,
-		@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey,
+		@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> feature,
 		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
 		LightPredicate light,
@@ -67,7 +67,7 @@ public class LocationPredicate {
 		this.y = y;
 		this.z = z;
 		this.biome = biome;
-		this.feature = registryKey;
+		this.feature = feature;
 		this.dimension = dimension;
 		this.smokey = smokey;
 		this.light = light;
@@ -105,13 +105,13 @@ public class LocationPredicate {
 		);
 	}
 
-	public static LocationPredicate feature(RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
+	public static LocationPredicate feature(RegistryKey<ConfiguredStructureFeature<?, ?>> feature) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			null,
-			registryKey,
+			feature,
 			null,
 			null,
 			LightPredicate.ANY,
@@ -273,8 +273,8 @@ public class LocationPredicate {
 			return this;
 		}
 
-		public LocationPredicate.Builder feature(@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> registryKey) {
-			this.feature = registryKey;
+		public LocationPredicate.Builder feature(@Nullable RegistryKey<ConfiguredStructureFeature<?, ?>> feature) {
+			this.feature = feature;
 			return this;
 		}
 

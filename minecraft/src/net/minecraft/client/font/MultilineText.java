@@ -35,7 +35,7 @@ public interface MultilineText {
 		}
 
 		@Override
-		public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
+		public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
 		}
 
 		@Override
@@ -86,61 +86,65 @@ public interface MultilineText {
 	}
 
 	static MultilineText create(TextRenderer renderer, List<MultilineText.Line> lines) {
-		return lines.isEmpty() ? EMPTY : new MultilineText() {
-			@Override
-			public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
-				return this.drawCenterWithShadow(matrices, x, y, 9, 16777215);
-			}
-
-			@Override
-			public int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-				int i = y;
-
-				for (MultilineText.Line line : lines) {
-					renderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
-					i += lineHeight;
+		return lines.isEmpty()
+			? EMPTY
+			: new MultilineText() {
+				@Override
+				public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
+					return this.drawCenterWithShadow(matrices, x, y, 9, 16777215);
 				}
 
-				return i;
-			}
+				@Override
+				public int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+					int i = y;
 
-			@Override
-			public int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-				int i = y;
+					for (MultilineText.Line line : lines) {
+						renderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
+						i += lineHeight;
+					}
 
-				for (MultilineText.Line line : lines) {
-					renderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
-					i += lineHeight;
+					return i;
 				}
 
-				return i;
-			}
+				@Override
+				public int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+					int i = y;
 
-			@Override
-			public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-				int i = y;
+					for (MultilineText.Line line : lines) {
+						renderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
+						i += lineHeight;
+					}
 
-				for (MultilineText.Line line : lines) {
-					renderer.draw(matrices, line.text, (float)x, (float)i, color);
-					i += lineHeight;
+					return i;
 				}
 
-				return i;
-			}
+				@Override
+				public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+					int i = y;
 
-			@Override
-			public void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
-				int n = lines.stream().mapToInt(line -> line.width).max().orElse(0);
-				if (n > 0) {
-					DrawableHelper.fill(matrixStack, i - n / 2 - l, j - l, i + n / 2 + l, j + lines.size() * k + l, m);
+					for (MultilineText.Line line : lines) {
+						renderer.draw(matrices, line.text, (float)x, (float)i, color);
+						i += lineHeight;
+					}
+
+					return i;
 				}
-			}
 
-			@Override
-			public int count() {
-				return lines.size();
-			}
-		};
+				@Override
+				public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
+					int i = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+					if (i > 0) {
+						DrawableHelper.fill(
+							matrices, centerX - i / 2 - padding, centerY - padding, centerX + i / 2 + padding, centerY + lines.size() * lineHeight + padding, color
+						);
+					}
+				}
+
+				@Override
+				public int count() {
+					return lines.size();
+				}
+			};
 	}
 
 	int drawCenterWithShadow(MatrixStack matrices, int x, int y);
@@ -151,7 +155,7 @@ public interface MultilineText {
 
 	int draw(MatrixStack matrices, int x, int y, int lineHeight, int color);
 
-	void method_41154(MatrixStack matrixStack, int i, int j, int k, int l, int m);
+	void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color);
 
 	int count();
 

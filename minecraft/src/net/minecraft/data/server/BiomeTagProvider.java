@@ -7,8 +7,8 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class BiomeTagProvider extends AbstractTagProvider<Biome> {
-	public BiomeTagProvider(DataGenerator root) {
-		super(root, BuiltinRegistries.BIOME);
+	public BiomeTagProvider(DataGenerator dataGenerator) {
+		super(dataGenerator, BuiltinRegistries.BIOME);
 	}
 
 	@Override
@@ -136,7 +136,6 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE).add(BiomeKeys.TAIGA);
 		this.getOrCreateTagBuilder(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE).add(BiomeKeys.DARK_FOREST);
 		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_HAS_STRUCTURE)
-			.add(BiomeKeys.THE_VOID)
 			.add(BiomeKeys.PLAINS)
 			.add(BiomeKeys.SUNFLOWER_PLAINS)
 			.add(BiomeKeys.SNOWY_PLAINS)
