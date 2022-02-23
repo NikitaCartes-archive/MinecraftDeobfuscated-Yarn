@@ -72,7 +72,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
@@ -299,7 +298,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.saveProperties = saveLoader.saveProperties();
 		this.proxy = proxy;
 		this.dataPackManager = dataPackManager;
-		this.resourceManagerHolder = new MinecraftServer.ResourceManagerHolder(saveLoader.resourceManager(), saveLoader.dataPackResources());
+		this.resourceManagerHolder = new MinecraftServer.ResourceManagerHolder(saveLoader.resourceManager(), saveLoader.dataPackContents());
 		this.sessionService = sessionService;
 		this.gameProfileRepo = gameProfileRepo;
 		this.userCache = userCache;
@@ -312,7 +311,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.session = session;
 		this.saveHandler = session.createSaveHandler();
 		this.dataFixer = dataFixer;
-		this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.managers.getFunctionLoader());
+		this.commandFunctionManager = new CommandFunctionManager(this, this.resourceManagerHolder.dataPackContents.getFunctionLoader());
 		this.structureManager = new StructureManager(saveLoader.resourceManager(), session, dataFixer);
 		this.serverThread = serverThread;
 		this.workerExecutor = Util.getMainWorkerExecutor();
@@ -1424,7 +1423,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public ServerAdvancementLoader getAdvancementLoader() {
-		return this.resourceManagerHolder.managers.getServerAdvancementLoader();
+		return this.resourceManagerHolder.dataPackContents.getServerAdvancementLoader();
 	}
 
 	public CommandFunctionManager getCommandFunctionManager() {
@@ -1451,7 +1450,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			.thenCompose(
 				resourcePacks -> {
 					LifecycledResourceManager lifecycledResourceManager = new LifecycledResourceManagerImpl(ResourceType.SERVER_DATA, resourcePacks);
-					return ServerResourceManager.reload(
+					return DataPackContents.reload(
 							lifecycledResourceManager,
 							immutable,
 							this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
@@ -1459,12 +1458,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 							this.workerExecutor,
 							this
 						)
-						.whenComplete((resourceManager, throwable) -> {
+						.whenComplete((dataPackContents, throwable) -> {
 							if (throwable != null) {
 								lifecycledResourceManager.close();
 							}
 						})
-						.thenApply(resourceManager -> new MinecraftServer.ResourceManagerHolder(lifecycledResourceManager, resourceManager));
+						.thenApply(dataPackContents -> new MinecraftServer.ResourceManagerHolder(lifecycledResourceManager, dataPackContents));
 				}
 			)
 			.thenAcceptAsync(resourceManagerHolder -> {
@@ -1472,10 +1471,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.resourceManagerHolder = resourceManagerHolder;
 				this.dataPackManager.setEnabledProfiles(dataPacks);
 				this.saveProperties.updateLevelInfo(createDataPackSettings(this.dataPackManager));
-				this.resourceManagerHolder.managers.refresh(this.getRegistryManager());
+				this.resourceManagerHolder.dataPackContents.refresh(this.getRegistryManager());
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
-				this.commandFunctionManager.setFunctions(this.resourceManagerHolder.managers.getFunctionLoader());
+				this.commandFunctionManager.setFunctions(this.resourceManagerHolder.dataPackContents.getFunctionLoader());
 				this.structureManager.setResourceManager(this.resourceManagerHolder.resourceManager);
 			}, this);
 		if (this.isOnThread()) {
@@ -1548,7 +1547,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * The command manager is responsible for parsing and dispatching commands.
 	 */
 	public CommandManager getCommandManager() {
-		return this.resourceManagerHolder.managers.getCommandManager();
+		return this.resourceManagerHolder.dataPackContents.getCommandManager();
 	}
 
 	/**
@@ -1575,7 +1574,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public abstract boolean shouldBroadcastConsoleToOps();
 
 	public RecipeManager getRecipeManager() {
-		return this.resourceManagerHolder.managers.getRecipeManager();
+		return this.resourceManagerHolder.dataPackContents.getRecipeManager();
 	}
 
 	public ServerScoreboard getScoreboard() {
@@ -1591,15 +1590,15 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public LootManager getLootManager() {
-		return this.resourceManagerHolder.managers.getLootManager();
+		return this.resourceManagerHolder.dataPackContents.getLootManager();
 	}
 
 	public LootConditionManager getPredicateManager() {
-		return this.resourceManagerHolder.managers.getLootConditionManager();
+		return this.resourceManagerHolder.dataPackContents.getLootConditionManager();
 	}
 
 	public LootFunctionManager getItemModifierManager() {
-		return this.resourceManagerHolder.managers.getLootFunctionManager();
+		return this.resourceManagerHolder.dataPackContents.getLootFunctionManager();
 	}
 
 	public GameRules getGameRules() {
@@ -2006,7 +2005,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	static record ResourceManagerHolder(LifecycledResourceManager resourceManager, ServerResourceManager managers) implements AutoCloseable {
+	static record ResourceManagerHolder(LifecycledResourceManager resourceManager, DataPackContents dataPackContents) implements AutoCloseable {
 
 		public void close() {
 			this.resourceManager.close();

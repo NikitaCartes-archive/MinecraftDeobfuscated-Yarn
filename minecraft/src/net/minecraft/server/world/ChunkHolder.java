@@ -131,6 +131,13 @@ public class ChunkHolder {
 	}
 
 	@Nullable
+	public WorldChunk method_41205() {
+		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.getAccessibleFuture();
+		Either<WorldChunk, ChunkHolder.Unloaded> either = (Either<WorldChunk, ChunkHolder.Unloaded>)completableFuture.getNow(null);
+		return either == null ? null : (WorldChunk)either.left().orElse(null);
+	}
+
+	@Nullable
 	public ChunkStatus getCurrentStatus() {
 		for (int i = CHUNK_STATUSES.size() - 1; i >= 0; i--) {
 			ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
@@ -180,17 +187,20 @@ public class ChunkHolder {
 	 * @param y chunk section y coordinate
 	 */
 	public void markForLightUpdate(LightType lightType, int y) {
-		WorldChunk worldChunk = this.getWorldChunk();
+		WorldChunk worldChunk = this.method_41205();
 		if (worldChunk != null) {
 			worldChunk.setNeedsSaving(true);
-			int i = this.lightingProvider.getBottomY();
-			int j = this.lightingProvider.getTopY();
-			if (y >= i && y <= j) {
-				int k = y - i;
-				if (lightType == LightType.SKY) {
-					this.skyLightUpdateBits.set(k);
-				} else {
-					this.blockLightUpdateBits.set(k);
+			WorldChunk worldChunk2 = this.getWorldChunk();
+			if (worldChunk2 != null) {
+				int i = this.lightingProvider.getBottomY();
+				int j = this.lightingProvider.getTopY();
+				if (y >= i && y <= j) {
+					int k = y - i;
+					if (lightType == LightType.SKY) {
+						this.skyLightUpdateBits.set(k);
+					} else {
+						this.blockLightUpdateBits.set(k);
+					}
 				}
 			}
 		}

@@ -51,7 +51,6 @@ import org.apache.commons.lang3.mutable.MutableInt;
 public class BookEditScreen extends Screen {
 	private static final int MAX_TEXT_WIDTH = 114;
 	private static final int MAX_TEXT_HEIGHT = 128;
-	private static final int DOUBLE_CLICK_MAX_DELAY = 250;
 	private static final int WIDTH = 192;
 	private static final int HEIGHT = 192;
 	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");

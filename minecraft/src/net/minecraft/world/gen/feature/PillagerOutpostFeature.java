@@ -19,6 +19,6 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
 		chunkRandom.setSeed((long)(i ^ j << 4) ^ context.seed());
 		chunkRandom.nextInt();
-		return chunkRandom.nextInt(5) != 0 ? false : !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, chunkPos.x, chunkPos.z, 10);
+		return chunkRandom.nextInt(5) != 0 ? false : !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, context.seed(), chunkPos.x, chunkPos.z, 10);
 	}
 }

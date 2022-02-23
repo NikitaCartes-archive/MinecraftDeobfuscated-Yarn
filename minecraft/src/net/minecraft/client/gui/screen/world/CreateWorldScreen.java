@@ -476,10 +476,10 @@ public class CreateWorldScreen extends Screen {
 					Util.getMainWorkerExecutor(),
 					this.client
 				)
-				.thenAcceptAsync(serverResourceManager -> {
+				.thenAcceptAsync(saveLoader -> {
 					this.dataPackSettings = dataPackSettings;
-					this.moreOptionsDialog.loadDatapacks(serverResourceManager);
-					serverResourceManager.close();
+					this.moreOptionsDialog.loadDatapacks(saveLoader);
+					saveLoader.close();
 				}, this.client)
 				.handle(
 					(v, throwable) -> {

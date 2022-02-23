@@ -54,7 +54,7 @@ public class StructureSeparationDataFix extends DataFix {
 	protected TypeRewriteRule makeRule() {
 		return this.fixTypeEverywhereTyped(
 			"WorldGenSettings building",
-			this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS),
+			this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS),
 			typed -> typed.update(DSL.remainderFinder(), StructureSeparationDataFix::method_28271)
 		);
 	}

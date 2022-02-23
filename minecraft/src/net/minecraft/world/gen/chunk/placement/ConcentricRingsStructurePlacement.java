@@ -17,9 +17,9 @@ public record ConcentricRingsStructurePlacement(int distance, int spread, int co
 	);
 
 	@Override
-	public boolean isStartChunk(ChunkGenerator chunkGenerator, int x, int z) {
+	public boolean isStartChunk(ChunkGenerator chunkGenerator, long l, int i, int j) {
 		List<ChunkPos> list = chunkGenerator.getConcentricRingsStartChunks(this);
-		return list == null ? false : list.contains(new ChunkPos(x, z));
+		return list == null ? false : list.contains(new ChunkPos(i, j));
 	}
 
 	@Override

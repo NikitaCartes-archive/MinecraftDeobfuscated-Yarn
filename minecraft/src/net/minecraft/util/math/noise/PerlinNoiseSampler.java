@@ -2,7 +2,7 @@ package net.minecraft.util.math.noise;
 
 import com.google.common.annotations.VisibleForTesting;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.NoiseHelper;
+import net.minecraft.world.gen.noise.NoiseHelper;
 import net.minecraft.world.gen.random.AbstractRandom;
 
 public final class PerlinNoiseSampler {

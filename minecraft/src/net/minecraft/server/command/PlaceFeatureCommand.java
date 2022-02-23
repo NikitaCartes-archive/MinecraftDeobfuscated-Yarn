@@ -4,12 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class PlaceFeatureCommand {
@@ -20,18 +20,17 @@ public class PlaceFeatureCommand {
 			CommandManager.literal("placefeature")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("feature", IdentifierArgumentType.identifier())
-						.suggests(SuggestionProviders.AVAILABLE_FEATURES)
+					CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(Registry.CONFIGURED_FEATURE_KEY))
 						.executes(
 							context -> execute(
-									context.getSource(), IdentifierArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(context.getSource().getPosition())
+									context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(context.getSource().getPosition())
 								)
 						)
 						.then(
 							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.executes(
 									context -> execute(
-											context.getSource(), IdentifierArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
+											context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos")
 										)
 								)
 						)
@@ -39,14 +38,14 @@ public class PlaceFeatureCommand {
 		);
 	}
 
-	public static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<ConfiguredFeature<?, ?>> configuredFeatureEntry, BlockPos pos) throws CommandSyntaxException {
+	public static int execute(ServerCommandSource source, RegistryEntry<ConfiguredFeature<?, ?>> feature, BlockPos pos) throws CommandSyntaxException {
 		ServerWorld serverWorld = source.getWorld();
-		ConfiguredFeature<?, ?> configuredFeature = configuredFeatureEntry.resource();
+		ConfiguredFeature<?, ?> configuredFeature = feature.value();
 		if (!configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), serverWorld.getRandom(), pos)) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			Identifier identifier = configuredFeatureEntry.id();
-			source.sendFeedback(new TranslatableText("commands.placefeature.success", identifier, pos.getX(), pos.getY(), pos.getZ()), true);
+			String string = (String)feature.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
+			source.sendFeedback(new TranslatableText("commands.placefeature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
 	}

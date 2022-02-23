@@ -45,9 +45,9 @@ public record RandomSpreadStructurePlacement(int spacing, int separation, Spread
 	}
 
 	@Override
-	public boolean isStartChunk(ChunkGenerator chunkGenerator, int x, int z) {
-		ChunkPos chunkPos = this.getStartChunk(chunkGenerator.getSeed(), x, z);
-		return chunkPos.x == x && chunkPos.z == z;
+	public boolean isStartChunk(ChunkGenerator chunkGenerator, long l, int i, int j) {
+		ChunkPos chunkPos = this.getStartChunk(l, i, j);
+		return chunkPos.x == i && chunkPos.z == j;
 	}
 
 	@Override

@@ -18,7 +18,7 @@ public class StructureSettingsFlattenFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+		Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
 		OpticFinder<?> opticFinder = type.findField("dimensions");
 		return this.fixTypeEverywhereTyped("StructureSettingsFlatten", type, typed -> typed.updateTyped(opticFinder, typedx -> {
 				Dynamic<?> dynamic = (Dynamic<?>)typedx.write().result().orElseThrow();

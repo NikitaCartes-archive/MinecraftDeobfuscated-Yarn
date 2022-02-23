@@ -2,7 +2,6 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.class_7056;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
@@ -14,6 +13,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
+import net.minecraft.world.gen.noise.SimpleNoiseRouter;
 import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 import net.minecraft.world.gen.surfacebuilder.VanillaSurfaceRules;
@@ -22,7 +22,7 @@ public record ChunkGeneratorSettings(
 	GenerationShapeConfig generationShapeConfig,
 	BlockState defaultBlock,
 	BlockState defaultFluid,
-	class_7056 noiseRouter,
+	SimpleNoiseRouter noiseRouter,
 	MaterialRules.MaterialRule surfaceRule,
 	int seaLevel,
 	@Deprecated boolean mobGenerationDisabled,
@@ -35,7 +35,7 @@ public record ChunkGeneratorSettings(
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::generationShapeConfig),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::defaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::defaultFluid),
-					class_7056.field_37137.fieldOf("noise_router").forGetter(ChunkGeneratorSettings::noiseRouter),
+					SimpleNoiseRouter.CODEC.fieldOf("noise_router").forGetter(ChunkGeneratorSettings::noiseRouter),
 					MaterialRules.MaterialRule.CODEC.fieldOf("surface_rule").forGetter(ChunkGeneratorSettings::surfaceRule),
 					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::seaLevel),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::mobGenerationDisabled),
@@ -107,12 +107,12 @@ public record ChunkGeneratorSettings(
 	}
 
 	private static ChunkGeneratorSettings createSurfaceSettings(boolean amplified, boolean largeBiomes) {
-		GenerationShapeConfig generationShapeConfig = GenerationShapeConfig.method_41126(amplified, largeBiomes);
+		GenerationShapeConfig generationShapeConfig = GenerationShapeConfig.method_41126(amplified);
 		return new ChunkGeneratorSettings(
 			generationShapeConfig,
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
-			DensityFunctions.method_41103(generationShapeConfig),
+			DensityFunctions.method_41103(generationShapeConfig, largeBiomes),
 			VanillaSurfaceRules.createOverworldSurfaceRule(),
 			63,
 			false,

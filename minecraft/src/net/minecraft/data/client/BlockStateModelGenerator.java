@@ -39,7 +39,6 @@ import net.minecraft.block.enums.Tilt;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.data.client.model.TextureMap;
 import net.minecraft.data.family.BlockFamilies;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;

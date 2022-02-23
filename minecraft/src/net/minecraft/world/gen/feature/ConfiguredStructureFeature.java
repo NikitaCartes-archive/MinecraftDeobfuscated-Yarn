@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructureManager;
@@ -36,11 +35,6 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	);
 	public static final Codec<RegistryEntryList<ConfiguredStructureFeature<?, ?>>> REGISTRY_ELEMENT_CODEC = RegistryCodecs.entryList(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC
-	);
-	public static final Codec<ConfiguredStructureFeature<?, ?>> field_37142 = Codec.unit(
-		(Supplier<ConfiguredStructureFeature<?, ?>>)(() -> new ConfiguredStructureFeature<>(
-				StructureFeature.IGLOO, DefaultFeatureConfig.INSTANCE, RegistryEntryList.of(), false, Map.of()
-			))
 	);
 	public final F feature;
 	public final FC config;

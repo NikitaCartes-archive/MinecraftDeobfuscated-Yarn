@@ -15,7 +15,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -24,7 +23,7 @@ import net.minecraft.world.level.storage.LevelStorage;
 
 public record SaveLoader(
 	LifecycledResourceManager resourceManager,
-	ServerResourceManager dataPackResources,
+	DataPackContents dataPackContents,
 	DynamicRegistryManager.Immutable dynamicRegistryManager,
 	SaveProperties saveProperties
 ) implements AutoCloseable {
@@ -43,7 +42,7 @@ public record SaveLoader(
 			Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = savePropertiesSupplier.get(lifecycledResourceManager, dataPackSettings2);
 			SaveProperties saveProperties = pair.getFirst();
 			DynamicRegistryManager.Immutable immutable = pair.getSecond();
-			return ServerResourceManager.reload(
+			return DataPackContents.reload(
 					lifecycledResourceManager,
 					immutable,
 					functionLoaderConfig.commandEnvironment(),
@@ -51,12 +50,12 @@ public record SaveLoader(
 					prepareExecutor,
 					applyExecutor
 				)
-				.whenComplete((resourceManager, throwable) -> {
+				.whenComplete((dataPackContents, throwable) -> {
 					if (throwable != null) {
 						lifecycledResourceManager.close();
 					}
 				})
-				.thenApply(resourceManager -> new SaveLoader(lifecycledResourceManager, resourceManager, immutable, saveProperties));
+				.thenApply(dataPackContents -> new SaveLoader(lifecycledResourceManager, dataPackContents, immutable, saveProperties));
 		} catch (Exception var12) {
 			return CompletableFuture.failedFuture(var12);
 		}
@@ -67,7 +66,7 @@ public record SaveLoader(
 	}
 
 	public void refresh() {
-		this.dataPackResources.refresh(this.dynamicRegistryManager);
+		this.dataPackContents.refresh(this.dynamicRegistryManager);
 	}
 
 	@FunctionalInterface

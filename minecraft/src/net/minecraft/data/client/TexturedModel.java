@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
-import net.minecraft.data.client.model.TextureMap;
 import net.minecraft.util.Identifier;
 
 /**

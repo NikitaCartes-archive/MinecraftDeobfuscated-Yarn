@@ -109,11 +109,11 @@ public class TestServer extends MinecraftServer {
 		Thread serverThread,
 		LevelStorage.Session session,
 		ResourcePackManager dataPackManager,
-		SaveLoader serverResourceManager,
+		SaveLoader saveLoader,
 		Collection<GameTestBatch> batches,
 		BlockPos pos
 	) {
-		super(serverThread, session, dataPackManager, serverResourceManager, Proxy.NO_PROXY, Schemas.getFixer(), null, null, null, WorldGenerationProgressLogger::new);
+		super(serverThread, session, dataPackManager, saveLoader, Proxy.NO_PROXY, Schemas.getFixer(), null, null, null, WorldGenerationProgressLogger::new);
 		this.batches = Lists.<GameTestBatch>newArrayList(batches);
 		this.pos = pos;
 	}

@@ -1,4 +1,4 @@
-package net.minecraft.world.gen;
+package net.minecraft.world.gen.noise;
 
 public class NoiseHelper {
 	public static double method_35479(double d, double e) {

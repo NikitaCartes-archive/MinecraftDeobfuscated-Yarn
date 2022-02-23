@@ -75,7 +75,7 @@ public class MissingDimensionFix extends DataFix {
 		);
 		CompoundListType<String, ?> compoundListType = DSL.compoundList(IdentifierNormalizingSchema.getIdentifierType(), method_29913("generator", taggedChoiceType));
 		Type<?> type = DSL.and(compoundListType, DSL.remainderType());
-		Type<?> type2 = schema.getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+		Type<?> type2 = schema.getType(TypeReferences.WORLD_GEN_SETTINGS);
 		FieldFinder<?> fieldFinder = new FieldFinder<>("dimensions", type);
 		if (!type2.findFieldType("dimensions").equals(type)) {
 			throw new IllegalStateException();

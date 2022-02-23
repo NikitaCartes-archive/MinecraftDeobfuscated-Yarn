@@ -19,18 +19,12 @@ import net.minecraft.util.registry.Registry;
 public class SuggestionProviders {
 	private static final Map<Identifier, SuggestionProvider<CommandSource>> REGISTRY = Maps.<Identifier, SuggestionProvider<CommandSource>>newHashMap();
 	private static final Identifier ASK_SERVER_NAME = new Identifier("ask_server");
-	public static final SuggestionProvider<CommandSource> ASK_SERVER = register(
-		ASK_SERVER_NAME, (context, builder) -> context.getSource().getCompletions(context, builder)
-	);
+	public static final SuggestionProvider<CommandSource> ASK_SERVER = register(ASK_SERVER_NAME, (context, builder) -> context.getSource().getCompletions(context));
 	public static final SuggestionProvider<ServerCommandSource> ALL_RECIPES = register(
 		new Identifier("all_recipes"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRecipeIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_SOUNDS = register(
 		new Identifier("available_sounds"), (context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getSoundIds(), builder)
-	);
-	public static final SuggestionProvider<ServerCommandSource> AVAILABLE_FEATURES = register(
-		new Identifier("available_features"),
-		(context, builder) -> CommandSource.suggestIdentifiers(context.getSource().getRegistryManager().get(Registry.CONFIGURED_FEATURE_KEY).getIds(), builder)
 	);
 	public static final SuggestionProvider<ServerCommandSource> SUMMONABLE_ENTITIES = register(
 		new Identifier("summonable_entities"),

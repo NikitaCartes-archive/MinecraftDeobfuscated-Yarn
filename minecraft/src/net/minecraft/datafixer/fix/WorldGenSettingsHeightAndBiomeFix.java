@@ -25,9 +25,9 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+		Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
 		OpticFinder<?> opticFinder = type.findField("dimensions");
-		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+		Type<?> type2 = this.getOutputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
 		Type<?> type3 = type2.findFieldType("dimensions");
 		return this.fixTypeEverywhereTyped(
 			"WorldGenSettingsHeightAndBiomeFix",

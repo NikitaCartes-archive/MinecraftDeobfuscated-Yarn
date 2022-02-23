@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
@@ -17,9 +16,6 @@ public record ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>>
 	public static final Codec<ConfiguredFeature<?, ?>> CODEC = Registry.FEATURE
 		.getCodec()
 		.dispatch(configuredFeature -> configuredFeature.feature, Feature::getCodec);
-	public static final Codec<ConfiguredFeature<?, ?>> NETWORK_CODEC = Codec.unit(
-		(Supplier<ConfiguredFeature<?, ?>>)(() -> new ConfiguredFeature<>(Feature.NO_OP, DefaultFeatureConfig.INSTANCE))
-	);
 	public static final Codec<RegistryEntry<ConfiguredFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_FEATURE_KEY, CODEC);
 	public static final Codec<RegistryEntryList<ConfiguredFeature<?, ?>>> LIST_CODEC = RegistryCodecs.entryList(Registry.CONFIGURED_FEATURE_KEY, CODEC);
 

@@ -83,14 +83,9 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (context.getSource() instanceof CommandSource commandSource) {
-			commandSource.getRegistryManager().getOptional(this.registryRef).ifPresent(registry -> {
-				CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, "#");
-				CommandSource.suggestIdentifiers(registry.getIds(), builder);
-			});
-		}
-
-		return builder.buildFuture();
+		return context.getSource() instanceof CommandSource commandSource
+			? commandSource.listIdSuggestions(this.registryRef, CommandSource.SuggestedIdType.ALL, builder, context)
+			: builder.buildFuture();
 	}
 
 	@Override

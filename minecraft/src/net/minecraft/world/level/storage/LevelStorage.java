@@ -110,7 +110,7 @@ public class LevelStorage {
 			}
 		}
 
-		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
+		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.WORLD_GEN_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic2);
 		return Pair.of((GeneratorOptions)dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).orElseGet(() -> {
 			DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.createDynamicRegistryManager(dynamic2);
@@ -138,8 +138,8 @@ public class LevelStorage {
 					boolean bl;
 					try {
 						bl = SessionLock.isLocked(file.toPath());
-					} catch (Exception var11) {
-						LOGGER.warn("Failed to read {} lock", file, var11);
+					} catch (Exception var14) {
+						LOGGER.warn("Failed to read {} lock", file, var14);
 						continue;
 					}
 
@@ -148,14 +148,20 @@ public class LevelStorage {
 						if (levelSummary != null) {
 							list.add(levelSummary);
 						}
-					} catch (OutOfMemoryError var9) {
+					} catch (OutOfMemoryError var12) {
 						CrashMemoryReserve.releaseMemory();
 						System.gc();
 						LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", file);
-						throw var9;
-					} catch (StackOverflowError var10) {
-						LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of stack trying to read summary of {}", file);
-						throw var10;
+						throw var12;
+					} catch (StackOverflowError var13) {
+						LOGGER.error(
+							LogUtils.FATAL_MARKER, "Ran out of stack trying to read summary of {}. Assuming corruption; attempting to restore from from level.dat_old.", file
+						);
+						File file2 = new File(file, "level.dat");
+						File file3 = new File(file, "level.dat_old");
+						File file4 = new File(file, "level.dat_corrupted_" + LocalDateTime.now().format(TIME_FORMATTER));
+						Util.backupAndReplace(file2, file3, file4, true);
+						throw var13;
 					}
 				}
 			}

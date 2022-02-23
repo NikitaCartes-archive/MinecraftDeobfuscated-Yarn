@@ -2,7 +2,6 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
@@ -19,9 +18,6 @@ public record GenerationShapeConfig(
 	SlideConfig bottomSlide,
 	int horizontalSize,
 	int verticalSize,
-	@Deprecated boolean islandNoiseOverride,
-	@Deprecated boolean amplified,
-	@Deprecated boolean largeBiomes,
 	VanillaTerrainParameters terrainParameters
 ) {
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
@@ -33,11 +29,6 @@ public record GenerationShapeConfig(
 						SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::bottomSlide),
 						Codec.intRange(1, 4).fieldOf("size_horizontal").forGetter(GenerationShapeConfig::horizontalSize),
 						Codec.intRange(1, 4).fieldOf("size_vertical").forGetter(GenerationShapeConfig::verticalSize),
-						Codec.BOOL
-							.optionalFieldOf("island_noise_override", Boolean.valueOf(false), Lifecycle.experimental())
-							.forGetter(GenerationShapeConfig::islandNoiseOverride),
-						Codec.BOOL.optionalFieldOf("amplified", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::amplified),
-						Codec.BOOL.optionalFieldOf("large_biomes", Boolean.valueOf(false), Lifecycle.experimental()).forGetter(GenerationShapeConfig::largeBiomes),
 						VanillaTerrainParameters.CODEC.fieldOf("terrain_shaper").forGetter(GenerationShapeConfig::terrainParameters)
 					)
 					.apply(instance, GenerationShapeConfig::new)
@@ -51,9 +42,6 @@ public record GenerationShapeConfig(
 		new SlideConfig(2.5, 4, -1),
 		1,
 		2,
-		false,
-		false,
-		false,
 		VanillaTerrainParametersCreator.createNetherParameters()
 	);
 	static final GenerationShapeConfig field_37139 = create(
@@ -64,9 +52,6 @@ public record GenerationShapeConfig(
 		new SlideConfig(-0.234375, 7, 1),
 		2,
 		1,
-		true,
-		false,
-		false,
 		VanillaTerrainParametersCreator.createEndParameters()
 	);
 	static final GenerationShapeConfig field_37140 = create(
@@ -77,9 +62,6 @@ public record GenerationShapeConfig(
 		new SlideConfig(2.5, 4, -1),
 		1,
 		2,
-		false,
-		false,
-		false,
 		VanillaTerrainParametersCreator.createCavesParameters()
 	);
 	static final GenerationShapeConfig field_37141 = create(
@@ -90,9 +72,6 @@ public record GenerationShapeConfig(
 		new SlideConfig(-0.234375, 7, 1),
 		2,
 		1,
-		false,
-		false,
-		false,
 		VanillaTerrainParametersCreator.createFloatingIslandsParameters()
 	);
 
@@ -114,13 +93,10 @@ public record GenerationShapeConfig(
 		SlideConfig bottomSlide,
 		int horizontalSize,
 		int verticalSize,
-		boolean islandNoiseOverride,
-		boolean amplified,
-		boolean largeBiomes,
-		VanillaTerrainParameters terrainParameters
+		VanillaTerrainParameters vanillaTerrainParameters
 	) {
 		GenerationShapeConfig generationShapeConfig = new GenerationShapeConfig(
-			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, islandNoiseOverride, amplified, largeBiomes, terrainParameters
+			minimumY, height, sampling, topSlide, bottomSlide, horizontalSize, verticalSize, vanillaTerrainParameters
 		);
 		checkHeight(generationShapeConfig).error().ifPresent(partialResult -> {
 			throw new IllegalStateException(partialResult.message());
@@ -128,7 +104,7 @@ public record GenerationShapeConfig(
 		return generationShapeConfig;
 	}
 
-	static GenerationShapeConfig method_41126(boolean bl, boolean bl2) {
+	static GenerationShapeConfig method_41126(boolean bl) {
 		return create(
 			-64,
 			384,
@@ -137,9 +113,6 @@ public record GenerationShapeConfig(
 			new SlideConfig(bl ? 0.4 : 0.1171875, 3, 0),
 			1,
 			2,
-			false,
-			bl,
-			bl2,
 			VanillaTerrainParametersCreator.createSurfaceParameters(bl)
 		);
 	}

@@ -39,7 +39,7 @@ public class GenerationSettings {
 						)
 						.fieldOf("carvers")
 						.forGetter(generationSettings -> generationSettings.carvers),
-					PlacedFeature.field_36416
+					PlacedFeature.LISTS_CODEC
 						.promotePartial(Util.addPrefix("Features: ", LOGGER::error))
 						.fieldOf("features")
 						.forGetter(generationSettings -> generationSettings.features)

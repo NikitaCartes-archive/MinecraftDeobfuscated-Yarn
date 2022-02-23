@@ -14,7 +14,7 @@ public class WorldGenSettingsDisallowOldCustomWorldsFix extends DataFix {
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+		Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
 		OpticFinder<?> opticFinder = type.findField("dimensions");
 		return this.fixTypeEverywhereTyped(
 			"WorldGenSettingsDisallowOldCustomWorldsFix_" + this.getOutputSchema().getVersionKey(), type, typed -> typed.updateTyped(opticFinder, typedx -> {

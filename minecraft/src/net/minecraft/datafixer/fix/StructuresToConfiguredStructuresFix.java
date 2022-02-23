@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -19,28 +19,30 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 
-public class class_7046 extends DataFix {
-	private static final Map<String, class_7046.class_7047> field_37050 = ImmutableMap.<String, class_7046.class_7047>builder()
+public class StructuresToConfiguredStructuresFix extends DataFix {
+	private static final Map<String, StructuresToConfiguredStructuresFix.Mapping> STRUCTURE_TO_CONFIGURED_STRUCTURES_MAPPING = ImmutableMap.<String, StructuresToConfiguredStructuresFix.Mapping>builder()
 		.put(
 			"mineshaft",
-			class_7046.class_7047.method_41029(
+			StructuresToConfiguredStructuresFix.Mapping.create(
 				Map.of(List.of("minecraft:badlands", "minecraft:eroded_badlands", "minecraft:wooded_badlands"), "minecraft:mineshaft_mesa"), "minecraft:mineshaft"
 			)
 		)
 		.put(
 			"shipwreck",
-			class_7046.class_7047.method_41029(Map.of(List.of("minecraft:beach", "minecraft:snowy_beach"), "minecraft:shipwreck_beached"), "minecraft:shipwreck")
+			StructuresToConfiguredStructuresFix.Mapping.create(
+				Map.of(List.of("minecraft:beach", "minecraft:snowy_beach"), "minecraft:shipwreck_beached"), "minecraft:shipwreck"
+			)
 		)
 		.put(
 			"ocean_ruin",
-			class_7046.class_7047.method_41029(
+			StructuresToConfiguredStructuresFix.Mapping.create(
 				Map.of(List.of("minecraft:warm_ocean", "minecraft:lukewarm_ocean", "minecraft:deep_lukewarm_ocean"), "minecraft:ocean_ruin_warm"),
 				"minecraft:ocean_ruin_cold"
 			)
 		)
 		.put(
 			"village",
-			class_7046.class_7047.method_41029(
+			StructuresToConfiguredStructuresFix.Mapping.create(
 				Map.of(
 					List.of("minecraft:desert"),
 					"minecraft:village_desert",
@@ -56,7 +58,7 @@ public class class_7046 extends DataFix {
 		)
 		.put(
 			"ruined_portal",
-			class_7046.class_7047.method_41029(
+			StructuresToConfiguredStructuresFix.Mapping.create(
 				Map.of(
 					List.of("minecraft:desert"),
 					"minecraft:ruined_portal_desert",
@@ -95,22 +97,22 @@ public class class_7046 extends DataFix {
 				"minecraft:ruined_portal_standard"
 			)
 		)
-		.put("pillager_outpost", class_7046.class_7047.method_41027("minecraft:pillager_outpost"))
-		.put("mansion", class_7046.class_7047.method_41027("minecraft:mansion"))
-		.put("jungle_pyramid", class_7046.class_7047.method_41027("minecraft:jungle_pyramid"))
-		.put("desert_pyramid", class_7046.class_7047.method_41027("minecraft:desert_pyramid"))
-		.put("igloo", class_7046.class_7047.method_41027("minecraft:igloo"))
-		.put("swamp_hut", class_7046.class_7047.method_41027("minecraft:swamp_hut"))
-		.put("stronghold", class_7046.class_7047.method_41027("minecraft:stronghold"))
-		.put("monument", class_7046.class_7047.method_41027("minecraft:monument"))
-		.put("fortress", class_7046.class_7047.method_41027("minecraft:fortress"))
-		.put("endcity", class_7046.class_7047.method_41027("minecraft:end_city"))
-		.put("buried_treasure", class_7046.class_7047.method_41027("minecraft:buried_treasure"))
-		.put("nether_fossil", class_7046.class_7047.method_41027("minecraft:nether_fossil"))
-		.put("bastion_remnant", class_7046.class_7047.method_41027("minecraft:bastion_remnant"))
+		.put("pillager_outpost", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:pillager_outpost"))
+		.put("mansion", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:mansion"))
+		.put("jungle_pyramid", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:jungle_pyramid"))
+		.put("desert_pyramid", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:desert_pyramid"))
+		.put("igloo", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:igloo"))
+		.put("swamp_hut", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:swamp_hut"))
+		.put("stronghold", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:stronghold"))
+		.put("monument", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:monument"))
+		.put("fortress", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:fortress"))
+		.put("endcity", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:end_city"))
+		.put("buried_treasure", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:buried_treasure"))
+		.put("nether_fossil", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:nether_fossil"))
+		.put("bastion_remnant", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:bastion_remnant"))
 		.build();
 
-	public class_7046(Schema schema) {
+	public StructuresToConfiguredStructuresFix(Schema schema) {
 		super(schema, false);
 	}
 
@@ -172,14 +174,14 @@ public class class_7046 extends DataFix {
 
 	private Dynamic<?> method_41022(Pair<Dynamic<?>, Dynamic<?>> pair, Dynamic<?> dynamic) {
 		String string = pair.getFirst().asString("UNKNOWN").toLowerCase(Locale.ROOT);
-		class_7046.class_7047 lv = (class_7046.class_7047)field_37050.get(string);
-		if (lv == null) {
+		StructuresToConfiguredStructuresFix.Mapping mapping = (StructuresToConfiguredStructuresFix.Mapping)STRUCTURE_TO_CONFIGURED_STRUCTURES_MAPPING.get(string);
+		if (mapping == null) {
 			throw new IllegalStateException("Found unknown structure: " + string);
 		} else {
 			Dynamic<?> dynamic2 = pair.getSecond();
-			String string2 = lv.fallback;
-			if (!lv.biomeMapping().isEmpty()) {
-				Optional<String> optional = this.method_41013(dynamic, lv);
+			String string2 = mapping.fallback;
+			if (!mapping.biomeMapping().isEmpty()) {
+				Optional<String> optional = this.method_41013(dynamic, mapping);
 				if (optional.isPresent()) {
 					string2 = (String)optional.get();
 				}
@@ -189,12 +191,12 @@ public class class_7046 extends DataFix {
 		}
 	}
 
-	private Optional<String> method_41013(Dynamic<?> dynamic, class_7046.class_7047 arg) {
+	private Optional<String> method_41013(Dynamic<?> dynamic, StructuresToConfiguredStructuresFix.Mapping mapping) {
 		Object2IntArrayMap<String> object2IntArrayMap = new Object2IntArrayMap<>();
 		dynamic.get("sections")
 			.asList(Function.identity())
 			.forEach(dynamicx -> dynamicx.get("biomes").get("palette").asList(Function.identity()).forEach(dynamicxx -> {
-					String string = (String)arg.biomeMapping().get(dynamicxx.asString(""));
+					String string = (String)mapping.biomeMapping().get(dynamicxx.asString(""));
 					if (string != null) {
 						object2IntArrayMap.mergeInt(string, 1, Integer::sum);
 					}
@@ -205,20 +207,20 @@ public class class_7046 extends DataFix {
 			.map(Entry::getKey);
 	}
 
-	static record class_7047(Map<String, String> biomeMapping, String fallback) {
+	static record Mapping(Map<String, String> biomeMapping, String fallback) {
 
-		public static class_7046.class_7047 method_41027(String string) {
-			return new class_7046.class_7047(Map.of(), string);
+		public static StructuresToConfiguredStructuresFix.Mapping create(String mapping) {
+			return new StructuresToConfiguredStructuresFix.Mapping(Map.of(), mapping);
 		}
 
-		public static class_7046.class_7047 method_41029(Map<List<String>, String> map, String string) {
-			return new class_7046.class_7047(method_41028(map), string);
+		public static StructuresToConfiguredStructuresFix.Mapping create(Map<List<String>, String> biomeMapping, String fallback) {
+			return new StructuresToConfiguredStructuresFix.Mapping(flattenBiomeMapping(biomeMapping), fallback);
 		}
 
-		private static Map<String, String> method_41028(Map<List<String>, String> map) {
+		private static Map<String, String> flattenBiomeMapping(Map<List<String>, String> biomeMapping) {
 			Builder<String, String> builder = ImmutableMap.builder();
 
-			for (Entry<List<String>, String> entry : map.entrySet()) {
+			for (Entry<List<String>, String> entry : biomeMapping.entrySet()) {
 				((List)entry.getKey()).forEach(string -> builder.put(string, (String)entry.getValue()));
 			}
 

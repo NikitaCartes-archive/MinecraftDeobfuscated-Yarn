@@ -58,10 +58,10 @@ public interface DynamicRegistryManager {
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
 		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
-		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC, ConfiguredFeature.NETWORK_CODEC);
+		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
 		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC, ConfiguredStructureFeature.field_37142);
-		register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.field_37195);
+		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
+		register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.CODEC);
 		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
 		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
 		register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);

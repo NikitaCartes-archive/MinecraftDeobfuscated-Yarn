@@ -18,7 +18,7 @@ public class Schema2551 extends IdentifierNormalizingSchema {
 		super.registerTypes(schema, entityTypes, blockEntityTypes);
 		schema.registerType(
 			false,
-			TypeReferences.CHUNK_GENERATOR_SETTINGS,
+			TypeReferences.WORLD_GEN_SETTINGS,
 			() -> DSL.fields(
 					"dimensions",
 					DSL.compoundList(

@@ -212,8 +212,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 		return !fluidState.isEmpty() && !state.isSideSolidFullSquare(world, pos, Direction.UP) ? fluidState.getBlockState() : state;
 	}
 
-	private static boolean isAquaticBiome(boolean[] biomes, int scale, int x, int z) {
-		return biomes[x * scale + z * scale * 128 * scale];
+	private static boolean isAquaticBiome(boolean[] biomes, int x, int z) {
+		return biomes[z * 128 + x];
 	}
 
 	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
@@ -223,89 +223,67 @@ public class FilledMapItem extends NetworkSyncedItem {
 				int i = 1 << mapState.scale;
 				int j = mapState.centerX;
 				int k = mapState.centerZ;
-				boolean[] bls = new boolean[128 * i * 128 * i];
+				boolean[] bls = new boolean[16384];
+				int l = j / i - 64;
+				int m = k / i - 64;
+				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int l = 0; l < 128 * i; l++) {
-					for (int m = 0; m < 128 * i; m++) {
-						Biome.Category category = Biome.getCategory(world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l)));
-						bls[l * 128 * i + m] = category == Biome.Category.OCEAN || category == Biome.Category.RIVER || category == Biome.Category.SWAMP;
+				for (int n = 0; n < 128; n++) {
+					for (int o = 0; o < 128; o++) {
+						Biome.Category category = Biome.getCategory(world.getBiome(mutable.set((l + o) * i, 0, (m + n) * i)));
+						bls[n * 128 + o] = category == Biome.Category.OCEAN || category == Biome.Category.RIVER || category == Biome.Category.SWAMP;
 					}
 				}
 
-				for (int l = 0; l < 128; l++) {
-					for (int m = 0; m < 128; m++) {
-						if (l > 0 && m > 0 && l < 127 && m < 127) {
-							int n = 8;
-							if (!isAquaticBiome(bls, i, l - 1, m - 1)) {
-								n--;
-							}
+				for (int n = 1; n < 127; n++) {
+					for (int o = 1; o < 127; o++) {
+						int p = 0;
 
-							if (!isAquaticBiome(bls, i, l - 1, m + 1)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l - 1, m)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l + 1, m - 1)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l + 1, m + 1)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l + 1, m)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l, m - 1)) {
-								n--;
-							}
-
-							if (!isAquaticBiome(bls, i, l, m + 1)) {
-								n--;
-							}
-
-							MapColor.Brightness brightness = MapColor.Brightness.LOWEST;
-							MapColor mapColor = MapColor.CLEAR;
-							if (isAquaticBiome(bls, i, l, m)) {
-								mapColor = MapColor.ORANGE;
-								if (n > 7 && m % 2 == 0) {
-									switch ((l + (int)(MathHelper.sin((float)m + 0.0F) * 7.0F)) / 8 % 5) {
-										case 0:
-										case 4:
-											brightness = MapColor.Brightness.LOW;
-											break;
-										case 1:
-										case 3:
-											brightness = MapColor.Brightness.NORMAL;
-											break;
-										case 2:
-											brightness = MapColor.Brightness.HIGH;
-									}
-								} else if (n > 7) {
-									mapColor = MapColor.CLEAR;
-								} else if (n > 5) {
-									brightness = MapColor.Brightness.NORMAL;
-								} else if (n > 3) {
-									brightness = MapColor.Brightness.LOW;
-								} else if (n > 1) {
-									brightness = MapColor.Brightness.LOW;
-								}
-							} else if (n > 0) {
-								mapColor = MapColor.BROWN;
-								if (n > 3) {
-									brightness = MapColor.Brightness.NORMAL;
-								} else {
-									brightness = MapColor.Brightness.LOWEST;
+						for (int q = -1; q < 2; q++) {
+							for (int r = -1; r < 2; r++) {
+								if ((q != 0 || r != 0) && isAquaticBiome(bls, n + q, o + r)) {
+									p++;
 								}
 							}
+						}
 
-							if (mapColor != MapColor.CLEAR) {
-								mapState.setColor(l, m, mapColor.getRenderColorByte(brightness));
+						MapColor.Brightness brightness = MapColor.Brightness.LOWEST;
+						MapColor mapColor = MapColor.CLEAR;
+						if (isAquaticBiome(bls, n, o)) {
+							mapColor = MapColor.ORANGE;
+							if (p > 7 && o % 2 == 0) {
+								switch ((n + (int)(MathHelper.sin((float)o + 0.0F) * 7.0F)) / 8 % 5) {
+									case 0:
+									case 4:
+										brightness = MapColor.Brightness.LOW;
+										break;
+									case 1:
+									case 3:
+										brightness = MapColor.Brightness.NORMAL;
+										break;
+									case 2:
+										brightness = MapColor.Brightness.HIGH;
+								}
+							} else if (p > 7) {
+								mapColor = MapColor.CLEAR;
+							} else if (p > 5) {
+								brightness = MapColor.Brightness.NORMAL;
+							} else if (p > 3) {
+								brightness = MapColor.Brightness.LOW;
+							} else if (p > 1) {
+								brightness = MapColor.Brightness.LOW;
 							}
+						} else if (p > 0) {
+							mapColor = MapColor.BROWN;
+							if (p > 3) {
+								brightness = MapColor.Brightness.NORMAL;
+							} else {
+								brightness = MapColor.Brightness.LOWEST;
+							}
+						}
+
+						if (mapColor != MapColor.CLEAR) {
+							mapState.setColor(n, o, mapColor.getRenderColorByte(brightness));
 						}
 					}
 				}

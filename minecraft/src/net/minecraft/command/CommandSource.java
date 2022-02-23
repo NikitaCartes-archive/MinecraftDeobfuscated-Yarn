@@ -16,8 +16,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -34,7 +36,7 @@ public interface CommandSource {
 
 	Stream<Identifier> getRecipeIds();
 
-	CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> context, SuggestionsBuilder builder);
+	CompletableFuture<Suggestions> getCompletions(CommandContext<?> context);
 
 	default Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
@@ -47,6 +49,20 @@ public interface CommandSource {
 	Set<RegistryKey<World>> getWorldKeys();
 
 	DynamicRegistryManager getRegistryManager();
+
+	default void suggestIdentifiers(Registry<?> registry, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder) {
+		if (suggestedIdType.canSuggestTags()) {
+			suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, "#");
+		}
+
+		if (suggestedIdType.canSuggestElements()) {
+			suggestIdentifiers(registry.getIds(), builder);
+		}
+	}
+
+	CompletableFuture<Suggestions> listIdSuggestions(
+		RegistryKey<? extends Registry<?>> registryRef, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder, CommandContext<?> context
+	);
 
 	boolean hasPermissionLevel(int level);
 
@@ -249,6 +265,20 @@ public interface CommandSource {
 			this.x = x;
 			this.y = y;
 			this.z = z;
+		}
+	}
+
+	public static enum SuggestedIdType {
+		TAGS,
+		ELEMENTS,
+		ALL;
+
+		public boolean canSuggestTags() {
+			return this == TAGS || this == ALL;
+		}
+
+		public boolean canSuggestElements() {
+			return this == ELEMENTS || this == ALL;
 		}
 	}
 }

@@ -430,8 +430,18 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	@Override
-	public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
-		return null;
+	public CompletableFuture<Suggestions> getCompletions(CommandContext<?> context) {
+		return Suggestions.empty();
+	}
+
+	@Override
+	public CompletableFuture<Suggestions> listIdSuggestions(
+		RegistryKey<? extends Registry<?>> registryRef, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder, CommandContext<?> context
+	) {
+		return (CompletableFuture<Suggestions>)this.getRegistryManager().getOptional(registryRef).map(registry -> {
+			this.suggestIdentifiers(registry, suggestedIdType, builder);
+			return builder.buildFuture();
+		}).orElseGet(Suggestions::empty);
 	}
 
 	@Override

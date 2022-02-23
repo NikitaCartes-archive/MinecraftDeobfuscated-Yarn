@@ -50,16 +50,31 @@ public class TextFilterer implements AutoCloseable {
 	final TextFilterer.HashIgnorer ignorer;
 	final ExecutorService executor;
 
-	private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, String roomId, TextFilterer.HashIgnorer ignorer, int parallelism) throws MalformedURLException {
+	private TextFilterer(
+		URL chatEndpoint,
+		URL joinEndpoint,
+		URL leaveEndpoint,
+		String apiKey,
+		int ruleId,
+		String serverId,
+		String roomId,
+		TextFilterer.HashIgnorer ignorer,
+		int parallelism
+	) {
 		this.apiKey = apiKey;
 		this.ruleId = ruleId;
 		this.serverId = serverId;
 		this.roomId = roomId;
 		this.ignorer = ignorer;
-		this.chatEndpoint = apiUrl.resolve("/v1/chat").toURL();
-		this.joinEndpoint = apiUrl.resolve("/v1/join").toURL();
-		this.leaveEndpoint = apiUrl.resolve("/v1/leave").toURL();
+		this.chatEndpoint = chatEndpoint;
+		this.joinEndpoint = joinEndpoint;
+		this.leaveEndpoint = leaveEndpoint;
 		this.executor = Executors.newFixedThreadPool(parallelism, THREAD_FACTORY);
+	}
+
+	private static URL getEndpoint(URI root, @Nullable JsonObject endpoints, String key, String fallback) throws MalformedURLException {
+		String string = endpoints != null ? JsonHelper.getString(endpoints, key, fallback) : fallback;
+		return root.resolve("/" + string).toURL();
 	}
 
 	@Nullable
@@ -79,11 +94,17 @@ public class TextFilterer implements AutoCloseable {
 					String string3 = JsonHelper.getString(jsonObject, "roomId", "Java:Chat");
 					int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
 					int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
+					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "endpoints", null);
+					URL uRL = getEndpoint(uRI, jsonObject2, "chat", "v1/chat");
+					URL uRL2 = getEndpoint(uRI, jsonObject2, "join", "v1/join");
+					URL uRL3 = getEndpoint(uRI, jsonObject2, "leave", "v1/leave");
 					TextFilterer.HashIgnorer hashIgnorer = TextFilterer.HashIgnorer.dropHashes(j);
-					return new TextFilterer(uRI, Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, string3, hashIgnorer, k);
+					return new TextFilterer(
+						uRL, uRL2, uRL3, Base64.getEncoder().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, string3, hashIgnorer, k
+					);
 				}
-			} catch (Exception var10) {
-				LOGGER.warn("Failed to parse chat filter config {}", config, var10);
+			} catch (Exception var14) {
+				LOGGER.warn("Failed to parse chat filter config {}", config, var14);
 				return null;
 			}
 		}
@@ -320,7 +341,7 @@ public class TextFilterer implements AutoCloseable {
 		@Override
 		public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
 			List<CompletableFuture<TextStream.Message>> list = (List<CompletableFuture<TextStream.Message>>)texts.stream()
-				.map(string -> TextFilterer.this.filterMessage(this.gameProfile, string, TextFilterer.this.ignorer, this.executor))
+				.map(text -> TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor))
 				.collect(ImmutableList.toImmutableList());
 			return Util.combine(list).exceptionally(throwable -> ImmutableList.of());
 		}

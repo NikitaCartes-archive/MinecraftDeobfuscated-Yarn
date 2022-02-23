@@ -7,11 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.Dynamic3CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
-import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.UUID;
-import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -23,9 +21,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
 
 public class AttributeCommand {
-	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestIdentifiers(
-			Registry.ATTRIBUTE.getIds(), builder
-		);
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
 		name -> new TranslatableText("commands.attribute.failed.entity", name)
 	);
@@ -46,13 +41,12 @@ public class AttributeCommand {
 				.then(
 					CommandManager.argument("target", EntityArgumentType.entity())
 						.then(
-							CommandManager.argument("attribute", IdentifierArgumentType.identifier())
-								.suggests(SUGGESTION_PROVIDER)
+							CommandManager.argument("attribute", RegistryKeyArgumentType.registryKey(Registry.ATTRIBUTE_KEY))
 								.then(
 									CommandManager.literal("get")
 										.executes(
 											context -> executeValueGet(
-													context.getSource(), EntityArgumentType.getEntity(context, "target"), IdentifierArgumentType.getAttributeArgument(context, "attribute"), 1.0
+													context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryKeyArgumentType.getAttribute(context, "attribute"), 1.0
 												)
 										)
 										.then(
@@ -61,7 +55,7 @@ public class AttributeCommand {
 													context -> executeValueGet(
 															context.getSource(),
 															EntityArgumentType.getEntity(context, "target"),
-															IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+															RegistryKeyArgumentType.getAttribute(context, "attribute"),
 															DoubleArgumentType.getDouble(context, "scale")
 														)
 												)
@@ -77,7 +71,7 @@ public class AttributeCommand {
 															context -> executeBaseValueSet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "value")
 																)
 														)
@@ -87,7 +81,7 @@ public class AttributeCommand {
 											CommandManager.literal("get")
 												.executes(
 													context -> executeBaseValueGet(
-															context.getSource(), EntityArgumentType.getEntity(context, "target"), IdentifierArgumentType.getAttributeArgument(context, "attribute"), 1.0
+															context.getSource(), EntityArgumentType.getEntity(context, "target"), RegistryKeyArgumentType.getAttribute(context, "attribute"), 1.0
 														)
 												)
 												.then(
@@ -96,7 +90,7 @@ public class AttributeCommand {
 															context -> executeBaseValueGet(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																	DoubleArgumentType.getDouble(context, "scale")
 																)
 														)
@@ -119,7 +113,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -133,7 +127,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -147,7 +141,7 @@ public class AttributeCommand {
 																					context -> executeModifierAdd(
 																							context.getSource(),
 																							EntityArgumentType.getEntity(context, "target"),
-																							IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																							RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																							UuidArgumentType.getUuid(context, "uuid"),
 																							StringArgumentType.getString(context, "name"),
 																							DoubleArgumentType.getDouble(context, "value"),
@@ -167,7 +161,7 @@ public class AttributeCommand {
 															context -> executeModifierRemove(
 																	context.getSource(),
 																	EntityArgumentType.getEntity(context, "target"),
-																	IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																	RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																	UuidArgumentType.getUuid(context, "uuid")
 																)
 														)
@@ -183,7 +177,7 @@ public class AttributeCommand {
 																	context -> executeModifierValueGet(
 																			context.getSource(),
 																			EntityArgumentType.getEntity(context, "target"),
-																			IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																			RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																			UuidArgumentType.getUuid(context, "uuid"),
 																			1.0
 																		)
@@ -194,7 +188,7 @@ public class AttributeCommand {
 																			context -> executeModifierValueGet(
 																					context.getSource(),
 																					EntityArgumentType.getEntity(context, "target"),
-																					IdentifierArgumentType.getAttributeArgument(context, "attribute"),
+																					RegistryKeyArgumentType.getAttribute(context, "attribute"),
 																					UuidArgumentType.getUuid(context, "uuid"),
 																					DoubleArgumentType.getDouble(context, "scale")
 																				)

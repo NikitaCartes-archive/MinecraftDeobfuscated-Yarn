@@ -573,11 +573,19 @@ public class Util {
 	 * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}
 	 */
 	public static void backupAndReplace(Path current, Path newPath, Path backup) {
+		backupAndReplace(current, newPath, backup, false);
+	}
+
+	public static void backupAndReplace(File current, File newPath, File backup, boolean noRestoreOnFail) {
+		backupAndReplace(current.toPath(), newPath.toPath(), backup.toPath(), noRestoreOnFail);
+	}
+
+	public static void backupAndReplace(Path current, Path newPath, Path backup, boolean noRestoreOnFail) {
 		int i = 10;
 		if (!Files.exists(current, new LinkOption[0])
 			|| attemptTasks(10, "create backup " + backup, deleteTask(backup), renameTask(current, backup), existenceCheckTask(backup))) {
 			if (attemptTasks(10, "remove old " + current, deleteTask(current), deletionVerifyTask(current))) {
-				if (!attemptTasks(10, "replace " + current + " with " + newPath, renameTask(newPath, current), existenceCheckTask(current))) {
+				if (!attemptTasks(10, "replace " + current + " with " + newPath, renameTask(newPath, current), existenceCheckTask(current)) && !noRestoreOnFail) {
 					attemptTasks(10, "restore " + current + " from " + backup, renameTask(backup, current), existenceCheckTask(current));
 				}
 			}
