@@ -12,6 +12,8 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public interface Element {
+	long MAX_DOUBLE_CLICK_INTERVAL = 250L;
+
 	/**
 	 * Callback for when a mouse move event has been captured.
 	 * 

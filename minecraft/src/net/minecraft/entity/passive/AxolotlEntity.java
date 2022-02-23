@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -61,6 +62,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import org.slf4j.Logger;
 
 /**
  * Represents an axolotl, the cutest predator.
@@ -99,6 +101,7 @@ import net.minecraft.world.WorldView;
  * </div>
  */
 public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bucketable {
+	private static final Logger field_37260 = LogUtils.getLogger();
 	public static final int PLAY_DEAD_TICKS = 200;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS
@@ -414,7 +417,13 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	@Override
 	public void copyDataFromNbt(NbtCompound nbt) {
 		Bucketable.copyDataFromNbt(this, nbt);
-		this.setVariant(AxolotlEntity.Variant.VARIANTS[nbt.getInt("Variant")]);
+		int i = nbt.getInt("Variant");
+		if (i >= 0 && i < AxolotlEntity.Variant.VARIANTS.length) {
+			this.setVariant(AxolotlEntity.Variant.VARIANTS[i]);
+		} else {
+			field_37260.error("Invalid variant: {}", i);
+		}
+
 		if (nbt.contains("Age")) {
 			this.setBreedingAge(nbt.getInt("Age"));
 		}

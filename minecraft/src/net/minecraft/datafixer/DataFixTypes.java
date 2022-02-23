@@ -13,7 +13,7 @@ public enum DataFixTypes {
 	SAVED_DATA(TypeReferences.SAVED_DATA),
 	ADVANCEMENTS(TypeReferences.ADVANCEMENTS),
 	POI_CHUNK(TypeReferences.POI_CHUNK),
-	WORLD_GEN_SETTINGS(TypeReferences.CHUNK_GENERATOR_SETTINGS),
+	WORLD_GEN_SETTINGS(TypeReferences.WORLD_GEN_SETTINGS),
 	ENTITY_CHUNK(TypeReferences.ENTITY_CHUNK);
 
 	private final TypeReference typeReference;

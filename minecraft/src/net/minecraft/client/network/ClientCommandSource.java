@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -23,6 +24,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -31,6 +33,7 @@ public class ClientCommandSource implements CommandSource {
 	private final ClientPlayNetworkHandler networkHandler;
 	private final MinecraftClient client;
 	private int completionId = -1;
+	@Nullable
 	private CompletableFuture<Suggestions> pendingCompletion;
 
 	public ClientCommandSource(ClientPlayNetworkHandler networkHandler, MinecraftClient client) {
@@ -78,7 +81,17 @@ public class ClientCommandSource implements CommandSource {
 	}
 
 	@Override
-	public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> context, SuggestionsBuilder builder) {
+	public CompletableFuture<Suggestions> listIdSuggestions(
+		RegistryKey<? extends Registry<?>> registryRef, CommandSource.SuggestedIdType suggestedIdType, SuggestionsBuilder builder, CommandContext<?> context
+	) {
+		return (CompletableFuture<Suggestions>)this.getRegistryManager().getOptional(registryRef).map(registry -> {
+			this.suggestIdentifiers(registry, suggestedIdType, builder);
+			return builder.buildFuture();
+		}).orElseGet(() -> this.getCompletions(context));
+	}
+
+	@Override
+	public CompletableFuture<Suggestions> getCompletions(CommandContext<?> context) {
 		if (this.pendingCompletion != null) {
 			this.pendingCompletion.cancel(false);
 		}

@@ -21,7 +21,7 @@ public interface DensityFunction {
 
 	void method_40470(double[] ds, DensityFunction.class_6911 arg);
 
-	DensityFunction method_40469(DensityFunction.DensityFunctionVisitor densityFunctionVisitor);
+	DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor);
 
 	double minValue();
 
@@ -34,27 +34,27 @@ public interface DensityFunction {
 	}
 
 	default DensityFunction abs() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.ABS);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.ABS);
 	}
 
 	default DensityFunction square() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.SQUARE);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUARE);
 	}
 
 	default DensityFunction cube() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.CUBE);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.CUBE);
 	}
 
 	default DensityFunction halfNegative() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.HALF_NEGATIVE);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.HALF_NEGATIVE);
 	}
 
 	default DensityFunction quarterNegative() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.QUARTER_NEGATIVE);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.QUARTER_NEGATIVE);
 	}
 
 	default DensityFunction squeeze() {
-		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.SQUEEZE);
+		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUEEZE);
 	}
 
 	public interface DensityFunctionVisitor extends Function<DensityFunction, DensityFunction> {
@@ -88,8 +88,8 @@ public interface DensityFunction {
 		}
 
 		@Override
-		default DensityFunction method_40469(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
-			return (DensityFunction)densityFunctionVisitor.apply(this);
+		default DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			return (DensityFunction)visitor.apply(this);
 		}
 	}
 }

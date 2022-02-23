@@ -12,7 +12,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
-import net.minecraft.data.client.model.TextureMap;
 import net.minecraft.util.Identifier;
 
 public class Model {

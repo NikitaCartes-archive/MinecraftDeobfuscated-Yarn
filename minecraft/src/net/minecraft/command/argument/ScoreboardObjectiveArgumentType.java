@@ -55,10 +55,11 @@ public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (context.getSource() instanceof ServerCommandSource) {
-			return CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getScoreboard().getObjectiveNames(), builder);
+		S object = context.getSource();
+		if (object instanceof ServerCommandSource serverCommandSource) {
+			return CommandSource.suggestMatching(serverCommandSource.getServer().getScoreboard().getObjectiveNames(), builder);
 		} else {
-			return context.getSource() instanceof CommandSource commandSource ? commandSource.getCompletions(context, builder) : Suggestions.empty();
+			return object instanceof CommandSource commandSource ? commandSource.getCompletions(context) : Suggestions.empty();
 		}
 	}
 

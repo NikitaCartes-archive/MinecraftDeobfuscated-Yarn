@@ -8,7 +8,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunction;
@@ -18,9 +17,6 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
@@ -31,14 +27,8 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("predicate.unknown", id)
 	);
-	private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("attribute.unknown", id)
-	);
 	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
 		id -> new TranslatableText("item_modifier.unknown", id)
-	);
-	private static final DynamicCommandExceptionType UNKNOWN_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.placefeature.invalid", id)
 	);
 
 	public static IdentifierArgumentType identifier() {
@@ -83,30 +73,6 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		}
 	}
 
-	public static EntityAttribute getAttributeArgument(CommandContext<ServerCommandSource> context, String argumentName) throws CommandSyntaxException {
-		Identifier identifier = getIdentifier(context, argumentName);
-		return (EntityAttribute)Registry.ATTRIBUTE.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ATTRIBUTE_EXCEPTION.create(identifier));
-	}
-
-	private static <T> IdentifierArgumentType.RegistryEntry<T> getFromRegistry(
-		CommandContext<ServerCommandSource> context, String argumentName, RegistryKey<Registry<T>> registryRef, DynamicCommandExceptionType exceptionType
-	) throws CommandSyntaxException {
-		Identifier identifier = getIdentifier(context, argumentName);
-		T object = (T)context.getSource()
-			.getServer()
-			.getRegistryManager()
-			.get(registryRef)
-			.getOrEmpty(identifier)
-			.orElseThrow(() -> exceptionType.create(identifier));
-		return new IdentifierArgumentType.RegistryEntry<>(identifier, object);
-	}
-
-	public static IdentifierArgumentType.RegistryEntry<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(
-		CommandContext<ServerCommandSource> context, String argumentName
-	) throws CommandSyntaxException {
-		return getFromRegistry(context, argumentName, Registry.CONFIGURED_FEATURE_KEY, UNKNOWN_FEATURE_EXCEPTION);
-	}
-
 	public static Identifier getIdentifier(CommandContext<ServerCommandSource> context, String name) {
 		return context.getArgument(name, Identifier.class);
 	}
@@ -118,8 +84,5 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	@Override
 	public Collection<String> getExamples() {
 		return EXAMPLES;
-	}
-
-	public static record RegistryEntry<T>(Identifier id, T resource) {
 	}
 }

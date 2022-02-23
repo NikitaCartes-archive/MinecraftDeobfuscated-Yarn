@@ -3,7 +3,6 @@ package net.minecraft.data.client;
 import com.google.gson.JsonElement;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import net.minecraft.data.client.model.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;

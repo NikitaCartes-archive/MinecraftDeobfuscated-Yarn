@@ -17,11 +17,11 @@ public interface StructureSets {
 		StructureSetKeys.VILLAGES,
 		new StructureSet(
 			List.of(
-				StructureSet.method_41145(ConfiguredStructureFeatures.VILLAGE_PLAINS),
-				StructureSet.method_41145(ConfiguredStructureFeatures.VILLAGE_DESERT),
-				StructureSet.method_41145(ConfiguredStructureFeatures.VILLAGE_SAVANNA),
-				StructureSet.method_41145(ConfiguredStructureFeatures.VILLAGE_SNOWY),
-				StructureSet.method_41145(ConfiguredStructureFeatures.VILLAGE_TAIGA)
+				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_PLAINS),
+				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_DESERT),
+				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_SAVANNA),
+				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_SNOWY),
+				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_TAIGA)
 			),
 			new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312)
 		)
@@ -55,7 +55,7 @@ public interface StructureSets {
 	RegistryEntry<StructureSet> MINESHAFTS = register(
 		StructureSetKeys.MINESHAFTS,
 		new StructureSet(
-			List.of(StructureSet.method_41145(ConfiguredStructureFeatures.MINESHAFT), StructureSet.method_41145(ConfiguredStructureFeatures.MINESHAFT_MESA)),
+			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT), StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT_MESA)),
 			new RandomSpreadStructurePlacement(1, 0, SpreadType.LINEAR, 0)
 		)
 	);
@@ -63,13 +63,13 @@ public interface StructureSets {
 		StructureSetKeys.RUINED_PORTALS,
 		new StructureSet(
 			List.of(
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN),
-				StructureSet.method_41145(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN),
+				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
 			),
 			new RandomSpreadStructurePlacement(40, 15, SpreadType.LINEAR, 34222645)
 		)
@@ -77,21 +77,21 @@ public interface StructureSets {
 	RegistryEntry<StructureSet> SHIPWRECKS = register(
 		StructureSetKeys.SHIPWRECKS,
 		new StructureSet(
-			List.of(StructureSet.method_41145(ConfiguredStructureFeatures.SHIPWRECK), StructureSet.method_41145(ConfiguredStructureFeatures.SHIPWRECK_BEACHED)),
+			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.SHIPWRECK), StructureSet.createEntry(ConfiguredStructureFeatures.SHIPWRECK_BEACHED)),
 			new RandomSpreadStructurePlacement(24, 4, SpreadType.LINEAR, 165745295)
 		)
 	);
 	RegistryEntry<StructureSet> OCEAN_RUINS = register(
 		StructureSetKeys.OCEAN_RUINS,
 		new StructureSet(
-			List.of(StructureSet.method_41145(ConfiguredStructureFeatures.OCEAN_RUIN_COLD), StructureSet.method_41145(ConfiguredStructureFeatures.OCEAN_RUIN_WARM)),
+			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.OCEAN_RUIN_COLD), StructureSet.createEntry(ConfiguredStructureFeatures.OCEAN_RUIN_WARM)),
 			new RandomSpreadStructurePlacement(20, 8, SpreadType.LINEAR, 14357621)
 		)
 	);
 	RegistryEntry<StructureSet> NETHER_COMPLEXES = register(
 		StructureSetKeys.NETHER_COMPLEXES,
 		new StructureSet(
-			List.of(StructureSet.method_41146(ConfiguredStructureFeatures.FORTRESS, 2), StructureSet.method_41146(ConfiguredStructureFeatures.BASTION_REMNANT, 3)),
+			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.FORTRESS, 2), StructureSet.createEntry(ConfiguredStructureFeatures.BASTION_REMNANT, 3)),
 			new RandomSpreadStructurePlacement(27, 4, SpreadType.LINEAR, 30084232)
 		)
 	);

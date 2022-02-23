@@ -413,7 +413,7 @@ public record VanillaTerrainParameters(
 		}
 
 		public VanillaTerrainParameters.class_7074 method_41194(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
-			return new VanillaTerrainParameters.class_7074(new RegistryEntry.Direct<>(this.function.value().method_40469(densityFunctionVisitor)));
+			return new VanillaTerrainParameters.class_7074(new RegistryEntry.Direct<>(this.function.value().apply(densityFunctionVisitor)));
 		}
 	}
 

@@ -85,6 +85,7 @@ public class ArgumentTypes {
 		register("dimension", DimensionArgumentType.class, new ConstantArgumentSerializer(DimensionArgumentType::dimension));
 		register("time", TimeArgumentType.class, new ConstantArgumentSerializer(TimeArgumentType::time));
 		register("uuid", UuidArgumentType.class, new ConstantArgumentSerializer(UuidArgumentType::uuid));
+		register("resource", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
 		register("resource_or_tag", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
 		if (SharedConstants.isDevelopment) {
 			register("test_argument", TestFunctionArgumentType.class, new ConstantArgumentSerializer(TestFunctionArgumentType::testFunction));
