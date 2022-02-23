@@ -84,8 +84,8 @@ public class TypeReferences {
      */
     public static final DSL.TypeReference BIOME = () -> "biome";
     /**
-     * A type reference which refers to chunk generator settings.
+     * A type reference which refers to world gen settings.
      */
-    public static final DSL.TypeReference CHUNK_GENERATOR_SETTINGS = () -> "world_gen_settings";
+    public static final DSL.TypeReference WORLD_GEN_SETTINGS = () -> "world_gen_settings";
 }
 

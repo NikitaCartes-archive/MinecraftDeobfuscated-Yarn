@@ -11,7 +11,7 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
 public interface StructurePlacement {
     public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT.getCodec().dispatch(StructurePlacement::getType, StructurePlacementType::codec);
 
-    public boolean isStartChunk(ChunkGenerator var1, int var2, int var3);
+    public boolean isStartChunk(ChunkGenerator var1, long var2, int var4, int var5);
 
     public StructurePlacementType<?> getType();
 }

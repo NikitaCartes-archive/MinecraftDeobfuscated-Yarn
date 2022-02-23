@@ -81,10 +81,7 @@ implements ArgumentType<RegistryPredicate<T>> {
         S s = context.getSource();
         if (s instanceof CommandSource) {
             CommandSource commandSource = (CommandSource)s;
-            commandSource.getRegistryManager().getOptional(this.registryRef).ifPresent(registry -> {
-                CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, "#");
-                CommandSource.suggestIdentifiers(registry.getIds(), builder);
-            });
+            return commandSource.listIdSuggestions(this.registryRef, CommandSource.SuggestedIdType.ALL, builder, context);
         }
         return builder.buildFuture();
     }

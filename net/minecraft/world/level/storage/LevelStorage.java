@@ -103,7 +103,7 @@ public class LevelStorage {
             if (!optional.isPresent()) continue;
             dynamic = dynamic.set(string, optional.get());
         }
-        Dynamic dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
+        Dynamic dynamic2 = dataFixer.update(TypeReferences.WORLD_GEN_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
         DataResult dataResult = GeneratorOptions.CODEC.parse(dynamic2);
         return Pair.of(dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).orElseGet(() -> {
             DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.createDynamicRegistryManager(dynamic2);
@@ -144,7 +144,11 @@ public class LevelStorage {
                 LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", (Object)file);
                 throw outOfMemoryError;
             } catch (StackOverflowError stackOverflowError) {
-                LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of stack trying to read summary of {}", (Object)file);
+                LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of stack trying to read summary of {}. Assuming corruption; attempting to restore from from level.dat_old.", (Object)file);
+                File file2 = new File(file, "level.dat");
+                File file3 = new File(file, "level.dat_old");
+                File file4 = new File(file, "level.dat_corrupted_" + LocalDateTime.now().format(TIME_FORMATTER));
+                Util.backupAndReplace(file2, file3, file4, true);
                 throw stackOverflowError;
             }
         }

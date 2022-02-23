@@ -19,8 +19,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -37,7 +39,7 @@ public interface CommandSource {
 
     public Stream<Identifier> getRecipeIds();
 
-    public CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> var1, SuggestionsBuilder var2);
+    public CompletableFuture<Suggestions> getCompletions(CommandContext<?> var1);
 
     default public Collection<RelativePosition> getBlockPositionSuggestions() {
         return Collections.singleton(RelativePosition.ZERO_WORLD);
@@ -50,6 +52,17 @@ public interface CommandSource {
     public Set<RegistryKey<World>> getWorldKeys();
 
     public DynamicRegistryManager getRegistryManager();
+
+    default public void suggestIdentifiers(Registry<?> registry, SuggestedIdType suggestedIdType, SuggestionsBuilder builder) {
+        if (suggestedIdType.canSuggestTags()) {
+            CommandSource.suggestIdentifiers(registry.streamTags().map(TagKey::id), builder, "#");
+        }
+        if (suggestedIdType.canSuggestElements()) {
+            CommandSource.suggestIdentifiers(registry.getIds(), builder);
+        }
+    }
+
+    public CompletableFuture<Suggestions> listIdSuggestions(RegistryKey<? extends Registry<?>> var1, SuggestedIdType var2, SuggestionsBuilder var3, CommandContext<?> var4);
 
     public boolean hasPermissionLevel(int var1);
 
@@ -234,6 +247,21 @@ public interface CommandSource {
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+    }
+
+    public static enum SuggestedIdType {
+        TAGS,
+        ELEMENTS,
+        ALL;
+
+
+        public boolean canSuggestTags() {
+            return this == TAGS || this == ALL;
+        }
+
+        public boolean canSuggestElements() {
+            return this == ELEMENTS || this == ALL;
         }
     }
 }

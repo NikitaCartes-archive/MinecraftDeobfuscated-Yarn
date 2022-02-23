@@ -17,7 +17,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourceType;
-import net.minecraft.resource.ServerResourceManager;
+import net.minecraft.server.DataPackContents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -25,7 +25,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 
-public record SaveLoader(LifecycledResourceManager resourceManager, ServerResourceManager dataPackResources, DynamicRegistryManager.Immutable dynamicRegistryManager, SaveProperties saveProperties) implements AutoCloseable
+public record SaveLoader(LifecycledResourceManager resourceManager, DataPackContents dataPackContents, DynamicRegistryManager.Immutable dynamicRegistryManager, SaveProperties saveProperties) implements AutoCloseable
 {
     public static CompletableFuture<SaveLoader> ofLoaded(FunctionLoaderConfig functionLoaderConfig, DataPackSettingsSupplier dataPackSettingsSupplier, SavePropertiesSupplier savePropertiesSupplier, Executor prepareExecutor, Executor applyExecutor) {
         try {
@@ -36,11 +36,11 @@ public record SaveLoader(LifecycledResourceManager resourceManager, ServerResour
             Pair<SaveProperties, DynamicRegistryManager.Immutable> pair = savePropertiesSupplier.get(lifecycledResourceManager, dataPackSettings2);
             SaveProperties saveProperties = pair.getFirst();
             DynamicRegistryManager.Immutable immutable = pair.getSecond();
-            return ((CompletableFuture)ServerResourceManager.reload(lifecycledResourceManager, immutable, functionLoaderConfig.commandEnvironment(), functionLoaderConfig.functionPermissionLevel(), prepareExecutor, applyExecutor).whenComplete((resourceManager, throwable) -> {
+            return ((CompletableFuture)DataPackContents.reload(lifecycledResourceManager, immutable, functionLoaderConfig.commandEnvironment(), functionLoaderConfig.functionPermissionLevel(), prepareExecutor, applyExecutor).whenComplete((dataPackContents, throwable) -> {
                 if (throwable != null) {
                     lifecycledResourceManager.close();
                 }
-            })).thenApply(resourceManager -> new SaveLoader(lifecycledResourceManager, (ServerResourceManager)resourceManager, immutable, saveProperties));
+            })).thenApply(dataPackContents -> new SaveLoader(lifecycledResourceManager, (DataPackContents)dataPackContents, immutable, saveProperties));
         } catch (Exception exception) {
             return CompletableFuture.failedFuture(exception);
         }
@@ -52,7 +52,7 @@ public record SaveLoader(LifecycledResourceManager resourceManager, ServerResour
     }
 
     public void refresh() {
-        this.dataPackResources.refresh(this.dynamicRegistryManager);
+        this.dataPackContents.refresh(this.dynamicRegistryManager);
     }
 
     @FunctionalInterface

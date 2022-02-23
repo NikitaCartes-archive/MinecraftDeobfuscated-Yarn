@@ -26,7 +26,7 @@ public interface DensityFunction {
 
     public void method_40470(double[] var1, class_6911 var2);
 
-    public DensityFunction method_40469(DensityFunctionVisitor var1);
+    public DensityFunction apply(DensityFunctionVisitor var1);
 
     public double minValue();
 
@@ -39,27 +39,27 @@ public interface DensityFunction {
     }
 
     default public DensityFunction abs() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.ABS);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.ABS);
     }
 
     default public DensityFunction square() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.SQUARE);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUARE);
     }
 
     default public DensityFunction cube() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.CUBE);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.CUBE);
     }
 
     default public DensityFunction halfNegative() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.HALF_NEGATIVE);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.HALF_NEGATIVE);
     }
 
     default public DensityFunction quarterNegative() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.QUARTER_NEGATIVE);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.QUARTER_NEGATIVE);
     }
 
     default public DensityFunction squeeze() {
-        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.class_6926.SQUEEZE);
+        return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUEEZE);
     }
 
     public record UnblendedNoisePos(int blockX, int blockY, int blockZ) implements NoisePos
@@ -86,8 +86,8 @@ public interface DensityFunction {
         }
 
         @Override
-        default public DensityFunction method_40469(DensityFunctionVisitor densityFunctionVisitor) {
-            return (DensityFunction)densityFunctionVisitor.apply(this);
+        default public DensityFunction apply(DensityFunctionVisitor visitor) {
+            return (DensityFunction)visitor.apply(this);
         }
     }
 

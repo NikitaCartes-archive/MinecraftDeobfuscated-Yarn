@@ -21,7 +21,7 @@ extends DataFix {
 
     @Override
     protected TypeRewriteRule makeRule() {
-        Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+        Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
         OpticFinder<?> opticFinder = type.findField("dimensions");
         return this.fixTypeEverywhereTyped("StructureSettingsFlatten", type, typed2 -> typed2.updateTyped(opticFinder, typed -> {
             Dynamic<?> dynamic = typed.write().result().orElseThrow();

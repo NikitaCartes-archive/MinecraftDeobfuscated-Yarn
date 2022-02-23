@@ -14,7 +14,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7046;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
@@ -142,6 +141,7 @@ import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
 import net.minecraft.datafixer.fix.StructureSeparationDataFix;
 import net.minecraft.datafixer.fix.StructureSettingsFlattenFix;
+import net.minecraft.datafixer.fix.StructuresToConfiguredStructuresFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.TicksInWrongChunkFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
@@ -550,7 +550,7 @@ public class Schemas {
         Schema schema121 = builder.addSchema(2550, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new StructureSeparationDataFix(schema121));
         Schema schema122 = builder.addSchema(2551, Schema2551::new);
-        builder.addFixer(new WriteAndReadFix(schema122, "add types to WorldGenData", TypeReferences.CHUNK_GENERATOR_SETTINGS));
+        builder.addFixer(new WriteAndReadFix(schema122, "add types to WorldGenData", TypeReferences.WORLD_GEN_SETTINGS));
         Schema schema123 = builder.addSchema(2552, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new BiomeRenameFix(schema123, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
         Schema schema124 = builder.addSchema(2553, EMPTY_IDENTIFIER_NORMALIZE);
@@ -583,7 +583,7 @@ public class Schemas {
         builder.addFixer(ItemNameFix.create(schema134, "Rename copper item suffixes", Schemas.replacing(immutableMap2)));
         builder.addFixer(JigsawBlockNameFix.create(schema134, "Rename copper blocks suffixes", Schemas.replacing(immutableMap2)));
         Schema schema135 = builder.addSchema(2693, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new AddFlagIfNotPresentFix(schema135, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", false));
+        builder.addFixer(new AddFlagIfNotPresentFix(schema135, TypeReferences.WORLD_GEN_SETTINGS, "has_increased_height_already", false));
         Schema schema136 = builder.addSchema(2696, EMPTY_IDENTIFIER_NORMALIZE);
         ImmutableMap<String, String> immutableMap3 = ImmutableMap.builder().put("minecraft:grimstone", "minecraft:deepslate").put("minecraft:grimstone_slab", "minecraft:cobbled_deepslate_slab").put("minecraft:grimstone_stairs", "minecraft:cobbled_deepslate_stairs").put("minecraft:grimstone_wall", "minecraft:cobbled_deepslate_wall").put("minecraft:polished_grimstone", "minecraft:polished_deepslate").put("minecraft:polished_grimstone_slab", "minecraft:polished_deepslate_slab").put("minecraft:polished_grimstone_stairs", "minecraft:polished_deepslate_stairs").put("minecraft:polished_grimstone_wall", "minecraft:polished_deepslate_wall").put("minecraft:grimstone_tiles", "minecraft:deepslate_tiles").put("minecraft:grimstone_tile_slab", "minecraft:deepslate_tile_slab").put("minecraft:grimstone_tile_stairs", "minecraft:deepslate_tile_stairs").put("minecraft:grimstone_tile_wall", "minecraft:deepslate_tile_wall").put("minecraft:grimstone_bricks", "minecraft:deepslate_bricks").put("minecraft:grimstone_brick_slab", "minecraft:deepslate_brick_slab").put("minecraft:grimstone_brick_stairs", "minecraft:deepslate_brick_stairs").put("minecraft:grimstone_brick_wall", "minecraft:deepslate_brick_wall").put("minecraft:chiseled_grimstone", "minecraft:chiseled_deepslate").build();
         builder.addFixer(ItemNameFix.create(schema136, "Renamed grimstone block items to deepslate", Schemas.replacing(immutableMap3)));
@@ -598,14 +598,14 @@ public class Schemas {
         builder.addFixer(new ChoiceTypesFix(schema140, "Added Goat", TypeReferences.ENTITY));
         Schema schema141 = builder.addSchema(2707, Schema2707::new);
         builder.addFixer(new ChoiceTypesFix(schema141, "Added Marker", TypeReferences.ENTITY));
-        builder.addFixer(new AddFlagIfNotPresentFix(schema141, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", true));
+        builder.addFixer(new AddFlagIfNotPresentFix(schema141, TypeReferences.WORLD_GEN_SETTINGS, "has_increased_height_already", true));
         Schema schema142 = builder.addSchema(2710, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new StatsRenameFix(schema142, "Renamed play_one_minute stat to play_time", ImmutableMap.of("minecraft:play_one_minute", "minecraft:play_time")));
         Schema schema143 = builder.addSchema(2717, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(ItemNameFix.create(schema143, "Rename azalea_leaves_flowers", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
         builder.addFixer(BlockNameFix.create(schema143, "Rename azalea_leaves_flowers items", Schemas.replacing(ImmutableMap.of("minecraft:azalea_leaves_flowers", "minecraft:flowering_azalea_leaves"))));
         Schema schema144 = builder.addSchema(2825, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new AddFlagIfNotPresentFix(schema144, TypeReferences.CHUNK_GENERATOR_SETTINGS, "has_increased_height_already", false));
+        builder.addFixer(new AddFlagIfNotPresentFix(schema144, TypeReferences.WORLD_GEN_SETTINGS, "has_increased_height_already", false));
         Schema schema145 = builder.addSchema(2831, Schema2831::new);
         builder.addFixer(new UntaggedSpawnerFix(schema145));
         Schema schema146 = builder.addSchema(2832, Schema2832::new);
@@ -629,7 +629,7 @@ public class Schemas {
         Schema schema154 = builder.addSchema(2967, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new StructureSettingsFlattenFix(schema154));
         Schema schema155 = builder.addSchema(2970, EMPTY_IDENTIFIER_NORMALIZE);
-        builder.addFixer(new class_7046(schema155));
+        builder.addFixer(new StructuresToConfiguredStructuresFix(schema155));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.model.TextureMap;
+import net.minecraft.data.client.TextureMap;
 import net.minecraft.util.Identifier;
 
 public class Model {

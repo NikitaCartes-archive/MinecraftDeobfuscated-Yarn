@@ -51,7 +51,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -239,7 +240,14 @@ public final class SpawnHelper {
     }
 
     public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
-        return spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, ConfiguredStructureFeatures.FORTRESS.value()).hasChildren();
+        if (spawnGroup != SpawnGroup.MONSTER || !world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
+            return false;
+        }
+        ConfiguredStructureFeature<?, ?> configuredStructureFeature = structureAccessor.method_41036().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(ConfiguredStructureFeatureKeys.FORTRESS);
+        if (configuredStructureFeature == null) {
+            return false;
+        }
+        return structureAccessor.getStructureAt(pos, configuredStructureFeature).hasChildren();
     }
 
     private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {

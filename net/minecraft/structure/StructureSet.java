@@ -18,26 +18,26 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
-public record StructureSet(List<class_7060> structures, StructurePlacement placement) {
-    public static final Codec<StructureSet> field_37195 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)class_7060.field_37197.listOf().fieldOf("structures")).forGetter(StructureSet::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(StructureSet::placement)).apply((Applicative<StructureSet, ?>)instance, StructureSet::new));
-    public static final Codec<RegistryEntry<StructureSet>> field_37196 = RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, field_37195);
+public record StructureSet(List<WeightedEntry> structures, StructurePlacement placement) {
+    public static final Codec<StructureSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)WeightedEntry.CODEC.listOf().fieldOf("structures")).forGetter(StructureSet::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(StructureSet::placement)).apply((Applicative<StructureSet, ?>)instance, StructureSet::new));
+    public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, CODEC);
 
-    public StructureSet(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry, StructurePlacement structurePlacement) {
-        this(List.of(new class_7060(registryEntry, 1)), structurePlacement);
+    public StructureSet(RegistryEntry<ConfiguredStructureFeature<?, ?>> structure, StructurePlacement placement) {
+        this(List.of(new WeightedEntry(structure, 1)), placement);
     }
 
-    public static class_7060 method_41146(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry, int i) {
-        return new class_7060(registryEntry, i);
+    public static WeightedEntry createEntry(RegistryEntry<ConfiguredStructureFeature<?, ?>> structure, int weight) {
+        return new WeightedEntry(structure, weight);
     }
 
-    public static class_7060 method_41145(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry) {
-        return new class_7060(registryEntry, 1);
+    public static WeightedEntry createEntry(RegistryEntry<ConfiguredStructureFeature<?, ?>> structure) {
+        return new WeightedEntry(structure, 1);
     }
 
-    public record class_7060(RegistryEntry<ConfiguredStructureFeature<?, ?>> structure, int weight) {
-        public static final Codec<class_7060> field_37197 = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredStructureFeature.REGISTRY_CODEC.fieldOf("structure")).forGetter(class_7060::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(class_7060::weight)).apply((Applicative<class_7060, ?>)instance, class_7060::new));
+    public record WeightedEntry(RegistryEntry<ConfiguredStructureFeature<?, ?>> structure, int weight) {
+        public static final Codec<WeightedEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredStructureFeature.REGISTRY_CODEC.fieldOf("structure")).forGetter(WeightedEntry::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(WeightedEntry::weight)).apply((Applicative<WeightedEntry, ?>)instance, WeightedEntry::new));
 
-        public boolean method_41148(Predicate<RegistryEntry<Biome>> predicate) {
+        public boolean matches(Predicate<RegistryEntry<Biome>> predicate) {
             RegistryEntryList<Biome> registryEntryList = this.structure().value().getBiomes();
             return registryEntryList.stream().anyMatch(predicate);
         }

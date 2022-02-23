@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.world.gen;
+package net.minecraft.world.gen.noise;
 
 public class NoiseHelper {
     public static double method_35479(double d, double e) {

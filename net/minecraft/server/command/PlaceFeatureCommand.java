@@ -9,31 +9,31 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.command.argument.IdentifierArgumentType;
-import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class PlaceFeatureCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.placefeature.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("placefeature").requires(source -> source.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)CommandManager.argument("feature", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.AVAILABLE_FEATURES).executes(context -> PlaceFeatureCommand.execute((ServerCommandSource)context.getSource(), IdentifierArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(((ServerCommandSource)context.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> PlaceFeatureCommand.execute((ServerCommandSource)context.getSource(), IdentifierArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"))))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("placefeature").requires(source -> source.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(Registry.CONFIGURED_FEATURE_KEY)).executes(context -> PlaceFeatureCommand.execute((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(((ServerCommandSource)context.getSource()).getPosition())))).then(CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> PlaceFeatureCommand.execute((ServerCommandSource)context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"))))));
     }
 
-    public static int execute(ServerCommandSource source, IdentifierArgumentType.RegistryEntry<ConfiguredFeature<?, ?>> configuredFeatureEntry, BlockPos pos) throws CommandSyntaxException {
+    public static int execute(ServerCommandSource source, RegistryEntry<ConfiguredFeature<?, ?>> feature, BlockPos pos) throws CommandSyntaxException {
         ServerWorld serverWorld = source.getWorld();
-        ConfiguredFeature<?, ?> configuredFeature = configuredFeatureEntry.resource();
+        ConfiguredFeature<?, ?> configuredFeature = feature.value();
         if (!configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), serverWorld.getRandom(), pos)) {
             throw FAILED_EXCEPTION.create();
         }
-        Identifier identifier = configuredFeatureEntry.id();
-        source.sendFeedback(new TranslatableText("commands.placefeature.success", identifier, pos.getX(), pos.getY(), pos.getZ()), true);
+        String string = feature.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
+        source.sendFeedback(new TranslatableText("commands.placefeature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
         return 1;
     }
 }

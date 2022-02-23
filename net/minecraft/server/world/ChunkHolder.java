@@ -131,6 +131,16 @@ public class ChunkHolder {
     }
 
     @Nullable
+    public WorldChunk method_41205() {
+        CompletableFuture<Either<WorldChunk, Unloaded>> completableFuture = this.getAccessibleFuture();
+        Either either = completableFuture.getNow(null);
+        if (either == null) {
+            return null;
+        }
+        return either.left().orElse(null);
+    }
+
+    @Nullable
     public ChunkStatus getCurrentStatus() {
         for (int i = CHUNK_STATUSES.size() - 1; i >= 0; --i) {
             ChunkStatus chunkStatus = CHUNK_STATUSES.get(i);
@@ -174,11 +184,15 @@ public class ChunkHolder {
      * @param y chunk section y coordinate
      */
     public void markForLightUpdate(LightType lightType, int y) {
-        WorldChunk worldChunk = this.getWorldChunk();
+        WorldChunk worldChunk = this.method_41205();
         if (worldChunk == null) {
             return;
         }
         worldChunk.setNeedsSaving(true);
+        WorldChunk worldChunk2 = this.getWorldChunk();
+        if (worldChunk2 == null) {
+            return;
+        }
         int i = this.lightingProvider.getBottomY();
         int j = this.lightingProvider.getTopY();
         if (y < i || y > j) {

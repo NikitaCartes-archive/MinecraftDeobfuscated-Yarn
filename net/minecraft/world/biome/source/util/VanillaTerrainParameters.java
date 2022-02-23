@@ -340,7 +340,7 @@ public record VanillaTerrainParameters(Spline<NoisePoint> offsetSpline, Spline<N
         }
 
         public class_7074 method_41194(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
-            return new class_7074(new RegistryEntry.Direct<DensityFunction>(this.function.value().method_40469(densityFunctionVisitor)));
+            return new class_7074(new RegistryEntry.Direct<DensityFunction>(this.function.value().apply(densityFunctionVisitor)));
         }
 
         @Override

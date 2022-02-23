@@ -28,9 +28,9 @@ extends DataFix {
 
     @Override
     protected TypeRewriteRule makeRule() {
-        Type<?> type = this.getInputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+        Type<?> type = this.getInputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
         OpticFinder<?> opticFinder = type.findField("dimensions");
-        Type<?> type2 = this.getOutputSchema().getType(TypeReferences.CHUNK_GENERATOR_SETTINGS);
+        Type<?> type2 = this.getOutputSchema().getType(TypeReferences.WORLD_GEN_SETTINGS);
         Type<?> type3 = type2.findFieldType("dimensions");
         return this.fixTypeEverywhereTyped(NAME, type, type2, (Typed<?> typed2) -> {
             OptionalDynamic<?> optionalDynamic = typed2.get(DSL.remainderFinder()).get(HAS_INCREASED_HEIGHT_ALREADY_KEY);

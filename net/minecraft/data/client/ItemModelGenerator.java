@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import net.minecraft.data.client.Model;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
-import net.minecraft.data.client.model.TextureMap;
+import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;

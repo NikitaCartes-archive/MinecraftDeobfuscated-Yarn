@@ -45,12 +45,12 @@ implements BlockEntityRenderer<T> {
     private final ModelPart singleChestLid;
     private final ModelPart singleChestBase;
     private final ModelPart singleChestLatch;
-    private final ModelPart doubleChestRightLid;
-    private final ModelPart doubleChestRightBase;
-    private final ModelPart doubleChestRightLatch;
     private final ModelPart doubleChestLeftLid;
     private final ModelPart doubleChestLeftBase;
     private final ModelPart doubleChestLeftLatch;
+    private final ModelPart doubleChestRightLid;
+    private final ModelPart doubleChestRightBase;
+    private final ModelPart doubleChestRightLatch;
     private boolean christmas;
 
     public ChestBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
@@ -63,13 +63,13 @@ implements BlockEntityRenderer<T> {
         this.singleChestLid = modelPart.getChild(LID);
         this.singleChestLatch = modelPart.getChild(LATCH);
         ModelPart modelPart2 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_LEFT);
-        this.doubleChestRightBase = modelPart2.getChild(BASE);
-        this.doubleChestRightLid = modelPart2.getChild(LID);
-        this.doubleChestRightLatch = modelPart2.getChild(LATCH);
+        this.doubleChestLeftBase = modelPart2.getChild(BASE);
+        this.doubleChestLeftLid = modelPart2.getChild(LID);
+        this.doubleChestLeftLatch = modelPart2.getChild(LATCH);
         ModelPart modelPart3 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_RIGHT);
-        this.doubleChestLeftBase = modelPart3.getChild(BASE);
-        this.doubleChestLeftLid = modelPart3.getChild(LID);
-        this.doubleChestLeftLatch = modelPart3.getChild(LATCH);
+        this.doubleChestRightBase = modelPart3.getChild(BASE);
+        this.doubleChestRightLid = modelPart3.getChild(LID);
+        this.doubleChestRightLatch = modelPart3.getChild(LATCH);
     }
 
     public static TexturedModelData getSingleTexturedModelData() {
@@ -125,9 +125,9 @@ implements BlockEntityRenderer<T> {
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
         if (bl2) {
             if (chestType == ChestType.LEFT) {
-                this.render(matrices, vertexConsumer, this.doubleChestRightLid, this.doubleChestRightLatch, this.doubleChestRightBase, g, i, overlay);
-            } else {
                 this.render(matrices, vertexConsumer, this.doubleChestLeftLid, this.doubleChestLeftLatch, this.doubleChestLeftBase, g, i, overlay);
+            } else {
+                this.render(matrices, vertexConsumer, this.doubleChestRightLid, this.doubleChestRightLatch, this.doubleChestRightBase, g, i, overlay);
             }
         } else {
             this.render(matrices, vertexConsumer, this.singleChestLid, this.singleChestLatch, this.singleChestBase, g, i, overlay);

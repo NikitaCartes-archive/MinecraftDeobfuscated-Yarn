@@ -36,7 +36,6 @@ implements ScreenHandlerProvider<T> {
     public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
     private static final float field_32318 = 100.0f;
     private static final int field_32319 = 500;
-    private static final int DOUBLE_CLICK_TIMEOUT = 250;
     public static final int field_32322 = 100;
     private static final int field_32321 = 200;
     protected int backgroundWidth = 176;

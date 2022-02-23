@@ -26,7 +26,6 @@ import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
@@ -36,7 +35,6 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
     public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE.getCodec().dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
     public static final Codec<RegistryEntry<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC);
     public static final Codec<RegistryEntryList<ConfiguredStructureFeature<?, ?>>> REGISTRY_ELEMENT_CODEC = RegistryCodecs.entryList(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, CODEC);
-    public static final Codec<ConfiguredStructureFeature<?, ?>> field_37142 = Codec.unit(() -> new ConfiguredStructureFeature<DefaultFeatureConfig, StructureFeature<DefaultFeatureConfig>>(StructureFeature.IGLOO, DefaultFeatureConfig.INSTANCE, RegistryEntryList.of(new RegistryEntry[0]), false, Map.of()));
     public final F feature;
     public final FC config;
     public final RegistryEntryList<Biome> biomes;

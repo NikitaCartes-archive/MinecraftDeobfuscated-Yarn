@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.data.client.model;
+package net.minecraft.data.client;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

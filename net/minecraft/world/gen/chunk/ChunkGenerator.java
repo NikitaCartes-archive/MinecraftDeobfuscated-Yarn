@@ -110,7 +110,8 @@ implements BiomeAccess.Storage {
     private final Map<ConfiguredStructureFeature<?, ?>, List<StructurePlacement>> field_37055 = new Object2ObjectOpenHashMap();
     private final Map<ConcentricRingsStructurePlacement, CompletableFuture<List<ChunkPos>>> field_36405 = new Object2ObjectArrayMap<ConcentricRingsStructurePlacement, CompletableFuture<List<ChunkPos>>>();
     private boolean field_37056;
-    private final long generationSeed;
+    @Deprecated
+    private final long field_37261;
 
     protected static final <T extends ChunkGenerator> Products.P1<RecordCodecBuilder.Mu<T>, Registry<StructureSet>> method_41042(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(RegistryOps.createRegistryCodec(Registry.STRUCTURE_SET_KEY).forGetter(chunkGenerator -> chunkGenerator.field_37053));
@@ -125,7 +126,7 @@ implements BiomeAccess.Storage {
         this.populationSource = biomeSource;
         this.biomeSource = biomeSource2;
         this.field_37054 = optional;
-        this.generationSeed = l;
+        this.field_37261 = l;
     }
 
     public Stream<RegistryEntry<StructureSet>> method_41039() {
@@ -139,13 +140,13 @@ implements BiomeAccess.Storage {
         Set<RegistryEntry<Biome>> set = this.biomeSource.getBiomes();
         this.method_41039().forEach(registryEntry -> {
             StructureSet structureSet = (StructureSet)registryEntry.value();
-            for (StructureSet.class_7060 lv : structureSet.structures()) {
-                this.field_37055.computeIfAbsent(lv.structure().value(), configuredStructureFeature -> new ArrayList()).add(structureSet.placement());
+            for (StructureSet.WeightedEntry weightedEntry2 : structureSet.structures()) {
+                this.field_37055.computeIfAbsent(weightedEntry2.structure().value(), configuredStructureFeature -> new ArrayList()).add(structureSet.placement());
             }
             StructurePlacement structurePlacement = structureSet.placement();
             if (structurePlacement instanceof ConcentricRingsStructurePlacement) {
                 ConcentricRingsStructurePlacement concentricRingsStructurePlacement = (ConcentricRingsStructurePlacement)structurePlacement;
-                if (structureSet.structures().stream().anyMatch(arg -> arg.method_41148(set::contains))) {
+                if (structureSet.structures().stream().anyMatch(weightedEntry -> weightedEntry.matches(set::contains))) {
                     this.field_36405.put(concentricRingsStructurePlacement, this.generateStrongholdPositions((RegistryEntry<StructureSet>)registryEntry, concentricRingsStructurePlacement));
                 }
             }
@@ -164,7 +165,7 @@ implements BiomeAccess.Storage {
             int j = placement.count();
             int k = placement.spread();
             Random random = new Random();
-            random.setSeed(this.generationSeed);
+            random.setSeed(this.field_37261);
             double d = random.nextDouble() * Math.PI * 2.0;
             int l = 0;
             int m = 0;
@@ -427,15 +428,15 @@ implements BiomeAccess.Storage {
         }
     }
 
-    public boolean method_41053(RegistryKey<StructureSet> registryKey, int i, int j, int k) {
+    public boolean method_41053(RegistryKey<StructureSet> registryKey, long l, int i, int j, int k) {
         StructureSet structureSet = this.field_37053.get(registryKey);
         if (structureSet == null) {
             return false;
         }
         StructurePlacement structurePlacement = structureSet.placement();
-        for (int l = i - k; l <= i + k; ++l) {
-            for (int m = j - k; m <= j + k; ++m) {
-                if (!structurePlacement.isStartChunk(this, l, m)) continue;
+        for (int m = i - k; m <= i + k; ++m) {
+            for (int n = j - k; n <= j + k; ++n) {
+                if (!structurePlacement.isStartChunk(this, l, m, n)) continue;
                 return true;
             }
         }
@@ -500,50 +501,50 @@ implements BiomeAccess.Storage {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
         this.method_41039().forEach(registryEntry -> {
             StructurePlacement structurePlacement = ((StructureSet)registryEntry.value()).placement();
-            List<StructureSet.class_7060> list = ((StructureSet)registryEntry.value()).structures();
-            for (StructureSet.class_7060 lv : list) {
-                StructureStart structureStart = world.getStructureStart(chunkSectionPos, lv.structure().value(), chunk);
+            List<StructureSet.WeightedEntry> list = ((StructureSet)registryEntry.value()).structures();
+            for (StructureSet.WeightedEntry weightedEntry : list) {
+                StructureStart structureStart = world.getStructureStart(chunkSectionPos, weightedEntry.structure().value(), chunk);
                 if (structureStart == null || !structureStart.hasChildren()) continue;
                 return;
             }
-            if (!structurePlacement.isStartChunk(this, chunkPos.x, chunkPos.z)) {
+            if (!structurePlacement.isStartChunk(this, worldSeed, chunkPos.x, chunkPos.z)) {
                 return;
             }
             if (list.size() == 1) {
                 this.method_41044(list.get(0), world, registryManager, structureManager, worldSeed, chunk, chunkPos, chunkSectionPos);
                 return;
             }
-            ArrayList<StructureSet.class_7060> arrayList = new ArrayList<StructureSet.class_7060>(list.size());
+            ArrayList<StructureSet.WeightedEntry> arrayList = new ArrayList<StructureSet.WeightedEntry>(list.size());
             arrayList.addAll(list);
             ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
             chunkRandom.setCarverSeed(worldSeed, chunkPos.x, chunkPos.z);
             int i = 0;
-            for (StructureSet.class_7060 lv2 : arrayList) {
-                i += lv2.weight();
+            for (StructureSet.WeightedEntry weightedEntry2 : arrayList) {
+                i += weightedEntry2.weight();
             }
             while (!arrayList.isEmpty()) {
-                StructureSet.class_7060 lv3;
+                StructureSet.WeightedEntry weightedEntry3;
                 int j = chunkRandom.nextInt(i);
                 int k = 0;
                 Iterator iterator = arrayList.iterator();
-                while (iterator.hasNext() && (j -= (lv3 = (StructureSet.class_7060)iterator.next()).weight()) >= 0) {
+                while (iterator.hasNext() && (j -= (weightedEntry3 = (StructureSet.WeightedEntry)iterator.next()).weight()) >= 0) {
                     ++k;
                 }
-                StructureSet.class_7060 lv4 = (StructureSet.class_7060)arrayList.get(k);
-                if (this.method_41044(lv4, world, registryManager, structureManager, worldSeed, chunk, chunkPos, chunkSectionPos)) {
+                StructureSet.WeightedEntry weightedEntry4 = (StructureSet.WeightedEntry)arrayList.get(k);
+                if (this.method_41044(weightedEntry4, world, registryManager, structureManager, worldSeed, chunk, chunkPos, chunkSectionPos)) {
                     return;
                 }
                 arrayList.remove(k);
-                i -= lv4.weight();
+                i -= weightedEntry4.weight();
             }
         });
     }
 
-    private boolean method_41044(StructureSet.class_7060 arg, StructureAccessor structureAccessor, DynamicRegistryManager dynamicRegistryManager, StructureManager structureManager, long l, Chunk chunk, ChunkPos chunkPos, ChunkSectionPos chunkSectionPos) {
+    private boolean method_41044(StructureSet.WeightedEntry weightedEntry, StructureAccessor structureAccessor, DynamicRegistryManager dynamicRegistryManager, StructureManager structureManager, long l, Chunk chunk, ChunkPos chunkPos, ChunkSectionPos chunkSectionPos) {
         RegistryEntryList<Biome> registryEntryList;
         Predicate<RegistryEntry<Biome>> predicate;
         int i;
-        ConfiguredStructureFeature<?, ?> configuredStructureFeature = arg.structure().value();
+        ConfiguredStructureFeature<?, ?> configuredStructureFeature = weightedEntry.structure().value();
         StructureStart structureStart = configuredStructureFeature.tryPlaceStart(dynamicRegistryManager, this, this.populationSource, structureManager, l, chunkPos, i = ChunkGenerator.getStructureReferences(structureAccessor, chunk, chunkSectionPos, configuredStructureFeature), chunk, predicate = arg_0 -> this.method_41048(registryEntryList = configuredStructureFeature.getBiomes(), arg_0));
         if (structureStart.hasChildren()) {
             structureAccessor.setStructureStart(chunkSectionPos, configuredStructureFeature, structureStart, chunk);
@@ -639,10 +640,6 @@ implements BiomeAccess.Storage {
     private List<StructurePlacement> method_41055(RegistryEntry<ConfiguredStructureFeature<?, ?>> registryEntry) {
         this.method_41058();
         return this.field_37055.getOrDefault(registryEntry.value(), List.of());
-    }
-
-    public long getSeed() {
-        return this.generationSeed;
     }
 
     public abstract void getDebugHudText(List<String> var1, BlockPos var2);

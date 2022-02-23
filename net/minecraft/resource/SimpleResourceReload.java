@@ -115,7 +115,7 @@ implements ResourceReload {
      * to the {@code reloaders}.
      * 
      * @apiNote In vanilla, this is respectively called by {@link ReloadableResourceManagerImpl}
-     * on the client and {@link ServerResourceManager} on the server.
+     * on the client and {@link net.minecraft.server.DataPackContents} on the server.
      * 
      * @param reloaders the reloaders performing the reload
      * @param manager the resource manager, providing resources to the reloaders

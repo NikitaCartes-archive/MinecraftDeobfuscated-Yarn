@@ -418,10 +418,10 @@ extends Screen {
             GeneratorOptions generatorOptions = (GeneratorOptions)dataResult.getOrThrow(false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error));
             LevelInfo levelInfo = this.createLevelInfo(generatorOptions.isDebugWorld());
             return Pair.of(new LevelProperties(levelInfo, generatorOptions, dataResult.lifecycle()), mutable.toImmutable());
-        }, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(serverResourceManager -> {
+        }, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(saveLoader -> {
             this.dataPackSettings = dataPackSettings2;
-            this.moreOptionsDialog.loadDatapacks((SaveLoader)serverResourceManager);
-            serverResourceManager.close();
+            this.moreOptionsDialog.loadDatapacks((SaveLoader)saveLoader);
+            saveLoader.close();
         }, (Executor)this.client)).handle((v, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);

@@ -580,6 +580,14 @@ public class Util {
      * Copies {@code current} to {@code backup} and then replaces {@code current} with {@code newPath}
      */
     public static void backupAndReplace(Path current, Path newPath, Path backup) {
+        Util.backupAndReplace(current, newPath, backup, false);
+    }
+
+    public static void backupAndReplace(File current, File newPath, File backup, boolean noRestoreOnFail) {
+        Util.backupAndReplace(current.toPath(), newPath.toPath(), backup.toPath(), noRestoreOnFail);
+    }
+
+    public static void backupAndReplace(Path current, Path newPath, Path backup, boolean noRestoreOnFail) {
         int i = 10;
         if (Files.exists(current, new LinkOption[0]) && !Util.attemptTasks(10, "create backup " + backup, Util.deleteTask(backup), Util.renameTask(current, backup), Util.existenceCheckTask(backup))) {
             return;
@@ -587,7 +595,7 @@ public class Util {
         if (!Util.attemptTasks(10, "remove old " + current, Util.deleteTask(current), Util.deletionVerifyTask(current))) {
             return;
         }
-        if (!Util.attemptTasks(10, "replace " + current + " with " + newPath, Util.renameTask(newPath, current), Util.existenceCheckTask(current))) {
+        if (!Util.attemptTasks(10, "replace " + current + " with " + newPath, Util.renameTask(newPath, current), Util.existenceCheckTask(current)) && !noRestoreOnFail) {
             Util.attemptTasks(10, "restore " + current + " from " + backup, Util.renameTask(backup, current), Util.existenceCheckTask(current));
         }
     }

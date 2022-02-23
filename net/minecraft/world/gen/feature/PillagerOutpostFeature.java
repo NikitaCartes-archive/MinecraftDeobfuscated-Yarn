@@ -28,7 +28,7 @@ extends JigsawFeature {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, chunkPos.x, chunkPos.z, 10);
+        return !context.chunkGenerator().method_41053(StructureSetKeys.VILLAGES, context.seed(), chunkPos.x, chunkPos.z, 10);
     }
 }
 

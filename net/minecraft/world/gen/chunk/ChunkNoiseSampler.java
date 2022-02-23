@@ -145,17 +145,17 @@ DensityFunction.NoisePos {
             this.aquiferSampler = AquiferSampler.aquifer(this, new ChunkPos(i, j), noiseRouter.barrierNoise(), noiseRouter.fluidLevelFloodednessNoise(), noiseRouter.fluidLevelSpreadNoise(), noiseRouter.lavaNoise(), noiseRouter.aquiferPositionalRandomFactory(), minimumY * this.verticalBlockSize, height * this.verticalBlockSize, fluidLevelSampler);
         }
         ImmutableList.Builder builder = ImmutableList.builder();
-        DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)).method_40469(this::method_40529);
+        DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)).apply(this::method_40529);
         builder.add(noisePos -> this.aquiferSampler.apply(noisePos, densityFunction.sample(noisePos)));
         if (chunkGeneratorSettings.oreVeins()) {
-            builder.add(class_6955.method_40548(noiseRouter.veinToggle().method_40469(this::method_40529), noiseRouter.veinRidged().method_40469(this::method_40529), noiseRouter.veinGap().method_40469(this::method_40529), noiseRouter.oreVeinsPositionalRandomFactory()));
+            builder.add(class_6955.method_40548(noiseRouter.veinToggle().apply(this::method_40529), noiseRouter.veinRidged().apply(this::method_40529), noiseRouter.veinGap().apply(this::method_40529), noiseRouter.oreVeinsPositionalRandomFactory()));
         }
         this.blockStateSampler = new ChainedBlockSource((List<BlockStateSampler>)((Object)builder.build()));
-        this.field_36583 = noiseRouter.initialDensityWithoutJaggedness().method_40469(this::method_40529);
+        this.field_36583 = noiseRouter.initialDensityWithoutJaggedness().apply(this::method_40529);
     }
 
     protected MultiNoiseUtil.MultiNoiseSampler createMultiNoiseSampler(NoiseRouter noiseRouter) {
-        return new MultiNoiseUtil.MultiNoiseSampler(noiseRouter.temperature().method_40469(this::method_40529), noiseRouter.humidity().method_40469(this::method_40529), noiseRouter.continents().method_40469(this::method_40529), noiseRouter.erosion().method_40469(this::method_40529), noiseRouter.depth().method_40469(this::method_40529), noiseRouter.ridges().method_40469(this::method_40529), noiseRouter.spawnTarget());
+        return new MultiNoiseUtil.MultiNoiseSampler(noiseRouter.temperature().apply(this::method_40529), noiseRouter.humidity().apply(this::method_40529), noiseRouter.continents().apply(this::method_40529), noiseRouter.erosion().apply(this::method_40529), noiseRouter.depth().apply(this::method_40529), noiseRouter.ridges().apply(this::method_40529), noiseRouter.spawnTarget());
     }
 
     @Nullable
@@ -729,8 +729,8 @@ DensityFunction.NoisePos {
         public DensityFunction wrapped();
 
         @Override
-        default public DensityFunction method_40469(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
-            return this.wrapped().method_40469(densityFunctionVisitor);
+        default public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+            return this.wrapped().apply(visitor);
         }
 
         @Override

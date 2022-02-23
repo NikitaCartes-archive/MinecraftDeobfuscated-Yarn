@@ -54,12 +54,14 @@ implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        if (context.getSource() instanceof ServerCommandSource) {
-            return CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getScoreboard().getObjectiveNames(), builder);
+        S object = context.getSource();
+        if (object instanceof ServerCommandSource) {
+            ServerCommandSource serverCommandSource = (ServerCommandSource)object;
+            return CommandSource.suggestMatching(serverCommandSource.getServer().getScoreboard().getObjectiveNames(), builder);
         }
-        if (context.getSource() instanceof CommandSource) {
-            CommandSource commandSource = (CommandSource)context.getSource();
-            return commandSource.getCompletions(context, builder);
+        if (object instanceof CommandSource) {
+            CommandSource commandSource = (CommandSource)object;
+            return commandSource.getCompletions(context);
         }
         return Suggestions.empty();
     }
