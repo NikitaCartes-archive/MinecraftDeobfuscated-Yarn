@@ -958,6 +958,7 @@ AutoCloseable {
             }
             return stringBuilder.toString();
         });
+        details.addSection("World Generation", () -> this.saveProperties.getLifecycle().toString());
         if (this.serverId != null) {
             details.addSection("Server Id", () -> this.serverId);
         }

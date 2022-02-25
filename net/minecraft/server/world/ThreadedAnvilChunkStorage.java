@@ -614,12 +614,10 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
         ChunkPos chunkPos = holder.getPos();
         CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.FULL);
-        CompletionStage completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(chunks -> {
-            WorldChunk worldChunk = (WorldChunk)chunks.get(chunks.size() / 2);
-            worldChunk.runPostProcessing();
-            this.world.disableTickSchedulers(worldChunk);
-            return Either.left(worldChunk);
-        }), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
+        CompletionStage completableFuture2 = ((CompletableFuture)completableFuture.thenApplyAsync(either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)))).thenApplyAsync(either -> either.ifLeft(chunk -> {
+            chunk.runPostProcessing();
+            this.world.disableTickSchedulers((WorldChunk)chunk);
+        }), (Executor)this.mainThreadExecutor);
         ((CompletableFuture)completableFuture2).thenAcceptAsync(either -> either.ifLeft(chunk -> {
             this.totalChunksLoadedCount.getAndIncrement();
             MutableObject mutableObject = new MutableObject();

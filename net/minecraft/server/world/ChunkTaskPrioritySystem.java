@@ -120,10 +120,10 @@ AutoCloseable {
             if (stream == null) {
                 this.idleActors.add(actor);
             } else {
-                Util.combineSafe(stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
+                CompletableFuture.allOf((CompletableFuture[])stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
                     addBlocking.run();
                     return CompletableFuture.completedFuture(Unit.INSTANCE);
-                })).collect(Collectors.toList())).thenAccept(list -> this.enqueueExecution(queue, actor));
+                })).toArray(CompletableFuture[]::new)).thenAccept(void_ -> this.enqueueExecution(queue, actor));
             }
         }));
     }
