@@ -1057,6 +1057,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			return stringBuilder.toString();
 		}));
+		details.addSection("World Generation", (Supplier<String>)(() -> this.saveProperties.getLifecycle().toString()));
 		if (this.serverId != null) {
 			details.addSection("Server Id", (Supplier<String>)(() -> this.serverId));
 		}

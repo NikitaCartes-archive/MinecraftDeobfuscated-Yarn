@@ -685,12 +685,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
 		ChunkPos chunkPos = holder.getPos();
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.FULL);
-		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(either -> either.flatMap(chunks -> {
-				WorldChunk worldChunk = (WorldChunk)chunks.get(chunks.size() / 2);
-				worldChunk.runPostProcessing();
-				this.world.disableTickSchedulers(worldChunk);
-				return Either.left(worldChunk);
-			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
+		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(
+				either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)),
+				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
+			)
+			.thenApplyAsync(either -> either.ifLeft(chunk -> {
+					chunk.runPostProcessing();
+					this.world.disableTickSchedulers(chunk);
+				}), this.mainThreadExecutor);
 		completableFuture2.thenAcceptAsync(either -> either.ifLeft(chunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
