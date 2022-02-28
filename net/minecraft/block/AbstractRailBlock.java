@@ -32,7 +32,7 @@ implements Waterloggable {
     protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
     protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    private final boolean allowCurves;
+    private final boolean forbidCurves;
 
     public static boolean isRail(World world, BlockPos pos) {
         return AbstractRailBlock.isRail(world.getBlockState(pos));
@@ -42,13 +42,13 @@ implements Waterloggable {
         return state.isIn(BlockTags.RAILS) && state.getBlock() instanceof AbstractRailBlock;
     }
 
-    protected AbstractRailBlock(boolean allowCurves, AbstractBlock.Settings settings) {
+    protected AbstractRailBlock(boolean forbidCurves, AbstractBlock.Settings settings) {
         super(settings);
-        this.allowCurves = allowCurves;
+        this.forbidCurves = forbidCurves;
     }
 
-    public boolean canMakeCurves() {
-        return this.allowCurves;
+    public boolean cannotMakeCurves() {
+        return this.forbidCurves;
     }
 
     @Override
@@ -76,7 +76,7 @@ implements Waterloggable {
 
     protected BlockState updateCurves(BlockState state, World world, BlockPos pos, boolean notify) {
         state = this.updateBlockState(world, pos, state, true);
-        if (this.allowCurves) {
+        if (this.forbidCurves) {
             state.neighborUpdate(world, pos, this, pos, notify);
         }
         return state;
@@ -149,7 +149,7 @@ implements Waterloggable {
         if (state.get(this.getShapeProperty()).isAscending()) {
             world.updateNeighborsAlways(pos.up(), this);
         }
-        if (this.allowCurves) {
+        if (this.forbidCurves) {
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);
         }

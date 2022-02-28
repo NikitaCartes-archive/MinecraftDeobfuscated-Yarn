@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world.gen;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,7 +11,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
-public final class class_6955 {
+public final class OreVeinSampler {
     private static final float field_36620 = 0.4f;
     private static final int field_36621 = 20;
     private static final double field_36622 = 0.2;
@@ -19,17 +19,17 @@ public final class class_6955 {
     private static final float field_36624 = 0.1f;
     private static final float field_36625 = 0.3f;
     private static final float field_36626 = 0.6f;
-    private static final float field_36627 = 0.02f;
+    private static final float RAW_ORE_BLOCK_CHANCE = 0.02f;
     private static final float field_36628 = -0.3f;
 
-    private class_6955() {
+    private OreVeinSampler() {
     }
 
-    protected static ChunkNoiseSampler.BlockStateSampler method_40548(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3, RandomDeriver randomDeriver) {
+    protected static ChunkNoiseSampler.BlockStateSampler create(DensityFunction veinToggle, DensityFunction veinRidged, DensityFunction veinGap, RandomDeriver randomDeriver) {
         BlockState blockState = null;
-        return noisePos -> {
-            double d = densityFunction.sample(noisePos);
-            int i = noisePos.blockY();
+        return pos -> {
+            double d = veinToggle.sample(pos);
+            int i = pos.blockY();
             VeinType veinType = d > 0.0 ? VeinType.COPPER : VeinType.IRON;
             double e = Math.abs(d);
             int j = veinType.maxY - i;
@@ -42,16 +42,16 @@ public final class class_6955 {
             if (e + f < (double)0.4f) {
                 return blockState;
             }
-            AbstractRandom abstractRandom = randomDeriver.createRandom(noisePos.blockX(), i, noisePos.blockZ());
+            AbstractRandom abstractRandom = randomDeriver.createRandom(pos.blockX(), i, pos.blockZ());
             if (abstractRandom.nextFloat() > 0.7f) {
                 return blockState;
             }
-            if (densityFunction2.sample(noisePos) >= 0.0) {
+            if (veinRidged.sample(pos) >= 0.0) {
                 return blockState;
             }
             double g = MathHelper.clampedLerpFromProgress(e, (double)0.4f, (double)0.6f, (double)0.1f, (double)0.3f);
-            if ((double)abstractRandom.nextFloat() < g && densityFunction3.sample(noisePos) > (double)-0.3f) {
-                return abstractRandom.nextFloat() < 0.02f ? veinType.rawBlock : veinType.ore;
+            if ((double)abstractRandom.nextFloat() < g && veinGap.sample(pos) > (double)-0.3f) {
+                return abstractRandom.nextFloat() < 0.02f ? veinType.rawOreBlock : veinType.ore;
             }
             return veinType.stone;
         };
@@ -62,14 +62,14 @@ public final class class_6955 {
         IRON(Blocks.DEEPSLATE_IRON_ORE.getDefaultState(), Blocks.RAW_IRON_BLOCK.getDefaultState(), Blocks.TUFF.getDefaultState(), -60, -8);
 
         final BlockState ore;
-        final BlockState rawBlock;
+        final BlockState rawOreBlock;
         final BlockState stone;
         protected final int minY;
         protected final int maxY;
 
-        private VeinType(BlockState ore, BlockState rawBlock, BlockState stone, int minY, int maxY) {
+        private VeinType(BlockState ore, BlockState rawOreBlock, BlockState stone, int minY, int maxY) {
             this.ore = ore;
-            this.rawBlock = rawBlock;
+            this.rawOreBlock = rawOreBlock;
             this.stone = stone;
             this.minY = minY;
             this.maxY = maxY;

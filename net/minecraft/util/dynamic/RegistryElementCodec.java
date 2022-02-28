@@ -25,8 +25,6 @@ import net.minecraft.util.registry.RegistryKey;
  * loading from registry before a registry is fully loaded from a codec.
  * 
  * @param <E> the element type
- * @see RegistryCodec
- * @see RegistryReadingOps
  * @see RegistryOps
  */
 public final class RegistryElementCodec<E>
@@ -54,7 +52,7 @@ implements Codec<RegistryEntry<E>> {
         RegistryOps registryOps;
         Optional optional;
         if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registryRef)).isPresent()) {
-            if (!registryEntry.setRegistry(optional.get())) {
+            if (!registryEntry.matchesRegistry(optional.get())) {
                 return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(key -> Identifier.CODEC.encode(key.getValue(), dynamicOps, object), value -> this.elementCodec.encode(value, dynamicOps, object));

@@ -27,7 +27,7 @@ import net.minecraft.world.spawner.Spawner;
  * A spawner for cats in villages and swamp huts.
  * 
  * @implNote Cats in swamp huts are also spawned in
- * {@link net.minecraft.world.gen.chunk.ChunkGeneratorSettings#getEntitySpawnList}.
+ * {@link net.minecraft.world.gen.chunk.ChunkGenerator#getEntitySpawnList}.
  */
 public class CatSpawner
 implements Spawner {

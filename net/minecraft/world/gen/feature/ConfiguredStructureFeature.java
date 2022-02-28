@@ -49,9 +49,6 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
         this.field_37143 = map;
     }
 
-    /**
-     * @see StructureFeature#tryPlaceStart
-     */
     public StructureStart tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, int structureReferences, HeightLimitView world, Predicate<RegistryEntry<Biome>> biomePredicate) {
         Optional optional = ((StructureFeature)this.feature).method_41138().createGenerator(new StructureGeneratorFactory.Context<FC>(chunkGenerator, biomeSource, worldSeed, chunkPos, this.config, world, biomePredicate, structureManager, registryManager));
         if (optional.isPresent()) {

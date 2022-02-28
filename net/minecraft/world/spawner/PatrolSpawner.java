@@ -22,7 +22,7 @@ import net.minecraft.world.spawner.Spawner;
  * A spawner for pillager patrols.
  * 
  * <p>Pillager spawns in pillager outposts are controlled at
- * {@link net.minecraft.world.gen.chunk.ChunkGeneratorSettings#getEntitySpawnList}.
+ * {@link net.minecraft.world.gen.chunk.ChunkGenerator#getEntitySpawnList}.
  */
 public class PatrolSpawner
 implements Spawner {

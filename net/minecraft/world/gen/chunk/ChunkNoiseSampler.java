@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_6955;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
@@ -21,6 +20,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChainedBlockSource;
+import net.minecraft.world.gen.OreVeinSampler;
 import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -148,7 +148,7 @@ DensityFunction.NoisePos {
         DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)).apply(this::method_40529);
         builder.add(noisePos -> this.aquiferSampler.apply(noisePos, densityFunction.sample(noisePos)));
         if (chunkGeneratorSettings.oreVeins()) {
-            builder.add(class_6955.method_40548(noiseRouter.veinToggle().apply(this::method_40529), noiseRouter.veinRidged().apply(this::method_40529), noiseRouter.veinGap().apply(this::method_40529), noiseRouter.oreVeinsPositionalRandomFactory()));
+            builder.add(OreVeinSampler.create(noiseRouter.veinToggle().apply(this::method_40529), noiseRouter.veinRidged().apply(this::method_40529), noiseRouter.veinGap().apply(this::method_40529), noiseRouter.oreVeinsPositionalRandomFactory()));
         }
         this.blockStateSampler = new ChainedBlockSource((List<BlockStateSampler>)((Object)builder.build()));
         this.field_36583 = noiseRouter.initialDensityWithoutJaggedness().apply(this::method_40529);

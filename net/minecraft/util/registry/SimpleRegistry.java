@@ -343,7 +343,7 @@ extends MutableRegistry<T> {
         this.keyToEntry.values().forEach(entry -> map.put((RegistryEntry.Reference)entry, new ArrayList()));
         tagEntries.forEach((? super K tag, ? super V entries) -> {
             for (RegistryEntry registryEntry : entries) {
-                if (!registryEntry.setRegistry(this)) {
+                if (!registryEntry.matchesRegistry(this)) {
                     throw new IllegalStateException("Can't create named set " + tag + " containing value " + registryEntry + " from outside registry " + this);
                 }
                 if (registryEntry instanceof RegistryEntry.Reference) {

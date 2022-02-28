@@ -334,7 +334,8 @@ implements Comparable<Vec3i> {
     /**
      * {@return the squared distance between here (center) and {@code vec}}
      * 
-     * @see #getSquaredDistance(Vec3i, boolean)
+     * @see #getSquaredDistance(double, double, double)
+     * @see #getSquaredDistanceFromCenter(double, double, double)
      */
     public double getSquaredDistance(Vec3i vec) {
         return this.getSquaredDistance(vec.getX(), vec.getY(), vec.getZ());
