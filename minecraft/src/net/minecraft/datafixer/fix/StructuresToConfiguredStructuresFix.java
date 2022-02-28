@@ -94,7 +94,7 @@ public class StructuresToConfiguredStructuresFix extends DataFix {
 					),
 					"minecraft:ruined_portal_ocean"
 				),
-				"minecraft:ruined_portal_standard"
+				"minecraft:ruined_portal"
 			)
 		)
 		.put("pillager_outpost", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:pillager_outpost"))
