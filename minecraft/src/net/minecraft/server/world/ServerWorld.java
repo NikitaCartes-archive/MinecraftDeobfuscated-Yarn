@@ -1315,7 +1315,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * {@return the world spawn point}
 	 * 
 	 * @implNote If it is outside the world border, this returns the position of the
-	 * highest {@linkplain Heightmap.Type#MOTION_BLOCKING motion-blocking} block at the center of the world border.
+	 * highest {@linkplain net.minecraft.world.Heightmap.Type#MOTION_BLOCKING motion-blocking}
+	 * block at the center of the world border.
 	 */
 	public BlockPos getSpawnPos() {
 		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());

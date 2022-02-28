@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
-import net.minecraft.class_6955;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -17,6 +16,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
 import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.OreVeinSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.noise.NoiseRouter;
@@ -318,8 +318,8 @@ public class DensityFunctions {
 		);
 		DensityFunction densityFunction16 = method_41116(Y);
 		int i = generationShapeConfig.minimumY();
-		int j = Stream.of(class_6955.VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(i);
-		int k = Stream.of(class_6955.VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(i);
+		int j = Stream.of(OreVeinSampler.VeinType.values()).mapToInt(veinType -> veinType.minY).min().orElse(i);
+		int k = Stream.of(OreVeinSampler.VeinType.values()).mapToInt(veinType -> veinType.maxY).max().orElse(i);
 		DensityFunction densityFunction17 = method_40539(
 			densityFunction16, DensityFunctionTypes.method_40502(method_41111(NoiseParametersKeys.ORE_VEININESS), 1.5, 1.5), j, k, 0
 		);

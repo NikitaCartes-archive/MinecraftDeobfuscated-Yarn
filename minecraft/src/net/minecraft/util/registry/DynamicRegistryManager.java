@@ -47,7 +47,7 @@ import org.slf4j.Logger;
  * registries, while each client play network handler has a dynamic registry
  * manager for server-sent dynamic registries.
  * 
- * <p>The {@link DynamicRegistryManager.Impl}
+ * <p>The {@link DynamicRegistryManager.ImmutableImpl}
  * class serves as an immutable implementation of any particular collection
  * or configuration of dynamic registries.
  */

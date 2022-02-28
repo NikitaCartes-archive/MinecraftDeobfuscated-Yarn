@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.FeaturePlacementContext;
  * takes a position with some context and returns zero or more positions.
  * It's used to determine where to generate configured features.
  * 
- * @see net.minecraft.world.gen.feature.ConfiguredFeature#withPlacement
+ * @see net.minecraft.world.gen.feature.ConfiguredFeature
  */
 public abstract class PlacementModifier {
 	public static final Codec<PlacementModifier> CODEC = Registry.PLACEMENT_MODIFIER_TYPE

@@ -50,9 +50,6 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 		this.field_37143 = map;
 	}
 
-	/**
-	 * @see StructureFeature#tryPlaceStart
-	 */
 	public StructureStart tryPlaceStart(
 		DynamicRegistryManager registryManager,
 		ChunkGenerator chunkGenerator,
