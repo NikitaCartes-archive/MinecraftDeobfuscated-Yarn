@@ -32,7 +32,7 @@ implements Waterloggable {
     protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
     protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    private final boolean forbidCurves;
+    private final boolean allowCurves;
 
     public static boolean isRail(World world, BlockPos pos) {
         return AbstractRailBlock.isRail(world.getBlockState(pos));
@@ -42,13 +42,13 @@ implements Waterloggable {
         return state.isIn(BlockTags.RAILS) && state.getBlock() instanceof AbstractRailBlock;
     }
 
-    protected AbstractRailBlock(boolean forbidCurves, AbstractBlock.Settings settings) {
+    protected AbstractRailBlock(boolean allowCurves, AbstractBlock.Settings settings) {
         super(settings);
-        this.forbidCurves = forbidCurves;
+        this.allowCurves = allowCurves;
     }
 
-    public boolean cannotMakeCurves() {
-        return this.forbidCurves;
+    public boolean canMakeCurves() {
+        return this.allowCurves;
     }
 
     @Override
@@ -76,14 +76,14 @@ implements Waterloggable {
 
     protected BlockState updateCurves(BlockState state, World world, BlockPos pos, boolean notify) {
         state = this.updateBlockState(world, pos, state, true);
-        if (this.forbidCurves) {
-            state.neighborUpdate(world, pos, this, pos, notify);
+        if (this.allowCurves) {
+            world.updateNeighbor(state, pos, this, pos, notify);
         }
         return state;
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (world.isClient || !world.getBlockState(pos).isOf(this)) {
             return;
         }
@@ -92,7 +92,7 @@ implements Waterloggable {
             AbstractRailBlock.dropStacks(state, world, pos);
             world.removeBlock(pos, notify);
         } else {
-            this.updateBlockState(state, world, pos, block);
+            this.updateBlockState(state, world, pos, sourceBlock);
         }
     }
 
@@ -149,7 +149,7 @@ implements Waterloggable {
         if (state.get(this.getShapeProperty()).isAscending()) {
             world.updateNeighborsAlways(pos.up(), this);
         }
-        if (this.forbidCurves) {
+        if (this.allowCurves) {
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);
         }

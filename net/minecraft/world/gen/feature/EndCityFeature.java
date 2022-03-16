@@ -5,32 +5,39 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.EndCityGenerator;
-import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.structure.StructureType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.StructureSpawns;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class EndCityFeature
-extends StructureFeature<DefaultFeatureConfig> {
+extends StructureFeature {
+    public static final Codec<EndCityFeature> CODEC = RecordCodecBuilder.create(instance -> EndCityFeature.method_41608(instance).apply(instance, EndCityFeature::new));
     private static final int Z_SEED_MULTIPLIER = 10387313;
 
-    public EndCityFeature(Codec<DefaultFeatureConfig> configCodec) {
-        super(configCodec, EndCityFeature::addPieces);
+    public EndCityFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl) {
+        super(registryEntryList, map, feature, bl);
     }
 
-    private static int getGenerationHeight(ChunkPos pos, ChunkGenerator chunkGenerator, HeightLimitView world) {
+    private static int getGenerationHeight(ChunkPos pos, ChunkGenerator chunkGenerator, HeightLimitView world, NoiseConfig noiseConfig) {
         Random random = new Random(pos.x + pos.z * 10387313);
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = 5;
@@ -45,28 +52,33 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
         int k = pos.getOffsetX(7);
         int l = pos.getOffsetZ(7);
-        int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, world);
-        int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, world);
-        int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, world);
-        int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, world);
+        int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
+        int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
+        int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
+        int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
         return Math.min(Math.min(m, n), Math.min(o, p));
     }
 
-    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context2) {
-        int i = EndCityFeature.getGenerationHeight(context2.chunkPos(), context2.chunkGenerator(), context2.world());
+    @Override
+    public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
+        int i = EndCityFeature.getGenerationHeight(arg.chunkPos(), arg.chunkGenerator(), arg.heightAccessor(), arg.randomState());
         if (i < 60) {
             return Optional.empty();
         }
-        BlockPos blockPos = context2.chunkPos().getCenterAtY(i);
-        if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ())))) {
-            return Optional.empty();
-        }
-        return Optional.of((collector, context) -> {
-            BlockRotation blockRotation = BlockRotation.random(context.random());
-            ArrayList<StructurePiece> list = Lists.newArrayList();
-            EndCityGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, context.random());
-            list.forEach(collector::addPiece);
-        });
+        BlockPos blockPos = arg.chunkPos().getCenterAtY(i);
+        return Optional.of(new StructureFeature.class_7150(blockPos, structurePiecesCollector -> this.method_39817((StructurePiecesCollector)structurePiecesCollector, blockPos, arg)));
+    }
+
+    private void method_39817(StructurePiecesCollector collector, BlockPos blockPos, StructureFeature.class_7149 arg) {
+        BlockRotation blockRotation = BlockRotation.random(arg.random());
+        ArrayList<StructurePiece> list = Lists.newArrayList();
+        EndCityGenerator.addPieces(arg.structureTemplateManager(), blockPos, blockRotation, list, arg.random());
+        list.forEach(collector::addPiece);
+    }
+
+    @Override
+    public StructureType<?> getType() {
+        return StructureType.END_CITY;
     }
 }
 

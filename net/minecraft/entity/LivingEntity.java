@@ -252,6 +252,7 @@ extends Entity {
     private float leaningPitch;
     private float lastLeaningPitch;
     protected Brain<?> brain;
+    private boolean experienceDroppingDisabled;
 
     protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
@@ -575,10 +576,8 @@ extends Entity {
      * @see #dropXp()
      * @see #shouldAlwaysDropXp()
      * @see #shouldDropXp()
-     * 
-     * @param player the attacking player
      */
-    protected int getXpToDrop(PlayerEntity player) {
+    public int getXpToDrop() {
         return 0;
     }
 
@@ -1241,6 +1240,7 @@ extends Entity {
         if (this.isSleeping()) {
             this.wakeUp();
         }
+        this.emitGameEvent(GameEvent.ENTITY_DYING);
         if (!this.world.isClient && this.hasCustomName()) {
             field_36332.info("Named entity {} died: {}", (Object)this, (Object)this.getDamageTracker().getDeathMessage().getString());
         }
@@ -1309,8 +1309,8 @@ extends Entity {
      * {@link #getXpToDrop(PlayerEntity)}.
      */
     protected void dropXp() {
-        if (this.world instanceof ServerWorld && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getXpToDrop(this.attackingPlayer));
+        if (this.world instanceof ServerWorld && !this.isExperienceDroppingDisabled() && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getXpToDrop());
         }
     }
 
@@ -1358,6 +1358,14 @@ extends Entity {
 
     private SoundEvent getFallSound(int distance) {
         return distance > 4 ? this.getFallSounds().big() : this.getFallSounds().small();
+    }
+
+    public void disableExperienceDropping() {
+        this.experienceDroppingDisabled = true;
+    }
+
+    public boolean isExperienceDroppingDisabled() {
+        return this.experienceDroppingDisabled;
     }
 
     public FallSounds getFallSounds() {
@@ -1952,7 +1960,7 @@ extends Entity {
                     vec3d = new Vec3d(vec3d.x, 0.2, vec3d.z);
                 }
                 this.setVelocity(vec3d.multiply(f, 0.8f, f));
-                Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
+                Vec3d vec3d2 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
                 this.setVelocity(vec3d2);
                 if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + (double)0.6f - this.getY() + e, vec3d2.z)) {
                     this.setVelocity(vec3d2.x, 0.3f, vec3d2.z);
@@ -1964,7 +1972,7 @@ extends Entity {
                 this.move(MovementType.SELF, this.getVelocity());
                 if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
                     this.setVelocity(this.getVelocity().multiply(0.5, 0.8f, 0.5));
-                    vec3d3 = this.method_26317(d, bl, this.getVelocity());
+                    vec3d3 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
                     this.setVelocity(vec3d3);
                 } else {
                     this.setVelocity(this.getVelocity().multiply(0.5));
@@ -2062,12 +2070,12 @@ extends Entity {
         return vec3d;
     }
 
-    public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
+    public Vec3d applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion) {
         if (!this.hasNoGravity() && !this.isSprinting()) {
-            double e = bl && Math.abs(vec3d.y - 0.005) >= 0.003 && Math.abs(vec3d.y - d / 16.0) < 0.003 ? -0.003 : vec3d.y - d / 16.0;
-            return new Vec3d(vec3d.x, e, vec3d.z);
+            double d = falling && Math.abs(motion.y - 0.005) >= 0.003 && Math.abs(motion.y - gravity / 16.0) < 0.003 ? -0.003 : motion.y - gravity / 16.0;
+            return new Vec3d(motion.x, d, motion.z);
         }
-        return vec3d;
+        return motion;
     }
 
     private Vec3d applyClimbingSpeed(Vec3d motion) {
@@ -2847,7 +2855,7 @@ extends Entity {
 
     @Override
     public boolean isInSwimmingPose() {
-        return super.isInSwimmingPose() || !this.isFallFlying() && this.getPose() == EntityPose.FALL_FLYING;
+        return super.isInSwimmingPose() || !this.isFallFlying() && this.isInPose(EntityPose.FALL_FLYING);
     }
 
     public int getRoll() {

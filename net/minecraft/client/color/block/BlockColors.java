@@ -57,7 +57,7 @@ public class BlockColors {
                 return FoliageColors.getDefaultColor();
             }
             return BiomeColors.getFoliageColor(world, pos);
-        }, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.VINE);
+        }, Blocks.OAK_LEAVES, Blocks.JUNGLE_LEAVES, Blocks.ACACIA_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.VINE, Blocks.MANGROVE_LEAVES);
         blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
             if (world == null || pos == null) {
                 return -1;

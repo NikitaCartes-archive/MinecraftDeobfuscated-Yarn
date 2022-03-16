@@ -41,7 +41,7 @@ extends Task<MobEntity> {
     @Override
     protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         if (mobEntity.isOnGround()) {
-            mobEntity.setVelocity(mobEntity.getVelocity().multiply(0.1f));
+            mobEntity.setVelocity(mobEntity.getVelocity().multiply(0.1f, 1.0, 0.1f));
             serverWorld.playSoundFromEntity(null, mobEntity, this.sound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
         }
         mobEntity.setNoDrag(false);

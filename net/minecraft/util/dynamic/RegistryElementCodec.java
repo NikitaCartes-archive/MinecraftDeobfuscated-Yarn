@@ -37,7 +37,7 @@ implements Codec<RegistryEntry<E>> {
         return RegistryElementCodec.of(registryRef, elementCodec, true);
     }
 
-    private static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
+    public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
         return new RegistryElementCodec<E>(registryRef, elementCodec, allowInlineDefinitions);
     }
 
@@ -52,7 +52,7 @@ implements Codec<RegistryEntry<E>> {
         RegistryOps registryOps;
         Optional optional;
         if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registryRef)).isPresent()) {
-            if (!registryEntry.matchesRegistry(optional.get())) {
+            if (!registryEntry.setRegistry(optional.get())) {
                 return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(key -> Identifier.CODEC.encode(key.getValue(), dynamicOps, object), value -> this.elementCodec.encode(value, dynamicOps, object));

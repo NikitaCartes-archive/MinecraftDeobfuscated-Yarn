@@ -21,10 +21,5 @@ extends AbstractTagProvider<Fluid> {
         this.getOrCreateTagBuilder(FluidTags.WATER).add((Fluid[])new Fluid[]{Fluids.WATER, Fluids.FLOWING_WATER});
         this.getOrCreateTagBuilder(FluidTags.LAVA).add((Fluid[])new Fluid[]{Fluids.LAVA, Fluids.FLOWING_LAVA});
     }
-
-    @Override
-    public String getName() {
-        return "Fluid Tags";
-    }
 }
 

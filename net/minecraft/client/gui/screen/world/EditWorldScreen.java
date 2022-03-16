@@ -97,7 +97,7 @@ extends Screen {
         }, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20, new TranslatableText("selectWorld.edit.export_worldgen_settings"), button -> {
             DataResult<Object> dataResult2;
-            try (SaveLoader saveLoader = this.client.createSaveLoader(this.storageSession, false);){
+            try (SaveLoader saveLoader = this.client.method_41735().createSaveLoader(this.storageSession, false);){
                 RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, saveLoader.dynamicRegistryManager());
                 DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, saveLoader.saveProperties().getGeneratorOptions());
                 dataResult2 = dataResult.flatMap(json -> {

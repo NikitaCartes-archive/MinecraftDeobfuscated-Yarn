@@ -48,12 +48,14 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -68,6 +70,9 @@ import org.jetbrains.annotations.Nullable;
  * </tr>
  * <tr>
  *  <td>Codec-based</td><td>{@link #decode(Codec)}</td><td>{@link #encode(Codec, Object)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, Function)}</td><td>{@link #writeCollection(Collection, BiConsumer)}</td>
@@ -259,6 +264,45 @@ extends ByteBuf {
             throw new EncoderException("Failed to encode: " + partial.message() + " " + object);
         });
         this.writeNbt((NbtCompound)dataResult.result().get());
+    }
+
+    /**
+     * Writes a value from a registry (or other {@link IndexedIterable}s). The value
+     * is stored using its raw ID as a {@linkplain #readVarInt() var int}.
+     * 
+     * <p>Callers must ensure that <strong>the registry (or the indexed iterable) is
+     * properly synchronized</strong> between the client and the server.
+     * 
+     * @throws IllegalArgumentException if {@code value} is not in {@code registry}
+     * @see #readRegistryValue(IndexedIterable)
+     * 
+     * @param registry the registry (or an indexed iterable) that contains the value
+     * @param value a value to write, must be in {@code registry}
+     */
+    public <T> void writeRegistryValue(IndexedIterable<T> registry, T value) {
+        int i = registry.getRawId(value);
+        if (i == -1) {
+            throw new IllegalArgumentException("Can't find id for '" + value + "' in map " + registry);
+        }
+        this.writeVarInt(i);
+    }
+
+    /**
+     * Reads a value from a registry (or other {@link IndexedIterable}s). The value
+     * is stored using its raw ID as a {@linkplain #readVarInt() var int}.
+     * 
+     * <p>Callers must ensure that <strong>the registry (or the indexed iterable) is
+     * properly synchronized</strong> between the client and the server.
+     * 
+     * @return the value, or {@code null} if it is missing from {@code registry}
+     * @see #writeRegistryValue(IndexedIterable, Object)
+     * 
+     * @param registry the registry (or an indexed iterable) that contains the value
+     */
+    @Nullable
+    public <T> T readRegistryValue(IndexedIterable<T> registry) {
+        int i = this.readVarInt();
+        return registry.get(i);
     }
 
     public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {
@@ -1038,7 +1082,7 @@ extends ByteBuf {
         } else {
             this.writeBoolean(true);
             Item item = stack.getItem();
-            this.writeVarInt(Item.getRawId(item));
+            this.writeRegistryValue(Registry.ITEM, item);
             this.writeByte(stack.getCount());
             NbtCompound nbtCompound = null;
             if (item.isDamageable() || item.isNbtSynced()) {
@@ -1062,9 +1106,9 @@ extends ByteBuf {
         if (!this.readBoolean()) {
             return ItemStack.EMPTY;
         }
-        int i = this.readVarInt();
-        byte j = this.readByte();
-        ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
+        Item item = this.readRegistryValue(Registry.ITEM);
+        byte i = this.readByte();
+        ItemStack itemStack = new ItemStack(item, (int)i);
         itemStack.setNbt(this.readNbt());
         return itemStack;
     }

@@ -55,16 +55,20 @@ extends DrawableHelper {
     }
 
     private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar) {
-        int i;
-        this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
-        if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-            this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2, 182, 5);
+        this.renderBossBar(matrices, x, y, bossBar, 182, 0);
+        int i = (int)(bossBar.getPercent() * 183.0f);
+        if (i > 0) {
+            this.renderBossBar(matrices, x, y, bossBar, i, 5);
         }
-        if ((i = (int)(bossBar.getPercent() * 183.0f)) > 0) {
-            this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
-            if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
-                this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + 5, i, 5);
-            }
+    }
+
+    private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar, int width, int height) {
+        this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + height, width, 5);
+        if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + height, width, 5);
+            RenderSystem.disableBlend();
         }
     }
 

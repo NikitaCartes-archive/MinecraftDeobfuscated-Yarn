@@ -40,6 +40,7 @@ public class ModelPartData {
         Object2ObjectArrayMap object2ObjectArrayMap = this.children.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> ((ModelPartData)entry.getValue()).createPart(textureWidth, textureHeight), (modelPart, modelPart2) -> modelPart, Object2ObjectArrayMap::new));
         List list = this.cuboidData.stream().map(modelCuboidData -> modelCuboidData.createCuboid(textureWidth, textureHeight)).collect(ImmutableList.toImmutableList());
         ModelPart modelPart3 = new ModelPart(list, object2ObjectArrayMap);
+        modelPart3.setDefaultTransform(this.rotationData);
         modelPart3.setTransform(this.rotationData);
         return modelPart3;
     }

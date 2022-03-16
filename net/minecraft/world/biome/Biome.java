@@ -46,10 +46,10 @@ import net.minecraft.world.gen.random.ChunkRandom;
 import org.jetbrains.annotations.Nullable;
 
 public final class Biome {
-    public static final Codec<Biome> CODEC = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects), GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings), SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)).apply((Applicative<Biome, ?>)instance, Biome::new));
-    public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)Category.CODEC.fieldOf("category")).forGetter(biome -> biome.category), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, category, effects) -> new Biome((Weather)weather, (Category)category, (BiomeEffects)effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
+    public static final Codec<Biome> CODEC = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects), GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings), SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)).apply((Applicative<Biome, ?>)instance, Biome::new));
+    public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(instance -> instance.group(Weather.CODEC.forGetter(biome -> biome.weather), ((MapCodec)BiomeEffects.CODEC.fieldOf("effects")).forGetter(biome -> biome.effects)).apply((Applicative<Biome, ?>)instance, (weather, effects) -> new Biome((Weather)weather, (BiomeEffects)effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE)));
     public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
-    public static final Codec<RegistryEntryList<Biome>> field_26750 = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
+    public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
     private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(Integer.valueOf(0)));
     static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((AbstractRandom)new ChunkRandom(new AtomicSimpleRandom(3456L)), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
     @Deprecated(forRemoval=true)
@@ -58,7 +58,6 @@ public final class Biome {
     private final Weather weather;
     private final GenerationSettings generationSettings;
     private final SpawnSettings spawnSettings;
-    private final Category category;
     private final BiomeEffects effects;
     private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
         Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25f){
@@ -71,11 +70,10 @@ public final class Biome {
         return long2FloatLinkedOpenHashMap;
     }));
 
-    Biome(Weather weather, Category category, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
+    Biome(Weather weather, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
         this.weather = weather;
         this.generationSettings = generationSettings;
         this.spawnSettings = spawnSettings;
-        this.category = category;
         this.effects = effects;
     }
 
@@ -238,15 +236,6 @@ public final class Biome {
         return this.effects.getMusic();
     }
 
-    Category getCategory() {
-        return this.category;
-    }
-
-    @Deprecated
-    public static Category getCategory(RegistryEntry<Biome> biomeEntry) {
-        return biomeEntry.value().getCategory();
-    }
-
     static class Weather {
         public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Precipitation.CODEC.fieldOf("precipitation")).forGetter(weather -> weather.precipitation), ((MapCodec)Codec.FLOAT.fieldOf("temperature")).forGetter(weather -> Float.valueOf(weather.temperature)), TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier), ((MapCodec)Codec.FLOAT.fieldOf("downfall")).forGetter(weather -> Float.valueOf(weather.downfall))).apply((Applicative<Weather, ?>)instance, Weather::new));
         final Precipitation precipitation;
@@ -259,55 +248,6 @@ public final class Biome {
             this.temperature = temperature;
             this.temperatureModifier = temperatureModifier;
             this.downfall = downfall;
-        }
-    }
-
-    public static enum Category implements StringIdentifiable
-    {
-        NONE("none"),
-        TAIGA("taiga"),
-        EXTREME_HILLS("extreme_hills"),
-        JUNGLE("jungle"),
-        MESA("mesa"),
-        PLAINS("plains"),
-        SAVANNA("savanna"),
-        ICY("icy"),
-        THEEND("the_end"),
-        BEACH("beach"),
-        FOREST("forest"),
-        OCEAN("ocean"),
-        DESERT("desert"),
-        RIVER("river"),
-        SWAMP("swamp"),
-        MUSHROOM("mushroom"),
-        NETHER("nether"),
-        UNDERGROUND("underground"),
-        MOUNTAIN("mountain");
-
-        public static final Codec<Category> CODEC;
-        private static final Map<String, Category> BY_NAME;
-        private final String name;
-
-        private Category(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static Category byName(String name) {
-            return BY_NAME.get(name);
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        static {
-            CODEC = StringIdentifiable.createCodec(Category::values, Category::byName);
-            BY_NAME = Arrays.stream(Category.values()).collect(Collectors.toMap(Category::getName, category -> category));
         }
     }
 
@@ -405,8 +345,6 @@ public final class Biome {
         @Nullable
         private Precipitation precipitation;
         @Nullable
-        private Category category;
-        @Nullable
         private Float temperature;
         private TemperatureModifier temperatureModifier = TemperatureModifier.NONE;
         @Nullable
@@ -419,16 +357,11 @@ public final class Biome {
         private GenerationSettings generationSettings;
 
         public static Builder copy(Biome biome) {
-            return new Builder().precipitation(biome.getPrecipitation()).category(biome.getCategory()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(biome.getGenerationSettings()).spawnSettings(biome.getSpawnSettings());
+            return new Builder().precipitation(biome.getPrecipitation()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(biome.getGenerationSettings()).spawnSettings(biome.getSpawnSettings());
         }
 
         public Builder precipitation(Precipitation precipitation) {
             this.precipitation = precipitation;
-            return this;
-        }
-
-        public Builder category(Category category) {
-            this.category = category;
             return this;
         }
 
@@ -463,14 +396,14 @@ public final class Biome {
         }
 
         public Biome build() {
-            if (this.precipitation == null || this.category == null || this.temperature == null || this.downfall == null || this.specialEffects == null || this.spawnSettings == null || this.generationSettings == null) {
+            if (this.precipitation == null || this.temperature == null || this.downfall == null || this.specialEffects == null || this.spawnSettings == null || this.generationSettings == null) {
                 throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
             }
-            return new Biome(new Weather(this.precipitation, this.temperature.floatValue(), this.temperatureModifier, this.downfall.floatValue()), this.category, this.specialEffects, this.generationSettings, this.spawnSettings);
+            return new Biome(new Weather(this.precipitation, this.temperature.floatValue(), this.temperatureModifier, this.downfall.floatValue()), this.specialEffects, this.generationSettings, this.spawnSettings);
         }
 
         public String toString() {
-            return "BiomeBuilder{\nprecipitation=" + this.precipitation + ",\nbiomeCategory=" + this.category + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n}";
+            return "BiomeBuilder{\nprecipitation=" + this.precipitation + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n}";
         }
     }
 }

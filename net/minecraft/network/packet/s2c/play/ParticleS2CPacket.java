@@ -37,7 +37,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public ParticleS2CPacket(PacketByteBuf buf) {
-        ParticleType particleType = (ParticleType)Registry.PARTICLE_TYPE.get(buf.readInt());
+        ParticleType<?> particleType = buf.readRegistryValue(Registry.PARTICLE_TYPE);
         this.longDistance = buf.readBoolean();
         this.x = buf.readDouble();
         this.y = buf.readDouble();
@@ -56,7 +56,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.parameters.getType()));
+        buf.writeRegistryValue(Registry.PARTICLE_TYPE, this.parameters.getType());
         buf.writeBoolean(this.longDistance);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);

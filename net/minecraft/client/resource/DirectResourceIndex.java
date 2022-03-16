@@ -43,14 +43,14 @@ extends ResourceIndex {
     }
 
     @Override
-    public Collection<Identifier> getFilesRecursively(String prefix, String namespace, int maxDepth, Predicate<String> pathFilter) {
+    public Collection<Identifier> getFilesRecursively(String prefix, String namespace, Predicate<Identifier> allowedPathPredicate) {
         block10: {
             Collection collection;
             block9: {
                 Path path2 = this.assetDir.toPath().resolve(namespace);
-                Stream<Path> stream2 = Files.walk(path2.resolve(prefix), maxDepth, new FileVisitOption[0]);
+                Stream<Path> stream2 = Files.walk(path2.resolve(prefix), new FileVisitOption[0]);
                 try {
-                    collection = stream2.filter(path -> Files.isRegularFile(path, new LinkOption[0])).filter(path -> !path.endsWith(".mcmeta")).filter(path -> pathFilter.test(path.getFileName().toString())).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).collect(Collectors.toList());
+                    collection = stream2.filter(path -> Files.isRegularFile(path, new LinkOption[0])).filter(path -> !path.endsWith(".mcmeta")).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).filter(allowedPathPredicate).collect(Collectors.toList());
                     if (stream2 == null) break block9;
                 } catch (Throwable throwable) {
                     try {

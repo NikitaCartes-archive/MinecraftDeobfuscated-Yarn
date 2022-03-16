@@ -39,12 +39,14 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
+import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -69,13 +71,15 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeature.CODEC);
+        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, StructureFeature.field_37744);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.CODEC);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
         DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
         DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.field_37057);
+        DynamicRegistryManager.register(builder, Registry.WORLD_PRESET_WORLDGEN, WorldPreset.CODEC);
+        DynamicRegistryManager.register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPreset.CODEC);
         return builder.build();
     });
     public static final Codec<DynamicRegistryManager> CODEC = DynamicRegistryManager.createCodec();
@@ -186,11 +190,10 @@ public interface DynamicRegistryManager {
         Mutable mutable = DynamicRegistryManager.createMutableRegistryManager();
         EntryLoader.Impl impl = new EntryLoader.Impl();
         for (Map.Entry<RegistryKey<Registry<?>>, Info<?>> entry : INFOS.entrySet()) {
-            if (entry.getKey().equals(Registry.DIMENSION_TYPE_KEY)) continue;
             DynamicRegistryManager.addEntriesToLoad(impl, entry.getValue());
         }
         RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, impl);
-        return DimensionType.addRegistryDefaults(mutable);
+        return mutable;
     }
 
     private static <E> void addEntriesToLoad(EntryLoader.Impl entryLoader, Info<E> info) {

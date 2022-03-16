@@ -45,7 +45,6 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
-import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
 
 public class OceanRuinGenerator {
     private static final Identifier[] WARM_RUINS = new Identifier[]{new Identifier("underwater_ruin/warm_1"), new Identifier("underwater_ruin/warm_2"), new Identifier("underwater_ruin/warm_3"), new Identifier("underwater_ruin/warm_4"), new Identifier("underwater_ruin/warm_5"), new Identifier("underwater_ruin/warm_6"), new Identifier("underwater_ruin/warm_7"), new Identifier("underwater_ruin/warm_8")};
@@ -65,16 +64,16 @@ public class OceanRuinGenerator {
         return Util.getRandom(BIG_WARM_RUINS, random);
     }
 
-    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeatureConfig config) {
-        boolean bl = random.nextFloat() <= config.largeProbability;
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeature oceanRuinFeature) {
+        boolean bl = random.nextFloat() <= oceanRuinFeature.field_37809;
         float f = bl ? 0.9f : 0.8f;
-        OceanRuinGenerator.method_14822(manager, pos, rotation, holder, random, config, bl, f);
-        if (bl && random.nextFloat() <= config.clusterProbability) {
-            OceanRuinGenerator.method_14825(manager, random, rotation, pos, config, holder);
+        OceanRuinGenerator.method_14822(manager, pos, rotation, holder, random, oceanRuinFeature, bl, f);
+        if (bl && random.nextFloat() <= oceanRuinFeature.field_37810) {
+            OceanRuinGenerator.method_14825(manager, random, rotation, pos, oceanRuinFeature, holder);
         }
     }
 
-    private static void method_14825(StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeatureConfig config, StructurePiecesHolder structurePiecesHolder) {
+    private static void method_14825(StructureManager manager, Random random, BlockRotation rotation, BlockPos pos, OceanRuinFeature oceanRuinFeature, StructurePiecesHolder structurePiecesHolder) {
         BlockPos blockPos = new BlockPos(pos.getX(), 90, pos.getZ());
         BlockPos blockPos2 = Structure.transformAround(new BlockPos(15, 0, 15), BlockMirror.NONE, rotation, BlockPos.ORIGIN).add(blockPos);
         BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
@@ -88,7 +87,7 @@ public class OceanRuinGenerator {
             BlockPos blockPos4;
             BlockBox blockBox2;
             if (list.isEmpty() || (blockBox2 = BlockBox.create(blockPos4 = list.remove(k = random.nextInt(list.size())), blockPos5 = Structure.transformAround(new BlockPos(5, 0, 6), BlockMirror.NONE, blockRotation = BlockRotation.random(random), BlockPos.ORIGIN).add(blockPos4))).intersects(blockBox)) continue;
-            OceanRuinGenerator.method_14822(manager, blockPos4, blockRotation, structurePiecesHolder, random, config, false, 0.8f);
+            OceanRuinGenerator.method_14822(manager, blockPos4, blockRotation, structurePiecesHolder, random, oceanRuinFeature, false, 0.8f);
         }
     }
 
@@ -105,11 +104,11 @@ public class OceanRuinGenerator {
         return list;
     }
 
-    private static void method_14822(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeatureConfig config, boolean large, float integrity) {
-        switch (config.biomeType) {
+    private static void method_14822(StructureManager manager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, OceanRuinFeature oceanRuinFeature, boolean large, float integrity) {
+        switch (oceanRuinFeature.field_37808) {
             default: {
                 Identifier identifier = large ? OceanRuinGenerator.getRandomBigWarmRuin(random) : OceanRuinGenerator.getRandomWarmRuin(random);
-                holder.addPiece(new Piece(manager, identifier, pos, rotation, integrity, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifier, pos, rotation, integrity, oceanRuinFeature.field_37808, large));
                 break;
             }
             case COLD: {
@@ -117,9 +116,9 @@ public class OceanRuinGenerator {
                 Identifier[] identifiers2 = large ? BIG_CRACKED_RUINS : CRACKED_RUINS;
                 Identifier[] identifiers3 = large ? BIG_MOSSY_RUINS : MOSSY_RUINS;
                 int i = random.nextInt(identifiers.length);
-                holder.addPiece(new Piece(manager, identifiers[i], pos, rotation, integrity, config.biomeType, large));
-                holder.addPiece(new Piece(manager, identifiers2[i], pos, rotation, 0.7f, config.biomeType, large));
-                holder.addPiece(new Piece(manager, identifiers3[i], pos, rotation, 0.5f, config.biomeType, large));
+                holder.addPiece(new Piece(manager, identifiers[i], pos, rotation, integrity, oceanRuinFeature.field_37808, large));
+                holder.addPiece(new Piece(manager, identifiers2[i], pos, rotation, 0.7f, oceanRuinFeature.field_37808, large));
+                holder.addPiece(new Piece(manager, identifiers3[i], pos, rotation, 0.5f, oceanRuinFeature.field_37808, large));
             }
         }
     }

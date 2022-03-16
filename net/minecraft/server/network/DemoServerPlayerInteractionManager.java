@@ -73,12 +73,12 @@ extends ServerPlayerInteractionManager {
     }
 
     @Override
-    public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight) {
+    public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
         if (this.demoEnded) {
             this.sendDemoReminder();
             return;
         }
-        super.processBlockBreakingAction(pos, action, direction, worldHeight);
+        super.processBlockBreakingAction(pos, action, direction, worldHeight, sequence);
     }
 
     @Override

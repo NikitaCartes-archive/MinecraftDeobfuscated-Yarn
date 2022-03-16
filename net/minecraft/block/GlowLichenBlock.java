@@ -5,13 +5,13 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.ToIntFunction;
-import java.util.stream.Stream;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.class_7118;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -31,6 +31,7 @@ extends AbstractLichenBlock
 implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    private final class_7118 field_37585 = new class_7118(this);
 
     public GlowLichenBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -71,7 +72,7 @@ Waterloggable {
 
     @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        return Stream.of(DIRECTIONS).anyMatch(direction -> this.canSpread(state, world, pos, direction.getOpposite()));
+        return Direction.stream().anyMatch(direction -> this.field_37585.method_41443(state, world, pos, direction.getOpposite()));
     }
 
     @Override
@@ -81,7 +82,7 @@ Waterloggable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        this.trySpreadRandomly(state, world, pos, random);
+        this.field_37585.method_41450(state, world, pos, random);
     }
 
     @Override
@@ -95,6 +96,11 @@ Waterloggable {
     @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return state.getFluidState().isEmpty();
+    }
+
+    @Override
+    public class_7118 method_41432() {
+        return this.field_37585;
     }
 }
 

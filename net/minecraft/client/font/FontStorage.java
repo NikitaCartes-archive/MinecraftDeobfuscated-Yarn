@@ -15,26 +15,19 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.BlankGlyph;
-import net.minecraft.client.font.EmptyGlyphRenderer;
+import net.minecraft.client.font.BuiltinEmptyGlyph;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphAtlasTexture;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
-import net.minecraft.client.font.WhiteRectangleGlyph;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class FontStorage
 implements AutoCloseable {
-    private static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
-    private static final Glyph SPACE = () -> 4.0f;
-    private static final Glyph ZERO_WIDTH_NON_JOINER = () -> 0.0f;
-    private static final int ZERO_WIDTH_NON_JOINER_CODE_POINT = 8204;
     private static final Random RANDOM = new Random();
     private final TextureManager textureManager;
     private final Identifier id;
@@ -57,8 +50,8 @@ implements AutoCloseable {
         this.glyphRendererCache.clear();
         this.glyphCache.clear();
         this.charactersByWidth.clear();
-        this.blankGlyphRenderer = this.getGlyphRenderer(BlankGlyph.INSTANCE);
-        this.whiteRectangleGlyphRenderer = this.getGlyphRenderer(WhiteRectangleGlyph.INSTANCE);
+        this.blankGlyphRenderer = BuiltinEmptyGlyph.MISSING.bake(this::getGlyphRenderer);
+        this.whiteRectangleGlyphRenderer = BuiltinEmptyGlyph.WHITE.bake(this::getGlyphRenderer);
         IntOpenHashSet intSet = new IntOpenHashSet();
         for (Font font : fonts) {
             intSet.addAll(font.getProvidedGlyphs());
@@ -66,14 +59,11 @@ implements AutoCloseable {
         HashSet set = Sets.newHashSet();
         intSet.forEach(codePoint -> {
             for (Font font : fonts) {
-                Glyph glyph = this.getEmptyGlyph(codePoint);
-                if (glyph == null) {
-                    glyph = font.getGlyph(codePoint);
-                }
+                Glyph glyph = font.getGlyph(codePoint);
                 if (glyph == null) continue;
                 set.add(font);
-                if (glyph == BlankGlyph.INSTANCE) break;
-                this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), i -> new IntArrayList()).add(codePoint);
+                if (glyph == BuiltinEmptyGlyph.MISSING) break;
+                this.charactersByWidth.computeIfAbsent(MathHelper.ceil(glyph.getAdvance(false)), advance -> new IntArrayList()).add(codePoint);
                 break;
             }
         });
@@ -101,42 +91,39 @@ implements AutoCloseable {
     }
 
     /**
-     * {@return the pre-defined empty glyph for the code point, or
-     * {@code null} if it is not defined}
+     * {@return the glyph of {@code codePoint}}
      * 
-     * @implNote Pre-defined empty glyphs include the space ({@code U+0020})
-     * and zero-width non joiner ({@code U+200C}).
+     * @apiNote Call {@link #getGlyph} instead, as that method provides caching.
      */
-    @Nullable
-    private Glyph getEmptyGlyph(int codePoint) {
-        return switch (codePoint) {
-            case 32 -> SPACE;
-            case 8204 -> ZERO_WIDTH_NON_JOINER;
-            default -> null;
-        };
-    }
-
-    public Glyph getGlyph(int codePoint2) {
-        return this.glyphCache.computeIfAbsent(codePoint2, codePoint -> {
-            Glyph glyph = this.getEmptyGlyph(codePoint);
-            return glyph == null ? this.getRenderableGlyph(codePoint) : glyph;
-        });
-    }
-
-    private RenderableGlyph getRenderableGlyph(int codePoint) {
+    private Glyph findGlyph(int codePoint) {
         for (Font font : this.fonts) {
-            RenderableGlyph renderableGlyph = font.getGlyph(codePoint);
-            if (renderableGlyph == null) continue;
-            return renderableGlyph;
+            Glyph glyph = font.getGlyph(codePoint);
+            if (glyph == null) continue;
+            return glyph;
         }
-        return BlankGlyph.INSTANCE;
+        return BuiltinEmptyGlyph.MISSING;
     }
 
-    public GlyphRenderer getGlyphRenderer(int codePoint2) {
-        return this.glyphRendererCache.computeIfAbsent(codePoint2, codePoint -> switch (codePoint) {
-            case 32, 8204 -> EMPTY_GLYPH_RENDERER;
-            default -> this.getGlyphRenderer(this.getRenderableGlyph(codePoint));
-        });
+    /**
+     * {@return the glyph of {@code codePoint}}
+     * 
+     * @implNote {@link BuiltinEmptyGlyph#MISSING} is returned for missing code points.
+     */
+    public Glyph getGlyph(int codePoint) {
+        return this.glyphCache.computeIfAbsent(codePoint, this::findGlyph);
+    }
+
+    private GlyphRenderer findGlyphRenderer(int codePoint) {
+        for (Font font : this.fonts) {
+            Glyph glyph = font.getGlyph(codePoint);
+            if (glyph == null) continue;
+            return glyph.bake(this::getGlyphRenderer);
+        }
+        return this.blankGlyphRenderer;
+    }
+
+    public GlyphRenderer getGlyphRenderer(int codePoint) {
+        return this.glyphRendererCache.computeIfAbsent(codePoint, this::findGlyphRenderer);
     }
 
     private GlyphRenderer getGlyphRenderer(RenderableGlyph c) {

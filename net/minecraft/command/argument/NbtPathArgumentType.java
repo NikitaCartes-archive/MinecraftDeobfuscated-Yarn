@@ -131,7 +131,7 @@ implements ArgumentType<NbtPath> {
     }
 
     static Predicate<NbtElement> getPredicate(NbtCompound filter) {
-        return nbtElement -> NbtHelper.matches(filter, nbtElement, true);
+        return nbt -> NbtHelper.matches(filter, nbt, true);
     }
 
     @Override

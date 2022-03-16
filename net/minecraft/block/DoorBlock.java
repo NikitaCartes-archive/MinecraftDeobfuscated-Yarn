@@ -204,10 +204,10 @@ extends Block {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         boolean bl;
         boolean bl2 = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN)) ? true : (bl = false);
-        if (!this.getDefaultState().isOf(block) && bl != state.get(POWERED)) {
+        if (!this.getDefaultState().isOf(sourceBlock) && bl != state.get(POWERED)) {
             if (bl != state.get(OPEN)) {
                 this.playOpenCloseSound(world, pos, bl);
                 world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);

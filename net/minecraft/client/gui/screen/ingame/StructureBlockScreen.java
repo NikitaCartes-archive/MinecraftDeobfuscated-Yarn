@@ -173,7 +173,7 @@ extends Screen {
                 return super.charTyped(chr, modifiers);
             }
         };
-        this.inputName.setMaxLength(64);
+        this.inputName.setMaxLength(128);
         this.inputName.setText(this.structureBlock.getStructureName());
         this.addSelectableChild(this.inputName);
         BlockPos blockPos = this.structureBlock.getOffset();

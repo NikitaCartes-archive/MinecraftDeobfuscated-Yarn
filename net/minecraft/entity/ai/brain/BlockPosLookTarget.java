@@ -14,7 +14,7 @@ implements LookTarget {
     private final Vec3d pos;
 
     public BlockPosLookTarget(BlockPos blockPos) {
-        this.blockPos = blockPos;
+        this.blockPos = blockPos.toImmutable();
         this.pos = Vec3d.ofCenter(blockPos);
     }
 

@@ -11,8 +11,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
@@ -120,7 +120,7 @@ extends RealmsScreen {
     private boolean dontSetConnectedToRealms;
     final Screen lastScreen;
     RealmSelectionList realmSelectionList;
-    private boolean field_33775;
+    private boolean hasSelectionList;
     private ButtonWidget playButton;
     private ButtonWidget backButton;
     private ButtonWidget renewButton;
@@ -225,7 +225,7 @@ extends RealmsScreen {
             this.realmSelectionList.setScrollAmount(lastScrollYPosition);
         }
         this.addSelectableChild(this.realmSelectionList);
-        this.field_33775 = true;
+        this.hasSelectionList = true;
         this.focusOn(this.realmSelectionList);
         this.popupText = MultilineText.create(this.textRenderer, (StringVisitable)POPUP_TEXT, 100);
     }
@@ -653,9 +653,9 @@ extends RealmsScreen {
         } else {
             if (this.showingPopup) {
                 this.updateButtonStates(null);
-                if (!this.field_33775) {
+                if (!this.hasSelectionList) {
                     this.addSelectableChild(this.realmSelectionList);
-                    this.field_33775 = true;
+                    this.hasSelectionList = true;
                 }
                 this.playButton.active = this.shouldPlayButtonBeActive(this.findServer());
             }
@@ -712,9 +712,9 @@ extends RealmsScreen {
             this.carouselTick = 0;
             this.hasSwitchedCarouselImage = true;
             this.updateButtonStates(null);
-            if (this.field_33775) {
+            if (this.hasSelectionList) {
                 this.remove(this.realmSelectionList);
-                this.field_33775 = false;
+                this.hasSelectionList = false;
             }
             NarratorManager.INSTANCE.narrate(POPUP_TEXT);
         }
@@ -1006,7 +1006,7 @@ extends RealmsScreen {
     }
 
     public static void loadImages(ResourceManager manager) {
-        Collection<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.endsWith(".png"));
+        Set<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.getPath().endsWith(".png")).keySet();
         IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).toList();
     }
 

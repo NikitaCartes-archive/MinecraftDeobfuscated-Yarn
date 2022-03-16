@@ -6,6 +6,7 @@ package net.minecraft.particle;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.ItemStack;
@@ -21,8 +22,8 @@ implements ParticleEffect {
         @Override
         public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
-            ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
-            ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getNbt()).createStack(1, false);
+            ItemStringReader.ItemResult itemResult = ItemStringReader.item(CommandRegistryWrapper.of(Registry.ITEM), stringReader);
+            ItemStack itemStack = new ItemStackArgument(itemResult.item(), itemResult.nbt()).createStack(1, false);
             return new ItemStackParticleEffect(particleType, itemStack);
         }
 
@@ -60,7 +61,7 @@ implements ParticleEffect {
 
     @Override
     public String asString() {
-        return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getItem(), this.stack.getNbt()).asString();
+        return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new ItemStackArgument(this.stack.getRegistryEntry(), this.stack.getNbt()).asString();
     }
 
     public ParticleType<ItemStackParticleEffect> getType() {

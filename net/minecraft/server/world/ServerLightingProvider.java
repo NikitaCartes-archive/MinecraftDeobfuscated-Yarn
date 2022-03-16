@@ -114,6 +114,14 @@ implements AutoCloseable {
         this.enqueue(pos.x, pos.z, () -> 0, Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setRetainData(pos, retainData), () -> "retainData " + pos));
     }
 
+    public CompletableFuture<Chunk> retainData(Chunk chunk) {
+        ChunkPos chunkPos = chunk.getPos();
+        return CompletableFuture.supplyAsync(Util.debugSupplier(() -> {
+            super.setRetainData(chunkPos, true);
+            return chunk;
+        }, () -> "retainData: " + chunkPos), task -> this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, task));
+    }
+
     public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
         ChunkPos chunkPos = chunk.getPos();
         chunk.setLightOn(false);

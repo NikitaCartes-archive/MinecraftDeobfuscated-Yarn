@@ -11,11 +11,11 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
@@ -29,6 +29,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
+import net.minecraft.world.gen.random.RandomDeriver;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkNoiseSampler
@@ -92,70 +93,65 @@ DensityFunction.NoisePos {
         }
     };
 
-    public static ChunkNoiseSampler create(Chunk chunk, NoiseRouter noiseRouter, Supplier<DensityFunctionTypes.class_7050> noiseTypeSupplier, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
+    public static ChunkNoiseSampler create(Chunk chunk, NoiseRouter noiseRouter, DensityFunctionTypes.class_7050 arg, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender, RandomDeriver randomDeriver, RandomDeriver randomDeriver2) {
         ChunkPos chunkPos = chunk.getPos();
-        GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.generationShapeConfig();
-        int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
-        int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
-        int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
-        int l = MathHelper.floorDiv(j - i, generationShapeConfig.verticalBlockSize());
-        return new ChunkNoiseSampler(16 / generationShapeConfig.horizontalBlockSize(), l, k, noiseRouter, chunkPos.getStartX(), chunkPos.getStartZ(), noiseTypeSupplier.get(), chunkGeneratorSettings, fluidLevelSampler, blender);
+        return new ChunkNoiseSampler(16 / chunkGeneratorSettings.generationShapeConfig().horizontalBlockSize(), chunk, noiseRouter, chunkPos.getStartX(), chunkPos.getStartZ(), arg, chunkGeneratorSettings, fluidLevelSampler, blender, randomDeriver, randomDeriver2);
     }
 
-    public static ChunkNoiseSampler create(int x, int z, int minimumY, int height, NoiseRouter noiseRouter, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler) {
-        return new ChunkNoiseSampler(1, height, minimumY, noiseRouter, x, z, DensityFunctionTypes.Beardifier.INSTANCE, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending());
-    }
-
-    private ChunkNoiseSampler(int horizontalSize, int height, int minimumY, NoiseRouter noiseRouter, int x, int z, DensityFunctionTypes.class_7050 noiseType, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender) {
-        int j;
-        int i;
+    public ChunkNoiseSampler(int horizontalSize, HeightLimitView heightLimitView, NoiseRouter noiseRouter, int i, int j, DensityFunctionTypes.class_7050 arg, ChunkGeneratorSettings chunkGeneratorSettings, AquiferSampler.FluidLevelSampler fluidLevelSampler, Blender blender, RandomDeriver randomDeriver, RandomDeriver randomDeriver2) {
+        int p;
+        int o;
         this.generationShapeConfig = chunkGeneratorSettings.generationShapeConfig();
+        int k = Math.max(this.generationShapeConfig.minimumY(), heightLimitView.getBottomY());
+        int l = Math.min(this.generationShapeConfig.minimumY() + this.generationShapeConfig.height(), heightLimitView.getTopY());
+        int m = MathHelper.floorDiv(k, this.generationShapeConfig.verticalBlockSize());
+        int n = MathHelper.floorDiv(l - k, this.generationShapeConfig.verticalBlockSize());
         this.horizontalSize = horizontalSize;
-        this.height = height;
-        this.minimumY = minimumY;
+        this.height = n;
+        this.minimumY = m;
         this.horizontalBlockSize = this.generationShapeConfig.horizontalBlockSize();
         this.verticalBlockSize = this.generationShapeConfig.verticalBlockSize();
-        this.x = Math.floorDiv(x, this.horizontalBlockSize);
-        this.z = Math.floorDiv(z, this.horizontalBlockSize);
+        this.x = Math.floorDiv(i, this.horizontalBlockSize);
+        this.z = Math.floorDiv(j, this.horizontalBlockSize);
         this.interpolators = Lists.newArrayList();
         this.field_36581 = Lists.newArrayList();
-        this.biomeX = BiomeCoords.fromBlock(x);
-        this.biomeZ = BiomeCoords.fromBlock(z);
+        this.biomeX = BiomeCoords.fromBlock(i);
+        this.biomeZ = BiomeCoords.fromBlock(j);
         this.field_36589 = BiomeCoords.fromBlock(horizontalSize * this.horizontalBlockSize);
         this.blender = blender;
-        this.field_37113 = noiseType;
+        this.field_37113 = arg;
         this.field_36585 = new class_6951(new class_6946(), false);
         this.field_36586 = new class_6951(new class_6947(), false);
-        for (i = 0; i <= this.field_36589; ++i) {
-            j = this.biomeX + i;
-            int k = BiomeCoords.toBlock(j);
-            for (int l = 0; l <= this.field_36589; ++l) {
-                int m = this.biomeZ + l;
-                int n = BiomeCoords.toBlock(m);
-                Blender.class_6956 lv = blender.method_39340(k, n);
-                this.field_36585.field_36613[i][l] = lv.alpha();
-                this.field_36586.field_36613[i][l] = lv.blendingOffset();
+        for (o = 0; o <= this.field_36589; ++o) {
+            p = this.biomeX + o;
+            int q = BiomeCoords.toBlock(p);
+            for (int r = 0; r <= this.field_36589; ++r) {
+                int s = this.biomeZ + r;
+                int t = BiomeCoords.toBlock(s);
+                Blender.class_6956 lv = blender.method_39340(q, t);
+                this.field_36585.field_36613[o][r] = lv.alpha();
+                this.field_36586.field_36613[o][r] = lv.blendingOffset();
             }
         }
         if (!chunkGeneratorSettings.hasAquifers()) {
             this.aquiferSampler = AquiferSampler.seaLevel(fluidLevelSampler);
         } else {
-            i = ChunkSectionPos.getSectionCoord(x);
-            j = ChunkSectionPos.getSectionCoord(z);
-            this.aquiferSampler = AquiferSampler.aquifer(this, new ChunkPos(i, j), noiseRouter.barrierNoise(), noiseRouter.fluidLevelFloodednessNoise(), noiseRouter.fluidLevelSpreadNoise(), noiseRouter.lavaNoise(), noiseRouter.aquiferPositionalRandomFactory(), minimumY * this.verticalBlockSize, height * this.verticalBlockSize, fluidLevelSampler);
+            o = ChunkSectionPos.getSectionCoord(i);
+            p = ChunkSectionPos.getSectionCoord(j);
+            this.aquiferSampler = AquiferSampler.aquifer(this, new ChunkPos(o, p), noiseRouter.barrierNoise(), noiseRouter.fluidLevelFloodednessNoise(), noiseRouter.fluidLevelSpreadNoise(), noiseRouter.lavaNoise(), randomDeriver, m * this.verticalBlockSize, n * this.verticalBlockSize, fluidLevelSampler);
         }
         ImmutableList.Builder builder = ImmutableList.builder();
-        DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)).apply(this::method_40529);
+        DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(DensityFunctionTypes.add(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)).apply(this::method_40529);
         builder.add(noisePos -> this.aquiferSampler.apply(noisePos, densityFunction.sample(noisePos)));
         if (chunkGeneratorSettings.oreVeins()) {
-            builder.add(OreVeinSampler.create(noiseRouter.veinToggle().apply(this::method_40529), noiseRouter.veinRidged().apply(this::method_40529), noiseRouter.veinGap().apply(this::method_40529), noiseRouter.oreVeinsPositionalRandomFactory()));
+            builder.add(OreVeinSampler.create(noiseRouter.veinToggle().apply(this::method_40529), noiseRouter.veinRidged().apply(this::method_40529), noiseRouter.veinGap().apply(this::method_40529), randomDeriver2));
         }
         this.blockStateSampler = new ChainedBlockSource((List<BlockStateSampler>)((Object)builder.build()));
         this.field_36583 = noiseRouter.initialDensityWithoutJaggedness().apply(this::method_40529);
     }
 
-    protected MultiNoiseUtil.MultiNoiseSampler createMultiNoiseSampler(NoiseRouter noiseRouter) {
-        return new MultiNoiseUtil.MultiNoiseSampler(noiseRouter.temperature().apply(this::method_40529), noiseRouter.humidity().apply(this::method_40529), noiseRouter.continents().apply(this::method_40529), noiseRouter.erosion().apply(this::method_40529), noiseRouter.depth().apply(this::method_40529), noiseRouter.ridges().apply(this::method_40529), noiseRouter.spawnTarget());
+    protected MultiNoiseUtil.MultiNoiseSampler createMultiNoiseSampler(NoiseRouter noiseRouter, List<MultiNoiseUtil.NoiseHypercube> list) {
+        return new MultiNoiseUtil.MultiNoiseSampler(noiseRouter.temperature().apply(this::method_40529), noiseRouter.vegetation().apply(this::method_40529), noiseRouter.continents().apply(this::method_40529), noiseRouter.erosion().apply(this::method_40529), noiseRouter.depth().apply(this::method_40529), noiseRouter.ridges().apply(this::method_40529), list);
     }
 
     @Nullable
@@ -334,9 +330,9 @@ DensityFunction.NoisePos {
         if (densityFunction == DensityFunctionTypes.Beardifier.INSTANCE) {
             return this.field_37113;
         }
-        if (densityFunction instanceof DensityFunctionTypes.class_7051) {
-            DensityFunctionTypes.class_7051 lv2 = (DensityFunctionTypes.class_7051)densityFunction;
-            return lv2.function().value();
+        if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
+            DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
+            return registryEntryHolder.function().value();
         }
         return densityFunction;
     }

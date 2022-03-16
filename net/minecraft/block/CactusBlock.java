@@ -64,7 +64,7 @@ extends Block {
             world.setBlockState(blockPos, this.getDefaultState());
             BlockState blockState = (BlockState)state.with(AGE, 0);
             world.setBlockState(pos, blockState, Block.NO_REDRAW);
-            blockState.neighborUpdate(world, blockPos, this, pos, false);
+            world.updateNeighbor(blockState, blockPos, this, pos, false);
         } else {
             world.setBlockState(pos, (BlockState)state.with(AGE, j + 1), Block.NO_REDRAW);
         }

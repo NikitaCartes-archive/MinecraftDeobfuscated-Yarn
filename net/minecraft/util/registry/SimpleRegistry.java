@@ -244,6 +244,11 @@ extends MutableRegistry<T> {
     }
 
     @Override
+    public Set<RegistryKey<T>> getKeys() {
+        return Collections.unmodifiableSet(this.keyToEntry.keySet());
+    }
+
+    @Override
     public Set<Map.Entry<RegistryKey<T>, T>> getEntrySet() {
         return Collections.unmodifiableSet(Maps.transformValues(this.keyToEntry, RegistryEntry::value).entrySet());
     }
@@ -343,7 +348,7 @@ extends MutableRegistry<T> {
         this.keyToEntry.values().forEach(entry -> map.put((RegistryEntry.Reference)entry, new ArrayList()));
         tagEntries.forEach((? super K tag, ? super V entries) -> {
             for (RegistryEntry registryEntry : entries) {
-                if (!registryEntry.matchesRegistry(this)) {
+                if (!registryEntry.setRegistry(this)) {
                     throw new IllegalStateException("Can't create named set " + tag + " containing value " + registryEntry + " from outside registry " + this);
                 }
                 if (registryEntry instanceof RegistryEntry.Reference) {

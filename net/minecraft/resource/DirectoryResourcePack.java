@@ -96,25 +96,26 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
         File file = new File(this.base, type.getDirectory());
         ArrayList<Identifier> list = Lists.newArrayList();
-        this.findFiles(new File(new File(file, namespace), prefix), maxDepth, namespace, list, prefix + "/", pathFilter);
+        this.findFiles(new File(new File(file, namespace), prefix), namespace, list, prefix + "/", allowedPathPredicate);
         return list;
     }
 
-    private void findFiles(File file, int maxDepth, String namespace, List<Identifier> found, String prefix, Predicate<String> pathFilter) {
+    private void findFiles(File file, String namespace, List<Identifier> foundIds, String rootDirectory, Predicate<Identifier> allowedPathPredicate) {
         File[] files = file.listFiles();
         if (files != null) {
             for (File file2 : files) {
                 if (file2.isDirectory()) {
-                    if (maxDepth <= 0) continue;
-                    this.findFiles(file2, maxDepth - 1, namespace, found, prefix + file2.getName() + "/", pathFilter);
+                    this.findFiles(file2, namespace, foundIds, rootDirectory + file2.getName() + "/", allowedPathPredicate);
                     continue;
                 }
-                if (file2.getName().endsWith(".mcmeta") || !pathFilter.test(file2.getName())) continue;
+                if (file2.getName().endsWith(".mcmeta")) continue;
                 try {
-                    found.add(new Identifier(namespace, prefix + file2.getName()));
+                    Identifier identifier = new Identifier(namespace, rootDirectory + file2.getName());
+                    if (!allowedPathPredicate.test(identifier)) continue;
+                    foundIds.add(identifier);
                 } catch (InvalidIdentifierException invalidIdentifierException) {
                     LOGGER.error(invalidIdentifierException.getMessage());
                 }

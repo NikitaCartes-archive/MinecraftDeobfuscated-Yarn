@@ -29,6 +29,7 @@ import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
 import net.minecraft.block.NetherWartBlock;
 import net.minecraft.block.PotatoesBlock;
+import net.minecraft.block.PropaguleBlock;
 import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SlabBlock;
@@ -280,6 +281,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.JUNGLE_PLANKS);
         this.addDrop(Blocks.ACACIA_PLANKS);
         this.addDrop(Blocks.DARK_OAK_PLANKS);
+        this.addDrop(Blocks.MANGROVE_PLANKS);
         this.addDrop(Blocks.OAK_SAPLING);
         this.addDrop(Blocks.SPRUCE_SAPLING);
         this.addDrop(Blocks.BIRCH_SAPLING);
@@ -302,12 +304,14 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.STRIPPED_OAK_LOG);
         this.addDrop(Blocks.STRIPPED_WARPED_STEM);
         this.addDrop(Blocks.STRIPPED_CRIMSON_STEM);
+        this.addDrop(Blocks.STRIPPED_MANGROVE_LOG);
         this.addDrop(Blocks.OAK_WOOD);
         this.addDrop(Blocks.SPRUCE_WOOD);
         this.addDrop(Blocks.BIRCH_WOOD);
         this.addDrop(Blocks.JUNGLE_WOOD);
         this.addDrop(Blocks.ACACIA_WOOD);
         this.addDrop(Blocks.DARK_OAK_WOOD);
+        this.addDrop(Blocks.MANGROVE_WOOD);
         this.addDrop(Blocks.STRIPPED_OAK_WOOD);
         this.addDrop(Blocks.STRIPPED_SPRUCE_WOOD);
         this.addDrop(Blocks.STRIPPED_BIRCH_WOOD);
@@ -316,6 +320,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.STRIPPED_DARK_OAK_WOOD);
         this.addDrop(Blocks.STRIPPED_CRIMSON_HYPHAE);
         this.addDrop(Blocks.STRIPPED_WARPED_HYPHAE);
+        this.addDrop(Blocks.STRIPPED_MANGROVE_WOOD);
         this.addDrop(Blocks.SPONGE);
         this.addDrop(Blocks.WET_SPONGE);
         this.addDrop(Blocks.LAPIS_BLOCK);
@@ -366,6 +371,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.CRYING_OBSIDIAN);
         this.addDrop(Blocks.TORCH);
         this.addDrop(Blocks.OAK_STAIRS);
+        this.addDrop(Blocks.MANGROVE_STAIRS);
         this.addDrop(Blocks.REDSTONE_WIRE);
         this.addDrop(Blocks.DIAMOND_BLOCK);
         this.addDrop(Blocks.CRAFTING_TABLE);
@@ -375,6 +381,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.ACACIA_SIGN);
         this.addDrop(Blocks.JUNGLE_SIGN);
         this.addDrop(Blocks.DARK_OAK_SIGN);
+        this.addDrop(Blocks.MANGROVE_SIGN);
         this.addDrop(Blocks.LADDER);
         this.addDrop(Blocks.RAIL);
         this.addDrop(Blocks.COBBLESTONE_STAIRS);
@@ -386,12 +393,14 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.JUNGLE_PRESSURE_PLATE);
         this.addDrop(Blocks.ACACIA_PRESSURE_PLATE);
         this.addDrop(Blocks.DARK_OAK_PRESSURE_PLATE);
+        this.addDrop(Blocks.MANGROVE_PRESSURE_PLATE);
         this.addDrop(Blocks.REDSTONE_TORCH);
         this.addDrop(Blocks.STONE_BUTTON);
         this.addDrop(Blocks.CACTUS);
         this.addDrop(Blocks.SUGAR_CANE);
         this.addDrop(Blocks.JUKEBOX);
         this.addDrop(Blocks.OAK_FENCE);
+        this.addDrop(Blocks.MANGROVE_FENCE);
         this.addDrop(Blocks.PUMPKIN);
         this.addDrop(Blocks.NETHERRACK);
         this.addDrop(Blocks.SOUL_SAND);
@@ -409,12 +418,14 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.JUNGLE_TRAPDOOR);
         this.addDrop(Blocks.ACACIA_TRAPDOOR);
         this.addDrop(Blocks.DARK_OAK_TRAPDOOR);
+        this.addDrop(Blocks.MANGROVE_TRAPDOOR);
         this.addDrop(Blocks.STONE_BRICKS);
         this.addDrop(Blocks.MOSSY_STONE_BRICKS);
         this.addDrop(Blocks.CRACKED_STONE_BRICKS);
         this.addDrop(Blocks.CHISELED_STONE_BRICKS);
         this.addDrop(Blocks.IRON_BARS);
         this.addDrop(Blocks.OAK_FENCE_GATE);
+        this.addDrop(Blocks.MANGROVE_FENCE_GATE);
         this.addDrop(Blocks.BRICK_STAIRS);
         this.addDrop(Blocks.STONE_BRICK_STAIRS);
         this.addDrop(Blocks.LILY_PAD);
@@ -439,6 +450,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.JUNGLE_BUTTON);
         this.addDrop(Blocks.ACACIA_BUTTON);
         this.addDrop(Blocks.DARK_OAK_BUTTON);
+        this.addDrop(Blocks.MANGROVE_BUTTON);
         this.addDrop(Blocks.SKELETON_SKULL);
         this.addDrop(Blocks.WITHER_SKELETON_SKULL);
         this.addDrop(Blocks.ZOMBIE_HEAD);
@@ -615,6 +627,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.SANDSTONE_WALL);
         this.addDrop(Blocks.END_STONE_BRICK_WALL);
         this.addDrop(Blocks.DIORITE_WALL);
+        this.addDrop(Blocks.MUD_BRICK_WALL);
         this.addDrop(Blocks.LOOM);
         this.addDrop(Blocks.SCAFFOLDING);
         this.addDrop(Blocks.HONEY_BLOCK);
@@ -666,11 +679,18 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.CHAIN);
         this.addDrop(Blocks.WARPED_ROOTS);
         this.addDrop(Blocks.CRIMSON_ROOTS);
+        this.addDrop(Blocks.MUD_BRICKS);
+        this.addDrop(Blocks.MUDDY_MANGROVE_ROOTS);
+        this.addDrop(Blocks.MUD_BRICK_STAIRS);
         this.addDrop(Blocks.AMETHYST_BLOCK);
         this.addDrop(Blocks.CALCITE);
         this.addDrop(Blocks.TUFF);
         this.addDrop(Blocks.TINTED_GLASS);
-        this.addDrop(Blocks.SCULK_SENSOR);
+        this.addDropWithSilkTouch(Blocks.SCULK_SENSOR);
+        this.addDropWithSilkTouch(Blocks.SCULK);
+        this.addDropWithSilkTouch(Blocks.SCULK_CATALYST);
+        this.addDropWithSilkTouch(Blocks.SCULK_VEIN);
+        this.addDrop(Blocks.SCULK_SHRIEKER, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.COPPER_BLOCK);
         this.addDrop(Blocks.EXPOSED_COPPER);
         this.addDrop(Blocks.WEATHERED_COPPER);
@@ -723,6 +743,13 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.RAW_IRON_BLOCK);
         this.addDrop(Blocks.RAW_COPPER_BLOCK);
         this.addDrop(Blocks.RAW_GOLD_BLOCK);
+        this.addDrop(Blocks.OCHRE_FROGLIGHT);
+        this.addDrop(Blocks.VERDANT_FROGLIGHT);
+        this.addDrop(Blocks.PEARLESCENT_FROGLIGHT);
+        this.addDrop(Blocks.MANGROVE_ROOTS);
+        this.addDrop(Blocks.MANGROVE_LOG);
+        this.addDrop(Blocks.MUD);
+        this.addDrop(Blocks.PACKED_MUD);
         this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
         this.addDrop(Blocks.TRIPWIRE, Items.STRING);
         this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
@@ -755,6 +782,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addPottedPlantDrop(Blocks.POTTED_JUNGLE_SAPLING);
         this.addPottedPlantDrop(Blocks.POTTED_ACACIA_SAPLING);
         this.addPottedPlantDrop(Blocks.POTTED_DARK_OAK_SAPLING);
+        this.addPottedPlantDrop(Blocks.POTTED_MANGROVE_PROPAGULE);
         this.addPottedPlantDrop(Blocks.POTTED_FERN);
         this.addPottedPlantDrop(Blocks.POTTED_DANDELION);
         this.addPottedPlantDrop(Blocks.POTTED_POPPY);
@@ -780,6 +808,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addPottedPlantDrop(Blocks.POTTED_WARPED_ROOTS);
         this.addPottedPlantDrop(Blocks.POTTED_AZALEA_BUSH);
         this.addPottedPlantDrop(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
+        this.addDrop(Blocks.MANGROVE_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.ACACIA_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.BIRCH_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.BRICK_SLAB, BlockLootTableGenerator::slabDrops);
@@ -832,6 +861,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.POLISHED_DEEPSLATE_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.DEEPSLATE_TILE_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.DEEPSLATE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+        this.addDrop(Blocks.MUD_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
         this.addDrop(Blocks.ACACIA_DOOR, BlockLootTableGenerator::addDoorDrop);
         this.addDrop(Blocks.BIRCH_DOOR, BlockLootTableGenerator::addDoorDrop);
         this.addDrop(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
@@ -841,6 +871,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.SPRUCE_DOOR, BlockLootTableGenerator::addDoorDrop);
         this.addDrop(Blocks.WARPED_DOOR, BlockLootTableGenerator::addDoorDrop);
         this.addDrop(Blocks.CRIMSON_DOOR, BlockLootTableGenerator::addDoorDrop);
+        this.addDrop(Blocks.MANGROVE_DOOR, BlockLootTableGenerator::addDoorDrop);
         this.addDrop(Blocks.BLACK_BED, (Block block) -> BlockLootTableGenerator.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
         this.addDrop(Blocks.BLUE_BED, (Block block) -> BlockLootTableGenerator.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
         this.addDrop(Blocks.BROWN_BED, (Block block) -> BlockLootTableGenerator.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
@@ -954,9 +985,11 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         BlockStatePropertyLootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.WHEAT).properties(StatePredicate.Builder.create().exactMatch(CropBlock.AGE, 7));
         this.addDrop(Blocks.WHEAT, BlockLootTableGenerator.cropDrops(Blocks.WHEAT, Items.WHEAT, Items.WHEAT_SEEDS, builder2));
         BlockStatePropertyLootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.CARROTS).properties(StatePredicate.Builder.create().exactMatch(CarrotsBlock.AGE, 7));
+        BlockStatePropertyLootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.MANGROVE_PROPAGULE).properties(StatePredicate.Builder.create().exactMatch(PropaguleBlock.AGE, 4));
+        this.addDrop(Blocks.MANGROVE_PROPAGULE, BlockLootTableGenerator.applyExplosionDecay(Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.field_37508)))));
         this.addDrop(Blocks.CARROTS, BlockLootTableGenerator.applyExplosionDecay(Blocks.CARROTS, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.CARROT))).pool(LootPool.builder().conditionally(builder3).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.CARROT).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3))))));
-        BlockStatePropertyLootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES).properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
-        this.addDrop(Blocks.POTATOES, BlockLootTableGenerator.applyExplosionDecay(Blocks.POTATOES, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO))).pool(LootPool.builder().conditionally(builder4).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))).pool(LootPool.builder().conditionally(builder4).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02f))))));
+        BlockStatePropertyLootCondition.Builder builder5 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES).properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
+        this.addDrop(Blocks.POTATOES, BlockLootTableGenerator.applyExplosionDecay(Blocks.POTATOES, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO))).pool(LootPool.builder().conditionally(builder5).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))).pool(LootPool.builder().conditionally(builder5).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02f))))));
         this.addDrop(Blocks.SWEET_BERRY_BUSH, (Block block) -> BlockLootTableGenerator.applyExplosionDecay(block, LootTable.builder().pool(LootPool.builder().conditionally(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 3))).with(ItemEntry.builder(Items.SWEET_BERRIES)).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 3.0f))).apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))).pool(LootPool.builder().conditionally(BlockStatePropertyLootCondition.builder(Blocks.SWEET_BERRY_BUSH).properties(StatePredicate.Builder.create().exactMatch(SweetBerryBushBlock.AGE, 2))).with(ItemEntry.builder(Items.SWEET_BERRIES)).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0f, 2.0f))).apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE)))));
         this.addDrop(Blocks.BROWN_MUSHROOM_BLOCK, (Block block) -> BlockLootTableGenerator.mushroomBlockDrops(block, Blocks.BROWN_MUSHROOM));
         this.addDrop(Blocks.RED_MUSHROOM_BLOCK, (Block block) -> BlockLootTableGenerator.mushroomBlockDrops(block, Blocks.RED_MUSHROOM));
@@ -984,6 +1017,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::glowLichenDrops);
         this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
+        this.addDrop(Blocks.MANGROVE_LEAVES, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.seagrassDrops(Blocks.SEAGRASS));
         this.addDrop(Blocks.LARGE_FERN, (Block block) -> BlockLootTableGenerator.tallGrassDrops(block, Blocks.FERN));
         this.addDrop(Blocks.TALL_GRASS, (Block block) -> BlockLootTableGenerator.tallGrassDrops(block, Blocks.GRASS));
@@ -1106,11 +1140,11 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getLootTableId();
             if (identifier == LootTables.EMPTY || !set.add(identifier)) continue;
-            LootTable.Builder builder5 = this.lootTables.remove(identifier);
-            if (builder5 == null) {
+            LootTable.Builder builder6 = this.lootTables.remove(identifier);
+            if (builder6 == null) {
                 throw new IllegalStateException(String.format("Missing loottable '%s' for '%s'", identifier, Registry.BLOCK.getId(block2)));
             }
-            biConsumer.accept(identifier, builder5);
+            biConsumer.accept(identifier, builder6);
         }
         if (!this.lootTables.isEmpty()) {
             throw new IllegalStateException("Created block loot tables for non-blocks: " + this.lootTables.keySet());

@@ -60,6 +60,7 @@ public abstract class BiomeKeys {
     public static final RegistryKey<Biome> MUSHROOM_FIELDS = BiomeKeys.register("mushroom_fields");
     public static final RegistryKey<Biome> DRIPSTONE_CAVES = BiomeKeys.register("dripstone_caves");
     public static final RegistryKey<Biome> LUSH_CAVES = BiomeKeys.register("lush_caves");
+    public static final RegistryKey<Biome> DEEP_DARK = BiomeKeys.register("deep_dark");
     public static final RegistryKey<Biome> NETHER_WASTES = BiomeKeys.register("nether_wastes");
     public static final RegistryKey<Biome> WARPED_FOREST = BiomeKeys.register("warped_forest");
     public static final RegistryKey<Biome> CRIMSON_FOREST = BiomeKeys.register("crimson_forest");

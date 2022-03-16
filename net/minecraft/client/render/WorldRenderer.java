@@ -36,8 +36,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -110,6 +112,7 @@ import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -119,6 +122,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -488,12 +492,7 @@ AutoCloseable {
             String string2 = "Failed to " + string + " shader: " + identifier;
             ShaderException shaderException = new ShaderException(string2, exception);
             if (this.client.getResourcePackManager().getEnabledNames().size() > 1) {
-                LiteralText text;
-                try {
-                    text = new LiteralText(this.client.getResourceManager().getResource(identifier).getResourcePackName());
-                } catch (IOException iOException) {
-                    text = null;
-                }
+                Text text = this.client.getResourceManager().streamResourcePacks().findFirst().map(resourcePack -> new LiteralText(resourcePack.getName())).orElse(null);
                 this.client.options.graphicsMode = GraphicsMode.FANCY;
                 this.client.onResourceReloadFailure(shaderException, text);
             }
@@ -1882,10 +1881,10 @@ AutoCloseable {
             ChunkPos chunkPos = new ChunkPos(builtChunk.getOrigin());
             if (!builtChunk.needsRebuild() || !this.world.getChunk(chunkPos.x, chunkPos.z).shouldRenderOnUpdate()) continue;
             boolean bl = false;
-            if (this.client.options.chunkBuilderMode == ChunkBuilderMode.NEARBY) {
+            if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.NEARBY) {
                 BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);
                 bl = blockPos2.getSquaredDistance(blockPos) < 768.0 || builtChunk.needsImportantRebuild();
-            } else if (this.client.options.chunkBuilderMode == ChunkBuilderMode.PLAYER_AFFECTED) {
+            } else if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.PLAYER_AFFECTED) {
                 bl = builtChunk.needsImportantRebuild();
             }
             if (bl) {
@@ -2440,20 +2439,60 @@ AutoCloseable {
                     ParticleUtil.spawnParticle(Direction.Axis.VALUES[data], this.world, pos, 0.125, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(10, 19));
                     break;
                 }
-                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(3, 5));
+                break;
+            }
+            case 3006: {
+                int i = data >> 6;
+                if (i > 0) {
+                    if (random.nextFloat() < 0.3f + (float)i * 0.1f) {
+                        float v = 0.15f + 0.02f * (float)i * (float)i * random.nextFloat();
+                        float w = 0.4f + 0.3f * (float)i * random.nextFloat();
+                        this.world.playSound(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, v, w, false);
+                    }
+                    int j = data & 0x3F;
+                    UniformIntProvider intProvider = UniformIntProvider.create(0, i);
+                    float ac = 0.005f;
+                    Supplier<Vec3d> supplier = () -> new Vec3d(MathHelper.nextDouble(random, -0.005f, 0.005f), MathHelper.nextDouble(random, -0.005f, 0.005f), MathHelper.nextDouble(random, -0.005f, 0.005f));
+                    if (j == 0) {
+                        for (Direction direction2 : Direction.values()) {
+                            float ad = direction2 == Direction.DOWN ? (float)Math.PI : 0.0f;
+                            double g = direction2.getAxis() == Direction.Axis.Y ? 0.65 : 0.57;
+                            ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ad), intProvider, direction2, supplier, g);
+                        }
+                    } else {
+                        for (Direction direction3 : AbstractLichenBlock.method_41437((byte)data)) {
+                            float ae = direction3 == Direction.UP ? (float)Math.PI : 0.0f;
+                            double af = 0.35;
+                            ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ae), intProvider, direction3, supplier, 0.35);
+                        }
+                    }
+                } else {
+                    this.world.playSound(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
+                    boolean bl = this.world.getBlockState(pos).isFullCube(this.world, pos);
+                    int k = bl ? 40 : 20;
+                    float ac = bl ? 0.45f : 0.25f;
+                    float ag = 0.07f;
+                    for (int t = 0; t < k; ++t) {
+                        float ah = 2.0f * random.nextFloat() - 1.0f;
+                        float ae = 2.0f * random.nextFloat() - 1.0f;
+                        float ai = 2.0f * random.nextFloat() - 1.0f;
+                        this.world.addParticle(ParticleTypes.SCULK_CHARGE_POP, (double)pos.getX() + 0.5 + (double)(ah * ac), (double)pos.getY() + 0.5 + (double)(ae * ac), (double)pos.getZ() + 0.5 + (double)(ai * ac), ah * 0.07f, ae * 0.07f, ai * 0.07f);
+                    }
+                }
                 break;
             }
             case 3003: {
-                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.WAX_ON, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.WAX_ON, UniformIntProvider.create(3, 5));
                 this.world.playSound(pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
                 break;
             }
             case 3004: {
-                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.WAX_OFF, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.WAX_OFF, UniformIntProvider.create(3, 5));
                 break;
             }
             case 3005: {
-                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
                 break;
             }
             case 2008: {
@@ -2470,48 +2509,48 @@ AutoCloseable {
             }
             case 1501: {
                 this.world.playSound(pos, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5f, 2.6f + (random.nextFloat() - random.nextFloat()) * 0.8f, false);
-                for (int i = 0; i < 8; ++i) {
+                for (int j = 0; j < 8; ++j) {
                     this.world.addParticle(ParticleTypes.LARGE_SMOKE, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0);
                 }
                 break;
             }
             case 1502: {
                 this.world.playSound(pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5f, 2.6f + (random.nextFloat() - random.nextFloat()) * 0.8f, false);
-                for (int i = 0; i < 5; ++i) {
-                    double s = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
-                    double d = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
-                    double e = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
-                    this.world.addParticle(ParticleTypes.SMOKE, s, d, e, 0.0, 0.0, 0.0);
+                for (int j = 0; j < 5; ++j) {
+                    double aj = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
+                    double ak = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
+                    double al = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
+                    this.world.addParticle(ParticleTypes.SMOKE, aj, ak, al, 0.0, 0.0, 0.0);
                 }
                 break;
             }
             case 1503: {
                 this.world.playSound(pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
-                for (int i = 0; i < 16; ++i) {
-                    double s = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-                    double d = (double)pos.getY() + 0.8125;
-                    double e = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-                    this.world.addParticle(ParticleTypes.SMOKE, s, d, e, 0.0, 0.0, 0.0);
+                for (int j = 0; j < 16; ++j) {
+                    double aj = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+                    double ak = (double)pos.getY() + 0.8125;
+                    double al = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+                    this.world.addParticle(ParticleTypes.SMOKE, aj, ak, al, 0.0, 0.0, 0.0);
                 }
                 break;
             }
             case 2006: {
-                for (int i = 0; i < 200; ++i) {
-                    float v = random.nextFloat() * 4.0f;
-                    float w = random.nextFloat() * ((float)Math.PI * 2);
-                    double d = MathHelper.cos(w) * v;
-                    double e = 0.01 + random.nextDouble() * 0.5;
-                    double f = MathHelper.sin(w) * v;
-                    Particle particle2 = this.spawnParticle(ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + d * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + f * 0.1, d, e, f);
+                for (int j = 0; j < 200; ++j) {
+                    float w = random.nextFloat() * 4.0f;
+                    float ac = random.nextFloat() * ((float)Math.PI * 2);
+                    double ak = MathHelper.cos(ac) * w;
+                    double al = 0.01 + random.nextDouble() * 0.5;
+                    double af = MathHelper.sin(ac) * w;
+                    Particle particle2 = this.spawnParticle(ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + ak * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + af * 0.1, ak, al, af);
                     if (particle2 == null) continue;
-                    particle2.move(v);
+                    particle2.move(w);
                 }
                 if (data != 1) break;
                 this.world.playSound(pos, SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, SoundCategory.HOSTILE, 1.0f, random.nextFloat() * 0.1f + 0.9f, false);
                 break;
             }
             case 2009: {
-                for (int i = 0; i < 8; ++i) {
+                for (int j = 0; j < 8; ++j) {
                     this.world.addParticle(ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0);
                 }
                 break;

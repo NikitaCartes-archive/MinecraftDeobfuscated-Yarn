@@ -319,15 +319,15 @@ public class ModelLoader {
             try {
                 List list2;
                 try {
-                    list2 = this.resourceManager.getAllResources(identifier2).stream().map(resource -> {
-                        Pair<String, ModelVariantMap> pair;
-                        block8: {
-                            InputStream inputStream = resource.getInputStream();
-                            try {
-                                pair = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
-                                if (inputStream == null) break block8;
-                            } catch (Throwable throwable) {
+                    list2 = this.resourceManager.getAllResources(identifier2).stream().map(resourceRef -> {
+                        try (Resource resource = resourceRef.open();){
+                            Pair<String, ModelVariantMap> pair;
+                            block14: {
+                                InputStream inputStream = resource.getInputStream();
                                 try {
+                                    pair = Pair.of(resourceRef.getPackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                                    if (inputStream == null) break block14;
+                                } catch (Throwable throwable) {
                                     if (inputStream != null) {
                                         try {
                                             inputStream.close();
@@ -336,13 +336,13 @@ public class ModelLoader {
                                         }
                                     }
                                     throw throwable;
-                                } catch (Exception exception) {
-                                    throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), exception.getMessage()));
                                 }
+                                inputStream.close();
                             }
-                            inputStream.close();
+                            return pair;
+                        } catch (Exception exception) {
+                            throw new ModelLoaderException(String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resourceRef.getPackName(), exception.getMessage()));
                         }
-                        return pair;
                     }).collect(Collectors.toList());
                 } catch (IOException iOException) {
                     LOGGER.warn("Exception loading blockstate definition: {}: {}", (Object)identifier2, (Object)iOException);

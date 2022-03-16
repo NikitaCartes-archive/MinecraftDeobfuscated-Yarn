@@ -20,6 +20,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -86,19 +87,20 @@ implements ResourceReloader {
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
-        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", path -> path.endsWith(EXTENSION)), prepareExecutor).thenCompose(ids -> {
-            HashMap<Identifier, CompletableFuture<CommandFunction>> map = Maps.newHashMap();
+        CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(EXTENSION)), prepareExecutor).thenCompose(map -> {
+            HashMap<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.newHashMap();
             ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null);
-            for (Identifier identifier : ids) {
+            for (Map.Entry entry : map.entrySet()) {
+                Identifier identifier = (Identifier)entry.getKey();
                 String string = identifier.getPath();
                 Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
-                map.put(identifier2, CompletableFuture.supplyAsync(() -> {
-                    List<String> list = FunctionLoader.readLines(manager, identifier);
+                map2.put(identifier2, CompletableFuture.supplyAsync(() -> {
+                    List<String> list = FunctionLoader.readLines((ResourceRef)entry.getValue());
                     return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
                 }, prepareExecutor));
             }
-            CompletableFuture[] completableFutures = map.values().toArray(new CompletableFuture[0]);
-            return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
+            CompletableFuture[] completableFutures = map2.values().toArray(new CompletableFuture[0]);
+            return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map2);
         });
         return ((CompletableFuture)((CompletableFuture)completableFuture.thenCombine(completableFuture2, Pair::of)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(intermediate -> {
             Map map = (Map)intermediate.getSecond();
@@ -116,10 +118,10 @@ implements ResourceReloader {
         }, applyExecutor);
     }
 
-    private static List<String> readLines(ResourceManager resourceManager, Identifier id) {
+    private static List<String> readLines(ResourceRef resourceRef) {
         List<String> list;
         block8: {
-            Resource resource = resourceManager.getResource(id);
+            Resource resource = resourceRef.open();
             try {
                 list = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
                 if (resource == null) break block8;

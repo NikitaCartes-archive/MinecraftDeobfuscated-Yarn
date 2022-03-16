@@ -28,7 +28,7 @@ extends Item {
         NbtCompound nbtCompound = stew.getOrCreateNbt();
         NbtList nbtList = nbtCompound.getList(EFFECTS_KEY, 9);
         NbtCompound nbtCompound2 = new NbtCompound();
-        nbtCompound2.putByte(EFFECT_ID_KEY, (byte)StatusEffect.getRawId(effect));
+        nbtCompound2.putInt(EFFECT_ID_KEY, StatusEffect.getRawId(effect));
         nbtCompound2.putInt(EFFECT_DURATION_KEY, duration);
         nbtList.add(nbtCompound2);
         nbtCompound.put(EFFECTS_KEY, nbtList);
@@ -47,7 +47,7 @@ extends Item {
                 if (nbtCompound2.contains(EFFECT_DURATION_KEY, 3)) {
                     j = nbtCompound2.getInt(EFFECT_DURATION_KEY);
                 }
-                if ((statusEffect = StatusEffect.byRawId(nbtCompound2.getByte(EFFECT_ID_KEY))) == null) continue;
+                if ((statusEffect = StatusEffect.byRawId(nbtCompound2.getInt(EFFECT_ID_KEY))) == null) continue;
                 user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
             }
         }

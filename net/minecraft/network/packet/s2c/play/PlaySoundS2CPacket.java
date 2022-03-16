@@ -34,7 +34,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public PlaySoundS2CPacket(PacketByteBuf buf) {
-        this.sound = (SoundEvent)Registry.SOUND_EVENT.get(buf.readVarInt());
+        this.sound = buf.readRegistryValue(Registry.SOUND_EVENT);
         this.category = buf.readEnumConstant(SoundCategory.class);
         this.fixedX = buf.readInt();
         this.fixedY = buf.readInt();
@@ -45,7 +45,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
+        buf.writeRegistryValue(Registry.SOUND_EVENT, this.sound);
         buf.writeEnumConstant(this.category);
         buf.writeInt(this.fixedX);
         buf.writeInt(this.fixedY);

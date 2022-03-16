@@ -72,7 +72,7 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected double getMaxSpeed() {
+    protected double getMaxOffRailSpeed() {
         return (this.isTouchingWater() ? 3.0 : 4.0) / 20.0;
     }
 

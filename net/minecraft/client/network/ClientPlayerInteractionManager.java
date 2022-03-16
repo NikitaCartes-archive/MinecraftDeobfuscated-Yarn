@@ -4,10 +4,8 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import java.util.ArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,6 +15,8 @@ import net.minecraft.block.OperatorBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.PendingUpdateManager;
+import net.minecraft.client.network.SequencedPacketCreator;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.world.ClientWorld;
@@ -26,6 +26,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ButtonClickC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
@@ -55,7 +57,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
-import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -73,8 +75,6 @@ public class ClientPlayerInteractionManager {
     private GameMode gameMode = GameMode.DEFAULT;
     @Nullable
     private GameMode previousGameMode;
-    private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, Vec3d> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap();
-    private static final int MAX_UNACKNOWLEDGED_PLAYER_ACTIONS = 50;
     private int lastSelectedSlot;
 
     public ClientPlayerInteractionManager(MinecraftClient client, ClientPlayNetworkHandler networkHandler) {
@@ -139,31 +139,35 @@ public class ClientPlayerInteractionManager {
         if (this.gameMode.isCreative()) {
             BlockState blockState = this.client.world.getBlockState(pos);
             this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 1.0f);
-            this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
-            this.breakBlock(pos);
+            this.sendSequencedPacket(this.client.world, sequence -> {
+                this.breakBlock(pos);
+                return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
+            });
             this.blockBreakingCooldown = 5;
         } else if (!this.breakingBlock || !this.isCurrentlyBreaking(pos)) {
-            boolean bl;
             if (this.breakingBlock) {
-                this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, direction);
+                this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, direction));
             }
             BlockState blockState = this.client.world.getBlockState(pos);
             this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 0.0f);
-            this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
-            boolean bl2 = bl = !blockState.isAir();
-            if (bl && this.currentBreakingProgress == 0.0f) {
-                blockState.onBlockBreakStart(this.client.world, pos, this.client.player);
-            }
-            if (bl && blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos) >= 1.0f) {
-                this.breakBlock(pos);
-            } else {
-                this.breakingBlock = true;
-                this.currentBreakingPos = pos;
-                this.selectedStack = this.client.player.getMainHandStack();
-                this.currentBreakingProgress = 0.0f;
-                this.blockBreakingSoundCooldown = 0.0f;
-                this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
-            }
+            this.sendSequencedPacket(this.client.world, sequence -> {
+                boolean bl;
+                boolean bl2 = bl = !blockState.isAir();
+                if (bl && this.currentBreakingProgress == 0.0f) {
+                    blockState.onBlockBreakStart(this.client.world, pos, this.client.player);
+                }
+                if (bl && blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos) >= 1.0f) {
+                    this.breakBlock(pos);
+                } else {
+                    this.breakingBlock = true;
+                    this.currentBreakingPos = pos;
+                    this.selectedStack = this.client.player.getMainHandStack();
+                    this.currentBreakingProgress = 0.0f;
+                    this.blockBreakingSoundCooldown = 0.0f;
+                    this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
+                }
+                return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
+            });
         }
         return true;
     }
@@ -172,7 +176,7 @@ public class ClientPlayerInteractionManager {
         if (this.breakingBlock) {
             BlockState blockState = this.client.world.getBlockState(this.currentBreakingPos);
             this.client.getTutorialManager().onBlockBreaking(this.client.world, this.currentBreakingPos, blockState, -1.0f);
-            this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
+            this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN));
             this.breakingBlock = false;
             this.currentBreakingProgress = 0.0f;
             this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, -1);
@@ -190,8 +194,10 @@ public class ClientPlayerInteractionManager {
             this.blockBreakingCooldown = 5;
             BlockState blockState = this.client.world.getBlockState(pos);
             this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 1.0f);
-            this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
-            this.breakBlock(pos);
+            this.sendSequencedPacket(this.client.world, sequence -> {
+                this.breakBlock(pos);
+                return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
+            });
             return true;
         }
         if (this.isCurrentlyBreaking(pos)) {
@@ -209,8 +215,10 @@ public class ClientPlayerInteractionManager {
             this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0f, 1.0f));
             if (this.currentBreakingProgress >= 1.0f) {
                 this.breakingBlock = false;
-                this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, pos, direction);
-                this.breakBlock(pos);
+                this.sendSequencedPacket(this.client.world, sequence -> {
+                    this.breakBlock(pos);
+                    return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, pos, direction, sequence);
+                });
                 this.currentBreakingProgress = 0.0f;
                 this.blockBreakingSoundCooldown = 0.0f;
                 this.blockBreakingCooldown = 5;
@@ -220,6 +228,14 @@ public class ClientPlayerInteractionManager {
         }
         this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0f) - 1);
         return true;
+    }
+
+    private void sendSequencedPacket(ClientWorld world, SequencedPacketCreator packetCreator) {
+        try (PendingUpdateManager pendingUpdateManager = world.getPendingUpdateManager().incrementSequence();){
+            int i = pendingUpdateManager.getSequence();
+            Packet<ServerPlayPacketListener> packet = packetCreator.predict(i);
+            this.networkHandler.sendPacket(packet);
+        }
     }
 
     public float getReachDistance() {
@@ -256,26 +272,32 @@ public class ClientPlayerInteractionManager {
         }
     }
 
-    public ActionResult interactBlock(ClientPlayerEntity player, ClientWorld world, Hand hand, BlockHitResult hitResult) {
-        ActionResult actionResult;
-        boolean bl2;
+    public ActionResult interactBlock(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
         this.syncSelectedSlot();
-        BlockPos blockPos = hitResult.getBlockPos();
-        if (!this.client.world.getWorldBorder().contains(blockPos)) {
+        if (!this.client.world.getWorldBorder().contains(hitResult.getBlockPos())) {
             return ActionResult.FAIL;
         }
+        MutableObject mutableObject = new MutableObject();
+        this.sendSequencedPacket(this.client.world, sequence -> {
+            mutableObject.setValue(this.interactBlockInternal(player, hand, hitResult));
+            return new PlayerInteractBlockC2SPacket(hand, hitResult, sequence);
+        });
+        return (ActionResult)((Object)mutableObject.getValue());
+    }
+
+    private ActionResult interactBlockInternal(ClientPlayerEntity player, Hand hand, BlockHitResult hitResult) {
+        ActionResult actionResult;
+        boolean bl2;
+        BlockPos blockPos = hitResult.getBlockPos();
         ItemStack itemStack = player.getStackInHand(hand);
         if (this.gameMode == GameMode.SPECTATOR) {
-            this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
             return ActionResult.SUCCESS;
         }
         boolean bl = !player.getMainHandStack().isEmpty() || !player.getOffHandStack().isEmpty();
         boolean bl3 = bl2 = player.shouldCancelInteraction() && bl;
-        if (!bl2 && (actionResult = world.getBlockState(blockPos).onUse(world, player, hand, hitResult)).isAccepted()) {
-            this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
+        if (!bl2 && (actionResult = this.client.world.getBlockState(blockPos).onUse(this.client.world, player, hand, hitResult)).isAccepted()) {
             return actionResult;
         }
-        this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, hitResult));
         if (itemStack.isEmpty() || player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
             return ActionResult.PASS;
         }
@@ -290,23 +312,29 @@ public class ClientPlayerInteractionManager {
         return actionResult;
     }
 
-    public ActionResult interactItem(PlayerEntity player, World world, Hand hand) {
+    public ActionResult interactItem(PlayerEntity player, Hand hand) {
         if (this.gameMode == GameMode.SPECTATOR) {
             return ActionResult.PASS;
         }
         this.syncSelectedSlot();
         this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch(), player.isOnGround()));
-        this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
-            return ActionResult.PASS;
-        }
-        TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, player, hand);
-        ItemStack itemStack2 = typedActionResult.getValue();
-        if (itemStack2 != itemStack) {
-            player.setStackInHand(hand, itemStack2);
-        }
-        return typedActionResult.getResult();
+        MutableObject mutableObject = new MutableObject();
+        this.sendSequencedPacket(this.client.world, sequence -> {
+            PlayerInteractItemC2SPacket playerInteractItemC2SPacket = new PlayerInteractItemC2SPacket(hand, sequence);
+            ItemStack itemStack = player.getStackInHand(hand);
+            if (player.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
+                mutableObject.setValue(ActionResult.PASS);
+                return playerInteractItemC2SPacket;
+            }
+            TypedActionResult<ItemStack> typedActionResult = itemStack.use(this.client.world, player, hand);
+            ItemStack itemStack2 = typedActionResult.getValue();
+            if (itemStack2 != itemStack) {
+                player.setStackInHand(hand, itemStack2);
+            }
+            mutableObject.setValue(typedActionResult.getResult());
+            return playerInteractItemC2SPacket;
+        });
+        return (ActionResult)((Object)mutableObject.getValue());
     }
 
     public ClientPlayerEntity createPlayer(ClientWorld world, StatHandler statHandler, ClientRecipeBook recipeBook) {
@@ -432,29 +460,6 @@ public class ClientPlayerInteractionManager {
 
     public void pickFromInventory(int slot) {
         this.networkHandler.sendPacket(new PickFromInventoryC2SPacket(slot));
-    }
-
-    private void sendPlayerAction(PlayerActionC2SPacket.Action action, BlockPos pos, Direction direction) {
-        ClientPlayerEntity clientPlayerEntity = this.client.player;
-        this.unacknowledgedPlayerActions.put(Pair.of(pos, action), clientPlayerEntity.getPos());
-        this.networkHandler.sendPacket(new PlayerActionC2SPacket(action, pos, direction));
-    }
-
-    public void processPlayerActionResponse(ClientWorld world, BlockPos pos, BlockState state, PlayerActionC2SPacket.Action action, boolean approved) {
-        Vec3d vec3d = this.unacknowledgedPlayerActions.remove(Pair.of(pos, action));
-        BlockState blockState = world.getBlockState(pos);
-        if ((vec3d == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && blockState != state) && blockState != state) {
-            world.setBlockStateWithoutNeighborUpdates(pos, state);
-            ClientPlayerEntity playerEntity = this.client.player;
-            if (vec3d != null && world == playerEntity.world && playerEntity.collidesWithStateAtPos(pos, state)) {
-                playerEntity.updatePosition(vec3d.x, vec3d.y, vec3d.z);
-            }
-        }
-        while (this.unacknowledgedPlayerActions.size() >= 50) {
-            Pair<BlockPos, PlayerActionC2SPacket.Action> pair = this.unacknowledgedPlayerActions.firstKey();
-            this.unacknowledgedPlayerActions.removeFirst();
-            LOGGER.error("Too many unacked block actions, dropping {}", (Object)pair);
-        }
     }
 }
 

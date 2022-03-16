@@ -27,6 +27,7 @@ import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALUtil;
+import org.lwjgl.openal.SOFTHRTF;
 import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 
@@ -75,7 +76,7 @@ public class SoundEngine {
         this.deviceSpecifier = SoundEngine.findAvailableDeviceSpecifier();
     }
 
-    public void init(@Nullable String deviceSpecifier) {
+    public void init(@Nullable String deviceSpecifier, boolean directionalAudio) {
         this.devicePointer = SoundEngine.openDeviceOrFallback(deviceSpecifier);
         this.disconnectExtensionPresent = ALC10.alcIsExtensionPresent(this.devicePointer, "ALC_EXT_disconnect");
         ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.devicePointer);
@@ -84,6 +85,9 @@ public class SoundEngine {
         }
         if (!aLCCapabilities.OpenALC11) {
             throw new IllegalStateException("OpenAL 1.1 not supported");
+        }
+        if (aLCCapabilities.ALC_SOFT_HRTF && directionalAudio) {
+            this.tryEnableDirectionalAudio();
         }
         this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer)null);
         ALC10.alcMakeContextCurrent(this.contextPointer);
@@ -103,6 +107,18 @@ public class SoundEngine {
         }
         AlUtil.checkErrors("Enable per-source distance models");
         LOGGER.info("OpenAL initialized on device {}", (Object)this.getCurrentDeviceName());
+    }
+
+    private void tryEnableDirectionalAudio() {
+        int i = ALC10.alcGetInteger(this.devicePointer, 6548);
+        if (i > 0) {
+            try (MemoryStack memoryStack = MemoryStack.stackPush();){
+                IntBuffer intBuffer = memoryStack.callocInt(10).put(6546).put(1).put(6550).put(0).put(0).flip();
+                if (!SOFTHRTF.alcResetDeviceSOFT(this.devicePointer, intBuffer)) {
+                    LOGGER.warn("Failed to reset device: {}", (Object)ALC10.alcGetString(this.devicePointer, ALC10.alcGetError(this.devicePointer)));
+                }
+            }
+        }
     }
 
     private int getMonoSourceCount() {

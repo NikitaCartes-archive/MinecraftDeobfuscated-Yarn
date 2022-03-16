@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.BitmapFont;
 import net.minecraft.client.font.FontLoader;
+import net.minecraft.client.font.SpaceFont;
 import net.minecraft.client.font.TrueTypeFontLoader;
 import net.minecraft.client.font.UnicodeTextureFont;
 import net.minecraft.util.Util;
@@ -19,6 +20,7 @@ import net.minecraft.util.Util;
 public enum FontType {
     BITMAP("bitmap", BitmapFont.Loader::fromJson),
     TTF("ttf", TrueTypeFontLoader::fromJson),
+    SPACE("space", SpaceFont::fromJson),
     LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 
     private static final Map<String, FontType> REGISTRY;

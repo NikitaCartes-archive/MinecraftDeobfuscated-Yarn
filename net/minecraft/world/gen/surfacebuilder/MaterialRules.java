@@ -31,6 +31,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
@@ -334,7 +335,7 @@ public class MaterialRules {
 
         @Override
         public BooleanSupplier apply(final MaterialRuleContext materialRuleContext) {
-            final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.noise);
+            final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.field_37703.getOrCreateSampler(this.noise);
             class NoiseThresholdPredicate
             extends HorizontalLazyAbstractPredicate {
                 NoiseThresholdPredicate() {
@@ -369,7 +370,7 @@ public class MaterialRules {
         public BooleanSupplier apply(final MaterialRuleContext materialRuleContext) {
             final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
             final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
-            final RandomDeriver randomDeriver = materialRuleContext.surfaceBuilder.getRandomDeriver(this.randomName());
+            final RandomDeriver randomDeriver = materialRuleContext.field_37703.getOrCreateRandomDeriver(this.randomName());
             class VerticalGradientPredicate
             extends FullLazyAbstractPredicate {
                 VerticalGradientPredicate() {
@@ -730,6 +731,7 @@ public class MaterialRules {
         final BooleanSupplier steepSlopePredicate = new SteepSlopePredicate(this);
         final BooleanSupplier negativeRunDepthPredicate = new NegativeRunDepthPredicate(this);
         final BooleanSupplier surfacePredicate = new SurfacePredicate();
+        final NoiseConfig field_37703;
         final Chunk chunk;
         private final ChunkNoiseSampler chunkNoiseSampler;
         private final Function<BlockPos, RegistryEntry<Biome>> posToBiome;
@@ -752,11 +754,12 @@ public class MaterialRules {
         int stoneDepthBelow;
         int stoneDepthAbove;
 
-        protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, Function<BlockPos, RegistryEntry<Biome>> posToBiome, Registry<Biome> biomeRegistry, HeightContext heightContext) {
+        protected MaterialRuleContext(SurfaceBuilder surfaceBuilder, NoiseConfig noiseConfig, Chunk chunk, ChunkNoiseSampler chunkNoiseSampler, Function<BlockPos, RegistryEntry<Biome>> function, Registry<Biome> registry, HeightContext heightContext) {
             this.surfaceBuilder = surfaceBuilder;
+            this.field_37703 = noiseConfig;
             this.chunk = chunk;
             this.chunkNoiseSampler = chunkNoiseSampler;
-            this.posToBiome = posToBiome;
+            this.posToBiome = function;
             this.heightContext = heightContext;
         }
 

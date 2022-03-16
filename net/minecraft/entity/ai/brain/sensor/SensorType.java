@@ -6,9 +6,11 @@ package net.minecraft.entity.ai.brain.sensor;
 import java.util.function.Supplier;
 import net.minecraft.entity.ai.brain.sensor.AxolotlAttackablesSensor;
 import net.minecraft.entity.ai.brain.sensor.DummySensor;
+import net.minecraft.entity.ai.brain.sensor.FrogAttackablesSensor;
 import net.minecraft.entity.ai.brain.sensor.GolemLastSeenSensor;
 import net.minecraft.entity.ai.brain.sensor.HoglinSpecificSensor;
 import net.minecraft.entity.ai.brain.sensor.HurtBySensor;
+import net.minecraft.entity.ai.brain.sensor.IsInWaterSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestBedSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestItemsSensor;
 import net.minecraft.entity.ai.brain.sensor.NearestLivingEntitiesSensor;
@@ -22,6 +24,7 @@ import net.minecraft.entity.ai.brain.sensor.TemptationsSensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerBabiesSensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerHostilesSensor;
 import net.minecraft.entity.passive.AxolotlBrain;
+import net.minecraft.entity.passive.FrogBrain;
 import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -44,6 +47,9 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<AxolotlAttackablesSensor> AXOLOTL_ATTACKABLES = SensorType.register("axolotl_attackables", AxolotlAttackablesSensor::new);
     public static final SensorType<TemptationsSensor> AXOLOTL_TEMPTATIONS = SensorType.register("axolotl_temptations", () -> new TemptationsSensor(AxolotlBrain.getTemptItems()));
     public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = SensorType.register("goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItems()));
+    public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = SensorType.register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
+    public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = SensorType.register("frog_attackables", FrogAttackablesSensor::new);
+    public static final SensorType<IsInWaterSensor> IS_IN_WATER = SensorType.register("is_in_water", IsInWaterSensor::new);
     private final Supplier<U> factory;
 
     private SensorType(Supplier<U> factory) {

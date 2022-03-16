@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -37,6 +38,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.ChatVisibility;
@@ -47,11 +49,13 @@ import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.option.Option;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
@@ -59,6 +63,10 @@ import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -82,9 +90,17 @@ public class GameOptions {
     public static final int field_32155 = 32;
     private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
     private static final float field_32151 = 1.0f;
-    public static final String field_34785 = "";
-    public boolean monochromeLogo;
-    public boolean hideLightningFlashes;
+    public static final String EMPTY_STRING = "";
+    private static final Text DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP = new TranslatableText("options.darkMojangStudiosBackgroundColor.tooltip");
+    private final SimpleOption<Boolean> monochromeLogo = SimpleOption.ofBoolean("options.darkMojangStudiosBackgroundColor", client -> {
+        List<OrderedText> list = client.textRenderer.wrapLines(DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP, 200);
+        return value -> list;
+    }, false);
+    private static final Text HIDE_LIGHTNING_FLASHES_TOOLTIP = new TranslatableText("options.hideLightningFlashes.tooltip");
+    private final SimpleOption<Boolean> hideLightningFlashes = SimpleOption.ofBoolean("options.hideLightningFlashes", client -> {
+        List<OrderedText> list = client.textRenderer.wrapLines(HIDE_LIGHTNING_FLASHES_TOOLTIP, 200);
+        return value -> list;
+    }, false);
     public double mouseSensitivity = 0.5;
     public int viewDistance;
     public int simulationDistance;
@@ -93,8 +109,16 @@ public class GameOptions {
     public int maxFps = 120;
     public CloudRenderMode cloudRenderMode = CloudRenderMode.FANCY;
     public GraphicsMode graphicsMode = GraphicsMode.FANCY;
-    public AoMode ao = AoMode.MAX;
-    public ChunkBuilderMode chunkBuilderMode = ChunkBuilderMode.NONE;
+    private final SimpleOption<AoMode> ao = new SimpleOption<AoMode>("options.ao", Option.emptyTooltipFactoryGetter(), aoMode -> new TranslatableText(aoMode.getTranslationKey()), new SimpleOption.PotentialValuesBasedCallbacks<AoMode>(Arrays.asList(AoMode.values())), AoMode.MAX, value -> MinecraftClient.getInstance().worldRenderer.reload());
+    private static final Text NONE_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.none.tooltip");
+    private static final Text BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.byPlayer.tooltip");
+    private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.nearby.tooltip");
+    private final SimpleOption<ChunkBuilderMode> chunkBuilderMode = new SimpleOption<ChunkBuilderMode>("options.prioritizeChunkUpdates", client -> value -> switch (value) {
+        default -> throw new IncompatibleClassChangeError();
+        case ChunkBuilderMode.NONE -> minecraftClient.textRenderer.wrapLines(NONE_CHUNK_BUILDER_MODE_TOOLTIP, 200);
+        case ChunkBuilderMode.PLAYER_AFFECTED -> minecraftClient.textRenderer.wrapLines(BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP, 200);
+        case ChunkBuilderMode.NEARBY -> minecraftClient.textRenderer.wrapLines(NEARBY_CHUNK_BUILDER_MODE_TOOLTIP, 200);
+    }, value -> new TranslatableText(value.getName()), new SimpleOption.PotentialValuesBasedCallbacks<ChunkBuilderMode>(Arrays.asList(ChunkBuilderMode.values())), ChunkBuilderMode.NONE, value -> {});
     public List<String> resourcePacks = Lists.newArrayList();
     public List<String> incompatibleResourcePacks = Lists.newArrayList();
     public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -113,19 +137,27 @@ public class GameOptions {
     public boolean heldItemTooltips = true;
     public double chatScale = 1.0;
     public double chatWidth = 1.0;
-    public double chatHeightUnfocused = 0.44366195797920227;
-    public double chatHeightFocused = 1.0;
+    private final SimpleOption<Double> chatHeightUnfocused = new SimpleOption<Double>("options.chat.height.unfocused", Option.emptyTooltipFactoryGetter(), value -> GameOptions.getPixelValueText(this.getChatHeightUnfocused().getDisplayPrefix(), ChatHud.getHeight(value)), SimpleOption.DoubleSliderCallbacks.INSTANCE, ChatHud.getDefaultUnfocusedHeight(), value -> MinecraftClient.getInstance().inGameHud.getChatHud().reset());
+    private final SimpleOption<Double> chatHeightFocused = new SimpleOption<Double>("options.chat.height.focused", Option.emptyTooltipFactoryGetter(), value -> GameOptions.getPixelValueText(this.getChatHeightFocused().getDisplayPrefix(), ChatHud.getHeight(value)), SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, value -> MinecraftClient.getInstance().inGameHud.getChatHud().reset());
     public double chatDelay;
     public int mipmapLevels = 4;
-    private final Object2FloatMap<SoundCategory> soundVolumeLevels = Util.make(new Object2FloatOpenHashMap(), object2FloatOpenHashMap -> object2FloatOpenHashMap.defaultReturnValue(1.0f));
+    private final Object2FloatMap<SoundCategory> soundVolumeLevels = Util.make(new Object2FloatOpenHashMap(), map -> map.defaultReturnValue(1.0f));
     public boolean useNativeTransport = true;
     public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
     public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
     public boolean joinedFirstServer = false;
     public boolean hideBundleTutorial = false;
-    public int biomeBlendRadius = 2;
-    public double mouseWheelSensitivity = 1.0;
-    public boolean rawMouseInput = true;
+    private final SimpleOption<Integer> biomeBlendRadius = new SimpleOption<Integer>("options.biomeBlendRadius", Option.emptyTooltipFactoryGetter(), value -> {
+        int i = value * 2 + 1;
+        return GameOptions.getGenericValueText(this.getBiomeBlendRadius().getDisplayPrefix(), new TranslatableText("options.biomeBlendRadius." + i));
+    }, new SimpleOption.IntSliderCallbacks(0, 7), 2, value -> MinecraftClient.getInstance().worldRenderer.reload());
+    private final SimpleOption<Double> mouseWheelSensitivity = new SimpleOption<Double>("options.mouseWheelSensitivity", Option.emptyTooltipFactoryGetter(), value -> GameOptions.getGenericValueText(this.getMouseWheelSensitivity().getDisplayPrefix(), new LiteralText(String.format("%.2f", value))), new SimpleOption.IntSliderCallbacks(-200, 100).withModifier(GameOptions::toMouseWheelSensitivityValue, GameOptions::toMouseWheelSensitivitySliderProgressValue), GameOptions.toMouseWheelSensitivityValue(0), value -> {});
+    private final SimpleOption<Boolean> rawMouseInput = SimpleOption.ofBoolean("options.rawMouseInput", true, value -> {
+        Window window = MinecraftClient.getInstance().getWindow();
+        if (window != null) {
+            window.setRawMouseMotion((boolean)value);
+        }
+    });
     public int glDebugVerbosity = 1;
     public boolean autoJump = true;
     public boolean autoSuggestions = true;
@@ -141,6 +173,7 @@ public class GameOptions {
     public boolean allowServerListing = true;
     public boolean reducedDebugInfo;
     public boolean showSubtitles;
+    public boolean directionalAudio;
     public boolean backgroundForChatOnly = true;
     public boolean touchscreen;
     public boolean fullscreen;
@@ -310,7 +343,14 @@ public class GameOptions {
     public boolean debugTpsEnabled;
     public String lastServer = "";
     public boolean smoothCameraEnabled;
-    public double fov = 70.0;
+    private final SimpleOption<Integer> fov = new SimpleOption<Integer>("options.fov", Option.emptyTooltipFactoryGetter(), value -> {
+        Text text = this.getFov().getDisplayPrefix();
+        return switch (value) {
+            case 70 -> GameOptions.getGenericValueText(text, new TranslatableText("options.fov.min"));
+            case 110 -> GameOptions.getGenericValueText(text, new TranslatableText("options.fov.max"));
+            default -> GameOptions.getGenericValueText(text, value);
+        };
+    }, new SimpleOption.IntSliderCallbacks(30, 110), 70, value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate());
     public float distortionEffectScale = 1.0f;
     public float fovEffectScale = 1.0f;
     public double gamma;
@@ -321,18 +361,66 @@ public class GameOptions {
     public String soundDevice = "";
     public boolean syncChunkWrites;
 
-    public GameOptions(MinecraftClient client, File optionsFile) {
-        this.client = client;
+    public SimpleOption<Boolean> getMonochromeLogo() {
+        return this.monochromeLogo;
+    }
+
+    public SimpleOption<Boolean> getHideLightningFlashes() {
+        return this.hideLightningFlashes;
+    }
+
+    public SimpleOption<AoMode> getAo() {
+        return this.ao;
+    }
+
+    public SimpleOption<ChunkBuilderMode> getChunkBuilderMode() {
+        return this.chunkBuilderMode;
+    }
+
+    public SimpleOption<Double> getChatHeightUnfocused() {
+        return this.chatHeightUnfocused;
+    }
+
+    public SimpleOption<Double> getChatHeightFocused() {
+        return this.chatHeightFocused;
+    }
+
+    public SimpleOption<Integer> getBiomeBlendRadius() {
+        return this.biomeBlendRadius;
+    }
+
+    private static double toMouseWheelSensitivityValue(int value) {
+        return Math.pow(10.0, (double)value / 100.0);
+    }
+
+    private static int toMouseWheelSensitivitySliderProgressValue(double value) {
+        return MathHelper.floor(Math.log10(value) * 100.0);
+    }
+
+    public SimpleOption<Double> getMouseWheelSensitivity() {
+        return this.mouseWheelSensitivity;
+    }
+
+    public SimpleOption<Boolean> getRawMouseInput() {
+        return this.rawMouseInput;
+    }
+
+    public SimpleOption<Integer> getFov() {
+        return this.fov;
+    }
+
+    public GameOptions(MinecraftClient client2, File optionsFile) {
+        this.client = client2;
         this.optionsFile = new File(optionsFile, "options.txt");
-        if (client.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
+        if (client2.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
             Option.RENDER_DISTANCE.setMax(32.0f);
             Option.SIMULATION_DISTANCE.setMax(32.0f);
         } else {
             Option.RENDER_DISTANCE.setMax(16.0f);
             Option.SIMULATION_DISTANCE.setMax(16.0f);
         }
-        this.viewDistance = client.is64Bit() ? 12 : 8;
-        this.simulationDistance = client.is64Bit() ? 12 : 8;
+        this.viewDistance = client2.is64Bit() ? 12 : 8;
+        this.simulationDistance = client2.is64Bit() ? 12 : 8;
         this.gamma = 0.5;
         this.syncChunkWrites = Util.getOperatingSystem() == Util.OperatingSystem.WINDOWS;
         this.load();
@@ -369,15 +457,16 @@ public class GameOptions {
         this.realmsNotifications = visitor.visitBoolean("realmsNotifications", this.realmsNotifications);
         this.reducedDebugInfo = visitor.visitBoolean("reducedDebugInfo", this.reducedDebugInfo);
         this.showSubtitles = visitor.visitBoolean("showSubtitles", this.showSubtitles);
+        this.directionalAudio = visitor.visitBoolean("directionalAudio", this.directionalAudio);
         this.touchscreen = visitor.visitBoolean("touchscreen", this.touchscreen);
         this.fullscreen = visitor.visitBoolean("fullscreen", this.fullscreen);
         this.bobView = visitor.visitBoolean("bobView", this.bobView);
         this.sneakToggled = visitor.visitBoolean("toggleCrouch", this.sneakToggled);
         this.sprintToggled = visitor.visitBoolean("toggleSprint", this.sprintToggled);
-        this.monochromeLogo = visitor.visitBoolean("darkMojangStudiosBackground", this.monochromeLogo);
-        this.hideLightningFlashes = visitor.visitBoolean("hideLightningFlashes", this.hideLightningFlashes);
+        this.monochromeLogo.setValue(visitor.visitBoolean("darkMojangStudiosBackground", this.monochromeLogo.getValue()));
+        this.hideLightningFlashes.setValue(visitor.visitBoolean("hideLightningFlashes", this.hideLightningFlashes.getValue()));
         this.mouseSensitivity = visitor.visitDouble("mouseSensitivity", this.mouseSensitivity);
-        this.fov = visitor.visitDouble("fov", (this.fov - 70.0) / 40.0) * 40.0 + 70.0;
+        this.fov.setValue((int)(visitor.visitFloat("fov", (float)(this.fov.getValue() - 70) / 40.0f) * 40.0f + 70.0f));
         this.distortionEffectScale = visitor.visitFloat("screenEffectScale", this.distortionEffectScale);
         this.fovEffectScale = visitor.visitFloat("fovEffectScale", this.fovEffectScale);
         this.gamma = visitor.visitDouble("gamma", this.gamma);
@@ -389,9 +478,9 @@ public class GameOptions {
         this.maxFps = visitor.visitInt("maxFps", this.maxFps);
         this.difficulty = visitor.visitObject("difficulty", this.difficulty, Difficulty::byOrdinal, Difficulty::getId);
         this.graphicsMode = visitor.visitObject("graphicsMode", this.graphicsMode, GraphicsMode::byId, GraphicsMode::getId);
-        this.ao = visitor.visitObject("ao", this.ao, GameOptions::loadAo, ao -> Integer.toString(ao.getId()));
-        this.chunkBuilderMode = visitor.visitObject("prioritizeChunkUpdates", this.chunkBuilderMode, ChunkBuilderMode::get, ChunkBuilderMode::getId);
-        this.biomeBlendRadius = visitor.visitInt("biomeBlendRadius", this.biomeBlendRadius);
+        this.ao.setValue(visitor.visitObject("ao", this.ao.getValue(), GameOptions::loadAo, ao -> Integer.toString(ao.getId())));
+        this.chunkBuilderMode.setValue(visitor.visitObject("prioritizeChunkUpdates", this.chunkBuilderMode.getValue(), ChunkBuilderMode::get, ChunkBuilderMode::getId));
+        this.biomeBlendRadius.setValue(visitor.visitInt("biomeBlendRadius", this.biomeBlendRadius.getValue()));
         this.cloudRenderMode = visitor.visitObject("renderClouds", this.cloudRenderMode, GameOptions::loadCloudRenderMode, GameOptions::saveCloudRenderMode);
         this.resourcePacks = visitor.visitObject("resourcePacks", this.resourcePacks, GameOptions::parseList, GSON::toJson);
         this.incompatibleResourcePacks = visitor.visitObject("incompatibleResourcePacks", this.incompatibleResourcePacks, GameOptions::parseList, GSON::toJson);
@@ -409,9 +498,9 @@ public class GameOptions {
         this.overrideWidth = visitor.visitInt("overrideWidth", this.overrideWidth);
         this.overrideHeight = visitor.visitInt("overrideHeight", this.overrideHeight);
         this.heldItemTooltips = visitor.visitBoolean("heldItemTooltips", this.heldItemTooltips);
-        this.chatHeightFocused = visitor.visitDouble("chatHeightFocused", this.chatHeightFocused);
+        this.chatHeightFocused.setValue(visitor.visitDouble("chatHeightFocused", this.chatHeightFocused.getValue()));
         this.chatDelay = visitor.visitDouble("chatDelay", this.chatDelay);
-        this.chatHeightUnfocused = visitor.visitDouble("chatHeightUnfocused", this.chatHeightUnfocused);
+        this.chatHeightUnfocused.setValue(visitor.visitDouble("chatHeightUnfocused", this.chatHeightUnfocused.getValue()));
         this.chatScale = visitor.visitDouble("chatScale", this.chatScale);
         this.chatWidth = visitor.visitDouble("chatWidth", this.chatWidth);
         this.mipmapLevels = visitor.visitInt("mipmapLevels", this.mipmapLevels);
@@ -420,8 +509,8 @@ public class GameOptions {
         this.attackIndicator = visitor.visitObject("attackIndicator", this.attackIndicator, AttackIndicator::byId, AttackIndicator::getId);
         this.narrator = visitor.visitObject("narrator", this.narrator, NarratorMode::byId, NarratorMode::getId);
         this.tutorialStep = visitor.visitObject("tutorialStep", this.tutorialStep, TutorialStep::byName, TutorialStep::getName);
-        this.mouseWheelSensitivity = visitor.visitDouble("mouseWheelSensitivity", this.mouseWheelSensitivity);
-        this.rawMouseInput = visitor.visitBoolean("rawMouseInput", this.rawMouseInput);
+        this.mouseWheelSensitivity.setValue(visitor.visitDouble("mouseWheelSensitivity", this.mouseWheelSensitivity.getValue()));
+        this.rawMouseInput.setValue(visitor.visitBoolean("rawMouseInput", this.rawMouseInput.getValue()));
         this.glDebugVerbosity = visitor.visitInt("glDebugVerbosity", this.glDebugVerbosity);
         this.skipMultiplayerWarning = visitor.visitBoolean("skipMultiplayerWarning", this.skipMultiplayerWarning);
         this.skipRealms32BitWarning = visitor.visitBoolean("skipRealms32bitWarning", this.skipRealms32BitWarning);
@@ -798,7 +887,7 @@ public class GameOptions {
     }
 
     public String collectProfiledOptions() {
-        ImmutableCollection immutableList = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().add(Pair.of("ao", String.valueOf((Object)this.ao)))).add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))).add(Pair.of("enableVsync", String.valueOf(this.enableVsync)))).add(Pair.of("entityDistanceScaling", String.valueOf(this.entityDistanceScaling)))).add(Pair.of("entityShadows", String.valueOf(this.entityShadows)))).add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))).add(Pair.of("fov", String.valueOf(this.fov)))).add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))).add(Pair.of("prioritizeChunkUpdates", String.valueOf((Object)this.chunkBuilderMode)))).add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))).add(Pair.of("gamma", String.valueOf(this.gamma)))).add(Pair.of("glDebugVerbosity", String.valueOf(this.glDebugVerbosity)))).add(Pair.of("graphicsMode", String.valueOf((Object)this.graphicsMode)))).add(Pair.of("guiScale", String.valueOf(this.guiScale)))).add(Pair.of("maxFps", String.valueOf(this.maxFps)))).add(Pair.of("mipmapLevels", String.valueOf(this.mipmapLevels)))).add(Pair.of("narrator", String.valueOf((Object)this.narrator)))).add(Pair.of("overrideHeight", String.valueOf(this.overrideHeight)))).add(Pair.of("overrideWidth", String.valueOf(this.overrideWidth)))).add(Pair.of("particles", String.valueOf((Object)this.particles)))).add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))).add(Pair.of("renderClouds", String.valueOf((Object)this.cloudRenderMode)))).add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))).add(Pair.of("simulationDistance", String.valueOf(this.simulationDistance)))).add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))).add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))).add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))).add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))).add(Pair.of("soundDevice", String.valueOf(this.soundDevice)))).build();
+        ImmutableCollection immutableList = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().add(Pair.of("ao", String.valueOf(this.ao)))).add(Pair.of("biomeBlendRadius", String.valueOf(this.biomeBlendRadius)))).add(Pair.of("enableVsync", String.valueOf(this.enableVsync)))).add(Pair.of("entityDistanceScaling", String.valueOf(this.entityDistanceScaling)))).add(Pair.of("entityShadows", String.valueOf(this.entityShadows)))).add(Pair.of("forceUnicodeFont", String.valueOf(this.forceUnicodeFont)))).add(Pair.of("fov", String.valueOf(this.fov)))).add(Pair.of("fovEffectScale", String.valueOf(this.fovEffectScale)))).add(Pair.of("prioritizeChunkUpdates", String.valueOf(this.chunkBuilderMode)))).add(Pair.of("fullscreen", String.valueOf(this.fullscreen)))).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))).add(Pair.of("gamma", String.valueOf(this.gamma)))).add(Pair.of("glDebugVerbosity", String.valueOf(this.glDebugVerbosity)))).add(Pair.of("graphicsMode", String.valueOf((Object)this.graphicsMode)))).add(Pair.of("guiScale", String.valueOf(this.guiScale)))).add(Pair.of("maxFps", String.valueOf(this.maxFps)))).add(Pair.of("mipmapLevels", String.valueOf(this.mipmapLevels)))).add(Pair.of("narrator", String.valueOf((Object)this.narrator)))).add(Pair.of("overrideHeight", String.valueOf(this.overrideHeight)))).add(Pair.of("overrideWidth", String.valueOf(this.overrideWidth)))).add(Pair.of("particles", String.valueOf((Object)this.particles)))).add(Pair.of("reducedDebugInfo", String.valueOf(this.reducedDebugInfo)))).add(Pair.of("renderClouds", String.valueOf((Object)this.cloudRenderMode)))).add(Pair.of("renderDistance", String.valueOf(this.viewDistance)))).add(Pair.of("simulationDistance", String.valueOf(this.simulationDistance)))).add(Pair.of("resourcePacks", String.valueOf(this.resourcePacks)))).add(Pair.of("screenEffectScale", String.valueOf(this.distortionEffectScale)))).add(Pair.of("syncChunkWrites", String.valueOf(this.syncChunkWrites)))).add(Pair.of("useNativeTransport", String.valueOf(this.useNativeTransport)))).add(Pair.of("soundDevice", this.soundDevice))).build();
         return immutableList.stream().map(option -> (String)option.getFirst() + ": " + (String)option.getSecond()).collect(Collectors.joining(System.lineSeparator()));
     }
 
@@ -808,6 +897,22 @@ public class GameOptions {
 
     public int getViewDistance() {
         return this.serverViewDistance > 0 ? Math.min(this.viewDistance, this.serverViewDistance) : this.viewDistance;
+    }
+
+    private static Text getPixelValueText(Text prefix, int value) {
+        return new TranslatableText("options.pixel_value", prefix, value);
+    }
+
+    private static Text getPercentValueText(Text prefix, double value) {
+        return new TranslatableText("options.percent_value", prefix, (int)(value * 100.0));
+    }
+
+    public static Text getGenericValueText(Text prefix, Text value) {
+        return new TranslatableText("options.generic_value", prefix, value);
+    }
+
+    public static Text getGenericValueText(Text prefix, int value) {
+        return GameOptions.getGenericValueText(prefix, new LiteralText(Integer.toString(value)));
     }
 
     @Environment(value=EnvType.CLIENT)

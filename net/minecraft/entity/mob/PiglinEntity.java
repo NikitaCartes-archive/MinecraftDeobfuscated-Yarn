@@ -267,7 +267,7 @@ InventoryOwner {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    public int getXpToDrop() {
         return this.experiencePoints;
     }
 

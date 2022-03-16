@@ -144,11 +144,11 @@ extends AnimalEntity {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    public int getXpToDrop() {
         if (this.hasJockey()) {
             return 10;
         }
-        return super.getXpToDrop(player);
+        return super.getXpToDrop();
     }
 
     @Override

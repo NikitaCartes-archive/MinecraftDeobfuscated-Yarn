@@ -38,9 +38,9 @@ implements SnbtProvider.Tweaker {
     private static NbtCompound internalUpdate(String name, NbtCompound nbt) {
         Structure structure = new Structure();
         int i = nbt.getInt("DataVersion");
-        int j = 2965;
-        if (i < 2965) {
-            LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 2965, name);
+        int j = 3075;
+        if (i < 3075) {
+            LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3075, name);
         }
         NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
         structure.readNbt(nbtCompound);

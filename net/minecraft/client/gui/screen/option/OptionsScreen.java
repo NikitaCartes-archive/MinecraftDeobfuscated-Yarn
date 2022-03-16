@@ -35,7 +35,6 @@ import net.minecraft.world.Difficulty;
 @Environment(value=EnvType.CLIENT)
 public class OptionsScreen
 extends Screen {
-    private static final Option[] OPTIONS = new Option[]{Option.FOV};
     private final Screen parent;
     private final GameOptions settings;
     private CyclingButtonWidget<Difficulty> difficultyButton;
@@ -50,7 +49,7 @@ extends Screen {
     @Override
     protected void init() {
         int i = 0;
-        for (Option option : OPTIONS) {
+        for (Option option : new Option[]{this.settings.getFov()}) {
             int j = this.width / 2 - 155 + i % 2 * 160;
             int k = this.height / 6 - 12 + 24 * (i >> 1);
             this.addDrawableChild(option.createButton(this.client.options, j, k, 150));
@@ -68,7 +67,7 @@ extends Screen {
                 this.difficultyButton.active = false;
             }
         } else {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.online"), buttonWidget -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.online"), button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))));
         }
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.skinCustomisation"), button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, new TranslatableText("options.sounds"), button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))));
@@ -82,7 +81,7 @@ extends Screen {
     }
 
     public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int buttonIndex, int width, int height, String translationKey, MinecraftClient client) {
-        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + buttonIndex % 2 * 160, height / 6 - 12 + 24 * (buttonIndex >> 1), 150, 20, new TranslatableText(translationKey), (cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
+        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + buttonIndex % 2 * 160, height / 6 - 12 + 24 * (buttonIndex >> 1), 150, 20, new TranslatableText(translationKey), (button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
     }
 
     private void refreshResourcePacks(ResourcePackManager resourcePackManager) {

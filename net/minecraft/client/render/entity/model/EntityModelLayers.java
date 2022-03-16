@@ -63,6 +63,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer EVOKER = EntityModelLayers.registerMain("evoker");
     public static final EntityModelLayer EVOKER_FANGS = EntityModelLayers.registerMain("evoker_fangs");
     public static final EntityModelLayer FOX = EntityModelLayers.registerMain("fox");
+    public static final EntityModelLayer FROG = EntityModelLayers.registerMain("frog");
     public static final EntityModelLayer FURNACE_MINECART = EntityModelLayers.registerMain("furnace_minecart");
     public static final EntityModelLayer GHAST = EntityModelLayers.registerMain("ghast");
     public static final EntityModelLayer GIANT = EntityModelLayers.registerMain("giant");
@@ -139,6 +140,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer STRAY_OUTER = EntityModelLayers.register("stray", "outer");
     public static final EntityModelLayer STRIDER = EntityModelLayers.registerMain("strider");
     public static final EntityModelLayer STRIDER_SADDLE = EntityModelLayers.register("strider", "saddle");
+    public static final EntityModelLayer TADPOLE = EntityModelLayers.registerMain("tadpole");
     public static final EntityModelLayer TNT_MINECART = EntityModelLayers.registerMain("tnt_minecart");
     public static final EntityModelLayer TRADER_LLAMA = EntityModelLayers.registerMain("trader_llama");
     public static final EntityModelLayer TRIDENT = EntityModelLayers.registerMain("trident");

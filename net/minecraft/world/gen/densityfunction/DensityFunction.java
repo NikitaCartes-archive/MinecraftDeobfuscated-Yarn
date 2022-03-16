@@ -14,10 +14,10 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 public interface DensityFunction {
     public static final Codec<DensityFunction> field_37057 = DensityFunctionTypes.field_37061;
     public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, field_37057);
-    public static final Codec<DensityFunction> field_37059 = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.class_7051::new, densityFunction -> {
-        if (densityFunction instanceof DensityFunctionTypes.class_7051) {
-            DensityFunctionTypes.class_7051 lv = (DensityFunctionTypes.class_7051)densityFunction;
-            return lv.function();
+    public static final Codec<DensityFunction> field_37059 = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, densityFunction -> {
+        if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
+            DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
+            return registryEntryHolder.function();
         }
         return new RegistryEntry.Direct<DensityFunction>((DensityFunction)densityFunction);
     });

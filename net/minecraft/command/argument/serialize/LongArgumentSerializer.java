@@ -6,46 +6,78 @@ package net.minecraft.command.argument.serialize;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
-import net.minecraft.command.argument.BrigadierArgumentTypes;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 
 public class LongArgumentSerializer
-implements ArgumentSerializer<LongArgumentType> {
+implements ArgumentSerializer<LongArgumentType, Properties> {
     @Override
-    public void toPacket(LongArgumentType longArgumentType, PacketByteBuf packetByteBuf) {
-        boolean bl = longArgumentType.getMinimum() != Long.MIN_VALUE;
-        boolean bl2 = longArgumentType.getMaximum() != Long.MAX_VALUE;
-        packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
+    public void writePacket(Properties properties, PacketByteBuf packetByteBuf) {
+        boolean bl = properties.min != Long.MIN_VALUE;
+        boolean bl2 = properties.max != Long.MAX_VALUE;
+        packetByteBuf.writeByte(ArgumentHelper.getMinMaxFlag(bl, bl2));
         if (bl) {
-            packetByteBuf.writeLong(longArgumentType.getMinimum());
+            packetByteBuf.writeLong(properties.min);
         }
         if (bl2) {
-            packetByteBuf.writeLong(longArgumentType.getMaximum());
+            packetByteBuf.writeLong(properties.max);
         }
     }
 
     @Override
-    public LongArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+    public Properties fromPacket(PacketByteBuf packetByteBuf) {
         byte b = packetByteBuf.readByte();
-        long l = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readLong() : Long.MIN_VALUE;
-        long m = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readLong() : Long.MAX_VALUE;
-        return LongArgumentType.longArg(l, m);
+        long l = ArgumentHelper.hasMinFlag(b) ? packetByteBuf.readLong() : Long.MIN_VALUE;
+        long m = ArgumentHelper.hasMaxFlag(b) ? packetByteBuf.readLong() : Long.MAX_VALUE;
+        return new Properties(l, m);
     }
 
     @Override
-    public void toJson(LongArgumentType longArgumentType, JsonObject jsonObject) {
-        if (longArgumentType.getMinimum() != Long.MIN_VALUE) {
-            jsonObject.addProperty("min", longArgumentType.getMinimum());
+    public void writeJson(Properties properties, JsonObject jsonObject) {
+        if (properties.min != Long.MIN_VALUE) {
+            jsonObject.addProperty("min", properties.min);
         }
-        if (longArgumentType.getMaximum() != Long.MAX_VALUE) {
-            jsonObject.addProperty("max", longArgumentType.getMaximum());
+        if (properties.max != Long.MAX_VALUE) {
+            jsonObject.addProperty("max", properties.max);
         }
     }
 
     @Override
-    public /* synthetic */ ArgumentType fromPacket(PacketByteBuf buf) {
+    public Properties getArgumentTypeProperties(LongArgumentType longArgumentType) {
+        return new Properties(longArgumentType.getMinimum(), longArgumentType.getMaximum());
+    }
+
+    @Override
+    public /* synthetic */ ArgumentSerializer.ArgumentTypeProperties fromPacket(PacketByteBuf buf) {
         return this.fromPacket(buf);
+    }
+
+    public final class Properties
+    implements ArgumentSerializer.ArgumentTypeProperties<LongArgumentType> {
+        final long min;
+        final long max;
+
+        Properties(long min, long max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public LongArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+            return LongArgumentType.longArg(this.min, this.max);
+        }
+
+        @Override
+        public ArgumentSerializer<LongArgumentType, ?> getSerializer() {
+            return LongArgumentSerializer.this;
+        }
+
+        @Override
+        public /* synthetic */ ArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+            return this.createType(commandRegistryAccess);
+        }
     }
 }
 

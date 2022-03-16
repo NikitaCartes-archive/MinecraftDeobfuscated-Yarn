@@ -13,21 +13,25 @@ public class PlayerInteractBlockC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private final BlockHitResult blockHitResult;
     private final Hand hand;
+    private final int sequence;
 
-    public PlayerInteractBlockC2SPacket(Hand hand, BlockHitResult blockHitResult) {
+    public PlayerInteractBlockC2SPacket(Hand hand, BlockHitResult blockHitResult, int sequence) {
         this.hand = hand;
         this.blockHitResult = blockHitResult;
+        this.sequence = sequence;
     }
 
     public PlayerInteractBlockC2SPacket(PacketByteBuf buf) {
         this.hand = buf.readEnumConstant(Hand.class);
         this.blockHitResult = buf.readBlockHitResult();
+        this.sequence = buf.readVarInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeEnumConstant(this.hand);
         buf.writeBlockHitResult(this.blockHitResult);
+        buf.writeVarInt(this.sequence);
     }
 
     @Override
@@ -41,6 +45,10 @@ implements Packet<ServerPlayPacketListener> {
 
     public BlockHitResult getBlockHitResult() {
         return this.blockHitResult;
+    }
+
+    public int getSequence() {
+        return this.sequence;
     }
 }
 

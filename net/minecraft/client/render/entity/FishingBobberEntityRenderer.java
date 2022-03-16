@@ -79,7 +79,7 @@ extends EntityRenderer<FishingBobberEntity> {
             q = MathHelper.lerp((double)g, playerEntity.prevZ, playerEntity.getZ()) - d * m + e * 0.8;
             r = playerEntity.isInSneakingPose() ? -0.1875f : 0.0f;
         } else {
-            s = 960.0 / this.dispatcher.gameOptions.fov;
+            s = 960.0 / (double)this.dispatcher.gameOptions.getFov().getValue().intValue();
             Vec3d vec3d = this.dispatcher.camera.getProjection().getPosition((float)j * 0.525f, -0.1f);
             vec3d = vec3d.multiply(s);
             vec3d = vec3d.rotateY(k * 0.5f);

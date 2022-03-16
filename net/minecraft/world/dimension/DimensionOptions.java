@@ -9,11 +9,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -22,48 +21,49 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public final class DimensionOptions {
-    public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)DimensionType.REGISTRY_CODEC.fieldOf("type")).forGetter(DimensionOptions::getDimensionTypeSupplier), ((MapCodec)ChunkGenerator.CODEC.fieldOf("generator")).forGetter(DimensionOptions::getChunkGenerator)).apply((Applicative<DimensionOptions, ?>)instance, instance.stable(DimensionOptions::new)));
+    public static final Codec<DimensionOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)DimensionType.REGISTRY_CODEC.fieldOf("type")).forGetter(DimensionOptions::getDimensionTypeEntry), ((MapCodec)ChunkGenerator.CODEC.fieldOf("generator")).forGetter(DimensionOptions::getChunkGenerator)).apply((Applicative<DimensionOptions, ?>)instance, instance.stable(DimensionOptions::new)));
     public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("overworld"));
     public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_nether"));
     public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_end"));
     private static final Set<RegistryKey<DimensionOptions>> BASE_DIMENSIONS = ImmutableSet.of(OVERWORLD, NETHER, END);
-    private final RegistryEntry<DimensionType> dimensionTypeSupplier;
+    private final RegistryEntry<DimensionType> dimensionTypeEntry;
     private final ChunkGenerator chunkGenerator;
 
-    public DimensionOptions(RegistryEntry<DimensionType> registryEntry, ChunkGenerator chunkGenerator) {
-        this.dimensionTypeSupplier = registryEntry;
+    public DimensionOptions(RegistryEntry<DimensionType> dimensionTypeEntry, ChunkGenerator chunkGenerator) {
+        this.dimensionTypeEntry = dimensionTypeEntry;
         this.chunkGenerator = chunkGenerator;
     }
 
-    public RegistryEntry<DimensionType> getDimensionTypeSupplier() {
-        return this.dimensionTypeSupplier;
+    public RegistryEntry<DimensionType> getDimensionTypeEntry() {
+        return this.dimensionTypeEntry;
     }
 
     public ChunkGenerator getChunkGenerator() {
         return this.chunkGenerator;
     }
 
-    public static Registry<DimensionOptions> method_29569(Registry<DimensionOptions> registry) {
+    public static Stream<RegistryKey<DimensionOptions>> streamRegistry(Stream<RegistryKey<DimensionOptions>> stream) {
+        return Stream.concat(BASE_DIMENSIONS.stream(), stream.filter(registryKey -> !BASE_DIMENSIONS.contains(registryKey)));
+    }
+
+    public static Registry<DimensionOptions> createRegistry(Registry<DimensionOptions> registry) {
         SimpleRegistry<DimensionOptions> mutableRegistry = new SimpleRegistry<DimensionOptions>(Registry.DIMENSION_KEY, Lifecycle.experimental(), null);
-        for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
-            DimensionOptions dimensionOptions = registry.get(registryKey);
-            if (dimensionOptions == null) continue;
-            ((MutableRegistry)mutableRegistry).add(registryKey, dimensionOptions, registry.getEntryLifecycle(dimensionOptions));
-        }
-        for (Map.Entry entry : registry.getEntrySet()) {
-            RegistryKey registryKey2 = (RegistryKey)entry.getKey();
-            if (BASE_DIMENSIONS.contains(registryKey2)) continue;
-            ((MutableRegistry)mutableRegistry).add(registryKey2, (DimensionOptions)entry.getValue(), registry.getEntryLifecycle((DimensionOptions)entry.getValue()));
-        }
+        DimensionOptions.streamRegistry(registry.getKeys().stream()).forEach(registryKey -> {
+            DimensionOptions dimensionOptions = (DimensionOptions)registry.get((RegistryKey<DimensionOptions>)registryKey);
+            if (dimensionOptions != null) {
+                mutableRegistry.add((RegistryKey<DimensionOptions>)registryKey, dimensionOptions, registry.getEntryLifecycle(dimensionOptions));
+            }
+        });
         return mutableRegistry;
     }
 
-    public static boolean hasDefaultSettings(long seed, Registry<DimensionOptions> registry) {
+    public static boolean hasDefaultSettings(Registry<DimensionOptions> registry) {
         if (registry.size() != BASE_DIMENSIONS.size()) {
             return false;
         }
@@ -73,13 +73,13 @@ public final class DimensionOptions {
         if (optional.isEmpty() || optional2.isEmpty() || optional3.isEmpty()) {
             return false;
         }
-        if (!optional.get().getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_REGISTRY_KEY) && !optional.get().getDimensionTypeSupplier().matchesKey(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY)) {
+        if (!optional.get().getDimensionTypeEntry().matchesKey(DimensionTypes.OVERWORLD) && !optional.get().getDimensionTypeEntry().matchesKey(DimensionTypes.OVERWORLD_CAVES)) {
             return false;
         }
-        if (!optional2.get().getDimensionTypeSupplier().matchesKey(DimensionType.THE_NETHER_REGISTRY_KEY)) {
+        if (!optional2.get().getDimensionTypeEntry().matchesKey(DimensionTypes.THE_NETHER)) {
             return false;
         }
-        if (!optional3.get().getDimensionTypeSupplier().matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
+        if (!optional3.get().getDimensionTypeEntry().matchesKey(DimensionTypes.THE_END)) {
             return false;
         }
         if (!(optional2.get().getChunkGenerator() instanceof NoiseChunkGenerator) || !(optional3.get().getChunkGenerator() instanceof NoiseChunkGenerator)) {
@@ -87,10 +87,10 @@ public final class DimensionOptions {
         }
         NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)optional2.get().getChunkGenerator();
         NoiseChunkGenerator noiseChunkGenerator2 = (NoiseChunkGenerator)optional3.get().getChunkGenerator();
-        if (!noiseChunkGenerator.matchesSettings(seed, ChunkGeneratorSettings.NETHER)) {
+        if (!noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.NETHER)) {
             return false;
         }
-        if (!noiseChunkGenerator2.matchesSettings(seed, ChunkGeneratorSettings.END)) {
+        if (!noiseChunkGenerator2.matchesSettings(ChunkGeneratorSettings.END)) {
             return false;
         }
         if (!(noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource)) {
@@ -104,11 +104,7 @@ public final class DimensionOptions {
         if (biomeSource instanceof MultiNoiseBiomeSource && !((MultiNoiseBiomeSource)biomeSource).matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
             return false;
         }
-        if (!(noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource)) {
-            return false;
-        }
-        TheEndBiomeSource theEndBiomeSource = (TheEndBiomeSource)noiseChunkGenerator2.getBiomeSource();
-        return theEndBiomeSource.matches(seed);
+        return noiseChunkGenerator2.getBiomeSource() instanceof TheEndBiomeSource;
     }
 }
 

@@ -14,6 +14,7 @@ public class Models {
     public static final Model CUBE_DIRECTIONAL = Models.block("cube_directional", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN);
     public static final Model CUBE_ALL = Models.block("cube_all", TextureKey.ALL);
     public static final Model CUBE_MIRRORED_ALL = Models.block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
+    public static final Model CUBE_NORTH_WEST_MIRRORED_ALL = Models.block("cube_north_west_mirrored_all", "_north_west_mirrored", TextureKey.ALL);
     public static final Model CUBE_COLUMN = Models.block("cube_column", TextureKey.END, TextureKey.SIDE);
     public static final Model CUBE_COLUMN_HORIZONTAL = Models.block("cube_column_horizontal", "_horizontal", TextureKey.END, TextureKey.SIDE);
     public static final Model CUBE_COLUMN_MIRRORED = Models.block("cube_column_mirrored", "_mirrored", TextureKey.END, TextureKey.SIDE);
@@ -25,10 +26,14 @@ public class Models {
     public static final Model BUTTON = Models.block("button", TextureKey.TEXTURE);
     public static final Model BUTTON_PRESSED = Models.block("button_pressed", "_pressed", TextureKey.TEXTURE);
     public static final Model BUTTON_INVENTORY = Models.block("button_inventory", "_inventory", TextureKey.TEXTURE);
-    public static final Model DOOR_BOTTOM = Models.block("door_bottom", "_bottom", TextureKey.TOP, TextureKey.BOTTOM);
-    public static final Model DOOR_BOTTOM_RH = Models.block("door_bottom_rh", "_bottom_hinge", TextureKey.TOP, TextureKey.BOTTOM);
-    public static final Model DOOR_TOP = Models.block("door_top", "_top", TextureKey.TOP, TextureKey.BOTTOM);
-    public static final Model DOOR_TOP_RH = Models.block("door_top_rh", "_top_hinge", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_BOTTOM_LEFT = Models.block("door_bottom_left", "_bottom_left", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_BOTTOM_LEFT_OPEN = Models.block("door_bottom_left_open", "_bottom_left_open", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_BOTTOM_RIGHT = Models.block("door_bottom_right", "_bottom_right", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_BOTTOM_RIGHT_OPEN = Models.block("door_bottom_right_open", "_bottom_right_open", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_TOP_LEFT = Models.block("door_top_left", "_top_left", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_TOP_LEFT_OPEN = Models.block("door_top_left_open", "_top_left_open", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_TOP_RIGHT = Models.block("door_top_right", "_top_right", TextureKey.TOP, TextureKey.BOTTOM);
+    public static final Model DOOR_TOP_RIGHT_OPEN = Models.block("door_top_right_open", "_top_right_open", TextureKey.TOP, TextureKey.BOTTOM);
     public static final Model FENCE_POST = Models.block("fence_post", "_post", TextureKey.TEXTURE);
     public static final Model FENCE_SIDE = Models.block("fence_side", "_side", TextureKey.TEXTURE);
     public static final Model FENCE_INVENTORY = Models.block("fence_inventory", "_inventory", TextureKey.TEXTURE);

@@ -70,6 +70,8 @@ import net.minecraft.client.particle.PortalParticle;
 import net.minecraft.client.particle.RainSplashParticle;
 import net.minecraft.client.particle.RedDustParticle;
 import net.minecraft.client.particle.ReversePortalParticle;
+import net.minecraft.client.particle.SculkChargeParticle;
+import net.minecraft.client.particle.SculkChargePopParticle;
 import net.minecraft.client.particle.SnowflakeParticle;
 import net.minecraft.client.particle.SoulParticle;
 import net.minecraft.client.particle.SpellParticle;
@@ -177,6 +179,9 @@ implements ResourceReloader {
         this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
         this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
+        this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.SculkSoulFactory::new);
+        this.registerFactory(ParticleTypes.SCULK_CHARGE, SculkChargeParticle.Factory::new);
+        this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, SculkChargePopParticle.Factory::new);
         this.registerFactory(ParticleTypes.SOUL, SoulParticle.Factory::new);
         this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
         this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);

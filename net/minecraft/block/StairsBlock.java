@@ -131,7 +131,7 @@ implements Waterloggable {
         if (state.isOf(state.getBlock())) {
             return;
         }
-        this.baseBlockState.neighborUpdate(world, pos, Blocks.AIR, pos, false);
+        world.updateNeighbor(this.baseBlockState, pos, Blocks.AIR, pos, false);
         this.baseBlock.onBlockAdded(this.baseBlockState, world, pos, oldState, false);
     }
 

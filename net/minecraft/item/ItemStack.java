@@ -6,8 +6,6 @@ package net.minecraft.item;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Streams;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.logging.LogUtils;
@@ -24,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criteria;
@@ -234,6 +233,10 @@ public final class ItemStack {
         nbt.ifPresent(this::setNbt);
     }
 
+    public ItemStack(RegistryEntry<Item> itemEntry, int count) {
+        this(itemEntry.value(), count);
+    }
+
     public ItemStack(ItemConvertible item, int count) {
         this.item = item == null ? null : item.asItem();
         this.count = count;
@@ -300,12 +303,24 @@ public final class ItemStack {
         return this.empty ? Items.AIR : this.item;
     }
 
+    public RegistryEntry<Item> getRegistryEntry() {
+        return this.getItem().getRegistryEntry();
+    }
+
     public boolean isIn(TagKey<Item> tag) {
         return this.getItem().getRegistryEntry().isIn(tag);
     }
 
     public boolean isOf(Item item) {
         return this.getItem() == item;
+    }
+
+    public boolean itemMatches(Predicate<RegistryEntry<Item>> predicate) {
+        return predicate.test(this.getItem().getRegistryEntry());
+    }
+
+    public boolean itemMatches(RegistryEntry<Item> itemEntry) {
+        return this.getItem().getRegistryEntry() == itemEntry;
     }
 
     public Stream<TagKey<Item>> streamTags() {
@@ -895,23 +910,10 @@ public final class ItemStack {
 
     private static Collection<Text> parseBlockTag(String tag) {
         try {
-            List<Text> list;
-            boolean bl2;
-            BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(tag), true).parse(true);
-            BlockState blockState = blockArgumentParser.getBlockState();
-            TagKey<Block> tagKey = blockArgumentParser.getTagId();
-            boolean bl = blockState != null;
-            boolean bl3 = bl2 = tagKey != null;
-            if (bl) {
-                return Lists.newArrayList(blockState.getBlock().getName().formatted(Formatting.DARK_GRAY));
-            }
-            if (bl2 && !(list = Streams.stream(Registry.BLOCK.iterateEntries(tagKey)).map(entry -> ((Block)entry.value()).getName()).map(text -> text.formatted(Formatting.DARK_GRAY)).collect(Collectors.toList())).isEmpty()) {
-                return list;
-            }
+            return BlockArgumentParser.blockOrTag(Registry.BLOCK, tag, true).map(blockResult -> Lists.newArrayList(blockResult.blockState().getBlock().getName().formatted(Formatting.DARK_GRAY)), tagResult -> tagResult.tag().stream().map(registryEntry -> ((Block)registryEntry.value()).getName().formatted(Formatting.DARK_GRAY)).collect(Collectors.toList()));
         } catch (CommandSyntaxException commandSyntaxException) {
-            // empty catch block
+            return Lists.newArrayList(new LiteralText("missingno").formatted(Formatting.DARK_GRAY));
         }
-        return Lists.newArrayList(new LiteralText("missingno").formatted(Formatting.DARK_GRAY));
     }
 
     public boolean hasGlint() {

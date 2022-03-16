@@ -15,7 +15,6 @@ import net.minecraft.client.gui.screen.world.WorldListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.TranslatableText;
@@ -25,6 +24,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ extends Screen {
         this.addSelectableChild(this.searchBox);
         this.addSelectableChild(this.levelList);
         this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> this.client.setScreen(CreateWorldScreen.create(this))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)));
         this.editButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
         this.deleteButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
         this.recreateButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
@@ -132,11 +132,10 @@ extends Screen {
                 entry.delete();
             }
             DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
-            long l = "test1".hashCode();
-            GeneratorOptions generatorOptions = GeneratorType.DEFAULT.createDefaultOptions(dynamicRegistryManager, l, true, false);
+            GeneratorOptions generatorOptions = WorldPresets.createDefaultOptions(dynamicRegistryManager, "test1".hashCode());
             LevelInfo levelInfo = new LevelInfo("DEBUG world", GameMode.SPECTATOR, false, Difficulty.NORMAL, true, new GameRules(), DataPackSettings.SAFE_MODE);
             String string2 = FileNameUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), "DEBUG world", "");
-            this.client.createWorld(string2, levelInfo, dynamicRegistryManager, generatorOptions);
+            this.client.method_41735().createAndStart(string2, levelInfo, dynamicRegistryManager, generatorOptions);
         } catch (IOException iOException) {
             LOGGER.error("Failed to recreate the debug world", iOException);
         }

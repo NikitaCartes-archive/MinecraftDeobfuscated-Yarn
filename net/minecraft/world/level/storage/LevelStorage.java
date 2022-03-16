@@ -62,6 +62,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -107,7 +108,7 @@ public class LevelStorage {
         DataResult dataResult = GeneratorOptions.CODEC.parse(dynamic2);
         return Pair.of(dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).orElseGet(() -> {
             DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.createDynamicRegistryManager(dynamic2);
-            return GeneratorOptions.getDefaultOptions(dynamicRegistryManager);
+            return WorldPresets.createDefaultOptions(dynamicRegistryManager);
         }), dataResult.lifecycle());
     }
 

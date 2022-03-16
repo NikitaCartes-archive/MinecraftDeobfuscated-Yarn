@@ -59,7 +59,6 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.tick.ChunkTickScheduler;
@@ -73,27 +72,33 @@ public class ChunkSerializer {
     private static final String UPGRADE_DATA_KEY = "UpgradeData";
     private static final String BLOCK_TICKS = "block_ticks";
     private static final String FLUID_TICKS = "fluid_ticks";
+    public static final String field_37659 = "xPos";
+    public static final String field_37660 = "zPos";
+    public static final String field_37661 = "Heightmaps";
+    public static final String field_37662 = "isLightOn";
+    public static final String field_37663 = "sections";
+    public static final String field_37664 = "BlockLight";
+    public static final String field_37665 = "SkyLight";
 
     public static ProtoChunk deserialize(ServerWorld world, PointOfInterestStorage poiStorage, ChunkPos chunkPos, NbtCompound nbt) {
         Chunk chunk;
-        ChunkPos chunkPos2 = new ChunkPos(nbt.getInt("xPos"), nbt.getInt("zPos"));
+        ChunkPos chunkPos2 = new ChunkPos(nbt.getInt(field_37659), nbt.getInt(field_37660));
         if (!Objects.equals(chunkPos, chunkPos2)) {
             LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
         }
         UpgradeData upgradeData = nbt.contains(UPGRADE_DATA_KEY, 10) ? new UpgradeData(nbt.getCompound(UPGRADE_DATA_KEY), world) : UpgradeData.NO_UPGRADE_DATA;
-        boolean bl = nbt.getBoolean("isLightOn");
-        NbtList nbtList = nbt.getList("sections", 10);
+        boolean bl = nbt.getBoolean(field_37662);
+        NbtList nbtList = nbt.getList(field_37663, 10);
         int i = world.countVerticalSections();
         ChunkSection[] chunkSections = new ChunkSection[i];
         boolean bl2 = world.getDimension().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
         LightingProvider lightingProvider = ((ChunkManager)chunkManager).getLightingProvider();
-        if (bl) {
-            lightingProvider.setRetainData(chunkPos, true);
-        }
         Registry<Biome> registry = world.getRegistryManager().get(Registry.BIOME_KEY);
         Codec<PalettedContainer<RegistryEntry<Biome>>> codec = ChunkSerializer.createCodec(registry);
+        boolean bl3 = false;
         for (int j = 0; j < nbtList.size(); ++j) {
+            boolean bl5;
             NbtCompound nbtCompound = nbtList.getCompound(j);
             byte k = nbtCompound.getByte("Y");
             int l = world.sectionCoordToIndex(k);
@@ -104,12 +109,18 @@ public class ChunkSerializer {
                 chunkSections[l] = chunkSection = new ChunkSection(k, palettedContainer, palettedContainer2);
                 poiStorage.initForPalette(chunkPos, chunkSection);
             }
-            if (!bl) continue;
-            if (nbtCompound.contains("BlockLight", 7)) {
-                lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("BlockLight")), true);
+            boolean bl4 = nbtCompound.contains(field_37664, 7);
+            boolean bl6 = bl5 = bl2 && nbtCompound.contains(field_37665, 7);
+            if (!bl4 && !bl5) continue;
+            if (!bl3) {
+                lightingProvider.setRetainData(chunkPos, true);
+                bl3 = true;
             }
-            if (!bl2 || !nbtCompound.contains("SkyLight", 7)) continue;
-            lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("SkyLight")), true);
+            if (bl4) {
+                lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray(field_37664)), true);
+            }
+            if (!bl5) continue;
+            lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray(field_37665)), true);
         }
         long m = nbt.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbt);
@@ -119,7 +130,7 @@ public class ChunkSerializer {
             ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, ChunkSerializer.getEntityLoadingCallback(world, nbt), blendingData);
         } else {
-            boolean bl3;
+            boolean bl6;
             SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
@@ -134,8 +145,8 @@ public class ChunkSerializer {
                 protoChunk.setLightingProvider(lightingProvider);
             }
             BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
-            boolean bl4 = bl3 = chunkStatus.isAtLeast(ChunkStatus.LIGHT) || belowZeroRetrogen != null && belowZeroRetrogen.getTargetStatus().isAtLeast(ChunkStatus.LIGHT);
-            if (!bl && bl3) {
+            boolean bl7 = bl6 = chunkStatus.isAtLeast(ChunkStatus.LIGHT) || belowZeroRetrogen != null && belowZeroRetrogen.getTargetStatus().isAtLeast(ChunkStatus.LIGHT);
+            if (!bl && bl6) {
                 for (BlockPos blockPos : BlockPos.iterate(chunkPos.getStartX(), world.getBottomY(), chunkPos.getStartZ(), chunkPos.getEndX(), world.getTopY() - 1, chunkPos.getEndZ())) {
                     if (chunk.getBlockState(blockPos).getLuminance() == 0) continue;
                     protoChunk.addLightSource(blockPos);
@@ -143,7 +154,7 @@ public class ChunkSerializer {
             }
         }
         chunk.setLightOn(bl);
-        NbtCompound nbtCompound2 = nbt.getCompound("Heightmaps");
+        NbtCompound nbtCompound2 = nbt.getCompound(field_37661);
         EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
         for (Heightmap.Type type : chunk.getStatus().getHeightmapTypes()) {
             String string = type.getName();
@@ -210,9 +221,9 @@ public class ChunkSerializer {
         ChunkPos chunkPos = chunk.getPos();
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        nbtCompound.putInt("xPos", chunkPos.x);
+        nbtCompound.putInt(field_37659, chunkPos.x);
         nbtCompound.putInt("yPos", chunk.getBottomSectionCoord());
-        nbtCompound.putInt("zPos", chunkPos.z);
+        nbtCompound.putInt(field_37660, chunkPos.z);
         nbtCompound.putLong("LastUpdate", world.getTime());
         nbtCompound.putLong("InhabitedTime", chunk.getInhabitedTime());
         nbtCompound.putString("Status", chunk.getStatus().getId());
@@ -245,18 +256,18 @@ public class ChunkSerializer {
                 nbtCompound2.put("biomes", codec.encodeStart(NbtOps.INSTANCE, chunkSection.getBiomeContainer()).getOrThrow(false, LOGGER::error));
             }
             if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
-                nbtCompound2.putByteArray("BlockLight", chunkNibbleArray.asByteArray());
+                nbtCompound2.putByteArray(field_37664, chunkNibbleArray.asByteArray());
             }
             if (chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized()) {
-                nbtCompound2.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+                nbtCompound2.putByteArray(field_37665, chunkNibbleArray2.asByteArray());
             }
             if (nbtCompound2.isEmpty()) continue;
             nbtCompound2.putByte("Y", (byte)i);
             nbtList.add(nbtCompound2);
         }
-        nbtCompound.put("sections", nbtList);
+        nbtCompound.put(field_37663, nbtList);
         if (bl) {
-            nbtCompound.putBoolean("isLightOn", true);
+            nbtCompound.putBoolean(field_37662, true);
         }
         NbtList nbtList2 = new NbtList();
         for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
@@ -286,7 +297,7 @@ public class ChunkSerializer {
             if (!chunk.getStatus().getHeightmapTypes().contains(entry.getKey())) continue;
             nbtCompound4.put(entry.getKey().getName(), new NbtLongArray(entry.getValue().asLongArray()));
         }
-        nbtCompound.put("Heightmaps", nbtCompound4);
+        nbtCompound.put(field_37661, nbtCompound4);
         nbtCompound.put("structures", ChunkSerializer.writeStructures(StructureContext.from(world), chunkPos, chunk.getStructureStarts(), chunk.getStructureReferences()));
         return nbtCompound;
     }
@@ -338,17 +349,17 @@ public class ChunkSerializer {
         return nbtList.isEmpty() ? null : nbtList;
     }
 
-    private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<ConfiguredStructureFeature<?, ?>, StructureStart> starts, Map<ConfiguredStructureFeature<?, ?>, LongSet> references) {
+    private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<StructureFeature, StructureStart> starts, Map<StructureFeature, LongSet> references) {
         NbtCompound nbtCompound = new NbtCompound();
         NbtCompound nbtCompound2 = new NbtCompound();
-        Registry<ConfiguredStructureFeature<?, ?>> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-        for (Map.Entry<ConfiguredStructureFeature<?, ?>, StructureStart> entry : starts.entrySet()) {
+        Registry<StructureFeature> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+        for (Map.Entry<StructureFeature, StructureStart> entry : starts.entrySet()) {
             Identifier identifier = registry.getId(entry.getKey());
             nbtCompound2.put(identifier.toString(), entry.getValue().toNbt(context, pos));
         }
         nbtCompound.put("starts", nbtCompound2);
         NbtCompound nbtCompound3 = new NbtCompound();
-        for (Map.Entry<ConfiguredStructureFeature<?, ?>, LongSet> entry2 : references.entrySet()) {
+        for (Map.Entry<StructureFeature, LongSet> entry2 : references.entrySet()) {
             if (entry2.getValue().isEmpty()) continue;
             Identifier identifier2 = registry.getId(entry2.getKey());
             nbtCompound3.put(identifier2.toString(), new NbtLongArray(entry2.getValue()));
@@ -357,38 +368,38 @@ public class ChunkSerializer {
         return nbtCompound;
     }
 
-    private static Map<ConfiguredStructureFeature<?, ?>, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
-        HashMap<ConfiguredStructureFeature<?, ?>, StructureStart> map = Maps.newHashMap();
-        Registry<ConfiguredStructureFeature<?, ?>> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+    private static Map<StructureFeature, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
+        HashMap<StructureFeature, StructureStart> map = Maps.newHashMap();
+        Registry<StructureFeature> registry = context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
         NbtCompound nbtCompound = nbt.getCompound("starts");
         for (String string : nbtCompound.getKeys()) {
             Identifier identifier = Identifier.tryParse(string);
-            ConfiguredStructureFeature<?, ?> configuredStructureFeature = registry.get(identifier);
-            if (configuredStructureFeature == null) {
+            StructureFeature structureFeature = registry.get(identifier);
+            if (structureFeature == null) {
                 LOGGER.error("Unknown structure start: {}", (Object)identifier);
                 continue;
             }
-            StructureStart structureStart = StructureFeature.readStructureStart(context, nbtCompound.getCompound(string), worldSeed);
+            StructureStart structureStart = StructureStart.method_41621(context, nbtCompound.getCompound(string), worldSeed);
             if (structureStart == null) continue;
-            map.put(configuredStructureFeature, structureStart);
+            map.put(structureFeature, structureStart);
         }
         return map;
     }
 
-    private static Map<ConfiguredStructureFeature<?, ?>, LongSet> readStructureReferences(DynamicRegistryManager dynamicRegistryManager, ChunkPos chunkPos, NbtCompound nbtCompound) {
-        HashMap<ConfiguredStructureFeature<?, ?>, LongSet> map = Maps.newHashMap();
-        Registry<ConfiguredStructureFeature<?, ?>> registry = dynamicRegistryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+    private static Map<StructureFeature, LongSet> readStructureReferences(DynamicRegistryManager dynamicRegistryManager, ChunkPos chunkPos, NbtCompound nbtCompound) {
+        HashMap<StructureFeature, LongSet> map = Maps.newHashMap();
+        Registry<StructureFeature> registry = dynamicRegistryManager.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
         NbtCompound nbtCompound2 = nbtCompound.getCompound("References");
         for (String string : nbtCompound2.getKeys()) {
             Identifier identifier = Identifier.tryParse(string);
-            ConfiguredStructureFeature<?, ?> configuredStructureFeature = registry.get(identifier);
-            if (configuredStructureFeature == null) {
+            StructureFeature structureFeature = registry.get(identifier);
+            if (structureFeature == null) {
                 LOGGER.warn("Found reference to unknown structure '{}' in chunk {}, discarding", (Object)identifier, (Object)chunkPos);
                 continue;
             }
             long[] ls = nbtCompound2.getLongArray(string);
             if (ls.length == 0) continue;
-            map.put(configuredStructureFeature, new LongOpenHashSet(Arrays.stream(ls).filter(packedPos -> {
+            map.put(structureFeature, new LongOpenHashSet(Arrays.stream(ls).filter(packedPos -> {
                 ChunkPos chunkPos2 = new ChunkPos(packedPos);
                 if (chunkPos2.getChebyshevDistance(chunkPos) > 8) {
                     LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", identifier, chunkPos2, chunkPos);

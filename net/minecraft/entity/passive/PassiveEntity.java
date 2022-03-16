@@ -151,6 +151,18 @@ extends PathAwareEntity {
         this.setBreedingAge(baby ? -24000 : 0);
     }
 
+    /**
+     * Calculates the age to pass to {@link #growUp(int)} in seconds.
+     * 
+     * @apiNote When passing the value from {@link #getBreedingAge()}, make sure to
+     * negate the value; otherwise, the entity's age will decrease.
+     * 
+     * @param breedingAge the current, negated breeding age (in ticks)
+     */
+    public static int toGrowUpAge(int breedingAge) {
+        return (int)((float)(breedingAge / 20) * 0.1f);
+    }
+
     public static class PassiveData
     implements EntityData {
         private int spawnCount;

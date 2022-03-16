@@ -440,6 +440,10 @@ CommandOutput {
         return this.dataTracker.get(POSE);
     }
 
+    public boolean isInPose(EntityPose pose) {
+        return this.getPose() == pose;
+    }
+
     /**
      * Checks if the distance between this entity and the {@code other} entity is less
      * than {@code radius}.
@@ -2005,7 +2009,7 @@ CommandOutput {
      * for foxes and cats.
      */
     public boolean isInSneakingPose() {
-        return this.getPose() == EntityPose.CROUCHING;
+        return this.isInPose(EntityPose.CROUCHING);
     }
 
     public boolean isSprinting() {
@@ -2021,7 +2025,7 @@ CommandOutput {
     }
 
     public boolean isInSwimmingPose() {
-        return this.getPose() == EntityPose.SWIMMING;
+        return this.isInPose(EntityPose.SWIMMING);
     }
 
     public boolean shouldLeaveSwimmingPose() {
@@ -2350,7 +2354,7 @@ CommandOutput {
             BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
             if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
                 axis = blockState.get(Properties.HORIZONTAL_AXIS);
-                BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
+                BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.world.getBlockState((BlockPos)pos) == blockState);
                 vec3d = this.positionInPortal(axis, rectangle);
             } else {
                 axis = Direction.Axis.X;

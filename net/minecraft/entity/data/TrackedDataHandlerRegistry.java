@@ -241,13 +241,13 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
-            packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId(particleEffect.getType()));
+            packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, particleEffect.getType());
             particleEffect.write(packetByteBuf);
         }
 
         @Override
         public ParticleEffect read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf, (ParticleType)Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
+            return this.read(packetByteBuf, packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
         }
 
         private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
@@ -414,14 +414,14 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public void write(PacketByteBuf packetByteBuf, VillagerData villagerData) {
-            packetByteBuf.writeVarInt(Registry.VILLAGER_TYPE.getRawId(villagerData.getType()));
-            packetByteBuf.writeVarInt(Registry.VILLAGER_PROFESSION.getRawId(villagerData.getProfession()));
+            packetByteBuf.writeRegistryValue(Registry.VILLAGER_TYPE, villagerData.getType());
+            packetByteBuf.writeRegistryValue(Registry.VILLAGER_PROFESSION, villagerData.getProfession());
             packetByteBuf.writeVarInt(villagerData.getLevel());
         }
 
         @Override
         public VillagerData read(PacketByteBuf packetByteBuf) {
-            return new VillagerData(Registry.VILLAGER_TYPE.get(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.get(packetByteBuf.readVarInt()), packetByteBuf.readVarInt());
+            return new VillagerData(packetByteBuf.readRegistryValue(Registry.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registry.VILLAGER_PROFESSION), packetByteBuf.readVarInt());
         }
 
         @Override
@@ -434,7 +434,7 @@ public class TrackedDataHandlerRegistry {
             return this.read(buf);
         }
     };
-    public static final TrackedDataHandler<OptionalInt> FIREWORK_DATA = new TrackedDataHandler<OptionalInt>(){
+    public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = new TrackedDataHandler<OptionalInt>(){
 
         @Override
         public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
@@ -514,7 +514,7 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(NBT_COMPOUND);
         TrackedDataHandlerRegistry.register(PARTICLE);
         TrackedDataHandlerRegistry.register(VILLAGER_DATA);
-        TrackedDataHandlerRegistry.register(FIREWORK_DATA);
+        TrackedDataHandlerRegistry.register(OPTIONAL_INT);
         TrackedDataHandlerRegistry.register(ENTITY_POSE);
     }
 }

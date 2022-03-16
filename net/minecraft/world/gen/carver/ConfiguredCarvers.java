@@ -27,7 +27,7 @@ public class ConfiguredCarvers {
     public static final RegistryEntry<ConfiguredCarver<CaveCarverConfig>> NETHER_CAVE = ConfiguredCarvers.register("nether_cave", Carver.NETHER_CAVE.configure(new CaveCarverConfig(0.2f, (HeightProvider)UniformHeightProvider.create(YOffset.fixed(0), YOffset.belowTop(1)), (FloatProvider)ConstantFloatProvider.create(0.5f), YOffset.aboveBottom(10), false, (FloatProvider)ConstantFloatProvider.create(1.0f), (FloatProvider)ConstantFloatProvider.create(1.0f), (FloatProvider)ConstantFloatProvider.create(-0.7f))));
 
     private static <WC extends CarverConfig> RegistryEntry<ConfiguredCarver<WC>> register(String id, ConfiguredCarver<WC> configuredCarver) {
-        return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
+        return BuiltinRegistries.addCasted(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
     }
 }
 

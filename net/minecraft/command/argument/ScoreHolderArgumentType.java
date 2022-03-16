@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
@@ -44,7 +45,6 @@ implements ArgumentType<ScoreHolder> {
     };
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
     private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.scoreHolder.empty"));
-    private static final byte MULTIPLE_TYPE_MASK = 1;
     final boolean multiple;
 
     public ScoreHolderArgumentType(boolean multiple) {
@@ -145,31 +145,62 @@ implements ArgumentType<ScoreHolder> {
     }
 
     public static class Serializer
-    implements ArgumentSerializer<ScoreHolderArgumentType> {
+    implements ArgumentSerializer<ScoreHolderArgumentType, Properties> {
+        private static final byte MULTIPLE_FLAG = 1;
+
         @Override
-        public void toPacket(ScoreHolderArgumentType scoreHolderArgumentType, PacketByteBuf packetByteBuf) {
-            int b = 0;
-            if (scoreHolderArgumentType.multiple) {
-                b = (byte)(b | 1);
+        public void writePacket(Properties properties, PacketByteBuf packetByteBuf) {
+            int i = 0;
+            if (properties.multiple) {
+                i |= 1;
             }
-            packetByteBuf.writeByte(b);
+            packetByteBuf.writeByte(i);
         }
 
         @Override
-        public ScoreHolderArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+        public Properties fromPacket(PacketByteBuf packetByteBuf) {
             byte b = packetByteBuf.readByte();
             boolean bl = (b & 1) != 0;
-            return new ScoreHolderArgumentType(bl);
+            return new Properties(bl);
         }
 
         @Override
-        public void toJson(ScoreHolderArgumentType scoreHolderArgumentType, JsonObject jsonObject) {
-            jsonObject.addProperty("amount", scoreHolderArgumentType.multiple ? "multiple" : "single");
+        public void writeJson(Properties properties, JsonObject jsonObject) {
+            jsonObject.addProperty("amount", properties.multiple ? "multiple" : "single");
         }
 
         @Override
-        public /* synthetic */ ArgumentType fromPacket(PacketByteBuf buf) {
+        public Properties getArgumentTypeProperties(ScoreHolderArgumentType scoreHolderArgumentType) {
+            return new Properties(scoreHolderArgumentType.multiple);
+        }
+
+        @Override
+        public /* synthetic */ ArgumentSerializer.ArgumentTypeProperties fromPacket(PacketByteBuf buf) {
             return this.fromPacket(buf);
+        }
+
+        public final class Properties
+        implements ArgumentSerializer.ArgumentTypeProperties<ScoreHolderArgumentType> {
+            final boolean multiple;
+
+            Properties(boolean multiple) {
+                this.multiple = multiple;
+            }
+
+            @Override
+            public ScoreHolderArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+                return new ScoreHolderArgumentType(this.multiple);
+            }
+
+            @Override
+            public ArgumentSerializer<ScoreHolderArgumentType, ?> getSerializer() {
+                return Serializer.this;
+            }
+
+            @Override
+            public /* synthetic */ ArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+                return this.createType(commandRegistryAccess);
+            }
         }
     }
 }

@@ -21,8 +21,9 @@ implements Resource {
     private final String packName;
     private final Identifier id;
     private final InputStream inputStream;
-    private final InputStream metaInputStream;
-    private boolean readMetadata;
+    @Nullable
+    private InputStream metaInputStream;
+    @Nullable
     private JsonObject metadata;
 
     public ResourceImpl(String packName, Identifier id, InputStream inputStream, @Nullable InputStream metaInputStream) {
@@ -44,17 +45,14 @@ implements Resource {
 
     @Override
     public boolean hasMetadata() {
-        return this.metaInputStream != null;
+        return this.metadata != null || this.metaInputStream != null;
     }
 
     @Override
     @Nullable
     public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
-        if (!this.hasMetadata()) {
-            return null;
-        }
-        if (this.metadata == null && !this.readMetadata) {
-            this.readMetadata = true;
+        block3: {
+            if (this.metadata != null || this.metaInputStream == null) break block3;
             BufferedReader bufferedReader = null;
             try {
                 bufferedReader = new BufferedReader(new InputStreamReader(this.metaInputStream, StandardCharsets.UTF_8));
@@ -64,6 +62,7 @@ implements Resource {
                 throw throwable;
             }
             IOUtils.closeQuietly(bufferedReader);
+            this.metaInputStream = null;
         }
         if (this.metadata == null) {
             return null;
@@ -75,26 +74,6 @@ implements Resource {
     @Override
     public String getResourcePackName() {
         return this.packName;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof ResourceImpl)) {
-            return false;
-        }
-        ResourceImpl resourceImpl = (ResourceImpl)o;
-        if (this.id != null ? !this.id.equals(resourceImpl.id) : resourceImpl.id != null) {
-            return false;
-        }
-        return !(this.packName != null ? !this.packName.equals(resourceImpl.packName) : resourceImpl.packName != null);
-    }
-
-    public int hashCode() {
-        int i = this.packName != null ? this.packName.hashCode() : 0;
-        i = 31 * i + (this.id != null ? this.id.hashCode() : 0);
-        return i;
     }
 
     @Override

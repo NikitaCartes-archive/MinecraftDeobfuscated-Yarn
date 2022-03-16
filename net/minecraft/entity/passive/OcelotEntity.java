@@ -277,7 +277,7 @@ extends AnimalEntity {
 
     @Override
     public boolean bypassesSteppingEffects() {
-        return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+        return this.isInSneakingPose() || super.bypassesSteppingEffects();
     }
 
     @Override

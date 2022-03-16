@@ -7,6 +7,7 @@ import net.minecraft.item.Item;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.registry.Registry;
 
 public class CooldownUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -19,13 +20,13 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public CooldownUpdateS2CPacket(PacketByteBuf buf) {
-        this.item = Item.byRawId(buf.readVarInt());
+        this.item = buf.readRegistryValue(Registry.ITEM);
         this.cooldown = buf.readVarInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeVarInt(Item.getRawId(this.item));
+        buf.writeRegistryValue(Registry.ITEM, this.item);
         buf.writeVarInt(this.cooldown);
     }
 

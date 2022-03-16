@@ -17,20 +17,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
-import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.world.gen.densityfunction.DensityFunctions;
 
 public class MultiNoiseBiomeSource
 extends BiomeSource {
@@ -55,11 +58,6 @@ extends BiomeSource {
     @Override
     protected Codec<? extends BiomeSource> getCodec() {
         return CODEC;
-    }
-
-    @Override
-    public BiomeSource withSeed(long seed) {
-        return this;
     }
 
     private Optional<Instance> getInstance() {
@@ -91,7 +89,7 @@ extends BiomeSource {
         float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
         float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
         float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
-        double d = VanillaTerrainParameters.getNormalizedWeirdness(m);
+        double d = DensityFunctions.method_41546(m);
         VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
         info.add("Biome builder PV: " + VanillaBiomeParameters.getWeirdnessDescription(d) + " C: " + vanillaBiomeParameters.getContinentalnessDescription(f) + " E: " + vanillaBiomeParameters.getErosionDescription(g) + " T: " + vanillaBiomeParameters.getTemperatureDescription(h) + " H: " + vanillaBiomeParameters.getHumidityDescription(l));
     }
@@ -121,6 +119,11 @@ extends BiomeSource {
             BY_IDENTIFIER.put(id, this);
         }
 
+        @Debug
+        public static Stream<Pair<Identifier, Preset>> method_41415() {
+            return BY_IDENTIFIER.entrySet().stream().map(entry -> Pair.of((Identifier)entry.getKey(), (Preset)entry.getValue()));
+        }
+
         MultiNoiseBiomeSource getBiomeSource(Instance instance, boolean useInstance) {
             MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries = this.biomeSourceFunction.apply(instance.biomeRegistry());
             return new MultiNoiseBiomeSource(entries, useInstance ? Optional.of(instance) : Optional.empty());
@@ -132,6 +135,10 @@ extends BiomeSource {
 
         public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry) {
             return this.getBiomeSource(biomeRegistry, true);
+        }
+
+        public Stream<RegistryKey<Biome>> stream() {
+            return this.getBiomeSource(BuiltinRegistries.BIOME).getBiomes().stream().flatMap(entry -> entry.getKey().stream());
         }
     }
 }

@@ -26,6 +26,8 @@ import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.command.argument.ArgumentTypes;
+import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -67,6 +69,7 @@ import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructureSet;
+import net.minecraft.structure.StructureType;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorList;
@@ -98,6 +101,8 @@ import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSourceType;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
+import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.blockpredicate.BlockPredicateType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
@@ -107,7 +112,6 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -167,6 +171,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<LootNumberProviderType>> LOOT_NUMBER_PROVIDER_TYPE_KEY = Registry.createRegistryKey("loot_number_provider_type");
     public static final RegistryKey<Registry<LootNbtProviderType>> LOOT_NBT_PROVIDER_TYPE_KEY = Registry.createRegistryKey("loot_nbt_provider_type");
     public static final RegistryKey<Registry<LootScoreProviderType>> LOOT_SCORE_PROVIDER_TYPE_KEY = Registry.createRegistryKey("loot_score_provider_type");
+    public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE_KEY = Registry.createRegistryKey("command_argument_type");
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
     /**
      * A registry key representing the {@link World} type. Can be used to obtain
@@ -208,6 +213,7 @@ IndexedIterable<T> {
     public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = Registry.create(RECIPE_SERIALIZER_KEY, registry -> RecipeSerializer.SHAPELESS);
     public static final Registry<EntityAttribute> ATTRIBUTE = Registry.create(ATTRIBUTE_KEY, registry -> EntityAttributes.GENERIC_LUCK);
     public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = Registry.create(POSITION_SOURCE_TYPE_KEY, registry -> PositionSourceType.BLOCK);
+    public static final Registry<ArgumentSerializer<?, ?>> COMMAND_ARGUMENT_TYPE = Registry.create(COMMAND_ARGUMENT_TYPE_KEY, ArgumentTypes::register);
     public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, registry -> Stats.USED);
     public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", (Registry<T> registry) -> VillagerType.PLAINS);
     public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", (Registry<T> registry) -> VillagerProfession.NONE);
@@ -234,23 +240,25 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER_KEY = Registry.createRegistryKey("worldgen/configured_carver");
     public static final RegistryKey<Registry<ConfiguredFeature<?, ?>>> CONFIGURED_FEATURE_KEY = Registry.createRegistryKey("worldgen/configured_feature");
     public static final RegistryKey<Registry<PlacedFeature>> PLACED_FEATURE_KEY = Registry.createRegistryKey("worldgen/placed_feature");
-    public static final RegistryKey<Registry<ConfiguredStructureFeature<?, ?>>> CONFIGURED_STRUCTURE_FEATURE_KEY = Registry.createRegistryKey("worldgen/configured_structure_feature");
+    public static final RegistryKey<Registry<StructureFeature>> CONFIGURED_STRUCTURE_FEATURE_KEY = Registry.createRegistryKey("worldgen/structure");
     public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET_KEY = Registry.createRegistryKey("worldgen/structure_set");
     public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = Registry.createRegistryKey("worldgen/processor_list");
     public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = Registry.createRegistryKey("worldgen/template_pool");
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
     public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = Registry.createRegistryKey("worldgen/noise");
     public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION_KEY = Registry.createRegistryKey("worldgen/density_function");
+    public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_WORLDGEN = Registry.createRegistryKey("worldgen/world_preset");
+    public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN = Registry.createRegistryKey("worldgen/flat_level_generator_preset");
     public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = Registry.createRegistryKey("worldgen/carver");
     public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, registry -> Carver.CAVE);
     public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = Registry.createRegistryKey("worldgen/feature");
     public static final Registry<Feature<?>> FEATURE = Registry.create(FEATURE_KEY, registry -> Feature.ORE);
-    public static final RegistryKey<Registry<StructureFeature<?>>> STRUCTURE_FEATURE_KEY = Registry.createRegistryKey("worldgen/structure_feature");
-    public static final Registry<StructureFeature<?>> STRUCTURE_FEATURE = Registry.create(STRUCTURE_FEATURE_KEY, registry -> StructureFeature.MINESHAFT);
     public static final RegistryKey<Registry<StructurePlacementType<?>>> STRUCTURE_PLACEMENT_KEY = Registry.createRegistryKey("worldgen/structure_placement");
     public static final Registry<StructurePlacementType<?>> STRUCTURE_PLACEMENT = Registry.create(STRUCTURE_PLACEMENT_KEY, registry -> StructurePlacementType.RANDOM_SPREAD);
     public static final RegistryKey<Registry<StructurePieceType>> STRUCTURE_PIECE_KEY = Registry.createRegistryKey("worldgen/structure_piece");
     public static final Registry<StructurePieceType> STRUCTURE_PIECE = Registry.create(STRUCTURE_PIECE_KEY, registry -> StructurePieceType.MINESHAFT_ROOM);
+    public static final RegistryKey<Registry<StructureType<?>>> STRUCTURE_TYPE_KEY = Registry.createRegistryKey("worldgen/structure_type");
+    public static final Registry<StructureType<?>> STRUCTURE_TYPE = Registry.create(STRUCTURE_TYPE_KEY, registry -> StructureType.JIGSAW);
     public static final RegistryKey<Registry<PlacementModifierType<?>>> PLACEMENT_MODIFIER_TYPE_KEY = Registry.createRegistryKey("worldgen/placement_modifier_type");
     public static final Registry<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPE = Registry.create(PLACEMENT_MODIFIER_TYPE_KEY, registry -> PlacementModifierType.COUNT);
     public static final RegistryKey<Registry<BlockStateProviderType<?>>> BLOCK_STATE_PROVIDER_TYPE_KEY = Registry.createRegistryKey("worldgen/block_state_provider_type");
@@ -419,6 +427,8 @@ IndexedIterable<T> {
     public abstract Set<Identifier> getIds();
 
     public abstract Set<Map.Entry<RegistryKey<T>, T>> getEntrySet();
+
+    public abstract Set<RegistryKey<T>> getKeys();
 
     public abstract Optional<RegistryEntry<T>> getRandom(Random var1);
 

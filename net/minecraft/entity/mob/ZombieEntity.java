@@ -169,11 +169,11 @@ extends HostileEntity {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    public int getXpToDrop() {
         if (this.isBaby()) {
             this.experiencePoints = (int)((double)this.experiencePoints * 2.5);
         }
-        return super.getXpToDrop(player);
+        return super.getXpToDrop();
     }
 
     @Override

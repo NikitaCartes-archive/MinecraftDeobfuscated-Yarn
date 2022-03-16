@@ -8,6 +8,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.registry.Registry;
 
 public class EntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -15,14 +16,14 @@ implements Packet<ClientPlayPacketListener> {
     private static final int SHOW_PARTICLES_MASK = 2;
     private static final int SHOW_ICON_MASK = 4;
     private final int entityId;
-    private final int effectId;
+    private final StatusEffect effectId;
     private final byte amplifier;
     private final int duration;
     private final byte flags;
 
     public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
         this.entityId = entityId;
-        this.effectId = StatusEffect.getRawId(effect.getEffectType());
+        this.effectId = effect.getEffectType();
         this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
         this.duration = effect.getDuration() > Short.MAX_VALUE ? Short.MAX_VALUE : effect.getDuration();
         byte b = 0;
@@ -40,7 +41,7 @@ implements Packet<ClientPlayPacketListener> {
 
     public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
         this.entityId = buf.readVarInt();
-        this.effectId = buf.readVarInt();
+        this.effectId = buf.readRegistryValue(Registry.STATUS_EFFECT);
         this.amplifier = buf.readByte();
         this.duration = buf.readVarInt();
         this.flags = buf.readByte();
@@ -49,7 +50,7 @@ implements Packet<ClientPlayPacketListener> {
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
-        buf.writeVarInt(this.effectId);
+        buf.writeRegistryValue(Registry.STATUS_EFFECT, this.effectId);
         buf.writeByte(this.amplifier);
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
@@ -68,7 +69,7 @@ implements Packet<ClientPlayPacketListener> {
         return this.entityId;
     }
 
-    public int getEffectId() {
+    public StatusEffect getEffectId() {
         return this.effectId;
     }
 

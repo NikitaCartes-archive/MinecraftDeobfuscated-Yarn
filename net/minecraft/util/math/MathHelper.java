@@ -791,6 +791,10 @@ public class MathHelper {
         return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), MathHelper.lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
     }
 
+    public static float method_41303(float f, float g, float h, float i, float j) {
+        return 0.5f * (2.0f * h + (i - g) * f + (2.0f * g - 5.0f * h + 4.0f * i - j) * f * f + (3.0f * h - g - 3.0f * i + j) * f * f * f);
+    }
+
     public static double perlinFade(double value) {
         return value * value * value * (value * (value * 6.0 - 15.0) + 10.0);
     }

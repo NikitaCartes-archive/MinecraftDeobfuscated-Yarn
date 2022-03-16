@@ -4,30 +4,28 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Map;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.JungleTempleGenerator;
-import net.minecraft.structure.StructureGeneratorFactory;
-import net.minecraft.structure.StructurePiecesCollector;
-import net.minecraft.structure.StructurePiecesGenerator;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
-import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.structure.StructureType;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.world.StructureSpawns;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.feature.BasicTempleStructureFeature;
 
 public class JungleTempleFeature
-extends StructureFeature<DefaultFeatureConfig> {
-    public JungleTempleFeature(Codec<DefaultFeatureConfig> configCodec) {
-        super(configCodec, StructureGeneratorFactory.simple(JungleTempleFeature::canGenerate, JungleTempleFeature::addPieces));
+extends BasicTempleStructureFeature {
+    public static final Codec<JungleTempleFeature> CODEC = RecordCodecBuilder.create(instance -> JungleTempleFeature.method_41608(instance).apply(instance, JungleTempleFeature::new));
+
+    public JungleTempleFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl) {
+        super(JungleTempleGenerator::new, 12, 15, registryEntryList, map, feature, bl);
     }
 
-    private static <C extends FeatureConfig> boolean canGenerate(StructureGeneratorFactory.Context<C> context) {
-        if (!context.isBiomeValid(Heightmap.Type.WORLD_SURFACE_WG)) {
-            return false;
-        }
-        return context.getMinCornerHeight(12, 15) >= context.chunkGenerator().getSeaLevel();
-    }
-
-    private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
-        collector.addPiece(new JungleTempleGenerator(context.random(), context.chunkPos().getStartX(), context.chunkPos().getStartZ()));
+    @Override
+    public StructureType<?> getType() {
+        return StructureType.JUNGLE_TEMPLE;
     }
 }
 

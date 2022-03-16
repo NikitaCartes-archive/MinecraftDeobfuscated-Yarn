@@ -8,7 +8,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.SaveLevelScreen;
+import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -77,7 +77,7 @@ extends Screen {
         if (this.client.world != null) {
             this.client.world.disconnect();
         }
-        this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
+        this.client.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
         this.client.setScreen(new TitleScreen());
     }
 

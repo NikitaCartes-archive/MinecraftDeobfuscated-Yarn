@@ -4,7 +4,6 @@
 package net.minecraft.client.option;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -15,10 +14,12 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.DoubleOptionSliderWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
-import net.minecraft.text.OrderedText;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
+@Deprecated(forRemoval=true)
 @Environment(value=EnvType.CLIENT)
 public class DoubleOption
 extends Option {
@@ -28,9 +29,9 @@ extends Option {
     private final Function<GameOptions, Double> getter;
     private final BiConsumer<GameOptions, Double> setter;
     private final BiFunction<GameOptions, DoubleOption, Text> displayStringGetter;
-    private final Function<MinecraftClient, List<OrderedText>> tooltipsGetter;
+    private final Function<MinecraftClient, Option.TooltipFactory<Double>> tooltipsGetter;
 
-    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter, Function<MinecraftClient, List<OrderedText>> tooltipsGetter) {
+    public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter, Function<MinecraftClient, Option.TooltipFactory<Double>> tooltipsGetter) {
         super(key);
         this.min = min;
         this.max = max;
@@ -42,13 +43,13 @@ extends Option {
     }
 
     public DoubleOption(String key, double min, double max, float step, Function<GameOptions, Double> getter, BiConsumer<GameOptions, Double> setter, BiFunction<GameOptions, DoubleOption, Text> displayStringGetter) {
-        this(key, min, max, step, getter, setter, displayStringGetter, client -> ImmutableList.of());
+        this(key, min, max, step, getter, setter, displayStringGetter, client -> value -> ImmutableList.of());
     }
 
     @Override
     public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-        List<OrderedText> list = this.tooltipsGetter.apply(MinecraftClient.getInstance());
-        return new DoubleOptionSliderWidget(options, x, y, width, 20, this, list);
+        Option.TooltipFactory<Double> tooltipFactory = this.tooltipsGetter.apply(MinecraftClient.getInstance());
+        return new DoubleOptionSliderWidget(options, x, y, width, 20, this, tooltipFactory);
     }
 
     public double getRatio(double value) {
@@ -88,6 +89,22 @@ extends Option {
 
     public Text getDisplayString(GameOptions options) {
         return this.displayStringGetter.apply(options, this);
+    }
+
+    protected Text getPixelValueText(int value) {
+        return new TranslatableText("options.pixel_value", this.getDisplayPrefix(), value);
+    }
+
+    protected Text getPercentValueText(double value) {
+        return new TranslatableText("options.percent_value", this.getDisplayPrefix(), (int)(value * 100.0));
+    }
+
+    protected Text getGenericValueText(Text value) {
+        return new TranslatableText("options.generic_value", this.getDisplayPrefix(), value);
+    }
+
+    protected Text getGenericValueText(int value) {
+        return this.getGenericValueText(new LiteralText(Integer.toString(value)));
     }
 }
 

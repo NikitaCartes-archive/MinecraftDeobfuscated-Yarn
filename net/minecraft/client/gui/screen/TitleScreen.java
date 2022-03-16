@@ -56,7 +56,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.jetbrains.annotations.Nullable;
@@ -201,10 +201,10 @@ extends Screen {
         boolean bl = this.canReadDemoWorldData();
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
             if (bl) {
-                this.client.startIntegratedServer(DEMO_WORLD_NAME);
+                this.client.method_41735().start(DEMO_WORLD_NAME);
             } else {
                 DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
-                this.client.createWorld(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, GeneratorOptions.createDemo(dynamicRegistryManager));
+                this.client.method_41735().createAndStart(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
             }
         }));
         this.buttonResetDemo = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), button -> {

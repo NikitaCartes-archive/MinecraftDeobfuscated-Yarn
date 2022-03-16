@@ -12,6 +12,7 @@ import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.SculkChargeParticleEffect;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.util.registry.Registry;
 
@@ -44,6 +45,9 @@ public class ParticleTypes {
     public static final DefaultParticleType FIREWORK = ParticleTypes.register("firework", false);
     public static final DefaultParticleType FISHING = ParticleTypes.register("fishing", false);
     public static final DefaultParticleType FLAME = ParticleTypes.register("flame", false);
+    public static final DefaultParticleType SCULK_SOUL = ParticleTypes.register("sculk_soul", false);
+    public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = ParticleTypes.method_42022("sculk_charge", SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC, true);
+    public static final DefaultParticleType SCULK_CHARGE_POP = ParticleTypes.register("sculk_charge_pop", true);
     public static final DefaultParticleType SOUL_FIRE_FLAME = ParticleTypes.register("soul_fire_flame", false);
     public static final DefaultParticleType SOUL = ParticleTypes.register("soul", false);
     public static final DefaultParticleType FLASH = ParticleTypes.register("flash", false);
@@ -110,8 +114,12 @@ public class ParticleTypes {
         return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
     }
 
-    private static <T extends ParticleEffect> ParticleType<T> register(String name, ParticleEffect.Factory<T> factory, final Function<ParticleType<T>, Codec<T>> function) {
-        return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<T>(false, factory){
+    private static <T extends ParticleEffect> ParticleType<T> register(String name, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function) {
+        return ParticleTypes.method_42022(name, factory, function, false);
+    }
+
+    private static <T extends ParticleEffect> ParticleType<T> method_42022(String string, ParticleEffect.Factory<T> factory, final Function<ParticleType<T>, Codec<T>> function, boolean bl) {
+        return Registry.register(Registry.PARTICLE_TYPE, string, new ParticleType<T>(bl, factory){
 
             @Override
             public Codec<T> getCodec() {

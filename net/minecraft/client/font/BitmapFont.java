@@ -15,10 +15,13 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
+import net.minecraft.client.font.Glyph;
+import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
@@ -47,8 +50,8 @@ implements Font {
 
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(int codePoint) {
-        return (RenderableGlyph)this.glyphs.get(codePoint);
+    public Glyph getGlyph(int codePoint) {
+        return (Glyph)this.glyphs.get(codePoint);
     }
 
     @Override
@@ -57,61 +60,47 @@ implements Font {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static final class BitmapFontGlyph
-    implements RenderableGlyph {
-        private final float scaleFactor;
-        private final NativeImage image;
-        private final int x;
-        private final int y;
-        private final int width;
-        private final int height;
-        private final int advance;
-        private final int ascent;
-
-        BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
-            this.scaleFactor = scaleFactor;
-            this.image = image;
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-            this.advance = advance;
-            this.ascent = ascent;
-        }
-
-        @Override
-        public float getOversample() {
-            return 1.0f / this.scaleFactor;
-        }
-
-        @Override
-        public int getWidth() {
-            return this.width;
-        }
-
-        @Override
-        public int getHeight() {
-            return this.height;
-        }
-
+    record BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) implements Glyph
+    {
         @Override
         public float getAdvance() {
             return this.advance;
         }
 
         @Override
-        public float getAscent() {
-            return RenderableGlyph.super.getAscent() + 7.0f - (float)this.ascent;
-        }
+        public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+            return function.apply(new RenderableGlyph(){
 
-        @Override
-        public void upload(int x, int y) {
-            this.image.upload(0, x, y, this.x, this.y, this.width, this.height, false, false);
-        }
+                @Override
+                public float getOversample() {
+                    return 1.0f / scaleFactor;
+                }
 
-        @Override
-        public boolean hasColor() {
-            return this.image.getFormat().getChannelCount() > 1;
+                @Override
+                public int getWidth() {
+                    return width;
+                }
+
+                @Override
+                public int getHeight() {
+                    return height;
+                }
+
+                @Override
+                public float getAscent() {
+                    return RenderableGlyph.super.getAscent() + 7.0f - (float)ascent;
+                }
+
+                @Override
+                public void upload(int x, int y) {
+                    image.upload(0, x, y, x, y, width, height, false, false);
+                }
+
+                @Override
+                public boolean hasColor() {
+                    return image.getFormat().getChannelCount() > 1;
+                }
+            });
         }
     }
 

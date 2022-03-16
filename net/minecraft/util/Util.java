@@ -415,6 +415,10 @@ public class Util {
         return optional;
     }
 
+    public static <T> Supplier<T> debugSupplier(Supplier<T> supplier, Supplier<String> messageSupplier) {
+        return supplier;
+    }
+
     public static Runnable debugRunnable(Runnable runnable, Supplier<String> messageSupplier) {
         return runnable;
     }
@@ -701,8 +705,8 @@ public class Util {
             private final Map<Pair<T, U>, R> cache = Maps.newHashMap();
 
             @Override
-            public R apply(T object, U object2) {
-                return this.cache.computeIfAbsent(Pair.of(object, object2), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
+            public R apply(T a, U b) {
+                return this.cache.computeIfAbsent(Pair.of(a, b), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
             }
 
             public String toString() {
@@ -798,13 +802,13 @@ public class Util {
 
 
         @Override
-        public int hashCode(Object object) {
-            return System.identityHashCode(object);
+        public int hashCode(Object o) {
+            return System.identityHashCode(o);
         }
 
         @Override
-        public boolean equals(Object object, Object object2) {
-            return object == object2;
+        public boolean equals(Object o, Object o2) {
+            return o == o2;
         }
     }
 }

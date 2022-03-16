@@ -118,7 +118,7 @@ extends AbstractRailBlock {
         List<BlockPos> list = railPlacementHelper.getNeighbors();
         for (BlockPos blockPos : list) {
             BlockState blockState = world.getBlockState(blockPos);
-            blockState.neighborUpdate(world, blockPos, blockState.getBlock(), pos, false);
+            world.updateNeighbor(blockState, blockPos, blockState.getBlock(), pos, false);
         }
     }
 

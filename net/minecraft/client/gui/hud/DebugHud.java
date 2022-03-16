@@ -69,6 +69,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -236,13 +237,17 @@ extends DrawableHelper {
                 LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
                 list.add(String.format(Locale.ROOT, "Local Difficulty: %.2f // %.2f (Day %d)", Float.valueOf(localDifficulty.getLocalDifficulty()), Float.valueOf(localDifficulty.getClampedLocalDifficulty()), this.client.world.getTimeOfDay() / 24000L));
             }
+            if (worldChunk2 != null) {
+                list.add(String.format("Blending: %s", worldChunk2.usesOldNoise() ? "Old" : "New"));
+            }
         }
         ServerWorld serverWorld = this.getServerWorld();
         if (serverWorld != null) {
             ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
             ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
-            chunkGenerator.getDebugHudText(list, blockPos);
-            MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.getMultiNoiseSampler();
+            NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
+            chunkGenerator.getDebugHudText(list, noiseConfig, blockPos);
+            MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.sampler();
             BiomeSource biomeSource = chunkGenerator.getBiomeSource();
             biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
             SpawnHelper.Info info = serverChunkManager.getSpawnInfo();

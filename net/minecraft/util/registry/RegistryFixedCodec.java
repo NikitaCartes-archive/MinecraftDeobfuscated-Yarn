@@ -31,7 +31,7 @@ implements Codec<RegistryEntry<E>> {
         RegistryOps registryOps;
         Optional optional;
         if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getRegistry(this.registry)).isPresent()) {
-            if (!registryEntry.matchesRegistry(optional.get())) {
+            if (!registryEntry.setRegistry(optional.get())) {
                 return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(registryKey -> Identifier.CODEC.encode(registryKey.getValue(), dynamicOps, object), value -> DataResult.error("Elements from registry " + this.registry + " can't be serialized to a value"));

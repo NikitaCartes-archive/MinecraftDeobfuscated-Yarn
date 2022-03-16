@@ -26,7 +26,7 @@ extends Task<E> {
     }
 
     public UpdateAttackTargetTask(Function<E, Optional<? extends LivingEntity>> targetGetter) {
-        this((E mobEntity) -> true, targetGetter);
+        this((E entity) -> true, targetGetter);
     }
 
     @Override
@@ -43,7 +43,7 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-        this.targetGetter.apply(mobEntity).ifPresent(livingEntity -> this.updateAttackTarget(mobEntity, (LivingEntity)livingEntity));
+        this.targetGetter.apply(mobEntity).ifPresent(target -> this.updateAttackTarget(mobEntity, (LivingEntity)target));
     }
 
     private void updateAttackTarget(E entity, LivingEntity target) {

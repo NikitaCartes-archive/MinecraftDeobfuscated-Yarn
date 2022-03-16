@@ -20,7 +20,7 @@ import net.minecraft.world.gen.random.ChunkRandom;
 public interface StructurePiecesGenerator<C extends FeatureConfig> {
     public void generatePieces(StructurePiecesCollector var1, Context<C> var2);
 
-    public record Context<C extends FeatureConfig>(C config, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, HeightLimitView world, ChunkRandom random, long seed) {
+    public record Context<C extends FeatureConfig>(C config, ChunkGenerator chunkGenerator, StructureManager structureTemplateManager, ChunkPos chunkPos, HeightLimitView world, ChunkRandom random, long seed) {
     }
 }
 

@@ -108,6 +108,10 @@ public abstract class StructurePiece {
         return this.chainLength;
     }
 
+    public void method_41620(int i) {
+        this.chainLength = i;
+    }
+
     public boolean intersectsChunk(ChunkPos pos, int offset) {
         int i = pos.getStartX();
         int j = pos.getStartZ();
@@ -446,11 +450,8 @@ public abstract class StructurePiece {
         return this.type;
     }
 
-    protected static abstract class BlockRandomizer {
+    public static abstract class BlockRandomizer {
         protected BlockState block = Blocks.AIR.getDefaultState();
-
-        protected BlockRandomizer() {
-        }
 
         public abstract void setBlock(Random var1, int var2, int var3, int var4, boolean var5);
 

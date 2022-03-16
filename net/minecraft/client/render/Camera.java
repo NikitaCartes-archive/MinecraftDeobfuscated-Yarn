@@ -156,7 +156,7 @@ public class Camera {
     public Projection getProjection() {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
-        double e = Math.tan(minecraftClient.options.fov * 0.01745329238474369 / 2.0) * (double)0.05f;
+        double e = Math.tan((double)((float)minecraftClient.options.getFov().getValue().intValue() * ((float)Math.PI / 180)) / 2.0) * (double)0.05f;
         double f = e * d;
         Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05f);
         Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);

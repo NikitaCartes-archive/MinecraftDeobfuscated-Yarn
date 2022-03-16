@@ -44,6 +44,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -62,7 +63,6 @@ extends SimpleStructurePiece {
     private static final float field_31620 = 0.3f;
     private static final float field_31621 = 0.07f;
     private static final float field_31622 = 0.2f;
-    private static final float field_31623 = 0.2f;
     private final VerticalPlacement verticalPlacement;
     private final Properties properties;
 
@@ -247,7 +247,8 @@ extends SimpleStructurePiece {
         return new StructureProcessorRule(new BlockMatchRuleTest(old), AlwaysTrueRuleTest.INSTANCE, updated.getDefaultState());
     }
 
-    public static enum VerticalPlacement {
+    public static enum VerticalPlacement implements StringIdentifiable
+    {
         ON_LAND_SURFACE("on_land_surface"),
         PARTLY_BURIED("partly_buried"),
         ON_OCEAN_FLOOR("on_ocean_floor"),
@@ -255,6 +256,7 @@ extends SimpleStructurePiece {
         UNDERGROUND("underground"),
         IN_NETHER("in_nether");
 
+        public static final Codec<VerticalPlacement> field_37811;
         private static final Map<String, VerticalPlacement> VERTICAL_PLACEMENTS;
         private final String id;
 
@@ -270,7 +272,13 @@ extends SimpleStructurePiece {
             return VERTICAL_PLACEMENTS.get(id);
         }
 
+        @Override
+        public String asString() {
+            return this.id;
+        }
+
         static {
+            field_37811 = StringIdentifiable.createCodec(VerticalPlacement::values, VerticalPlacement::getFromId);
             VERTICAL_PLACEMENTS = Arrays.stream(VerticalPlacement.values()).collect(Collectors.toMap(VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
         }
     }
@@ -278,7 +286,7 @@ extends SimpleStructurePiece {
     public static class Properties {
         public static final Codec<Properties> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.BOOL.fieldOf("cold")).forGetter(properties -> properties.cold), ((MapCodec)Codec.FLOAT.fieldOf("mossiness")).forGetter(properties -> Float.valueOf(properties.mossiness)), ((MapCodec)Codec.BOOL.fieldOf("air_pocket")).forGetter(properties -> properties.airPocket), ((MapCodec)Codec.BOOL.fieldOf("overgrown")).forGetter(properties -> properties.overgrown), ((MapCodec)Codec.BOOL.fieldOf("vines")).forGetter(properties -> properties.vines), ((MapCodec)Codec.BOOL.fieldOf("replace_with_blackstone")).forGetter(properties -> properties.replaceWithBlackstone)).apply((Applicative<Properties, ?>)instance, Properties::new));
         public boolean cold;
-        public float mossiness = 0.2f;
+        public float mossiness;
         public boolean airPocket;
         public boolean overgrown;
         public boolean vines;

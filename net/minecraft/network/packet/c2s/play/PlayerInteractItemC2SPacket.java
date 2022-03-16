@@ -11,18 +11,22 @@ import net.minecraft.util.Hand;
 public class PlayerInteractItemC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private final Hand hand;
+    private final int sequence;
 
-    public PlayerInteractItemC2SPacket(Hand hand) {
+    public PlayerInteractItemC2SPacket(Hand hand, int sequence) {
         this.hand = hand;
+        this.sequence = sequence;
     }
 
     public PlayerInteractItemC2SPacket(PacketByteBuf buf) {
         this.hand = buf.readEnumConstant(Hand.class);
+        this.sequence = buf.readVarInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeEnumConstant(this.hand);
+        buf.writeVarInt(this.sequence);
     }
 
     @Override
@@ -32,6 +36,10 @@ implements Packet<ServerPlayPacketListener> {
 
     public Hand getHand() {
         return this.hand;
+    }
+
+    public int getSequence() {
+        return this.sequence;
     }
 }
 

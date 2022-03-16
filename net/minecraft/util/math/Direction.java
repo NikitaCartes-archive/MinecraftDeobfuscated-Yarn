@@ -4,11 +4,15 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Locale;
@@ -112,6 +116,16 @@ public enum Direction implements StringIdentifiable
         Vector4f vector4f = new Vector4f(vec3i.getX(), vec3i.getY(), vec3i.getZ(), 0.0f);
         vector4f.transform(matrix);
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
+    }
+
+    public static Collection<Direction> shuffle(Random random) {
+        ArrayList<Direction> list = Lists.newArrayList(Direction.values());
+        Collections.shuffle(list, random);
+        return list;
+    }
+
+    public static Stream<Direction> stream() {
+        return Stream.of(ALL);
     }
 
     public Quaternion getRotationQuaternion() {

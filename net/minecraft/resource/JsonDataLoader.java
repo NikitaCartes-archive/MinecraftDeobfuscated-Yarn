@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -45,11 +46,12 @@ extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
     protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
         HashMap<Identifier, JsonElement> map = Maps.newHashMap();
         int i = this.dataType.length() + 1;
-        for (Identifier identifier : resourceManager.findResources(this.dataType, path -> path.endsWith(FILE_SUFFIX))) {
+        for (Map.Entry<Identifier, ResourceRef> entry : resourceManager.findResources(this.dataType, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet()) {
+            Identifier identifier = entry.getKey();
             String string = identifier.getPath();
             Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(i, string.length() - FILE_SUFFIX_LENGTH));
             try {
-                Resource resource = resourceManager.getResource(identifier);
+                Resource resource = entry.getValue().open();
                 try {
                     InputStream inputStream = resource.getInputStream();
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));){

@@ -61,6 +61,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
@@ -589,6 +590,31 @@ public interface DispenserBehavior {
                     return stack;
                 }
                 return super.dispenseSilently(pointer, stack);
+            }
+        });
+        DispenserBlock.registerBehavior(Items.POTION, new ItemDispenserBehavior(){
+            private final ItemDispenserBehavior fallback = new ItemDispenserBehavior();
+
+            @Override
+            public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
+                if (PotionUtil.getPotion(stack) != Potions.WATER) {
+                    return this.fallback.dispense(pointer, stack);
+                }
+                ServerWorld serverWorld = pointer.getWorld();
+                BlockPos blockPos = pointer.getPos();
+                BlockPos blockPos2 = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
+                if (serverWorld.getBlockState(blockPos2).isIn(BlockTags.CONVERTABLE_TO_MUD)) {
+                    if (!serverWorld.isClient) {
+                        for (int i = 0; i < 5; ++i) {
+                            serverWorld.spawnParticles(ParticleTypes.SPLASH, (double)blockPos.getX() + serverWorld.random.nextDouble(), blockPos.getY() + 1, (double)blockPos.getZ() + serverWorld.random.nextDouble(), 1, 0.0, 0.0, 0.0, 1.0);
+                        }
+                    }
+                    serverWorld.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    serverWorld.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
+                    serverWorld.setBlockState(blockPos2, Blocks.MUD.getDefaultState());
+                    return new ItemStack(Items.GLASS_BOTTLE);
+                }
+                return this.fallback.dispense(pointer, stack);
             }
         });
     }

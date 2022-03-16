@@ -5,7 +5,6 @@ package net.minecraft.data.server;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -45,7 +44,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.raid.Raid;
@@ -73,7 +71,7 @@ implements Consumer<Consumer<Advancement>> {
     public void accept(Consumer<Advancement> consumer) {
         Advancement advancement = Advancement.Builder.create().display(Items.MAP, (Text)new TranslatableText("advancements.adventure.root.title"), (Text)new TranslatableText("advancements.adventure.root.description"), new Identifier("textures/gui/advancements/backgrounds/adventure.png"), AdvancementFrame.TASK, false, false, false).criteriaMerger(CriterionMerger.OR).criterion("killed_something", OnKilledCriterion.Conditions.createPlayerKilledEntity()).criterion("killed_by_something", OnKilledCriterion.Conditions.createEntityKilledPlayer()).build(consumer, "adventure/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Blocks.RED_BED, (Text)new TranslatableText("advancements.adventure.sleep_in_bed.title"), (Text)new TranslatableText("advancements.adventure.sleep_in_bed.description"), null, AdvancementFrame.TASK, true, true, false).criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed()).build(consumer, "adventure/sleep_in_bed");
-        AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), this.getOverworldBiomes()).parent(advancement2).display(Items.DIAMOND_BOOTS, (Text)new TranslatableText("advancements.adventure.adventuring_time.title"), (Text)new TranslatableText("advancements.adventure.adventuring_time.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(500)).build(consumer, "adventure/adventuring_time");
+        AdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream().toList()).parent(advancement2).display(Items.DIAMOND_BOOTS, (Text)new TranslatableText("advancements.adventure.adventuring_time.title"), (Text)new TranslatableText("advancements.adventure.adventuring_time.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(500)).build(consumer, "adventure/adventuring_time");
         Advancement advancement3 = Advancement.Builder.create().parent(advancement).display(Items.EMERALD, (Text)new TranslatableText("advancements.adventure.trade.title"), (Text)new TranslatableText("advancements.adventure.trade.description"), null, AdvancementFrame.TASK, true, true, false).criterion("traded", VillagerTradeCriterion.Conditions.any()).build(consumer, "adventure/trade");
         Advancement.Builder.create().parent(advancement3).display(Items.EMERALD, (Text)new TranslatableText("advancements.adventure.trade_at_world_height.title"), (Text)new TranslatableText("advancements.adventure.trade_at_world_height.description"), null, AdvancementFrame.TASK, true, true, false).criterion("trade_at_world_height", VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))).build(consumer, "adventure/trade_at_world_height");
         Advancement advancement4 = this.requireListedMobsKilled(Advancement.Builder.create()).parent(advancement).display(Items.IRON_SWORD, (Text)new TranslatableText("advancements.adventure.kill_a_mob.title"), (Text)new TranslatableText("advancements.adventure.kill_a_mob.description"), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriterionMerger.OR).build(consumer, "adventure/kill_a_mob");
@@ -99,10 +97,6 @@ implements Consumer<Consumer<Advancement>> {
         Advancement.Builder.create().parent(advancement2).display(Items.JUKEBOX, (Text)new TranslatableText("advancements.adventure.play_jukebox_in_meadows.title"), (Text)new TranslatableText("advancements.adventure.play_jukebox_in_meadows.description"), null, AdvancementFrame.TASK, true, true, false).criterion("play_jukebox_in_meadows", ItemUsedOnBlockCriterion.Conditions.create(LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()), ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS))).build(consumer, "adventure/play_jukebox_in_meadows");
         Advancement.Builder.create().parent(advancement10).display(Items.SPYGLASS, (Text)new TranslatableText("advancements.adventure.spyglass_at_dragon.title"), (Text)new TranslatableText("advancements.adventure.spyglass_at_dragon.description"), null, AdvancementFrame.TASK, true, true, false).criterion("spyglass_at_dragon", AdventureTabAdvancementGenerator.createLookingAtEntityUsing(EntityType.ENDER_DRAGON, Items.SPYGLASS)).build(consumer, "adventure/spyglass_at_dragon");
         Advancement.Builder.create().parent(advancement).display(Items.WATER_BUCKET, (Text)new TranslatableText("advancements.adventure.fall_from_world_height.title"), (Text)new TranslatableText("advancements.adventure.fall_from_world_height.description"), null, AdvancementFrame.TASK, true, true, false).criterion("fall_from_world_height", TravelCriterion.Conditions.fallFromHeight(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atMost(-59.0))), DistancePredicate.y(NumberRange.FloatRange.atLeast(379.0)), LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0)))).build(consumer, "adventure/fall_from_world_height");
-    }
-
-    private List<RegistryKey<Biome>> getOverworldBiomes() {
-        return MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(BuiltinRegistries.BIOME).getBiomes().stream().flatMap(biomeEntry -> biomeEntry.getKey().stream()).collect(Collectors.toList());
     }
 
     private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {

@@ -31,7 +31,7 @@ extends AutoCloseable {
 
     public InputStream open(ResourceType var1, Identifier var2) throws IOException;
 
-    public Collection<Identifier> findResources(ResourceType var1, String var2, String var3, int var4, Predicate<String> var5);
+    public Collection<Identifier> findResources(ResourceType var1, String var2, String var3, Predicate<Identifier> var4);
 
     public boolean contains(ResourceType var1, Identifier var2);
 

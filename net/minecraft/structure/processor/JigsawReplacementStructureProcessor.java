@@ -3,7 +3,6 @@
  */
 package net.minecraft.structure.processor;
 
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
@@ -14,6 +13,7 @@ import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,21 +28,22 @@ extends StructureProcessor {
     @Override
     @Nullable
     public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
+        BlockState blockState2;
         BlockState blockState = structureBlockInfo2.state;
         if (!blockState.isOf(Blocks.JIGSAW)) {
             return structureBlockInfo2;
         }
         String string = structureBlockInfo2.nbt.getString("final_state");
-        BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
         try {
-            blockArgumentParser.parse(true);
+            BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(Registry.BLOCK, string, true);
+            blockState2 = blockResult.blockState();
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new RuntimeException(commandSyntaxException);
         }
-        if (blockArgumentParser.getBlockState().isOf(Blocks.STRUCTURE_VOID)) {
+        if (blockState2.isOf(Blocks.STRUCTURE_VOID)) {
             return null;
         }
-        return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
+        return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, null);
     }
 
     @Override

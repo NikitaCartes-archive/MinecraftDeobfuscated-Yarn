@@ -19,7 +19,7 @@ public class RailPlacementHelper {
     private final BlockPos pos;
     private final AbstractRailBlock block;
     private BlockState state;
-    private final boolean forbidCurves;
+    private final boolean allowCurves;
     private final List<BlockPos> neighbors = Lists.newArrayList();
 
     public RailPlacementHelper(World world, BlockPos pos, BlockState state) {
@@ -28,7 +28,7 @@ public class RailPlacementHelper {
         this.state = state;
         this.block = (AbstractRailBlock)state.getBlock();
         RailShape railShape = state.get(this.block.getShapeProperty());
-        this.forbidCurves = this.block.cannotMakeCurves();
+        this.allowCurves = this.block.canMakeCurves();
         this.computeNeighbors(railShape);
     }
 
@@ -169,7 +169,7 @@ public class RailPlacementHelper {
         if (bl3 || bl4) {
             railShape = RailShape.EAST_WEST;
         }
-        if (!this.forbidCurves) {
+        if (!this.allowCurves) {
             if (bl2 && bl4 && !bl && !bl3) {
                 railShape = RailShape.SOUTH_EAST;
             }
@@ -239,7 +239,7 @@ public class RailPlacementHelper {
         boolean bl8 = bl2 && bl3;
         boolean bl9 = bl && bl4;
         boolean bl11 = bl10 = bl && bl3;
-        if (!this.forbidCurves) {
+        if (!this.allowCurves) {
             if (bl72 && !bl && !bl3) {
                 railShape2 = RailShape.SOUTH_EAST;
             }
@@ -261,7 +261,7 @@ public class RailPlacementHelper {
             } else if (bl6) {
                 railShape2 = RailShape.EAST_WEST;
             }
-            if (!this.forbidCurves) {
+            if (!this.allowCurves) {
                 if (powered) {
                     if (bl72) {
                         railShape2 = RailShape.SOUTH_EAST;

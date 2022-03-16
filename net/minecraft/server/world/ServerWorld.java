@@ -132,12 +132,14 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
+import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
@@ -146,7 +148,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -184,6 +186,7 @@ implements StructureWorldAccess {
     private final ServerWorldProperties worldProperties;
     final EntityList entityList = new EntityList();
     private final ServerEntityManager<Entity> entityManager;
+    private final NeighborUpdater neighborUpdater;
     public boolean savingDisabled;
     private final SleepManager sleepManager;
     private int idleTimeout;
@@ -204,18 +207,20 @@ implements StructureWorldAccess {
     private final StructureLocator structureLocator;
     private final boolean shouldTickTime;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, RegistryEntry<DimensionType> registryEntry, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
-        super(properties, worldKey, registryEntry, server::getProfiler, false, debugWorld, seed);
-        this.shouldTickTime = shouldTickTime;
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean bl, long l, List<Spawner> list, boolean bl2) {
+        super(properties, worldKey, dimensionOptions.getDimensionTypeEntry(), server::getProfiler, false, bl, l);
+        this.shouldTickTime = bl2;
         this.server = server;
-        this.spawners = spawners;
+        this.spawners = list;
         this.worldProperties = properties;
-        chunkGenerator.method_41058();
-        boolean bl = server.syncChunkWrites();
+        ChunkGenerator chunkGenerator = dimensionOptions.getChunkGenerator();
+        boolean bl3 = server.syncChunkWrites();
         DataFixer dataFixer = server.getDataFixer();
-        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
+        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl3, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
-        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
+        this.neighborUpdater = new ChainRestrictedNeighborUpdater(this);
+        this.chunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.getPlayerManager().getSimulationDistance(), bl3, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
+        chunkGenerator.method_41058(this.chunkManager.getNoiseConfig());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
@@ -224,10 +229,10 @@ implements StructureWorldAccess {
         if (!server.isSingleplayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
-        long l = server.getSaveProperties().getGeneratorOptions().getSeed();
-        this.structureLocator = new StructureLocator(this.chunkManager.getChunkIoWorker(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this, chunkGenerator.getBiomeSource(), l, dataFixer);
+        long m = server.getSaveProperties().getGeneratorOptions().getSeed();
+        this.structureLocator = new StructureLocator(this.chunkManager.getChunkIoWorker(), this.getRegistryManager(), server.getStructureManager(), worldKey, chunkGenerator, this.chunkManager.getNoiseConfig(), this, chunkGenerator.getBiomeSource(), m, dataFixer);
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
-        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight()) : null;
+        this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, m, server.getSaveProperties().getDragonFight()) : null;
         this.sleepManager = new SleepManager();
     }
 
@@ -255,7 +260,7 @@ implements StructureWorldAccess {
 
     @Override
     public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-        return this.getChunkManager().getChunkGenerator().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.getChunkManager().getNoiseConfig().sampler());
     }
 
     public StructureAccessor getStructureAccessor() {
@@ -943,7 +948,7 @@ implements StructureWorldAccess {
         this.blockEventQueue.clear();
         while (!this.syncedBlockEventQueue.isEmpty()) {
             BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
-            if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEvent.pos()))) {
+            if (this.shouldTickBlockPos(blockEvent.pos())) {
                 if (!this.processBlockEvent(blockEvent)) continue;
                 this.server.getPlayerManager().sendToAround(null, blockEvent.pos().getX(), blockEvent.pos().getY(), blockEvent.pos().getZ(), 64.0, this.getRegistryKey(), new BlockEventS2CPacket(blockEvent.pos(), blockEvent.block(), blockEvent.type(), blockEvent.data()));
                 continue;
@@ -1083,21 +1088,26 @@ implements StructureWorldAccess {
      * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(TagKey<ConfiguredStructureFeature<?, ?>> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
+    public BlockPos locateStructure(TagKey<StructureFeature> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
             return null;
         }
-        Optional<RegistryEntryList.Named<ConfiguredStructureFeature<?, ?>>> optional = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).getEntryList(structureTag);
+        Optional<RegistryEntryList.Named<StructureFeature>> optional = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).getEntryList(structureTag);
         if (optional.isEmpty()) {
             return null;
         }
-        Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList)optional.get(), pos, radius, skipExistingChunks);
+        Pair<BlockPos, RegistryEntry<StructureFeature>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureFeature>)optional.get(), pos, radius, skipExistingChunks);
         return pair != null ? pair.getFirst() : null;
     }
 
     @Nullable
     public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> biomeEntryPredicate, BlockPos pos, int radius, int blockCheckInterval) {
-        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, biomeEntryPredicate, this.random, true, this.getChunkManager().getChunkGenerator().getMultiNoiseSampler());
+        return this.getChunkManager().getChunkGenerator().getBiomeSource().locateBiome(pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, biomeEntryPredicate, this.random, true, this.getChunkManager().getNoiseConfig().sampler());
+    }
+
+    @Override
+    public NeighborUpdater getNeighborUpdater() {
+        return this.neighborUpdater;
     }
 
     @Override

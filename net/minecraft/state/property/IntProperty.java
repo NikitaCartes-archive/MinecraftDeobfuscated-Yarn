@@ -19,6 +19,8 @@ import net.minecraft.state.property.Property;
 public class IntProperty
 extends Property<Integer> {
     private final ImmutableSet<Integer> values;
+    private final int field_37655;
+    private final int field_37656;
 
     protected IntProperty(String name, int min, int max) {
         super(name, Integer.class);
@@ -28,6 +30,8 @@ extends Property<Integer> {
         if (max <= min) {
             throw new IllegalArgumentException("Max value of " + name + " must be greater than min (" + min + ")");
         }
+        this.field_37655 = min;
+        this.field_37656 = max;
         HashSet<Integer> set = Sets.newHashSet();
         for (int i = min; i <= max; ++i) {
             set.add(i);
@@ -78,7 +82,7 @@ extends Property<Integer> {
     public Optional<Integer> parse(String name) {
         try {
             Integer integer = Integer.valueOf(name);
-            return this.values.contains(integer) ? Optional.of(integer) : Optional.empty();
+            return integer >= this.field_37655 && integer <= this.field_37656 ? Optional.of(integer) : Optional.empty();
         } catch (NumberFormatException numberFormatException) {
             return Optional.empty();
         }

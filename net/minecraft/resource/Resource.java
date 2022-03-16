@@ -3,6 +3,7 @@
  */
 package net.minecraft.resource;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.Closeable;
 import java.io.InputStream;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -38,6 +39,7 @@ extends Closeable {
     /**
      * Returns if this resource has any metadata.
      */
+    @VisibleForTesting
     public boolean hasMetadata();
 
     /**

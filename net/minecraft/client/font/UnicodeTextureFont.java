@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Map;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
+import net.minecraft.client.font.Glyph;
+import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.Resource;
@@ -34,6 +37,7 @@ implements Font {
     private static final int field_32232 = 256;
     private static final int field_32233 = 256;
     private static final int field_32234 = 256;
+    private static final byte field_37905 = 0;
     private final ResourceManager resourceManager;
     private final byte[] sizes;
     private final String template;
@@ -75,9 +79,9 @@ implements Font {
 
     @Override
     @Nullable
-    public RenderableGlyph getGlyph(int codePoint) {
+    public Glyph getGlyph(int codePoint) {
         NativeImage nativeImage;
-        if (codePoint < 0 || codePoint > 65535) {
+        if (codePoint < 0 || codePoint >= this.sizes.length) {
             return null;
         }
         byte b = this.sizes[codePoint];
@@ -91,7 +95,7 @@ implements Font {
     @Override
     public IntSet getProvidedGlyphs() {
         IntOpenHashSet intSet = new IntOpenHashSet();
-        for (int i = 0; i < 65535; ++i) {
+        for (int i = 0; i < this.sizes.length; ++i) {
             if (this.sizes[i] == 0) continue;
             intSet.add(i);
         }
@@ -135,50 +139,11 @@ implements Font {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class UnicodeTextureGlyph
-    implements RenderableGlyph {
-        private final int width;
-        private final int height;
-        private final int unpackSkipPixels;
-        private final int unpackSkipRows;
-        private final NativeImage image;
-
-        UnicodeTextureGlyph(int unpackSkipPixels, int unpackSkipRows, int width, int height, NativeImage image) {
-            this.width = width;
-            this.height = height;
-            this.unpackSkipPixels = unpackSkipPixels;
-            this.unpackSkipRows = unpackSkipRows;
-            this.image = image;
-        }
-
-        @Override
-        public float getOversample() {
-            return 2.0f;
-        }
-
-        @Override
-        public int getWidth() {
-            return this.width;
-        }
-
-        @Override
-        public int getHeight() {
-            return this.height;
-        }
-
+    record UnicodeTextureGlyph(int unpackSkipPixels, int unpackSkipRows, int width, int height, NativeImage image) implements Glyph
+    {
         @Override
         public float getAdvance() {
             return this.width / 2 + 1;
-        }
-
-        @Override
-        public void upload(int x, int y) {
-            this.image.upload(0, x, y, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
-        }
-
-        @Override
-        public boolean hasColor() {
-            return this.image.getFormat().getChannelCount() > 1;
         }
 
         @Override
@@ -189,6 +154,37 @@ implements Font {
         @Override
         public float getBoldOffset() {
             return 0.5f;
+        }
+
+        @Override
+        public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+            return function.apply(new RenderableGlyph(){
+
+                @Override
+                public float getOversample() {
+                    return 2.0f;
+                }
+
+                @Override
+                public int getWidth() {
+                    return width;
+                }
+
+                @Override
+                public int getHeight() {
+                    return height;
+                }
+
+                @Override
+                public void upload(int x, int y) {
+                    image.upload(0, x, y, unpackSkipPixels, unpackSkipRows, width, height, false, false);
+                }
+
+                @Override
+                public boolean hasColor() {
+                    return image.getFormat().getChannelCount() > 1;
+                }
+            });
         }
     }
 
@@ -224,8 +220,7 @@ implements Font {
             block8: {
                 Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
                 try {
-                    byte[] bs = new byte[65536];
-                    resource.getInputStream().read(bs);
+                    byte[] bs = resource.getInputStream().readNBytes(65536);
                     unicodeTextureFont = new UnicodeTextureFont(manager, bs, this.template);
                     if (resource == null) break block8;
                 } catch (Throwable throwable) {

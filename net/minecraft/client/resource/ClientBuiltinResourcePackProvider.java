@@ -25,8 +25,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
-import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.DefaultClientResourcePack;
@@ -138,7 +138,7 @@ implements ResourcePackProvider {
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.execute(() -> {
                     if (!closeAfterDownload) {
-                        minecraftClient.setScreen(new SaveLevelScreen(APPLYING_PACK_TEXT));
+                        minecraftClient.setScreen(new MessageScreen(APPLYING_PACK_TEXT));
                     }
                 });
                 return this.loadServerPack(file, ResourcePackSource.PACK_SOURCE_SERVER);

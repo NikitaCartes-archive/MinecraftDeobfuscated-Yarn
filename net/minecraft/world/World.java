@@ -61,6 +61,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
@@ -77,7 +78,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class World
 implements WorldAccess,
 AutoCloseable {
-    public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
+    public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(Registry.WORLD_KEY);
     public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
     public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
     public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
@@ -312,18 +313,15 @@ AutoCloseable {
     public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
     }
 
+    public abstract NeighborUpdater getNeighborUpdater();
+
     /**
      * Emits a neighbor update to all 6 neighboring blocks of {@code pos}.
      * 
      * @see #updateNeighborsExcept(BlockPos, Block, Direction)
      */
-    public void updateNeighborsAlways(BlockPos pos, Block block) {
-        this.updateNeighbor(pos.west(), block, pos);
-        this.updateNeighbor(pos.east(), block, pos);
-        this.updateNeighbor(pos.down(), block, pos);
-        this.updateNeighbor(pos.up(), block, pos);
-        this.updateNeighbor(pos.north(), block, pos);
-        this.updateNeighbor(pos.south(), block, pos);
+    public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
+        this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, null);
     }
 
     /**
@@ -333,52 +331,21 @@ AutoCloseable {
      * @see #updateNeighborsAlways(BlockPos, Block)
      */
     public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-        if (direction != Direction.WEST) {
-            this.updateNeighbor(pos.west(), sourceBlock, pos);
-        }
-        if (direction != Direction.EAST) {
-            this.updateNeighbor(pos.east(), sourceBlock, pos);
-        }
-        if (direction != Direction.DOWN) {
-            this.updateNeighbor(pos.down(), sourceBlock, pos);
-        }
-        if (direction != Direction.UP) {
-            this.updateNeighbor(pos.up(), sourceBlock, pos);
-        }
-        if (direction != Direction.NORTH) {
-            this.updateNeighbor(pos.north(), sourceBlock, pos);
-        }
-        if (direction != Direction.SOUTH) {
-            this.updateNeighbor(pos.south(), sourceBlock, pos);
-        }
+        this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, direction);
     }
 
     /**
-     * Triggers a neighbor update originating from {@code pos} at
-     * {@code neighborPos}.
+     * Triggers a neighbor update originating from {@code sourcePos} at
+     * {@code pos}.
      * 
      * @see #updateNeighborsAlways(BlockPos, Block)
      */
-    public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
-        if (this.isClient) {
-            return;
-        }
-        BlockState blockState = this.getBlockState(pos);
-        try {
-            blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
-        } catch (Throwable throwable) {
-            CrashReport crashReport = CrashReport.create(throwable, "Exception while updating neighbours");
-            CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
-            crashReportSection.add("Source block type", () -> {
-                try {
-                    return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
-                } catch (Throwable throwable) {
-                    return "ID #" + Registry.BLOCK.getId(sourceBlock);
-                }
-            });
-            CrashReportSection.addBlockInfo(crashReportSection, this, pos, blockState);
-            throw new CrashException(crashReport);
-        }
+    public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
+        this.getNeighborUpdater().updateNeighbor(pos, sourceBlock, sourcePos);
+    }
+
+    public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        this.getNeighborUpdater().updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
     }
 
     @Override
@@ -473,7 +440,7 @@ AutoCloseable {
                 iterator.remove();
                 continue;
             }
-            if (!this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEntityTickInvoker.getPos()))) continue;
+            if (!this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) continue;
             blockEntityTickInvoker.tick();
         }
         this.iteratingTickingBlockEntities = false;
@@ -500,6 +467,10 @@ AutoCloseable {
      */
     public boolean shouldTickBlocksInChunk(long chunkPos) {
         return true;
+    }
+
+    public boolean shouldTickBlockPos(BlockPos pos) {
+        return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
     }
 
     /**
@@ -917,11 +888,11 @@ AutoCloseable {
             if (!this.isChunkLoaded(blockPos)) continue;
             BlockState blockState = this.getBlockState(blockPos);
             if (blockState.isOf(Blocks.COMPARATOR)) {
-                blockState.neighborUpdate(this, blockPos, block, pos, false);
+                this.updateNeighbor(blockState, blockPos, block, pos, false);
                 continue;
             }
             if (!blockState.isSolidBlock(this, blockPos) || !(blockState = this.getBlockState(blockPos = blockPos.offset(direction))).isOf(Blocks.COMPARATOR)) continue;
-            blockState.neighborUpdate(this, blockPos, block, pos, false);
+            this.updateNeighbor(blockState, blockPos, block, pos, false);
         }
     }
 

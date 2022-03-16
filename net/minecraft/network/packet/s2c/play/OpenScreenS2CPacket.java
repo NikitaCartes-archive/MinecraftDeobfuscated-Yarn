@@ -14,25 +14,25 @@ import org.jetbrains.annotations.Nullable;
 public class OpenScreenS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final int syncId;
-    private final int screenHandlerId;
+    private final ScreenHandlerType<?> screenHandlerId;
     private final Text name;
 
     public OpenScreenS2CPacket(int syncId, ScreenHandlerType<?> type, Text name) {
         this.syncId = syncId;
-        this.screenHandlerId = Registry.SCREEN_HANDLER.getRawId(type);
+        this.screenHandlerId = type;
         this.name = name;
     }
 
     public OpenScreenS2CPacket(PacketByteBuf buf) {
         this.syncId = buf.readVarInt();
-        this.screenHandlerId = buf.readVarInt();
+        this.screenHandlerId = buf.readRegistryValue(Registry.SCREEN_HANDLER);
         this.name = buf.readText();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.syncId);
-        buf.writeVarInt(this.screenHandlerId);
+        buf.writeRegistryValue(Registry.SCREEN_HANDLER, this.screenHandlerId);
         buf.writeText(this.name);
     }
 
@@ -47,7 +47,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Nullable
     public ScreenHandlerType<?> getScreenHandlerType() {
-        return (ScreenHandlerType)Registry.SCREEN_HANDLER.get(this.screenHandlerId);
+        return this.screenHandlerId;
     }
 
     public Text getName() {

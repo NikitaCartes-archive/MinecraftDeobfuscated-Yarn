@@ -99,11 +99,11 @@ ResourceFactory {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
         HashSet<Identifier> set = Sets.newHashSet();
         if (resourcePath != null) {
             try {
-                DefaultResourcePack.getIdentifiers(set, maxDepth, namespace, resourcePath.resolve(type.getDirectory()), prefix, pathFilter);
+                DefaultResourcePack.collectIdentifiers(set, namespace, resourcePath.resolve(type.getDirectory()), prefix, allowedPathPredicate);
             } catch (IOException iOException) {
                 // empty catch block
             }
@@ -118,7 +118,7 @@ ResourceFactory {
                     try {
                         URI uRI = enumeration.nextElement().toURI();
                         if (!"file".equals(uRI.getScheme())) continue;
-                        DefaultResourcePack.getIdentifiers(set, maxDepth, namespace, Paths.get(uRI), prefix, pathFilter);
+                        DefaultResourcePack.collectIdentifiers(set, namespace, Paths.get(uRI), prefix, allowedPathPredicate);
                     } catch (IOException | URISyntaxException exception) {}
                 }
             }
@@ -126,7 +126,7 @@ ResourceFactory {
         try {
             Path path = TYPE_TO_FILE_SYSTEM.get((Object)type);
             if (path != null) {
-                DefaultResourcePack.getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
+                DefaultResourcePack.collectIdentifiers(set, namespace, path, prefix, allowedPathPredicate);
             } else {
                 LOGGER.error("Can't access assets root for type: {}", (Object)type);
             }
@@ -137,10 +137,10 @@ ResourceFactory {
         return set;
     }
 
-    private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
+    private static void collectIdentifiers(Collection<Identifier> results, String namespace, Path root, String prefix, Predicate<Identifier> allowedPathPredicate) throws IOException {
         Path path2 = root.resolve(namespace);
-        try (Stream<Path> stream = Files.walk(path2.resolve(prefix), maxDepth, new FileVisitOption[0]);){
-            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && pathFilter.test(path.getFileName().toString())).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).forEach(results::add);
+        try (Stream<Path> stream = Files.walk(path2.resolve(prefix), new FileVisitOption[0]);){
+            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0])).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).filter(allowedPathPredicate).forEach(results::add);
         }
     }
 
@@ -270,7 +270,7 @@ ResourceFactory {
 
             @Override
             public String getResourcePackName() {
-                return identifier.toString();
+                return DefaultResourcePack.this.getName();
             }
         };
     }

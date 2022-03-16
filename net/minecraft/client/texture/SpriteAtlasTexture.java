@@ -149,7 +149,7 @@ implements TextureTickListener {
                 Sprite.Info info;
                 Identifier identifier2 = this.getTexturePath(identifier);
                 try (Resource resource = resourceManager.getResource(identifier2);){
-                    PngFile pngFile = new PngFile(resource.toString(), resource.getInputStream());
+                    PngFile pngFile = new PngFile(identifier2::toString, resource.getInputStream());
                     AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
                     if (animationResourceMetadata == null) {
                         animationResourceMetadata = AnimationResourceMetadata.EMPTY;

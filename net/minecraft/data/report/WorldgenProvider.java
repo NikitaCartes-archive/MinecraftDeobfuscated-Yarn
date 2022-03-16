@@ -22,10 +22,6 @@ import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.dimension.DimensionOptions;
-import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 import org.slf4j.Logger;
 
 public class WorldgenProvider
@@ -42,13 +38,8 @@ implements DataProvider {
     public void run(DataCache cache) {
         Path path = this.generator.getOutput();
         DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
-        boolean i = false;
-        Registry<DimensionOptions> registry = DimensionType.createDefaultDimensionOptions(dynamicRegistryManager, 0L, false);
-        NoiseChunkGenerator chunkGenerator = GeneratorOptions.createOverworldGenerator(dynamicRegistryManager, 0L, false);
-        Registry<DimensionOptions> registry2 = GeneratorOptions.getRegistryWithReplacedOverworldGenerator(dynamicRegistryManager.getManaged(Registry.DIMENSION_TYPE_KEY), registry, chunkGenerator);
         RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
         DynamicRegistryManager.getInfos().forEach(info -> WorldgenProvider.writeRegistryEntries(cache, path, dynamicRegistryManager, dynamicOps, info));
-        WorldgenProvider.writeRegistryEntries(path, cache, dynamicOps, Registry.DIMENSION_KEY, registry2, DimensionOptions.CODEC);
     }
 
     private static <T> void writeRegistryEntries(DataCache cache, Path path, DynamicRegistryManager registryManager, DynamicOps<JsonElement> json, DynamicRegistryManager.Info<T> info) {

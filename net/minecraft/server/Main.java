@@ -15,6 +15,7 @@ import java.io.File;
 import java.net.Proxy;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import joptsimple.AbstractOptionSpec;
@@ -37,6 +38,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
+import net.minecraft.server.SaveLoading;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.dedicated.EulaReader;
@@ -57,6 +59,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -138,11 +141,10 @@ public class Main {
             }
             ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
-                SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl);
-                saveLoader = SaveLoader.ofLoaded(functionLoaderConfig, () -> {
-                    DataPackSettings dataPackSettings = session.getDataPackSettings();
-                    return dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings;
-                }, (resourceManager, dataPackSettings) -> {
+                DataPackSettings dataPackSettings2 = Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
+                SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings2, bl);
+                SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel);
+                saveLoader = SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
                     GeneratorOptions generatorOptions;
                     LevelInfo levelInfo;
                     DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
@@ -153,7 +155,7 @@ public class Main {
                     }
                     if (optionSet.has(optionSpec3)) {
                         levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                        generatorOptions = GeneratorOptions.createDemo(mutable);
+                        generatorOptions = WorldPresets.createDemoOptions(mutable);
                     } else {
                         ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
                         levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings);
@@ -164,10 +166,8 @@ public class Main {
                 }, Util.getMainWorkerExecutor(), Runnable::run).get();
             } catch (Exception exception) {
                 LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", exception);
-                resourcePackManager.close();
                 return;
             }
-            saveLoader.refresh();
             DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
             serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
             SaveProperties saveProperties = saveLoader.saveProperties();

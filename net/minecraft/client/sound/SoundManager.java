@@ -34,6 +34,7 @@ import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -67,10 +68,11 @@ extends SinglePreparationResourceReloader<SoundList> {
         for (String string : resourceManager.getAllNamespaces()) {
             profiler.push(string);
             try {
-                List<Resource> list = resourceManager.getAllResources(new Identifier(string, SOUNDS_JSON));
-                for (Resource resource : list) {
-                    profiler.push(resource.getResourcePackName());
-                    try (InputStream inputStream = resource.getInputStream();
+                List<ResourceRef> list = resourceManager.getAllResources(new Identifier(string, SOUNDS_JSON));
+                for (ResourceRef resourceRef : list) {
+                    profiler.push(resourceRef.getPackName());
+                    try (Resource resource = resourceRef.open();
+                         InputStream inputStream = resource.getInputStream();
                          InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);){
                         profiler.push("parse");
                         Map<String, SoundEntry> map = JsonHelper.deserialize(GSON, (Reader)reader, TYPE);
@@ -80,7 +82,7 @@ extends SinglePreparationResourceReloader<SoundList> {
                         }
                         profiler.pop();
                     } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Invalid {} in resourcepack: '{}'", SOUNDS_JSON, resource.getResourcePackName(), runtimeException);
+                        LOGGER.warn("Invalid {} in resourcepack: '{}'", SOUNDS_JSON, resourceRef.getPackName(), runtimeException);
                     }
                     profiler.pop();
                 }

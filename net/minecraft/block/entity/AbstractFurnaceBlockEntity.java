@@ -185,7 +185,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Items.CROSSBOW, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.BAMBOO, 50);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.DEAD_BUSH, 100);
-        AbstractFurnaceBlockEntity.addFuel(map, Blocks.SCAFFOLDING, 400);
+        AbstractFurnaceBlockEntity.addFuel(map, Blocks.SCAFFOLDING, 50);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.LOOM, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.BARREL, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
@@ -194,6 +194,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.COMPOSTER, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.AZALEA, 100);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.FLOWERING_AZALEA, 100);
+        AbstractFurnaceBlockEntity.addFuel(map, Blocks.MANGROVE_ROOTS, 300);
         return map;
     }
 

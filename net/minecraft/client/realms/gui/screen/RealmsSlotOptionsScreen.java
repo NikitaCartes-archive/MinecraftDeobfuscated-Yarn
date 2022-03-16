@@ -4,6 +4,7 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -126,7 +127,7 @@ extends RealmsScreen {
         CyclingButtonWidget<Boolean> cyclingButtonWidget = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.pvp).build(i, RealmsSlotOptionsScreen.row(1), this.column2_x, 20, new TranslatableText("mco.configure.world.pvp"), (button, pvp) -> {
             this.pvp = pvp;
         }));
-        this.addDrawableChild(CyclingButtonWidget.builder(GameMode::getSimpleTranslatableName).values(GAME_MODES).initially(this.gameMode).build(this.column1_x, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (button, gameModeIndex) -> {
+        this.addDrawableChild(CyclingButtonWidget.builder(GameMode::getSimpleTranslatableName).values((Collection<GameMode>)GAME_MODES).initially(this.gameMode).build(this.column1_x, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (button, gameModeIndex) -> {
             this.gameMode = gameModeIndex;
         }));
         CyclingButtonWidget<Boolean> cyclingButtonWidget2 = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.spawnAnimals).build(i, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnAnimals"), (button, spawnAnimals) -> {
@@ -135,7 +136,7 @@ extends RealmsScreen {
         CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.onOffBuilder(this.difficulty != Difficulty.PEACEFUL && this.spawnMonsters).build(i, RealmsSlotOptionsScreen.row(5), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnMonsters"), (button, spawnMonsters) -> {
             this.spawnMonsters = spawnMonsters;
         });
-        this.addDrawableChild(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values(DIFFICULTIES).initially(this.difficulty).build(this.column1_x, RealmsSlotOptionsScreen.row(5), this.column2_x, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> {
+        this.addDrawableChild(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Collection<Difficulty>)DIFFICULTIES).initially(this.difficulty).build(this.column1_x, RealmsSlotOptionsScreen.row(5), this.column2_x, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> {
             this.difficulty = difficulty;
             if (this.worldType == RealmsServer.WorldType.NORMAL) {
                 boolean bl;

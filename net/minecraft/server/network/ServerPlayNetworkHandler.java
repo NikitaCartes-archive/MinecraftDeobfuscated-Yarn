@@ -114,6 +114,7 @@ import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
@@ -147,7 +148,6 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -167,10 +167,13 @@ implements EntityTrackingListener,
 ServerPlayPacketListener {
     static final Logger LOGGER = LogUtils.getLogger();
     private static final int KEEP_ALIVE_INTERVAL = 15000;
+    public static final double MAX_BREAK_SQUARED_DISTANCE = MathHelper.square(6.0);
+    private static final int field_37281 = -1;
     public final ClientConnection connection;
     private final MinecraftServer server;
     public ServerPlayerEntity player;
     private int ticks;
+    private int sequence = -1;
     private long lastKeepAliveTime;
     private boolean waitingForKeepAlive;
     private long keepAliveId;
@@ -212,6 +215,10 @@ ServerPlayPacketListener {
     }
 
     public void tick() {
+        if (this.sequence > -1) {
+            this.sendPacket(new PlayerActionResponseS2CPacket(this.sequence));
+            this.sequence = -1;
+        }
         this.syncWithPlayerPosition();
         this.player.prevX = this.player.getX();
         this.player.prevY = this.player.getY();
@@ -936,7 +943,8 @@ ServerPlayPacketListener {
             case START_DESTROY_BLOCK: 
             case ABORT_DESTROY_BLOCK: 
             case STOP_DESTROY_BLOCK: {
-                this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY());
+                this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY(), packet.getSequence());
+                this.player.networkHandler.updateSequence(packet.getSequence());
                 return;
             }
         }
@@ -959,20 +967,21 @@ ServerPlayPacketListener {
     @Override
     public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+        this.player.networkHandler.updateSequence(packet.getSequence());
         ServerWorld serverWorld = this.player.getWorld();
         Hand hand = packet.getHand();
         ItemStack itemStack = this.player.getStackInHand(hand);
         BlockHitResult blockHitResult = packet.getBlockHitResult();
         Vec3d vec3d = blockHitResult.getPos();
         BlockPos blockPos = blockHitResult.getBlockPos();
-        Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
-        if (this.player.world.getServer() == null || this.player.getChunkPos().getChebyshevDistance(new ChunkPos(blockPos)) >= this.player.world.getServer().getPlayerManager().getViewDistance()) {
-            LOGGER.warn("Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.", this.player.getGameProfile().getName(), blockPos, this.player.getBlockPos());
+        Vec3d vec3d2 = Vec3d.ofCenter(blockPos);
+        if (this.player.getEyePos().squaredDistanceTo(vec3d2) > MAX_BREAK_SQUARED_DISTANCE) {
             return;
         }
+        Vec3d vec3d3 = vec3d.subtract(vec3d2);
         double d = 1.0000001;
-        if (!(Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001)) {
-            LOGGER.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
+        if (!(Math.abs(vec3d3.getX()) < 1.0000001 && Math.abs(vec3d3.getY()) < 1.0000001 && Math.abs(vec3d3.getZ()) < 1.0000001)) {
+            LOGGER.warn("Rejecting UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
             return;
         }
         Direction direction = blockHitResult.getSide();
@@ -999,6 +1008,7 @@ ServerPlayPacketListener {
     @Override
     public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+        this.updateSequence(packet.getSequence());
         ServerWorld serverWorld = this.player.getWorld();
         Hand hand = packet.getHand();
         ItemStack itemStack = this.player.getStackInHand(hand);
@@ -1059,6 +1069,13 @@ ServerPlayPacketListener {
             LOGGER.info("Stopping singleplayer server as player logged out");
             this.server.stop(false);
         }
+    }
+
+    public void updateSequence(int sequence) {
+        if (sequence < 0) {
+            throw new IllegalArgumentException("Expected packet sequence nr >= 0");
+        }
+        this.sequence = Math.max(sequence, this.sequence);
     }
 
     @Override
@@ -1207,8 +1224,7 @@ ServerPlayPacketListener {
             if (!serverWorld.getWorldBorder().contains(entity.getBlockPos())) {
                 return;
             }
-            double d = 36.0;
-            if (this.player.squaredDistanceTo(entity) < 36.0) {
+            if (entity.squaredDistanceTo(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
                 packet.handle(new PlayerInteractEntityC2SPacket.Handler(){
 
                     private void processInteract(Hand hand, Interaction action) {

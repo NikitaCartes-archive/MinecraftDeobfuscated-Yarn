@@ -367,11 +367,15 @@ implements Drawable {
         this.textRenderer = client.textRenderer;
         this.width = width;
         this.height = height;
+        this.clearAndInit();
+        this.narrateScreenIfNarrationEnabled(false);
+        this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
+    }
+
+    protected void clearAndInit() {
         this.clearChildren();
         this.setFocused(null);
         this.init();
-        this.narrateScreenIfNarrationEnabled(false);
-        this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
     }
 
     @Override

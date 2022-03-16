@@ -138,6 +138,7 @@ implements DataProvider {
         RecipeProvider.offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS);
         RecipeProvider.offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS);
         RecipeProvider.offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS);
+        RecipeProvider.offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.ACACIA_WOOD, Blocks.ACACIA_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.BIRCH_WOOD, Blocks.BIRCH_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_LOG);
@@ -146,6 +147,7 @@ implements DataProvider {
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.SPRUCE_WOOD, Blocks.SPRUCE_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.CRIMSON_HYPHAE, Blocks.CRIMSON_STEM);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.WARPED_HYPHAE, Blocks.WARPED_STEM);
+        RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.MANGROVE_WOOD, Blocks.MANGROVE_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_ACACIA_WOOD, Blocks.STRIPPED_ACACIA_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_BIRCH_WOOD, Blocks.STRIPPED_BIRCH_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_LOG);
@@ -154,12 +156,14 @@ implements DataProvider {
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_LOG);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_STEM);
         RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_WARPED_HYPHAE, Blocks.STRIPPED_WARPED_STEM);
+        RecipeProvider.offerBarkBlockRecipe(exporter, Blocks.STRIPPED_MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_LOG);
         RecipeProvider.offerBoatRecipe(exporter, Items.ACACIA_BOAT, Blocks.ACACIA_PLANKS);
         RecipeProvider.offerBoatRecipe(exporter, Items.BIRCH_BOAT, Blocks.BIRCH_PLANKS);
         RecipeProvider.offerBoatRecipe(exporter, Items.DARK_OAK_BOAT, Blocks.DARK_OAK_PLANKS);
         RecipeProvider.offerBoatRecipe(exporter, Items.JUNGLE_BOAT, Blocks.JUNGLE_PLANKS);
         RecipeProvider.offerBoatRecipe(exporter, Items.OAK_BOAT, Blocks.OAK_PLANKS);
         RecipeProvider.offerBoatRecipe(exporter, Items.SPRUCE_BOAT, Blocks.SPRUCE_PLANKS);
+        RecipeProvider.offerBoatRecipe(exporter, Items.MANGROVE_BOAT, Blocks.MANGROVE_PLANKS);
         RecipeProvider.offerWoolDyeingRecipe(exporter, Blocks.BLACK_WOOL, Items.BLACK_DYE);
         RecipeProvider.offerCarpetRecipe(exporter, Blocks.BLACK_CARPET, Blocks.BLACK_WOOL);
         RecipeProvider.offerCarpetDyeingRecipe(exporter, Blocks.BLACK_CARPET, Items.BLACK_DYE);
@@ -351,6 +355,9 @@ implements DataProvider {
         RecipeProvider.offerCandleDyeingRecipe(exporter, Blocks.RED_CANDLE, Items.RED_DYE);
         RecipeProvider.offerCandleDyeingRecipe(exporter, Blocks.WHITE_CANDLE, Items.WHITE_DYE);
         RecipeProvider.offerCandleDyeingRecipe(exporter, Blocks.YELLOW_CANDLE, Items.YELLOW_DYE);
+        ShapelessRecipeJsonBuilder.create(Blocks.PACKED_MUD, 1).input(Blocks.MUD).input(Items.WHEAT).criterion("has_mud", RecipeProvider.conditionsFromItem(Blocks.MUD)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(Blocks.MUD_BRICKS, 4).input(Character.valueOf('#'), Blocks.PACKED_MUD).pattern("##").pattern("##").criterion("has_packed_mud", RecipeProvider.conditionsFromItem(Blocks.PACKED_MUD)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(Blocks.MUDDY_MANGROVE_ROOTS, 1).input(Blocks.MUD).input(Items.field_37513).criterion("has_mangrove_roots", RecipeProvider.conditionsFromItem(Blocks.MANGROVE_ROOTS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.ACTIVATOR_RAIL, 6).input(Character.valueOf('#'), Blocks.REDSTONE_TORCH).input(Character.valueOf('S'), Items.STICK).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("XSX").pattern("X#X").pattern("XSX").criterion("has_rail", RecipeProvider.conditionsFromItem(Blocks.RAIL)).offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(Blocks.ANDESITE, 2).input(Blocks.DIORITE).input(Blocks.COBBLESTONE).criterion("has_stone", RecipeProvider.conditionsFromItem(Blocks.DIORITE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.ANVIL).input(Character.valueOf('I'), Blocks.IRON_BLOCK).input(Character.valueOf('i'), Items.IRON_INGOT).pattern("III").pattern(" i ").pattern("iii").criterion("has_iron_block", RecipeProvider.conditionsFromItem(Blocks.IRON_BLOCK)).offerTo(exporter);
@@ -757,6 +764,9 @@ implements DataProvider {
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.BRICK_SLAB, Blocks.BRICKS, 2);
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.BRICK_STAIRS, Blocks.BRICKS);
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.BRICK_WALL, Blocks.BRICKS);
+        RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_SLAB, Blocks.MUD_BRICKS, 2);
+        RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_STAIRS, Blocks.MUD_BRICKS);
+        RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_WALL, Blocks.MUD_BRICKS);
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_SLAB, Blocks.NETHER_BRICKS, 2);
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_BRICKS);
         RecipeProvider.offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_WALL, Blocks.NETHER_BRICKS);

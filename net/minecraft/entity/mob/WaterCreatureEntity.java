@@ -46,7 +46,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    protected int getXpToDrop(PlayerEntity player) {
+    public int getXpToDrop() {
         return 1 + this.world.random.nextInt(3);
     }
 

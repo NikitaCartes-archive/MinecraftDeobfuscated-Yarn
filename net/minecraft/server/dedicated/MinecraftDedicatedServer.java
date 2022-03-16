@@ -505,6 +505,11 @@ implements DedicatedServer {
     }
 
     @Override
+    public int getMaxChainedNeighborUpdates() {
+        return this.getProperties().maxChainedNeighborUpdates;
+    }
+
+    @Override
     public String getPlugins() {
         return "";
     }

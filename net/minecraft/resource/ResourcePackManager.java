@@ -31,8 +31,7 @@ import org.jetbrains.annotations.Nullable;
  * builds {@linkplain #createResourcePacks() a list of resource packs} when the
  * resource manager reloads.
  */
-public class ResourcePackManager
-implements AutoCloseable {
+public class ResourcePackManager {
     private final Set<ResourcePackProvider> providers;
     private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
     private List<ResourcePackProfile> enabled = ImmutableList.of();
@@ -49,7 +48,6 @@ implements AutoCloseable {
 
     public void scanPacks() {
         List list = this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
-        this.close();
         this.profiles = this.providePackProfiles();
         this.enabled = this.buildEnabledProfiles(list);
     }
@@ -98,11 +96,6 @@ implements AutoCloseable {
     @Nullable
     public ResourcePackProfile getProfile(String name) {
         return this.profiles.get(name);
-    }
-
-    @Override
-    public void close() {
-        this.profiles.values().forEach(ResourcePackProfile::close);
     }
 
     public boolean hasProfile(String name) {

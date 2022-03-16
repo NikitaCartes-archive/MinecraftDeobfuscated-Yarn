@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -48,7 +47,7 @@ extends Feature<GlowLichenFeatureConfig> {
             for (int i = 0; i < glowLichenFeatureConfig.searchRange; ++i) {
                 mutable.set((Vec3i)blockPos, direction);
                 BlockState blockState = structureWorldAccess.getBlockState(mutable);
-                if (!GlowLichenFeature.isAirOrWater(blockState) && !blockState.isOf(Blocks.GLOW_LICHEN)) continue block0;
+                if (!GlowLichenFeature.isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.field_37709)) continue block0;
                 if (!GlowLichenFeature.generate(structureWorldAccess, mutable, blockState, glowLichenFeatureConfig, random, list2)) continue;
                 return true;
             }
@@ -61,15 +60,14 @@ extends Feature<GlowLichenFeatureConfig> {
         for (Direction direction : directions) {
             BlockState blockState = world.getBlockState(mutable.set((Vec3i)pos, direction));
             if (!blockState.isIn(config.canPlaceOn)) continue;
-            GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
-            BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
+            BlockState blockState2 = config.field_37709.withDirection(state, world, pos, direction);
             if (blockState2 == null) {
                 return false;
             }
             world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
             world.getChunk(pos).markBlockForPostProcessing(pos);
             if (random.nextFloat() < config.spreadChance) {
-                glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random, true);
+                config.field_37709.method_41432().method_41447(blockState2, world, pos, direction, random, true);
             }
             return true;
         }

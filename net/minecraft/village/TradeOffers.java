@@ -49,7 +49,7 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
 
 public class TradeOffers {
@@ -330,13 +330,13 @@ public class TradeOffers {
     static class SellMapFactory
     implements Factory {
         private final int price;
-        private final TagKey<ConfiguredStructureFeature<?, ?>> structure;
+        private final TagKey<StructureFeature> structure;
         private final String nameKey;
         private final MapIcon.Type iconType;
         private final int maxUses;
         private final int experience;
 
-        public SellMapFactory(int price, TagKey<ConfiguredStructureFeature<?, ?>> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
+        public SellMapFactory(int price, TagKey<StructureFeature> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
             this.price = price;
             this.structure = structure;
             this.nameKey = nameKey;

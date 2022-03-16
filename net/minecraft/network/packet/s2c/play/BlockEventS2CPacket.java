@@ -28,7 +28,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pos = buf.readBlockPos();
         this.type = buf.readUnsignedByte();
         this.data = buf.readUnsignedByte();
-        this.block = Registry.BLOCK.get(buf.readVarInt());
+        this.block = buf.readRegistryValue(Registry.BLOCK);
     }
 
     @Override
@@ -36,7 +36,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBlockPos(this.pos);
         buf.writeByte(this.type);
         buf.writeByte(this.data);
-        buf.writeVarInt(Registry.BLOCK.getRawId(this.block));
+        buf.writeRegistryValue(Registry.BLOCK, this.block);
     }
 
     @Override

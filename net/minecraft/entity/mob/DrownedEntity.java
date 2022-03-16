@@ -43,6 +43,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +57,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 import org.jetbrains.annotations.Nullable;
 
 public class DrownedEntity
@@ -109,7 +109,7 @@ implements RangedAttackMob {
         }
         RegistryEntry<Biome> registryEntry = world.getBiome(pos);
         boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-        if (registryEntry.matchesKey(BiomeKeys.RIVER) || registryEntry.matchesKey(BiomeKeys.FROZEN_RIVER)) {
+        if (registryEntry.isIn(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS)) {
             return random.nextInt(15) == 0 && bl;
         }
         return random.nextInt(40) == 0 && DrownedEntity.isValidSpawnDepth(world, pos) && bl;

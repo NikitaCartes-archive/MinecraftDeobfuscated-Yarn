@@ -31,8 +31,8 @@ implements Comparable<StatusEffectInstance> {
     @Nullable
     private StatusEffectInstance hiddenEffect;
 
-    public StatusEffectInstance(StatusEffect statusEffect) {
-        this(statusEffect, 0, 0);
+    public StatusEffectInstance(StatusEffect type) {
+        this(type, 0, 0);
     }
 
     public StatusEffectInstance(StatusEffect type, int duration) {
@@ -200,7 +200,7 @@ implements Comparable<StatusEffectInstance> {
     }
 
     public NbtCompound writeNbt(NbtCompound nbt) {
-        nbt.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
+        nbt.putInt("Id", StatusEffect.getRawId(this.getEffectType()));
         this.writeTypelessNbt(nbt);
         return nbt;
     }
@@ -220,7 +220,7 @@ implements Comparable<StatusEffectInstance> {
 
     @Nullable
     public static StatusEffectInstance fromNbt(NbtCompound nbt) {
-        byte i = nbt.getByte("Id");
+        int i = nbt.getInt("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
             return null;

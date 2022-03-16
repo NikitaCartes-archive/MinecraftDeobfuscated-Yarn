@@ -18,6 +18,7 @@ import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.ReorderingUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Identifier;
@@ -41,32 +42,39 @@ extends Language {
         boolean bl = false;
         for (LanguageDefinition languageDefinition : definitions) {
             bl |= languageDefinition.isRightToLeft();
-            String string = String.format("lang/%s.json", languageDefinition.getCode());
-            for (String string2 : resourceManager.getAllNamespaces()) {
+            String string = languageDefinition.getCode();
+            String string2 = String.format("lang/%s.json", string);
+            for (String string3 : resourceManager.getAllNamespaces()) {
                 try {
-                    Identifier identifier = new Identifier(string2, string);
-                    TranslationStorage.load(resourceManager.getAllResources(identifier), map);
+                    Identifier identifier = new Identifier(string3, string2);
+                    TranslationStorage.load(string, resourceManager.getAllResources(identifier), map);
                 } catch (FileNotFoundException identifier) {
                 } catch (Exception exception) {
-                    LOGGER.warn("Skipped language file: {}:{} ({})", string2, string, exception.toString());
+                    LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, exception.toString());
                 }
             }
         }
         return new TranslationStorage(ImmutableMap.copyOf(map), bl);
     }
 
-    private static void load(List<Resource> resources, Map<String, String> translationMap) {
-        for (Resource resource : resources) {
+    private static void load(String langCode, List<ResourceRef> resourceRefs, Map<String, String> translations) {
+        for (ResourceRef resourceRef : resourceRefs) {
             try {
-                InputStream inputStream = resource.getInputStream();
+                Resource resource = resourceRef.open();
                 try {
-                    Language.load(inputStream, translationMap::put);
+                    InputStream inputStream = resource.getInputStream();
+                    try {
+                        Language.load(inputStream, translations::put);
+                    } finally {
+                        if (inputStream == null) continue;
+                        inputStream.close();
+                    }
                 } finally {
-                    if (inputStream == null) continue;
-                    inputStream.close();
+                    if (resource == null) continue;
+                    resource.close();
                 }
             } catch (IOException iOException) {
-                LOGGER.warn("Failed to load translations from {}", (Object)resource, (Object)iOException);
+                LOGGER.warn("Failed to load translations for {} from pack {}", langCode, resourceRef.getPackName(), iOException);
             }
         }
     }

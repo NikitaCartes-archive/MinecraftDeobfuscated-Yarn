@@ -47,6 +47,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -362,7 +363,7 @@ extends AnimalEntity {
         if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
             return i < 80 ? 1 : 3;
         }
-        if (Biome.getCategory(registryEntry) == Biome.Category.DESERT) {
+        if (registryEntry.isIn(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS)) {
             return 4;
         }
         return i < 50 ? 0 : (i < 90 ? 5 : 2);

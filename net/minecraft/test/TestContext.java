@@ -44,6 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
 public class TestContext {
@@ -489,6 +490,11 @@ public class TestContext {
         BlockPos blockPos = this.getAbsolutePos(pos);
         ServerWorld serverWorld = this.getWorld();
         serverWorld.getBlockState(blockPos).randomTick(serverWorld, blockPos, serverWorld.random);
+    }
+
+    public int getRelativeTopY(Heightmap.Type heightmap, int x, int z) {
+        BlockPos blockPos = this.getAbsolutePos(new BlockPos(x, 0, z));
+        return this.getRelativePos(this.getWorld().getTopPosition(heightmap, blockPos)).getY();
     }
 
     public void throwPositionedException(String message, BlockPos pos) {

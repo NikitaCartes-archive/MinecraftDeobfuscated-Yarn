@@ -6,46 +6,78 @@ package net.minecraft.command.argument.serialize;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import net.minecraft.command.argument.BrigadierArgumentTypes;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 
 public class FloatArgumentSerializer
-implements ArgumentSerializer<FloatArgumentType> {
+implements ArgumentSerializer<FloatArgumentType, Properties> {
     @Override
-    public void toPacket(FloatArgumentType floatArgumentType, PacketByteBuf packetByteBuf) {
-        boolean bl = floatArgumentType.getMinimum() != -3.4028235E38f;
-        boolean bl2 = floatArgumentType.getMaximum() != Float.MAX_VALUE;
-        packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
+    public void writePacket(Properties properties, PacketByteBuf packetByteBuf) {
+        boolean bl = properties.min != -3.4028235E38f;
+        boolean bl2 = properties.max != Float.MAX_VALUE;
+        packetByteBuf.writeByte(ArgumentHelper.getMinMaxFlag(bl, bl2));
         if (bl) {
-            packetByteBuf.writeFloat(floatArgumentType.getMinimum());
+            packetByteBuf.writeFloat(properties.min);
         }
         if (bl2) {
-            packetByteBuf.writeFloat(floatArgumentType.getMaximum());
+            packetByteBuf.writeFloat(properties.max);
         }
     }
 
     @Override
-    public FloatArgumentType fromPacket(PacketByteBuf packetByteBuf) {
+    public Properties fromPacket(PacketByteBuf packetByteBuf) {
         byte b = packetByteBuf.readByte();
-        float f = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readFloat() : -3.4028235E38f;
-        float g = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
-        return FloatArgumentType.floatArg(f, g);
+        float f = ArgumentHelper.hasMinFlag(b) ? packetByteBuf.readFloat() : -3.4028235E38f;
+        float g = ArgumentHelper.hasMaxFlag(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
+        return new Properties(f, g);
     }
 
     @Override
-    public void toJson(FloatArgumentType floatArgumentType, JsonObject jsonObject) {
-        if (floatArgumentType.getMinimum() != -3.4028235E38f) {
-            jsonObject.addProperty("min", Float.valueOf(floatArgumentType.getMinimum()));
+    public void writeJson(Properties properties, JsonObject jsonObject) {
+        if (properties.min != -3.4028235E38f) {
+            jsonObject.addProperty("min", Float.valueOf(properties.min));
         }
-        if (floatArgumentType.getMaximum() != Float.MAX_VALUE) {
-            jsonObject.addProperty("max", Float.valueOf(floatArgumentType.getMaximum()));
+        if (properties.max != Float.MAX_VALUE) {
+            jsonObject.addProperty("max", Float.valueOf(properties.max));
         }
     }
 
     @Override
-    public /* synthetic */ ArgumentType fromPacket(PacketByteBuf buf) {
+    public Properties getArgumentTypeProperties(FloatArgumentType floatArgumentType) {
+        return new Properties(floatArgumentType.getMinimum(), floatArgumentType.getMaximum());
+    }
+
+    @Override
+    public /* synthetic */ ArgumentSerializer.ArgumentTypeProperties fromPacket(PacketByteBuf buf) {
         return this.fromPacket(buf);
+    }
+
+    public final class Properties
+    implements ArgumentSerializer.ArgumentTypeProperties<FloatArgumentType> {
+        final float min;
+        final float max;
+
+        Properties(float min, float max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public FloatArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+            return FloatArgumentType.floatArg(this.min, this.max);
+        }
+
+        @Override
+        public ArgumentSerializer<FloatArgumentType, ?> getSerializer() {
+            return FloatArgumentSerializer.this;
+        }
+
+        @Override
+        public /* synthetic */ ArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+            return this.createType(commandRegistryAccess);
+        }
     }
 }
 

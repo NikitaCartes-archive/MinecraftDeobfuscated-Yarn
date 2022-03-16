@@ -179,7 +179,7 @@ implements Shearable {
         super.writeCustomDataToNbt(nbt);
         nbt.putString("Type", this.getMooshroomType().name);
         if (this.stewEffect != null) {
-            nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+            nbt.putInt("EffectId", StatusEffect.getRawId(this.stewEffect));
             nbt.putInt("EffectDuration", this.stewEffectDuration);
         }
     }
@@ -189,7 +189,7 @@ implements Shearable {
         super.readCustomDataFromNbt(nbt);
         this.setType(Type.fromName(nbt.getString("Type")));
         if (nbt.contains("EffectId", 1)) {
-            this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
+            this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
         }
         if (nbt.contains("EffectDuration", 3)) {
             this.stewEffectDuration = nbt.getInt("EffectDuration");

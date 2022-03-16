@@ -94,6 +94,8 @@ import net.minecraft.world.gen.feature.ReplaceBlobsFeatureConfig;
 import net.minecraft.world.gen.feature.RootSystemFeature;
 import net.minecraft.world.gen.feature.RootSystemFeatureConfig;
 import net.minecraft.world.gen.feature.ScatteredOreFeature;
+import net.minecraft.world.gen.feature.SculkPatchFeature;
+import net.minecraft.world.gen.feature.SculkPatchFeatureConfig;
 import net.minecraft.world.gen.feature.SeaPickleFeature;
 import net.minecraft.world.gen.feature.SeagrassFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeature;
@@ -182,6 +184,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DripstoneClusterFeatureConfig> DRIPSTONE_CLUSTER = Feature.register("dripstone_cluster", new DripstoneClusterFeature(DripstoneClusterFeatureConfig.CODEC));
     public static final Feature<LargeDripstoneFeatureConfig> LARGE_DRIPSTONE = Feature.register("large_dripstone", new LargeDripstoneFeature(LargeDripstoneFeatureConfig.CODEC));
     public static final Feature<SmallDripstoneFeatureConfig> POINTED_DRIPSTONE = Feature.register("pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC));
+    public static final Feature<SculkPatchFeatureConfig> SCULK_PATCH = Feature.register("sculk_patch", new SculkPatchFeature(SculkPatchFeatureConfig.CODEC));
     private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
     private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

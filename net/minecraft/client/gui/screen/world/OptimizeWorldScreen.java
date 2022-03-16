@@ -44,7 +44,7 @@ extends Screen {
 
     @Nullable
     public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
-        SaveLoader saveLoader = client.createSaveLoader(storageSession, false);
+        SaveLoader saveLoader = client.method_41735().createSaveLoader(storageSession, false);
         try {
             SaveProperties saveProperties = saveLoader.saveProperties();
             storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);

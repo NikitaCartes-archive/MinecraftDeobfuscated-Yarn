@@ -92,7 +92,7 @@ implements FeatureRendererContext<T, M> {
             m *= -1.0f;
             k *= -1.0f;
         }
-        if (((Entity)livingEntity).getPose() == EntityPose.SLEEPING && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
+        if (((Entity)livingEntity).isInPose(EntityPose.SLEEPING) && (direction = ((LivingEntity)livingEntity).getSleepingDirection()) != null) {
             n = ((Entity)livingEntity).getEyeHeight(EntityPose.STANDING) - 0.1f;
             matrixStack.translate((float)(-direction.getOffsetX()) * n, 0.0, (float)(-direction.getOffsetZ()) * n);
         }
@@ -190,11 +190,10 @@ implements FeatureRendererContext<T, M> {
     }
 
     protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
-        EntityPose entityPose;
         if (this.isShaking(entity)) {
             bodyYaw += (float)(Math.cos((double)((LivingEntity)entity).age * 3.25) * Math.PI * (double)0.4f);
         }
-        if ((entityPose = ((Entity)entity).getPose()) != EntityPose.SLEEPING) {
+        if (!((Entity)entity).isInPose(EntityPose.SLEEPING)) {
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
         }
         if (((LivingEntity)entity).deathTime > 0) {
@@ -206,7 +205,7 @@ implements FeatureRendererContext<T, M> {
         } else if (((LivingEntity)entity).isUsingRiptide()) {
             matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((Entity)entity).getPitch()));
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
-        } else if (entityPose == EntityPose.SLEEPING) {
+        } else if (((Entity)entity).isInPose(EntityPose.SLEEPING)) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
             float g = direction != null ? LivingEntityRenderer.getYaw(direction) : bodyYaw;
             matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));

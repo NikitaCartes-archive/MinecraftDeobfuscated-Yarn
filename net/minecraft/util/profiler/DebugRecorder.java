@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import net.minecraft.util.profiler.Deviation;
 import net.minecraft.util.profiler.DummyProfiler;
+import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerSystem;
@@ -74,6 +76,16 @@ implements Recorder {
     }
 
     @Override
+    public synchronized void forceStop() {
+        if (!this.isActive()) {
+            return;
+        }
+        this.profiler = DummyProfiler.INSTANCE;
+        this.resultConsumer.accept(EmptyProfileResult.INSTANCE);
+        this.forceStop(this.samplers);
+    }
+
+    @Override
     public void startTick() {
         this.checkState();
         this.samplers = this.samplerSource.getSamplers(() -> this.profiler);
@@ -97,8 +109,8 @@ implements Recorder {
         }
         if (this.stopping || this.timeGetter.getAsLong() > this.endTime) {
             this.stopping = false;
-            this.profiler = DummyProfiler.INSTANCE;
             ProfileResult profileResult = this.timeTracker.getResult();
+            this.profiler = DummyProfiler.INSTANCE;
             this.resultConsumer.accept(profileResult);
             this.dump(profileResult);
             return;
@@ -126,13 +138,17 @@ implements Recorder {
         HashSet<Sampler> hashSet = new HashSet<Sampler>(this.samplers);
         this.dumpExecutor.execute(() -> {
             Path path = this.dumper.createDump(hashSet, this.deviations, result);
-            for (Sampler sampler : hashSet) {
-                sampler.stop();
-            }
-            this.deviations.clear();
-            this.timeTracker.disable();
+            this.forceStop(hashSet);
             this.dumpConsumer.accept(path);
         });
+    }
+
+    private void forceStop(Collection<Sampler> samplers) {
+        for (Sampler sampler : samplers) {
+            sampler.stop();
+        }
+        this.deviations.clear();
+        this.timeTracker.disable();
     }
 
     public static void setGlobalDumpConsumer(Consumer<Path> consumer) {

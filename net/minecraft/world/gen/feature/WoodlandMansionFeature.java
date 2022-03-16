@@ -5,38 +5,42 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.structure.StructureGeneratorFactory;
-import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.entity.SpawnGroup;
+import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesList;
+import net.minecraft.structure.StructureType;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.world.StructureSpawns;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.biome.source.BiomeCoords;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class WoodlandMansionFeature
-extends StructureFeature<DefaultFeatureConfig> {
-    public WoodlandMansionFeature(Codec<DefaultFeatureConfig> configCodec) {
-        super(configCodec, WoodlandMansionFeature::addPieces, WoodlandMansionFeature::postPlace);
+extends StructureFeature {
+    public static final Codec<WoodlandMansionFeature> CODEC = RecordCodecBuilder.create(instance -> WoodlandMansionFeature.method_41608(instance).apply(instance, WoodlandMansionFeature::new));
+
+    public WoodlandMansionFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl) {
+        super(registryEntryList, map, feature, bl);
     }
 
-    private static Optional<StructurePiecesGenerator<DefaultFeatureConfig>> addPieces(StructureGeneratorFactory.Context<DefaultFeatureConfig> context2) {
-        ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-        chunkRandom.setCarverSeed(context2.seed(), context2.chunkPos().x, context2.chunkPos().z);
-        BlockRotation blockRotation = BlockRotation.random(chunkRandom);
+    @Override
+    public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
+        BlockRotation blockRotation = BlockRotation.random(arg.random());
         int i = 5;
         int j = 5;
         if (blockRotation == BlockRotation.CLOCKWISE_90) {
@@ -47,40 +51,47 @@ extends StructureFeature<DefaultFeatureConfig> {
         } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
             j = -5;
         }
-        int k = context2.chunkPos().getOffsetX(7);
-        int l = context2.chunkPos().getOffsetZ(7);
-        int[] is = context2.getCornerHeights(k, i, l, j);
+        int k = arg.chunkPos().getOffsetX(7);
+        int l = arg.chunkPos().getOffsetZ(7);
+        int[] is = WoodlandMansionFeature.method_41611(arg, k, i, l, j);
         int m = Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
         if (m < 60) {
             return Optional.empty();
         }
-        if (!context2.validBiome().test(context2.chunkGenerator().getBiomeForNoiseGen(BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(is[0]), BiomeCoords.fromBlock(l)))) {
-            return Optional.empty();
-        }
-        BlockPos blockPos = new BlockPos(context2.chunkPos().getCenterX(), m + 1, context2.chunkPos().getCenterZ());
-        return Optional.of((collector, context) -> {
-            LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
-            WoodlandMansionGenerator.addPieces(context.structureManager(), blockPos, blockRotation, list, chunkRandom);
-            list.forEach(collector::addPiece);
-        });
+        BlockPos blockPos = new BlockPos(k, m, l);
+        return Optional.of(new StructureFeature.class_7150(blockPos, structurePiecesCollector -> this.method_41696((StructurePiecesCollector)structurePiecesCollector, arg, blockPos, blockRotation)));
     }
 
-    private static void postPlace(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, StructurePiecesList children) {
+    private void method_41696(StructurePiecesCollector structurePiecesCollector, StructureFeature.class_7149 arg, BlockPos blockPos, BlockRotation blockRotation) {
+        ChunkPos chunkPos = arg.chunkPos();
+        BlockPos blockPos2 = new BlockPos(chunkPos.getCenterX(), blockPos.getY() + 1, chunkPos.getCenterZ());
+        LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
+        WoodlandMansionGenerator.addPieces(arg.structureTemplateManager(), blockPos2, blockRotation, list, arg.random());
+        list.forEach(structurePiecesCollector::addPiece);
+    }
+
+    @Override
+    public void postPlace(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, StructurePiecesList structurePiecesList) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int i = world.getBottomY();
-        BlockBox blockBox = children.getBoundingBox();
-        int j = blockBox.getMinY();
-        for (int k = chunkBox.getMinX(); k <= chunkBox.getMaxX(); ++k) {
-            block1: for (int l = chunkBox.getMinZ(); l <= chunkBox.getMaxZ(); ++l) {
+        int i = structureWorldAccess.getBottomY();
+        BlockBox blockBox2 = structurePiecesList.getBoundingBox();
+        int j = blockBox2.getMinY();
+        for (int k = blockBox.getMinX(); k <= blockBox.getMaxX(); ++k) {
+            block1: for (int l = blockBox.getMinZ(); l <= blockBox.getMaxZ(); ++l) {
                 mutable.set(k, j, l);
-                if (world.isAir(mutable) || !blockBox.contains(mutable) || !children.contains(mutable)) continue;
+                if (structureWorldAccess.isAir(mutable) || !blockBox2.contains(mutable) || !structurePiecesList.contains(mutable)) continue;
                 for (int m = j - 1; m > i; --m) {
                     mutable.setY(m);
-                    if (!world.isAir(mutable) && !world.getBlockState(mutable).getMaterial().isLiquid()) continue block1;
-                    world.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
+                    if (!structureWorldAccess.isAir(mutable) && !structureWorldAccess.getBlockState(mutable).getMaterial().isLiquid()) continue block1;
+                    structureWorldAccess.setBlockState(mutable, Blocks.COBBLESTONE.getDefaultState(), Block.NOTIFY_LISTENERS);
                 }
             }
         }
+    }
+
+    @Override
+    public StructureType<?> getType() {
+        return StructureType.WOODLAND_MANSION;
     }
 }
 

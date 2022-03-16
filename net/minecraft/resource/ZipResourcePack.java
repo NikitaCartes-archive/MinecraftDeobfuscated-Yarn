@@ -102,7 +102,7 @@ extends AbstractFileResourcePack {
     }
 
     @Override
-    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+    public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
         ZipFile zipFile;
         try {
             zipFile = this.getZipFile();
@@ -115,11 +115,11 @@ extends AbstractFileResourcePack {
         String string2 = string + prefix + "/";
         while (enumeration.hasMoreElements()) {
             String string4;
-            String[] strings;
+            Identifier identifier;
             String string3;
             ZipEntry zipEntry = enumeration.nextElement();
-            if (zipEntry.isDirectory() || (string3 = zipEntry.getName()).endsWith(".mcmeta") || !string3.startsWith(string2) || (strings = (string4 = string3.substring(string.length())).split("/")).length < maxDepth + 1 || !pathFilter.test(strings[strings.length - 1])) continue;
-            list.add(new Identifier(namespace, string4));
+            if (zipEntry.isDirectory() || (string3 = zipEntry.getName()).endsWith(".mcmeta") || !string3.startsWith(string2) || !allowedPathPredicate.test(identifier = new Identifier(namespace, string4 = string3.substring(string.length())))) continue;
+            list.add(identifier);
         }
         return list;
     }

@@ -12,10 +12,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -23,8 +25,7 @@ import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.biome.source.TheEndBiomeSource;
-import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
@@ -71,7 +72,6 @@ public final class DensityFunctionTypes {
             DensityFunctionTypes.register(registry, ((Operation.Type)enum_).asString(), ((Operation.Type)enum_).codec);
         }
         DensityFunctionTypes.register(registry, "spline", Spline.CODEC);
-        DensityFunctionTypes.register(registry, "terrain_shaper_spline", TerrainShaperSpline.CODEC);
         DensityFunctionTypes.register(registry, "constant", Constant.CODEC);
         return DensityFunctionTypes.register(registry, "y_clamped_gradient", YClampedGradient.CODEC);
     }
@@ -179,24 +179,24 @@ public final class DensityFunctionTypes {
         return new Slide(generationShapeConfig, densityFunction);
     }
 
-    public static DensityFunction method_40486(DensityFunction densityFunction, DensityFunction densityFunction2) {
+    public static DensityFunction add(DensityFunction densityFunction, DensityFunction densityFunction2) {
         return Operation.create(Operation.Type.ADD, densityFunction, densityFunction2);
     }
 
-    public static DensityFunction method_40500(DensityFunction densityFunction, DensityFunction densityFunction2) {
+    public static DensityFunction mul(DensityFunction densityFunction, DensityFunction densityFunction2) {
         return Operation.create(Operation.Type.MUL, densityFunction, densityFunction2);
     }
 
-    public static DensityFunction method_40505(DensityFunction densityFunction, DensityFunction densityFunction2) {
+    public static DensityFunction min(DensityFunction densityFunction, DensityFunction densityFunction2) {
         return Operation.create(Operation.Type.MIN, densityFunction, densityFunction2);
     }
 
-    public static DensityFunction method_40508(DensityFunction densityFunction, DensityFunction densityFunction2) {
+    public static DensityFunction max(DensityFunction densityFunction, DensityFunction densityFunction2) {
         return Operation.create(Operation.Type.MAX, densityFunction, densityFunction2);
     }
 
-    public static DensityFunction method_40489(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3, TerrainShaperSpline.Spline spline, double d, double e) {
-        return new TerrainShaperSpline(densityFunction, densityFunction2, densityFunction3, null, spline, d, e);
+    public static DensityFunction spline(net.minecraft.util.math.Spline<Spline.class_7136, Spline.class_7135> spline) {
+        return new Spline(spline);
     }
 
     public static DensityFunction zero() {
@@ -218,7 +218,7 @@ public final class DensityFunctionTypes {
     private static DensityFunction method_40484(DensityFunction densityFunction, double d, double e) {
         double f = (d + e) * 0.5;
         double g = (e - d) * 0.5;
-        return DensityFunctionTypes.method_40486(DensityFunctionTypes.constant(f), DensityFunctionTypes.method_40500(DensityFunctionTypes.constant(g), densityFunction));
+        return DensityFunctionTypes.add(DensityFunctionTypes.constant(f), DensityFunctionTypes.mul(DensityFunctionTypes.constant(g), densityFunction));
     }
 
     public static DensityFunction blendAlpha() {
@@ -231,8 +231,8 @@ public final class DensityFunctionTypes {
 
     public static DensityFunction method_40488(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3) {
         DensityFunction densityFunction4 = DensityFunctionTypes.cacheOnce(densityFunction);
-        DensityFunction densityFunction5 = DensityFunctionTypes.method_40486(DensityFunctionTypes.method_40500(densityFunction4, DensityFunctionTypes.constant(-1.0)), DensityFunctionTypes.constant(1.0));
-        return DensityFunctionTypes.method_40486(DensityFunctionTypes.method_40500(densityFunction2, densityFunction5), DensityFunctionTypes.method_40500(densityFunction3, densityFunction4));
+        DensityFunction densityFunction5 = DensityFunctionTypes.add(DensityFunctionTypes.mul(densityFunction4, DensityFunctionTypes.constant(-1.0)), DensityFunctionTypes.constant(1.0));
+        return DensityFunctionTypes.add(DensityFunctionTypes.mul(densityFunction2, densityFunction5), DensityFunctionTypes.mul(densityFunction3, densityFunction4));
     }
 
     protected static enum BlendAlpha implements DensityFunction.class_6913
@@ -425,7 +425,8 @@ public final class DensityFunctionTypes {
     protected static final class EndIslands
     implements DensityFunction.class_6913 {
         public static final Codec<EndIslands> CODEC = Codec.unit(new EndIslands(0L));
-        final SimplexNoiseSampler field_36554;
+        private static final float field_37677 = -0.9f;
+        private final SimplexNoiseSampler field_36554;
 
         public EndIslands(long seed) {
             AtomicSimpleRandom abstractRandom = new AtomicSimpleRandom(seed);
@@ -433,9 +434,32 @@ public final class DensityFunctionTypes {
             this.field_36554 = new SimplexNoiseSampler(abstractRandom);
         }
 
+        private static float method_41529(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {
+            int k = i / 2;
+            int l = j / 2;
+            int m = i % 2;
+            int n = j % 2;
+            float f = 100.0f - MathHelper.sqrt(i * i + j * j) * 8.0f;
+            f = MathHelper.clamp(f, -100.0f, 80.0f);
+            for (int o = -12; o <= 12; ++o) {
+                for (int p = -12; p <= 12; ++p) {
+                    long q = k + o;
+                    long r = l + p;
+                    if (q * q + r * r <= 4096L || !(simplexNoiseSampler.sample(q, r) < (double)-0.9f)) continue;
+                    float g = (MathHelper.abs(q) * 3439.0f + MathHelper.abs(r) * 147.0f) % 13.0f + 9.0f;
+                    float h = m - o * 2;
+                    float s = n - p * 2;
+                    float t = 100.0f - MathHelper.sqrt(h * h + s * s) * g;
+                    t = MathHelper.clamp(t, -100.0f, 80.0f);
+                    f = Math.max(f, t);
+                }
+            }
+            return f;
+        }
+
         @Override
         public double sample(DensityFunction.NoisePos pos) {
-            return ((double)TheEndBiomeSource.getNoiseAt(this.field_36554, pos.blockX() / 8, pos.blockZ() / 8) - 8.0) / 128.0;
+            return ((double)EndIslands.method_41529(this.field_36554, pos.blockX() / 8, pos.blockZ() / 8) - 8.0) / 128.0;
         }
 
         @Override
@@ -965,14 +989,25 @@ public final class DensityFunctionTypes {
         }
     }
 
-    public record Spline(net.minecraft.util.math.Spline<VanillaTerrainParameters.class_7075> spline, double minValue, double maxValue) implements DensityFunction
+    public record Spline(net.minecraft.util.math.Spline<class_7136, class_7135> spline) implements DensityFunction
     {
-        private static final MapCodec<Spline> field_37256 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)VanillaTerrainParameters.field_37252.fieldOf("spline")).forGetter(Spline::spline), ((MapCodec)CONSTANT_RANGE.fieldOf("min_value")).forGetter(Spline::minValue), ((MapCodec)CONSTANT_RANGE.fieldOf("max_value")).forGetter(Spline::maxValue)).apply((Applicative<Spline, ?>)instance, Spline::new));
+        private static final Codec<net.minecraft.util.math.Spline<class_7136, class_7135>> field_37678 = net.minecraft.util.math.Spline.createCodec(class_7135.field_37679);
+        private static final MapCodec<Spline> field_37256 = ((MapCodec)field_37678.fieldOf("spline")).xmap(Spline::new, Spline::spline);
         public static final Codec<Spline> CODEC = DensityFunctionTypes.method_41065(field_37256);
 
         @Override
         public double sample(DensityFunction.NoisePos pos) {
-            return MathHelper.clamp((double)this.spline.apply(VanillaTerrainParameters.method_41191(pos)), this.minValue, this.maxValue);
+            return this.spline.apply(new class_7136(pos));
+        }
+
+        @Override
+        public double minValue() {
+            return this.spline.min();
+        }
+
+        @Override
+        public double maxValue() {
+            return this.spline.max();
         }
 
         @Override
@@ -982,52 +1017,7 @@ public final class DensityFunctionTypes {
 
         @Override
         public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-            return (DensityFunction)visitor.apply(new Spline(this.spline.method_41187(toFloatFunction -> {
-                ToFloatFunction toFloatFunction2;
-                if (toFloatFunction instanceof VanillaTerrainParameters.class_7074) {
-                    VanillaTerrainParameters.class_7074 lv = (VanillaTerrainParameters.class_7074)toFloatFunction;
-                    toFloatFunction2 = lv.method_41194(visitor);
-                } else {
-                    toFloatFunction2 = toFloatFunction;
-                }
-                return toFloatFunction2;
-            }), this.minValue, this.maxValue));
-        }
-
-        @Override
-        public Codec<? extends DensityFunction> getCodec() {
-            return CODEC;
-        }
-    }
-
-    @Deprecated
-    public record TerrainShaperSpline(DensityFunction continentalness, DensityFunction erosion, DensityFunction weirdness, @Nullable VanillaTerrainParameters shaper, Spline spline, double minValue, double maxValue) implements DensityFunction
-    {
-        private static final MapCodec<TerrainShaperSpline> field_37101 = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)DensityFunction.field_37059.fieldOf("continentalness")).forGetter(TerrainShaperSpline::continentalness), ((MapCodec)DensityFunction.field_37059.fieldOf("erosion")).forGetter(TerrainShaperSpline::erosion), ((MapCodec)DensityFunction.field_37059.fieldOf("weirdness")).forGetter(TerrainShaperSpline::weirdness), ((MapCodec)Spline.CODEC.fieldOf("spline")).forGetter(TerrainShaperSpline::spline), ((MapCodec)CONSTANT_RANGE.fieldOf("min_value")).forGetter(TerrainShaperSpline::minValue), ((MapCodec)CONSTANT_RANGE.fieldOf("max_value")).forGetter(TerrainShaperSpline::maxValue)).apply((Applicative<TerrainShaperSpline, ?>)instance, TerrainShaperSpline::method_41094));
-        public static final Codec<TerrainShaperSpline> CODEC = DensityFunctionTypes.method_41065(field_37101);
-
-        public static TerrainShaperSpline method_41094(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3, Spline spline, double d, double e) {
-            return new TerrainShaperSpline(densityFunction, densityFunction2, densityFunction3, null, spline, d, e);
-        }
-
-        @Override
-        public double sample(DensityFunction.NoisePos pos) {
-            if (this.shaper == null) {
-                return 0.0;
-            }
-            return MathHelper.clamp((double)this.spline.field_37108.apply(this.shaper, VanillaTerrainParameters.createNoisePoint((float)this.continentalness.sample(pos), (float)this.erosion.sample(pos), (float)this.weirdness.sample(pos))), this.minValue, this.maxValue);
-        }
-
-        @Override
-        public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
-            for (int i = 0; i < ds.length; ++i) {
-                ds[i] = this.sample(arg.method_40477(i));
-            }
-        }
-
-        @Override
-        public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-            return (DensityFunction)visitor.apply(new TerrainShaperSpline(this.continentalness.apply(visitor), this.erosion.apply(visitor), this.weirdness.apply(visitor), this.shaper, this.spline, this.minValue, this.maxValue));
+            return (DensityFunction)visitor.apply(new Spline(this.spline.method_41187(arg -> arg.method_41530(visitor))));
         }
 
         @Override
@@ -1035,40 +1025,52 @@ public final class DensityFunctionTypes {
             return CODEC;
         }
 
-        @Nullable
-        public VanillaTerrainParameters shaper() {
-            return this.shaper;
+        public record class_7136(DensityFunction.NoisePos context) {
         }
 
-        public static enum Spline implements StringIdentifiable
+        public record class_7135(RegistryEntry<DensityFunction> function) implements ToFloatFunction<class_7136>
         {
-            OFFSET("offset", VanillaTerrainParameters::getOffset),
-            FACTOR("factor", VanillaTerrainParameters::getFactor),
-            JAGGEDNESS("jaggedness", VanillaTerrainParameters::getPeak);
+            public static final Codec<class_7135> field_37679 = DensityFunction.REGISTRY_ENTRY_CODEC.xmap(class_7135::new, class_7135::function);
 
-            private static final Map<String, Spline> field_37106;
-            public static final Codec<Spline> CODEC;
-            private final String name;
-            final class_7053 field_37108;
-
-            private Spline(String name, class_7053 arg) {
-                this.name = name;
-                this.field_37108 = arg;
+            @Override
+            public String toString() {
+                Optional<RegistryKey<DensityFunction>> optional = this.function.getKey();
+                if (optional.isPresent()) {
+                    RegistryKey<DensityFunction> registryKey = optional.get();
+                    if (registryKey == DensityFunctions.CONTINENTS_OVERWORLD) {
+                        return "continents";
+                    }
+                    if (registryKey == DensityFunctions.EROSION_OVERWORLD) {
+                        return "erosion";
+                    }
+                    if (registryKey == DensityFunctions.RIDGES_OVERWORLD) {
+                        return "weirdness";
+                    }
+                    if (registryKey == DensityFunctions.RIDGES_FOLDED_OVERWORLD) {
+                        return "ridges";
+                    }
+                }
+                return "Coordinate[" + this.function + "]";
             }
 
             @Override
-            public String asString() {
-                return this.name;
+            public float apply(class_7136 arg) {
+                return (float)this.function.value().sample(arg.context());
             }
 
-            static {
-                field_37106 = Arrays.stream(Spline.values()).collect(Collectors.toMap(Spline::asString, spline -> spline));
-                CODEC = StringIdentifiable.createCodec(Spline::values, field_37106::get);
+            @Override
+            public float min() {
+                return (float)this.function.value().minValue();
             }
-        }
 
-        static interface class_7053 {
-            public float apply(VanillaTerrainParameters var1, VanillaTerrainParameters.NoisePoint var2);
+            @Override
+            public float max() {
+                return (float)this.function.value().maxValue();
+            }
+
+            public class_7135 method_41530(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
+                return new class_7135(new RegistryEntry.Direct<DensityFunction>(this.function.value().apply(densityFunctionVisitor)));
+            }
         }
     }
 
@@ -1197,8 +1199,8 @@ public final class DensityFunctionTypes {
         }
     }
 
-    record class_6929(SpecificType specificType, DensityFunction input, double minValue, double maxValue, double argument) implements Operation,
-    class_6932
+    record class_6929(SpecificType specificType, DensityFunction input, double minValue, double maxValue, double argument) implements class_6932,
+    Operation
     {
         @Override
         public Operation.Type type() {
@@ -1289,7 +1291,8 @@ public final class DensityFunctionTypes {
         }
     }
 
-    protected record class_7051(RegistryEntry<DensityFunction> function) implements DensityFunction
+    @Debug
+    public record RegistryEntryHolder(RegistryEntry<DensityFunction> function) implements DensityFunction
     {
         @Override
         public double sample(DensityFunction.NoisePos pos) {
@@ -1303,7 +1306,7 @@ public final class DensityFunctionTypes {
 
         @Override
         public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-            return (DensityFunction)visitor.apply(new class_7051(new RegistryEntry.Direct<DensityFunction>(this.function.value().apply(visitor))));
+            return (DensityFunction)visitor.apply(new RegistryEntryHolder(new RegistryEntry.Direct<DensityFunction>(this.function.value().apply(visitor))));
         }
 
         @Override

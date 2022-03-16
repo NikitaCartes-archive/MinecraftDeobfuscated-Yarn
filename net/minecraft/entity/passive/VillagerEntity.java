@@ -744,7 +744,7 @@ VillagerDataContainer {
 
     private int getAvailableFood() {
         SimpleInventory simpleInventory = this.getInventory();
-        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> simpleInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+        return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(item -> simpleInventory.count((Item)item.getKey()) * (Integer)item.getValue()).sum();
     }
 
     public boolean hasSeedToPlant() {

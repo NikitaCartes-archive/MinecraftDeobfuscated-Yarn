@@ -3,18 +3,17 @@
  */
 package net.minecraft.resource;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.util.Identifier;
 
 /**
@@ -50,7 +49,7 @@ extends ResourceFactory {
      * 
      * @param id the resource identifier to search for
      */
-    public List<Resource> getAllResources(Identifier var1) throws IOException;
+    public List<ResourceRef> getAllResources(Identifier var1) throws IOException;
 
     /**
      * Returns a sorted list of identifiers matching a path predicate.
@@ -63,10 +62,12 @@ extends ResourceFactory {
      * 
      * @return the list matching identifiers
      * 
-     * @param pathPredicate a predicate to determine whether a path should be included or not
      * @param startingPath the starting path to begin scanning from
+     * @param allowedPathPredicate a predicate to determine whether a path should be included or not
      */
-    public Collection<Identifier> findResources(String var1, Predicate<String> var2);
+    public Map<Identifier, ResourceRef> findResources(String var1, Predicate<Identifier> var2);
+
+    public Map<Identifier, List<ResourceRef>> findAllResources(String var1, Predicate<Identifier> var2);
 
     /**
      * Gets a stream of loaded resource packs in increasing order of priority.
@@ -80,7 +81,7 @@ extends ResourceFactory {
 
         @Override
         public Set<String> getAllNamespaces() {
-            return ImmutableSet.of();
+            return Set.of();
         }
 
         @Override
@@ -94,13 +95,18 @@ extends ResourceFactory {
         }
 
         @Override
-        public List<Resource> getAllResources(Identifier id) {
-            return ImmutableList.of();
+        public List<ResourceRef> getAllResources(Identifier id) throws IOException {
+            throw new FileNotFoundException(id.toString());
         }
 
         @Override
-        public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
-            return ImmutableSet.of();
+        public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+            return Map.of();
+        }
+
+        @Override
+        public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+            return Map.of();
         }
 
         @Override

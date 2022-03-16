@@ -25,6 +25,7 @@ import net.minecraft.village.raid.Raid;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -162,7 +163,7 @@ extends PersistentState {
     }
 
     public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
-        if (dimensionTypeEntry.matchesKey(DimensionType.THE_END_REGISTRY_KEY)) {
+        if (dimensionTypeEntry.matchesKey(DimensionTypes.THE_END)) {
             return "raids_end";
         }
         return RAIDS;

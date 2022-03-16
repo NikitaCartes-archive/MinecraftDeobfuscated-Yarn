@@ -134,8 +134,6 @@ implements BiomeSupplier {
 
     protected abstract Codec<? extends BiomeSource> getCodec();
 
-    public abstract BiomeSource withSeed(long var1);
-
     public Set<RegistryEntry<Biome>> getBiomes() {
         return this.biomes;
     }
