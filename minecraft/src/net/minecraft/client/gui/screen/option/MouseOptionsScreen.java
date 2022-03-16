@@ -17,9 +17,10 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class MouseOptionsScreen extends GameOptionsScreen {
 	private ButtonListWidget buttonList;
-	private static final Option[] OPTIONS = new Option[]{
-		Option.SENSITIVITY, Option.INVERT_MOUSE, Option.MOUSE_WHEEL_SENSITIVITY, Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN
-	};
+
+	private static Option[] getOptons(GameOptions gameOptions) {
+		return new Option[]{Option.SENSITIVITY, Option.INVERT_MOUSE, gameOptions.getMouseWheelSensitivity(), Option.DISCRETE_MOUSE_SCROLL, Option.TOUCHSCREEN};
+	}
 
 	public MouseOptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(parent, gameOptions, new TranslatableText("options.mouse_settings.title"));
@@ -29,9 +30,10 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 	protected void init() {
 		this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
 		if (InputUtil.isRawMouseMotionSupported()) {
-			this.buttonList.addAll((Option[])Stream.concat(Arrays.stream(OPTIONS), Stream.of(Option.RAW_MOUSE_INPUT)).toArray(Option[]::new));
+			this.buttonList
+				.addAll((Option[])Stream.concat(Arrays.stream(getOptons(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(Option[]::new));
 		} else {
-			this.buttonList.addAll(OPTIONS);
+			this.buttonList.addAll(getOptons(this.gameOptions));
 		}
 
 		this.addSelectableChild(this.buttonList);

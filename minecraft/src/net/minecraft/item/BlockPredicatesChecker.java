@@ -3,10 +3,10 @@ package net.minecraft.item;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Objects;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -25,7 +25,6 @@ import net.minecraft.util.registry.Registry;
  * using {@code CanPlaceOn} or {@code CanDestroy}.
  */
 public class BlockPredicatesChecker {
-	public static final BlockPredicateArgumentType BLOCK_PREDICATE = BlockPredicateArgumentType.blockPredicate();
 	private final String key;
 	@Nullable
 	private CachedBlockPosition cachedPos;
@@ -72,14 +71,15 @@ public class BlockPredicatesChecker {
 					String string = nbtList.getString(i);
 
 					try {
-						BlockPredicateArgumentType.BlockPredicate blockPredicate = BLOCK_PREDICATE.parse(new StringReader(string));
+						BlockPredicateArgumentType.BlockPredicate blockPredicate = BlockPredicateArgumentType.parse(
+							CommandRegistryWrapper.of(blockRegistry), new StringReader(string)
+						);
 						this.nbtAware = this.nbtAware | blockPredicate.hasNbt();
-						Predicate<CachedBlockPosition> predicate = blockPredicate.create(blockRegistry);
-						if (predicate.test(pos)) {
+						if (blockPredicate.test(pos)) {
 							this.lastResult = true;
 							return true;
 						}
-					} catch (CommandSyntaxException var10) {
+					} catch (CommandSyntaxException var9) {
 					}
 				}
 			}

@@ -24,7 +24,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.EmptyTickSchedulers;
 
@@ -139,43 +139,44 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return this.wrapped.getStructureStart(configuredStructureFeature);
+	public StructureStart getStructureStart(StructureFeature structureFeature) {
+		return this.wrapped.getStructureStart(structureFeature);
 	}
 
 	@Override
-	public void setStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, StructureStart start) {
+	public void setStructureStart(StructureFeature structureFeature, StructureStart start) {
 	}
 
 	@Override
-	public Map<ConfiguredStructureFeature<?, ?>, StructureStart> getStructureStarts() {
+	public Map<StructureFeature, StructureStart> getStructureStarts() {
 		return this.wrapped.getStructureStarts();
 	}
 
 	@Override
-	public void setStructureStarts(Map<ConfiguredStructureFeature<?, ?>, StructureStart> structureStarts) {
+	public void setStructureStarts(Map<StructureFeature, StructureStart> structureStarts) {
 	}
 
 	@Override
-	public LongSet getStructureReferences(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return this.wrapped.getStructureReferences(configuredStructureFeature);
+	public LongSet getStructureReferences(StructureFeature structureFeature) {
+		return this.wrapped.getStructureReferences(structureFeature);
 	}
 
 	@Override
-	public void addStructureReference(ConfiguredStructureFeature<?, ?> configuredStructureFeature, long reference) {
+	public void addStructureReference(StructureFeature structureFeature, long reference) {
 	}
 
 	@Override
-	public Map<ConfiguredStructureFeature<?, ?>, LongSet> getStructureReferences() {
+	public Map<StructureFeature, LongSet> getStructureReferences() {
 		return this.wrapped.getStructureReferences();
 	}
 
 	@Override
-	public void setStructureReferences(Map<ConfiguredStructureFeature<?, ?>, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureFeature, LongSet> structureReferences) {
 	}
 
 	@Override
 	public void setNeedsSaving(boolean needsSaving) {
+		this.wrapped.setNeedsSaving(needsSaving);
 	}
 
 	@Override

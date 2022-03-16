@@ -14,6 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
@@ -32,7 +33,7 @@ public class CloneCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed"));
 	public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = pos -> !pos.getBlockState().isAir();
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(
 			CommandManager.literal("clone")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -159,7 +160,7 @@ public class CloneCommand {
 										.then(
 											CommandManager.literal("filtered")
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
+													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate(commandRegistryAccess))
 														.executes(
 															context -> execute(
 																	context.getSource(),

@@ -113,6 +113,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<SmallDripstoneFeatureConfig> POINTED_DRIPSTONE = register(
 		"pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
 	);
+	public static final Feature<SculkPatchFeatureConfig> SCULK_PATCH = register("sculk_patch", new SculkPatchFeature(SculkPatchFeatureConfig.CODEC));
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

@@ -83,6 +83,7 @@ import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -614,7 +615,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
-		packet.visitUpdates((pos, state) -> this.world.setBlockState(pos, state, i));
+		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, i));
 	}
 
 	@Override
@@ -680,7 +681,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onBlockUpdate(BlockUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.setBlockStateWithoutNeighborUpdates(packet.getPos(), packet.getState());
+		this.world.handleBlockUpdate(packet.getPos(), packet.getState(), 19);
 	}
 
 	@Override
@@ -796,7 +797,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onMobSpawn(MobSpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(packet.getEntityTypeId(), this.world);
+		LivingEntity livingEntity = (LivingEntity)EntityType.newInstance(this.world, packet.getEntityTypeId());
 		if (livingEntity != null) {
 			livingEntity.readFromPacket(packet);
 			this.world.addEntity(packet.getId(), livingEntity);
@@ -1248,7 +1249,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onCommandTree(CommandTreeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.commandDispatcher = new CommandDispatcher<>(packet.getCommandTree());
+		this.commandDispatcher = new CommandDispatcher<>(packet.getCommandTree(new CommandRegistryAccess(this.registryManager)));
 	}
 
 	@Override
@@ -1349,7 +1350,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity instanceof LivingEntity) {
-			StatusEffect statusEffect = StatusEffect.byRawId(packet.getEffectId());
+			StatusEffect statusEffect = packet.getEffectId();
 			if (statusEffect != null) {
 				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(
 					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
@@ -2235,7 +2236,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.interactionManager.processPlayerActionResponse(this.world, packet.pos(), packet.state(), packet.action(), packet.approved());
+		this.world.handlePlayerActionResponse(packet.sequence());
 	}
 
 	private void updateLighting(

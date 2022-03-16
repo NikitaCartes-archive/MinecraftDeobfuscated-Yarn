@@ -195,6 +195,7 @@ public class RecipeProvider implements DataProvider {
 		offerPlanksRecipe(exporter, Blocks.OAK_PLANKS, ItemTags.OAK_LOGS);
 		offerPlanksRecipe(exporter, Blocks.SPRUCE_PLANKS, ItemTags.SPRUCE_LOGS);
 		offerPlanksRecipe(exporter, Blocks.WARPED_PLANKS, ItemTags.WARPED_STEMS);
+		offerPlanksRecipe(exporter, Blocks.MANGROVE_PLANKS, ItemTags.MANGROVE_LOGS);
 		offerBarkBlockRecipe(exporter, Blocks.ACACIA_WOOD, Blocks.ACACIA_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.BIRCH_WOOD, Blocks.BIRCH_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_LOG);
@@ -203,6 +204,7 @@ public class RecipeProvider implements DataProvider {
 		offerBarkBlockRecipe(exporter, Blocks.SPRUCE_WOOD, Blocks.SPRUCE_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.CRIMSON_HYPHAE, Blocks.CRIMSON_STEM);
 		offerBarkBlockRecipe(exporter, Blocks.WARPED_HYPHAE, Blocks.WARPED_STEM);
+		offerBarkBlockRecipe(exporter, Blocks.MANGROVE_WOOD, Blocks.MANGROVE_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_ACACIA_WOOD, Blocks.STRIPPED_ACACIA_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_BIRCH_WOOD, Blocks.STRIPPED_BIRCH_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_LOG);
@@ -211,12 +213,14 @@ public class RecipeProvider implements DataProvider {
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_SPRUCE_WOOD, Blocks.STRIPPED_SPRUCE_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_CRIMSON_HYPHAE, Blocks.STRIPPED_CRIMSON_STEM);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_WARPED_HYPHAE, Blocks.STRIPPED_WARPED_STEM);
+		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_LOG);
 		offerBoatRecipe(exporter, Items.ACACIA_BOAT, Blocks.ACACIA_PLANKS);
 		offerBoatRecipe(exporter, Items.BIRCH_BOAT, Blocks.BIRCH_PLANKS);
 		offerBoatRecipe(exporter, Items.DARK_OAK_BOAT, Blocks.DARK_OAK_PLANKS);
 		offerBoatRecipe(exporter, Items.JUNGLE_BOAT, Blocks.JUNGLE_PLANKS);
 		offerBoatRecipe(exporter, Items.OAK_BOAT, Blocks.OAK_PLANKS);
 		offerBoatRecipe(exporter, Items.SPRUCE_BOAT, Blocks.SPRUCE_PLANKS);
+		offerBoatRecipe(exporter, Items.MANGROVE_BOAT, Blocks.MANGROVE_PLANKS);
 		offerWoolDyeingRecipe(exporter, Blocks.BLACK_WOOL, Items.BLACK_DYE);
 		offerCarpetRecipe(exporter, Blocks.BLACK_CARPET, Blocks.BLACK_WOOL);
 		offerCarpetDyeingRecipe(exporter, Blocks.BLACK_CARPET, Items.BLACK_DYE);
@@ -415,6 +419,22 @@ public class RecipeProvider implements DataProvider {
 		offerCandleDyeingRecipe(exporter, Blocks.RED_CANDLE, Items.RED_DYE);
 		offerCandleDyeingRecipe(exporter, Blocks.WHITE_CANDLE, Items.WHITE_DYE);
 		offerCandleDyeingRecipe(exporter, Blocks.YELLOW_CANDLE, Items.YELLOW_DYE);
+		ShapelessRecipeJsonBuilder.create(Blocks.PACKED_MUD, 1)
+			.input(Blocks.MUD)
+			.input(Items.WHEAT)
+			.criterion("has_mud", conditionsFromItem(Blocks.MUD))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(Blocks.MUD_BRICKS, 4)
+			.input('#', Blocks.PACKED_MUD)
+			.pattern("##")
+			.pattern("##")
+			.criterion("has_packed_mud", conditionsFromItem(Blocks.PACKED_MUD))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Blocks.MUDDY_MANGROVE_ROOTS, 1)
+			.input(Blocks.MUD)
+			.input(Items.field_37513)
+			.criterion("has_mangrove_roots", conditionsFromItem(Blocks.MANGROVE_ROOTS))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(Blocks.ACTIVATOR_RAIL, 6)
 			.input('#', Blocks.REDSTONE_TORCH)
 			.input('S', Items.STICK)
@@ -2474,6 +2494,9 @@ public class RecipeProvider implements DataProvider {
 		offerStonecuttingRecipe(exporter, Blocks.BRICK_SLAB, Blocks.BRICKS, 2);
 		offerStonecuttingRecipe(exporter, Blocks.BRICK_STAIRS, Blocks.BRICKS);
 		offerStonecuttingRecipe(exporter, Blocks.BRICK_WALL, Blocks.BRICKS);
+		offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_SLAB, Blocks.MUD_BRICKS, 2);
+		offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_STAIRS, Blocks.MUD_BRICKS);
+		offerStonecuttingRecipe(exporter, Blocks.MUD_BRICK_WALL, Blocks.MUD_BRICKS);
 		offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_SLAB, Blocks.NETHER_BRICKS, 2);
 		offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_BRICKS);
 		offerStonecuttingRecipe(exporter, Blocks.NETHER_BRICK_WALL, Blocks.NETHER_BRICKS);

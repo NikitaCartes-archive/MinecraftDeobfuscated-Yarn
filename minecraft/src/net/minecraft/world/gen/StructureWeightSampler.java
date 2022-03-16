@@ -15,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
@@ -42,7 +43,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.class_7050 {
 		int j = chunkPos.getStartZ();
 		this.junctions = new ObjectArrayList<>(32);
 		this.pieces = new ObjectArrayList<>(10);
-		structureAccessor.method_41035(ChunkSectionPos.from(chunk), configuredStructureFeature -> configuredStructureFeature.field_37144).forEach(start -> {
+		structureAccessor.method_41035(ChunkSectionPos.from(chunk), StructureFeature::shouldAdaptNoise).forEach(start -> {
 			for (StructurePiece structurePiece : start.getChildren()) {
 				if (structurePiece.intersectsChunk(chunkPos, 12)) {
 					if (structurePiece instanceof PoolStructurePiece) {

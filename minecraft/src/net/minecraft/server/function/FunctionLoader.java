@@ -11,11 +11,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -88,26 +90,27 @@ public class FunctionLoader implements ResourceReloader {
 	) {
 		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
-				() -> manager.findResources("functions", path -> path.endsWith(".mcfunction")), prepareExecutor
+				() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(".mcfunction")), prepareExecutor
 			)
 			.thenCompose(
-				ids -> {
-					Map<Identifier, CompletableFuture<CommandFunction>> map = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
+				map -> {
+					Map<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
 						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null
 					);
 
-					for (Identifier identifier : ids) {
+					for (Entry<Identifier, ResourceRef> entry : map.entrySet()) {
+						Identifier identifier = (Identifier)entry.getKey();
 						String string = identifier.getPath();
 						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
-						map.put(identifier2, CompletableFuture.supplyAsync(() -> {
-							List<String> list = readLines(manager, identifier);
+						map2.put(identifier2, CompletableFuture.supplyAsync(() -> {
+							List<String> list = readLines((ResourceRef)entry.getValue());
 							return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
 						}, prepareExecutor));
 					}
 
-					CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])map.values().toArray(new CompletableFuture[0]);
-					return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map);
+					CompletableFuture<?>[] completableFutures = (CompletableFuture<?>[])map2.values().toArray(new CompletableFuture[0]);
+					return CompletableFuture.allOf(completableFutures).handle((unused, ex) -> map2);
 				}
 			);
 		return completableFuture.thenCombine(completableFuture2, Pair::of).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(intermediate -> {
@@ -127,32 +130,32 @@ public class FunctionLoader implements ResourceReloader {
 		}, applyExecutor);
 	}
 
-	private static List<String> readLines(ResourceManager resourceManager, Identifier id) {
+	private static List<String> readLines(ResourceRef resourceRef) {
 		try {
-			Resource resource = resourceManager.getResource(id);
+			Resource resource = resourceRef.open();
 
-			List var3;
+			List var2;
 			try {
-				var3 = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
-			} catch (Throwable var6) {
+				var2 = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
+			} catch (Throwable var5) {
 				if (resource != null) {
 					try {
 						resource.close();
-					} catch (Throwable var5) {
-						var6.addSuppressed(var5);
+					} catch (Throwable var4) {
+						var5.addSuppressed(var4);
 					}
 				}
 
-				throw var6;
+				throw var5;
 			}
 
 			if (resource != null) {
 				resource.close();
 			}
 
-			return var3;
-		} catch (IOException var7) {
-			throw new CompletionException(var7);
+			return var2;
+		} catch (IOException var6) {
+			throw new CompletionException(var6);
 		}
 	}
 }

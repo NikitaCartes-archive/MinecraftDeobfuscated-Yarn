@@ -9,6 +9,7 @@ import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.stb.STBIEOFCallback;
@@ -24,7 +25,7 @@ public class PngFile {
 	public final int width;
 	public final int height;
 
-	public PngFile(String name, InputStream in) throws IOException {
+	public PngFile(Supplier<String> filenameSupplier, InputStream in) throws IOException {
 		try (
 			MemoryStack memoryStack = MemoryStack.stackPush();
 			PngFile.Reader reader = createReader(in);
@@ -40,7 +41,7 @@ public class PngFile {
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
 			if (!STBImage.stbi_info_from_callbacks(sTBIIOCallbacks, 0L, intBuffer, intBuffer2, intBuffer3)) {
-				throw new IOException("Could not read info from the PNG file " + name + " " + STBImage.stbi_failure_reason());
+				throw new IOException("Could not read info from the PNG file " + (String)filenameSupplier.get() + " " + STBImage.stbi_failure_reason());
 			}
 
 			this.width = intBuffer.get(0);

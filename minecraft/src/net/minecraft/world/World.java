@@ -51,6 +51,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
@@ -64,7 +65,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public abstract class World implements WorldAccess, AutoCloseable {
-	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
+	public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(Registry.WORLD_KEY);
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
@@ -331,18 +332,15 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
 	}
 
+	public abstract NeighborUpdater getNeighborUpdater();
+
 	/**
 	 * Emits a neighbor update to all 6 neighboring blocks of {@code pos}.
 	 * 
 	 * @see #updateNeighborsExcept(BlockPos, Block, Direction)
 	 */
-	public void updateNeighborsAlways(BlockPos pos, Block block) {
-		this.updateNeighbor(pos.west(), block, pos);
-		this.updateNeighbor(pos.east(), block, pos);
-		this.updateNeighbor(pos.down(), block, pos);
-		this.updateNeighbor(pos.up(), block, pos);
-		this.updateNeighbor(pos.north(), block, pos);
-		this.updateNeighbor(pos.south(), block, pos);
+	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
+		this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, null);
 	}
 
 	/**
@@ -352,57 +350,21 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #updateNeighborsAlways(BlockPos, Block)
 	 */
 	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		if (direction != Direction.WEST) {
-			this.updateNeighbor(pos.west(), sourceBlock, pos);
-		}
-
-		if (direction != Direction.EAST) {
-			this.updateNeighbor(pos.east(), sourceBlock, pos);
-		}
-
-		if (direction != Direction.DOWN) {
-			this.updateNeighbor(pos.down(), sourceBlock, pos);
-		}
-
-		if (direction != Direction.UP) {
-			this.updateNeighbor(pos.up(), sourceBlock, pos);
-		}
-
-		if (direction != Direction.NORTH) {
-			this.updateNeighbor(pos.north(), sourceBlock, pos);
-		}
-
-		if (direction != Direction.SOUTH) {
-			this.updateNeighbor(pos.south(), sourceBlock, pos);
-		}
+		this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, direction);
 	}
 
 	/**
-	 * Triggers a neighbor update originating from {@code pos} at
-	 * {@code neighborPos}.
+	 * Triggers a neighbor update originating from {@code sourcePos} at
+	 * {@code pos}.
 	 * 
 	 * @see #updateNeighborsAlways(BlockPos, Block)
 	 */
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
-		if (!this.isClient) {
-			BlockState blockState = this.getBlockState(pos);
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
+		this.getNeighborUpdater().updateNeighbor(pos, sourceBlock, sourcePos);
+	}
 
-			try {
-				blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
-			} catch (Throwable var8) {
-				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
-				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
-				crashReportSection.add("Source block type", (CrashCallable<String>)(() -> {
-					try {
-						return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
-					} catch (Throwable var2) {
-						return "ID #" + Registry.BLOCK.getId(sourceBlock);
-					}
-				}));
-				CrashReportSection.addBlockInfo(crashReportSection, this, pos, blockState);
-				throw new CrashException(crashReport);
-			}
-		}
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+		this.getNeighborUpdater().updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
 	}
 
 	@Override
@@ -513,7 +475,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			BlockEntityTickInvoker blockEntityTickInvoker = (BlockEntityTickInvoker)iterator.next();
 			if (blockEntityTickInvoker.isRemoved()) {
 				iterator.remove();
-			} else if (this.shouldTickBlocksInChunk(ChunkPos.toLong(blockEntityTickInvoker.getPos()))) {
+			} else if (this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) {
 				blockEntityTickInvoker.tick();
 			}
 		}
@@ -542,6 +504,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 */
 	public boolean shouldTickBlocksInChunk(long chunkPos) {
 		return true;
+	}
+
+	public boolean shouldTickBlockPos(BlockPos pos) {
+		return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
 	}
 
 	/**
@@ -968,12 +934,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
 				if (blockState.isOf(Blocks.COMPARATOR)) {
-					blockState.neighborUpdate(this, blockPos, block, pos, false);
+					this.updateNeighbor(blockState, blockPos, block, pos, false);
 				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
 					if (blockState.isOf(Blocks.COMPARATOR)) {
-						blockState.neighborUpdate(this, blockPos, block, pos, false);
+						this.updateNeighbor(blockState, blockPos, block, pos, false);
 					}
 				}
 			}

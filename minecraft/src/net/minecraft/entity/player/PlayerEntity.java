@@ -1769,7 +1769,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	public int getXpToDrop() {
 		if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) && !this.isSpectator()) {
 			int i = this.experienceLevel * 7;
 			return i > 100 ? 100 : i;

@@ -6,10 +6,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
-import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Map.Entry;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
@@ -27,11 +27,13 @@ public class RegistryLoader {
 	public <E> DataResult<? extends Registry<E>> load(
 		MutableRegistry<E> registry, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec, DynamicOps<JsonElement> ops
 	) {
-		Collection<RegistryKey<E>> collection = this.entryLoader.getKnownEntryPaths(registryRef);
+		Map<RegistryKey<E>, EntryLoader.Parseable<E>> map = this.entryLoader.getKnownEntryPaths(registryRef);
 		DataResult<MutableRegistry<E>> dataResult = DataResult.success(registry, Lifecycle.stable());
 
-		for (RegistryKey<E> registryKey : collection) {
-			dataResult = dataResult.flatMap(reg -> this.load(reg, registryRef, codec, registryKey, ops).map(entry -> reg));
+		for (Entry<RegistryKey<E>, EntryLoader.Parseable<E>> entry : map.entrySet()) {
+			dataResult = dataResult.flatMap(
+				reg -> this.load(reg, registryRef, codec, (RegistryKey<E>)entry.getKey(), Optional.of((EntryLoader.Parseable)entry.getValue()), ops).map(entryxx -> reg)
+			);
 		}
 
 		return dataResult.setPartial(registry);
@@ -40,6 +42,18 @@ public class RegistryLoader {
 	<E> DataResult<RegistryEntry<E>> load(
 		MutableRegistry<E> registry, RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec, RegistryKey<E> entryKey, DynamicOps<JsonElement> ops
 	) {
+		Optional<EntryLoader.Parseable<E>> optional = this.entryLoader.createParseable(entryKey);
+		return this.load(registry, registryRef, codec, entryKey, optional, ops);
+	}
+
+	private <E> DataResult<RegistryEntry<E>> load(
+		MutableRegistry<E> registry,
+		RegistryKey<? extends Registry<E>> registryRef,
+		Codec<E> codec,
+		RegistryKey<E> entryKey,
+		Optional<EntryLoader.Parseable<E>> parseable,
+		DynamicOps<JsonElement> ops
+	) {
 		RegistryLoader.ValueHolder<E> valueHolder = this.getOrCreateValueHolder(registryRef);
 		DataResult<RegistryEntry<E>> dataResult = (DataResult<RegistryEntry<E>>)valueHolder.values.get(entryKey);
 		if (dataResult != null) {
@@ -47,19 +61,18 @@ public class RegistryLoader {
 		} else {
 			RegistryEntry<E> registryEntry = registry.getOrCreateEntry(entryKey);
 			valueHolder.values.put(entryKey, DataResult.success(registryEntry));
-			Optional<DataResult<EntryLoader.Entry<E>>> optional = this.entryLoader.load(ops, registryRef, entryKey, codec);
 			DataResult<RegistryEntry<E>> dataResult2;
-			if (optional.isEmpty()) {
+			if (parseable.isEmpty()) {
 				if (registry.contains(entryKey)) {
 					dataResult2 = DataResult.success(registryEntry, Lifecycle.stable());
 				} else {
 					dataResult2 = DataResult.error("Missing referenced custom/removed registry entry for registry " + registryRef + " named " + entryKey.getValue());
 				}
 			} else {
-				DataResult<EntryLoader.Entry<E>> dataResult3 = (DataResult<EntryLoader.Entry<E>>)optional.get();
-				Optional<EntryLoader.Entry<E>> optional2 = dataResult3.result();
-				if (optional2.isPresent()) {
-					EntryLoader.Entry<E> entry = (EntryLoader.Entry<E>)optional2.get();
+				DataResult<EntryLoader.Entry<E>> dataResult3 = ((EntryLoader.Parseable)parseable.get()).parseElement(ops, codec);
+				Optional<EntryLoader.Entry<E>> optional = dataResult3.result();
+				if (optional.isPresent()) {
+					EntryLoader.Entry<E> entry = (EntryLoader.Entry<E>)optional.get();
 					registry.replace(entry.fixedId(), entryKey, entry.value(), dataResult3.lifecycle());
 				}
 

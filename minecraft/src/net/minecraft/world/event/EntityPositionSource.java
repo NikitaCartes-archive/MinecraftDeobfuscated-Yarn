@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public class EntityPositionSource implements PositionSource {
 	public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Codec.INT.fieldOf("source_entity_id").forGetter(entityPositionSource -> entityPositionSource.entityId))
+		instance -> instance.group(Codec.INT.fieldOf("source_entity_id").forGetter(positionSource -> positionSource.entityId))
 				.apply(instance, EntityPositionSource::new)
 	);
 	final int entityId;

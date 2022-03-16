@@ -36,17 +36,40 @@ public class GenerationStep {
 		}
 	}
 
-	public static enum Feature {
-		RAW_GENERATION,
-		LAKES,
-		LOCAL_MODIFICATIONS,
-		UNDERGROUND_STRUCTURES,
-		SURFACE_STRUCTURES,
-		STRONGHOLDS,
-		UNDERGROUND_ORES,
-		UNDERGROUND_DECORATION,
-		FLUID_SPRINGS,
-		VEGETAL_DECORATION,
-		TOP_LAYER_MODIFICATION;
+	public static enum Feature implements StringIdentifiable {
+		RAW_GENERATION("raw_generation"),
+		LAKES("lakes"),
+		LOCAL_MODIFICATIONS("local_modifications"),
+		UNDERGROUND_STRUCTURES("underground_structures"),
+		SURFACE_STRUCTURES("surface_structures"),
+		STRONGHOLDS("strongholds"),
+		UNDERGROUND_ORES("underground_ores"),
+		UNDERGROUND_DECORATION("underground_decoration"),
+		FLUID_SPRINGS("fluid_springs"),
+		VEGETAL_DECORATION("vegetal_decoration"),
+		TOP_LAYER_MODIFICATION("top_layer_modification");
+
+		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values, GenerationStep.Feature::get);
+		private static final Map<String, GenerationStep.Feature> VALUES = (Map<String, GenerationStep.Feature>)Arrays.stream(values())
+			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
+		private final String name;
+
+		private Feature(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		@Nullable
+		public static GenerationStep.Feature get(String name) {
+			return (GenerationStep.Feature)VALUES.get(name);
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
+		}
 	}
 }

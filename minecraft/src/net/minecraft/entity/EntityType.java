@@ -72,6 +72,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseEntity;
@@ -91,6 +92,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.StriderEntity;
+import net.minecraft.entity.passive.TadpoleEntity;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -268,6 +270,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final EntityType<FoxEntity> FOX = register(
 		"fox",
 		EntityType.Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8).allowSpawningInside(Blocks.SWEET_BERRY_BUSH)
+	);
+	public static final EntityType<FrogEntity> FROG = register(
+		"frog", EntityType.Builder.create(FrogEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.5F).maxTrackingRange(10)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
@@ -491,6 +496,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<StriderEntity> STRIDER = register(
 		"strider", EntityType.Builder.create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().setDimensions(0.9F, 1.7F).maxTrackingRange(10)
+	);
+	public static final EntityType<TadpoleEntity> TADPOLE = register(
+		"tadpole", EntityType.Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.4F).maxTrackingRange(10)
 	);
 	public static final EntityType<EggEntity> EGG = register(
 		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
@@ -819,11 +827,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return this.factory.create(this, world);
 	}
 
-	@Nullable
-	public static Entity createInstanceFromId(int type, World world) {
-		return newInstance(world, Registry.ENTITY_TYPE.get(type));
-	}
-
 	public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
 		return Util.ifPresentOrElse(
 			fromNbt(nbt).map(entityType -> entityType.create(world)),
@@ -833,7 +836,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	}
 
 	@Nullable
-	private static Entity newInstance(World world, @Nullable EntityType<?> type) {
+	public static Entity newInstance(World world, @Nullable EntityType<?> type) {
 		return type == null ? null : type.create(world);
 	}
 

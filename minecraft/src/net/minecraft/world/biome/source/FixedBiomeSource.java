@@ -21,19 +21,14 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		.codec();
 	private final RegistryEntry<Biome> biome;
 
-	public FixedBiomeSource(RegistryEntry<Biome> registryEntry) {
-		super(ImmutableList.of(registryEntry));
-		this.biome = registryEntry;
+	public FixedBiomeSource(RegistryEntry<Biome> biome) {
+		super(ImmutableList.of(biome));
+		this.biome = biome;
 	}
 
 	@Override
 	protected Codec<? extends BiomeSource> getCodec() {
 		return CODEC;
-	}
-
-	@Override
-	public BiomeSource withSeed(long seed) {
-		return this;
 	}
 
 	@Override

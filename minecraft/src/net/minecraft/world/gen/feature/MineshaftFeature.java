@@ -1,60 +1,77 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.MineshaftGenerator;
-import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructurePiecesCollector;
-import net.minecraft.structure.StructurePiecesGenerator;
+import net.minecraft.structure.StructureType;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.StructureSpawns;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.random.ChunkRandom;
 
-public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
-	public MineshaftFeature(Codec<MineshaftFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(MineshaftFeature::canGenerate, MineshaftFeature::addPieces));
+public class MineshaftFeature extends StructureFeature {
+	public static final Codec<MineshaftFeature> CODEC = RecordCodecBuilder.create(
+		instance -> method_41608(instance)
+				.and(MineshaftFeature.Type.CODEC.fieldOf("mineshaft_type").forGetter(mineshaftFeature -> mineshaftFeature.field_37802))
+				.apply(instance, MineshaftFeature::new)
+	);
+	private final MineshaftFeature.Type field_37802;
+
+	public MineshaftFeature(
+		RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl, MineshaftFeature.Type type
+	) {
+		super(registryEntryList, map, feature, bl);
+		this.field_37802 = type;
 	}
 
-	private static boolean canGenerate(StructureGeneratorFactory.Context<MineshaftFeatureConfig> context) {
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
-		double d = (double)context.config().probability;
-		return chunkRandom.nextDouble() >= d
-			? false
-			: context.validBiome()
-				.test(
-					context.chunkGenerator()
-						.getBiomeForNoiseGen(
-							BiomeCoords.fromBlock(context.chunkPos().getCenterX()), BiomeCoords.fromBlock(50), BiomeCoords.fromBlock(context.chunkPos().getCenterZ())
-						)
-				);
+	@Override
+	public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
+		arg.random().nextDouble();
+		ChunkPos chunkPos = arg.chunkPos();
+		BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
+		return Optional.of(new StructureFeature.class_7150(blockPos, structurePiecesCollector -> this.addPieces(structurePiecesCollector, blockPos, arg)));
 	}
 
-	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<MineshaftFeatureConfig> context) {
+	private void addPieces(StructurePiecesCollector structurePiecesCollector, BlockPos blockPos, StructureFeature.class_7149 arg) {
+		ChunkPos chunkPos = arg.chunkPos();
+		ChunkRandom chunkRandom = arg.random();
+		ChunkGenerator chunkGenerator = arg.chunkGenerator();
 		MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-			0, context.random(), context.chunkPos().getOffsetX(2), context.chunkPos().getOffsetZ(2), context.config().type
+			0, chunkRandom, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), this.field_37802
 		);
-		collector.addPiece(mineshaftRoom);
-		mineshaftRoom.fillOpenings(mineshaftRoom, collector, context.random());
-		int i = context.chunkGenerator().getSeaLevel();
-		if (context.config().type == MineshaftFeature.Type.MESA) {
-			BlockPos blockPos = collector.getBoundingBox().getCenter();
-			int j = context.chunkGenerator().getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world());
-			int k = j <= i ? i : MathHelper.nextBetween(context.random(), i, j);
-			int l = k - blockPos.getY();
-			collector.shift(l);
+		structurePiecesCollector.addPiece(mineshaftRoom);
+		mineshaftRoom.fillOpenings(mineshaftRoom, structurePiecesCollector, chunkRandom);
+		int i = chunkGenerator.getSeaLevel();
+		if (this.field_37802 == MineshaftFeature.Type.MESA) {
+			BlockPos blockPos2 = structurePiecesCollector.getBoundingBox().getCenter();
+			int j = chunkGenerator.getHeight(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, arg.heightAccessor(), arg.randomState());
+			int k = j <= i ? i : MathHelper.nextBetween(chunkRandom, i, j);
+			int l = k - blockPos2.getY();
+			structurePiecesCollector.shift(l);
 		} else {
-			collector.shiftInto(i, context.chunkGenerator().getMinimumY(), context.random(), 10);
+			structurePiecesCollector.shiftInto(i, chunkGenerator.getMinimumY(), chunkRandom, 10);
 		}
+	}
+
+	@Override
+	public StructureType<?> getType() {
+		return StructureType.MINESHAFT;
 	}
 
 	public static enum Type implements StringIdentifiable {

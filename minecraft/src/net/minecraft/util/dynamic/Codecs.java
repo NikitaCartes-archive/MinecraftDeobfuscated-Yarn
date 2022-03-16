@@ -22,6 +22,8 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -38,6 +40,13 @@ public class Codecs {
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
+	public static final Codec<Pattern> REGULAR_EXPRESSION = Codec.STRING.comapFlatMap(pattern -> {
+		try {
+			return DataResult.success(Pattern.compile(pattern));
+		} catch (PatternSyntaxException var2) {
+			return DataResult.error("Invalid regex pattern '" + pattern + "': " + var2.getMessage());
+		}
+	}, Pattern::pattern);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.

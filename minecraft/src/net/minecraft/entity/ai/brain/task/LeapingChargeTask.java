@@ -32,7 +32,7 @@ public class LeapingChargeTask extends Task<MobEntity> {
 
 	protected void finishRunning(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (mobEntity.isOnGround()) {
-			mobEntity.setVelocity(mobEntity.getVelocity().multiply(0.1F));
+			mobEntity.setVelocity(mobEntity.getVelocity().multiply(0.1F, 1.0, 0.1F));
 			serverWorld.playSoundFromEntity(null, mobEntity, this.sound, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 		}
 

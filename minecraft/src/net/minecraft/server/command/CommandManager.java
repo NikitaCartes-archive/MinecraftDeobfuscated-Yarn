@@ -19,7 +19,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.command.CommandException;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.ArgumentHelper;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
@@ -48,6 +50,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import org.slf4j.Logger;
 
 public class CommandManager {
@@ -59,13 +62,13 @@ public class CommandManager {
 	public static final int field_31841 = 4;
 	private final CommandDispatcher<ServerCommandSource> dispatcher = new CommandDispatcher<>();
 
-	public CommandManager(CommandManager.RegistrationEnvironment environment) {
+	public CommandManager(CommandManager.RegistrationEnvironment environment, CommandRegistryAccess commandRegistryAccess) {
 		AdvancementCommand.register(this.dispatcher);
 		AttributeCommand.register(this.dispatcher);
-		ExecuteCommand.register(this.dispatcher);
+		ExecuteCommand.register(this.dispatcher, commandRegistryAccess);
 		BossBarCommand.register(this.dispatcher);
-		ClearCommand.register(this.dispatcher);
-		CloneCommand.register(this.dispatcher);
+		ClearCommand.register(this.dispatcher, commandRegistryAccess);
+		CloneCommand.register(this.dispatcher, commandRegistryAccess);
 		DataCommand.register(this.dispatcher);
 		DatapackCommand.register(this.dispatcher);
 		DebugCommand.register(this.dispatcher);
@@ -75,20 +78,20 @@ public class CommandManager {
 		MeCommand.register(this.dispatcher);
 		EnchantCommand.register(this.dispatcher);
 		ExperienceCommand.register(this.dispatcher);
-		FillCommand.register(this.dispatcher);
+		FillCommand.register(this.dispatcher, commandRegistryAccess);
 		ForceLoadCommand.register(this.dispatcher);
 		FunctionCommand.register(this.dispatcher);
 		GameModeCommand.register(this.dispatcher);
 		GameRuleCommand.register(this.dispatcher);
-		GiveCommand.register(this.dispatcher);
+		GiveCommand.register(this.dispatcher, commandRegistryAccess);
 		HelpCommand.register(this.dispatcher);
-		ItemCommand.register(this.dispatcher);
+		ItemCommand.register(this.dispatcher, commandRegistryAccess);
 		KickCommand.register(this.dispatcher);
 		KillCommand.register(this.dispatcher);
 		ListCommand.register(this.dispatcher);
 		LocateCommand.register(this.dispatcher);
 		LocateBiomeCommand.register(this.dispatcher);
-		LootCommand.register(this.dispatcher);
+		LootCommand.register(this.dispatcher, commandRegistryAccess);
 		MessageCommand.register(this.dispatcher);
 		ParticleCommand.register(this.dispatcher);
 		PlaceFeatureCommand.register(this.dispatcher);
@@ -99,7 +102,7 @@ public class CommandManager {
 		ScheduleCommand.register(this.dispatcher);
 		ScoreboardCommand.register(this.dispatcher);
 		SeedCommand.register(this.dispatcher, environment != CommandManager.RegistrationEnvironment.INTEGRATED);
-		SetBlockCommand.register(this.dispatcher);
+		SetBlockCommand.register(this.dispatcher, commandRegistryAccess);
 		SpawnPointCommand.register(this.dispatcher);
 		SetWorldSpawnCommand.register(this.dispatcher);
 		SpectateCommand.register(this.dispatcher);
@@ -145,12 +148,6 @@ public class CommandManager {
 			PublishCommand.register(this.dispatcher);
 		}
 
-		this.dispatcher
-			.findAmbiguities(
-				(parent, child, sibling, inputs) -> LOGGER.warn(
-						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(child), this.dispatcher.getPath(sibling), inputs
-					)
-			);
 		this.dispatcher.setConsumer((context, success, result) -> context.getSource().onCommandComplete(context, success, result));
 	}
 
@@ -302,9 +299,18 @@ public class CommandManager {
 	}
 
 	public static void checkMissing() {
-		RootCommandNode<ServerCommandSource> rootCommandNode = new CommandManager(CommandManager.RegistrationEnvironment.ALL).getDispatcher().getRoot();
-		Set<ArgumentType<?>> set = ArgumentTypes.getAllArgumentTypes(rootCommandNode);
-		Set<ArgumentType<?>> set2 = (Set<ArgumentType<?>>)set.stream().filter(type -> !ArgumentTypes.hasClass(type)).collect(Collectors.toSet());
+		CommandRegistryAccess commandRegistryAccess = new CommandRegistryAccess((DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get());
+		commandRegistryAccess.setEntryListCreationPolicy(CommandRegistryAccess.EntryListCreationPolicy.RETURN_EMPTY);
+		CommandDispatcher<ServerCommandSource> commandDispatcher = new CommandManager(CommandManager.RegistrationEnvironment.ALL, commandRegistryAccess)
+			.getDispatcher();
+		RootCommandNode<ServerCommandSource> rootCommandNode = commandDispatcher.getRoot();
+		commandDispatcher.findAmbiguities(
+			(parent, child, sibling, inputs) -> LOGGER.warn(
+					"Ambiguity between arguments {} and {} with inputs: {}", commandDispatcher.getPath(child), commandDispatcher.getPath(sibling), inputs
+				)
+		);
+		Set<ArgumentType<?>> set = ArgumentHelper.collectUsedArgumentTypes(rootCommandNode);
+		Set<ArgumentType<?>> set2 = (Set<ArgumentType<?>>)set.stream().filter(type -> !ArgumentTypes.has(type.getClass())).collect(Collectors.toSet());
 		if (!set2.isEmpty()) {
 			LOGGER.warn("Missing type registration for following arguments:\n {}", set2.stream().map(type -> "\t" + type).collect(Collectors.joining(",\n")));
 			throw new IllegalStateException("Unregistered argument types");

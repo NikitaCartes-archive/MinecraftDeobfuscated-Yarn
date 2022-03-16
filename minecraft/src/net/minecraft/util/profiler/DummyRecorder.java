@@ -8,6 +8,10 @@ public class DummyRecorder implements Recorder {
 	}
 
 	@Override
+	public void forceStop() {
+	}
+
+	@Override
 	public void startTick() {
 	}
 

@@ -6,6 +6,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class RemoveEntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -19,13 +20,13 @@ public class RemoveEntityStatusEffectS2CPacket implements Packet<ClientPlayPacke
 
 	public RemoveEntityStatusEffectS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectType = StatusEffect.byRawId(buf.readVarInt());
+		this.effectType = buf.readRegistryValue(Registry.STATUS_EFFECT);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeVarInt(StatusEffect.getRawId(this.effectType));
+		buf.writeRegistryValue(Registry.STATUS_EFFECT, this.effectType);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

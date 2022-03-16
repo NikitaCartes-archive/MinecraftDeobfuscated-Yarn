@@ -3,6 +3,7 @@ package net.minecraft.client.option;
 import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,13 +15,11 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.ChunkBuilderMode;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Window;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -29,46 +28,17 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class Option {
-	protected static final int field_32147 = 200;
-	public static final DoubleOption BIOME_BLEND_RADIUS = new DoubleOption(
-		"options.biomeBlendRadius", 0.0, 7.0, 1.0F, gameOptions -> (double)gameOptions.biomeBlendRadius, (gameOptions, biomeBlendRadius) -> {
-			gameOptions.biomeBlendRadius = MathHelper.clamp((int)biomeBlendRadius.doubleValue(), 0, 7);
-			MinecraftClient.getInstance().worldRenderer.reload();
-		}, (gameOptions, option) -> {
-			double d = option.get(gameOptions);
-			int i = (int)d * 2 + 1;
-			return option.getGenericLabel(new TranslatableText("options.biomeBlendRadius." + i));
-		}
-	);
-	public static final DoubleOption CHAT_HEIGHT_FOCUSED = new DoubleOption(
-		"options.chat.height.focused", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatHeightFocused, (gameOptions, chatHeightFocused) -> {
-			gameOptions.chatHeightFocused = chatHeightFocused;
-			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-		}, (gameOptions, option) -> {
-			double d = option.getRatio(option.get(gameOptions));
-			return option.getPixelLabel(ChatHud.getHeight(d));
-		}
-	);
-	public static final DoubleOption SATURATION = new DoubleOption(
-		"options.chat.height.unfocused", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatHeightUnfocused, (gameOptions, chatHeightUnfocused) -> {
-			gameOptions.chatHeightUnfocused = chatHeightUnfocused;
-			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-		}, (gameOptions, option) -> {
-			double d = option.getRatio(option.get(gameOptions));
-			return option.getPixelLabel(ChatHud.getHeight(d));
-		}
-	);
+	protected static final int field_37859 = 200;
 	public static final DoubleOption CHAT_OPACITY = new DoubleOption(
 		"options.chat.opacity", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatOpacity, (gameOptions, chatOpacity) -> {
 			gameOptions.chatOpacity = chatOpacity;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			return option.getPercentLabel(d * 0.9 + 0.1);
+			return option.getPercentValueText(d * 0.9 + 0.1);
 		}
 	);
 	public static final DoubleOption CHAT_SCALE = new DoubleOption(
@@ -77,7 +47,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(option.getDisplayPrefix(), false) : option.getPercentLabel(d));
+			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(option.getDisplayPrefix(), false) : option.getPercentValueText(d));
 		}
 	);
 	public static final DoubleOption CHAT_WIDTH = new DoubleOption(
@@ -86,7 +56,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			return option.getPixelLabel(ChatHud.getWidth(d));
+			return option.getPixelValueText(ChatHud.getWidth(d));
 		}
 	);
 	public static final DoubleOption CHAT_LINE_SPACING = new DoubleOption(
@@ -96,7 +66,7 @@ public abstract class Option {
 		0.0F,
 		gameOptions -> gameOptions.chatLineSpacing,
 		(gameOptions, chatLineSpacing) -> gameOptions.chatLineSpacing = chatLineSpacing,
-		(gameOptions, option) -> option.getPercentLabel(option.getRatio(option.get(gameOptions)))
+		(gameOptions, option) -> option.getPercentValueText(option.getRatio(option.get(gameOptions)))
 	);
 	public static final DoubleOption CHAT_DELAY_INSTANT = new DoubleOption(
 		"options.chat.delay_instant",
@@ -110,17 +80,6 @@ public abstract class Option {
 			return d <= 0.0 ? new TranslatableText("options.chat.delay_none") : new TranslatableText("options.chat.delay", String.format("%.1f", d));
 		}
 	);
-	public static final DoubleOption FOV = new DoubleOption("options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, fov) -> {
-		gameOptions.fov = fov;
-		MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
-	}, (gameOptions, option) -> {
-		double d = option.get(gameOptions);
-		if (d == 70.0) {
-			return option.getGenericLabel(new TranslatableText("options.fov.min"));
-		} else {
-			return d == option.getMax() ? option.getGenericLabel(new TranslatableText("options.fov.max")) : option.getGenericLabel((int)d);
-		}
-	});
 	private static final Text FOV_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.fovEffectScale.tooltip");
 	public static final DoubleOption FOV_EFFECT_SCALE = new DoubleOption(
 		"options.fovEffectScale",
@@ -131,9 +90,9 @@ public abstract class Option {
 		(gameOptions, fovEffectScale) -> gameOptions.fovEffectScale = (float)Math.sqrt(fovEffectScale),
 		(gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+			return d == 0.0 ? option.getGenericValueText(ScreenTexts.OFF) : option.getPercentValueText(d);
 		},
-		client -> client.textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200)
+		client -> value -> client.textRenderer.wrapLines(FOV_EFFECT_SCALE_TOOLTIP, 200)
 	);
 	private static final Text DISTORTION_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.screenEffectScale.tooltip");
 	public static final DoubleOption DISTORTION_EFFECT_SCALE = new DoubleOption(
@@ -145,9 +104,9 @@ public abstract class Option {
 		(gameOptions, distortionEffectScale) -> gameOptions.distortionEffectScale = distortionEffectScale.floatValue(),
 		(gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
-			return d == 0.0 ? option.getGenericLabel(ScreenTexts.OFF) : option.getPercentLabel(d);
+			return d == 0.0 ? option.getGenericValueText(ScreenTexts.OFF) : option.getPercentValueText(d);
 		},
-		client -> client.textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200)
+		client -> value -> client.textRenderer.wrapLines(DISTORTION_EFFECT_SCALE_TOOLTIP, 200)
 	);
 	public static final DoubleOption FRAMERATE_LIMIT = new DoubleOption(
 		"options.framerateLimit",
@@ -162,8 +121,8 @@ public abstract class Option {
 		(gameOptions, option) -> {
 			double d = option.get(gameOptions);
 			return d == option.getMax()
-				? option.getGenericLabel(new TranslatableText("options.framerateLimit.max"))
-				: option.getGenericLabel(new TranslatableText("options.framerate", (int)d));
+				? option.getGenericValueText(new TranslatableText("options.framerateLimit.max"))
+				: option.getGenericValueText(new TranslatableText("options.framerate", (int)d));
 		}
 	);
 	public static final DoubleOption GAMMA = new DoubleOption(
@@ -171,11 +130,11 @@ public abstract class Option {
 			double d = option.getRatio(option.get(gameOptions));
 			int i = (int)(d * 100.0);
 			if (i == 0) {
-				return option.getGenericLabel(new TranslatableText("options.gamma.min"));
+				return option.getGenericValueText(new TranslatableText("options.gamma.min"));
 			} else if (i == 50) {
-				return option.getGenericLabel(new TranslatableText("options.gamma.default"));
+				return option.getGenericValueText(new TranslatableText("options.gamma.default"));
 			} else {
-				return i == 100 ? option.getGenericLabel(new TranslatableText("options.gamma.max")) : option.getGenericLabel(i);
+				return i == 100 ? option.getGenericValueText(new TranslatableText("options.gamma.max")) : option.getGenericValueText(i);
 			}
 		}
 	);
@@ -188,28 +147,7 @@ public abstract class Option {
 		(gameOptions, mipmapLevels) -> gameOptions.mipmapLevels = (int)mipmapLevels.doubleValue(),
 		(gameOptions, option) -> {
 			double d = option.get(gameOptions);
-			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(option.getDisplayPrefix(), false) : option.getGenericLabel((int)d));
-		}
-	);
-	public static final DoubleOption MOUSE_WHEEL_SENSITIVITY = new LogarithmicOption(
-		"options.mouseWheelSensitivity",
-		0.01,
-		10.0,
-		0.01F,
-		gameOptions -> gameOptions.mouseWheelSensitivity,
-		(gameOptions, mouseWheelSensitivity) -> gameOptions.mouseWheelSensitivity = mouseWheelSensitivity,
-		(gameOptions, option) -> {
-			double d = option.getRatio(option.get(gameOptions));
-			return option.getGenericLabel(new LiteralText(String.format("%.2f", option.getValue(d))));
-		}
-	);
-	public static final CyclingOption<Boolean> RAW_MOUSE_INPUT = CyclingOption.create(
-		"options.rawMouseInput", gameOptions -> gameOptions.rawMouseInput, (gameOptions, option, rawMouseInput) -> {
-			gameOptions.rawMouseInput = rawMouseInput;
-			Window window = MinecraftClient.getInstance().getWindow();
-			if (window != null) {
-				window.setRawMouseMotion(rawMouseInput);
-			}
+			return (Text)(d == 0.0 ? ScreenTexts.composeToggleText(option.getDisplayPrefix(), false) : option.getGenericValueText((int)d));
 		}
 	);
 	public static final DoubleOption RENDER_DISTANCE = new DoubleOption(
@@ -218,7 +156,7 @@ public abstract class Option {
 			MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate();
 		}, (gameOptions, option) -> {
 			double d = option.get(gameOptions);
-			return option.getGenericLabel(new TranslatableText("options.chunks", (int)d));
+			return option.getGenericValueText(new TranslatableText("options.chunks", (int)d));
 		}
 	);
 	public static final DoubleOption SIMULATION_DISTANCE = new DoubleOption(
@@ -230,7 +168,7 @@ public abstract class Option {
 		(gameOptions, simulationDistance) -> gameOptions.simulationDistance = simulationDistance.intValue(),
 		(gameOptions, option) -> {
 			double d = option.get(gameOptions);
-			return option.getGenericLabel(new TranslatableText("options.chunks", (int)d));
+			return option.getGenericValueText(new TranslatableText("options.chunks", (int)d));
 		}
 	);
 	public static final DoubleOption ENTITY_DISTANCE_SCALING = new DoubleOption(
@@ -242,7 +180,7 @@ public abstract class Option {
 		(gameOptions, entityDistanceScaling) -> gameOptions.entityDistanceScaling = (float)entityDistanceScaling.doubleValue(),
 		(gameOptions, option) -> {
 			double d = option.get(gameOptions);
-			return option.getPercentLabel(d);
+			return option.getPercentValueText(d);
 		}
 	);
 	public static final DoubleOption SENSITIVITY = new DoubleOption(
@@ -255,9 +193,9 @@ public abstract class Option {
 		(gameOptions, option) -> {
 			double d = option.getRatio(option.get(gameOptions));
 			if (d == 0.0) {
-				return option.getGenericLabel(new TranslatableText("options.sensitivity.min"));
+				return option.getGenericValueText(new TranslatableText("options.sensitivity.min"));
 			} else {
-				return d == 1.0 ? option.getGenericLabel(new TranslatableText("options.sensitivity.max")) : option.getPercentLabel(2.0 * d);
+				return d == 1.0 ? option.getGenericValueText(new TranslatableText("options.sensitivity.max")) : option.getPercentValueText(2.0 * d);
 			}
 		}
 	);
@@ -265,32 +203,8 @@ public abstract class Option {
 		"options.accessibility.text_background_opacity", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.textBackgroundOpacity, (gameOptions, textBackgroundOpacity) -> {
 			gameOptions.textBackgroundOpacity = textBackgroundOpacity;
 			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
-		}, (gameOptions, option) -> option.getPercentLabel(option.getRatio(option.get(gameOptions)))
+		}, (gameOptions, option) -> option.getPercentValueText(option.getRatio(option.get(gameOptions)))
 	);
-	public static final CyclingOption<AoMode> AO = CyclingOption.create(
-		"options.ao", AoMode.values(), aoMode -> new TranslatableText(aoMode.getTranslationKey()), gameOptions -> gameOptions.ao, (gameOptions, option, aoMode) -> {
-			gameOptions.ao = aoMode;
-			MinecraftClient.getInstance().worldRenderer.reload();
-		}
-	);
-	private static final Text CHUNK_BUILDER_THREADED_TEXT = new TranslatableText("options.prioritizeChunkUpdates.none.tooltip");
-	private static final Text CHUNK_BUILDER_SEMI_BLOCKING_TEXT = new TranslatableText("options.prioritizeChunkUpdates.byPlayer.tooltip");
-	private static final Text CHUNK_BUILDER_FULLY_BLOCKING_TEXT = new TranslatableText("options.prioritizeChunkUpdates.nearby.tooltip");
-	public static final CyclingOption<ChunkBuilderMode> CHUNK_BUILDER_MODE = CyclingOption.<ChunkBuilderMode>create(
-			"options.prioritizeChunkUpdates",
-			ChunkBuilderMode.values(),
-			chunkBuilderMode -> new TranslatableText(chunkBuilderMode.getName()),
-			gameOptions -> gameOptions.chunkBuilderMode,
-			(gameOptions, option, chunkBuilderMode) -> gameOptions.chunkBuilderMode = chunkBuilderMode
-		)
-		.tooltip(minecraftClient -> chunkBuilderMode -> {
-				return (List)(switch (chunkBuilderMode) {
-					case NONE -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_THREADED_TEXT, 200);
-					case PLAYER_AFFECTED -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_SEMI_BLOCKING_TEXT, 200);
-					case NEARBY -> minecraftClient.textRenderer.wrapLines(CHUNK_BUILDER_FULLY_BLOCKING_TEXT, 200);
-					default -> ImmutableList.of();
-				});
-			});
 	public static final CyclingOption<AttackIndicator> ATTACK_INDICATOR = CyclingOption.create(
 		"options.attackIndicator",
 		AttackIndicator.values(),
@@ -336,19 +250,14 @@ public abstract class Option {
 			List<OrderedText> list2 = client.textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200);
 			List<OrderedText> list3 = client.textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200);
 			return graphicsMode -> {
-				switch (graphicsMode) {
-					case FANCY:
-						return list2;
-					case FAST:
-						return list;
-					case FABULOUS:
-						return list3;
-					default:
-						return ImmutableList.of();
-				}
+				return switch (graphicsMode) {
+					case FANCY -> list2;
+					case FAST -> list;
+					case FABULOUS -> list3;
+				};
 			};
 		});
-	public static final CyclingOption GUI_SCALE = CyclingOption.create(
+	public static final CyclingOption<Integer> GUI_SCALE = CyclingOption.create(
 		"options.guiScale",
 		(Supplier<List<Integer>>)(() -> (List)IntStream.rangeClosed(
 					0, MinecraftClient.getInstance().getWindow().calculateScaleFactor(0, MinecraftClient.getInstance().forcesUnicodeFont())
@@ -497,6 +406,19 @@ public abstract class Option {
 	public static final CyclingOption<Boolean> SUBTITLES = CyclingOption.create(
 		"options.showSubtitles", gameOptions -> gameOptions.showSubtitles, (gameOptions, option, showSubtitles) -> gameOptions.showSubtitles = showSubtitles
 	);
+	private static final Text DIRECTIONAL_AUDIO_ON_TEXT = new TranslatableText("options.directionalAudio.on.tooltip");
+	private static final Text DIRECTIONAL_AUDIO_OFF_TEXT = new TranslatableText("options.directionalAudio.off.tooltip");
+	public static final CyclingOption<Boolean> DIRECTIONAL_AUDIO = CyclingOption.create(
+			"options.directionalAudio", gameOptions -> gameOptions.directionalAudio, (gameOptions, option, directionalAudio) -> {
+				gameOptions.directionalAudio = directionalAudio;
+				SoundManager soundManager = MinecraftClient.getInstance().getSoundManager();
+				soundManager.reloadSounds();
+				soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+			}
+		)
+		.tooltip(
+			client -> value -> value ? client.textRenderer.wrapLines(DIRECTIONAL_AUDIO_ON_TEXT, 200) : client.textRenderer.wrapLines(DIRECTIONAL_AUDIO_OFF_TEXT, 200)
+		);
 	private static final Text TOGGLE_TEXT = new TranslatableText("options.key.toggle");
 	private static final Text HOLD_TEXT = new TranslatableText("options.key.hold");
 	public static final CyclingOption<Boolean> SNEAK_TOGGLED = CyclingOption.create(
@@ -525,26 +447,16 @@ public abstract class Option {
 	public static final CyclingOption<Boolean> VIEW_BOBBING = CyclingOption.create(
 		"options.viewBobbing", gameOptions -> gameOptions.bobView, (gameOptions, option, bobView) -> gameOptions.bobView = bobView
 	);
-	private static final Text MONOCHROME_LOGO_TOOLTIP = new TranslatableText("options.darkMojangStudiosBackgroundColor.tooltip");
-	public static final CyclingOption<Boolean> MONOCHROME_LOGO = CyclingOption.create(
-		"options.darkMojangStudiosBackgroundColor",
-		MONOCHROME_LOGO_TOOLTIP,
-		gameOptions -> gameOptions.monochromeLogo,
-		(gameOptions, option, monochromeLogo) -> gameOptions.monochromeLogo = monochromeLogo
-	);
-	private static final Text HIDE_LIGHTNING_FLASHES_TOOLTIP = new TranslatableText("options.hideLightningFlashes.tooltip");
-	public static final CyclingOption<Boolean> HIDE_LIGHTNING_FLASHES = CyclingOption.create(
-		"options.hideLightningFlashes",
-		HIDE_LIGHTNING_FLASHES_TOOLTIP,
-		gameOptions -> gameOptions.hideLightningFlashes,
-		(gameOptions, option, hideLightningFlashes) -> gameOptions.hideLightningFlashes = hideLightningFlashes
-	);
 	public static final CyclingOption<Boolean> SHOW_AUTOSAVE_INDICATOR = CyclingOption.create(
 		"options.autosaveIndicator",
 		gameOptions -> gameOptions.showAutosaveIndicator,
 		(gameOptions, option, showAutosaveIndicator) -> gameOptions.showAutosaveIndicator = showAutosaveIndicator
 	);
 	private final Text key;
+
+	public static <T> Function<MinecraftClient, Option.TooltipFactory<T>> emptyTooltipFactoryGetter() {
+		return client -> value -> ImmutableList.of();
+	}
 
 	public Option(String key) {
 		this.key = new TranslatableText(key);
@@ -556,23 +468,8 @@ public abstract class Option {
 		return this.key;
 	}
 
-	protected Text getPixelLabel(int pixel) {
-		return new TranslatableText("options.pixel_value", this.getDisplayPrefix(), pixel);
-	}
-
-	protected Text getPercentLabel(double proportion) {
-		return new TranslatableText("options.percent_value", this.getDisplayPrefix(), (int)(proportion * 100.0));
-	}
-
-	protected Text getPercentAdditionLabel(int percentage) {
-		return new TranslatableText("options.percent_add_value", this.getDisplayPrefix(), percentage);
-	}
-
-	protected Text getGenericLabel(Text value) {
-		return new TranslatableText("options.generic_value", this.getDisplayPrefix(), value);
-	}
-
-	protected Text getGenericLabel(int value) {
-		return this.getGenericLabel(new LiteralText(Integer.toString(value)));
+	@FunctionalInterface
+	@Environment(EnvType.CLIENT)
+	public interface TooltipFactory<T> extends Function<T, List<OrderedText>> {
 	}
 }

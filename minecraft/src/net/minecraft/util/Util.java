@@ -417,6 +417,10 @@ public class Util {
 		return optional;
 	}
 
+	public static <T> Supplier<T> debugSupplier(Supplier<T> supplier, Supplier<String> messageSupplier) {
+		return supplier;
+	}
+
 	public static Runnable debugRunnable(Runnable runnable, Supplier<String> messageSupplier) {
 		return runnable;
 	}
@@ -692,8 +696,8 @@ public class Util {
 		return new BiFunction<T, U, R>() {
 			private final Map<com.mojang.datafixers.util.Pair<T, U>, R> cache = Maps.<com.mojang.datafixers.util.Pair<T, U>, R>newHashMap();
 
-			public R apply(T object, U object2) {
-				return (R)this.cache.computeIfAbsent(com.mojang.datafixers.util.Pair.of(object, object2), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
+			public R apply(T a, U b) {
+				return (R)this.cache.computeIfAbsent(com.mojang.datafixers.util.Pair.of(a, b), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
 			}
 
 			public String toString() {
@@ -706,13 +710,13 @@ public class Util {
 		INSTANCE;
 
 		@Override
-		public int hashCode(Object object) {
-			return System.identityHashCode(object);
+		public int hashCode(Object o) {
+			return System.identityHashCode(o);
 		}
 
 		@Override
-		public boolean equals(Object object, Object object2) {
-			return object == object2;
+		public boolean equals(Object o, Object o2) {
+			return o == o2;
 		}
 	}
 

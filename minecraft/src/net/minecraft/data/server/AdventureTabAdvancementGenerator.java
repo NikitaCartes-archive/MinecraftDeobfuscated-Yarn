@@ -2,7 +2,6 @@ package net.minecraft.data.server;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -41,7 +40,6 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.raid.Raid;
@@ -138,7 +136,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
-		requireListedBiomesVisited(Advancement.Builder.create(), this.getOverworldBiomes())
+		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream().toList())
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -560,15 +558,6 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/fall_from_world_height");
-	}
-
-	private List<RegistryKey<Biome>> getOverworldBiomes() {
-		return (List<RegistryKey<Biome>>)MultiNoiseBiomeSource.Preset.OVERWORLD
-			.getBiomeSource(BuiltinRegistries.BIOME)
-			.getBiomes()
-			.stream()
-			.flatMap(biomeEntry -> biomeEntry.getKey().stream())
-			.collect(Collectors.toList());
 	}
 
 	private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {

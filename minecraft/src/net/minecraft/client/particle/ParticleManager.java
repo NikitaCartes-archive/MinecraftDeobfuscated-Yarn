@@ -125,6 +125,9 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.SculkSoulFactory::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE, SculkChargeParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, SculkChargePopParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SOUL, SoulParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);

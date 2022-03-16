@@ -12,7 +12,7 @@ public class SayCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("say")
-				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+				.requires(source -> source.hasPermissionLevel(2))
 				.then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
 					Text text = MessageArgumentType.getMessage(context, "message");
 					Text text2 = new TranslatableText("chat.type.announcement", context.getSource().getDisplayName(), text);

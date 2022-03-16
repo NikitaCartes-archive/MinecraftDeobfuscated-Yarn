@@ -7,15 +7,10 @@ import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -23,22 +18,20 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.structure.StructureSet;
-import net.minecraft.structure.StructureSetKeys;
+import net.minecraft.tag.FlatLevelGeneratorPresetTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import org.lwjgl.glfw.GLFW;
@@ -54,9 +47,9 @@ public class PresetsScreen extends Screen {
 	private static final int ICON_BACKGROUND_OFFSET_Y = 1;
 	private static final int ICON_OFFSET_X = 2;
 	private static final int ICON_OFFSET_Y = 2;
-	static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
 	private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
-	final CustomizeFlatLevelScreen parent;
+	public static final Text UNKNOWN_PRESET_TEXT = new TranslatableText("flat_world_preset.unknown");
+	private final CustomizeFlatLevelScreen parent;
 	private Text shareText;
 	private Text listText;
 	private PresetsScreen.SuperflatPresetsListWidget listWidget;
@@ -188,7 +181,7 @@ public class PresetsScreen extends Screen {
 		this.customPresetField.setText(getGeneratorConfigString(this.parent.getConfig()));
 		this.config = this.parent.getConfig();
 		this.addSelectableChild(this.customPresetField);
-		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
+		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget(this.parent.parent.moreOptionsDialog.getRegistryManager());
 		this.addSelectableChild(this.listWidget);
 		this.selectPresetButton = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
@@ -247,182 +240,14 @@ public class PresetsScreen extends Screen {
 		this.selectPresetButton.active = hasSelected || this.customPresetField.getText().length() > 1;
 	}
 
-	private static void addPreset(
-		Text presetName,
-		ItemConvertible icon,
-		RegistryKey<Biome> presetBiome,
-		Set<RegistryKey<StructureSet>> structureKeys,
-		boolean generateStronghold,
-		boolean generateFeatures,
-		FlatChunkGeneratorLayer... layers
-	) {
-		PRESETS.add(
-			new PresetsScreen.SuperflatPreset(
-				icon.asItem(),
-				presetName,
-				dynamicRegistryManager -> {
-					Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
-					Registry<StructureSet> registry2 = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
-					RegistryEntryList.Direct<StructureSet> direct = RegistryEntryList.of(
-						(List<? extends RegistryEntry<StructureSet>>)structureKeys.stream()
-							.flatMap(structureKey -> registry2.getEntry(structureKey).stream())
-							.collect(Collectors.toList())
-					);
-					FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(Optional.of(direct), registry);
-					if (generateStronghold) {
-						flatChunkGeneratorConfig.enableFeatures();
-					}
-
-					if (generateFeatures) {
-						flatChunkGeneratorConfig.enableLakes();
-					}
-
-					for (int i = layers.length - 1; i >= 0; i--) {
-						flatChunkGeneratorConfig.getLayers().add(layers[i]);
-					}
-
-					flatChunkGeneratorConfig.setBiome(registry.getOrCreateEntry(presetBiome));
-					flatChunkGeneratorConfig.updateLayerBlocks();
-					return flatChunkGeneratorConfig;
-				}
-			)
-		);
-	}
-
-	static {
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.classic_flat"),
-			Blocks.GRASS_BLOCK,
-			BiomeKeys.PLAINS,
-			Set.of(StructureSetKeys.VILLAGES),
-			false,
-			false,
-			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
-			new FlatChunkGeneratorLayer(2, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.tunnelers_dream"),
-			Blocks.STONE,
-			BiomeKeys.WINDSWEPT_HILLS,
-			Set.of(StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
-			true,
-			false,
-			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
-			new FlatChunkGeneratorLayer(5, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(230, Blocks.STONE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.water_world"),
-			Items.WATER_BUCKET,
-			BiomeKeys.DEEP_OCEAN,
-			Set.of(StructureSetKeys.OCEAN_RUINS, StructureSetKeys.SHIPWRECKS, StructureSetKeys.OCEAN_MONUMENTS),
-			false,
-			false,
-			new FlatChunkGeneratorLayer(90, Blocks.WATER),
-			new FlatChunkGeneratorLayer(5, Blocks.GRAVEL),
-			new FlatChunkGeneratorLayer(5, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(5, Blocks.STONE),
-			new FlatChunkGeneratorLayer(64, Blocks.DEEPSLATE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.overworld"),
-			Blocks.GRASS,
-			BiomeKeys.PLAINS,
-			Set.of(
-				StructureSetKeys.VILLAGES, StructureSetKeys.MINESHAFTS, StructureSetKeys.PILLAGER_OUTPOSTS, StructureSetKeys.RUINED_PORTALS, StructureSetKeys.STRONGHOLDS
-			),
-			true,
-			true,
-			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
-			new FlatChunkGeneratorLayer(3, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(59, Blocks.STONE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.snowy_kingdom"),
-			Blocks.SNOW,
-			BiomeKeys.SNOWY_PLAINS,
-			Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.IGLOOS),
-			false,
-			false,
-			new FlatChunkGeneratorLayer(1, Blocks.SNOW),
-			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
-			new FlatChunkGeneratorLayer(3, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(59, Blocks.STONE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.bottomless_pit"),
-			Items.FEATHER,
-			BiomeKeys.PLAINS,
-			Set.of(StructureSetKeys.VILLAGES),
-			false,
-			false,
-			new FlatChunkGeneratorLayer(1, Blocks.GRASS_BLOCK),
-			new FlatChunkGeneratorLayer(3, Blocks.DIRT),
-			new FlatChunkGeneratorLayer(2, Blocks.COBBLESTONE)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.desert"),
-			Blocks.SAND,
-			BiomeKeys.DESERT,
-			Set.of(StructureSetKeys.VILLAGES, StructureSetKeys.DESERT_PYRAMIDS, StructureSetKeys.MINESHAFTS, StructureSetKeys.STRONGHOLDS),
-			true,
-			false,
-			new FlatChunkGeneratorLayer(8, Blocks.SAND),
-			new FlatChunkGeneratorLayer(52, Blocks.SANDSTONE),
-			new FlatChunkGeneratorLayer(3, Blocks.STONE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.redstone_ready"),
-			Items.REDSTONE,
-			BiomeKeys.DESERT,
-			Set.of(),
-			false,
-			false,
-			new FlatChunkGeneratorLayer(116, Blocks.SANDSTONE),
-			new FlatChunkGeneratorLayer(3, Blocks.STONE),
-			new FlatChunkGeneratorLayer(1, Blocks.BEDROCK)
-		);
-		addPreset(
-			new TranslatableText("createWorld.customize.preset.the_void"),
-			Blocks.BARRIER,
-			BiomeKeys.THE_VOID,
-			Set.of(),
-			true,
-			false,
-			new FlatChunkGeneratorLayer(1, Blocks.AIR)
-		);
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class SuperflatPreset {
-		public final Item icon;
-		public final Text name;
-		public final Function<DynamicRegistryManager, FlatChunkGeneratorConfig> generatorConfigProvider;
-
-		public SuperflatPreset(Item icon, Text name, Function<DynamicRegistryManager, FlatChunkGeneratorConfig> generatorConfigProvider) {
-			this.icon = icon;
-			this.name = name;
-			this.generatorConfigProvider = generatorConfigProvider;
-		}
-
-		public Text getName() {
-			return this.name;
-		}
-	}
-
 	@Environment(EnvType.CLIENT)
 	class SuperflatPresetsListWidget extends AlwaysSelectedEntryListWidget<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
-		public SuperflatPresetsListWidget() {
+		public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager) {
 			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
 
-			for (PresetsScreen.SuperflatPreset superflatPreset : PresetsScreen.PRESETS) {
-				this.addEntry(new PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry(superflatPreset));
+			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN)
+				.iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
+				this.addEntry(new PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry(registryEntry));
 			}
 		}
 
@@ -451,16 +276,20 @@ public class PresetsScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class SuperflatPresetEntry extends AlwaysSelectedEntryListWidget.Entry<PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry> {
-			private final PresetsScreen.SuperflatPreset preset;
+			private final FlatLevelGeneratorPreset preset;
+			private final Text text;
 
-			public SuperflatPresetEntry(PresetsScreen.SuperflatPreset preset) {
-				this.preset = preset;
+			public SuperflatPresetEntry(RegistryEntry<FlatLevelGeneratorPreset> preset) {
+				this.preset = preset.value();
+				this.text = (Text)preset.getKey()
+					.map(key -> new TranslatableText(key.getValue().toTranslationKey("flat_world_preset")))
+					.orElse(PresetsScreen.UNKNOWN_PRESET_TEXT);
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				this.renderIcon(matrices, x, y, this.preset.icon);
-				PresetsScreen.this.textRenderer.draw(matrices, this.preset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
+				this.renderIcon(matrices, x, y, this.preset.displayItem().value());
+				PresetsScreen.this.textRenderer.draw(matrices, this.text, (float)(x + 18 + 5), (float)(y + 6), 16777215);
 			}
 
 			@Override
@@ -474,9 +303,7 @@ public class PresetsScreen extends Screen {
 
 			void setPreset() {
 				SuperflatPresetsListWidget.this.setSelected(this);
-				PresetsScreen.this.config = (FlatChunkGeneratorConfig)this.preset
-					.generatorConfigProvider
-					.apply(PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager());
+				PresetsScreen.this.config = this.preset.settings();
 				PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(PresetsScreen.this.config));
 				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
@@ -494,7 +321,7 @@ public class PresetsScreen extends Screen {
 
 			@Override
 			public Text getNarration() {
-				return new TranslatableText("narrator.select", this.preset.getName());
+				return new TranslatableText("narrator.select", this.text);
 			}
 		}
 	}

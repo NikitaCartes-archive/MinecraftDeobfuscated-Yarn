@@ -51,11 +51,7 @@ public class ChatHud extends DrawableHelper {
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
 			if (j > 0) {
-				boolean bl = false;
-				if (this.isChatFocused()) {
-					bl = true;
-				}
-
+				boolean bl = this.isChatFocused();
 				float f = (float)this.getChatScale();
 				int k = MathHelper.ceil((float)this.getWidth() / f);
 				matrices.push();
@@ -281,7 +277,8 @@ public class ChatHud extends DrawableHelper {
 
 	public int getHeight() {
 		return getHeight(
-			(this.isChatFocused() ? this.client.options.chatHeightFocused : this.client.options.chatHeightUnfocused) / (this.client.options.chatLineSpacing + 1.0)
+			this.isChatFocused() ? this.client.options.getChatHeightFocused().getValue() : this.client.options.getChatHeightUnfocused().getValue()
+				/ (this.client.options.chatLineSpacing + 1.0)
 		);
 	}
 
@@ -299,6 +296,12 @@ public class ChatHud extends DrawableHelper {
 		int i = 180;
 		int j = 20;
 		return MathHelper.floor(heightOption * 160.0 + 20.0);
+	}
+
+	public static double getDefaultUnfocusedHeight() {
+		int i = 180;
+		int j = 20;
+		return 70.0 / (double)(getHeight(1.0) - 20);
 	}
 
 	public int getVisibleLineCount() {

@@ -26,10 +26,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
-import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class DebugChunkGenerator extends ChunkGenerator {
 	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
@@ -64,12 +64,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public ChunkGenerator withSeed(long seed) {
-		return this;
-	}
-
-	@Override
-	public void buildSurface(ChunkRegion region, StructureAccessor structures, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, StructureAccessor structures, NoiseConfig noiseConfig, Chunk chunk) {
 	}
 
 	@Override
@@ -91,22 +86,22 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
 		return CompletableFuture.completedFuture(chunk);
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
+	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
 		return 0;
 	}
 
 	@Override
-	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
+	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world, NoiseConfig noiseConfig) {
 		return new VerticalBlockSample(0, new BlockState[0]);
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, BlockPos pos) {
+	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos) {
 	}
 
 	public static BlockState getBlockState(int x, int z) {
@@ -126,13 +121,14 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler() {
-		return MultiNoiseUtil.method_40443();
-	}
-
-	@Override
 	public void carve(
-		ChunkRegion chunkRegion, long seed, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
+		ChunkRegion chunkRegion,
+		long seed,
+		NoiseConfig noiseConfig,
+		BiomeAccess biomeAccess,
+		StructureAccessor structureAccessor,
+		Chunk chunk,
+		GenerationStep.Carver carver
 	) {
 	}
 

@@ -108,7 +108,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private boolean dontSetConnectedToRealms;
 	final Screen lastScreen;
 	RealmsMainScreen.RealmSelectionList realmSelectionList;
-	private boolean field_33775;
+	private boolean hasSelectionList;
 	private ButtonWidget playButton;
 	private ButtonWidget backButton;
 	private ButtonWidget renewButton;
@@ -220,7 +220,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			this.addSelectableChild(this.realmSelectionList);
-			this.field_33775 = true;
+			this.hasSelectionList = true;
 			this.focusOn(this.realmSelectionList);
 			this.popupText = MultilineText.create(this.textRenderer, POPUP_TEXT, 100);
 		}
@@ -721,9 +721,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		} else {
 			if (this.showingPopup) {
 				this.updateButtonStates(null);
-				if (!this.field_33775) {
+				if (!this.hasSelectionList) {
 					this.addSelectableChild(this.realmSelectionList);
-					this.field_33775 = true;
+					this.hasSelectionList = true;
 				}
 
 				this.playButton.active = this.shouldPlayButtonBeActive(this.findServer());
@@ -796,9 +796,9 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.carouselTick = 0;
 			this.hasSwitchedCarouselImage = true;
 			this.updateButtonStates(null);
-			if (this.field_33775) {
+			if (this.hasSelectionList) {
 				this.remove(this.realmSelectionList);
-				this.field_33775 = false;
+				this.hasSelectionList = false;
 			}
 
 			NarratorManager.INSTANCE.narrate(POPUP_TEXT);
@@ -1103,7 +1103,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public static void loadImages(ResourceManager manager) {
-		Collection<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.endsWith(".png"));
+		Collection<Identifier> collection = manager.findResources("textures/gui/images", filename -> filename.getPath().endsWith(".png")).keySet();
 		IMAGES = collection.stream().filter(id -> id.getNamespace().equals("realms")).toList();
 	}
 

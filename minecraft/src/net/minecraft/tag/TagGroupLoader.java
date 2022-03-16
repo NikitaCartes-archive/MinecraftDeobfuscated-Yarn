@@ -8,24 +8,25 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceRef;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class TagGroupLoader<T> {
@@ -44,12 +45,15 @@ public class TagGroupLoader<T> {
 	public Map<Identifier, Tag.Builder> loadTags(ResourceManager manager) {
 		Map<Identifier, Tag.Builder> map = Maps.<Identifier, Tag.Builder>newHashMap();
 
-		for (Identifier identifier : manager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
+		for (Entry<Identifier, List<ResourceRef>> entry : manager.findAllResources(this.dataType, identifierx -> identifierx.getPath().endsWith(".json")).entrySet()) {
+			Identifier identifier = (Identifier)entry.getKey();
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
 
-			try {
-				for (Resource resource : manager.getAllResources(identifier)) {
+			for (ResourceRef resourceRef : (List)entry.getValue()) {
+				try {
+					Resource resource = resourceRef.open();
+
 					try {
 						InputStream inputStream = resource.getInputStream();
 
@@ -59,44 +63,54 @@ public class TagGroupLoader<T> {
 							try {
 								JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
 								if (jsonObject == null) {
-									LOGGER.error("Couldn't load tag list {} from {} in data pack {} as it is empty or null", identifier2, identifier, resource.getResourcePackName());
-								} else {
-									((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
-								}
-							} catch (Throwable var23) {
-								try {
-									reader.close();
-								} catch (Throwable var22) {
-									var23.addSuppressed(var22);
+									throw new NullPointerException("Invalid JSON contents");
 								}
 
-								throw var23;
+								((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resourceRef.getPackName());
+							} catch (Throwable var18) {
+								try {
+									reader.close();
+								} catch (Throwable var17) {
+									var18.addSuppressed(var17);
+								}
+
+								throw var18;
 							}
 
 							reader.close();
-						} catch (Throwable var24) {
+						} catch (Throwable var19) {
 							if (inputStream != null) {
 								try {
 									inputStream.close();
-								} catch (Throwable var21) {
-									var24.addSuppressed(var21);
+								} catch (Throwable var16) {
+									var19.addSuppressed(var16);
 								}
 							}
 
-							throw var24;
+							throw var19;
 						}
 
 						if (inputStream != null) {
 							inputStream.close();
 						}
-					} catch (RuntimeException | IOException var25) {
-						LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var25);
-					} finally {
-						IOUtils.closeQuietly(resource);
+					} catch (Throwable var20) {
+						if (resource != null) {
+							try {
+								resource.close();
+							} catch (Throwable var15) {
+								var20.addSuppressed(var15);
+							}
+						}
+
+						throw var20;
 					}
+
+					if (resource != null) {
+						resource.close();
+					}
+				} catch (Exception var21) {
+					LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resourceRef.getPackName(), var21);
 				}
-			} catch (IOException var27) {
-				LOGGER.error("Couldn't read tag list {} from {}", identifier2, identifier, var27);
 			}
 		}
 

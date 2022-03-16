@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -43,14 +44,9 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.event.listener.GameEventDispatcher;
-import net.minecraft.world.gen.chunk.AquiferSampler;
-import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.chunk.BlendingData;
-import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.noise.NoiseRouter;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.SerializableTickScheduler;
 import org.slf4j.Logger;
@@ -75,8 +71,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	protected BlendingData blendingData;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private final Map<ConfiguredStructureFeature<?, ?>, StructureStart> structureStarts = Maps.<ConfiguredStructureFeature<?, ?>, StructureStart>newHashMap();
-	private final Map<ConfiguredStructureFeature<?, ?>, LongSet> structureReferences = Maps.<ConfiguredStructureFeature<?, ?>, LongSet>newHashMap();
+	private final Map<StructureFeature, StructureStart> structureStarts = Maps.<StructureFeature, StructureStart>newHashMap();
+	private final Map<StructureFeature, LongSet> structureReferences = Maps.<StructureFeature, LongSet>newHashMap();
 	protected final Map<BlockPos, NbtCompound> blockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
 	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	protected final HeightLimitView heightLimitView;
@@ -197,44 +193,44 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return (StructureStart)this.structureStarts.get(configuredStructureFeature);
+	public StructureStart getStructureStart(StructureFeature structureFeature) {
+		return (StructureStart)this.structureStarts.get(structureFeature);
 	}
 
 	@Override
-	public void setStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, StructureStart start) {
-		this.structureStarts.put(configuredStructureFeature, start);
+	public void setStructureStart(StructureFeature structureFeature, StructureStart start) {
+		this.structureStarts.put(structureFeature, start);
 		this.needsSaving = true;
 	}
 
-	public Map<ConfiguredStructureFeature<?, ?>, StructureStart> getStructureStarts() {
+	public Map<StructureFeature, StructureStart> getStructureStarts() {
 		return Collections.unmodifiableMap(this.structureStarts);
 	}
 
-	public void setStructureStarts(Map<ConfiguredStructureFeature<?, ?>, StructureStart> structureStarts) {
+	public void setStructureStarts(Map<StructureFeature, StructureStart> structureStarts) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(structureStarts);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public LongSet getStructureReferences(ConfiguredStructureFeature<?, ?> configuredStructureFeature) {
-		return (LongSet)this.structureReferences.getOrDefault(configuredStructureFeature, EMPTY_STRUCTURE_REFERENCES);
+	public LongSet getStructureReferences(StructureFeature structureFeature) {
+		return (LongSet)this.structureReferences.getOrDefault(structureFeature, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override
-	public void addStructureReference(ConfiguredStructureFeature<?, ?> configuredStructureFeature, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(configuredStructureFeature, configuredStructureFeaturex -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(StructureFeature structureFeature, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet())).add(reference);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public Map<ConfiguredStructureFeature<?, ?>, LongSet> getStructureReferences() {
+	public Map<StructureFeature, LongSet> getStructureReferences() {
 		return Collections.unmodifiableMap(this.structureReferences);
 	}
 
 	@Override
-	public void setStructureReferences(Map<ConfiguredStructureFeature<?, ?>, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureFeature, LongSet> structureReferences) {
 		this.structureReferences.clear();
 		this.structureReferences.putAll(structureReferences);
 		this.needsSaving = true;
@@ -307,7 +303,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	}
 
 	public boolean usesOldNoise() {
-		return this.blendingData != null && this.blendingData.usesOldNoise();
+		return this.blendingData != null;
 	}
 
 	@Nullable
@@ -358,15 +354,9 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return this.heightLimitView.getHeight();
 	}
 
-	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(
-		NoiseRouter noiseColumnSampler,
-		Supplier<DensityFunctionTypes.class_7050> columnSampler,
-		ChunkGeneratorSettings chunkGeneratorSettings,
-		AquiferSampler.FluidLevelSampler fluidLevelSampler,
-		Blender blender
-	) {
+	public ChunkNoiseSampler getOrCreateChunkNoiseSampler(Function<Chunk, ChunkNoiseSampler> function) {
 		if (this.chunkNoiseSampler == null) {
-			this.chunkNoiseSampler = ChunkNoiseSampler.create(this, noiseColumnSampler, columnSampler, chunkGeneratorSettings, fluidLevelSampler, blender);
+			this.chunkNoiseSampler = (ChunkNoiseSampler)function.apply(this);
 		}
 
 		return this.chunkNoiseSampler;

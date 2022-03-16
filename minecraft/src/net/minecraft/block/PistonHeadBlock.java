@@ -129,10 +129,9 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (state.canPlaceAt(world, pos)) {
-			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
-			world.getBlockState(blockPos).neighborUpdate(world, blockPos, block, fromPos, false);
+			world.updateNeighbor(pos.offset(((Direction)state.get(FACING)).getOpposite()), sourceBlock, sourcePos);
 		}
 	}
 

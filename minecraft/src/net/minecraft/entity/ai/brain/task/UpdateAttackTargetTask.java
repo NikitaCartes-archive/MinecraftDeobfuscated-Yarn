@@ -23,7 +23,7 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	public UpdateAttackTargetTask(Function<E, Optional<? extends LivingEntity>> targetGetter) {
-		this(mobEntity -> true, targetGetter);
+		this(entity -> true, targetGetter);
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
@@ -36,7 +36,7 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(livingEntity -> this.updateAttackTarget(mobEntity, livingEntity));
+		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(target -> this.updateAttackTarget(mobEntity, target));
 	}
 
 	private void updateAttackTarget(E entity, LivingEntity target) {

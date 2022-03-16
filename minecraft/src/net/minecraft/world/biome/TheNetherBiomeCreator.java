@@ -42,7 +42,6 @@ public class TheNetherBiomeCreator {
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.NETHER)
 			.temperature(2.0F)
 			.downfall(0.0F)
 			.effects(
@@ -91,7 +90,6 @@ public class TheNetherBiomeCreator {
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.NETHER)
 			.temperature(2.0F)
 			.downfall(0.0F)
 			.effects(
@@ -139,7 +137,6 @@ public class TheNetherBiomeCreator {
 		DefaultBiomeFeatures.addAncientDebris(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.NETHER)
 			.temperature(2.0F)
 			.downfall(0.0F)
 			.effects(
@@ -183,7 +180,6 @@ public class TheNetherBiomeCreator {
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.NETHER)
 			.temperature(2.0F)
 			.downfall(0.0F)
 			.effects(
@@ -228,7 +224,6 @@ public class TheNetherBiomeCreator {
 		DefaultBiomeFeatures.addNetherMineables(builder);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.NETHER)
 			.temperature(2.0F)
 			.downfall(0.0F)
 			.effects(

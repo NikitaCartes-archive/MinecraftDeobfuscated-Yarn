@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
@@ -12,7 +13,7 @@ import net.minecraft.util.registry.Registry;
 public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int id;
 	private final UUID uuid;
-	private final int entityTypeId;
+	private final EntityType<?> entityTypeId;
 	private final double x;
 	private final double y;
 	private final double z;
@@ -26,7 +27,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public MobSpawnS2CPacket(LivingEntity entity) {
 		this.id = entity.getId();
 		this.uuid = entity.getUuid();
-		this.entityTypeId = Registry.ENTITY_TYPE.getRawId(entity.getType());
+		this.entityTypeId = entity.getType();
 		this.x = entity.getX();
 		this.y = entity.getY();
 		this.z = entity.getZ();
@@ -46,7 +47,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public MobSpawnS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.uuid = buf.readUuid();
-		this.entityTypeId = buf.readVarInt();
+		this.entityTypeId = buf.readRegistryValue(Registry.ENTITY_TYPE);
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -62,7 +63,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeUuid(this.uuid);
-		buf.writeVarInt(this.entityTypeId);
+		buf.writeRegistryValue(Registry.ENTITY_TYPE, this.entityTypeId);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
@@ -86,7 +87,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.uuid;
 	}
 
-	public int getEntityTypeId() {
+	public EntityType<?> getEntityTypeId() {
 		return this.entityTypeId;
 	}
 

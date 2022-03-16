@@ -371,7 +371,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 	}
 
-	protected double getMaxSpeed() {
+	protected double getMaxOffRailSpeed() {
 		return (this.isTouchingWater() ? 4.0 : 8.0) / 20.0;
 	}
 
@@ -379,7 +379,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	protected void moveOffRail() {
-		double d = this.getMaxSpeed();
+		double d = this.getMaxOffRailSpeed();
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(MathHelper.clamp(vec3d.x, -d, d), vec3d.y, MathHelper.clamp(vec3d.z, -d, d));
 		if (this.onGround) {
@@ -488,7 +488,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		f = p + i * s;
 		this.setPosition(d, e, f);
 		double t = this.hasPassengers() ? 0.75 : 1.0;
-		double u = this.getMaxSpeed();
+		double u = this.getMaxOffRailSpeed();
 		vec3d2 = this.getVelocity();
 		this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
 		if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {

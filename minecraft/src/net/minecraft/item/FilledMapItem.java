@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -27,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
@@ -230,8 +232,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 				for (int n = 0; n < 128; n++) {
 					for (int o = 0; o < 128; o++) {
-						Biome.Category category = Biome.getCategory(world.getBiome(mutable.set((l + o) * i, 0, (m + n) * i)));
-						bls[n * 128 + o] = category == Biome.Category.OCEAN || category == Biome.Category.RIVER || category == Biome.Category.SWAMP;
+						RegistryEntry<Biome> registryEntry = world.getBiome(mutable.set((l + o) * i, 0, (m + n) * i));
+						bls[n * 128 + o] = registryEntry.isIn(BiomeTags.WATER_ON_MAP_OUTLINES);
 					}
 				}
 

@@ -124,7 +124,7 @@ public class EditWorldScreen extends Screen {
 				new TranslatableText("selectWorld.edit.export_worldgen_settings"),
 				button -> {
 					DataResult<String> dataResult2;
-					try (SaveLoader saveLoader = this.client.createSaveLoader(this.storageSession, false)) {
+					try (SaveLoader saveLoader = this.client.method_41735().createSaveLoader(this.storageSession, false)) {
 						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, saveLoader.dynamicRegistryManager());
 						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, saveLoader.saveProperties().getGeneratorOptions());
 						dataResult2 = dataResult.flatMap(json -> {

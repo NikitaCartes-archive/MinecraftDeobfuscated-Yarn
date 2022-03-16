@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Map;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,6 +28,7 @@ public class UnicodeTextureFont implements Font {
 	private static final int field_32232 = 256;
 	private static final int field_32233 = 256;
 	private static final int field_32234 = 256;
+	private static final byte field_37905 = 0;
 	private final ResourceManager resourceManager;
 	private final byte[] sizes;
 	private final String template;
@@ -104,8 +106,8 @@ public class UnicodeTextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int codePoint) {
-		if (codePoint >= 0 && codePoint <= 65535) {
+	public Glyph getGlyph(int codePoint) {
+		if (codePoint >= 0 && codePoint < this.sizes.length) {
 			byte b = this.sizes[codePoint];
 			if (b != 0) {
 				NativeImage nativeImage = (NativeImage)this.images.computeIfAbsent(this.getImageId(codePoint), this::getGlyphImage);
@@ -125,7 +127,7 @@ public class UnicodeTextureFont implements Font {
 	public IntSet getProvidedGlyphs() {
 		IntSet intSet = new IntOpenHashSet();
 
-		for (int i = 0; i < 65535; i++) {
+		for (int i = 0; i < this.sizes.length; i++) {
 			if (this.sizes[i] != 0) {
 				intSet.add(i);
 			}
@@ -206,8 +208,7 @@ public class UnicodeTextureFont implements Font {
 
 				UnicodeTextureFont var4;
 				try {
-					byte[] bs = new byte[65536];
-					resource.getInputStream().read(bs);
+					byte[] bs = resource.getInputStream().readNBytes(65536);
 					var4 = new UnicodeTextureFont(manager, bs, this.template);
 				} catch (Throwable var6) {
 					if (resource != null) {
@@ -234,49 +235,11 @@ public class UnicodeTextureFont implements Font {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class UnicodeTextureGlyph implements RenderableGlyph {
-		private final int width;
-		private final int height;
-		private final int unpackSkipPixels;
-		private final int unpackSkipRows;
-		private final NativeImage image;
-
-		UnicodeTextureGlyph(int unpackSkipPixels, int unpackSkipRows, int width, int height, NativeImage image) {
-			this.width = width;
-			this.height = height;
-			this.unpackSkipPixels = unpackSkipPixels;
-			this.unpackSkipRows = unpackSkipRows;
-			this.image = image;
-		}
-
-		@Override
-		public float getOversample() {
-			return 2.0F;
-		}
-
-		@Override
-		public int getWidth() {
-			return this.width;
-		}
-
-		@Override
-		public int getHeight() {
-			return this.height;
-		}
+	static record UnicodeTextureGlyph(int unpackSkipPixels, int unpackSkipRows, int width, int height, NativeImage image) implements Glyph {
 
 		@Override
 		public float getAdvance() {
 			return (float)(this.width / 2 + 1);
-		}
-
-		@Override
-		public void upload(int x, int y) {
-			this.image.upload(0, x, y, this.unpackSkipPixels, this.unpackSkipRows, this.width, this.height, false, false);
-		}
-
-		@Override
-		public boolean hasColor() {
-			return this.image.getFormat().getChannelCount() > 1;
 		}
 
 		@Override
@@ -287,6 +250,49 @@ public class UnicodeTextureFont implements Font {
 		@Override
 		public float getBoldOffset() {
 			return 0.5F;
+		}
+
+		@Override
+		public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+			return (GlyphRenderer)function.apply(
+				new RenderableGlyph() {
+					@Override
+					public float getOversample() {
+						return 2.0F;
+					}
+
+					@Override
+					public int getWidth() {
+						return UnicodeTextureGlyph.this.width;
+					}
+
+					@Override
+					public int getHeight() {
+						return UnicodeTextureGlyph.this.height;
+					}
+
+					@Override
+					public void upload(int x, int y) {
+						UnicodeTextureGlyph.this.image
+							.upload(
+								0,
+								x,
+								y,
+								UnicodeTextureGlyph.this.unpackSkipPixels,
+								UnicodeTextureGlyph.this.unpackSkipRows,
+								UnicodeTextureGlyph.this.width,
+								UnicodeTextureGlyph.this.height,
+								false,
+								false
+							);
+					}
+
+					@Override
+					public boolean hasColor() {
+						return UnicodeTextureGlyph.this.image.getFormat().getChannelCount() > 1;
+					}
+				}
+			);
 		}
 	}
 }

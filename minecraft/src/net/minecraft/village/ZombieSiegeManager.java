@@ -8,11 +8,11 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.spawner.Spawner;
 import org.slf4j.Logger;
 
@@ -71,7 +71,7 @@ public class ZombieSiegeManager implements Spawner {
 		for (PlayerEntity playerEntity : world.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
 				BlockPos blockPos = playerEntity.getBlockPos();
-				if (world.isNearOccupiedPointOfInterest(blockPos) && Biome.getCategory(world.getBiome(blockPos)) != Biome.Category.MUSHROOM) {
+				if (world.isNearOccupiedPointOfInterest(blockPos) && !world.getBiome(blockPos).isIn(BiomeTags.WITHOUT_ZOMBIE_SIEGES)) {
 					for (int i = 0; i < 10; i++) {
 						float f = world.random.nextFloat() * (float) (Math.PI * 2);
 						this.startX = blockPos.getX() + MathHelper.floor(MathHelper.cos(f) * 32.0F);

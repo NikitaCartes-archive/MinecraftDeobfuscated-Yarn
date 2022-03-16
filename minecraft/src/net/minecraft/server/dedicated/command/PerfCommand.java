@@ -20,6 +20,7 @@ import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.ZipCompressor;
+import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.RecordDumper;
 import org.apache.commons.io.FileUtils;
@@ -108,10 +109,12 @@ public class PerfCommand {
 	}
 
 	private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
-		int i = result.getTickSpan();
-		double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
-		source.sendFeedback(
-			new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
-		);
+		if (result != EmptyProfileResult.INSTANCE) {
+			int i = result.getTickSpan();
+			double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
+			source.sendFeedback(
+				new TranslatableText("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
+			);
+		}
 	}
 }

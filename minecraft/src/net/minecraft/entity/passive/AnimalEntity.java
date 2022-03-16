@@ -31,7 +31,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class AnimalEntity extends PassiveEntity {
-	static final int BREEDING_COOLDOWN = 6000;
+	protected static final int BREEDING_COOLDOWN = 6000;
 	private int loveTicks;
 	@Nullable
 	private UUID lovingPlayer;
@@ -124,7 +124,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	public int getXpToDrop() {
 		return 1 + this.world.random.nextInt(3);
 	}
 
@@ -146,7 +146,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
-				this.growUp((int)((float)(-i / 20) * 0.1F), true);
+				this.growUp(toGrowUpAge(-i), true);
 				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.success(this.world.isClient);
 			}

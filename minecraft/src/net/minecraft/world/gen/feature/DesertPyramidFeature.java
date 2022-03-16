@@ -1,22 +1,27 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Map;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.DesertTempleGenerator;
-import net.minecraft.structure.StructureGeneratorFactory;
-import net.minecraft.structure.StructurePiecesCollector;
-import net.minecraft.structure.StructurePiecesGenerator;
-import net.minecraft.world.Heightmap;
+import net.minecraft.structure.StructureType;
+import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.world.StructureSpawns;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.GenerationStep;
 
-public class DesertPyramidFeature extends StructureFeature<DefaultFeatureConfig> {
-	public DesertPyramidFeature(Codec<DefaultFeatureConfig> configCodec) {
-		super(configCodec, StructureGeneratorFactory.simple(DesertPyramidFeature::canGenerate, DesertPyramidFeature::addPieces));
+public class DesertPyramidFeature extends BasicTempleStructureFeature {
+	public static final Codec<DesertPyramidFeature> CODEC = RecordCodecBuilder.create(
+		instance -> method_41608(instance).apply(instance, DesertPyramidFeature::new)
+	);
+
+	public DesertPyramidFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl) {
+		super(DesertTempleGenerator::new, 21, 21, registryEntryList, map, feature, bl);
 	}
 
-	private static <C extends FeatureConfig> boolean canGenerate(StructureGeneratorFactory.Context<C> context) {
-		return !context.isBiomeValid(Heightmap.Type.WORLD_SURFACE_WG) ? false : context.getMinCornerHeight(21, 21) >= context.chunkGenerator().getSeaLevel();
-	}
-
-	private static void addPieces(StructurePiecesCollector collector, StructurePiecesGenerator.Context<DefaultFeatureConfig> context) {
-		collector.addPiece(new DesertTempleGenerator(context.random(), context.chunkPos().getStartX(), context.chunkPos().getStartZ()));
+	@Override
+	public StructureType<?> getType() {
+		return StructureType.DESERT_PYRAMID;
 	}
 }

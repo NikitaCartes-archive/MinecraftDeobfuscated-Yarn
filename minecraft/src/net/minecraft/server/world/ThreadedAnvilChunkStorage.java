@@ -89,6 +89,9 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
+import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.VersionedChunkStorage;
@@ -119,6 +122,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final ServerLightingProvider lightingProvider;
 	private final ThreadExecutor<Runnable> mainThreadExecutor;
 	private ChunkGenerator chunkGenerator;
+	private NoiseConfig noiseConfig;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
 	private final PointOfInterestStorage pointOfInterestStorage;
 	final LongSet unloadedChunks = new LongOpenHashSet();
@@ -160,6 +164,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.saveDir = path.getFileName().toString();
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
+		if (chunkGenerator instanceof NoiseChunkGenerator noiseChunkGenerator) {
+			this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.method_41541().value(), world.getRegistryManager().get(Registry.NOISE_WORLDGEN), world.getSeed());
+		} else {
+			this.noiseConfig = NoiseConfig.create(world.getRegistryManager(), ChunkGeneratorSettings.OVERWORLD, world.getSeed());
+		}
+
 		this.mainThreadExecutor = mainThreadExecutor;
 		TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
 		MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
@@ -180,6 +190,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	protected ChunkGenerator getChunkGenerator() {
 		return this.chunkGenerator;
+	}
+
+	protected NoiseConfig getNoiseConfig() {
+		return this.noiseConfig;
 	}
 
 	public void verifyChunkGenerator() {
@@ -290,11 +304,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(listx -> {
-			List<Chunk> list2x = Lists.<Chunk>newArrayList();
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(chunks -> {
+			List<Chunk> listx = Lists.<Chunk>newArrayList();
 			int l = 0;
 
-			for (final Either<Chunk, ChunkHolder.Unloaded> either : listx) {
+			for (final Either<Chunk, ChunkHolder.Unloaded> either : chunks) {
 				if (either == null) {
 					throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
 				}
@@ -309,11 +323,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					});
 				}
 
-				list2x.add((Chunk)optional.get());
+				listx.add((Chunk)optional.get());
 				l++;
 			}
 
-			return Either.left(list2x);
+			return Either.left(listx);
 		});
 
 		for (ChunkHolder chunkHolder2 : list2) {
@@ -323,7 +337,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return completableFuture3;
 	}
 
-	public CrashException crash(IllegalStateException exception, String string) {
+	public CrashException crash(IllegalStateException exception, String details) {
 		StringBuilder stringBuilder = new StringBuilder();
 		Consumer<ChunkHolder> consumer = chunkHolder -> chunkHolder.collectFuturesByStatus()
 				.forEach(
@@ -346,7 +360,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.chunkHolders.values().forEach(consumer);
 		CrashReport crashReport = CrashReport.create(exception, "Chunk loading");
 		CrashReportSection crashReportSection = crashReport.addElement("Chunk loading");
-		crashReportSection.add("Details", string);
+		crashReportSection.add("Details", details);
 		crashReportSection.add("Futures", stringBuilder);
 		return new CrashException(crashReport);
 	}
@@ -592,7 +606,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
 		ChunkPos chunkPos = holder.getPos();
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(
-			chunkPos, requiredStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(requiredStatus, i)
+			chunkPos, requiredStatus.getTaskMargin(), distance -> this.getRequiredStatusForGeneration(requiredStatus, distance)
 		);
 		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus.getId()));
 		Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
@@ -1321,7 +1335,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		 */
 		public void updateTrackedStatus(ServerPlayerEntity player) {
 			if (player != this.entity) {
-				Vec3d vec3d = player.getPos().subtract(this.entry.getLastPos());
+				Vec3d vec3d = player.getPos().subtract(this.entity.getPos());
 				double d = (double)Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
 				double e = vec3d.x * vec3d.x + vec3d.z * vec3d.z;
 				double f = d * d;

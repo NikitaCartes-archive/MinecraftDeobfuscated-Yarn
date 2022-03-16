@@ -121,7 +121,7 @@ public class ForceLoadCommand {
 		ServerWorld serverWorld = source.getWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		LongSet longSet = serverWorld.getForcedChunks();
-		longSet.forEach(l -> serverWorld.setChunkForced(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), false));
+		longSet.forEach(chunkPos -> serverWorld.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
 		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", registryKey.getValue()), true);
 		return 0;
 	}

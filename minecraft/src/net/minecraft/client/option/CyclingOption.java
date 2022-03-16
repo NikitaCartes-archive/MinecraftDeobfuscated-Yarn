@@ -1,6 +1,6 @@
 package net.minecraft.client.option;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -13,12 +13,15 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
+@Deprecated(
+	forRemoval = true
+)
 @Environment(EnvType.CLIENT)
 public class CyclingOption<T> extends Option {
 	private final CyclingOption.Setter<T> setter;
 	private final Function<GameOptions, T> getter;
 	private final Supplier<CyclingButtonWidget.Builder<T>> buttonBuilderFactory;
-	private Function<MinecraftClient, CyclingButtonWidget.TooltipFactory<T>> tooltips = client -> value -> ImmutableList.of();
+	private Function<MinecraftClient, Option.TooltipFactory<T>> tooltips = emptyTooltipFactoryGetter();
 
 	private CyclingOption(
 		String key, Function<GameOptions, T> getter, CyclingOption.Setter<T> setter, Supplier<CyclingButtonWidget.Builder<T>> buttonBuilderFactory
@@ -38,7 +41,7 @@ public class CyclingOption<T> extends Option {
 	public static <T> CyclingOption<T> create(
 		String key, Supplier<List<T>> valuesSupplier, Function<T, Text> valueToText, Function<GameOptions, T> getter, CyclingOption.Setter<T> setter
 	) {
-		return new CyclingOption<>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values((List<T>)valuesSupplier.get()));
+		return new CyclingOption<>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values((Collection<T>)valuesSupplier.get()));
 	}
 
 	public static <T> CyclingOption<T> create(
@@ -74,14 +77,14 @@ public class CyclingOption<T> extends Option {
 		});
 	}
 
-	public CyclingOption<T> tooltip(Function<MinecraftClient, CyclingButtonWidget.TooltipFactory<T>> tooltips) {
+	public CyclingOption<T> tooltip(Function<MinecraftClient, Option.TooltipFactory<T>> tooltips) {
 		this.tooltips = tooltips;
 		return this;
 	}
 
 	@Override
 	public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-		CyclingButtonWidget.TooltipFactory<T> tooltipFactory = (CyclingButtonWidget.TooltipFactory<T>)this.tooltips.apply(MinecraftClient.getInstance());
+		Option.TooltipFactory<T> tooltipFactory = (Option.TooltipFactory<T>)this.tooltips.apply(MinecraftClient.getInstance());
 		return ((CyclingButtonWidget.Builder)this.buttonBuilderFactory.get())
 			.tooltip(tooltipFactory)
 			.initially((T)this.getter.apply(options))

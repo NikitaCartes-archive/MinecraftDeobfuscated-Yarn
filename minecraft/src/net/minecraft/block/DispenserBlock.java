@@ -95,7 +95,7 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {

@@ -4,7 +4,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
@@ -19,76 +18,46 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.TagKey;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntryList;
 
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
-	static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("arguments.block.tag.unknown", id));
+	private final CommandRegistryWrapper<Block> registryWrapper;
 
-	public static BlockPredicateArgumentType blockPredicate() {
-		return new BlockPredicateArgumentType();
+	public BlockPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
+		this.registryWrapper = commandRegistryAccess.createWrapper(Registry.BLOCK_KEY);
+	}
+
+	public static BlockPredicateArgumentType blockPredicate(CommandRegistryAccess commandRegistryAccess) {
+		return new BlockPredicateArgumentType(commandRegistryAccess);
 	}
 
 	public BlockPredicateArgumentType.BlockPredicate parse(StringReader stringReader) throws CommandSyntaxException {
-		final BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
-		if (blockArgumentParser.getBlockState() != null) {
-			final BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
-				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
+		return parse(this.registryWrapper, stringReader);
+	}
+
+	public static BlockPredicateArgumentType.BlockPredicate parse(CommandRegistryWrapper<Block> registryWrapper, StringReader reader) throws CommandSyntaxException {
+		return BlockArgumentParser.blockOrTag(registryWrapper, reader, true)
+			.map(
+				result -> new BlockPredicateArgumentType.StatePredicate(result.blockState(), result.properties().keySet(), result.nbt()),
+				result -> new BlockPredicateArgumentType.TagPredicate(result.tag(), result.vagueProperties(), result.nbt())
 			);
-			return new BlockPredicateArgumentType.BlockPredicate() {
-				@Override
-				public Predicate<CachedBlockPosition> create(Registry<Block> blockRegistry) {
-					return statePredicate;
-				}
-
-				@Override
-				public boolean hasNbt() {
-					return statePredicate.hasNbt();
-				}
-			};
-		} else {
-			final TagKey<Block> tagKey = blockArgumentParser.getTagId();
-			return new BlockPredicateArgumentType.BlockPredicate() {
-				@Override
-				public Predicate<CachedBlockPosition> create(Registry<Block> blockRegistry) throws CommandSyntaxException {
-					if (!blockRegistry.containsTag(tagKey)) {
-						throw BlockPredicateArgumentType.UNKNOWN_TAG_EXCEPTION.create(tagKey);
-					} else {
-						return new BlockPredicateArgumentType.TagPredicate(tagKey, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
-					}
-				}
-
-				@Override
-				public boolean hasNbt() {
-					return blockArgumentParser.getNbtData() != null;
-				}
-			};
-		}
 	}
 
 	public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return context.<BlockPredicateArgumentType.BlockPredicate>getArgument(name, BlockPredicateArgumentType.BlockPredicate.class)
-			.create(context.getSource().getServer().getRegistryManager().get(Registry.BLOCK_KEY));
+		return context.getArgument(name, BlockPredicateArgumentType.BlockPredicate.class);
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		StringReader stringReader = new StringReader(builder.getInput());
-		stringReader.setCursor(builder.getStart());
-		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true);
-
-		try {
-			blockArgumentParser.parse(true);
-		} catch (CommandSyntaxException var6) {
-		}
-
-		return blockArgumentParser.getSuggestions(builder, Registry.BLOCK);
+		return BlockArgumentParser.getSuggestions(this.registryWrapper, builder, true, true);
 	}
 
 	@Override
@@ -96,13 +65,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		return EXAMPLES;
 	}
 
-	public interface BlockPredicate {
-		Predicate<CachedBlockPosition> create(Registry<Block> blockRegistry) throws CommandSyntaxException;
-
+	public interface BlockPredicate extends Predicate<CachedBlockPosition> {
 		boolean hasNbt();
 	}
 
-	static class StatePredicate implements Predicate<CachedBlockPosition> {
+	static class StatePredicate implements BlockPredicateArgumentType.BlockPredicate {
 		private final BlockState state;
 		private final Set<Property<?>> properties;
 		@Nullable
@@ -134,18 +101,19 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 			}
 		}
 
+		@Override
 		public boolean hasNbt() {
 			return this.nbt != null;
 		}
 	}
 
-	static class TagPredicate implements Predicate<CachedBlockPosition> {
-		private final TagKey<Block> tag;
+	static class TagPredicate implements BlockPredicateArgumentType.BlockPredicate {
+		private final RegistryEntryList<Block> tag;
 		@Nullable
 		private final NbtCompound nbt;
 		private final Map<String, String> properties;
 
-		TagPredicate(TagKey<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
+		TagPredicate(RegistryEntryList<Block> tag, Map<String, String> properties, @Nullable NbtCompound nbt) {
 			this.tag = tag;
 			this.properties = properties;
 			this.nbt = nbt;
@@ -179,6 +147,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.createNbtWithIdentifyingData(), true);
 				}
 			}
+		}
+
+		@Override
+		public boolean hasNbt() {
+			return this.nbt != null;
 		}
 	}
 }

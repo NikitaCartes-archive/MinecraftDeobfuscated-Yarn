@@ -85,6 +85,9 @@ public class Blocks {
 	public static final Block DARK_OAK_PLANKS = register(
 		"dark_oak_planks", new Block(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
+	public static final Block MANGROVE_PLANKS = register(
+		"mangrove_planks", new Block(AbstractBlock.Settings.of(Material.WOOD, MapColor.RED).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+	);
 	public static final Block OAK_SAPLING = register(
 		"oak_sapling",
 		new SaplingBlock(
@@ -120,6 +123,10 @@ public class Blocks {
 		new SaplingBlock(
 			new DarkOakSaplingGenerator(), AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)
 		)
+	);
+	public static final Block MANGROVE_PROPAGULE = register(
+		"mangrove_propagule",
+		new PropaguleBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block BEDROCK = register(
 		"bedrock", new Block(AbstractBlock.Settings.of(Material.STONE).strength(-1.0F, 3600000.0F).dropsNothing().allowsSpawning(Blocks::never))
@@ -173,12 +180,31 @@ public class Blocks {
 	public static final Block JUNGLE_LOG = register("jungle_log", createLogBlock(MapColor.DIRT_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block ACACIA_LOG = register("acacia_log", createLogBlock(MapColor.ORANGE, MapColor.STONE_GRAY));
 	public static final Block DARK_OAK_LOG = register("dark_oak_log", createLogBlock(MapColor.BROWN, MapColor.BROWN));
+	public static final Block MANGROVE_LOG = register("mangrove_log", createLogBlock(MapColor.ORANGE, MapColor.STONE_GRAY));
+	public static final Block MANGROVE_ROOTS = register(
+		"mangrove_roots",
+		new MangroveRootsBlock(
+			AbstractBlock.Settings.of(Material.WOOD)
+				.strength(0.7F)
+				.ticksRandomly()
+				.sounds(BlockSoundGroup.MANGROVE_ROOTS)
+				.nonOpaque()
+				.allowsSpawning(Blocks::canSpawnOnLeaves)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+				.nonOpaque()
+		)
+	);
+	public static final Block MUDDY_MANGROVE_ROOTS = register(
+		"muddy_mangrove_roots", new PillarBlock(AbstractBlock.Settings.of(Material.SOIL).strength(0.7F).sounds(BlockSoundGroup.MUDDY_MANGROVE_ROOTS))
+	);
 	public static final Block STRIPPED_SPRUCE_LOG = register("stripped_spruce_log", createLogBlock(MapColor.SPRUCE_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block STRIPPED_BIRCH_LOG = register("stripped_birch_log", createLogBlock(MapColor.PALE_YELLOW, MapColor.PALE_YELLOW));
 	public static final Block STRIPPED_JUNGLE_LOG = register("stripped_jungle_log", createLogBlock(MapColor.DIRT_BROWN, MapColor.DIRT_BROWN));
 	public static final Block STRIPPED_ACACIA_LOG = register("stripped_acacia_log", createLogBlock(MapColor.ORANGE, MapColor.ORANGE));
 	public static final Block STRIPPED_DARK_OAK_LOG = register("stripped_dark_oak_log", createLogBlock(MapColor.BROWN, MapColor.BROWN));
 	public static final Block STRIPPED_OAK_LOG = register("stripped_oak_log", createLogBlock(MapColor.OAK_TAN, MapColor.OAK_TAN));
+	public static final Block STRIPPED_MANGROVE_LOG = register("stripped_mangrove_log", createLogBlock(MapColor.RED, MapColor.RED));
 	public static final Block OAK_WOOD = register(
 		"oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
 	);
@@ -196,6 +222,9 @@ public class Blocks {
 	);
 	public static final Block DARK_OAK_WOOD = register(
 		"dark_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
+	);
+	public static final Block MANGROVE_WOOD = register(
+		"mangrove_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.RED).strength(2.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block STRIPPED_OAK_WOOD = register(
 		"stripped_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
@@ -215,12 +244,26 @@ public class Blocks {
 	public static final Block STRIPPED_DARK_OAK_WOOD = register(
 		"stripped_dark_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
 	);
+	public static final Block STRIPPED_MANGROVE_WOOD = register("stripped_mangrove_wood", createLogBlock(MapColor.RED, MapColor.RED));
 	public static final Block OAK_LEAVES = register("oak_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block SPRUCE_LEAVES = register("spruce_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block BIRCH_LEAVES = register("birch_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block JUNGLE_LEAVES = register("jungle_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block ACACIA_LEAVES = register("acacia_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
 	public static final Block DARK_OAK_LEAVES = register("dark_oak_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block MANGROVE_LEAVES = register(
+		"mangrove_leaves",
+		new MangroveLeavesBlock(
+			AbstractBlock.Settings.of(Material.LEAVES)
+				.strength(0.2F)
+				.ticksRandomly()
+				.sounds(BlockSoundGroup.GRASS)
+				.nonOpaque()
+				.allowsSpawning(Blocks::canSpawnOnLeaves)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+		)
+	);
 	public static final Block AZALEA_LEAVES = register("azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block FLOWERING_AZALEA_LEAVES = register("flowering_azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block SPONGE = register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS)));
@@ -561,6 +604,9 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_LOG.getDefaultMapColor()).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.DARK_OAK
 		)
 	);
+	public static final Block MANGROVE_SIGN = register(
+		"mangrove_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.MANGROVE)
+	);
 	public static final Block OAK_DOOR = register(
 		"oak_door", new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMapColor()).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
 	);
@@ -613,6 +659,12 @@ public class Blocks {
 				.sounds(BlockSoundGroup.WOOD)
 				.dropsLike(DARK_OAK_SIGN),
 			SignType.DARK_OAK
+		)
+	);
+	public static final Block MANGROVE_WALL_SIGN = register(
+		"mangrove_wall_sign",
+		new WallSignBlock(
+			AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD).dropsLike(MANGROVE_SIGN), SignType.MANGROVE
 		)
 	);
 	public static final Block LEVER = register(
@@ -668,6 +720,13 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getDefaultMapColor()).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
 		)
 	);
+	public static final Block MANGROVE_PRESSURE_PLATE = register(
+		"mangrove_pressure_plate",
+		new PressurePlateBlock(
+			PressurePlateBlock.ActivationRule.EVERYTHING,
+			AbstractBlock.Settings.of(Material.WOOD, MANGROVE_PLANKS.getDefaultMapColor()).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD)
+		)
+	);
 	public static final Block REDSTONE_ORE = register(
 		"redstone_ore",
 		new RedstoneOreBlock(
@@ -706,7 +765,7 @@ public class Blocks {
 				.strength(0.1F)
 				.requiresTool()
 				.sounds(BlockSoundGroup.SNOW)
-				.blockVision((blockStatex, blockView, blockPos) -> (Integer)blockStatex.get(SnowBlock.LAYERS) >= 8)
+				.blockVision((state, world, pos) -> (Integer)state.get(SnowBlock.LAYERS) >= 8)
 		)
 	);
 	public static final Block ICE = register(
@@ -854,6 +913,12 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)
 		)
 	);
+	public static final Block MANGROVE_TRAPDOOR = register(
+		"mangrove_trapdoor",
+		new TrapdoorBlock(
+			AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)
+		)
+	);
 	public static final Block STONE_BRICKS = register("stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(1.5F, 6.0F)));
 	public static final Block MOSSY_STONE_BRICKS = register(
 		"mossy_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(1.5F, 6.0F))
@@ -863,6 +928,12 @@ public class Blocks {
 	);
 	public static final Block CHISELED_STONE_BRICKS = register(
 		"chiseled_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(1.5F, 6.0F))
+	);
+	public static final Block PACKED_MUD = register(
+		"packed_mud", new Block(AbstractBlock.Settings.copy(DIRT).strength(1.0F, 3.0F).sounds(BlockSoundGroup.PACKED_MUD))
+	);
+	public static final Block MUD_BRICKS = register(
+		"mud_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).strength(1.5F, 3.0F).sounds(BlockSoundGroup.MUD_BRICKS))
 	);
 	public static final Block INFESTED_STONE = register("infested_stone", new InfestedBlock(STONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT)));
 	public static final Block INFESTED_COBBLESTONE = register(
@@ -951,6 +1022,9 @@ public class Blocks {
 	public static final Block BRICK_STAIRS = register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), AbstractBlock.Settings.copy(BRICKS)));
 	public static final Block STONE_BRICK_STAIRS = register(
 		"stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS))
+	);
+	public static final Block MUD_BRICK_STAIRS = register(
+		"mud_brick_stairs", new StairsBlock(MUD_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(MUD_BRICKS))
 	);
 	public static final Block MYCELIUM = register(
 		"mycelium",
@@ -1080,6 +1154,9 @@ public class Blocks {
 	public static final Block POTTED_DARK_OAK_SAPLING = register(
 		"potted_dark_oak_sapling", new FlowerPotBlock(DARK_OAK_SAPLING, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
 	);
+	public static final Block POTTED_MANGROVE_PROPAGULE = register(
+		"potted_mangrove_propagule", new FlowerPotBlock(MANGROVE_PROPAGULE, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
+	);
 	public static final Block POTTED_FERN = register(
 		"potted_fern", new FlowerPotBlock(FERN, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
 	);
@@ -1157,6 +1234,9 @@ public class Blocks {
 	);
 	public static final Block DARK_OAK_BUTTON = register(
 		"dark_oak_button", new WoodenButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD))
+	);
+	public static final Block MANGROVE_BUTTON = register(
+		"mangrove_button", new WoodenButtonBlock(AbstractBlock.Settings.of(Material.DECORATION).noCollision().strength(0.5F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block SKELETON_SKULL = register(
 		"skeleton_skull", new SkullBlock(SkullBlock.Type.SKELETON, AbstractBlock.Settings.of(Material.DECORATION).strength(1.0F))
@@ -1371,6 +1451,9 @@ public class Blocks {
 	);
 	public static final Block DARK_OAK_STAIRS = register(
 		"dark_oak_stairs", new StairsBlock(DARK_OAK_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(DARK_OAK_PLANKS))
+	);
+	public static final Block MANGROVE_STAIRS = register(
+		"mangrove_stairs", new StairsBlock(MANGROVE_PLANKS.getDefaultState(), AbstractBlock.Settings.copy(MANGROVE_PLANKS))
 	);
 	public static final Block SLIME_BLOCK = register(
 		"slime_block",
@@ -1665,6 +1748,9 @@ public class Blocks {
 	public static final Block DARK_OAK_SLAB = register(
 		"dark_oak_slab", new SlabBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
+	public static final Block MANGROVE_SLAB = register(
+		"mangrove_slab", new SlabBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+	);
 	public static final Block STONE_SLAB = register(
 		"stone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0F, 6.0F))
 	);
@@ -1688,6 +1774,9 @@ public class Blocks {
 	);
 	public static final Block STONE_BRICK_SLAB = register(
 		"stone_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0F, 6.0F))
+	);
+	public static final Block MUD_BRICK_SLAB = register(
+		"mud_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN).requiresTool().strength(2.0F, 6.0F))
 	);
 	public static final Block NETHER_BRICK_SLAB = register(
 		"nether_brick_slab",
@@ -1737,6 +1826,10 @@ public class Blocks {
 		"dark_oak_fence_gate",
 		new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
+	public static final Block MANGROVE_FENCE_GATE = register(
+		"mangrove_fence_gate",
+		new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, MANGROVE_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+	);
 	public static final Block SPRUCE_FENCE = register(
 		"spruce_fence",
 		new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, SPRUCE_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
@@ -1755,6 +1848,10 @@ public class Blocks {
 	public static final Block DARK_OAK_FENCE = register(
 		"dark_oak_fence",
 		new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+	);
+	public static final Block MANGROVE_FENCE = register(
+		"mangrove_fence",
+		new FenceBlock(AbstractBlock.Settings.of(Material.WOOD, MANGROVE_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block SPRUCE_DOOR = register(
 		"spruce_door",
@@ -1775,6 +1872,10 @@ public class Blocks {
 	public static final Block DARK_OAK_DOOR = register(
 		"dark_oak_door",
 		new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, DARK_OAK_PLANKS.getDefaultMapColor()).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
+	);
+	public static final Block MANGROVE_DOOR = register(
+		"mangrove_door",
+		new DoorBlock(AbstractBlock.Settings.of(Material.WOOD, MANGROVE_PLANKS.getDefaultMapColor()).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque())
 	);
 	public static final Block END_ROD = register(
 		"end_rod", new EndRodBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 14).sounds(BlockSoundGroup.WOOD).nonOpaque())
@@ -2400,6 +2501,7 @@ public class Blocks {
 	public static final Block MOSSY_STONE_BRICK_WALL = register("mossy_stone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(MOSSY_STONE_BRICKS)));
 	public static final Block GRANITE_WALL = register("granite_wall", new WallBlock(AbstractBlock.Settings.copy(GRANITE)));
 	public static final Block STONE_BRICK_WALL = register("stone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(STONE_BRICKS)));
+	public static final Block MUD_BRICK_WALL = register("mud_brick_wall", new WallBlock(AbstractBlock.Settings.copy(MUD_BRICKS)));
 	public static final Block NETHER_BRICK_WALL = register("nether_brick_wall", new WallBlock(AbstractBlock.Settings.copy(NETHER_BRICKS)));
 	public static final Block ANDESITE_WALL = register("andesite_wall", new WallBlock(AbstractBlock.Settings.copy(ANDESITE)));
 	public static final Block RED_NETHER_BRICK_WALL = register("red_nether_brick_wall", new WallBlock(AbstractBlock.Settings.copy(RED_NETHER_BRICKS)));
@@ -3002,11 +3104,11 @@ public class Blocks {
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
-		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(blockStatex -> 2))
+		new AmethystClusterBlock(4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(state -> 2))
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",
-		new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(blockStatex -> 1))
+		new AmethystClusterBlock(3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(state -> 1))
 	);
 	public static final Block TUFF = register(
 		"tuff", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_GRAY).sounds(BlockSoundGroup.TUFF).requiresTool().strength(1.5F, 6.0F))
@@ -3035,10 +3137,24 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN)
 				.strength(1.5F)
 				.sounds(BlockSoundGroup.SCULK_SENSOR)
-				.luminance(blockStatex -> 1)
+				.luminance(state -> 1)
 				.emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE),
 			8
 		)
+	);
+	public static final Block SCULK = register("sculk", new SculkBlock(AbstractBlock.Settings.of(Material.SCULK).strength(0.6F).sounds(BlockSoundGroup.SCULK)));
+	public static final Block SCULK_VEIN = register(
+		"sculk_vein", new SculkVeinBlock(AbstractBlock.Settings.of(Material.SCULK).requiresTool().noCollision().strength(0.2F).sounds(BlockSoundGroup.SCULK_VEIN))
+	);
+	public static final Block SCULK_CATALYST = register(
+		"sculk_catalyst",
+		new SculkCatalystBlock(
+			AbstractBlock.Settings.of(Material.SCULK).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_CATALYST).luminance(state -> 6)
+		)
+	);
+	public static final Block SCULK_SHRIEKER = register(
+		"sculk_shrieker",
+		new SculkShriekerBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.BLACK).strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_SHRIEKER))
 	);
 	public static final Block OXIDIZED_COPPER = register(
 		"oxidized_copper",
@@ -3215,6 +3331,17 @@ public class Blocks {
 	public static final Block ROOTED_DIRT = register(
 		"rooted_dirt", new RootedDirtBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.5F).sounds(BlockSoundGroup.ROOTED_DIRT))
 	);
+	public static final Block MUD = register(
+		"mud",
+		new MudBlock(
+			AbstractBlock.Settings.copy(DIRT)
+				.allowsSpawning(Blocks::always)
+				.solidBlock(Blocks::always)
+				.blockVision(Blocks::always)
+				.suffocates(Blocks::always)
+				.sounds(BlockSoundGroup.MUD)
+		)
+	);
 	public static final Block DEEPSLATE = register(
 		"deepslate",
 		new PillarBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.DEEPSLATE))
@@ -3273,6 +3400,21 @@ public class Blocks {
 	);
 	public static final Block POTTED_FLOWERING_AZALEA_BUSH = register(
 		"potted_flowering_azalea_bush", new FlowerPotBlock(FLOWERING_AZALEA, AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().nonOpaque())
+	);
+	public static final Block OCHRE_FROGLIGHT = register(
+		"ochre_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
+	);
+	public static final Block VERDANT_FROGLIGHT = register(
+		"verdant_froglight",
+		new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
+	);
+	public static final Block PEARLESCENT_FROGLIGHT = register(
+		"pearlescent_froglight",
+		new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
+	);
+	public static final Block FROGSPAWN = register(
+		"frogspawn",
+		new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().dropsNothing().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN))
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {

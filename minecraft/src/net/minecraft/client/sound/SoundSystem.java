@@ -90,7 +90,7 @@ public class SoundSystem {
 	private synchronized void start() {
 		if (!this.started) {
 			try {
-				this.soundEngine.init("".equals(this.settings.soundDevice) ? null : this.settings.soundDevice);
+				this.soundEngine.init("".equals(this.settings.soundDevice) ? null : this.settings.soundDevice, this.settings.directionalAudio);
 				this.listener.init();
 				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);

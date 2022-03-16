@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
@@ -42,7 +41,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 					for (int i = 0; i < glowLichenFeatureConfig.searchRange; i++) {
 						mutable.set(blockPos, direction);
 						BlockState blockState = structureWorldAccess.getBlockState(mutable);
-						if (!isAirOrWater(blockState) && !blockState.isOf(Blocks.GLOW_LICHEN)) {
+						if (!isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.field_37709)) {
 							break;
 						}
 
@@ -65,8 +64,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 		for (Direction direction : directions) {
 			BlockState blockState = world.getBlockState(mutable.set(pos, direction));
 			if (blockState.isIn(config.canPlaceOn)) {
-				GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
-				BlockState blockState2 = glowLichenBlock.withDirection(state, world, pos, direction);
+				BlockState blockState2 = config.field_37709.withDirection(state, world, pos, direction);
 				if (blockState2 == null) {
 					return false;
 				}
@@ -74,7 +72,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 				world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
 				world.getChunk(pos).markBlockForPostProcessing(pos);
 				if (random.nextFloat() < config.spreadChance) {
-					glowLichenBlock.trySpreadRandomly(blockState2, world, pos, direction, random, true);
+					config.field_37709.method_41432().method_41447(blockState2, world, pos, direction, random, true);
 				}
 
 				return true;

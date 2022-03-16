@@ -16,8 +16,9 @@ public class ResourceImpl implements Resource {
 	private final String packName;
 	private final Identifier id;
 	private final InputStream inputStream;
-	private final InputStream metaInputStream;
-	private boolean readMetadata;
+	@Nullable
+	private InputStream metaInputStream;
+	@Nullable
 	private JsonObject metadata;
 
 	public ResourceImpl(String packName, Identifier id, InputStream inputStream, @Nullable InputStream metaInputStream) {
@@ -39,56 +40,36 @@ public class ResourceImpl implements Resource {
 
 	@Override
 	public boolean hasMetadata() {
-		return this.metaInputStream != null;
+		return this.metadata != null || this.metaInputStream != null;
 	}
 
 	@Nullable
 	@Override
 	public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
-		if (!this.hasMetadata()) {
+		if (this.metadata == null && this.metaInputStream != null) {
+			BufferedReader bufferedReader = null;
+
+			try {
+				bufferedReader = new BufferedReader(new InputStreamReader(this.metaInputStream, StandardCharsets.UTF_8));
+				this.metadata = JsonHelper.deserialize(bufferedReader);
+			} finally {
+				IOUtils.closeQuietly(bufferedReader);
+			}
+
+			this.metaInputStream = null;
+		}
+
+		if (this.metadata == null) {
 			return null;
 		} else {
-			if (this.metadata == null && !this.readMetadata) {
-				this.readMetadata = true;
-				BufferedReader bufferedReader = null;
-
-				try {
-					bufferedReader = new BufferedReader(new InputStreamReader(this.metaInputStream, StandardCharsets.UTF_8));
-					this.metadata = JsonHelper.deserialize(bufferedReader);
-				} finally {
-					IOUtils.closeQuietly(bufferedReader);
-				}
-			}
-
-			if (this.metadata == null) {
-				return null;
-			} else {
-				String string = metaReader.getKey();
-				return this.metadata.has(string) ? metaReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
-			}
+			String string = metaReader.getKey();
+			return this.metadata.has(string) ? metaReader.fromJson(JsonHelper.getObject(this.metadata, string)) : null;
 		}
 	}
 
 	@Override
 	public String getResourcePackName() {
 		return this.packName;
-	}
-
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		} else if (!(o instanceof ResourceImpl resourceImpl)) {
-			return false;
-		} else if (this.id != null ? this.id.equals(resourceImpl.id) : resourceImpl.id == null) {
-			return this.packName != null ? this.packName.equals(resourceImpl.packName) : resourceImpl.packName == null;
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		int i = this.packName != null ? this.packName.hashCode() : 0;
-		return 31 * i + (this.id != null ? this.id.hashCode() : 0);
 	}
 
 	public void close() throws IOException {

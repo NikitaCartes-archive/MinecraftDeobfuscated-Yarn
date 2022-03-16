@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -39,7 +40,7 @@ public class BitmapFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int codePoint) {
+	public Glyph getGlyph(int codePoint) {
 		return this.glyphs.get(codePoint);
 	}
 
@@ -49,41 +50,7 @@ public class BitmapFont implements Font {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static final class BitmapFontGlyph implements RenderableGlyph {
-		private final float scaleFactor;
-		private final NativeImage image;
-		private final int x;
-		private final int y;
-		private final int width;
-		private final int height;
-		private final int advance;
-		private final int ascent;
-
-		BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) {
-			this.scaleFactor = scaleFactor;
-			this.image = image;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-			this.advance = advance;
-			this.ascent = ascent;
-		}
-
-		@Override
-		public float getOversample() {
-			return 1.0F / this.scaleFactor;
-		}
-
-		@Override
-		public int getWidth() {
-			return this.width;
-		}
-
-		@Override
-		public int getHeight() {
-			return this.height;
-		}
+	static record BitmapFontGlyph(float scaleFactor, NativeImage image, int x, int y, int width, int height, int advance, int ascent) implements Glyph {
 
 		@Override
 		public float getAdvance() {
@@ -91,18 +58,41 @@ public class BitmapFont implements Font {
 		}
 
 		@Override
-		public float getAscent() {
-			return RenderableGlyph.super.getAscent() + 7.0F - (float)this.ascent;
-		}
+		public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+			return (GlyphRenderer)function.apply(
+				new RenderableGlyph() {
+					@Override
+					public float getOversample() {
+						return 1.0F / BitmapFontGlyph.this.scaleFactor;
+					}
 
-		@Override
-		public void upload(int x, int y) {
-			this.image.upload(0, x, y, this.x, this.y, this.width, this.height, false, false);
-		}
+					@Override
+					public int getWidth() {
+						return BitmapFontGlyph.this.width;
+					}
 
-		@Override
-		public boolean hasColor() {
-			return this.image.getFormat().getChannelCount() > 1;
+					@Override
+					public int getHeight() {
+						return BitmapFontGlyph.this.height;
+					}
+
+					@Override
+					public float getAscent() {
+						return RenderableGlyph.super.getAscent() + 7.0F - (float)BitmapFontGlyph.this.ascent;
+					}
+
+					@Override
+					public void upload(int x, int y) {
+						BitmapFontGlyph.this.image
+							.upload(0, x, y, BitmapFontGlyph.this.x, BitmapFontGlyph.this.y, BitmapFontGlyph.this.width, BitmapFontGlyph.this.height, false, false);
+					}
+
+					@Override
+					public boolean hasColor() {
+						return BitmapFontGlyph.this.image.getFormat().getChannelCount() > 1;
+					}
+				}
+			);
 		}
 	}
 

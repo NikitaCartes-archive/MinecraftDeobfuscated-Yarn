@@ -3,7 +3,6 @@ package net.minecraft.client.resource;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
@@ -38,39 +37,39 @@ public class DirectResourceIndex extends ResourceIndex {
 	}
 
 	@Override
-	public Collection<Identifier> getFilesRecursively(String prefix, String namespace, int maxDepth, Predicate<String> pathFilter) {
+	public Collection<Identifier> getFilesRecursively(String prefix, String namespace, Predicate<Identifier> allowedPathPredicate) {
 		Path path = this.assetDir.toPath().resolve(namespace);
 
 		try {
-			Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
+			Stream<Path> stream = Files.walk(path.resolve(prefix));
 
-			Collection var7;
+			Collection var6;
 			try {
-				var7 = (Collection)stream.filter(pathx -> Files.isRegularFile(pathx, new LinkOption[0]))
+				var6 = (Collection)stream.filter(pathx -> Files.isRegularFile(pathx, new LinkOption[0]))
 					.filter(pathx -> !pathx.endsWith(".mcmeta"))
-					.filter(pathx -> pathFilter.test(pathx.getFileName().toString()))
 					.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
+					.filter(allowedPathPredicate)
 					.collect(Collectors.toList());
-			} catch (Throwable var10) {
+			} catch (Throwable var9) {
 				if (stream != null) {
 					try {
 						stream.close();
-					} catch (Throwable var9) {
-						var10.addSuppressed(var9);
+					} catch (Throwable var8) {
+						var9.addSuppressed(var8);
 					}
 				}
 
-				throw var10;
+				throw var9;
 			}
 
 			if (stream != null) {
 				stream.close();
 			}
 
-			return var7;
-		} catch (NoSuchFileException var11) {
-		} catch (IOException var12) {
-			field_36375.warn("Unable to getFiles on {}", prefix, var12);
+			return var6;
+		} catch (NoSuchFileException var10) {
+		} catch (IOException var11) {
+			field_36375.warn("Unable to getFiles on {}", prefix, var11);
 		}
 
 		return Collections.emptyList();

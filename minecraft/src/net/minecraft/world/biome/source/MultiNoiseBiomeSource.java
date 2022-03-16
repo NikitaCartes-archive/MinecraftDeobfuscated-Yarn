@@ -14,18 +14,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.biome.source.util.VanillaBiomeParameters;
-import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
+import net.minecraft.world.gen.densityfunction.DensityFunctions;
 
 public class MultiNoiseBiomeSource extends BiomeSource {
 	/**
@@ -73,11 +76,6 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		return CODEC;
 	}
 
-	@Override
-	public BiomeSource withSeed(long seed) {
-		return this;
-	}
-
 	private Optional<MultiNoiseBiomeSource.Instance> getInstance() {
 		return this.instance;
 	}
@@ -107,7 +105,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 		float h = MultiNoiseUtil.method_38666(noiseValuePoint.temperatureNoise());
 		float l = MultiNoiseUtil.method_38666(noiseValuePoint.humidityNoise());
 		float m = MultiNoiseUtil.method_38666(noiseValuePoint.weirdnessNoise());
-		double d = (double)VanillaTerrainParameters.getNormalizedWeirdness(m);
+		double d = (double)DensityFunctions.method_41546(m);
 		VanillaBiomeParameters vanillaBiomeParameters = new VanillaBiomeParameters();
 		info.add(
 			"Biome builder PV: "
@@ -174,6 +172,11 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 			BY_IDENTIFIER.put(id, this);
 		}
 
+		@Debug
+		public static Stream<Pair<Identifier, MultiNoiseBiomeSource.Preset>> method_41415() {
+			return BY_IDENTIFIER.entrySet().stream().map(entry -> Pair.of((Identifier)entry.getKey(), (MultiNoiseBiomeSource.Preset)entry.getValue()));
+		}
+
 		MultiNoiseBiomeSource getBiomeSource(MultiNoiseBiomeSource.Instance instance, boolean useInstance) {
 			MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries = (MultiNoiseUtil.Entries<RegistryEntry<Biome>>)this.biomeSourceFunction
 				.apply(instance.biomeRegistry());
@@ -186,6 +189,10 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 
 		public MultiNoiseBiomeSource getBiomeSource(Registry<Biome> biomeRegistry) {
 			return this.getBiomeSource(biomeRegistry, true);
+		}
+
+		public Stream<RegistryKey<Biome>> stream() {
+			return this.getBiomeSource(BuiltinRegistries.BIOME).getBiomes().stream().flatMap(entry -> entry.getKey().stream());
 		}
 	}
 }

@@ -17,10 +17,10 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
-import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator extends ChunkGenerator {
 	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
@@ -31,7 +31,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	private final FlatChunkGeneratorConfig config;
 
 	public FlatChunkGenerator(Registry<StructureSet> structureFeatureRegistry, FlatChunkGeneratorConfig config) {
-		super(structureFeatureRegistry, config.method_41139(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()), 0L);
+		super(structureFeatureRegistry, config.method_41139(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
 		this.config = config;
 	}
 
@@ -40,17 +40,12 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		return CODEC;
 	}
 
-	@Override
-	public ChunkGenerator withSeed(long seed) {
-		return this;
-	}
-
 	public FlatChunkGeneratorConfig getConfig() {
 		return this.config;
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion region, StructureAccessor structures, Chunk chunk) {
+	public void buildSurface(ChunkRegion region, StructureAccessor structures, NoiseConfig noiseConfig, Chunk chunk) {
 	}
 
 	@Override
@@ -64,7 +59,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, StructureAccessor structureAccessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk) {
 		List<BlockState> list = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
@@ -89,7 +84,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
+	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world, NoiseConfig noiseConfig) {
 		List<BlockState> list = this.config.getLayerBlocks();
 
 		for (int i = Math.min(list.size(), world.getTopY()) - 1; i >= 0; i--) {
@@ -103,7 +98,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
+	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world, NoiseConfig noiseConfig) {
 		return new VerticalBlockSample(
 			world.getBottomY(),
 			(BlockState[])this.config
@@ -116,17 +111,18 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void getDebugHudText(List<String> text, BlockPos pos) {
-	}
-
-	@Override
-	public MultiNoiseUtil.MultiNoiseSampler getMultiNoiseSampler() {
-		return MultiNoiseUtil.method_40443();
+	public void getDebugHudText(List<String> text, NoiseConfig noiseConfig, BlockPos blockPos) {
 	}
 
 	@Override
 	public void carve(
-		ChunkRegion chunkRegion, long seed, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver generationStep
+		ChunkRegion chunkRegion,
+		long seed,
+		NoiseConfig noiseConfig,
+		BiomeAccess biomeAccess,
+		StructureAccessor structureAccessor,
+		Chunk chunk,
+		GenerationStep.Carver carver
 	) {
 	}
 

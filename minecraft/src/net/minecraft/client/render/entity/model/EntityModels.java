@@ -94,6 +94,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.EVOKER, texturedModelData8);
 		builder.put(EntityModelLayers.EVOKER_FANGS, EvokerFangsEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.FOX, FoxEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.FROG, FrogEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.FURNACE_MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.GHAST, GhastEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.GIANT, texturedModelData);
@@ -170,6 +171,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.STRAY_OUTER, TexturedModelData.of(BipedEntityModel.getModelData(new Dilation(0.25F), 0.0F), 64, 32));
 		builder.put(EntityModelLayers.STRIDER, texturedModelData14);
 		builder.put(EntityModelLayers.STRIDER_SADDLE, texturedModelData14);
+		builder.put(EntityModelLayers.TADPOLE, TadpoleEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.TNT_MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.TRADER_LLAMA, texturedModelData13);
 		builder.put(EntityModelLayers.TRIDENT, TridentEntityModel.getTexturedModelData());

@@ -707,7 +707,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		} else {
 			double d = 70.0;
 			if (changingFov) {
-				d = this.client.options.fov;
+				d = (double)this.client.options.getFov().getValue().intValue();
 				d *= (double)MathHelper.lerp(tickDelta, this.lastFovMultiplier, this.fovMultiplier);
 			}
 
@@ -1079,7 +1079,9 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			RenderSystem.setInverseViewRotationMatrix(matrix3f);
 		}
 
-		this.client.worldRenderer.setupFrustum(matrices, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, this.client.options.fov)));
+		this.client
+			.worldRenderer
+			.setupFrustum(matrices, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, (double)this.client.options.getFov().getValue().intValue())));
 		this.client.worldRenderer.render(matrices, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {

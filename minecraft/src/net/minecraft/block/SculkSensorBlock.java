@@ -14,6 +14,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -26,6 +27,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -69,6 +71,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		map.put(GameEvent.ENTITY_PLACE, 12);
 		map.put(GameEvent.BLOCK_PLACE, 12);
 		map.put(GameEvent.FLUID_PLACE, 12);
+		map.put(GameEvent.ENTITY_DYING, 13);
 		map.put(GameEvent.ENTITY_KILLED, 13);
 		map.put(GameEvent.BLOCK_DESTROY, 13);
 		map.put(GameEvent.FLUID_PICKUP, 13);
@@ -217,7 +220,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void setCooldown(World world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN).with(POWER, Integer.valueOf(0)), Block.NOTIFY_ALL);
-		world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
+		world.createAndScheduleBlockTick(pos, state.getBlock(), 1);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.2F + 0.8F);
 		}
@@ -227,7 +230,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void setActive(World world, BlockPos pos, BlockState state, int power) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
-		world.createAndScheduleBlockTick(new BlockPos(pos), state.getBlock(), 40);
+		world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
 		updateNeighbors(world, pos);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(
@@ -284,5 +287,11 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public boolean hasSidedTransparency(BlockState state) {
 		return true;
+	}
+
+	@Override
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+		super.onStacksDropped(state, world, pos, stack);
+		this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
 	}
 }

@@ -31,7 +31,7 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 		return of(registryRef, elementCodec, true);
 	}
 
-	private static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
+	public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
 		return new RegistryElementCodec<>(registryRef, elementCodec, allowInlineDefinitions);
 	}
 
@@ -45,7 +45,7 @@ public final class RegistryElementCodec<E> implements Codec<RegistryEntry<E>> {
 		if (dynamicOps instanceof RegistryOps<?> registryOps) {
 			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registryRef);
 			if (optional.isPresent()) {
-				if (!registryEntry.matchesRegistry((Registry<E>)optional.get())) {
+				if (!registryEntry.setRegistry((Registry<E>)optional.get())) {
 					return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
 				}
 

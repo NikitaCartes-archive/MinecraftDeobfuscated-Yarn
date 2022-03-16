@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class HotbarStorage {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final int field_32135 = 9;
+	public static final int STORAGE_ENTRY_COUNT = 9;
 	private final File file;
 	private final DataFixer dataFixer;
 	private final HotbarStorageEntry[] entries = new HotbarStorageEntry[9];

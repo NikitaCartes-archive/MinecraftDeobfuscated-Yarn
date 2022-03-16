@@ -53,6 +53,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -61,13 +62,9 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
  * Meow.
@@ -429,15 +426,10 @@ public class CatEntity extends TameableEntity {
 		}
 
 		World world2 = world.toServerWorld();
-		if (world2 instanceof ServerWorld serverWorld) {
-			Registry<ConfiguredStructureFeature<?, ?>> registry = serverWorld.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-			if (ChunkGenerator.method_41049(registry, StructureFeature.SWAMP_HUT)
-				.anyMatch(
-					configuredStructureFeature -> serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), configuredStructureFeature).hasChildren()
-				)) {
-				this.setCatType(ALL_BLACK_TYPE);
-				this.setPersistent();
-			}
+		if (world2 instanceof ServerWorld serverWorld
+			&& serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
+			this.setCatType(ALL_BLACK_TYPE);
+			this.setPersistent();
 		}
 
 		return entityData;
@@ -534,7 +526,7 @@ public class CatEntity extends TameableEntity {
 
 	@Override
 	public boolean bypassesSteppingEffects() {
-		return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+		return this.isInSneakingPose() || super.bypassesSteppingEffects();
 	}
 
 	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

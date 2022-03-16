@@ -171,6 +171,7 @@ public class ItemModelGenerator {
 		this.register(Items.LIME_DYE, Models.GENERATED);
 		this.register(Items.MAGENTA_DYE, Models.GENERATED);
 		this.register(Items.MAGMA_CREAM, Models.GENERATED);
+		this.register(Items.MANGROVE_BOAT, Models.GENERATED);
 		this.register(Items.MAP, Models.GENERATED);
 		this.register(Items.MELON_SLICE, Models.GENERATED);
 		this.register(Items.MILK_BUCKET, Models.GENERATED);
@@ -258,6 +259,7 @@ public class ItemModelGenerator {
 		this.register(Items.TROPICAL_FISH, Models.GENERATED);
 		this.register(Items.TROPICAL_FISH_BUCKET, Models.GENERATED);
 		this.register(Items.AXOLOTL_BUCKET, Models.GENERATED);
+		this.register(Items.TADPOLE_BUCKET, Models.GENERATED);
 		this.register(Items.TURTLE_HELMET, Models.GENERATED);
 		this.register(Items.WATER_BUCKET, Models.GENERATED);
 		this.register(Items.WHEAT, Models.GENERATED);

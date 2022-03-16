@@ -14,10 +14,10 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 public class ChaseCommand {
-	private static final String field_35000 = "localhost";
-	private static final String field_35001 = "0.0.0.0";
-	private static final int field_35002 = 10000;
-	private static final int field_35003 = 100;
+	private static final String LOCALHOST = "localhost";
+	private static final String BIND_ALL = "0.0.0.0";
+	private static final int DEFAULT_PORT = 10000;
+	private static final int INTERVAL = 100;
 	public static BiMap<String, RegistryKey<World>> DIMENSIONS = ImmutableBiMap.of("o", World.OVERWORLD, "n", World.NETHER, "e", World.END);
 	@Nullable
 	private static ChaseServer server;
@@ -31,35 +31,29 @@ public class ChaseCommand {
 					CommandManager.literal("follow")
 						.then(
 							CommandManager.argument("host", StringArgumentType.string())
-								.executes(commandContext -> startClient(commandContext.getSource(), StringArgumentType.getString(commandContext, "host"), 10000))
+								.executes(context -> startClient(context.getSource(), StringArgumentType.getString(context, "host"), 10000))
 								.then(
 									CommandManager.argument("port", IntegerArgumentType.integer(1, 65535))
-										.executes(
-											commandContext -> startClient(
-													commandContext.getSource(), StringArgumentType.getString(commandContext, "host"), IntegerArgumentType.getInteger(commandContext, "port")
-												)
-										)
+										.executes(context -> startClient(context.getSource(), StringArgumentType.getString(context, "host"), IntegerArgumentType.getInteger(context, "port")))
 								)
 						)
-						.executes(commandContext -> startClient(commandContext.getSource(), "localhost", 10000))
+						.executes(context -> startClient(context.getSource(), "localhost", 10000))
 				)
 				.then(
 					CommandManager.literal("lead")
 						.then(
 							CommandManager.argument("bind_address", StringArgumentType.string())
-								.executes(commandContext -> startServer(commandContext.getSource(), StringArgumentType.getString(commandContext, "bind_address"), 10000))
+								.executes(context -> startServer(context.getSource(), StringArgumentType.getString(context, "bind_address"), 10000))
 								.then(
 									CommandManager.argument("port", IntegerArgumentType.integer(1024, 65535))
 										.executes(
-											commandContext -> startServer(
-													commandContext.getSource(), StringArgumentType.getString(commandContext, "bind_address"), IntegerArgumentType.getInteger(commandContext, "port")
-												)
+											context -> startServer(context.getSource(), StringArgumentType.getString(context, "bind_address"), IntegerArgumentType.getInteger(context, "port"))
 										)
 								)
 						)
-						.executes(commandContext -> startServer(commandContext.getSource(), "0.0.0.0", 10000))
+						.executes(context -> startServer(context.getSource(), "0.0.0.0", 10000))
 				)
-				.then(CommandManager.literal("stop").executes(commandContext -> stop(commandContext.getSource())))
+				.then(CommandManager.literal("stop").executes(context -> stop(context.getSource())))
 		);
 	}
 

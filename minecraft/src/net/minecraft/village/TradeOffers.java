@@ -42,7 +42,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class TradeOffers {
 	private static final int DEFAULT_MAX_USES = 12;
@@ -911,13 +911,13 @@ public class TradeOffers {
 
 	static class SellMapFactory implements TradeOffers.Factory {
 		private final int price;
-		private final TagKey<ConfiguredStructureFeature<?, ?>> structure;
+		private final TagKey<StructureFeature> structure;
 		private final String nameKey;
 		private final MapIcon.Type iconType;
 		private final int maxUses;
 		private final int experience;
 
-		public SellMapFactory(int price, TagKey<ConfiguredStructureFeature<?, ?>> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
+		public SellMapFactory(int price, TagKey<StructureFeature> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience) {
 			this.price = price;
 			this.structure = structure;
 			this.nameKey = nameKey;

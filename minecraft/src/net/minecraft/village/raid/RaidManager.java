@@ -24,6 +24,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -176,7 +177,7 @@ public class RaidManager extends PersistentState {
 	}
 
 	public static String nameFor(RegistryEntry<DimensionType> dimensionTypeEntry) {
-		return dimensionTypeEntry.matchesKey(DimensionType.THE_END_REGISTRY_KEY) ? "raids_end" : "raids";
+		return dimensionTypeEntry.matchesKey(DimensionTypes.THE_END) ? "raids_end" : "raids";
 	}
 
 	private int nextId() {

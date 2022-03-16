@@ -9,12 +9,12 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.Chunk;
@@ -24,6 +24,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.noise.NoiseRouter;
+import net.minecraft.world.gen.random.RandomDeriver;
 
 public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFunction.NoisePos {
 	private final GenerationShapeConfig generationShapeConfig;
@@ -86,110 +87,99 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 	public static ChunkNoiseSampler create(
 		Chunk chunk,
 		NoiseRouter noiseRouter,
-		Supplier<DensityFunctionTypes.class_7050> noiseTypeSupplier,
+		DensityFunctionTypes.class_7050 arg,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
-		Blender blender
+		Blender blender,
+		RandomDeriver randomDeriver,
+		RandomDeriver randomDeriver2
 	) {
 		ChunkPos chunkPos = chunk.getPos();
-		GenerationShapeConfig generationShapeConfig = chunkGeneratorSettings.generationShapeConfig();
-		int i = Math.max(generationShapeConfig.minimumY(), chunk.getBottomY());
-		int j = Math.min(generationShapeConfig.minimumY() + generationShapeConfig.height(), chunk.getTopY());
-		int k = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
-		int l = MathHelper.floorDiv(j - i, generationShapeConfig.verticalBlockSize());
 		return new ChunkNoiseSampler(
-			16 / generationShapeConfig.horizontalBlockSize(),
-			l,
-			k,
+			16 / chunkGeneratorSettings.generationShapeConfig().horizontalBlockSize(),
+			chunk,
 			noiseRouter,
 			chunkPos.getStartX(),
 			chunkPos.getStartZ(),
-			(DensityFunctionTypes.class_7050)noiseTypeSupplier.get(),
+			arg,
 			chunkGeneratorSettings,
 			fluidLevelSampler,
-			blender
+			blender,
+			randomDeriver,
+			randomDeriver2
 		);
 	}
 
-	public static ChunkNoiseSampler create(
-		int x,
-		int z,
-		int minimumY,
-		int height,
-		NoiseRouter noiseRouter,
-		ChunkGeneratorSettings chunkGeneratorSettings,
-		AquiferSampler.FluidLevelSampler fluidLevelSampler
-	) {
-		return new ChunkNoiseSampler(
-			1, height, minimumY, noiseRouter, x, z, DensityFunctionTypes.Beardifier.INSTANCE, chunkGeneratorSettings, fluidLevelSampler, Blender.getNoBlending()
-		);
-	}
-
-	private ChunkNoiseSampler(
+	public ChunkNoiseSampler(
 		int horizontalSize,
-		int height,
-		int minimumY,
+		HeightLimitView heightLimitView,
 		NoiseRouter noiseRouter,
-		int x,
-		int z,
-		DensityFunctionTypes.class_7050 noiseType,
+		int i,
+		int j,
+		DensityFunctionTypes.class_7050 arg,
 		ChunkGeneratorSettings chunkGeneratorSettings,
 		AquiferSampler.FluidLevelSampler fluidLevelSampler,
-		Blender blender
+		Blender blender,
+		RandomDeriver randomDeriver,
+		RandomDeriver randomDeriver2
 	) {
 		this.generationShapeConfig = chunkGeneratorSettings.generationShapeConfig();
+		int k = Math.max(this.generationShapeConfig.minimumY(), heightLimitView.getBottomY());
+		int l = Math.min(this.generationShapeConfig.minimumY() + this.generationShapeConfig.height(), heightLimitView.getTopY());
+		int m = MathHelper.floorDiv(k, this.generationShapeConfig.verticalBlockSize());
+		int n = MathHelper.floorDiv(l - k, this.generationShapeConfig.verticalBlockSize());
 		this.horizontalSize = horizontalSize;
-		this.height = height;
-		this.minimumY = minimumY;
+		this.height = n;
+		this.minimumY = m;
 		this.horizontalBlockSize = this.generationShapeConfig.horizontalBlockSize();
 		this.verticalBlockSize = this.generationShapeConfig.verticalBlockSize();
-		this.x = Math.floorDiv(x, this.horizontalBlockSize);
-		this.z = Math.floorDiv(z, this.horizontalBlockSize);
+		this.x = Math.floorDiv(i, this.horizontalBlockSize);
+		this.z = Math.floorDiv(j, this.horizontalBlockSize);
 		this.interpolators = Lists.<ChunkNoiseSampler.NoiseInterpolator>newArrayList();
 		this.field_36581 = Lists.<ChunkNoiseSampler.class_6949>newArrayList();
-		this.biomeX = BiomeCoords.fromBlock(x);
-		this.biomeZ = BiomeCoords.fromBlock(z);
+		this.biomeX = BiomeCoords.fromBlock(i);
+		this.biomeZ = BiomeCoords.fromBlock(j);
 		this.field_36589 = BiomeCoords.fromBlock(horizontalSize * this.horizontalBlockSize);
 		this.blender = blender;
-		this.field_37113 = noiseType;
+		this.field_37113 = arg;
 		this.field_36585 = new ChunkNoiseSampler.class_6951(new ChunkNoiseSampler.class_6946(), false);
 		this.field_36586 = new ChunkNoiseSampler.class_6951(new ChunkNoiseSampler.class_6947(), false);
 
-		for (int i = 0; i <= this.field_36589; i++) {
-			int j = this.biomeX + i;
-			int k = BiomeCoords.toBlock(j);
+		for (int o = 0; o <= this.field_36589; o++) {
+			int p = this.biomeX + o;
+			int q = BiomeCoords.toBlock(p);
 
-			for (int l = 0; l <= this.field_36589; l++) {
-				int m = this.biomeZ + l;
-				int n = BiomeCoords.toBlock(m);
-				Blender.class_6956 lv = blender.method_39340(k, n);
-				this.field_36585.field_36613[i][l] = lv.alpha();
-				this.field_36586.field_36613[i][l] = lv.blendingOffset();
+			for (int r = 0; r <= this.field_36589; r++) {
+				int s = this.biomeZ + r;
+				int t = BiomeCoords.toBlock(s);
+				Blender.class_6956 lv = blender.method_39340(q, t);
+				this.field_36585.field_36613[o][r] = lv.alpha();
+				this.field_36586.field_36613[o][r] = lv.blendingOffset();
 			}
 		}
 
 		if (!chunkGeneratorSettings.hasAquifers()) {
 			this.aquiferSampler = AquiferSampler.seaLevel(fluidLevelSampler);
 		} else {
-			int i = ChunkSectionPos.getSectionCoord(x);
-			int j = ChunkSectionPos.getSectionCoord(z);
+			int o = ChunkSectionPos.getSectionCoord(i);
+			int p = ChunkSectionPos.getSectionCoord(j);
 			this.aquiferSampler = AquiferSampler.aquifer(
 				this,
-				new ChunkPos(i, j),
+				new ChunkPos(o, p),
 				noiseRouter.barrierNoise(),
 				noiseRouter.fluidLevelFloodednessNoise(),
 				noiseRouter.fluidLevelSpreadNoise(),
 				noiseRouter.lavaNoise(),
-				noiseRouter.aquiferPositionalRandomFactory(),
-				minimumY * this.verticalBlockSize,
-				height * this.verticalBlockSize,
+				randomDeriver,
+				m * this.verticalBlockSize,
+				n * this.verticalBlockSize,
 				fluidLevelSampler
 			);
 		}
 
 		Builder<ChunkNoiseSampler.BlockStateSampler> builder = ImmutableList.builder();
 		DensityFunction densityFunction = DensityFunctionTypes.cacheAllInCell(
-				DensityFunctionTypes.method_40486(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)
+				DensityFunctionTypes.add(noiseRouter.finalDensity(), DensityFunctionTypes.Beardifier.INSTANCE)
 			)
 			.apply(this::method_40529);
 		builder.add(noisePos -> this.aquiferSampler.apply(noisePos, densityFunction.sample(noisePos)));
@@ -199,7 +189,7 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 					noiseRouter.veinToggle().apply(this::method_40529),
 					noiseRouter.veinRidged().apply(this::method_40529),
 					noiseRouter.veinGap().apply(this::method_40529),
-					noiseRouter.oreVeinsPositionalRandomFactory()
+					randomDeriver2
 				)
 			);
 		}
@@ -208,15 +198,15 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 		this.field_36583 = noiseRouter.initialDensityWithoutJaggedness().apply(this::method_40529);
 	}
 
-	protected MultiNoiseUtil.MultiNoiseSampler createMultiNoiseSampler(NoiseRouter noiseRouter) {
+	protected MultiNoiseUtil.MultiNoiseSampler createMultiNoiseSampler(NoiseRouter noiseRouter, List<MultiNoiseUtil.NoiseHypercube> list) {
 		return new MultiNoiseUtil.MultiNoiseSampler(
 			noiseRouter.temperature().apply(this::method_40529),
-			noiseRouter.humidity().apply(this::method_40529),
+			noiseRouter.vegetation().apply(this::method_40529),
 			noiseRouter.continents().apply(this::method_40529),
 			noiseRouter.erosion().apply(this::method_40529),
 			noiseRouter.depth().apply(this::method_40529),
 			noiseRouter.ridges().apply(this::method_40529),
-			noiseRouter.spawnTarget()
+			list
 		);
 	}
 
@@ -405,7 +395,7 @@ public class ChunkNoiseSampler implements DensityFunction.class_6911, DensityFun
 			if (densityFunction == DensityFunctionTypes.Beardifier.INSTANCE) {
 				return this.field_37113;
 			} else {
-				return densityFunction instanceof DensityFunctionTypes.class_7051 lv2 ? lv2.function().value() : densityFunction;
+				return densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder ? registryEntryHolder.function().value() : densityFunction;
 			}
 		}
 	}

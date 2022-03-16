@@ -5,6 +5,7 @@ import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 
 public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 	public BiomeTagProvider(DataGenerator dataGenerator) {
@@ -48,12 +49,17 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST)
 			.add(BiomeKeys.DARK_FOREST)
 			.add(BiomeKeys.GROVE);
-		this.getOrCreateTagBuilder(BiomeTags.IS_NETHER)
-			.add(BiomeKeys.NETHER_WASTES)
-			.add(BiomeKeys.BASALT_DELTAS)
-			.add(BiomeKeys.SOUL_SAND_VALLEY)
-			.add(BiomeKeys.CRIMSON_FOREST)
-			.add(BiomeKeys.WARPED_FOREST);
+		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
+		AbstractTagProvider.ObjectBuilder<Biome> objectBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
+		MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(registryKey -> objectBuilder.add(registryKey));
+		AbstractTagProvider.ObjectBuilder<Biome> objectBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
+		MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(registryKey -> objectBuilder2.add(registryKey));
+		this.getOrCreateTagBuilder(BiomeTags.IS_END)
+			.add(BiomeKeys.THE_END)
+			.add(BiomeKeys.END_HIGHLANDS)
+			.add(BiomeKeys.END_MIDLANDS)
+			.add(BiomeKeys.SMALL_END_ISLANDS)
+			.add(BiomeKeys.END_BARRENS);
 		this.getOrCreateTagBuilder(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH);
 		this.getOrCreateTagBuilder(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE).add(BiomeKeys.DESERT);
 		this.getOrCreateTagBuilder(BiomeTags.IGLOO_HAS_STRUCTURE).add(BiomeKeys.SNOWY_TAIGA).add(BiomeKeys.SNOWY_PLAINS).add(BiomeKeys.SNOWY_SLOPES);
@@ -83,6 +89,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.LUSH_CAVES);
 		this.getOrCreateTagBuilder(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE).addTag(BiomeTags.IS_BADLANDS);
 		this.getOrCreateTagBuilder(BiomeTags.OCEAN_MONUMENT_HAS_STRUCTURE).addTag(BiomeTags.IS_DEEP_OCEAN);
+		this.getOrCreateTagBuilder(BiomeTags.REQUIRED_OCEAN_MONUMENT_SURROUNDING).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
 		this.getOrCreateTagBuilder(BiomeTags.OCEAN_RUIN_COLD_HAS_STRUCTURE)
 			.add(BiomeKeys.FROZEN_OCEAN)
 			.add(BiomeKeys.COLD_OCEAN)
@@ -135,7 +142,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_SNOWY_HAS_STRUCTURE).add(BiomeKeys.SNOWY_PLAINS);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE).add(BiomeKeys.TAIGA);
 		this.getOrCreateTagBuilder(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE).add(BiomeKeys.DARK_FOREST);
-		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_HAS_STRUCTURE)
+		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_BIASED_TO)
 			.add(BiomeKeys.PLAINS)
 			.add(BiomeKeys.SUNFLOWER_PLAINS)
 			.add(BiomeKeys.SNOWY_PLAINS)
@@ -171,6 +178,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.MUSHROOM_FIELDS)
 			.add(BiomeKeys.DRIPSTONE_CAVES)
 			.add(BiomeKeys.LUSH_CAVES);
+		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_HAS_STRUCTURE).addTag(BiomeTags.IS_OVERWORLD);
 		this.getOrCreateTagBuilder(BiomeTags.NETHER_FORTRESS_HAS_STRUCTURE).addTag(BiomeTags.IS_NETHER);
 		this.getOrCreateTagBuilder(BiomeTags.NETHER_FOSSIL_HAS_STRUCTURE).add(BiomeKeys.SOUL_SAND_VALLEY);
 		this.getOrCreateTagBuilder(BiomeTags.BASTION_REMNANT_HAS_STRUCTURE)
@@ -180,10 +188,29 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.WARPED_FOREST);
 		this.getOrCreateTagBuilder(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE).addTag(BiomeTags.IS_NETHER);
 		this.getOrCreateTagBuilder(BiomeTags.END_CITY_HAS_STRUCTURE).add(BiomeKeys.END_HIGHLANDS).add(BiomeKeys.END_MIDLANDS);
-	}
-
-	@Override
-	public String getName() {
-		return "Biome Tags";
+		this.getOrCreateTagBuilder(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL).add(BiomeKeys.WARM_OCEAN);
+		this.getOrCreateTagBuilder(BiomeTags.PLAYS_UNDERWATER_MUSIC).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER);
+		this.getOrCreateTagBuilder(BiomeTags.HAS_CLOSER_WATER_FOG).add(BiomeKeys.SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.WATER_ON_MAP_OUTLINES).addTag(BiomeTags.IS_OCEAN).addTag(BiomeTags.IS_RIVER).add(BiomeKeys.SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_ZOMBIE_SIEGES).add(BiomeKeys.MUSHROOM_FIELDS);
+		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_PATROL_SPAWNS).add(BiomeKeys.MUSHROOM_FIELDS);
+		this.getOrCreateTagBuilder(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS).add(BiomeKeys.THE_VOID);
+		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)
+			.add(BiomeKeys.SNOWY_PLAINS)
+			.add(BiomeKeys.ICE_SPIKES)
+			.addTag(BiomeTags.IS_MOUNTAIN)
+			.addTag(BiomeTags.IS_END);
+		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_WARM_VARIANT_FROGS)
+			.add(BiomeKeys.DESERT)
+			.addTag(BiomeTags.IS_JUNGLE)
+			.addTag(BiomeTags.IS_SAVANNA)
+			.addTag(BiomeTags.IS_NETHER)
+			.addTag(BiomeTags.IS_BADLANDS);
+		this.getOrCreateTagBuilder(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS).add(BiomeKeys.DESERT);
+		this.getOrCreateTagBuilder(BiomeTags.REDUCE_WATER_AMBIENT_SPAWNS).addTag(BiomeTags.IS_RIVER);
+		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT).add(BiomeKeys.LUSH_CAVES);
+		this.getOrCreateTagBuilder(BiomeTags.POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS).add(BiomeKeys.FROZEN_OCEAN).add(BiomeKeys.DEEP_FROZEN_OCEAN);
+		this.getOrCreateTagBuilder(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS).addTag(BiomeTags.IS_RIVER);
+		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS).add(BiomeKeys.SWAMP);
 	}
 }

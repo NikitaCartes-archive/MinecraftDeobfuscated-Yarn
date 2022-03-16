@@ -280,7 +280,7 @@ public class OcelotEntity extends AnimalEntity {
 
 	@Override
 	public boolean bypassesSteppingEffects() {
-		return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+		return this.isInSneakingPose() || super.bypassesSteppingEffects();
 	}
 
 	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

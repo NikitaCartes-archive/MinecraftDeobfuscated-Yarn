@@ -5,7 +5,6 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -457,7 +456,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				for (int q = k; q <= n; q++) {
 					BlockPos blockPos = new BlockPos(o, p, q);
 					BlockState blockState = this.world.getBlockState(blockPos);
-					if (!blockState.isAir() && blockState.getMaterial() != Material.FIRE) {
+					if (!blockState.isAir() && !blockState.isIn(BlockTags.DRAGON_TRANSPARENT)) {
 						if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && !blockState.isIn(BlockTags.DRAGON_IMMUNE)) {
 							bl2 = this.world.removeBlock(blockPos, false) || bl2;
 						} else {

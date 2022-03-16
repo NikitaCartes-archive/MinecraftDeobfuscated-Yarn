@@ -28,6 +28,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
@@ -398,6 +399,7 @@ public class MaterialRules {
 		final MaterialRules.BooleanSupplier steepSlopePredicate = new MaterialRules.MaterialRuleContext.SteepSlopePredicate(this);
 		final MaterialRules.BooleanSupplier negativeRunDepthPredicate = new MaterialRules.MaterialRuleContext.NegativeRunDepthPredicate(this);
 		final MaterialRules.BooleanSupplier surfacePredicate = new MaterialRules.MaterialRuleContext.SurfacePredicate();
+		final NoiseConfig field_37703;
 		final Chunk chunk;
 		private final ChunkNoiseSampler chunkNoiseSampler;
 		private final Function<BlockPos, RegistryEntry<Biome>> posToBiome;
@@ -422,16 +424,18 @@ public class MaterialRules {
 
 		protected MaterialRuleContext(
 			SurfaceBuilder surfaceBuilder,
+			NoiseConfig noiseConfig,
 			Chunk chunk,
 			ChunkNoiseSampler chunkNoiseSampler,
-			Function<BlockPos, RegistryEntry<Biome>> posToBiome,
-			Registry<Biome> biomeRegistry,
+			Function<BlockPos, RegistryEntry<Biome>> function,
+			Registry<Biome> registry,
 			HeightContext heightContext
 		) {
 			this.surfaceBuilder = surfaceBuilder;
+			this.field_37703 = noiseConfig;
 			this.chunk = chunk;
 			this.chunkNoiseSampler = chunkNoiseSampler;
-			this.posToBiome = posToBiome;
+			this.posToBiome = function;
 			this.heightContext = heightContext;
 		}
 
@@ -572,7 +576,7 @@ public class MaterialRules {
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.surfaceBuilder.getNoiseSampler(this.noise);
+			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.field_37703.getOrCreateSampler(this.noise);
 
 			class NoiseThresholdPredicate extends MaterialRules.HorizontalLazyAbstractPredicate {
 				NoiseThresholdPredicate() {
@@ -781,7 +785,7 @@ public class MaterialRules {
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
 			final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
-			final RandomDeriver randomDeriver = materialRuleContext.surfaceBuilder.getRandomDeriver(this.randomName());
+			final RandomDeriver randomDeriver = materialRuleContext.field_37703.getOrCreateRandomDeriver(this.randomName());
 
 			class VerticalGradientPredicate extends MaterialRules.FullLazyAbstractPredicate {
 				VerticalGradientPredicate() {

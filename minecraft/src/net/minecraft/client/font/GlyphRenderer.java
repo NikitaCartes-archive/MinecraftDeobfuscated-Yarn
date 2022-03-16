@@ -86,15 +86,11 @@ public class GlyphRenderer {
 	}
 
 	public RenderLayer getLayer(TextRenderer.TextLayerType layerType) {
-		switch (layerType) {
-			case NORMAL:
-			default:
-				return this.textLayer;
-			case SEE_THROUGH:
-				return this.seeThroughTextLayer;
-			case POLYGON_OFFSET:
-				return this.polygonOffsetTextLayer;
-		}
+		return switch (layerType) {
+			case NORMAL -> this.textLayer;
+			case SEE_THROUGH -> this.seeThroughTextLayer;
+			case POLYGON_OFFSET -> this.polygonOffsetTextLayer;
+		};
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -202,7 +202,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (world.isReceivingRedstonePower(pos)) {
 			resetTilt(state, world, pos);
 		}

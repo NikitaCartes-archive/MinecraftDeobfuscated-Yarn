@@ -47,7 +47,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.slf4j.Logger;
@@ -264,14 +264,25 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsDemo(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
-			if (bl) {
-				this.client.startIntegratedServer("Demo_World");
-			} else {
-				DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
-				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, GeneratorOptions.createDemo(dynamicRegistryManager));
-			}
-		}));
+		this.addDrawableChild(
+			new ButtonWidget(
+				this.width / 2 - 100,
+				y,
+				200,
+				20,
+				new TranslatableText("menu.playdemo"),
+				button -> {
+					if (bl) {
+						this.client.method_41735().start("Demo_World");
+					} else {
+						DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
+						this.client
+							.method_41735()
+							.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
+					}
+				}
+			)
+		);
 		this.buttonResetDemo = this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,

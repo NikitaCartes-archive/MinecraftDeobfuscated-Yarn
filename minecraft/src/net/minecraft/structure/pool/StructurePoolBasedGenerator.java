@@ -13,9 +13,7 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureGeneratorFactory;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.StructurePiecesGenerator;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -31,11 +29,9 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.feature.StructurePoolFeatureConfig;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
+import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.ChunkRandom;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
@@ -43,25 +39,24 @@ import org.slf4j.Logger;
 public class StructurePoolBasedGenerator {
 	static final Logger LOGGER = LogUtils.getLogger();
 
-	public static Optional<StructurePiecesGenerator<StructurePoolFeatureConfig>> generate(
-		StructureGeneratorFactory.Context<StructurePoolFeatureConfig> context,
+	public static Optional<StructureFeature.class_7150> generate(
+		StructureFeature.class_7149 arg,
+		RegistryEntry<StructurePool> registryEntry,
+		int i,
 		StructurePoolBasedGenerator.PieceFactory pieceFactory,
-		BlockPos pos,
+		BlockPos blockPos,
 		boolean bl,
-		boolean bl2
+		Optional<Heightmap.Type> optional
 	) {
-		ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-		chunkRandom.setCarverSeed(context.seed(), context.chunkPos().x, context.chunkPos().z);
-		DynamicRegistryManager dynamicRegistryManager = context.registryManager();
-		StructurePoolFeatureConfig structurePoolFeatureConfig = context.config();
-		ChunkGenerator chunkGenerator = context.chunkGenerator();
-		StructureManager structureManager = context.structureManager();
-		HeightLimitView heightLimitView = context.world();
-		Predicate<RegistryEntry<Biome>> predicate = context.validBiome();
-		StructureFeature.init();
+		DynamicRegistryManager dynamicRegistryManager = arg.registryAccess();
+		ChunkGenerator chunkGenerator = arg.chunkGenerator();
+		StructureManager structureManager = arg.structureTemplateManager();
+		HeightLimitView heightLimitView = arg.heightAccessor();
+		Predicate<RegistryEntry<Biome>> predicate = arg.validBiome();
+		ChunkRandom chunkRandom = arg.random();
 		Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.STRUCTURE_POOL_KEY);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
-		StructurePool structurePool = structurePoolFeatureConfig.getStartPool().value();
+		StructurePool structurePool = registryEntry.value();
 		StructurePoolElement structurePoolElement = structurePool.getRandomElement(chunkRandom);
 		if (structurePoolElement == EmptyPoolElement.INSTANCE) {
 			return Optional.empty();
@@ -69,35 +64,34 @@ public class StructurePoolBasedGenerator {
 			PoolStructurePiece poolStructurePiece = pieceFactory.create(
 				structureManager,
 				structurePoolElement,
-				pos,
+				blockPos,
 				structurePoolElement.getGroundLevelDelta(),
 				blockRotation,
-				structurePoolElement.getBoundingBox(structureManager, pos, blockRotation)
+				structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation)
 			);
 			BlockBox blockBox = poolStructurePiece.getBoundingBox();
-			int i = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
-			int j = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
-			int k;
-			if (bl2) {
-				k = pos.getY() + chunkGenerator.getHeightOnGround(i, j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			int j = (blockBox.getMaxX() + blockBox.getMinX()) / 2;
+			int k = (blockBox.getMaxZ() + blockBox.getMinZ()) / 2;
+			int l;
+			if (optional.isPresent()) {
+				l = blockPos.getY() + chunkGenerator.getHeightOnGround(j, k, (Heightmap.Type)optional.get(), heightLimitView, arg.randomState());
 			} else {
-				k = pos.getY();
+				l = blockPos.getY();
 			}
 
-			if (!predicate.test(chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j)))) {
-				return Optional.empty();
-			} else {
-				int l = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
-				poolStructurePiece.translate(0, k - l, 0);
-				return Optional.of(
-					(StructurePiecesGenerator<>)(structurePiecesCollector, contextx) -> {
+			int m = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
+			poolStructurePiece.translate(0, l - m, 0);
+			return Optional.of(
+				new StructureFeature.class_7150(
+					new BlockPos(j, l, k),
+					structurePiecesCollector -> {
 						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 						list.add(poolStructurePiece);
-						if (structurePoolFeatureConfig.getSize() > 0) {
-							int lx = 80;
-							Box box = new Box((double)(i - 80), (double)(k - 80), (double)(j - 80), (double)(i + 80 + 1), (double)(k + 80 + 1), (double)(j + 80 + 1));
+						if (i > 0) {
+							int mx = 80;
+							Box box = new Box((double)(j - 80), (double)(l - 80), (double)(k - 80), (double)(j + 80 + 1), (double)(l + 80 + 1), (double)(k + 80 + 1));
 							StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
-								registry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, chunkRandom
+								registry, i, pieceFactory, chunkGenerator, structureManager, list, chunkRandom
 							);
 							structurePoolGenerator.structurePieces
 								.addLast(
@@ -112,15 +106,15 @@ public class StructurePoolBasedGenerator {
 								StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = (StructurePoolBasedGenerator.ShapedPoolStructurePiece)structurePoolGenerator.structurePieces
 									.removeFirst();
 								structurePoolGenerator.generatePiece(
-									shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, bl, heightLimitView
+									shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, bl, heightLimitView, arg.randomState()
 								);
 							}
 
 							list.forEach(structurePiecesCollector::addPiece);
 						}
 					}
-				);
-			}
+				)
+			);
 		}
 	}
 
@@ -133,7 +127,8 @@ public class StructurePoolBasedGenerator {
 		StructureManager structureManager,
 		List<? super PoolStructurePiece> results,
 		Random random,
-		HeightLimitView world
+		HeightLimitView world,
+		NoiseConfig noiseConfig
 	) {
 		Registry<StructurePool> registry = registryManager.get(Registry.STRUCTURE_POOL_KEY);
 		StructurePoolBasedGenerator.StructurePoolGenerator structurePoolGenerator = new StructurePoolBasedGenerator.StructurePoolGenerator(
@@ -145,7 +140,9 @@ public class StructurePoolBasedGenerator {
 		while (!structurePoolGenerator.structurePieces.isEmpty()) {
 			StructurePoolBasedGenerator.ShapedPoolStructurePiece shapedPoolStructurePiece = (StructurePoolBasedGenerator.ShapedPoolStructurePiece)structurePoolGenerator.structurePieces
 				.removeFirst();
-			structurePoolGenerator.generatePiece(shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, false, world);
+			structurePoolGenerator.generatePiece(
+				shapedPoolStructurePiece.piece, shapedPoolStructurePiece.pieceShape, shapedPoolStructurePiece.currentSize, false, world, noiseConfig
+			);
 		}
 	}
 
@@ -195,7 +192,9 @@ public class StructurePoolBasedGenerator {
 			this.random = random;
 		}
 
-		void generatePiece(PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, boolean modifyBoundingBox, HeightLimitView world) {
+		void generatePiece(
+			PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, boolean modifyBoundingBox, HeightLimitView world, NoiseConfig noiseConfig
+		) {
 			StructurePoolElement structurePoolElement = piece.getPoolElement();
 			BlockPos blockPos = piece.getPos();
 			BlockRotation blockRotation = piece.getRotation();
@@ -281,7 +280,7 @@ public class StructurePoolBasedGenerator {
 											p = i + o;
 										} else {
 											if (k == -1) {
-												k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world);
+												k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
 											}
 
 											p = k - n;
@@ -314,7 +313,7 @@ public class StructurePoolBasedGenerator {
 												t = p + n;
 											} else {
 												if (k == -1) {
-													k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world);
+													k = this.chunkGenerator.getHeightOnGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, world, noiseConfig);
 												}
 
 												t = k + o / 2;

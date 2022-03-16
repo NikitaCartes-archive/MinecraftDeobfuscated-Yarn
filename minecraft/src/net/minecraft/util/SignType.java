@@ -14,6 +14,7 @@ public class SignType {
 	public static final SignType DARK_OAK = register(new SignType("dark_oak"));
 	public static final SignType CRIMSON = register(new SignType("crimson"));
 	public static final SignType WARPED = register(new SignType("warped"));
+	public static final SignType MANGROVE = register(new SignType("mangrove"));
 	private final String name;
 
 	protected SignType(String name) {

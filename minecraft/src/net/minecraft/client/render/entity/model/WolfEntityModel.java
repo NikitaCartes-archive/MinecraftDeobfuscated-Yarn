@@ -70,6 +70,7 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 				.uv(16, 14)
 				.cuboid(-2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F)
 				.uv(16, 14)
+				.mirrored()
 				.cuboid(2.0F, -5.0F, 0.0F, 2.0F, 2.0F, 1.0F)
 				.uv(0, 10)
 				.cuboid(-0.5F, 0.0F, -5.0F, 3.0F, 3.0F, 4.0F),
@@ -86,10 +87,11 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 			ModelTransform.of(-1.0F, 14.0F, -3.0F, (float) (Math.PI / 2), 0.0F, 0.0F)
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 18).cuboid(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F);
+		ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create().uv(0, 18).mirrored().cuboid(0.0F, 0.0F, -1.0F, 2.0F, 8.0F, 2.0F);
 		modelPartData.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, 7.0F));
-		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, 7.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder2, ModelTransform.pivot(0.5F, 16.0F, 7.0F));
 		modelPartData.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(-2.5F, 16.0F, -4.0F));
-		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder, ModelTransform.pivot(0.5F, 16.0F, -4.0F));
+		modelPartData.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder2, ModelTransform.pivot(0.5F, 16.0F, -4.0F));
 		ModelPartData modelPartData3 = modelPartData.addChild(
 			EntityModelPartNames.TAIL, ModelPartBuilder.create(), ModelTransform.of(-1.0F, 12.0F, 8.0F, (float) (Math.PI / 5), 0.0F, 0.0F)
 		);

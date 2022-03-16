@@ -111,7 +111,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (!world.isClient) {
 			boolean bl = world.isReceivingRedstonePower(pos);
 			if (bl != (Boolean)state.get(POWERED)) {

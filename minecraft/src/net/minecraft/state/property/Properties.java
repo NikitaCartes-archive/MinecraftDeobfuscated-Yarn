@@ -156,6 +156,8 @@ public class Properties {
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
 	public static final BooleanProperty VINE_END = BooleanProperty.of("vine_end");
 	public static final BooleanProperty BERRIES = BooleanProperty.of("berries");
+	public static final BooleanProperty BLOOM = BooleanProperty.of("bloom");
+	public static final BooleanProperty SHRIEKING = BooleanProperty.of("shrieking");
 	/**
 	 *  A property that specifies the axis a block is oriented to.
 	 * 
@@ -277,6 +279,7 @@ public class Properties {
 	public static final int AGE_1_MAX = 1;
 	public static final int AGE_2_MAX = 2;
 	public static final int AGE_3_MAX = 3;
+	public static final int AGE_4_MAX = 4;
 	public static final int AGE_5_MAX = 5;
 	public static final int AGE_7_MAX = 7;
 	public static final int AGE_15_MAX = 15;
@@ -293,6 +296,7 @@ public class Properties {
 	 * A property that specifies the age of a block on a scale of 0 to 3.
 	 */
 	public static final IntProperty AGE_3 = IntProperty.of("age", 0, 3);
+	public static final IntProperty AGE_4 = IntProperty.of("age", 0, 4);
 	/**
 	 * A property that specifies the age of a block on a scale of 0 to 5.
 	 */

@@ -22,6 +22,7 @@ import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTarget;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.PlayDeadTask;
 import net.minecraft.entity.ai.brain.task.PlayDeadTimerTask;
@@ -113,7 +114,7 @@ public class AxolotlBrain {
 	private static void addPlayDeadActivities(Brain<AxolotlEntity> brain) {
 		brain.setTaskList(
 			Activity.PLAY_DEAD,
-			ImmutableList.of(Pair.of(0, new PlayDeadTask()), Pair.of(1, new ForgetTask<>(AxolotlBrain::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS))),
+			ImmutableList.of(Pair.of(0, new PlayDeadTask()), Pair.of(1, new ForgetTask<>(LookTargetUtil::hasBreedTarget, MemoryModuleType.PLAY_DEAD_TICKS))),
 			ImmutableSet.of(Pair.of(MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleState.VALUE_PRESENT)),
 			ImmutableSet.of(MemoryModuleType.PLAY_DEAD_TICKS)
 		);
@@ -127,7 +128,7 @@ public class AxolotlBrain {
 				new ForgetAttackTargetTask<>(AxolotlEntity::appreciatePlayer),
 				new RangedApproachTask(AxolotlBrain::getTargetApproachingSpeed),
 				new MeleeAttackTask(20),
-				new ForgetTask(AxolotlBrain::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
+				new ForgetTask(LookTargetUtil::hasBreedTarget, MemoryModuleType.ATTACK_TARGET)
 			),
 			MemoryModuleType.ATTACK_TARGET
 		);
@@ -224,11 +225,7 @@ public class AxolotlBrain {
 	}
 
 	private static Optional<? extends LivingEntity> getAttackTarget(AxolotlEntity axolotl) {
-		return hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE);
-	}
-
-	private static boolean hasBreedTarget(AxolotlEntity axolotl) {
-		return axolotl.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
+		return LookTargetUtil.hasBreedTarget(axolotl) ? Optional.empty() : axolotl.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE);
 	}
 
 	public static Ingredient getTemptItems() {

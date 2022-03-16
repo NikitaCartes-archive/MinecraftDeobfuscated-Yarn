@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Predicate;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemPredicateArgumentType;
 import net.minecraft.item.ItemStack;
@@ -21,7 +22,7 @@ public class ClearCommand {
 		playerCount -> new TranslatableText("clear.failed.multiple", playerCount)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(
 			CommandManager.literal("clear")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -30,10 +31,10 @@ public class ClearCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))
 						.then(
-							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate())
+							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess))
 								.executes(
 									context -> execute(
-											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemPredicate(context, "item"), -1
+											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item"), -1
 										)
 								)
 								.then(
@@ -42,7 +43,7 @@ public class ClearCommand {
 											context -> execute(
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
-													ItemPredicateArgumentType.getItemPredicate(context, "item"),
+													ItemPredicateArgumentType.getItemStackPredicate(context, "item"),
 													IntegerArgumentType.getInteger(context, "maxCount")
 												)
 										)

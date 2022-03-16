@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Deque;
 import java.util.List;
@@ -21,6 +22,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PendingUpdateManager;
 import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
@@ -75,6 +77,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityHandler;
@@ -83,9 +86,11 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.level.ColorResolver;
 import net.minecraft.world.tick.EmptyTickSchedulers;
 import net.minecraft.world.tick.QueryableTickScheduler;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * A minor offset applied when spawning particles.
 	 */
@@ -112,13 +117,54 @@ public class ClientWorld extends World {
 	private final ClientChunkManager chunkManager;
 	private final Deque<Runnable> chunkUpdaters = Queues.<Runnable>newArrayDeque();
 	private int simulationDistance;
+	private final PendingUpdateManager pendingUpdateManager = new PendingUpdateManager();
 	private static final Set<Item> BLOCK_MARKER_ITEMS = Set.of(Items.BARRIER, Items.LIGHT);
 
+	public void handlePlayerActionResponse(int sequence) {
+		this.pendingUpdateManager.processPendingUpdates(sequence, this);
+	}
+
+	public void handleBlockUpdate(BlockPos pos, BlockState state, int flags) {
+		if (!this.pendingUpdateManager.hasPendingUpdate(pos, state)) {
+			super.setBlockState(pos, state, flags, 512);
+		}
+	}
+
+	public void processPendingUpdate(BlockPos pos, BlockState state, Vec3d playerPos) {
+		BlockState blockState = this.getBlockState(pos);
+		if (blockState != state) {
+			this.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+			PlayerEntity playerEntity = this.client.player;
+			if (this == playerEntity.world && playerEntity.collidesWithStateAtPos(pos, state)) {
+				playerEntity.updatePosition(playerPos.x, playerPos.y, playerPos.z);
+			}
+		}
+	}
+
+	public PendingUpdateManager getPendingUpdateManager() {
+		return this.pendingUpdateManager;
+	}
+
+	@Override
+	public boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth) {
+		if (this.pendingUpdateManager.hasPendingSequence()) {
+			BlockState blockState = this.getBlockState(pos);
+			boolean bl = super.setBlockState(pos, state, flags, maxUpdateDepth);
+			if (bl) {
+				this.pendingUpdateManager.addPendingUpdate(pos, blockState, this.client.player);
+			}
+
+			return bl;
+		} else {
+			return super.setBlockState(pos, state, flags, maxUpdateDepth);
+		}
+	}
+
 	public ClientWorld(
-		ClientPlayNetworkHandler netHandler,
+		ClientPlayNetworkHandler networkHandler,
 		ClientWorld.Properties properties,
 		RegistryKey<World> registryRef,
-		RegistryEntry<DimensionType> registryEntry,
+		RegistryEntry<DimensionType> dimensionTypeEntry,
 		int loadDistance,
 		int simulationDistance,
 		Supplier<Profiler> profiler,
@@ -126,12 +172,12 @@ public class ClientWorld extends World {
 		boolean debugWorld,
 		long seed
 	) {
-		super(properties, registryRef, registryEntry, profiler, true, debugWorld, seed);
-		this.networkHandler = netHandler;
+		super(properties, registryRef, dimensionTypeEntry, profiler, true, debugWorld, seed);
+		this.networkHandler = networkHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
-		this.dimensionEffects = DimensionEffects.byDimensionType(registryEntry.value());
+		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionTypeEntry.value());
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
 		this.simulationDistance = simulationDistance;
 		this.calculateAmbientDarkness();
@@ -290,10 +336,6 @@ public class ClientWorld extends World {
 	@Override
 	public Entity getEntityById(int id) {
 		return this.getEntityLookup().get(id);
-	}
-
-	public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
-		this.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
 	}
 
 	@Override
@@ -521,6 +563,11 @@ public class ClientWorld extends World {
 		this.worldRenderer.scheduleBlockRerenderIfNeeded(pos, old, updated);
 	}
 
+	@Override
+	public NeighborUpdater getNeighborUpdater() {
+		return NeighborUpdater.NOOP;
+	}
+
 	public void scheduleBlockRenders(int x, int y, int z) {
 		this.worldRenderer.scheduleBlockRenders(x, y, z);
 	}
@@ -627,7 +674,7 @@ public class ClientWorld extends World {
 			j = j * n + m * (1.0F - n);
 		}
 
-		if (!this.client.options.hideLightningFlashes && this.lightningTicksLeft > 0) {
+		if (!this.client.options.getHideLightningFlashes().getValue() && this.lightningTicksLeft > 0) {
 			float m = (float)this.lightningTicksLeft - tickDelta;
 			if (m > 1.0F) {
 				m = 1.0F;
@@ -719,7 +766,7 @@ public class ClientWorld extends World {
 	}
 
 	public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
-		int i = MinecraftClient.getInstance().options.biomeBlendRadius;
+		int i = MinecraftClient.getInstance().options.getBiomeBlendRadius().getValue();
 		if (i == 0) {
 			return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
 		} else {

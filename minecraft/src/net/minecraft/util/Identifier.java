@@ -128,6 +128,14 @@ public class Identifier implements Comparable<Identifier> {
 		return this.toString().replace('/', '_').replace(':', '_');
 	}
 
+	public String toTranslationKey() {
+		return this.namespace + "." + this.path;
+	}
+
+	public String toTranslationKey(String prefix) {
+		return prefix + "." + this.toTranslationKey();
+	}
+
 	public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
 		int i = reader.getCursor();
 

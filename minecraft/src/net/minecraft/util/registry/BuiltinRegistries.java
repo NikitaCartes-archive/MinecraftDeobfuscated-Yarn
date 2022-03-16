@@ -15,6 +15,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypeRegistrar;
+import net.minecraft.world.gen.FlatLevelGeneratorPreset;
+import net.minecraft.world.gen.FlatLevelGeneratorPresets;
+import net.minecraft.world.gen.WorldPreset;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarvers;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -22,10 +28,10 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
 import org.slf4j.Logger;
 
@@ -47,12 +53,13 @@ public class BuiltinRegistries {
 		RegistryKey.ofRegistry(new Identifier("root")), Lifecycle.experimental(), null
 	);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
+	public static final Registry<DimensionType> DIMENSION_TYPE = addRegistry(Registry.DIMENSION_TYPE_KEY, DimensionTypeRegistrar::initAndGetDefault);
 	public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
 	public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = addRegistry(
 		Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature
 	);
 	public static final Registry<PlacedFeature> PLACED_FEATURE = addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
-	public static final Registry<ConfiguredStructureFeature<?, ?>> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
+	public static final Registry<StructureFeature> CONFIGURED_STRUCTURE_FEATURE = addRegistry(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeatures::getDefault
 	);
 	public static final Registry<StructureSet> STRUCTURE_SET = addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
@@ -65,6 +72,10 @@ public class BuiltinRegistries {
 	public static final Registry<DensityFunction> DENSITY_FUNCTION = addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::init);
 	public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = addRegistry(
 		Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance
+	);
+	public static final Registry<WorldPreset> WORLD_PRESET = addRegistry(Registry.WORLD_PRESET_WORLDGEN, WorldPresets::initAndGetDefault);
+	public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = addRegistry(
+		Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPresets::initAndGetDefault
 	);
 	public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER = DynamicRegistryManager.of(REGISTRIES);
 
@@ -87,7 +98,7 @@ public class BuiltinRegistries {
 		return registry;
 	}
 
-	public static <V extends T, T> RegistryEntry<V> method_40360(Registry<T> registry, String id, V value) {
+	public static <V extends T, T> RegistryEntry<V> addCasted(Registry<T> registry, String id, V value) {
 		return add(registry, new Identifier(id), value);
 	}
 

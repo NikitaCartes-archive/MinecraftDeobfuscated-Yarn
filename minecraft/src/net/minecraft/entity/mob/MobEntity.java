@@ -307,7 +307,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
+	public int getXpToDrop() {
 		if (this.experiencePoints > 0) {
 			int i = this.experiencePoints;
 

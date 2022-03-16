@@ -9,6 +9,7 @@ import net.minecraft.block.DeadCoralWallFanBlock;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +20,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
 
 public class BoneMealItem extends Item {
 	public static final int field_30851 = 3;
@@ -96,7 +96,7 @@ public class BoneMealItem extends Item {
 					}
 
 					RegistryEntry<Biome> registryEntry = world.getBiome(blockPos2);
-					if (registryEntry.matchesKey(BiomeKeys.WARM_OCEAN)) {
+					if (registryEntry.isIn(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL)) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = (BlockState)Registry.BLOCK
 								.getEntryList(BlockTags.WALL_CORALS)

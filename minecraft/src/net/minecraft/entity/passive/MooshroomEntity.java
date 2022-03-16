@@ -202,7 +202,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
-			nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+			nbt.putInt("EffectId", StatusEffect.getRawId(this.stewEffect));
 			nbt.putInt("EffectDuration", this.stewEffectDuration);
 		}
 	}
@@ -212,7 +212,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		super.readCustomDataFromNbt(nbt);
 		this.setType(MooshroomEntity.Type.fromName(nbt.getString("Type")));
 		if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
-			this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
+			this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
 		}
 
 		if (nbt.contains("EffectDuration", NbtElement.INT_TYPE)) {

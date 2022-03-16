@@ -84,7 +84,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			k *= -1.0F;
 		}
 
-		if (livingEntity.getPose() == EntityPose.SLEEPING) {
+		if (livingEntity.isInPose(EntityPose.SLEEPING)) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
@@ -188,8 +188,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			bodyYaw += (float)(Math.cos((double)entity.age * 3.25) * Math.PI * 0.4F);
 		}
 
-		EntityPose entityPose = entity.getPose();
-		if (entityPose != EntityPose.SLEEPING) {
+		if (!entity.isInPose(EntityPose.SLEEPING)) {
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
 		}
 
@@ -204,7 +203,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		} else if (entity.isUsingRiptide()) {
 			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.getPitch()));
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
-		} else if (entityPose == EntityPose.SLEEPING) {
+		} else if (entity.isInPose(EntityPose.SLEEPING)) {
 			Direction direction = entity.getSleepingDirection();
 			float g = direction != null ? getYaw(direction) : bodyYaw;
 			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));

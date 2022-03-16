@@ -22,7 +22,7 @@ public class SuspiciousStewItem extends Item {
 		NbtCompound nbtCompound = stew.getOrCreateNbt();
 		NbtList nbtList = nbtCompound.getList("Effects", NbtElement.LIST_TYPE);
 		NbtCompound nbtCompound2 = new NbtCompound();
-		nbtCompound2.putByte("EffectId", (byte)StatusEffect.getRawId(effect));
+		nbtCompound2.putInt("EffectId", StatusEffect.getRawId(effect));
 		nbtCompound2.putInt("EffectDuration", duration);
 		nbtList.add(nbtCompound2);
 		nbtCompound.put("Effects", nbtList);
@@ -42,7 +42,7 @@ public class SuspiciousStewItem extends Item {
 					j = nbtCompound2.getInt("EffectDuration");
 				}
 
-				StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getByte("EffectId"));
+				StatusEffect statusEffect = StatusEffect.byRawId(nbtCompound2.getInt("EffectId"));
 				if (statusEffect != null) {
 					user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
 				}
