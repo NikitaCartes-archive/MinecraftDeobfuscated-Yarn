@@ -73,6 +73,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.noise.NoiseConfig;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
@@ -323,14 +324,19 @@ public class DebugHud extends DrawableHelper {
 						)
 					);
 				}
+
+				if (worldChunk2 != null) {
+					list.add(String.format("Blending: %s", worldChunk2.usesOldNoise() ? "Old" : "New"));
+				}
 			}
 
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
-				chunkGenerator.getDebugHudText(list, blockPos);
-				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.getMultiNoiseSampler();
+				NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
+				chunkGenerator.getDebugHudText(list, noiseConfig, blockPos);
+				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.sampler();
 				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();

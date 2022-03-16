@@ -16,9 +16,4 @@ public class FluidTagProvider extends AbstractTagProvider<Fluid> {
 		this.getOrCreateTagBuilder(FluidTags.WATER).add(Fluids.WATER, Fluids.FLOWING_WATER);
 		this.getOrCreateTagBuilder(FluidTags.LAVA).add(Fluids.LAVA, Fluids.FLOWING_LAVA);
 	}
-
-	@Override
-	public String getName() {
-		return "Fluid Tags";
-	}
 }

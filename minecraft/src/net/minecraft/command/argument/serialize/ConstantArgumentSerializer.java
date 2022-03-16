@@ -2,26 +2,55 @@ package net.minecraft.command.argument.serialize;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.ArgumentType;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.network.PacketByteBuf;
 
-public class ConstantArgumentSerializer<T extends ArgumentType<?>> implements ArgumentSerializer<T> {
-	private final Supplier<T> supplier;
+public class ConstantArgumentSerializer<A extends ArgumentType<?>> implements ArgumentSerializer<A, ConstantArgumentSerializer<A>.Properties> {
+	private final ConstantArgumentSerializer<A>.Properties properties;
 
-	public ConstantArgumentSerializer(Supplier<T> supplier) {
-		this.supplier = supplier;
+	private ConstantArgumentSerializer(Function<CommandRegistryAccess, A> typeSupplier) {
+		this.properties = new ConstantArgumentSerializer.Properties(typeSupplier);
 	}
 
-	@Override
-	public void toPacket(T type, PacketByteBuf buf) {
+	public static <T extends ArgumentType<?>> ConstantArgumentSerializer<T> of(Supplier<T> typeSupplier) {
+		return new ConstantArgumentSerializer<>(commandRegistryAccess -> (ArgumentType)typeSupplier.get());
 	}
 
-	@Override
-	public T fromPacket(PacketByteBuf buf) {
-		return (T)this.supplier.get();
+	public static <T extends ArgumentType<?>> ConstantArgumentSerializer<T> of(Function<CommandRegistryAccess, T> typeSupplier) {
+		return new ConstantArgumentSerializer<>(typeSupplier);
 	}
 
-	@Override
-	public void toJson(T type, JsonObject json) {
+	public void writePacket(ConstantArgumentSerializer<A>.Properties properties, PacketByteBuf packetByteBuf) {
+	}
+
+	public void writeJson(ConstantArgumentSerializer<A>.Properties properties, JsonObject jsonObject) {
+	}
+
+	public ConstantArgumentSerializer<A>.Properties fromPacket(PacketByteBuf packetByteBuf) {
+		return this.properties;
+	}
+
+	public ConstantArgumentSerializer<A>.Properties getArgumentTypeProperties(A argumentType) {
+		return this.properties;
+	}
+
+	public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<A> {
+		private final Function<CommandRegistryAccess, A> typeSupplier;
+
+		public Properties(Function<CommandRegistryAccess, A> typeSupplier) {
+			this.typeSupplier = typeSupplier;
+		}
+
+		@Override
+		public A createType(CommandRegistryAccess commandRegistryAccess) {
+			return (A)this.typeSupplier.apply(commandRegistryAccess);
+		}
+
+		@Override
+		public ArgumentSerializer<A, ?> getSerializer() {
+			return ConstantArgumentSerializer.this;
+		}
 	}
 }

@@ -11,7 +11,6 @@ public class TheEndBiomeCreator {
 		DefaultBiomeFeatures.addEndMobs(builder2);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.NONE)
-			.category(Biome.Category.THEEND)
 			.temperature(0.5F)
 			.downfall(0.5F)
 			.effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(10518688).skyColor(0).moodSound(BiomeMoodSound.CAVE).build())

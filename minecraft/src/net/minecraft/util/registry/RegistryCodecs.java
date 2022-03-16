@@ -15,7 +15,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.dynamic.RegistryLoader;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -24,10 +23,7 @@ public class RegistryCodecs {
 	private static <T> MapCodec<RegistryCodecs.RegistryManagerEntry<T>> managerEntry(RegistryKey<? extends Registry<T>> registryRef, MapCodec<T> elementCodec) {
 		return RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						Identifier.CODEC
-							.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue)
-							.fieldOf("name")
-							.forGetter(RegistryCodecs.RegistryManagerEntry::key),
+						RegistryKey.createCodec(registryRef).fieldOf("name").forGetter(RegistryCodecs.RegistryManagerEntry::key),
 						Codec.INT.fieldOf("id").forGetter(RegistryCodecs.RegistryManagerEntry::rawId),
 						elementCodec.forGetter(RegistryCodecs.RegistryManagerEntry::value)
 					)
@@ -89,7 +85,7 @@ public class RegistryCodecs {
 	}
 
 	private static <T> Codec<Map<RegistryKey<T>, T>> registryMap(RegistryKey<? extends Registry<T>> registryRef, Codec<T> elementCodec) {
-		return Codec.unboundedMap(Identifier.CODEC.xmap(RegistryKey.createKeyFactory(registryRef), RegistryKey::getValue), elementCodec);
+		return Codec.unboundedMap(RegistryKey.createCodec(registryRef), elementCodec);
 	}
 
 	public static <E> Codec<RegistryEntryList<E>> entryList(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {

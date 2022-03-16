@@ -170,4 +170,20 @@ public class UndergroundPlacedFeatures {
 		HeightRangePlacementModifier.uniform(YOffset.aboveBottom(6), YOffset.fixed(30)),
 		BiomePlacementModifier.of()
 	);
+	public static final RegistryEntry<PlacedFeature> SCULK_PATCH = PlacedFeatures.register(
+		"sculk_patch",
+		UndergroundConfiguredFeatures.SCULK_PATCH,
+		CountPlacementModifier.of(ConstantIntProvider.create(256)),
+		SquarePlacementModifier.of(),
+		PlacedFeatures.BOTTOM_TO_120_RANGE,
+		BiomePlacementModifier.of()
+	);
+	public static final RegistryEntry<PlacedFeature> SCULK_VEIN = PlacedFeatures.register(
+		"sculk_vein",
+		UndergroundConfiguredFeatures.SCULK_VEIN,
+		CountPlacementModifier.of(UniformIntProvider.create(204, 250)),
+		SquarePlacementModifier.of(),
+		PlacedFeatures.BOTTOM_TO_120_RANGE,
+		BiomePlacementModifier.of()
+	);
 }

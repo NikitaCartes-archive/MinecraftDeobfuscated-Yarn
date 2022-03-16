@@ -139,8 +139,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected int getXpToDrop(PlayerEntity player) {
-		return this.hasJockey() ? 10 : super.getXpToDrop(player);
+	public int getXpToDrop() {
+		return this.hasJockey() ? 10 : super.getXpToDrop();
 	}
 
 	@Override

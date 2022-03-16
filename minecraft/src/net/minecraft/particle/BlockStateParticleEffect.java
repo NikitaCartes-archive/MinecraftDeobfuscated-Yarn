@@ -13,11 +13,11 @@ public class BlockStateParticleEffect implements ParticleEffect {
 	public static final ParticleEffect.Factory<BlockStateParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<BlockStateParticleEffect>() {
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
-			return new BlockStateParticleEffect(particleType, new BlockArgumentParser(stringReader, false).parse(false).getBlockState());
+			return new BlockStateParticleEffect(particleType, BlockArgumentParser.block(Registry.BLOCK, stringReader, false).blockState());
 		}
 
 		public BlockStateParticleEffect read(ParticleType<BlockStateParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-			return new BlockStateParticleEffect(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
+			return new BlockStateParticleEffect(particleType, packetByteBuf.readRegistryValue(Block.STATE_IDS));
 		}
 	};
 	private final ParticleType<BlockStateParticleEffect> type;
@@ -34,7 +34,7 @@ public class BlockStateParticleEffect implements ParticleEffect {
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeVarInt(Block.STATE_IDS.getRawId(this.blockState));
+		buf.writeRegistryValue(Block.STATE_IDS, this.blockState);
 	}
 
 	@Override

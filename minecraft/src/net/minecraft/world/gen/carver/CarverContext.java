@@ -12,28 +12,41 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
+import net.minecraft.world.gen.noise.NoiseConfig;
+import net.minecraft.world.gen.surfacebuilder.MaterialRules;
 
 public class CarverContext extends HeightContext {
-	private final NoiseChunkGenerator chunkGenerator;
 	private final DynamicRegistryManager registryManager;
 	private final ChunkNoiseSampler chunkNoiseSampler;
+	private final NoiseConfig field_37706;
+	private final MaterialRules.MaterialRule field_37707;
 
 	public CarverContext(
-		NoiseChunkGenerator chunkGenerator, DynamicRegistryManager registryManager, HeightLimitView heightLimitView, ChunkNoiseSampler chunkNoiseSampler
+		NoiseChunkGenerator noiseChunkGenerator,
+		DynamicRegistryManager dynamicRegistryManager,
+		HeightLimitView heightLimitView,
+		ChunkNoiseSampler chunkNoiseSampler,
+		NoiseConfig noiseConfig,
+		MaterialRules.MaterialRule materialRule
 	) {
-		super(chunkGenerator, heightLimitView);
-		this.chunkGenerator = chunkGenerator;
-		this.registryManager = registryManager;
+		super(noiseChunkGenerator, heightLimitView);
+		this.registryManager = dynamicRegistryManager;
 		this.chunkNoiseSampler = chunkNoiseSampler;
+		this.field_37706 = noiseConfig;
+		this.field_37707 = materialRule;
 	}
 
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(Function<BlockPos, RegistryEntry<Biome>> posToBiome, Chunk chunk, BlockPos pos, boolean hasFluid) {
-		return this.chunkGenerator.applyMaterialRule(this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
+		return this.field_37706.surfaceBuilder().applyMaterialRule(this.field_37707, this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
 	}
 
 	@Deprecated
 	public DynamicRegistryManager getRegistryManager() {
 		return this.registryManager;
+	}
+
+	public NoiseConfig method_41570() {
+		return this.field_37706;
 	}
 }

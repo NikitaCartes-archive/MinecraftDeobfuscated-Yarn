@@ -46,7 +46,7 @@ public class OptimizeWorldScreen extends Screen {
 	) {
 		try {
 			OptimizeWorldScreen var7;
-			try (SaveLoader saveLoader = client.createSaveLoader(storageSession, false)) {
+			try (SaveLoader saveLoader = client.method_41735().createSaveLoader(storageSession, false)) {
 				SaveProperties saveProperties = saveLoader.saveProperties();
 				storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
 				var7 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());

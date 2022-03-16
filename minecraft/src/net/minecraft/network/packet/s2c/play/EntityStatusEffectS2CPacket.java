@@ -5,20 +5,21 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.registry.Registry;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static final int AMBIENT_MASK = 1;
 	private static final int SHOW_PARTICLES_MASK = 2;
 	private static final int SHOW_ICON_MASK = 4;
 	private final int entityId;
-	private final int effectId;
+	private final StatusEffect effectId;
 	private final byte amplifier;
 	private final int duration;
 	private final byte flags;
 
 	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
 		this.entityId = entityId;
-		this.effectId = StatusEffect.getRawId(effect.getEffectType());
+		this.effectId = effect.getEffectType();
 		this.amplifier = (byte)(effect.getAmplifier() & 0xFF);
 		if (effect.getDuration() > 32767) {
 			this.duration = 32767;
@@ -44,7 +45,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
 		this.entityId = buf.readVarInt();
-		this.effectId = buf.readVarInt();
+		this.effectId = buf.readRegistryValue(Registry.STATUS_EFFECT);
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
@@ -53,7 +54,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeVarInt(this.effectId);
+		buf.writeRegistryValue(Registry.STATUS_EFFECT, this.effectId);
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
@@ -71,7 +72,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		return this.entityId;
 	}
 
-	public int getEffectId() {
+	public StatusEffect getEffectId() {
 		return this.effectId;
 	}
 

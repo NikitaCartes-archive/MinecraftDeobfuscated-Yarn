@@ -196,7 +196,7 @@ public class StructureBlockScreen extends Screen {
 				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), chr, this.getCursor()) ? false : super.charTyped(chr, modifiers);
 			}
 		};
-		this.inputName.setMaxLength(64);
+		this.inputName.setMaxLength(128);
 		this.inputName.setText(this.structureBlock.getStructureName());
 		this.addSelectableChild(this.inputName);
 		BlockPos blockPos = this.structureBlock.getOffset();

@@ -141,10 +141,10 @@ public class BeaconScreenHandler extends ScreenHandler {
 		return StatusEffect.byRawId(this.propertyDelegate.get(2));
 	}
 
-	public void setEffects(int primaryEffectId, int secondaryEffectId) {
+	public void setEffects(StatusEffect statusEffect, StatusEffect statusEffect2) {
 		if (this.paymentSlot.hasStack()) {
-			this.propertyDelegate.set(1, primaryEffectId);
-			this.propertyDelegate.set(2, secondaryEffectId);
+			this.propertyDelegate.set(1, StatusEffect.getRawId(statusEffect));
+			this.propertyDelegate.set(2, StatusEffect.getRawId(statusEffect2));
 			this.paymentSlot.takeStack(1);
 			this.context.run(World::markDirty);
 		}

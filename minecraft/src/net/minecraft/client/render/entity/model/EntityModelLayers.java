@@ -59,6 +59,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer EVOKER = registerMain("evoker");
 	public static final EntityModelLayer EVOKER_FANGS = registerMain("evoker_fangs");
 	public static final EntityModelLayer FOX = registerMain("fox");
+	public static final EntityModelLayer FROG = registerMain("frog");
 	public static final EntityModelLayer FURNACE_MINECART = registerMain("furnace_minecart");
 	public static final EntityModelLayer GHAST = registerMain("ghast");
 	public static final EntityModelLayer GIANT = registerMain("giant");
@@ -135,6 +136,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer STRAY_OUTER = register("stray", "outer");
 	public static final EntityModelLayer STRIDER = registerMain("strider");
 	public static final EntityModelLayer STRIDER_SADDLE = register("strider", "saddle");
+	public static final EntityModelLayer TADPOLE = registerMain("tadpole");
 	public static final EntityModelLayer TNT_MINECART = registerMain("tnt_minecart");
 	public static final EntityModelLayer TRADER_LLAMA = registerMain("trader_llama");
 	public static final EntityModelLayer TRIDENT = registerMain("trident");

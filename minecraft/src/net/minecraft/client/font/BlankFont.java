@@ -10,8 +10,8 @@ import net.fabricmc.api.Environment;
 public class BlankFont implements Font {
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(int codePoint) {
-		return BlankGlyph.INSTANCE;
+	public Glyph getGlyph(int codePoint) {
+		return BuiltinEmptyGlyph.MISSING;
 	}
 
 	@Override

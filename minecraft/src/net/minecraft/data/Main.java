@@ -16,15 +16,18 @@ import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.report.WorldgenProvider;
 import net.minecraft.data.server.AdvancementProvider;
+import net.minecraft.data.server.BiomeParametersProvider;
 import net.minecraft.data.server.BiomeTagProvider;
 import net.minecraft.data.server.BlockTagProvider;
 import net.minecraft.data.server.ConfiguredStructureFeatureTagProvider;
 import net.minecraft.data.server.EntityTypeTagProvider;
+import net.minecraft.data.server.FlatLevelGeneratorPresetTagProvider;
 import net.minecraft.data.server.FluidTagProvider;
 import net.minecraft.data.server.GameEventTagProvider;
 import net.minecraft.data.server.ItemTagProvider;
 import net.minecraft.data.server.LootTableProvider;
 import net.minecraft.data.server.RecipeProvider;
+import net.minecraft.data.server.WorldPresetTagProvider;
 import net.minecraft.data.validate.StructureValidatorProvider;
 import net.minecraft.obfuscate.DontObfuscate;
 
@@ -84,6 +87,8 @@ public class Main {
 			dataGenerator.addProvider(new GameEventTagProvider(dataGenerator));
 			dataGenerator.addProvider(new BiomeTagProvider(dataGenerator));
 			dataGenerator.addProvider(new ConfiguredStructureFeatureTagProvider(dataGenerator));
+			dataGenerator.addProvider(new WorldPresetTagProvider(dataGenerator));
+			dataGenerator.addProvider(new FlatLevelGeneratorPresetTagProvider(dataGenerator));
 		}
 
 		if (includeDev) {
@@ -95,6 +100,7 @@ public class Main {
 			dataGenerator.addProvider(new RegistryDumpProvider(dataGenerator));
 			dataGenerator.addProvider(new CommandSyntaxProvider(dataGenerator));
 			dataGenerator.addProvider(new WorldgenProvider(dataGenerator));
+			dataGenerator.addProvider(new BiomeParametersProvider(dataGenerator));
 		}
 
 		return dataGenerator;

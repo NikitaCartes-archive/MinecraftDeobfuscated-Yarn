@@ -305,6 +305,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(EntityType.FOX, LootTable.builder());
+		this.register(EntityType.FROG, LootTable.builder());
 		this.register(
 			EntityType.GHAST,
 			LootTable.builder()
@@ -818,6 +819,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
+		this.register(EntityType.TADPOLE, LootTable.builder());
 		this.register(
 			EntityType.TRADER_LLAMA,
 			LootTable.builder()

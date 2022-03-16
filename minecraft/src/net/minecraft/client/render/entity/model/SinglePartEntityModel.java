@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Optional;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,4 +27,8 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 	}
 
 	public abstract ModelPart getPart();
+
+	public Optional<ModelPart> getChild(String name) {
+		return this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
+	}
 }

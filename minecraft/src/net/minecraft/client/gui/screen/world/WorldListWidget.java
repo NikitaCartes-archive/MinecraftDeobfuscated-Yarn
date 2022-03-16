@@ -26,9 +26,9 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
+import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
-import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -110,7 +110,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		if (this.levels.isEmpty()) {
-			this.client.setScreen(CreateWorldScreen.create(null));
+			CreateWorldScreen.create(this.client, null);
 		} else {
 			String string = ((String)searchTextSupplier.get()).toLowerCase(Locale.ROOT);
 
@@ -385,6 +385,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void edit() {
+			this.openReadingWorldScreen();
 			String string = this.level.getName();
 
 			try {
@@ -414,7 +415,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			try (
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-				SaveLoader saveLoader = this.client.createSaveLoader(session, false);
+				SaveLoader saveLoader = this.client.method_41735().createSaveLoader(session, false);
 			) {
 				GeneratorOptions generatorOptions = saveLoader.saveProperties().getGeneratorOptions();
 				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
@@ -449,12 +450,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
 				this.openReadingWorldScreen();
-				this.client.startIntegratedServer(this.level.getName());
+				this.client.method_41735().start(this.level.getName());
 			}
 		}
 
 		private void openReadingWorldScreen() {
-			this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
+			this.client.setScreenAndRender(new MessageScreen(new TranslatableText("selectWorld.data_read")));
 		}
 
 		@Nullable

@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.util.Identifier;
 
 /**
@@ -103,17 +102,7 @@ public class RegistryKey<T> {
 		return this.value;
 	}
 
-	public Identifier method_41185() {
+	public Identifier getRegistry() {
 		return this.registry;
-	}
-
-	/**
-	 * Creates a function that converts an identifier to a registry key for the
-	 * registry that {@code registry} refers to in the root registry.
-	 * 
-	 * @param registry the reference to the value-holding registry in the root registry
-	 */
-	public static <T> Function<Identifier, RegistryKey<T>> createKeyFactory(RegistryKey<? extends Registry<T>> registry) {
-		return id -> of(registry, id);
 	}
 }

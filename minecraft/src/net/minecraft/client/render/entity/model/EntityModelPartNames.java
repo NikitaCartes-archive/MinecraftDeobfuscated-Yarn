@@ -236,4 +236,40 @@ public class EntityModelPartNames {
 	 * The key of a right gills model part, whose value is {@value}.
 	 */
 	public static final String RIGHT_GILLS = "right_gills";
+	/**
+	 * The key of a root model part, whose value is {@value}.
+	 */
+	public static final String ROOT = "root";
+	/**
+	 * The key of a croaking body model part, whose value is {@value}.
+	 */
+	public static final String CROAKING_BODY = "croaking_body";
+	/**
+	 * The key of a tongue model part, whose value is {@value}.
+	 */
+	public static final String TONGUE = "tongue";
+	/**
+	 * The key of a tongue rl model part, whose value is {@value}.
+	 */
+	public static final String TONGUE_RL = "tongue_r1";
+	/**
+	 * The key of a left hand model part, whose value is {@value}.
+	 */
+	public static final String LEFT_HAND = "left_hand";
+	/**
+	 * The key of a right hand model part, whose value is {@value}.
+	 */
+	public static final String RIGHT_HAND = "right_hand";
+	/**
+	 * The key of a left foot model part, whose value is {@value}.
+	 */
+	public static final String LEFT_FOOT = "left_foot";
+	/**
+	 * The key of a right foot model part, whose value is {@value}.
+	 */
+	public static final String RIGHT_FOOT = "right_foot";
+	/**
+	 * The key of an eyes model part, whose value is {@value}.
+	 */
+	public static final String EYES = "eyes";
 }

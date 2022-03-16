@@ -27,9 +27,9 @@ public class SpongeBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		this.update(world, pos);
-		super.neighborUpdate(state, world, pos, block, fromPos, notify);
+		super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
 	}
 
 	protected void update(World world, BlockPos pos) {

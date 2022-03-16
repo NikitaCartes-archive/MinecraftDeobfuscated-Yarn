@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -61,7 +62,7 @@ public class ItemCommand {
 		return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), builder);
 	};
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(
 			CommandManager.literal("item")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -76,7 +77,7 @@ public class ItemCommand {
 													.then(
 														CommandManager.literal("with")
 															.then(
-																CommandManager.argument("item", ItemStackArgumentType.itemStack())
+																CommandManager.argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess))
 																	.executes(
 																		context -> executeBlockReplace(
 																				context.getSource(),
@@ -177,7 +178,7 @@ public class ItemCommand {
 													.then(
 														CommandManager.literal("with")
 															.then(
-																CommandManager.argument("item", ItemStackArgumentType.itemStack())
+																CommandManager.argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess))
 																	.executes(
 																		context -> executeEntityReplace(
 																				context.getSource(),

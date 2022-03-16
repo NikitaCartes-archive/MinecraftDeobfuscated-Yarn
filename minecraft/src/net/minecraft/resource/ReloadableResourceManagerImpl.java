@@ -3,8 +3,8 @@ package net.minecraft.resource;
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -76,13 +76,18 @@ public class ReloadableResourceManagerImpl implements ResourceManager, AutoClose
 	}
 
 	@Override
-	public List<Resource> getAllResources(Identifier id) throws IOException {
+	public List<ResourceRef> getAllResources(Identifier id) throws IOException {
 		return this.activeManager.getAllResources(id);
 	}
 
 	@Override
-	public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
-		return this.activeManager.findResources(startingPath, pathPredicate);
+	public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+		return this.activeManager.findResources(startingPath, allowedPathPredicate);
+	}
+
+	@Override
+	public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+		return this.activeManager.findAllResources(startingPath, allowedPathPredicate);
 	}
 
 	@Override

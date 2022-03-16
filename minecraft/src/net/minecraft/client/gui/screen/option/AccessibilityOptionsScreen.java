@@ -13,26 +13,29 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
-	private static final Option[] OPTIONS = new Option[]{
-		Option.NARRATOR,
-		Option.SUBTITLES,
-		Option.TEXT_BACKGROUND_OPACITY,
-		Option.TEXT_BACKGROUND,
-		Option.CHAT_OPACITY,
-		Option.CHAT_LINE_SPACING,
-		Option.CHAT_DELAY_INSTANT,
-		Option.AUTO_JUMP,
-		Option.SNEAK_TOGGLED,
-		Option.SPRINT_TOGGLED,
-		Option.DISTORTION_EFFECT_SCALE,
-		Option.FOV_EFFECT_SCALE,
-		Option.MONOCHROME_LOGO,
-		Option.HIDE_LIGHTNING_FLASHES
-	};
 	private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
 
+	private static Option[] getOptions(GameOptions gameOptions) {
+		return new Option[]{
+			Option.NARRATOR,
+			Option.SUBTITLES,
+			Option.TEXT_BACKGROUND_OPACITY,
+			Option.TEXT_BACKGROUND,
+			Option.CHAT_OPACITY,
+			Option.CHAT_LINE_SPACING,
+			Option.CHAT_DELAY_INSTANT,
+			Option.AUTO_JUMP,
+			Option.SNEAK_TOGGLED,
+			Option.SPRINT_TOGGLED,
+			Option.DISTORTION_EFFECT_SCALE,
+			Option.FOV_EFFECT_SCALE,
+			gameOptions.getMonochromeLogo(),
+			gameOptions.getHideLightningFlashes()
+		};
+	}
+
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, new TranslatableText("options.accessibility.title"), OPTIONS);
+		super(parent, gameOptions, new TranslatableText("options.accessibility.title"), getOptions(gameOptions));
 	}
 
 	@Override

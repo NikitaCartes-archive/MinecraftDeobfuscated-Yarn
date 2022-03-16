@@ -41,6 +41,11 @@ public class ParticleTypes {
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
+	public static final DefaultParticleType SCULK_SOUL = register("sculk_soul", false);
+	public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = method_42022(
+		"sculk_charge", SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC, true
+	);
+	public static final DefaultParticleType SCULK_CHARGE_POP = register("sculk_charge_pop", true);
 	public static final DefaultParticleType SOUL_FIRE_FLAME = register("soul_fire_flame", false);
 	public static final DefaultParticleType SOUL = register("soul", false);
 	public static final DefaultParticleType FLASH = register("flash", false);
@@ -114,7 +119,13 @@ public class ParticleTypes {
 	private static <T extends ParticleEffect> ParticleType<T> register(
 		String name, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function
 	) {
-		return Registry.register(Registry.PARTICLE_TYPE, name, new ParticleType<T>(false, factory) {
+		return method_42022(name, factory, function, false);
+	}
+
+	private static <T extends ParticleEffect> ParticleType<T> method_42022(
+		String string, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function, boolean bl
+	) {
+		return Registry.register(Registry.PARTICLE_TYPE, string, new ParticleType<T>(bl, factory) {
 			@Override
 			public Codec<T> getCodec() {
 				return (Codec<T>)function.apply(this);

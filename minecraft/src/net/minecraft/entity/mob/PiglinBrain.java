@@ -171,7 +171,7 @@ public class PiglinBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity))),
+				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(target -> !isPreferredAttackTarget(piglin, target))),
 				new ConditionalTask(PiglinBrain::isHoldingCrossbow, new AttackTask<>(5, 0.75F)),
 				new RangedApproachTask(1.0F),
 				new MeleeAttackTask(20),

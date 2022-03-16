@@ -5,15 +5,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.option.DoubleOption;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 
 @Environment(EnvType.CLIENT)
 public class DoubleOptionSliderWidget extends OptionSliderWidget implements OrderableTooltip {
 	private final DoubleOption option;
-	private final List<OrderedText> orderedTooltip;
+	private final Option.TooltipFactory<Double> orderedTooltip;
 
-	public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option, List<OrderedText> orderedTooltip) {
+	public DoubleOptionSliderWidget(
+		GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option, Option.TooltipFactory<Double> orderedTooltip
+	) {
 		super(gameOptions, x, y, width, height, (double)((float)option.getRatio(option.get(gameOptions))));
 		this.option = option;
 		this.orderedTooltip = orderedTooltip;
@@ -33,6 +36,6 @@ public class DoubleOptionSliderWidget extends OptionSliderWidget implements Orde
 
 	@Override
 	public List<OrderedText> getOrderedTooltip() {
-		return this.orderedTooltip;
+		return (List<OrderedText>)this.orderedTooltip.apply(this.option.getValue(this.value));
 	}
 }

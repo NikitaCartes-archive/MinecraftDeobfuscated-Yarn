@@ -51,6 +51,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -160,7 +161,7 @@ public abstract class AbstractBlock {
 	 * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">the class javadoc</a>.
 	 */
 	@Deprecated
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		DebugInfoSender.sendNeighborUpdate(world, pos);
 	}
 
@@ -571,6 +572,10 @@ public abstract class AbstractBlock {
 			return this.owner;
 		}
 
+		public RegistryEntry<Block> getRegistryEntry() {
+			return this.owner.getRegistryEntry();
+		}
+
 		public Material getMaterial() {
 			return this.material;
 		}
@@ -750,8 +755,9 @@ public abstract class AbstractBlock {
 			return this.getBlock().onSyncedBlockEvent(this.asBlockState(), world, pos, type, data);
 		}
 
-		public void neighborUpdate(World world, BlockPos pos, Block block, BlockPos posFrom, boolean notify) {
-			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, block, posFrom, notify);
+		@Deprecated
+		public void neighborUpdate(World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+			this.getBlock().neighborUpdate(this.asBlockState(), world, pos, sourceBlock, sourcePos, notify);
 		}
 
 		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags) {

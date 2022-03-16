@@ -41,7 +41,6 @@ public final class Biome {
 	public static final Codec<Biome> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
-					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
 					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects),
 					GenerationSettings.CODEC.forGetter(biome -> biome.generationSettings),
 					SpawnSettings.CODEC.forGetter(biome -> biome.spawnSettings)
@@ -49,15 +48,11 @@ public final class Biome {
 				.apply(instance, Biome::new)
 	);
 	public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(
-		instance -> instance.group(
-					Biome.Weather.CODEC.forGetter(biome -> biome.weather),
-					Biome.Category.CODEC.fieldOf("category").forGetter(biome -> biome.category),
-					BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects)
-				)
-				.apply(instance, (weather, category, effects) -> new Biome(weather, category, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
+		instance -> instance.group(Biome.Weather.CODEC.forGetter(biome -> biome.weather), BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects))
+				.apply(instance, (weather, effects) -> new Biome(weather, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
 	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
-	public static final Codec<RegistryEntryList<Biome>> field_26750 = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
+	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(Registry.BIOME_KEY, CODEC);
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new AtomicSimpleRandom(1234L)), ImmutableList.of(0)
 	);
@@ -74,7 +69,6 @@ public final class Biome {
 	private final Biome.Weather weather;
 	private final GenerationSettings generationSettings;
 	private final SpawnSettings spawnSettings;
-	private final Biome.Category category;
 	private final BiomeEffects effects;
 	private final ThreadLocal<Long2FloatLinkedOpenHashMap> temperatureCache = ThreadLocal.withInitial(() -> Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(1024, 0.25F) {
@@ -86,11 +80,10 @@ public final class Biome {
 			return long2FloatLinkedOpenHashMap;
 		}));
 
-	Biome(Biome.Weather weather, Biome.Category category, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
+	Biome(Biome.Weather weather, BiomeEffects effects, GenerationSettings generationSettings, SpawnSettings spawnSettings) {
 		this.weather = weather;
 		this.generationSettings = generationSettings;
 		this.spawnSettings = spawnSettings;
-		this.category = category;
 		this.effects = effects;
 	}
 
@@ -265,20 +258,9 @@ public final class Biome {
 		return this.effects.getMusic();
 	}
 
-	Biome.Category getCategory() {
-		return this.category;
-	}
-
-	@Deprecated
-	public static Biome.Category getCategory(RegistryEntry<Biome> biomeEntry) {
-		return biomeEntry.value().getCategory();
-	}
-
 	public static class Builder {
 		@Nullable
 		private Biome.Precipitation precipitation;
-		@Nullable
-		private Biome.Category category;
 		@Nullable
 		private Float temperature;
 		private Biome.TemperatureModifier temperatureModifier = Biome.TemperatureModifier.NONE;
@@ -294,7 +276,6 @@ public final class Biome {
 		public static Biome.Builder copy(Biome biome) {
 			return new Biome.Builder()
 				.precipitation(biome.getPrecipitation())
-				.category(biome.getCategory())
 				.temperature(biome.getTemperature())
 				.downfall(biome.getDownfall())
 				.effects(biome.getEffects())
@@ -304,11 +285,6 @@ public final class Biome {
 
 		public Biome.Builder precipitation(Biome.Precipitation precipitation) {
 			this.precipitation = precipitation;
-			return this;
-		}
-
-		public Biome.Builder category(Biome.Category category) {
-			this.category = category;
 			return this;
 		}
 
@@ -344,7 +320,6 @@ public final class Biome {
 
 		public Biome build() {
 			if (this.precipitation != null
-				&& this.category != null
 				&& this.temperature != null
 				&& this.downfall != null
 				&& this.specialEffects != null
@@ -352,7 +327,6 @@ public final class Biome {
 				&& this.generationSettings != null) {
 				return new Biome(
 					new Biome.Weather(this.precipitation, this.temperature, this.temperatureModifier, this.downfall),
-					this.category,
 					this.specialEffects,
 					this.generationSettings,
 					this.spawnSettings
@@ -365,8 +339,6 @@ public final class Biome {
 		public String toString() {
 			return "BiomeBuilder{\nprecipitation="
 				+ this.precipitation
-				+ ",\nbiomeCategory="
-				+ this.category
 				+ ",\ntemperature="
 				+ this.temperature
 				+ ",\ntemperatureModifier="
@@ -380,50 +352,6 @@ public final class Biome {
 				+ ",\ngenerationSettings="
 				+ this.generationSettings
 				+ ",\n}";
-		}
-	}
-
-	public static enum Category implements StringIdentifiable {
-		NONE("none"),
-		TAIGA("taiga"),
-		EXTREME_HILLS("extreme_hills"),
-		JUNGLE("jungle"),
-		MESA("mesa"),
-		PLAINS("plains"),
-		SAVANNA("savanna"),
-		ICY("icy"),
-		THEEND("the_end"),
-		BEACH("beach"),
-		FOREST("forest"),
-		OCEAN("ocean"),
-		DESERT("desert"),
-		RIVER("river"),
-		SWAMP("swamp"),
-		MUSHROOM("mushroom"),
-		NETHER("nether"),
-		UNDERGROUND("underground"),
-		MOUNTAIN("mountain");
-
-		public static final Codec<Biome.Category> CODEC = StringIdentifiable.createCodec(Biome.Category::values, Biome.Category::byName);
-		private static final Map<String, Biome.Category> BY_NAME = (Map<String, Biome.Category>)Arrays.stream(values())
-			.collect(Collectors.toMap(Biome.Category::getName, category -> category));
-		private final String name;
-
-		private Category(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public static Biome.Category byName(String name) {
-			return (Biome.Category)BY_NAME.get(name);
-		}
-
-		@Override
-		public String asString() {
-			return this.name;
 		}
 	}
 

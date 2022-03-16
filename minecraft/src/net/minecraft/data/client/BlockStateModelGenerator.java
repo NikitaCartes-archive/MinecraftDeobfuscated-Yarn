@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
+import net.minecraft.block.PropaguleBlock;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BlockHalf;
@@ -61,6 +62,7 @@ public class BlockStateModelGenerator {
 	final Map<Block, BlockStateModelGenerator.StateFactory> stoneStateFactories = ImmutableMap.<Block, BlockStateModelGenerator.StateFactory>builder()
 		.put(Blocks.STONE, BlockStateModelGenerator::createStoneState)
 		.put(Blocks.DEEPSLATE, BlockStateModelGenerator::createDeepslateState)
+		.put(Blocks.MUD_BRICKS, BlockStateModelGenerator::method_42039)
 		.build();
 	final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE))
@@ -160,6 +162,13 @@ public class BlockStateModelGenerator {
 	) {
 		Identifier identifier = Models.CUBE_MIRRORED_ALL.upload(block, textures, modelCollector);
 		return createBlockStateWithTwoModelAndRandomInversion(block, modelId, identifier);
+	}
+
+	private static BlockStateSupplier method_42039(
+		Block block, Identifier identifier, TextureMap textureMap, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer
+	) {
+		Identifier identifier2 = Models.CUBE_NORTH_WEST_MIRRORED_ALL.upload(block, textureMap, biConsumer);
+		return createSingletonBlockState(block, identifier2);
 	}
 
 	private static BlockStateSupplier createDeepslateState(
@@ -345,101 +354,111 @@ public class BlockStateModelGenerator {
 	private static BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> fillDoorVariantMap(
 		BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
 		DoubleBlockHalf targetHalf,
-		Identifier regularModel,
-		Identifier hingeModel
+		Identifier identifier,
+		Identifier identifier2,
+		Identifier identifier3,
+		Identifier identifier4
 	) {
-		return variantMap.register(Direction.EAST, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create().put(VariantSettings.MODEL, regularModel))
+		return variantMap.register(Direction.EAST, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
 			.register(
 				Direction.SOUTH,
 				targetHalf,
 				DoorHinge.LEFT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R90)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90)
 			)
 			.register(
 				Direction.WEST,
 				targetHalf,
 				DoorHinge.LEFT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R180)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R180)
 			)
 			.register(
 				Direction.NORTH,
 				targetHalf,
 				DoorHinge.LEFT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R270)
 			)
-			.register(Direction.EAST, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel))
+			.register(Direction.EAST, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3))
 			.register(
 				Direction.SOUTH,
 				targetHalf,
 				DoorHinge.RIGHT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R90)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90)
 			)
 			.register(
 				Direction.WEST,
 				targetHalf,
 				DoorHinge.RIGHT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R180)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R180)
 			)
 			.register(
 				Direction.NORTH,
 				targetHalf,
 				DoorHinge.RIGHT,
 				false,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R270)
 			)
 			.register(
 				Direction.EAST,
 				targetHalf,
 				DoorHinge.LEFT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R90)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90)
 			)
 			.register(
 				Direction.SOUTH,
 				targetHalf,
 				DoorHinge.LEFT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R180)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R180)
 			)
 			.register(
 				Direction.WEST,
 				targetHalf,
 				DoorHinge.LEFT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R270)
 			)
-			.register(Direction.NORTH, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create().put(VariantSettings.MODEL, hingeModel))
+			.register(Direction.NORTH, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2))
 			.register(
 				Direction.EAST,
 				targetHalf,
 				DoorHinge.RIGHT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R270)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R270)
 			)
-			.register(Direction.SOUTH, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create().put(VariantSettings.MODEL, regularModel))
+			.register(Direction.SOUTH, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create().put(VariantSettings.MODEL, identifier4))
 			.register(
 				Direction.WEST,
 				targetHalf,
 				DoorHinge.RIGHT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R90)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R90)
 			)
 			.register(
 				Direction.NORTH,
 				targetHalf,
 				DoorHinge.RIGHT,
 				true,
-				BlockStateVariant.create().put(VariantSettings.MODEL, regularModel).put(VariantSettings.Y, VariantSettings.Rotation.R180)
+				BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R180)
 			);
 	}
 
 	private static BlockStateSupplier createDoorBlockState(
-		Block doorBlock, Identifier bottomModelId, Identifier bottomHingeModelId, Identifier topModelId, Identifier topHingeModelId
+		Block doorBlock,
+		Identifier bottomModelId,
+		Identifier bottomHingeModelId,
+		Identifier identifier,
+		Identifier identifier2,
+		Identifier identifier3,
+		Identifier identifier4,
+		Identifier identifier5,
+		Identifier identifier6
 	) {
 		return VariantsBlockStateSupplier.create(doorBlock)
 			.coordinate(
@@ -448,11 +467,15 @@ public class BlockStateModelGenerator {
 						BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN),
 						DoubleBlockHalf.LOWER,
 						bottomModelId,
-						bottomHingeModelId
+						bottomHingeModelId,
+						identifier,
+						identifier2
 					),
 					DoubleBlockHalf.UPPER,
-					topModelId,
-					topHingeModelId
+					identifier3,
+					identifier4,
+					identifier5,
+					identifier6
 				)
 			);
 	}
@@ -1136,12 +1159,17 @@ public class BlockStateModelGenerator {
 
 	void registerDoor(Block doorBlock) {
 		TextureMap textureMap = TextureMap.topBottom(doorBlock);
-		Identifier identifier = Models.DOOR_BOTTOM.upload(doorBlock, textureMap, this.modelCollector);
-		Identifier identifier2 = Models.DOOR_BOTTOM_RH.upload(doorBlock, textureMap, this.modelCollector);
-		Identifier identifier3 = Models.DOOR_TOP.upload(doorBlock, textureMap, this.modelCollector);
-		Identifier identifier4 = Models.DOOR_TOP_RH.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier = Models.DOOR_BOTTOM_LEFT.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.DOOR_BOTTOM_LEFT_OPEN.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier3 = Models.DOOR_BOTTOM_RIGHT.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier4 = Models.DOOR_BOTTOM_RIGHT_OPEN.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier5 = Models.DOOR_TOP_LEFT.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier6 = Models.DOOR_TOP_LEFT_OPEN.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier7 = Models.DOOR_TOP_RIGHT.upload(doorBlock, textureMap, this.modelCollector);
+		Identifier identifier8 = Models.DOOR_TOP_RIGHT_OPEN.upload(doorBlock, textureMap, this.modelCollector);
 		this.registerItemModel(doorBlock.asItem());
-		this.blockStateCollector.accept(createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4));
+		this.blockStateCollector
+			.accept(createDoorBlockState(doorBlock, identifier, identifier2, identifier3, identifier4, identifier5, identifier6, identifier7, identifier8));
 	}
 
 	void registerOrientableTrapdoor(Block trapdoorBlock) {
@@ -2541,6 +2569,29 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(lantern).coordinate(createBooleanModelMap(Properties.HANGING, identifier2, identifier)));
 	}
 
+	private void method_42033() {
+		TextureMap textureMap = TextureMap.sideEnd(
+			TextureMap.getSubId(Blocks.MUDDY_MANGROVE_ROOTS, "_side"), TextureMap.getSubId(Blocks.MUDDY_MANGROVE_ROOTS, "_top")
+		);
+		Identifier identifier = Models.CUBE_COLUMN.upload(Blocks.MUDDY_MANGROVE_ROOTS, textureMap, this.modelCollector);
+		this.blockStateCollector.accept(createAxisRotatedBlockState(Blocks.MUDDY_MANGROVE_ROOTS, identifier));
+	}
+
+	private void method_42034() {
+		this.registerItemModel(Items.field_37508);
+		Block block = Blocks.MANGROVE_PROPAGULE;
+		BlockStateVariantMap.DoubleProperty<Boolean, Integer> doubleProperty = BlockStateVariantMap.create(PropaguleBlock.HANGING, PropaguleBlock.AGE);
+		Identifier identifier = ModelIds.getBlockModelId(block);
+
+		for(int i = 0; i <= 4; ++i) {
+			Identifier identifier2 = ModelIds.getBlockSubModelId(block, "_hanging_" + i);
+			doubleProperty.register(true, i, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2));
+			doubleProperty.register(false, i, BlockStateVariant.create().put(VariantSettings.MODEL, identifier));
+		}
+
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.MANGROVE_PROPAGULE).coordinate(doubleProperty));
+	}
+
 	private void registerFrostedIce() {
 		this.blockStateCollector
 			.accept(
@@ -2744,6 +2795,11 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.LILY_PAD, ModelIds.getBlockModelId(Blocks.LILY_PAD)));
 	}
 
+	private void method_42035() {
+		this.registerItemModel(Blocks.FROGSPAWN);
+		this.blockStateCollector.accept(createSingletonBlockState(Blocks.FROGSPAWN, ModelIds.getBlockModelId(Blocks.FROGSPAWN)));
+	}
+
 	private void registerNetherPortal() {
 		this.blockStateCollector
 			.accept(
@@ -2901,6 +2957,14 @@ public class BlockStateModelGenerator {
 							)
 					)
 			);
+	}
+
+	private void method_42037() {
+		Identifier identifier = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
+		Identifier identifier2 = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
+		this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(createBooleanModelMap(Properties.SHRIEKING, identifier2, identifier)));
 	}
 
 	private void registerScaffolding() {
@@ -3369,6 +3433,29 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
 	}
 
+	private void method_42038() {
+		Identifier identifier = TextureMap.getSubId(Blocks.SCULK_CATALYST, "_bottom");
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.BOTTOM, identifier)
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.SCULK_CATALYST, "_top"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.SCULK_CATALYST, "_side"));
+		TextureMap textureMap2 = new TextureMap()
+			.put(TextureKey.BOTTOM, identifier)
+			.put(TextureKey.TOP, TextureMap.getSubId(Blocks.SCULK_CATALYST, "_top_bloom"))
+			.put(TextureKey.SIDE, TextureMap.getSubId(Blocks.SCULK_CATALYST, "_side_bloom"));
+		Identifier identifier2 = Models.CUBE_BOTTOM_TOP.upload(Blocks.SCULK_CATALYST, "", textureMap, this.modelCollector);
+		Identifier identifier3 = Models.CUBE_BOTTOM_TOP.upload(Blocks.SCULK_CATALYST, "_bloom", textureMap2, this.modelCollector);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.SCULK_CATALYST)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.BLOOM)
+							.register(boolean_ -> BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier3 : identifier2))
+					)
+			);
+		this.registerParentedItemModel(Items.SCULK_CATALYST, identifier2);
+	}
+
 	private void registerMagmaBlock() {
 		this.blockStateCollector
 			.accept(
@@ -3610,6 +3697,8 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.JUKEBOX, TexturedModel.CUBE_TOP);
 		this.registerSingleton(Blocks.LODESTONE, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.MELON, TexturedModel.CUBE_COLUMN);
+		this.registerSimpleState(Blocks.MANGROVE_ROOTS);
+		this.registerSimpleState(Blocks.POTTED_MANGROVE_PROPAGULE);
 		this.registerSimpleCubeAll(Blocks.NETHER_WART_BLOCK);
 		this.registerSimpleCubeAll(Blocks.NOTE_BLOCK);
 		this.registerSimpleCubeAll(Blocks.PACKED_ICE);
@@ -3635,6 +3724,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleCubeAll(Blocks.RAW_IRON_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_COPPER_BLOCK);
 		this.registerSimpleCubeAll(Blocks.RAW_GOLD_BLOCK);
+		this.registerMirrorable(Blocks.SCULK);
 		this.registerPetrifiedOakSlab();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);
@@ -3694,9 +3784,14 @@ public class BlockStateModelGenerator {
 		this.registerTurtleEgg();
 		this.registerWallPlant(Blocks.VINE);
 		this.registerWallPlant(Blocks.GLOW_LICHEN);
+		this.registerWallPlant(Blocks.SCULK_VEIN);
 		this.registerMagmaBlock();
 		this.registerJigsaw();
 		this.registerSculkSensor();
+		this.method_42037();
+		this.method_42035();
+		this.method_42034();
+		this.method_42033();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -3725,6 +3820,9 @@ public class BlockStateModelGenerator {
 		this.registerAxisRotated(Blocks.HAY_BLOCK, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.PURPUR_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
+		this.registerAxisRotated(Blocks.OCHRE_FROGLIGHT, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
+		this.registerAxisRotated(Blocks.VERDANT_FROGLIGHT, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
+		this.registerAxisRotated(Blocks.PEARLESCENT_FROGLIGHT, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
 		this.registerNorthDefaultHorizontalRotated(Blocks.LOOM, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerPumpkins();
 		this.registerBeehive(Blocks.BEE_NEST, TextureMap::sideFrontTopBottom);
@@ -3947,6 +4045,8 @@ public class BlockStateModelGenerator {
 		this.registerWoolAndCarpet(Blocks.GREEN_WOOL, Blocks.GREEN_CARPET);
 		this.registerWoolAndCarpet(Blocks.RED_WOOL, Blocks.RED_CARPET);
 		this.registerWoolAndCarpet(Blocks.BLACK_WOOL, Blocks.BLACK_CARPET);
+		this.registerSimpleCubeAll(Blocks.MUD);
+		this.registerSimpleCubeAll(Blocks.PACKED_MUD);
 		this.registerFlowerPotPlant(Blocks.FERN, Blocks.POTTED_FERN, BlockStateModelGenerator.TintType.TINTED);
 		this.registerFlowerPotPlant(Blocks.DANDELION, Blocks.POTTED_DANDELION, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerFlowerPotPlant(Blocks.POPPY, Blocks.POTTED_POPPY, BlockStateModelGenerator.TintType.NOT_TINTED);
@@ -4046,6 +4146,9 @@ public class BlockStateModelGenerator {
 		);
 		this.registerGourd(Blocks.MELON_STEM, Blocks.ATTACHED_MELON_STEM);
 		this.registerGourd(Blocks.PUMPKIN_STEM, Blocks.ATTACHED_PUMPKIN_STEM);
+		this.registerLog(Blocks.MANGROVE_LOG).log(Blocks.MANGROVE_LOG).wood(Blocks.MANGROVE_WOOD);
+		this.registerLog(Blocks.STRIPPED_MANGROVE_LOG).log(Blocks.STRIPPED_MANGROVE_LOG).wood(Blocks.STRIPPED_MANGROVE_WOOD);
+		this.registerSingleton(Blocks.MANGROVE_LEAVES, TexturedModel.LEAVES);
 		this.registerLog(Blocks.ACACIA_LOG).log(Blocks.ACACIA_LOG).wood(Blocks.ACACIA_WOOD);
 		this.registerLog(Blocks.STRIPPED_ACACIA_LOG).log(Blocks.STRIPPED_ACACIA_LOG).wood(Blocks.STRIPPED_ACACIA_WOOD);
 		this.registerFlowerPotPlant(Blocks.ACACIA_SAPLING, Blocks.POTTED_ACACIA_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
@@ -4101,6 +4204,7 @@ public class BlockStateModelGenerator {
 		this.registerCooker(Blocks.SMOKER, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerRedstone();
 		this.registerRespawnAnchor();
+		this.method_42038();
 		this.registerInfested(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
 		this.registerInfested(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
 		this.registerInfested(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);

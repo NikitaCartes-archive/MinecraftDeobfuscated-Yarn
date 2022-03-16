@@ -145,7 +145,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	}
 
 	static Predicate<NbtElement> getPredicate(NbtCompound filter) {
-		return nbtElement -> NbtHelper.matches(filter, nbtElement, true);
+		return nbt -> NbtHelper.matches(filter, nbt, true);
 	}
 
 	static class AllListElementNode implements NbtPathArgumentType.PathNode {

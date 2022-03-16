@@ -216,8 +216,9 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			if (VexEntity.this.getTarget() != null && !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(toGoalTicks(7)) == 0) {
-				return VexEntity.this.squaredDistanceTo(VexEntity.this.getTarget()) > 4.0;
+			LivingEntity livingEntity = VexEntity.this.getTarget();
+			if (livingEntity != null && livingEntity.isAlive() && !VexEntity.this.getMoveControl().isMoving() && VexEntity.this.random.nextInt(toGoalTicks(7)) == 0) {
+				return VexEntity.this.squaredDistanceTo(livingEntity) > 4.0;
 			} else {
 				return false;
 			}

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -54,7 +55,7 @@ public class LootCommand {
 		entityName -> new TranslatableText("commands.drop.no_loot_table", entityName)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(
 			addTargetArguments(
 				CommandManager.literal("loot").requires(source -> source.hasPermissionLevel(2)),
@@ -75,7 +76,7 @@ public class LootCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("tool", ItemStackArgumentType.itemStack())
+													CommandManager.argument("tool", ItemStackArgumentType.itemStack(commandRegistryAccess))
 														.executes(
 															context -> executeFish(
 																	context,
@@ -134,7 +135,7 @@ public class LootCommand {
 									CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 										.executes(context -> executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStack.EMPTY, constructor))
 										.then(
-											CommandManager.argument("tool", ItemStackArgumentType.itemStack())
+											CommandManager.argument("tool", ItemStackArgumentType.itemStack(commandRegistryAccess))
 												.executes(
 													context -> executeMine(
 															context,

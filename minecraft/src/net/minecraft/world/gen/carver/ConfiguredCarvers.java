@@ -77,6 +77,6 @@ public class ConfiguredCarvers {
 	);
 
 	private static <WC extends CarverConfig> RegistryEntry<ConfiguredCarver<WC>> register(String id, ConfiguredCarver<WC> configuredCarver) {
-		return BuiltinRegistries.method_40360(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
+		return BuiltinRegistries.addCasted(BuiltinRegistries.CONFIGURED_CARVER, id, configuredCarver);
 	}
 }

@@ -22,7 +22,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 
 public class LocateCommand {
 	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.failed", id));
@@ -41,14 +41,14 @@ public class LocateCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<ConfiguredStructureFeature<?, ?>> structureFeature) throws CommandSyntaxException {
-		Registry<ConfiguredStructureFeature<?, ?>> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-		RegistryEntryList<ConfiguredStructureFeature<?, ?>> registryEntryList = (RegistryEntryList)((Optional)structureFeature.getKey()
+	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<StructureFeature> structureFeature) throws CommandSyntaxException {
+		Registry<StructureFeature> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		RegistryEntryList<StructureFeature> registryEntryList = (RegistryEntryList)((Optional)structureFeature.getKey()
 				.map(key -> registry.getEntry(key).map(entry -> RegistryEntryList.of(entry)), registry::getEntryList))
 			.orElseThrow(() -> INVALID_EXCEPTION.create(structureFeature.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
-		Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = serverWorld.getChunkManager()
+		Pair<BlockPos, RegistryEntry<StructureFeature>> pair = serverWorld.getChunkManager()
 			.getChunkGenerator()
 			.locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
 		if (pair == null) {

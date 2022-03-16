@@ -10,26 +10,26 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 2975;
+	public static final int WORLD_VERSION = 3080;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.18.2";
+	public static final String VERSION_NAME = "22w11a";
 	@Deprecated
-	public static final String RELEASE_TARGET = "1.18.2";
+	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
-	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 758;
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 73;
-	public static final int SNBT_TOO_OLD_THRESHOLD = 2965;
+	public static final int field_29736 = 74;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
-	public static final boolean field_36325 = false;
+	public static final boolean field_36325 = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 8;
+	public static final int RESOURCE_PACK_VERSION = 9;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 9;
+	public static final int DATA_PACK_VERSION = 10;
 	public static final String DATA_VERSION_KEY = "DataVersion";
 	public static final boolean field_33712 = false;
 	public static final boolean field_29743 = false;
@@ -75,6 +75,7 @@ public class SharedConstants {
 	public static final boolean field_29699 = false;
 	public static final boolean field_29700 = false;
 	public static final boolean field_33554 = false;
+	public static final boolean field_37273 = false;
 	public static final boolean field_34368 = false;
 	public static final boolean field_29701 = false;
 	public static final boolean field_29710 = false;
@@ -172,7 +173,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 758;
+		return 1073741898;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

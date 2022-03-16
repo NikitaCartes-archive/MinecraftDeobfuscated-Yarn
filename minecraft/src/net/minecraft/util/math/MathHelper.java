@@ -807,6 +807,10 @@ public class MathHelper {
 		return lerp(deltaZ, lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
 	}
 
+	public static float method_41303(float f, float g, float h, float i, float j) {
+		return 0.5F * (2.0F * h + (i - g) * f + (2.0F * g - 5.0F * h + 4.0F * i - j) * f * f + (3.0F * h - g - 3.0F * i + j) * f * f * f);
+	}
+
 	public static double perlinFade(double value) {
 		return value * value * value * (value * (value * 6.0 - 15.0) + 10.0);
 	}

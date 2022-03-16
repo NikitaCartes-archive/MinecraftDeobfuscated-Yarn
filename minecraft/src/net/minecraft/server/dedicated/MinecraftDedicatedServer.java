@@ -561,6 +561,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
+	public int getMaxChainedNeighborUpdates() {
+		return this.getProperties().maxChainedNeighborUpdates;
+	}
+
+	@Override
 	public String getPlugins() {
 		return "";
 	}

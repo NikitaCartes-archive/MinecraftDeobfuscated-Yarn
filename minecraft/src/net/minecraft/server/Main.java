@@ -13,6 +13,7 @@ import java.io.File;
 import java.net.Proxy;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import joptsimple.OptionParser;
@@ -50,6 +51,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -144,15 +146,13 @@ public class Main {
 
 			SaveLoader saveLoader;
 			try {
-				SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(
-					resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel, bl
+				DataPackSettings dataPackSettings = (DataPackSettings)Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
+				SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, bl);
+				SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(
+					dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel
 				);
-				saveLoader = (SaveLoader)SaveLoader.ofLoaded(
-						functionLoaderConfig,
-						() -> {
-							DataPackSettings dataPackSettings = session.getDataPackSettings();
-							return dataPackSettings == null ? DataPackSettings.SAFE_MODE : dataPackSettings;
-						},
+				saveLoader = (SaveLoader)SaveLoader.load(
+						serverConfig,
 						(resourceManager, dataPackSettings) -> {
 							DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
 							DynamicOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
@@ -164,7 +164,7 @@ public class Main {
 								GeneratorOptions generatorOptions;
 								if (optionSet.has(optionSpec3)) {
 									levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-									generatorOptions = GeneratorOptions.createDemo(mutable);
+									generatorOptions = WorldPresets.createDemoOptions(mutable);
 								} else {
 									ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
 									levelInfo = new LevelInfo(
@@ -191,11 +191,9 @@ public class Main {
 					.get();
 			} catch (Exception var38) {
 				LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", var38);
-				resourcePackManager.close();
 				return;
 			}
 
-			saveLoader.refresh();
 			DynamicRegistryManager.Immutable immutable = saveLoader.dynamicRegistryManager();
 			serverPropertiesLoader.getPropertiesHandler().getGeneratorOptions(immutable);
 			SaveProperties saveProperties = saveLoader.saveProperties();

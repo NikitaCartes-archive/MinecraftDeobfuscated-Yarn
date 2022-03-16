@@ -23,6 +23,7 @@ import net.minecraft.datafixer.fix.BiomeFormatFix;
 import net.minecraft.datafixer.fix.BiomeRenameFix;
 import net.minecraft.datafixer.fix.BiomesFix;
 import net.minecraft.datafixer.fix.BitStorageAlignFix;
+import net.minecraft.datafixer.fix.BlendingDataFix;
 import net.minecraft.datafixer.fix.BlockEntityBannerColorFix;
 import net.minecraft.datafixer.fix.BlockEntityBlockStateFix;
 import net.minecraft.datafixer.fix.BlockEntityCustomNameToTextFix;
@@ -39,6 +40,7 @@ import net.minecraft.datafixer.fix.CatTypeFix;
 import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
 import net.minecraft.datafixer.fix.ChoiceTypesFix;
+import net.minecraft.datafixer.fix.ChunkDeleteIgnoredLightDataFix;
 import net.minecraft.datafixer.fix.ChunkHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.ChunkLevelTagRenameFix;
 import net.minecraft.datafixer.fix.ChunkLightRemoveFix;
@@ -208,6 +210,8 @@ import net.minecraft.datafixer.schema.Schema2707;
 import net.minecraft.datafixer.schema.Schema2831;
 import net.minecraft.datafixer.schema.Schema2832;
 import net.minecraft.datafixer.schema.Schema2842;
+import net.minecraft.datafixer.schema.Schema3076;
+import net.minecraft.datafixer.schema.Schema3078;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -831,6 +835,16 @@ public class Schemas {
 		builder.addFixer(new StructureSettingsFlattenFix(schema154));
 		Schema schema155 = builder.addSchema(2970, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StructuresToConfiguredStructuresFix(schema155));
+		Schema schema156 = builder.addSchema(3076, Schema3076::new);
+		builder.addFixer(new ChoiceTypesFix(schema156, "Added Sculk Catalyst", TypeReferences.BLOCK_ENTITY));
+		Schema schema157 = builder.addSchema(3077, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ChunkDeleteIgnoredLightDataFix(schema157));
+		Schema schema158 = builder.addSchema(3078, Schema3078::new);
+		builder.addFixer(new ChoiceTypesFix(schema158, "Added Frog", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema158, "Added Tadpole", TypeReferences.ENTITY));
+		builder.addFixer(new ChoiceTypesFix(schema158, "Added Sculk Shrieker", TypeReferences.BLOCK_ENTITY));
+		Schema schema159 = builder.addSchema(3079, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlendingDataFix(schema159, "Blending Data Fix v3079"));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

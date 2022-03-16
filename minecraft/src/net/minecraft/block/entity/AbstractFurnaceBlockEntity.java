@@ -167,7 +167,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.CROSSBOW, 300);
 		addFuel(map, Blocks.BAMBOO, 50);
 		addFuel(map, Blocks.DEAD_BUSH, 100);
-		addFuel(map, Blocks.SCAFFOLDING, 400);
+		addFuel(map, Blocks.SCAFFOLDING, 50);
 		addFuel(map, Blocks.LOOM, 300);
 		addFuel(map, Blocks.BARREL, 300);
 		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
@@ -176,6 +176,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Blocks.COMPOSTER, 300);
 		addFuel(map, Blocks.AZALEA, 100);
 		addFuel(map, Blocks.FLOWERING_AZALEA, 100);
+		addFuel(map, Blocks.MANGROVE_ROOTS, 300);
 		return map;
 	}
 

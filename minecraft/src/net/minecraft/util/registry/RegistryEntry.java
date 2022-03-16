@@ -31,7 +31,7 @@ public interface RegistryEntry<T> {
 
 	RegistryEntry.Type getType();
 
-	boolean matchesRegistry(Registry<T> registry);
+	boolean setRegistry(Registry<T> registry);
 
 	static <T> RegistryEntry<T> of(T value) {
 		return new RegistryEntry.Direct<>(value);
@@ -87,7 +87,7 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean matchesRegistry(Registry<T> registry) {
+		public boolean setRegistry(Registry<T> registry) {
 			return true;
 		}
 
@@ -160,7 +160,7 @@ public interface RegistryEntry<T> {
 		}
 
 		@Override
-		public boolean matchesRegistry(Registry<T> registry) {
+		public boolean setRegistry(Registry<T> registry) {
 			return this.registry == registry;
 		}
 

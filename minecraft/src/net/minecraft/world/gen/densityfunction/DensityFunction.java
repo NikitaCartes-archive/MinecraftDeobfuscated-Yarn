@@ -11,9 +11,9 @@ public interface DensityFunction {
 	Codec<DensityFunction> field_37057 = DensityFunctionTypes.field_37061;
 	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, field_37057);
 	Codec<DensityFunction> field_37059 = REGISTRY_ENTRY_CODEC.xmap(
-		DensityFunctionTypes.class_7051::new,
-		densityFunction -> (RegistryEntry)(densityFunction instanceof DensityFunctionTypes.class_7051 lv
-				? lv.function()
+		DensityFunctionTypes.RegistryEntryHolder::new,
+		densityFunction -> (RegistryEntry)(densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder
+				? registryEntryHolder.function()
 				: new RegistryEntry.Direct<>(densityFunction))
 	);
 

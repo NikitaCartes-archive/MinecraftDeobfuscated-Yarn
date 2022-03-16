@@ -39,6 +39,7 @@ public class ItemTagProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.BIRCH_LOGS, ItemTags.BIRCH_LOGS);
 		this.copy(BlockTags.ACACIA_LOGS, ItemTags.ACACIA_LOGS);
 		this.copy(BlockTags.SPRUCE_LOGS, ItemTags.SPRUCE_LOGS);
+		this.copy(BlockTags.MANGROVE_LOGS, ItemTags.MANGROVE_LOGS);
 		this.copy(BlockTags.JUNGLE_LOGS, ItemTags.JUNGLE_LOGS);
 		this.copy(BlockTags.CRIMSON_STEMS, ItemTags.CRIMSON_STEMS);
 		this.copy(BlockTags.WARPED_STEMS, ItemTags.WARPED_STEMS);
@@ -188,10 +189,5 @@ public class ItemTagProvider extends AbstractTagProvider<Item> {
 		Tag.Builder builder = this.getTagBuilder(itemTag);
 		Tag.Builder builder2 = (Tag.Builder)this.blockTags.apply(blockTag);
 		builder2.streamEntries().forEach(builder::add);
-	}
-
-	@Override
-	public String getName() {
-		return "Item Tags";
 	}
 }

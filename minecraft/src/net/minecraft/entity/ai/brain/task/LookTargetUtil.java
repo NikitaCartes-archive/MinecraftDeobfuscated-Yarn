@@ -179,4 +179,8 @@ public class LookTargetUtil {
 
 		return vec3d;
 	}
+
+	public static boolean hasBreedTarget(LivingEntity entity) {
+		return entity.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
+	}
 }

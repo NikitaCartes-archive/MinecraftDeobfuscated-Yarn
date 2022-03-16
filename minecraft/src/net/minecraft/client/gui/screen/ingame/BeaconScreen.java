@@ -234,9 +234,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void onPress() {
-			BeaconScreen.this.client
-				.getNetworkHandler()
-				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
+			BeaconScreen.this.client.getNetworkHandler().sendPacket(new UpdateBeaconC2SPacket(BeaconScreen.this.primaryEffect, BeaconScreen.this.secondaryEffect));
 			BeaconScreen.this.client.player.closeHandledScreen();
 		}
 
