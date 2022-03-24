@@ -123,7 +123,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             OrderedText orderedText = this.displayName;
             MultilineText multilineText = this.description;
-            if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
+            if (this.isSelectable() && (this.client.options.getTouchscreen().getValue().booleanValue() || hovered)) {
                 RenderSystem.setShaderTexture(0, RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);

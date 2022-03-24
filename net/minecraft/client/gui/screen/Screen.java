@@ -311,7 +311,7 @@ implements Drawable {
         } else if (clickEvent != null) {
             block21: {
                 if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-                    if (!this.client.options.chatLinks) {
+                    if (!this.client.options.getChatLinks().getValue().booleanValue()) {
                         return false;
                     }
                     try {
@@ -323,7 +323,7 @@ implements Drawable {
                         if (!ALLOWED_PROTOCOLS.contains(string.toLowerCase(Locale.ROOT))) {
                             throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
                         }
-                        if (this.client.options.chatLinksPrompt) {
+                        if (this.client.options.getChatLinksPrompt().getValue().booleanValue()) {
                             this.clickedLink = uRI;
                             this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
                             break block21;

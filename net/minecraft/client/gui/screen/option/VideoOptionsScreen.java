@@ -19,7 +19,6 @@ import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
-import net.minecraft.client.option.Option;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.Monitor;
@@ -45,18 +44,18 @@ extends GameOptionsScreen {
     private final VideoWarningManager warningManager;
     private final int mipmapLevels;
 
-    private static Option[] getOptions(GameOptions gameOptions) {
-        return new Option[]{Option.GRAPHICS, Option.RENDER_DISTANCE, gameOptions.getChunkBuilderMode(), Option.SIMULATION_DISTANCE, gameOptions.getAo(), Option.FRAMERATE_LIMIT, Option.VSYNC, Option.VIEW_BOBBING, Option.GUI_SCALE, Option.ATTACK_INDICATOR, Option.GAMMA, Option.CLOUDS, Option.FULLSCREEN, Option.PARTICLES, Option.MIPMAP_LEVELS, Option.ENTITY_SHADOWS, Option.DISTORTION_EFFECT_SCALE, Option.ENTITY_DISTANCE_SCALING, Option.FOV_EFFECT_SCALE, Option.SHOW_AUTOSAVE_INDICATOR};
+    private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
+        return new SimpleOption[]{gameOptions.getGraphicsMode(), gameOptions.getViewDistance(), gameOptions.getChunkBuilderMode(), gameOptions.getSimulationDistance(), gameOptions.getAo(), gameOptions.getMaxFps(), gameOptions.getEnableVsync(), gameOptions.getBobView(), gameOptions.getGuiScale(), gameOptions.getAttackIndicator(), gameOptions.getGamma(), gameOptions.getCloudRenderMod(), gameOptions.getFullscreen(), gameOptions.getParticles(), gameOptions.getMipmapLevels(), gameOptions.getEntityShadows(), gameOptions.getDistortionEffectScale(), gameOptions.getEntityDistanceScaling(), gameOptions.getFovEffectScale(), gameOptions.getShowAutosaveIndicator()};
     }
 
     public VideoOptionsScreen(Screen parent, GameOptions options) {
         super(parent, options, new TranslatableText("options.videoTitle"));
         this.warningManager = parent.client.getVideoWarningManager();
         this.warningManager.reset();
-        if (options.graphicsMode == GraphicsMode.FABULOUS) {
+        if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
             this.warningManager.acceptAfterWarnings();
         }
-        this.mipmapLevels = options.mipmapLevels;
+        this.mipmapLevels = options.getMipmapLevels().getValue();
     }
 
     @Override
@@ -74,7 +73,7 @@ extends GameOptionsScreen {
         }
         String string = "options.fullscreen.resolution";
         TranslatableText translatableText = new TranslatableText("options.fullscreen.resolution");
-        SimpleOption<Integer> simpleOption = new SimpleOption<Integer>("options.fullscreen.resolution", Option.emptyTooltipFactoryGetter(), value -> {
+        SimpleOption<Integer> simpleOption = new SimpleOption<Integer>("options.fullscreen.resolution", SimpleOption.emptyTooltipFactoryGetter(), value -> {
             if (monitor == null) {
                 return new TranslatableText("options.fullscreen.unavailable");
             }
@@ -82,7 +81,7 @@ extends GameOptionsScreen {
                 return GameOptions.getGenericValueText((Text)translatableText, new TranslatableText("options.fullscreen.current"));
             }
             return GameOptions.getGenericValueText((Text)translatableText, new LiteralText(monitor.getVideoMode((int)value).toString()));
-        }, new SimpleOption.IntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1), j, value -> {
+        }, new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1), j, value -> {
             if (monitor == null) {
                 return;
             }
@@ -101,8 +100,8 @@ extends GameOptionsScreen {
 
     @Override
     public void removed() {
-        if (this.gameOptions.mipmapLevels != this.mipmapLevels) {
-            this.client.setMipmapLevels(this.gameOptions.mipmapLevels);
+        if (this.gameOptions.getMipmapLevels().getValue() != this.mipmapLevels) {
+            this.client.setMipmapLevels(this.gameOptions.getMipmapLevels().getValue());
             this.client.reloadResourcesConcurrently();
         }
         super.removed();
@@ -110,9 +109,9 @@ extends GameOptionsScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button2) {
-        int i = this.gameOptions.guiScale;
+        int i = this.gameOptions.getGuiScale().getValue();
         if (super.mouseClicked(mouseX, mouseY, button2)) {
-            if (this.gameOptions.guiScale != i) {
+            if (this.gameOptions.getGuiScale().getValue() != i) {
                 this.client.onResolutionChanged();
             }
             if (this.warningManager.shouldWarn()) {
@@ -133,7 +132,7 @@ extends GameOptionsScreen {
                     list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
                 }
                 this.client.setScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, button -> {
-                    this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
+                    this.gameOptions.getGraphicsMode().setValue(GraphicsMode.FABULOUS);
                     MinecraftClient.getInstance().worldRenderer.reload();
                     this.warningManager.acceptAfterWarnings();
                     this.client.setScreen(this);
@@ -149,12 +148,12 @@ extends GameOptionsScreen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        int i = this.gameOptions.guiScale;
+        int i = this.gameOptions.getGuiScale().getValue();
         if (super.mouseReleased(mouseX, mouseY, button)) {
             return true;
         }
         if (this.list.mouseReleased(mouseX, mouseY, button)) {
-            if (this.gameOptions.guiScale != i) {
+            if (this.gameOptions.getGuiScale().getValue() != i) {
                 this.client.onResolutionChanged();
             }
             return true;

@@ -6,6 +6,7 @@ package net.minecraft.client.font;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 
@@ -26,5 +27,14 @@ public interface Glyph {
     }
 
     public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> var1);
+
+    @Environment(value=EnvType.CLIENT)
+    public static interface EmptyGlyph
+    extends Glyph {
+        @Override
+        default public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+            return EmptyGlyphRenderer.field_38311;
+        }
+    }
 }
 

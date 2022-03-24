@@ -93,20 +93,20 @@ public class VanillaTerrainParametersCreator {
         Spline.Builder builder = Spline.builder(toFloatFunction, toFloatFunction2);
         float g = -0.7f;
         float h = -1.0f;
-        float i = VanillaTerrainParametersCreator.method_42046(-1.0f, f, -0.7f);
+        float i = VanillaTerrainParametersCreator.getOffsetValue(-1.0f, f, -0.7f);
         float j = 1.0f;
-        float k = VanillaTerrainParametersCreator.method_42046(1.0f, f, -0.7f);
+        float k = VanillaTerrainParametersCreator.getOffsetValue(1.0f, f, -0.7f);
         float l = VanillaTerrainParametersCreator.method_42045(f);
         float m = -0.65f;
         if (-0.65f < l && l < 1.0f) {
-            float n = VanillaTerrainParametersCreator.method_42046(-0.65f, f, -0.7f);
+            float n = VanillaTerrainParametersCreator.getOffsetValue(-0.65f, f, -0.7f);
             float o = -0.75f;
-            float p = VanillaTerrainParametersCreator.method_42046(-0.75f, f, -0.7f);
+            float p = VanillaTerrainParametersCreator.getOffsetValue(-0.75f, f, -0.7f);
             float q = VanillaTerrainParametersCreator.method_42047(i, p, -1.0f, -0.75f);
             builder.add(-1.0f, i, q);
             builder.method_41294(-0.75f, p);
             builder.method_41294(-0.65f, n);
-            float r = VanillaTerrainParametersCreator.method_42046(l, f, -0.7f);
+            float r = VanillaTerrainParametersCreator.getOffsetValue(l, f, -0.7f);
             float s = VanillaTerrainParametersCreator.method_42047(r, k, l, 1.0f);
             float t = 0.01f;
             builder.method_41294(l - 0.01f, r);
@@ -125,7 +125,7 @@ public class VanillaTerrainParametersCreator {
         return builder.build();
     }
 
-    private static float method_42046(float f, float g, float h) {
+    private static float getOffsetValue(float f, float g, float h) {
         float i = 1.17f;
         float j = 0.46082947f;
         float k = 1.0f - (1.0f - g) * 0.5f;

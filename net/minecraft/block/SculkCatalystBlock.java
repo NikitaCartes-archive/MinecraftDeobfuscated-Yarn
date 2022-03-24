@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SculkCatalystBlock
 extends BlockWithEntity {
-    public static final int field_37603 = 8;
+    public static final int BLOOM_DURATION = 8;
     public static final BooleanProperty BLOOM = Properties.BLOOM;
     private final IntProvider experience = ConstantIntProvider.create(20);
 
@@ -66,7 +66,7 @@ extends BlockWithEntity {
 
     @Override
     @Nullable
-    public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
+    public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
         if (blockEntity instanceof SculkCatalystBlockEntity) {
             SculkCatalystBlockEntity sculkCatalystBlockEntity = (SculkCatalystBlockEntity)blockEntity;
             return sculkCatalystBlockEntity;

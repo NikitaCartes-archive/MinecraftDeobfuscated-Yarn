@@ -231,7 +231,6 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
-import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
@@ -241,7 +240,6 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPac
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourcePackSource;
@@ -281,7 +279,6 @@ import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
-import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -416,14 +413,6 @@ implements ClientPlayPacketListener {
         entity.setPitch(0.0f);
         entity.setId(packet.getId());
         this.world.addEntity(packet.getId(), entity);
-    }
-
-    @Override
-    public void onVibration(VibrationS2CPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        Vibration vibration = packet.getVibration();
-        BlockPos blockPos = vibration.getOrigin();
-        this.world.addImportantParticle(new VibrationParticleEffect(vibration), true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -1254,7 +1243,7 @@ implements ClientPlayPacketListener {
         if (statusEffect == null) {
             return;
         }
-        StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon());
+        StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon(), null, Optional.ofNullable(packet.getFactorCalculationData()));
         statusEffectInstance.setPermanent(packet.isPermanent());
         ((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
     }
@@ -1698,11 +1687,11 @@ implements ClientPlayPacketListener {
                 }
                 this.client.debugRenderer.raidCenterDebugRenderer.setRaidCenters(collection);
             } else if (CustomPayloadS2CPacket.DEBUG_BRAIN.equals(identifier)) {
+                int x;
                 int w;
                 int v;
                 int u;
                 int t;
-                int s;
                 double d = packetByteBuf.readDouble();
                 double e = packetByteBuf.readDouble();
                 double g = packetByteBuf.readDouble();
@@ -1718,40 +1707,41 @@ implements ClientPlayPacketListener {
                 boolean bl2 = packetByteBuf.readBoolean();
                 Path path2 = bl2 ? Path.fromBuffer(packetByteBuf) : null;
                 boolean bl3 = packetByteBuf.readBoolean();
-                VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string4, string5, p, h, q, position, string6, path2, bl3);
-                int r = packetByteBuf.readVarInt();
-                for (s = 0; s < r; ++s) {
+                int r = packetByteBuf.readInt();
+                VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string4, string5, p, h, q, position, string6, path2, bl3, r);
+                int s = packetByteBuf.readVarInt();
+                for (t = 0; t < s; ++t) {
                     String string7 = packetByteBuf.readString();
                     brain.possibleActivities.add(string7);
                 }
-                s = packetByteBuf.readVarInt();
-                for (t = 0; t < s; ++t) {
+                t = packetByteBuf.readVarInt();
+                for (u = 0; u < t; ++u) {
                     String string8 = packetByteBuf.readString();
                     brain.runningTasks.add(string8);
                 }
-                t = packetByteBuf.readVarInt();
-                for (u = 0; u < t; ++u) {
+                u = packetByteBuf.readVarInt();
+                for (v = 0; v < u; ++v) {
                     String string9 = packetByteBuf.readString();
                     brain.memories.add(string9);
                 }
-                u = packetByteBuf.readVarInt();
-                for (v = 0; v < u; ++v) {
+                v = packetByteBuf.readVarInt();
+                for (w = 0; w < v; ++w) {
                     BlockPos blockPos3 = packetByteBuf.readBlockPos();
                     brain.pointsOfInterest.add(blockPos3);
                 }
-                v = packetByteBuf.readVarInt();
-                for (w = 0; w < v; ++w) {
+                w = packetByteBuf.readVarInt();
+                for (x = 0; x < w; ++x) {
                     BlockPos blockPos4 = packetByteBuf.readBlockPos();
                     brain.potentialJobSites.add(blockPos4);
                 }
-                w = packetByteBuf.readVarInt();
-                for (int x = 0; x < w; ++x) {
+                x = packetByteBuf.readVarInt();
+                for (int y = 0; y < x; ++y) {
                     String string10 = packetByteBuf.readString();
                     brain.gossips.add(string10);
                 }
                 this.client.debugRenderer.villageDebugRenderer.addBrain(brain);
             } else if (CustomPayloadS2CPacket.DEBUG_BEE.equals(identifier)) {
-                int aa;
+                int r;
                 double d = packetByteBuf.readDouble();
                 double e = packetByteBuf.readDouble();
                 double g = packetByteBuf.readDouble();
@@ -1768,20 +1758,20 @@ implements ClientPlayPacketListener {
                 if (bl5) {
                     blockPos6 = packetByteBuf.readBlockPos();
                 }
-                int y = packetByteBuf.readInt();
+                int z = packetByteBuf.readInt();
                 boolean bl6 = packetByteBuf.readBoolean();
                 Path path3 = null;
                 if (bl6) {
                     path3 = Path.fromBuffer(packetByteBuf);
                 }
-                BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, y);
-                int z = packetByteBuf.readVarInt();
-                for (aa = 0; aa < z; ++aa) {
+                BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, z);
+                int aa = packetByteBuf.readVarInt();
+                for (r = 0; r < aa; ++r) {
                     String string11 = packetByteBuf.readString();
                     bee.labels.add(string11);
                 }
-                aa = packetByteBuf.readVarInt();
-                for (int r = 0; r < aa; ++r) {
+                r = packetByteBuf.readVarInt();
+                for (int ab = 0; ab < r; ++ab) {
                     BlockPos blockPos7 = packetByteBuf.readBlockPos();
                     bee.blacklist.add(blockPos7);
                 }
@@ -1790,9 +1780,9 @@ implements ClientPlayPacketListener {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 String string2 = packetByteBuf.readString();
                 int j = packetByteBuf.readInt();
-                int ab = packetByteBuf.readInt();
+                int ac = packetByteBuf.readInt();
                 boolean bl7 = packetByteBuf.readBoolean();
-                BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string2, j, ab, bl7, this.world.getTime());
+                BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string2, j, ac, bl7, this.world.getTime());
                 this.client.debugRenderer.beeDebugRenderer.addHive(hive);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
                 this.client.debugRenderer.gameTestDebugRenderer.clear();
@@ -1800,12 +1790,12 @@ implements ClientPlayPacketListener {
                 BlockPos blockPos2 = packetByteBuf.readBlockPos();
                 int m = packetByteBuf.readInt();
                 String string12 = packetByteBuf.readString();
-                int ab = packetByteBuf.readInt();
-                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ab);
+                int ac = packetByteBuf.readInt();
+                this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ac);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
                 GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
-                BlockPos blockPos8 = packetByteBuf.readBlockPos();
-                this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, blockPos8);
+                Vec3d vec3d = new Vec3d(packetByteBuf.readDouble(), packetByteBuf.readDouble(), packetByteBuf.readDouble());
+                this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, vec3d);
             } else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
                 Identifier identifier2 = packetByteBuf.readIdentifier();
                 Object positionSource = Registry.POSITION_SOURCE_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)).readFromBuf(packetByteBuf);

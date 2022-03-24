@@ -104,7 +104,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.option.Option;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -523,7 +522,7 @@ implements WindowEventHandler {
         } catch (IOException iOException) {
             LOGGER.error("Couldn't set icon", iOException);
         }
-        this.window.setFramerateLimit(this.options.maxFps);
+        this.window.setFramerateLimit(this.options.getMaxFps().getValue());
         this.mouse = new Mouse(this);
         this.mouse.setup(this.window.getHandle());
         this.keyboard = new Keyboard(this);
@@ -557,7 +556,7 @@ implements WindowEventHandler {
         this.window.setPhase("Post startup");
         this.blockColors = BlockColors.create();
         this.itemColors = ItemColors.create(this.blockColors);
-        this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
+        this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.getMipmapLevels().getValue());
         this.resourceManager.registerReloader(this.bakedModelManager);
         this.entityModelLoader = new EntityModelLoader();
         this.resourceManager.registerReloader(this.entityModelLoader);
@@ -599,11 +598,11 @@ implements WindowEventHandler {
             }
             this.window.setWindowedSize(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
             TinyFileDialogs.tinyfd_messageBox("Minecraft", stringBuilder.toString(), "ok", "error", false);
-        } else if (this.options.fullscreen && !this.window.isFullscreen()) {
+        } else if (this.options.getFullscreen().getValue().booleanValue() && !this.window.isFullscreen()) {
             this.window.toggleFullscreen();
-            this.options.fullscreen = this.window.isFullscreen();
+            this.options.getFullscreen().setValue(this.window.isFullscreen());
         }
-        this.window.setVsync(this.options.enableVsync);
+        this.window.setVsync(this.options.getEnableVsync().getValue());
         this.window.setRawMouseMotion(this.options.getRawMouseInput().getValue());
         this.window.logOnGlError();
         this.onResolutionChanged();
@@ -761,7 +760,7 @@ implements WindowEventHandler {
     }
 
     private void handleGlErrorByDisableVsync(int error, long description) {
-        this.options.enableVsync = false;
+        this.options.getEnableVsync().setValue(false);
         this.options.write();
     }
 
@@ -808,7 +807,7 @@ implements WindowEventHandler {
     }
 
     public boolean forcesUnicodeFont() {
-        return this.options.forceUnicodeFont;
+        return this.options.getForceUnicodeFont().getValue();
     }
 
     public CompletableFuture<Void> reloadResources() {
@@ -1073,7 +1072,7 @@ implements WindowEventHandler {
         this.profiler.swap("updateDisplay");
         this.window.swapBuffers();
         int k = this.getFramerateLimit();
-        if ((double)k < Option.FRAMERATE_LIMIT.getMax()) {
+        if (k < 260) {
             RenderSystem.limitDisplayFPS(k);
         }
         this.profiler.swap("yield");
@@ -1104,7 +1103,7 @@ implements WindowEventHandler {
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             Object string = this.gpuUtilizationPercentage > 0.0 ? " GPU: " + (this.gpuUtilizationPercentage > 100.0 ? Formatting.RED + "100%" : Math.round(this.gpuUtilizationPercentage) + "%") : "";
             currentFps = this.fpsCounter;
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d%s", new Object[]{currentFps, (double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : Integer.valueOf(this.options.maxFps), this.options.enableVsync ? " vsync" : "", this.options.graphicsMode, this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string});
+            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d%s", new Object[]{currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string});
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
         }
@@ -1149,7 +1148,7 @@ implements WindowEventHandler {
 
     @Override
     public void onResolutionChanged() {
-        int i = this.window.calculateScaleFactor(this.options.guiScale, this.forcesUnicodeFont());
+        int i = this.window.calculateScaleFactor(this.options.getGuiScale().getValue(), this.forcesUnicodeFont());
         this.window.setScaleFactor(i);
         if (this.currentScreen != null) {
             this.currentScreen.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
@@ -1905,7 +1904,7 @@ implements WindowEventHandler {
     }
 
     public ChatRestriction getChatRestriction() {
-        if (this.options.chatVisibility == ChatVisibility.HIDDEN) {
+        if (this.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) {
             return ChatRestriction.DISABLED_BY_OPTIONS;
         }
         if (!this.onlineChatEnabled) {
@@ -1931,11 +1930,11 @@ implements WindowEventHandler {
     }
 
     public static boolean isFancyGraphicsOrBetter() {
-        return MinecraftClient.instance.options.graphicsMode.getId() >= GraphicsMode.FANCY.getId();
+        return MinecraftClient.instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FANCY.getId();
     }
 
     public static boolean isFabulousGraphicsOrBetter() {
-        return !MinecraftClient.instance.gameRenderer.isRenderingPanorama() && MinecraftClient.instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
+        return !MinecraftClient.instance.gameRenderer.isRenderingPanorama() && MinecraftClient.instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FABULOUS.getId();
     }
 
     public static boolean isAmbientOcclusionEnabled() {
@@ -2049,7 +2048,7 @@ implements WindowEventHandler {
             if (instance != null && (string = instance.getVideoWarningManager().getWarningsAsString()) != null) {
                 systemDetails.addSection("GPU Warnings", string);
             }
-            systemDetails.addSection("Graphics mode", options.graphicsMode.toString());
+            systemDetails.addSection("Graphics mode", options.getGraphicsMode().getValue().toString());
             systemDetails.addSection("Resource Packs", () -> {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (String string : gameOptions.resourcePacks) {
@@ -2281,7 +2280,7 @@ implements WindowEventHandler {
     }
 
     public boolean hasReducedDebugInfo() {
-        return this.player != null && this.player.hasReducedDebugInfo() || this.options.reducedDebugInfo;
+        return this.player != null && this.player.hasReducedDebugInfo() || this.options.getReducedDebugInfo().getValue() != false;
     }
 
     public ToastManager getToastManager() {

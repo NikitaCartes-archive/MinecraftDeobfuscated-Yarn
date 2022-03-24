@@ -23,7 +23,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
@@ -49,10 +49,10 @@ extends Screen {
     @Override
     protected void init() {
         int i = 0;
-        for (Option option : new Option[]{this.settings.getFov()}) {
+        for (SimpleOption simpleOption : new SimpleOption[]{this.settings.getFov()}) {
             int j = this.width / 2 - 155 + i % 2 * 160;
             int k = this.height / 6 - 12 + 24 * (i >> 1);
-            this.addDrawableChild(option.createButton(this.client.options, j, k, 150));
+            this.addDrawableChild(simpleOption.createButton(this.client.options, j, k, 150));
             ++i;
         }
         if (this.client.world != null && this.client.isIntegratedServerRunning()) {

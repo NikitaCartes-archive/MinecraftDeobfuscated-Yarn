@@ -206,7 +206,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             RenderSystem.enableBlend();
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
-            if (this.client.options.touchscreen || hovered) {
+            if (this.client.options.getTouchscreen().getValue().booleanValue() || hovered) {
                 int j;
                 RenderSystem.setShaderTexture(0, WORLD_SELECTION_LOCATION);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
@@ -372,7 +372,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
             if (this.client.getLevelStorage().levelExists(this.level.getName())) {
                 this.openReadingWorldScreen();
-                this.client.method_41735().start(this.level.getName());
+                this.client.method_41735().start(this.screen, this.level.getName());
             }
         }
 

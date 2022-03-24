@@ -78,7 +78,6 @@ extends RealmsScreen {
     static final Identifier WORLD_ICON = new Identifier("realms", "textures/gui/realms/world_icon.png");
     private static final Identifier REALMS = new Identifier("realms", "textures/gui/title/realms.png");
     private static final Identifier CONFIGURE_ICON = new Identifier("realms", "textures/gui/realms/configure_icon.png");
-    private static final Identifier QUESTIONMARK = new Identifier("realms", "textures/gui/realms/questionmark.png");
     private static final Identifier NEWS_ICON = new Identifier("realms", "textures/gui/realms/news_icon.png");
     private static final Identifier POPUP = new Identifier("realms", "textures/gui/realms/popup.png");
     private static final Identifier DARKEN = new Identifier("realms", "textures/gui/realms/darken.png");
@@ -102,7 +101,6 @@ extends RealmsScreen {
     private static final Text CLOSED_TEXT = new TranslatableText("mco.selectServer.closed");
     private static final Text LEAVE_TEXT = new TranslatableText("mco.selectServer.leave");
     private static final Text CONFIGURE_TEXT = new TranslatableText("mco.selectServer.configure");
-    private static final Text INFO_TEXT = new TranslatableText("mco.selectServer.info");
     private static final Text NEWS_TEXT = new TranslatableText("mco.news");
     static final Text UNINITIALIZED_BUTTON_NARRATION = new TranslatableText("gui.narrate.button", UNINITIALIZED_TEXT);
     static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
@@ -244,9 +242,11 @@ extends RealmsScreen {
             }
         }));
         this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
-        this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.newsButton = this.addDrawableChild(new NewsButton());
-        this.showPopupButton = this.addDrawableChild(new ShowPopupButton());
+        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, new TranslatableText("mco.selectServer.purchase"), buttonWidget -> {
+            this.popupOpenedByUser = !this.popupOpenedByUser;
+        }));
+        this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.closeButton = this.addDrawableChild(new CloseButton());
         this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, new TranslatableText("mco.selectServer.trial"), button -> {
             if (!this.trialsAvailable || this.createdTrial) {
@@ -938,20 +938,6 @@ extends RealmsScreen {
         }
     }
 
-    void renderMoreInfo(MatrixStack matrices, int mouseX, int mouseY, int x, int y, boolean hovered) {
-        boolean bl = false;
-        if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
-            bl = true;
-        }
-        RenderSystem.setShaderTexture(0, QUESTIONMARK);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        float f = hovered ? 20.0f : 0.0f;
-        DrawableHelper.drawTexture(matrices, x, y, f, 0.0f, 20, 20, 40, 20);
-        if (bl) {
-            this.setTooltips(INFO_TEXT);
-        }
-    }
-
     void renderNews(MatrixStack matrices, int mouseX, int mouseY, boolean hasUnread, int x, int y, boolean hovered, boolean active) {
         boolean bl = false;
         if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
@@ -1113,27 +1099,10 @@ extends RealmsScreen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class PendingInvitesButton
-    extends ButtonWidget {
-        public PendingInvitesButton() {
-            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, LiteralText.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen);
-        }
-
-        public void updatePendingText() {
-            this.setMessage(RealmsMainScreen.this.numberOfPendingInvites == 0 ? NO_PENDING_TEXT : PENDING_TEXT);
-        }
-
-        @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.drawInvitationPendingIcon(matrices, mouseX, mouseY, this.x, this.y, this.isHovered(), this.active);
-        }
-    }
-
-    @Environment(value=EnvType.CLIENT)
     class NewsButton
     extends ButtonWidget {
         public NewsButton() {
-            super(RealmsMainScreen.this.width - 62, 6, 20, 20, new TranslatableText("mco.news"), button -> {
+            super(RealmsMainScreen.this.width - 115, 6, 20, 20, new TranslatableText("mco.news"), button -> {
                 if (realmsMainScreen.newsLink == null) {
                     return;
                 }
@@ -1154,17 +1123,19 @@ extends RealmsScreen {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class ShowPopupButton
+    class PendingInvitesButton
     extends ButtonWidget {
-        public ShowPopupButton() {
-            super(RealmsMainScreen.this.width - 37, 6, 20, 20, new TranslatableText("mco.selectServer.info"), button -> {
-                realmsMainScreen.popupOpenedByUser = !realmsMainScreen.popupOpenedByUser;
-            });
+        public PendingInvitesButton() {
+            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, LiteralText.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen);
+        }
+
+        public void updatePendingText() {
+            this.setMessage(RealmsMainScreen.this.numberOfPendingInvites == 0 ? NO_PENDING_TEXT : PENDING_TEXT);
         }
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.renderMoreInfo(matrices, mouseX, mouseY, this.x, this.y, this.isHovered());
+            RealmsMainScreen.this.drawInvitationPendingIcon(matrices, mouseX, mouseY, this.x, this.y, this.isHovered(), this.active);
         }
     }
 

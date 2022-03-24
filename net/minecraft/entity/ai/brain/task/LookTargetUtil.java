@@ -106,12 +106,7 @@ public class LookTargetUtil {
                 return mob.isInRange(target, i);
             }
         }
-        return LookTargetUtil.isTargetWithinMeleeRange(mob, target);
-    }
-
-    public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
-        double d = source.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
-        return d <= source.squaredAttackRange(target);
+        return mob.isInAttackRange(target);
     }
 
     /**

@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -37,10 +37,10 @@ implements OrderableTooltip {
     private final Function<T, Text> valueToText;
     private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
     private final UpdateCallback<T> callback;
-    private final Option.TooltipFactory<T> tooltipFactory;
+    private final SimpleOption.TooltipFactory<T> tooltipFactory;
     private final boolean optionTextOmitted;
 
-    CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, Option.TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
+    CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, SimpleOption.TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
         super(x, y, width, height, message);
         this.optionText = optionText;
         this.index = index;
@@ -237,7 +237,7 @@ implements OrderableTooltip {
         @Nullable
         private T value;
         private final Function<T, Text> valueToText;
-        private Option.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
+        private SimpleOption.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
         private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
         private Values<T> values = Values.of(ImmutableList.of());
         private boolean optionTextOmitted;
@@ -266,7 +266,7 @@ implements OrderableTooltip {
             return this;
         }
 
-        public Builder<T> tooltip(Option.TooltipFactory<T> tooltipFactory) {
+        public Builder<T> tooltip(SimpleOption.TooltipFactory<T> tooltipFactory) {
             this.tooltipFactory = tooltipFactory;
             return this;
         }

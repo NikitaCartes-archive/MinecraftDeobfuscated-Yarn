@@ -10,26 +10,23 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
 
 public class BlockPositionSource
 implements PositionSource {
-    public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).xmap(Optional::of, Optional::get).forGetter(blockPositionSource -> blockPositionSource.pos)).apply((Applicative<BlockPositionSource, ?>)instance, BlockPositionSource::new));
-    final Optional<BlockPos> pos;
+    public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).forGetter(blockPositionSource -> blockPositionSource.pos)).apply((Applicative<BlockPositionSource, ?>)instance, BlockPositionSource::new));
+    final BlockPos pos;
 
-    public BlockPositionSource(BlockPos pos) {
-        this(Optional.of(pos));
-    }
-
-    public BlockPositionSource(Optional<BlockPos> pos) {
-        this.pos = pos;
+    public BlockPositionSource(BlockPos blockPos) {
+        this.pos = blockPos;
     }
 
     @Override
-    public Optional<BlockPos> getPos(World world) {
-        return this.pos;
+    public Optional<Vec3d> getPos(World world) {
+        return Optional.of(Vec3d.ofCenter(this.pos));
     }
 
     @Override
@@ -41,12 +38,12 @@ implements PositionSource {
     implements PositionSourceType<BlockPositionSource> {
         @Override
         public BlockPositionSource readFromBuf(PacketByteBuf packetByteBuf) {
-            return new BlockPositionSource(Optional.of(packetByteBuf.readBlockPos()));
+            return new BlockPositionSource(packetByteBuf.readBlockPos());
         }
 
         @Override
         public void writeToBuf(PacketByteBuf packetByteBuf, BlockPositionSource blockPositionSource) {
-            blockPositionSource.pos.ifPresent(packetByteBuf::writeBlockPos);
+            packetByteBuf.writeBlockPos(blockPositionSource.pos);
         }
 
         @Override

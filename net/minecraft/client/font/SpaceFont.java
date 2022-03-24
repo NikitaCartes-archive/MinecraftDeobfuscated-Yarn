@@ -15,26 +15,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.font.EmptyGlyphRenderer;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.Glyph;
-import net.minecraft.client.font.GlyphRenderer;
-import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SpaceFont
 implements Font {
-    static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
-    private final Int2ObjectMap<EmptyGlyph> codePointsToGlyphs;
+    private final Int2ObjectMap<Glyph.EmptyGlyph> codePointsToGlyphs;
 
     public SpaceFont(Int2FloatMap codePointsToAdvances) {
-        this.codePointsToGlyphs = new Int2ObjectOpenHashMap<EmptyGlyph>(codePointsToAdvances.size());
+        this.codePointsToGlyphs = new Int2ObjectOpenHashMap<Glyph.EmptyGlyph>(codePointsToAdvances.size());
         Int2FloatMaps.fastForEach(codePointsToAdvances, entry -> {
             float f = entry.getFloatValue();
             this.codePointsToGlyphs.put(entry.getIntKey(), () -> f);
@@ -64,15 +59,6 @@ implements Font {
             int2FloatMap.put(is[0], f);
         }
         return resourceManager -> new SpaceFont(int2FloatMap);
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    static interface EmptyGlyph
-    extends Glyph {
-        @Override
-        default public GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-            return EMPTY_GLYPH_RENDERER;
-        }
     }
 }
 

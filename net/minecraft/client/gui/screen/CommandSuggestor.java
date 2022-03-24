@@ -236,7 +236,7 @@ public class CommandSuggestor {
             this.showUsages(Formatting.GRAY);
         }
         this.window = null;
-        if (this.windowActive && this.client.options.autoSuggestions) {
+        if (this.windowActive && this.client.options.getAutoSuggestions().getValue().booleanValue()) {
             this.showSuggestions(false);
         }
     }

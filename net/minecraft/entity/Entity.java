@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.advancement.criterion.Criteria;
@@ -448,11 +449,8 @@ CommandOutput {
      * Checks if the distance between this entity and the {@code other} entity is less
      * than {@code radius}.
      */
-    public boolean isInRange(Entity other, double radius) {
-        double d = other.pos.x - this.pos.x;
-        double e = other.pos.y - this.pos.y;
-        double f = other.pos.z - this.pos.z;
-        return d * d + e * e + f * f < radius * radius;
+    public boolean isInRange(Entity entity, double radius) {
+        return this.getPos().isInRange(entity.getPos(), radius);
     }
 
     protected void setRotation(float yaw, float pitch) {
@@ -684,7 +682,7 @@ CommandOutput {
         if (movement.y != vec3d.y) {
             block.onEntityLand(this.world, this);
         }
-        if (this.onGround && !this.bypassesSteppingEffects()) {
+        if (this.onGround) {
             block.onSteppedOn(this.world, blockPos, blockState, this);
         }
         if ((moveEffect = this.getMoveEffect()).hasAny() && !this.hasVehicle()) {
@@ -954,20 +952,12 @@ CommandOutput {
     protected void onBlockCollision(BlockState state) {
     }
 
-    public void emitGameEvent(GameEvent event, @Nullable Entity entity, BlockPos pos) {
-        this.world.emitGameEvent(entity, event, pos);
-    }
-
     public void emitGameEvent(GameEvent event, @Nullable Entity entity) {
-        this.emitGameEvent(event, entity, this.blockPos);
-    }
-
-    public void emitGameEvent(GameEvent event, BlockPos pos) {
-        this.emitGameEvent(event, this, pos);
+        this.world.emitGameEvent(entity, event, this.pos);
     }
 
     public void emitGameEvent(GameEvent event) {
-        this.emitGameEvent(event, this.blockPos);
+        this.emitGameEvent(event, this);
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
@@ -1129,7 +1119,7 @@ CommandOutput {
     protected boolean updateWaterState() {
         this.fluidHeight.clear();
         this.checkWaterState();
-        double d = this.world.getDimension().isUltrawarm() ? 0.007 : 0.0023333333333333335;
+        double d = this.world.getDimension().ultrawarm() ? 0.007 : 0.0023333333333333335;
         boolean bl = this.updateMovementInFluid(FluidTags.LAVA, d);
         return this.isTouchingWater() || bl;
     }
@@ -1240,6 +1230,7 @@ CommandOutput {
         return new Vec3d(vec3d.x * (double)g - vec3d.z * (double)f, vec3d.y, vec3d.z * (double)g + vec3d.x * (double)f);
     }
 
+    @Deprecated
     public float getBrightnessAtEyes() {
         if (this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
             return this.world.getBrightness(new BlockPos(this.getX(), this.getEyeY(), this.getZ()));
@@ -2067,18 +2058,7 @@ CommandOutput {
         return this.isInvisible();
     }
 
-    /**
-     * Returns the game event handler for this entity.
-     * 
-     * <p>Subclasses interested in listening to game events as an entity should return a
-     * handler so the {@link net.minecraft.world.event.listener.GameEventListener listener}
-     * used to receive game events can be registered to the correct dispatchers.
-     * 
-     * @implNote The vanilla implementation always returns {@code null}.
-     */
-    @Nullable
-    public EntityGameEventHandler getGameEventHandler() {
-        return null;
+    public void updateEventHandler(BiConsumer<EntityGameEventHandler, ServerWorld> biConsumer) {
     }
 
     @Nullable
@@ -2672,6 +2652,10 @@ CommandOutput {
         return null;
     }
 
+    public final boolean hasPrimaryPassenger() {
+        return this.getPrimaryPassenger() != null;
+    }
+
     public final List<Entity> getPassengerList() {
         return this.passengerList;
     }
@@ -2941,10 +2925,6 @@ CommandOutput {
         return this.blockStateAtPos;
     }
 
-    public BlockPos getCameraBlockPos() {
-        return new BlockPos(this.getCameraPosVec(1.0f));
-    }
-
     public ChunkPos getChunkPos() {
         return this.chunkPos;
     }
@@ -3027,10 +3007,7 @@ CommandOutput {
                 }
             }
             this.changeListener.updateEntityPosition();
-            EntityGameEventHandler entityGameEventHandler = this.getGameEventHandler();
-            if (entityGameEventHandler != null) {
-                entityGameEventHandler.onEntitySetPos(this.world);
-            }
+            this.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
         }
     }
 

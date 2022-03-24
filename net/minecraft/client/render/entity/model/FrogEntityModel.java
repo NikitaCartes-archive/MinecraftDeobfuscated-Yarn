@@ -75,12 +75,12 @@ extends SinglePartEntityModel<T> {
     public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
         long l = Util.getMeasuringTimeMs();
-        this.runAnimation(((FrogEntity)frogEntity).longJumping, FrogAnimations.LONG_JUMPING, l);
-        this.runAnimation(((FrogEntity)frogEntity).croaking, FrogAnimations.CROAKING, l);
-        this.runAnimation(((FrogEntity)frogEntity).usingTongue, FrogAnimations.USING_TONGUE, l);
-        this.runAnimation(((FrogEntity)frogEntity).walking, FrogAnimations.WALKING, l);
-        this.runAnimation(((FrogEntity)frogEntity).swimming, FrogAnimations.SWIMMING, l);
-        this.runAnimation(((FrogEntity)frogEntity).idlingInWater, FrogAnimations.IDLING_IN_WATER, l);
+        this.runAnimation(((FrogEntity)frogEntity).longJumpingAnimationState, FrogAnimations.LONG_JUMPING, l);
+        this.runAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING, l);
+        this.runAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE, l);
+        this.runAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, l);
+        this.runAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING, l);
+        this.runAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, l);
     }
 
     private void runAnimation(AnimationState animationState, Animation animation, long time) {

@@ -177,8 +177,9 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canBeControlledByRider() {
-        return false;
+    @Nullable
+    public LivingEntity getPrimaryPassenger() {
+        return null;
     }
 
     @Override
@@ -224,7 +225,7 @@ implements RangedAttackMob {
         }
         if (bl) {
             SoundEvent soundEvent;
-            this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+            this.emitGameEvent(GameEvent.MOB_INTERACT);
             if (!this.isSilent() && (soundEvent = this.getEatSound()) != null) {
                 this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             }
@@ -478,6 +479,12 @@ implements RangedAttackMob {
     @Override
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getPrimaryPassenger() {
+        return this.getPrimaryPassenger();
     }
 
     static class SpitRevengeGoal

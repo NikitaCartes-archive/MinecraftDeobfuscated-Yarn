@@ -147,7 +147,12 @@ extends Chunk {
 
     @Override
     public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
-        return this.gameEventDispatchers.computeIfAbsent(ySectionCoord, sectionCoord -> new SimpleGameEventDispatcher(this.world));
+        World world = this.world;
+        if (world instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld)world;
+            return this.gameEventDispatchers.computeIfAbsent(ySectionCoord, sectionCoord -> new SimpleGameEventDispatcher(serverWorld));
+        }
+        return super.getGameEventDispatcher(ySectionCoord);
     }
 
     @Override
@@ -296,7 +301,11 @@ extends Chunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         this.setBlockEntity(blockEntity);
         if (this.canTickBlockEntities()) {
-            this.updateGameEventListener(blockEntity);
+            World world = this.world;
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld)world;
+                this.updateGameEventListener(blockEntity, serverWorld);
+            }
             this.updateTicker(blockEntity);
         }
     }
@@ -352,19 +361,20 @@ extends Chunk {
     public void removeBlockEntity(BlockPos pos) {
         BlockEntity blockEntity;
         if (this.canTickBlockEntities() && (blockEntity = (BlockEntity)this.blockEntities.remove(pos)) != null) {
-            this.removeGameEventListener(blockEntity);
+            World world = this.world;
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld)world;
+                this.removeGameEventListener(blockEntity, serverWorld);
+            }
             blockEntity.markRemoved();
         }
         this.removeBlockEntityTicker(pos);
     }
 
-    private <T extends BlockEntity> void removeGameEventListener(T blockEntity) {
+    private <T extends BlockEntity> void removeGameEventListener(T blockEntity, ServerWorld serverWorld) {
         GameEventListener gameEventListener;
-        if (this.world.isClient) {
-            return;
-        }
         Block block = blockEntity.getCachedState().getBlock();
-        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(serverWorld, blockEntity)) != null) {
             int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
             GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(i);
             gameEventDispatcher.removeListener(gameEventListener);
@@ -514,18 +524,19 @@ extends Chunk {
 
     public void updateAllBlockEntities() {
         this.blockEntities.values().forEach(blockEntity -> {
-            this.updateGameEventListener(blockEntity);
+            World world = this.world;
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld)world;
+                this.updateGameEventListener(blockEntity, serverWorld);
+            }
             this.updateTicker(blockEntity);
         });
     }
 
-    private <T extends BlockEntity> void updateGameEventListener(T blockEntity) {
+    private <T extends BlockEntity> void updateGameEventListener(T blockEntity, ServerWorld serverWorld) {
         GameEventListener gameEventListener;
-        if (this.world.isClient) {
-            return;
-        }
         Block block = blockEntity.getCachedState().getBlock();
-        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(serverWorld, blockEntity)) != null) {
             GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
             gameEventDispatcher.addListener(gameEventListener);
         }

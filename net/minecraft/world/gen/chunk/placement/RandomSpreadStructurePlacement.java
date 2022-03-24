@@ -31,7 +31,7 @@ extends StructurePlacement {
     private final int field_37773;
     private final SpreadType field_37774;
 
-    public RandomSpreadStructurePlacement(Vec3i vec3i, StructurePlacement.FrequencyReductionMethod frequencyReductionMethod, float f, int i, Optional<StructurePlacement.class_7152> optional, int j, int k, SpreadType spreadType) {
+    public RandomSpreadStructurePlacement(Vec3i vec3i, StructurePlacement.FrequencyReductionMethod frequencyReductionMethod, float f, int i, Optional<StructurePlacement.ExclusionZone> optional, int j, int k, SpreadType spreadType) {
         super(vec3i, frequencyReductionMethod, f, i, optional);
         this.field_37772 = j;
         this.field_37773 = k;
@@ -66,9 +66,9 @@ extends StructurePlacement {
     }
 
     @Override
-    protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long l, int i, int j) {
-        ChunkPos chunkPos = this.getStartChunk(l, i, j);
-        return chunkPos.x == i && chunkPos.z == j;
+    protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
+        ChunkPos chunkPos = this.getStartChunk(seed, x, z);
+        return chunkPos.x == x && chunkPos.z == z;
     }
 
     @Override

@@ -986,7 +986,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WHEAT, BlockLootTableGenerator.cropDrops(Blocks.WHEAT, Items.WHEAT, Items.WHEAT_SEEDS, builder2));
         BlockStatePropertyLootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.CARROTS).properties(StatePredicate.Builder.create().exactMatch(CarrotsBlock.AGE, 7));
         BlockStatePropertyLootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.MANGROVE_PROPAGULE).properties(StatePredicate.Builder.create().exactMatch(PropaguleBlock.AGE, 4));
-        this.addDrop(Blocks.MANGROVE_PROPAGULE, BlockLootTableGenerator.applyExplosionDecay(Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.field_37508)))));
+        this.addDrop(Blocks.MANGROVE_PROPAGULE, BlockLootTableGenerator.applyExplosionDecay(Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.MANGROVE_PROPAGULE)))));
         this.addDrop(Blocks.CARROTS, BlockLootTableGenerator.applyExplosionDecay(Blocks.CARROTS, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.CARROT))).pool(LootPool.builder().conditionally(builder3).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.CARROT).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3))))));
         BlockStatePropertyLootCondition.Builder builder5 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES).properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
         this.addDrop(Blocks.POTATOES, BlockLootTableGenerator.applyExplosionDecay(Blocks.POTATOES, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO))).pool(LootPool.builder().conditionally(builder5).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286f, 3)))).pool(LootPool.builder().conditionally(builder5).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02f))))));
@@ -1136,6 +1136,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_PORTAL, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.BUDDING_AMETHYST, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.POWDER_SNOW, BlockLootTableGenerator.dropsNothing());
+        this.addDrop(Blocks.FROGSPAWN, BlockLootTableGenerator.dropsNothing());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getLootTableId();

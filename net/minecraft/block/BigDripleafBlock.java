@@ -228,7 +228,7 @@ Waterloggable {
     private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
         world.setBlockState(pos, (BlockState)state.with(TILT, tilt), Block.NOTIFY_LISTENERS);
         if (tilt.isStable()) {
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
         }
     }
 

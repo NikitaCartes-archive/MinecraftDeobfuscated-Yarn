@@ -23,6 +23,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.TemptationsSensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerBabiesSensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerHostilesSensor;
+import net.minecraft.entity.ai.brain.sensor.WardenAttackablesSensor;
 import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.entity.passive.FrogBrain;
 import net.minecraft.entity.passive.GoatBrain;
@@ -50,6 +51,7 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = SensorType.register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
     public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = SensorType.register("frog_attackables", FrogAttackablesSensor::new);
     public static final SensorType<IsInWaterSensor> IS_IN_WATER = SensorType.register("is_in_water", IsInWaterSensor::new);
+    public static final SensorType<WardenAttackablesSensor> WARDEN_ENTITY_SENSOR = SensorType.register("warden_entity_sensor", WardenAttackablesSensor::new);
     private final Supplier<U> factory;
 
     private SensorType(Supplier<U> factory) {

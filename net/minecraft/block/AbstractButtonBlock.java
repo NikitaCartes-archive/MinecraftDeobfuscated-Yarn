@@ -162,7 +162,7 @@ extends WallMountedBlock {
             world.setBlockState(pos, (BlockState)state.with(POWERED, false), Block.NOTIFY_ALL);
             this.updateNeighbors(state, world, pos);
             this.playClickSound(null, world, pos, false);
-            world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
         }
     }
 

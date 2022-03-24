@@ -130,7 +130,7 @@ extends FlowableFluid {
 
     @Override
     public int getFlowSpeed(WorldView world) {
-        return world.getDimension().isUltrawarm() ? 4 : 2;
+        return world.getDimension().ultrawarm() ? 4 : 2;
     }
 
     @Override
@@ -145,7 +145,7 @@ extends FlowableFluid {
 
     @Override
     public int getLevelDecreasePerBlock(WorldView world) {
-        return world.getDimension().isUltrawarm() ? 1 : 2;
+        return world.getDimension().ultrawarm() ? 1 : 2;
     }
 
     @Override
@@ -155,7 +155,7 @@ extends FlowableFluid {
 
     @Override
     public int getTickRate(WorldView world) {
-        return world.getDimension().isUltrawarm() ? 10 : 30;
+        return world.getDimension().ultrawarm() ? 10 : 30;
     }
 
     @Override

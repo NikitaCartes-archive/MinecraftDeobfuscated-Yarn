@@ -64,7 +64,7 @@ extends RealmsScreen {
     }
 
     private boolean shouldShowNotifications() {
-        return this.client.options.realmsNotifications;
+        return this.client.options.getRealmsNotifications().getValue();
     }
 
     private boolean isTitleScreen() {

@@ -294,12 +294,12 @@ implements ScreenHandlerProvider<T> {
             if (bl2) {
                 k = -999;
             }
-            if (this.client.options.touchscreen && bl2 && ((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
-                this.client.setScreen(null);
+            if (this.client.options.getTouchscreen().getValue().booleanValue() && bl2 && ((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
+                this.close();
                 return true;
             }
             if (k != -1) {
-                if (this.client.options.touchscreen) {
+                if (this.client.options.getTouchscreen().getValue().booleanValue()) {
                     if (slot != null && slot.hasStack()) {
                         this.touchDragSlotStart = slot;
                         this.touchDragStack = ItemStack.EMPTY;
@@ -367,7 +367,7 @@ implements ScreenHandlerProvider<T> {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         Slot slot = this.getSlotAt(mouseX, mouseY);
         ItemStack itemStack = ((ScreenHandler)this.handler).getCursorStack();
-        if (this.touchDragSlotStart != null && this.client.options.touchscreen) {
+        if (this.touchDragSlotStart != null && this.client.options.getTouchscreen().getValue().booleanValue()) {
             if (button == 0 || button == 1) {
                 if (this.touchDragStack.isEmpty()) {
                     if (slot != this.touchDragSlotStart && !this.touchDragSlotStart.getStack().isEmpty()) {
@@ -433,7 +433,7 @@ implements ScreenHandlerProvider<T> {
                 this.cancelNextRelease = false;
                 return true;
             }
-            if (this.touchDragSlotStart != null && this.client.options.touchscreen) {
+            if (this.touchDragSlotStart != null && this.client.options.getTouchscreen().getValue().booleanValue()) {
                 if (button == 0 || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     if (this.touchDragStack.isEmpty() && slot != this.touchDragSlotStart) {
                         this.touchDragStack = this.touchDragSlotStart.getStack();

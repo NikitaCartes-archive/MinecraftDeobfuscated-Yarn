@@ -79,6 +79,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MobEntity
@@ -263,6 +264,7 @@ extends LivingEntity {
     }
 
     public void onEatingGrass() {
+        this.emitGameEvent(GameEvent.EAT);
     }
 
     @Override
@@ -1032,10 +1034,6 @@ extends LivingEntity {
         return entityData;
     }
 
-    public boolean canBeControlledByRider() {
-        return false;
-    }
-
     public void setPersistent() {
         this.persistent = true;
     }
@@ -1287,7 +1285,7 @@ extends LivingEntity {
 
     @Override
     public boolean isLogicalSideForUpdatingMovement() {
-        return this.canBeControlledByRider() && super.isLogicalSideForUpdatingMovement();
+        return this.hasPrimaryPassenger() && super.isLogicalSideForUpdatingMovement();
     }
 
     @Override
@@ -1332,6 +1330,11 @@ extends LivingEntity {
 
     public double squaredAttackRange(LivingEntity target) {
         return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + target.getWidth();
+    }
+
+    public boolean isInAttackRange(LivingEntity entity) {
+        double d = this.squaredDistanceTo(entity.getX(), entity.getY(), entity.getZ());
+        return d <= this.squaredAttackRange(entity);
     }
 
     @Override

@@ -98,7 +98,7 @@ extends Screen {
     }
 
     private boolean areRealmsNotificationsEnabled() {
-        return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
+        return this.client.options.getRealmsNotifications().getValue() != false && this.realmsNotificationGui != null;
     }
 
     @Override
@@ -155,7 +155,7 @@ extends Screen {
         this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
         this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, Runnables.doNothing())), this.textRenderer));
         this.client.setConnectedToRealms(false);
-        if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
+        if (this.client.options.getRealmsNotifications().getValue().booleanValue() && this.realmsNotificationGui == null) {
             this.realmsNotificationGui = new RealmsNotificationsScreen();
         }
         if (this.areRealmsNotificationsEnabled()) {
@@ -201,7 +201,7 @@ extends Screen {
         boolean bl = this.canReadDemoWorldData();
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
             if (bl) {
-                this.client.method_41735().start(DEMO_WORLD_NAME);
+                this.client.method_41735().start(this, DEMO_WORLD_NAME);
             } else {
                 DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();
                 this.client.method_41735().createAndStart(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));

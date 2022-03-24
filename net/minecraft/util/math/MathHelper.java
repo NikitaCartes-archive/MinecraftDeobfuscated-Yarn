@@ -6,6 +6,7 @@ package net.minecraft.util.math;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -935,6 +936,36 @@ public class MathHelper {
      */
     public static int roundDownToMultiple(double a, int b) {
         return MathHelper.floor(a / (double)b) * b;
+    }
+
+    public static IntStream stream(int seed, int lowerBound, int upperBound) {
+        return MathHelper.stream(seed, lowerBound, upperBound, 1);
+    }
+
+    public static IntStream stream(int seed, int lowerBound, int upperBound, int steps) {
+        if (lowerBound > upperBound) {
+            throw new IllegalArgumentException("upperbound %d expected to be > lowerBound %d".formatted(upperBound, lowerBound));
+        }
+        if (steps < 1) {
+            throw new IllegalArgumentException("steps expected to be >= 1, was %d".formatted(steps));
+        }
+        if (seed < lowerBound || seed > upperBound) {
+            return IntStream.empty();
+        }
+        return IntStream.iterate(seed, i -> {
+            int m = Math.abs(seed - i);
+            return seed - m >= lowerBound || seed + m <= upperBound;
+        }, i -> {
+            int o;
+            boolean bl2;
+            boolean bl = i <= seed;
+            int n = Math.abs(seed - i);
+            boolean bl3 = bl2 = seed + n + steps <= upperBound;
+            if (!(bl && bl2 || (o = seed - n - (bl ? steps : 0)) < lowerBound)) {
+                return o;
+            }
+            return seed + n + steps;
+        });
     }
 
     static {

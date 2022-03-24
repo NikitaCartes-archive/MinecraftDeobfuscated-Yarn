@@ -115,7 +115,7 @@ public class ModelPredicateProviderRegistry {
                 if (clientWorld == null) {
                     return 0.0f;
                 }
-                double d = clientWorld.getDimension().isNatural() ? (double)clientWorld.getSkyAngle(1.0f) : Math.random();
+                double d = clientWorld.getDimension().natural() ? (double)clientWorld.getSkyAngle(1.0f) : Math.random();
                 d = this.getTime(clientWorld, d);
                 return (float)d;
             }
@@ -190,7 +190,7 @@ public class ModelPredicateProviderRegistry {
 
             @Nullable
             private BlockPos getSpawnPos(ClientWorld world) {
-                return world.getDimension().isNatural() ? world.getSpawnPos() : null;
+                return world.getDimension().natural() ? world.getSpawnPos() : null;
             }
 
             @Nullable

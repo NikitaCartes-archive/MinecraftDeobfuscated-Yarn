@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -307,13 +308,16 @@ extends ProjectileEntity {
                 return;
             }
             if (entity instanceof LivingEntity) {
-                Vec3d vec3d;
                 LivingEntity livingEntity = (LivingEntity)entity;
                 if (!this.world.isClient && this.getPierceLevel() <= 0) {
                     livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
                 }
-                if (this.punch > 0 && (vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.punch * 0.6)).lengthSquared() > 0.0) {
-                    livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
+                if (this.punch > 0) {
+                    double d = Math.max(0.0, 1.0 - livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+                    Vec3d vec3d = this.getVelocity().multiply(1.0, 0.0, 1.0).normalize().multiply((double)this.punch * 0.6 * d);
+                    if (vec3d.lengthSquared() > 0.0) {
+                        livingEntity.addVelocity(vec3d.x, 0.1, vec3d.z);
+                    }
                 }
                 if (!this.world.isClient && entity2 instanceof LivingEntity) {
                     EnchantmentHelper.onUserDamaged(livingEntity, entity2);

@@ -7,17 +7,10 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.logging.LogUtils;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.ServerSocket;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -38,66 +31,6 @@ public class NetworkUtils {
     public static final ListeningExecutorService EXECUTOR = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).setNameFormat("Downloader %d").build()));
 
     private NetworkUtils() {
-    }
-
-    public static String makeQueryString(Map<String, Object> query) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, Object> entry : query.entrySet()) {
-            if (stringBuilder.length() > 0) {
-                stringBuilder.append('&');
-            }
-            try {
-                stringBuilder.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-            } catch (UnsupportedEncodingException unsupportedEncodingException) {
-                unsupportedEncodingException.printStackTrace();
-            }
-            if (entry.getValue() == null) continue;
-            stringBuilder.append('=');
-            try {
-                stringBuilder.append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
-            } catch (UnsupportedEncodingException unsupportedEncodingException) {
-                unsupportedEncodingException.printStackTrace();
-            }
-        }
-        return stringBuilder.toString();
-    }
-
-    public static String post(URL url, Map<String, Object> query, boolean ignoreError, @Nullable Proxy proxy) {
-        return NetworkUtils.post(url, NetworkUtils.makeQueryString(query), ignoreError, proxy);
-    }
-
-    private static String post(URL url, String content, boolean ignoreError, @Nullable Proxy proxy) {
-        try {
-            String string;
-            if (proxy == null) {
-                proxy = Proxy.NO_PROXY;
-            }
-            HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection(proxy);
-            httpURLConnection.setRequestMethod("POST");
-            httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            httpURLConnection.setRequestProperty("Content-Length", "" + content.getBytes().length);
-            httpURLConnection.setRequestProperty("Content-Language", "en-US");
-            httpURLConnection.setUseCaches(false);
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.setDoOutput(true);
-            DataOutputStream dataOutputStream = new DataOutputStream(httpURLConnection.getOutputStream());
-            dataOutputStream.writeBytes(content);
-            dataOutputStream.flush();
-            dataOutputStream.close();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((string = bufferedReader.readLine()) != null) {
-                stringBuilder.append(string);
-                stringBuilder.append('\r');
-            }
-            bufferedReader.close();
-            return stringBuilder.toString();
-        } catch (Exception exception) {
-            if (!ignoreError) {
-                LOGGER.error("Could not post to {}", (Object)url, (Object)exception);
-            }
-            return "";
-        }
     }
 
     public static CompletableFuture<?> downloadResourcePack(File file, String url, Map<String, String> headers, int maxFileSize, @Nullable ProgressListener progressListener, Proxy proxy) {

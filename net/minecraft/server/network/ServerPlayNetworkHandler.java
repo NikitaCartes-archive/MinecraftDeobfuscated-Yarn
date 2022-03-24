@@ -44,8 +44,8 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -1198,8 +1198,10 @@ ServerPlayPacketListener {
                 break;
             }
             case OPEN_INVENTORY: {
-                if (!(this.player.getVehicle() instanceof HorseBaseEntity)) break;
-                ((HorseBaseEntity)this.player.getVehicle()).openInventory(this.player);
+                Entity entity = this.player.getVehicle();
+                if (!(entity instanceof RideableInventory)) break;
+                RideableInventory rideableInventory = (RideableInventory)((Object)entity);
+                rideableInventory.openInventory(this.player);
                 break;
             }
             case START_FALL_FLYING: {

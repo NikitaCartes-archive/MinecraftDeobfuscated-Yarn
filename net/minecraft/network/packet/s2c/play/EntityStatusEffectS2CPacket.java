@@ -9,6 +9,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -20,6 +21,8 @@ implements Packet<ClientPlayPacketListener> {
     private final byte amplifier;
     private final int duration;
     private final byte flags;
+    @Nullable
+    private final StatusEffectInstance.FactorCalculationData factorCalculationData;
 
     public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
         this.entityId = entityId;
@@ -37,6 +40,7 @@ implements Packet<ClientPlayPacketListener> {
             b = (byte)(b | 4);
         }
         this.flags = b;
+        this.factorCalculationData = effect.getFactorCalculationData().orElse(null);
     }
 
     public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
@@ -45,6 +49,8 @@ implements Packet<ClientPlayPacketListener> {
         this.amplifier = buf.readByte();
         this.duration = buf.readVarInt();
         this.flags = buf.readByte();
+        boolean bl = buf.readBoolean();
+        this.factorCalculationData = bl ? buf.decode(StatusEffectInstance.FactorCalculationData.CODEC) : null;
     }
 
     @Override
@@ -54,6 +60,11 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeByte(this.amplifier);
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
+        boolean bl = this.factorCalculationData != null;
+        buf.writeBoolean(bl);
+        if (bl) {
+            buf.encode(StatusEffectInstance.FactorCalculationData.CODEC, this.factorCalculationData);
+        }
     }
 
     public boolean isPermanent() {
@@ -91,6 +102,11 @@ implements Packet<ClientPlayPacketListener> {
 
     public boolean shouldShowIcon() {
         return (this.flags & 4) == 4;
+    }
+
+    @Nullable
+    public StatusEffectInstance.FactorCalculationData getFactorCalculationData() {
+        return this.factorCalculationData;
     }
 }
 

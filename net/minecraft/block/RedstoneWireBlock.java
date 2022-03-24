@@ -179,15 +179,13 @@ extends Block {
             BlockState blockState = world.getBlockState(mutable);
             if (!blockState.isOf(Blocks.OBSERVER)) {
                 Vec3i blockPos = mutable.offset(direction.getOpposite());
-                BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos), world, mutable, (BlockPos)blockPos);
-                RedstoneWireBlock.replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
+                world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, (BlockPos)blockPos, flags, maxUpdateDepth);
             }
             mutable.set((Vec3i)pos, direction).move(Direction.UP);
-            BlockState blockState3 = world.getBlockState(mutable);
-            if (blockState3.isOf(Blocks.OBSERVER)) continue;
+            BlockState blockState2 = world.getBlockState(mutable);
+            if (blockState2.isOf(Blocks.OBSERVER)) continue;
             Vec3i blockPos2 = mutable.offset(direction.getOpposite());
-            BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos2), world, mutable, (BlockPos)blockPos2);
-            RedstoneWireBlock.replace(blockState3, blockState4, world, mutable, flags, maxUpdateDepth);
+            world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, (BlockPos)blockPos2, flags, maxUpdateDepth);
         }
     }
 

@@ -14,13 +14,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class BackupPromptScreen
 extends Screen {
-    @Nullable
     private final Screen parent;
     protected final Callback callback;
     private final Text subtitle;
@@ -29,7 +27,7 @@ extends Screen {
     protected int field_32236;
     private CheckboxWidget eraseCacheCheckbox;
 
-    public BackupPromptScreen(@Nullable Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
+    public BackupPromptScreen(Screen parent, Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
         super(title);
         this.parent = parent;
         this.callback = callback;

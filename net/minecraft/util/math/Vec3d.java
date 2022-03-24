@@ -3,7 +3,10 @@
  */
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
 import java.util.EnumSet;
+import java.util.List;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
@@ -25,6 +28,7 @@ import net.minecraft.util.math.Vec3i;
  */
 public class Vec3d
 implements Position {
+    public static final Codec<Vec3d> CODEC = Codec.DOUBLE.listOf().comapFlatMap(list2 -> Util.toArray(list2, 3).map(list -> new Vec3d((Double)list.get(0), (Double)list.get(1), (Double)list.get(2))), vec3d -> List.of(Double.valueOf(vec3d.getX()), Double.valueOf(vec3d.getY()), Double.valueOf(vec3d.getZ())));
     /**
      * The zero vector (0, 0, 0).
      */

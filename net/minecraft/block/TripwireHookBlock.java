@@ -173,16 +173,16 @@ extends Block {
     private void playSound(World world, BlockPos pos, boolean attached, boolean on, boolean detached, boolean off) {
         if (on && !off) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_ON, SoundCategory.BLOCKS, 0.4f, 0.6f);
-            world.emitGameEvent(GameEvent.BLOCK_PRESS, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_PRESS, pos);
         } else if (!on && off) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_OFF, SoundCategory.BLOCKS, 0.4f, 0.5f);
-            world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
         } else if (attached && !detached) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_ATTACH, SoundCategory.BLOCKS, 0.4f, 0.7f);
-            world.emitGameEvent(GameEvent.BLOCK_ATTACH, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_ATTACH, pos);
         } else if (!attached && detached) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_DETACH, SoundCategory.BLOCKS, 0.4f, 1.2f / (world.random.nextFloat() * 0.2f + 0.9f));
-            world.emitGameEvent(GameEvent.BLOCK_DETACH, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_DETACH, pos);
         }
     }
 

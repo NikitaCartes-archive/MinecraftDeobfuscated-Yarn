@@ -97,7 +97,6 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
-import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
@@ -118,8 +117,6 @@ extends PacketListener {
     public void onEntitySpawn(EntitySpawnS2CPacket var1);
 
     public void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket var1);
-
-    public void onVibration(VibrationS2CPacket var1);
 
     public void onMobSpawn(MobSpawnS2CPacket var1);
 

@@ -88,7 +88,7 @@ implements Monster {
 
     @Override
     public float getPathfindingFavor(BlockPos pos, WorldView world) {
-        return 0.5f - world.getBrightness(pos);
+        return -world.getPhototaxisFavor(pos);
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {

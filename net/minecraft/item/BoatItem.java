@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -16,7 +17,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -27,9 +27,11 @@ public class BoatItem
 extends Item {
     private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
     private final BoatEntity.Type type;
+    private final boolean chest;
 
-    public BoatItem(BoatEntity.Type type, Item.Settings settings) {
+    public BoatItem(boolean chest, BoatEntity.Type type, Item.Settings settings) {
         super(settings);
+        this.chest = chest;
         this.type = type;
     }
 
@@ -52,7 +54,7 @@ extends Item {
             }
         }
         if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK) {
-            BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+            BoatEntity boatEntity = this.createEntity(world, hitResult);
             boatEntity.setBoatType(this.type);
             boatEntity.setYaw(user.getYaw());
             if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
@@ -60,7 +62,7 @@ extends Item {
             }
             if (!world.isClient) {
                 world.spawnEntity(boatEntity);
-                world.emitGameEvent((Entity)user, GameEvent.ENTITY_PLACE, new BlockPos(hitResult.getPos()));
+                world.emitGameEvent((Entity)user, GameEvent.ENTITY_PLACE, hitResult.getPos());
                 if (!user.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
@@ -69,6 +71,13 @@ extends Item {
             return TypedActionResult.success(itemStack, world.isClient());
         }
         return TypedActionResult.pass(itemStack);
+    }
+
+    private BoatEntity createEntity(World world, HitResult hitResult) {
+        if (this.chest) {
+            return new ChestBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
+        }
+        return new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
     }
 }
 

@@ -31,7 +31,7 @@ extends TransparentBlock {
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
         super.afterBreak(world, player, pos, state, blockEntity, stack);
         if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-            if (world.getDimension().isUltrawarm()) {
+            if (world.getDimension().ultrawarm()) {
                 world.removeBlock(pos, false);
                 return;
             }
@@ -50,7 +50,7 @@ extends TransparentBlock {
     }
 
     protected void melt(BlockState state, World world, BlockPos pos) {
-        if (world.getDimension().isUltrawarm()) {
+        if (world.getDimension().ultrawarm()) {
             world.removeBlock(pos, false);
             return;
         }

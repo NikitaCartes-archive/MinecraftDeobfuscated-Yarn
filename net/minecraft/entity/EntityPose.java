@@ -13,7 +13,11 @@ public enum EntityPose {
     LONG_JUMPING,
     DYING,
     CROAKING,
-    USING_TONGUE;
+    USING_TONGUE,
+    ROARING,
+    SNIFFING,
+    EMERGING,
+    DIGGING;
 
 }
 

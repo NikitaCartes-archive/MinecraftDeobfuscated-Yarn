@@ -686,7 +686,7 @@ extends PlayerEntity {
             return this;
         }
         WorldProperties worldProperties = destination.getLevelProperties();
-        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.method_40134(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), destination.isDebugWorld(), destination.isFlat(), true));
+        this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(destination.getDimensionEntry(), destination.getRegistryKey(), BiomeAccess.hashSeed(destination.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), destination.isDebugWorld(), destination.isFlat(), true));
         this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
         PlayerManager playerManager = this.server.getPlayerManager();
         playerManager.sendCommandTree(this);
@@ -783,7 +783,7 @@ extends PlayerEntity {
         if (this.isSleeping() || !this.isAlive()) {
             return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
         }
-        if (!this.world.getDimension().isNatural()) {
+        if (!this.world.getDimension().natural()) {
             return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
         }
         if (!this.isBedTooFarAway(pos, direction)) {
@@ -1355,7 +1355,7 @@ extends PlayerEntity {
         } else {
             ServerWorld serverWorld = this.getWorld();
             WorldProperties worldProperties = targetWorld.getLevelProperties();
-            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.method_40134(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
+            this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(targetWorld.getDimensionEntry(), targetWorld.getRegistryKey(), BiomeAccess.hashSeed(targetWorld.getSeed()), this.interactionManager.getGameMode(), this.interactionManager.getPreviousGameMode(), targetWorld.isDebugWorld(), targetWorld.isFlat(), true));
             this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
             this.server.getPlayerManager().sendCommandTree(this);
             serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);

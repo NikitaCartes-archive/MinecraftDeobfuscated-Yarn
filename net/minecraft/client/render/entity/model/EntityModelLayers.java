@@ -152,6 +152,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer VEX = EntityModelLayers.registerMain("vex");
     public static final EntityModelLayer VILLAGER = EntityModelLayers.registerMain("villager");
     public static final EntityModelLayer VINDICATOR = EntityModelLayers.registerMain("vindicator");
+    public static final EntityModelLayer WARDEN = EntityModelLayers.registerMain("warden");
     public static final EntityModelLayer WANDERING_TRADER = EntityModelLayers.registerMain("wandering_trader");
     public static final EntityModelLayer WITCH = EntityModelLayers.registerMain("witch");
     public static final EntityModelLayer WITHER = EntityModelLayers.registerMain("wither");
@@ -201,6 +202,10 @@ public class EntityModelLayers {
 
     public static EntityModelLayer createBoat(BoatEntity.Type type) {
         return EntityModelLayers.create("boat/" + type.getName(), MAIN);
+    }
+
+    public static EntityModelLayer createChestBoat(BoatEntity.Type type) {
+        return EntityModelLayers.create("chest_boat/" + type.getName(), MAIN);
     }
 
     public static EntityModelLayer createSign(SignType type) {

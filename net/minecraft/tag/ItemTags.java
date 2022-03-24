@@ -67,6 +67,7 @@ public final class ItemTags {
     public static final TagKey<Item> DIRT = ItemTags.of("dirt");
     public static final TagKey<Item> TERRACOTTA = ItemTags.of("terracotta");
     public static final TagKey<Item> BOATS = ItemTags.of("boats");
+    public static final TagKey<Item> CHEST_BOATS = ItemTags.of("chest_boats");
     public static final TagKey<Item> FISHES = ItemTags.of("fishes");
     public static final TagKey<Item> SIGNS = ItemTags.of("signs");
     public static final TagKey<Item> MUSIC_DISCS = ItemTags.of("music_discs");

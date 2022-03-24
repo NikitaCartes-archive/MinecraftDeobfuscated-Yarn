@@ -40,6 +40,7 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
@@ -99,6 +100,7 @@ extends AbstractClientPlayerEntity {
     private static final float field_32674 = 0.6f;
     private static final double field_32675 = 0.35;
     private static final double MAX_SOFT_COLLISION_RADIANS = 0.13962633907794952;
+    private static final float field_38337 = 0.3f;
     public final ClientPlayNetworkHandler networkHandler;
     private final StatHandler statHandler;
     private final ClientRecipeBook recipeBook;
@@ -272,7 +274,7 @@ extends AbstractClientPlayerEntity {
                 this.lastPitch = this.getPitch();
             }
             this.lastOnGround = this.onGround;
-            this.autoJumpEnabled = this.client.options.autoJump;
+            this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
         }
     }
 
@@ -668,7 +670,8 @@ extends AbstractClientPlayerEntity {
         boolean bl2 = this.input.sneaking;
         boolean bl3 = this.isWalking();
         this.inSneakingPose = !this.getAbilities().flying && !this.isSwimming() && this.wouldPoseNotCollide(EntityPose.CROUCHING) && (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-        this.input.tick(this.shouldSlowDown());
+        float f = MathHelper.clamp(0.3f + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0f, 1.0f);
+        this.input.tick(this.shouldSlowDown(), f);
         this.client.getTutorialManager().onMovement(this.input);
         if (this.isUsingItem() && !this.hasVehicle()) {
             this.input.movementSideways *= 0.2f;

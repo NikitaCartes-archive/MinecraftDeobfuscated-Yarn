@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventListener;
@@ -22,7 +23,7 @@ public interface BlockEntityProvider {
     }
 
     @Nullable
-    default public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
+    default public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
         return null;
     }
 }

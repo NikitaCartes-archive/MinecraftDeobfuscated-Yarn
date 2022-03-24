@@ -36,28 +36,30 @@ extends StructureFeature {
     private final HeightProvider field_37797;
     private final boolean field_37798;
     private final Optional<Heightmap.Type> field_37799;
+    private final int field_38268;
 
-    public static Products.P9<RecordCodecBuilder.Mu<JigsawFeature>, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean, RegistryEntry<StructurePool>, Integer, HeightProvider, Boolean, Optional<Heightmap.Type>> method_41660(RecordCodecBuilder.Instance<JigsawFeature> instance) {
+    public static Products.P10<RecordCodecBuilder.Mu<JigsawFeature>, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean, RegistryEntry<StructurePool>, Integer, HeightProvider, Boolean, Optional<Heightmap.Type>, Integer> method_41660(RecordCodecBuilder.Instance<JigsawFeature> instance) {
         Products.P4<RecordCodecBuilder.Mu<JigsawFeature>, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean> p4 = JigsawFeature.method_41608(instance);
-        Products.P5<JigsawFeature, RegistryEntry, Integer, HeightProvider, Boolean, Optional> p5 = instance.group(((MapCodec)StructurePool.REGISTRY_CODEC.fieldOf("start_pool")).forGetter(jigsawFeature -> jigsawFeature.field_37795), ((MapCodec)Codec.intRange(0, 7).fieldOf("size")).forGetter(jigsawFeature -> jigsawFeature.field_37796), ((MapCodec)HeightProvider.CODEC.fieldOf("start_height")).forGetter(jigsawFeature -> jigsawFeature.field_37797), ((MapCodec)Codec.BOOL.fieldOf("use_expansion_hack")).forGetter(jigsawFeature -> jigsawFeature.field_37798), Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(jigsawFeature -> jigsawFeature.field_37799));
-        return new Products.P9<JigsawFeature, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean, RegistryEntry, Integer, HeightProvider, Boolean, Optional>(p4.t1(), p4.t2(), p4.t3(), p4.t4(), p5.t1(), p5.t2(), p5.t3(), p5.t4(), p5.t5());
+        Products.P6<JigsawFeature, RegistryEntry, Integer, HeightProvider, Boolean, Optional, Integer> p6 = instance.group(((MapCodec)StructurePool.REGISTRY_CODEC.fieldOf("start_pool")).forGetter(jigsawFeature -> jigsawFeature.field_37795), ((MapCodec)Codec.intRange(0, 7).fieldOf("size")).forGetter(jigsawFeature -> jigsawFeature.field_37796), ((MapCodec)HeightProvider.CODEC.fieldOf("start_height")).forGetter(jigsawFeature -> jigsawFeature.field_37797), ((MapCodec)Codec.BOOL.fieldOf("use_expansion_hack")).forGetter(jigsawFeature -> jigsawFeature.field_37798), Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(jigsawFeature -> jigsawFeature.field_37799), ((MapCodec)Codec.intRange(1, 128).fieldOf("max_distance_from_center")).forGetter(jigsawFeature -> jigsawFeature.field_38268));
+        return new Products.P10<JigsawFeature, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean, RegistryEntry, Integer, HeightProvider, Boolean, Optional, Integer>(p4.t1(), p4.t2(), p4.t3(), p4.t4(), p6.t1(), p6.t2(), p6.t3(), p6.t4(), p6.t5(), p6.t6());
     }
 
-    public JigsawFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl, RegistryEntry<StructurePool> registryEntry, int i, HeightProvider heightProvider, boolean bl2, Optional<Heightmap.Type> optional) {
+    public JigsawFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl, RegistryEntry<StructurePool> registryEntry, int i, HeightProvider heightProvider, boolean bl2, Optional<Heightmap.Type> optional, int j) {
         super(registryEntryList, map, feature, bl);
         this.field_37795 = registryEntry;
         this.field_37796 = i;
         this.field_37797 = heightProvider;
         this.field_37798 = bl2;
         this.field_37799 = optional;
+        this.field_38268 = j;
     }
 
     public JigsawFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean surface, RegistryEntry<StructurePool> registryEntry, int i, HeightProvider heightProvider, boolean bl, Heightmap.Type type) {
-        this(registryEntryList, map, feature, surface, registryEntry, i, heightProvider, bl, Optional.of(type));
+        this(registryEntryList, map, feature, surface, registryEntry, i, heightProvider, bl, Optional.of(type), 80);
     }
 
     public JigsawFeature(RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl, RegistryEntry<StructurePool> registryEntry, int i, HeightProvider heightProvider, boolean bl2) {
-        this(registryEntryList, map, feature, bl, registryEntry, i, heightProvider, bl2, Optional.empty());
+        this(registryEntryList, map, feature, bl, registryEntry, i, heightProvider, bl2, Optional.empty(), 80);
     }
 
     @Override
@@ -66,7 +68,7 @@ extends StructureFeature {
         int i = this.field_37797.get(arg.random(), new HeightContext(arg.chunkGenerator(), arg.heightAccessor()));
         BlockPos blockPos = new BlockPos(chunkPos.getStartX(), i, chunkPos.getStartZ());
         StructurePools.initDefaultPools();
-        return StructurePoolBasedGenerator.generate(arg, this.field_37795, this.field_37796, PoolStructurePiece::new, blockPos, this.field_37798, this.field_37799);
+        return StructurePoolBasedGenerator.generate(arg, this.field_37795, this.field_37796, PoolStructurePiece::new, blockPos, this.field_37798, this.field_37799, this.field_38268);
     }
 
     @Override

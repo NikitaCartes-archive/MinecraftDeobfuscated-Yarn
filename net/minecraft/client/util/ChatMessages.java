@@ -23,7 +23,7 @@ public class ChatMessages {
     private static final OrderedText SPACES = OrderedText.styled(32, Style.EMPTY);
 
     private static String getRenderedChatMessage(String message) {
-        return MinecraftClient.getInstance().options.chatColors ? message : Formatting.strip(message);
+        return MinecraftClient.getInstance().options.getChatColors().getValue() != false ? message : Formatting.strip(message);
     }
 
     public static List<OrderedText> breakRenderedChatMessageLines(StringVisitable message2, int width, TextRenderer textRenderer) {

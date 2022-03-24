@@ -136,14 +136,14 @@ extends RaiderEntity {
     }
 
     @Override
-    public boolean canBeControlledByRider() {
-        return !this.isAiDisabled() && this.getPrimaryPassenger() instanceof LivingEntity;
-    }
-
-    @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        return this.getFirstPassenger();
+        Entity entity = this.getFirstPassenger();
+        return entity != null && this.canBecomePrimaryPassenger(entity) ? entity : null;
+    }
+
+    private boolean canBecomePrimaryPassenger(Entity entity) {
+        return !this.isAiDisabled() && entity instanceof LivingEntity;
     }
 
     @Override
@@ -250,7 +250,7 @@ extends RaiderEntity {
                 this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
                 ++var3_5;
             }
-            this.world.emitGameEvent((Entity)this, GameEvent.RAVAGER_ROAR, this.getCameraBlockPos());
+            this.world.emitGameEvent((Entity)this, GameEvent.RAVAGER_ROAR, this.getEyePos());
         }
     }
 

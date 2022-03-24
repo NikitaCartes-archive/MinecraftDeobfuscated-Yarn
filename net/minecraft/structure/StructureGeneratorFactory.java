@@ -37,7 +37,7 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
             int i = this.chunkPos.getCenterX();
             int j = this.chunkPos.getCenterZ();
             int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world, this.randomState);
-            RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j), this.randomState.sampler());
+            RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j), this.randomState.getMultiNoiseSampler());
             return this.validBiome.test(registryEntry);
         }
     }

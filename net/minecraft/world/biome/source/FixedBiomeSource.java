@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -55,6 +56,12 @@ implements BiomeAccess.Storage {
             return Pair.of(new BlockPos(x - radius + random.nextInt(radius * 2 + 1), y, z - radius + random.nextInt(radius * 2 + 1)), this.biome);
         }
         return null;
+    }
+
+    @Override
+    @Nullable
+    public Pair<BlockPos, RegistryEntry<Biome>> method_42310(BlockPos blockPos, int i, int j, int k, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, WorldView worldView) {
+        return predicate.test(this.biome) ? Pair.of(blockPos, this.biome) : null;
     }
 
     @Override

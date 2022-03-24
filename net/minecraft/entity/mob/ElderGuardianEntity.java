@@ -4,13 +4,12 @@
 package net.minecraft.entity.mob;
 
 import java.util.List;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -23,6 +22,11 @@ import net.minecraft.world.World;
 public class ElderGuardianEntity
 extends GuardianEntity {
     public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
+    private static final int field_38119 = 1200;
+    private static final int field_38115 = 50;
+    private static final int field_38116 = 6000;
+    private static final int field_38117 = 2;
+    private static final int field_38118 = 1200;
 
     public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
         super((EntityType<? extends GuardianEntity>)entityType, world);
@@ -64,18 +68,10 @@ extends GuardianEntity {
     @Override
     protected void mobTick() {
         super.mobTick();
-        int i = 1200;
         if ((this.age + this.getId()) % 1200 == 0) {
-            StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
-            List<ServerPlayerEntity> list = ((ServerWorld)this.world).getPlayers(player -> this.squaredDistanceTo((Entity)player) < 2500.0 && player.interactionManager.isSurvivalLike());
-            int j = 2;
-            int k = 6000;
-            int l = 1200;
-            for (ServerPlayerEntity serverPlayerEntity : list) {
-                if (serverPlayerEntity.hasStatusEffect(statusEffect) && serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() >= 2 && serverPlayerEntity.getStatusEffect(statusEffect).getDuration() >= 1200) continue;
-                serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f));
-                serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2), this);
-            }
+            StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
+            List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance((ServerWorld)this.world, this, this.getPos(), 50.0, statusEffectInstance, 1200);
+            list.forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : (int)1.0f)));
         }
         if (!this.hasPositionTarget()) {
             this.setPositionTarget(this.getBlockPos(), 16);

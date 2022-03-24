@@ -33,11 +33,11 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> FlatChunkGenerator.method_41042(instance).and(((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).forGetter(FlatChunkGenerator::getConfig)).apply((Applicative<FlatChunkGenerator, ?>)instance, instance.stable(FlatChunkGenerator::new)));
+    public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> FlatChunkGenerator.createStructureSetRegistryGetter(instance).and(((MapCodec)FlatChunkGeneratorConfig.CODEC.fieldOf("settings")).forGetter(FlatChunkGenerator::getConfig)).apply((Applicative<FlatChunkGenerator, ?>)instance, instance.stable(FlatChunkGenerator::new)));
     private final FlatChunkGeneratorConfig config;
 
-    public FlatChunkGenerator(Registry<StructureSet> structureFeatureRegistry, FlatChunkGeneratorConfig config) {
-        super(structureFeatureRegistry, config.method_41139(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
+    public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
+        super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
         this.config = config;
     }
 
@@ -106,7 +106,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess world, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carverStep) {
     }
 
     @Override

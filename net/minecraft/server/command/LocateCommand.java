@@ -43,14 +43,15 @@ public class LocateCommand {
         if (pair == null) {
             throw FAILED_EXCEPTION.create(structureFeature.asString());
         }
-        return LocateCommand.sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success");
+        return LocateCommand.sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success", false);
     }
 
-    public static int sendCoordinates(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature, BlockPos currentPos, Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry, String successMessage) {
+    public static int sendCoordinates(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature, BlockPos currentPos, Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry, String successMessage, boolean bl) {
         BlockPos blockPos = structurePosAndEntry.getFirst();
         String string = structureFeature.getKey().map(key -> key.getValue().toString(), key2 -> "#" + key2.id() + " (" + ((RegistryEntry)structurePosAndEntry.getSecond()).getKey().map(key -> key.getValue().toString()).orElse("[unregistered]") + ")");
-        int i = MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
-        MutableText text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), "~", blockPos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
+        int i = bl ? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos))) : MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
+        String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
+        MutableText text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), string2, blockPos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip"))));
         source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);
         return i;
     }

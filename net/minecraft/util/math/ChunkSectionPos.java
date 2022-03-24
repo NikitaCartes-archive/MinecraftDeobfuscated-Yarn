@@ -8,14 +8,15 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.entity.EntityLike;
 
 public class ChunkSectionPos
 extends Vec3i {
@@ -59,8 +60,12 @@ extends Vec3i {
         return new ChunkSectionPos(chunkPos.x, y, chunkPos.z);
     }
 
-    public static ChunkSectionPos from(Entity entity) {
-        return new ChunkSectionPos(ChunkSectionPos.getSectionCoord(entity.getBlockX()), ChunkSectionPos.getSectionCoord(entity.getBlockY()), ChunkSectionPos.getSectionCoord(entity.getBlockZ()));
+    public static ChunkSectionPos from(EntityLike entity) {
+        return ChunkSectionPos.from(entity.getBlockPos());
+    }
+
+    public static ChunkSectionPos from(Position pos) {
+        return new ChunkSectionPos(ChunkSectionPos.getSectionCoordFloored(pos.getX()), ChunkSectionPos.getSectionCoordFloored(pos.getY()), ChunkSectionPos.getSectionCoordFloored(pos.getZ()));
     }
 
     /**
@@ -102,6 +107,10 @@ extends Vec3i {
      */
     public static int getSectionCoord(int coord) {
         return coord >> 4;
+    }
+
+    public static int getSectionCoordFloored(double coord) {
+        return MathHelper.floor(coord) >> 4;
     }
 
     /**

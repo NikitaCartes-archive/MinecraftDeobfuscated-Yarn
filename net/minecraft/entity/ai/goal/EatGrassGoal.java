@@ -15,7 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.event.GameEvent;
 
 public class EatGrassGoal
 extends Goal {
@@ -76,7 +75,6 @@ extends Goal {
                 this.world.breakBlock(blockPos, false);
             }
             this.mob.onEatingGrass();
-            this.mob.emitGameEvent(GameEvent.EAT, this.mob.getCameraBlockPos());
         } else {
             BlockPos blockPos2 = blockPos.down();
             if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
@@ -85,7 +83,6 @@ extends Goal {
                     this.world.setBlockState(blockPos2, Blocks.DIRT.getDefaultState(), Block.NOTIFY_LISTENERS);
                 }
                 this.mob.onEatingGrass();
-                this.mob.emitGameEvent(GameEvent.EAT, this.mob.getCameraBlockPos());
             }
         }
     }

@@ -66,7 +66,7 @@ implements Shearable {
         if (world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM)) {
             return 10.0f;
         }
-        return world.getBrightness(pos) - 0.5f;
+        return world.getPhototaxisFavor(pos);
     }
 
     public static boolean canSpawn(EntityType<MooshroomEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

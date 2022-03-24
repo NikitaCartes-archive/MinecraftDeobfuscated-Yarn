@@ -59,6 +59,7 @@ public class SelectionManager {
     }
 
     public boolean handleSpecialKey(int keyCode) {
+        SelectionType selectionType;
         if (Screen.isSelectAll(keyCode)) {
             this.selectAll();
             return true;
@@ -75,27 +76,20 @@ public class SelectionManager {
             this.cut();
             return true;
         }
+        SelectionType selectionType2 = selectionType = Screen.hasControlDown() ? SelectionType.WORD : SelectionType.CHARACTER;
         if (keyCode == 259) {
-            this.delete(-1);
+            this.delete(-1, selectionType);
             return true;
         }
         if (keyCode == 261) {
-            this.delete(1);
+            this.delete(1, selectionType);
         } else {
             if (keyCode == 263) {
-                if (Screen.hasControlDown()) {
-                    this.moveCursorPastWord(-1, Screen.hasShiftDown());
-                } else {
-                    this.moveCursor(-1, Screen.hasShiftDown());
-                }
+                this.moveCursor(-1, Screen.hasShiftDown(), selectionType);
                 return true;
             }
             if (keyCode == 262) {
-                if (Screen.hasControlDown()) {
-                    this.moveCursorPastWord(1, Screen.hasShiftDown());
-                } else {
-                    this.moveCursor(1, Screen.hasShiftDown());
-                }
+                this.moveCursor(1, Screen.hasShiftDown(), selectionType);
                 return true;
             }
             if (keyCode == 268) {
@@ -136,6 +130,18 @@ public class SelectionManager {
         }
     }
 
+    public void moveCursor(int offset, boolean shiftDown, SelectionType selectionType) {
+        switch (selectionType) {
+            case CHARACTER: {
+                this.moveCursor(offset, shiftDown);
+                break;
+            }
+            case WORD: {
+                this.moveCursorPastWord(offset, shiftDown);
+            }
+        }
+    }
+
     public void moveCursor(int offset) {
         this.moveCursor(offset, false);
     }
@@ -154,18 +160,35 @@ public class SelectionManager {
         this.updateSelectionRange(shiftDown);
     }
 
-    public void delete(int cursorOffset) {
+    public void delete(int offset, SelectionType selectionType) {
+        switch (selectionType) {
+            case CHARACTER: {
+                this.delete(offset);
+                break;
+            }
+            case WORD: {
+                this.deleteWord(offset);
+            }
+        }
+    }
+
+    public void deleteWord(int offset) {
+        int i = TextHandler.moveCursorByWords(this.stringGetter.get(), offset, this.selectionStart, true);
+        this.delete(i - this.selectionStart);
+    }
+
+    public void delete(int offset) {
         String string = this.stringGetter.get();
         if (!string.isEmpty()) {
             String string2;
             if (this.selectionEnd != this.selectionStart) {
                 string2 = this.deleteSelectedText(string);
             } else {
-                int i = Util.moveCursor(string, this.selectionStart, cursorOffset);
+                int i = Util.moveCursor(string, this.selectionStart, offset);
                 int j = Math.min(i, this.selectionStart);
                 int k = Math.max(i, this.selectionStart);
                 string2 = new StringBuilder(string).delete(j, k).toString();
-                if (cursorOffset < 0) {
+                if (offset < 0) {
                     this.selectionEnd = this.selectionStart = j;
                 }
             }
@@ -214,7 +237,7 @@ public class SelectionManager {
         this.moveCursorToStart(false);
     }
 
-    private void moveCursorToStart(boolean shiftDown) {
+    public void moveCursorToStart(boolean shiftDown) {
         this.selectionStart = 0;
         this.updateSelectionRange(shiftDown);
     }
@@ -223,7 +246,7 @@ public class SelectionManager {
         this.moveCursorToEnd(false);
     }
 
-    private void moveCursorToEnd(boolean shiftDown) {
+    public void moveCursorToEnd(boolean shiftDown) {
         this.selectionStart = this.stringGetter.get().length();
         this.updateSelectionRange(shiftDown);
     }
@@ -257,6 +280,13 @@ public class SelectionManager {
 
     public boolean isSelecting() {
         return this.selectionStart != this.selectionEnd;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum SelectionType {
+        CHARACTER,
+        WORD;
+
     }
 }
 

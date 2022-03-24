@@ -55,31 +55,32 @@ implements Font {
 
     @Override
     @Nullable
-    public TtfGlyph getGlyph(int i) {
-        if (this.excludedCharacters.contains(i)) {
+    public Glyph getGlyph(int codePoint) {
+        if (this.excludedCharacters.contains(codePoint)) {
             return null;
         }
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
+            int i = STBTruetype.stbtt_FindGlyphIndex(this.info, codePoint);
+            if (i == 0) {
+                Glyph glyph = null;
+                return glyph;
+            }
             IntBuffer intBuffer = memoryStack.mallocInt(1);
             IntBuffer intBuffer2 = memoryStack.mallocInt(1);
             IntBuffer intBuffer3 = memoryStack.mallocInt(1);
             IntBuffer intBuffer4 = memoryStack.mallocInt(1);
-            int j = STBTruetype.stbtt_FindGlyphIndex(this.info, i);
-            if (j == 0) {
-                TtfGlyph ttfGlyph = null;
-                return ttfGlyph;
-            }
-            STBTruetype.stbtt_GetGlyphBitmapBoxSubpixel(this.info, j, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4);
-            int k = intBuffer3.get(0) - intBuffer.get(0);
-            int l = intBuffer4.get(0) - intBuffer2.get(0);
-            if (k <= 0 || l <= 0) {
-                TtfGlyph ttfGlyph = null;
-                return ttfGlyph;
-            }
             IntBuffer intBuffer5 = memoryStack.mallocInt(1);
             IntBuffer intBuffer6 = memoryStack.mallocInt(1);
-            STBTruetype.stbtt_GetGlyphHMetrics(this.info, j, intBuffer5, intBuffer6);
-            TtfGlyph ttfGlyph = new TtfGlyph(intBuffer.get(0), intBuffer3.get(0), -intBuffer2.get(0), -intBuffer4.get(0), (float)intBuffer5.get(0) * this.scaleFactor, (float)intBuffer6.get(0) * this.scaleFactor, j);
+            STBTruetype.stbtt_GetGlyphHMetrics(this.info, i, intBuffer5, intBuffer6);
+            STBTruetype.stbtt_GetGlyphBitmapBoxSubpixel(this.info, i, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4);
+            float f = (float)intBuffer5.get(0) * this.scaleFactor;
+            int j = intBuffer3.get(0) - intBuffer.get(0);
+            int k = intBuffer4.get(0) - intBuffer2.get(0);
+            if (j <= 0 || k <= 0) {
+                Glyph.EmptyGlyph emptyGlyph = () -> f / this.oversample;
+                return emptyGlyph;
+            }
+            TtfGlyph ttfGlyph = new TtfGlyph(intBuffer.get(0), intBuffer3.get(0), -intBuffer2.get(0), -intBuffer4.get(0), f, (float)intBuffer6.get(0) * this.scaleFactor, i);
             return ttfGlyph;
         }
     }
@@ -93,12 +94,6 @@ implements Font {
     @Override
     public IntSet getProvidedGlyphs() {
         return IntStream.range(0, 65535).filter(codePoint -> !this.excludedCharacters.contains(codePoint)).collect(IntOpenHashSet::new, IntCollection::add, IntCollection::addAll);
-    }
-
-    @Override
-    @Nullable
-    public /* synthetic */ Glyph getGlyph(int codePoint) {
-        return this.getGlyph(codePoint);
     }
 
     @Environment(value=EnvType.CLIENT)

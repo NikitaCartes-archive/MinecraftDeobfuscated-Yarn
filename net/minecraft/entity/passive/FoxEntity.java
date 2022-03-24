@@ -954,8 +954,8 @@ extends AnimalEntity {
             if (FoxEntity.this.isSleeping() || this.mob.getTarget() != null) {
                 return false;
             }
-            if (FoxEntity.this.world.isThundering()) {
-                return true;
+            if (FoxEntity.this.world.isThundering() && FoxEntity.this.world.isSkyVisible(this.mob.getBlockPos())) {
+                return this.targetShadedPos();
             }
             if (this.timer > 0) {
                 --this.timer;

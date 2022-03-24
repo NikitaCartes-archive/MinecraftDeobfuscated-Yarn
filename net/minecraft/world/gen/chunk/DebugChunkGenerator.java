@@ -40,7 +40,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class DebugChunkGenerator
 extends ChunkGenerator {
-    public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> DebugChunkGenerator.method_41042(instance).and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry)).apply((Applicative<DebugChunkGenerator, ?>)instance, instance.stable(DebugChunkGenerator::new)));
+    public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(instance -> DebugChunkGenerator.createStructureSetRegistryGetter(instance).and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry)).apply((Applicative<DebugChunkGenerator, ?>)instance, instance.stable(DebugChunkGenerator::new)));
     private static final int field_31467 = 2;
     private static final List<BlockState> BLOCK_STATES = StreamSupport.stream(Registry.BLOCK.spliterator(), false).flatMap(block -> block.getStateManager().getStates().stream()).collect(Collectors.toList());
     private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt(BLOCK_STATES.size()));
@@ -115,7 +115,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess biomeAccess, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carver) {
+    public void carve(ChunkRegion chunkRegion, long seed, NoiseConfig noiseConfig, BiomeAccess world, StructureAccessor structureAccessor, Chunk chunk, GenerationStep.Carver carverStep) {
     }
 
     @Override

@@ -144,7 +144,7 @@ implements VillagerDataContainer {
                 if (!this.world.isClient) {
                     this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
                 }
-                this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+                this.emitGameEvent(GameEvent.MOB_INTERACT);
                 return ActionResult.SUCCESS;
             }
             return ActionResult.CONSUME;

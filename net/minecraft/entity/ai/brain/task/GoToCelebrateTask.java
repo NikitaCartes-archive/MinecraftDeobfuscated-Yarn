@@ -16,18 +16,20 @@ import net.minecraft.util.math.BlockPos;
 
 public class GoToCelebrateTask<E extends MobEntity>
 extends Task<E> {
+    private final MemoryModuleType<BlockPos> memoryModuleType;
     private final int completionRange;
     private final float speed;
 
-    public GoToCelebrateTask(int completionRange, float speed) {
-        super(ImmutableMap.of(MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
-        this.completionRange = completionRange;
-        this.speed = speed;
+    public GoToCelebrateTask(MemoryModuleType<BlockPos> memoryModuleType, int i, float f) {
+        super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
+        this.memoryModuleType = memoryModuleType;
+        this.completionRange = i;
+        this.speed = f;
     }
 
     @Override
     protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-        BlockPos blockPos = GoToCelebrateTask.getCelebrateLocation(mobEntity);
+        BlockPos blockPos = this.getCelebrateLocation(mobEntity);
         boolean bl = blockPos.isWithinDistance(mobEntity.getBlockPos(), (double)this.completionRange);
         if (!bl) {
             LookTargetUtil.walkTowards((LivingEntity)mobEntity, GoToCelebrateTask.fuzz(mobEntity, blockPos), this.speed, this.completionRange);
@@ -43,8 +45,8 @@ extends Task<E> {
         return random.nextInt(3) - 1;
     }
 
-    private static BlockPos getCelebrateLocation(MobEntity entity) {
-        return entity.getBrain().getOptionalMemory(MemoryModuleType.CELEBRATE_LOCATION).get();
+    private BlockPos getCelebrateLocation(MobEntity mobEntity) {
+        return mobEntity.getBrain().getOptionalMemory(this.memoryModuleType).get();
     }
 }
 

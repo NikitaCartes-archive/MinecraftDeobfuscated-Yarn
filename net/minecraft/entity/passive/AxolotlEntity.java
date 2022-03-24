@@ -408,15 +408,10 @@ Bucketable {
         return !this.isPlayingDead() && super.canTakeDamage();
     }
 
-    public static void appreciatePlayer(AxolotlEntity axolotl) {
+    public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity livingEntity) {
         Entity entity;
         DamageSource damageSource;
-        Optional<LivingEntity> optional = axolotl.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
-        if (!optional.isPresent()) {
-            return;
-        }
         World world = axolotl.world;
-        LivingEntity livingEntity = optional.get();
         if (livingEntity.isDead() && (damageSource = livingEntity.getRecentDamageSource()) != null && (entity = damageSource.getAttacker()) != null && entity.getType() == EntityType.PLAYER) {
             PlayerEntity playerEntity = (PlayerEntity)entity;
             List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));

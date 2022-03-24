@@ -31,16 +31,16 @@ extends Task<FrogEntity> {
     private static final float field_37482 = 0.75f;
     private int field_37483;
     private int field_37484;
-    private final SoundEvent field_37485;
-    private final SoundEvent field_37486;
-    private Vec3d field_37487;
+    private final SoundEvent tongueSound;
+    private final SoundEvent eatSound;
+    private Vec3d targetPos;
     private boolean field_37488;
-    private class_7109 field_37489 = class_7109.DONE;
+    private Phase phase = Phase.DONE;
 
-    public FrogEatEntityTask(SoundEvent soundEvent, SoundEvent soundEvent2) {
+    public FrogEatEntityTask(SoundEvent tongueSound, SoundEvent eatSound) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT), 100);
-        this.field_37485 = soundEvent;
-        this.field_37486 = soundEvent2;
+        this.tongueSound = tongueSound;
+        this.eatSound = eatSound;
     }
 
     @Override
@@ -50,7 +50,7 @@ extends Task<FrogEntity> {
 
     @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-        return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.field_37489 != class_7109.DONE;
+        return frogEntity.getBrain().hasMemoryModule(MemoryModuleType.ATTACK_TARGET) && this.phase != Phase.DONE;
     }
 
     @Override
@@ -60,20 +60,20 @@ extends Task<FrogEntity> {
         frogEntity.setFrogTarget(livingEntity);
         frogEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(livingEntity.getPos(), 2.0f, 0));
         this.field_37484 = 10;
-        this.field_37489 = class_7109.MOVE_TO_TARGET;
+        this.phase = Phase.MOVE_TO_TARGET;
     }
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
         frogEntity.setPose(EntityPose.STANDING);
-        serverWorld.playSoundFromEntity(null, frogEntity, this.field_37486, SoundCategory.NEUTRAL, 2.0f, 1.0f);
+        serverWorld.playSoundFromEntity(null, frogEntity, this.eatSound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
         Optional<Entity> optional = frogEntity.getFrogTarget();
         if (optional.isPresent()) {
             Entity entity = optional.get();
             if (this.field_37488 && entity.isAlive()) {
                 entity.remove(Entity.RemovalReason.KILLED);
                 ItemStack itemStack = FrogEatEntityTask.createDroppedStack(frogEntity, entity);
-                serverWorld.spawnEntity(new ItemEntity(serverWorld, this.field_37487.getX(), this.field_37487.getY(), this.field_37487.getZ(), itemStack));
+                serverWorld.spawnEntity(new ItemEntity(serverWorld, this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), itemStack));
             }
         }
         frogEntity.clearFrogTarget();
@@ -96,15 +96,15 @@ extends Task<FrogEntity> {
     protected void keepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
         LivingEntity livingEntity = frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
         frogEntity.setFrogTarget(livingEntity);
-        switch (this.field_37489) {
+        switch (this.phase) {
             case MOVE_TO_TARGET: {
                 if (livingEntity.distanceTo(frogEntity) < 1.75f) {
-                    serverWorld.playSoundFromEntity(null, frogEntity, this.field_37485, SoundCategory.NEUTRAL, 2.0f, 1.0f);
+                    serverWorld.playSoundFromEntity(null, frogEntity, this.tongueSound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
                     frogEntity.setPose(EntityPose.USING_TONGUE);
                     livingEntity.setVelocity(livingEntity.getPos().relativize(frogEntity.getPos()).normalize().multiply(0.75));
-                    this.field_37487 = livingEntity.getPos();
+                    this.targetPos = livingEntity.getPos();
                     this.field_37483 = 6;
-                    this.field_37489 = class_7109.EAT_ANIMATION;
+                    this.phase = Phase.EAT_ANIMATION;
                     break;
                 }
                 if (this.field_37484 <= 0) {
@@ -118,7 +118,7 @@ extends Task<FrogEntity> {
             case EAT_ANIMATION: {
                 if (this.field_37483 <= 0) {
                     this.field_37488 = true;
-                    this.field_37489 = class_7109.DONE;
+                    this.phase = Phase.DONE;
                     break;
                 }
                 --this.field_37483;
@@ -137,7 +137,7 @@ extends Task<FrogEntity> {
         this.run(world, (FrogEntity)entity, time);
     }
 
-    static enum class_7109 {
+    static enum Phase {
         MOVE_TO_TARGET,
         EAT_ANIMATION,
         DONE;

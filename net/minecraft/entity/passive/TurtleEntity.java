@@ -304,7 +304,7 @@ extends AnimalEntity {
         if (TurtleEggBlock.isSandBelow(world, pos)) {
             return 10.0f;
         }
-        return world.getBrightness(pos) - 0.5f;
+        return world.getPhototaxisFavor(pos);
     }
 
     @Override

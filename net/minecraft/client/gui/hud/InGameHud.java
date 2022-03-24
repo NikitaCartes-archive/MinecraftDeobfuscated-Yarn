@@ -41,6 +41,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -378,7 +379,7 @@ extends DrawableHelper {
         if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR && !this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
             return;
         }
-        if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+        if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue().booleanValue()) {
             Camera camera = this.client.gameRenderer.getCamera();
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
@@ -394,7 +395,7 @@ extends DrawableHelper {
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
             int i = 15;
             this.drawTexture(matrices, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
-            if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
+            if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
                 float f = this.client.player.getAttackCooldownProgress(0.0f);
                 boolean bl = false;
                 if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0f) {
@@ -526,7 +527,7 @@ extends DrawableHelper {
                 this.renderHotbarItem(i + 91 + 10, n, tickDelta, playerEntity, itemStack, m++);
             }
         }
-        if (this.client.options.attackIndicator == AttackIndicator.HOTBAR && (f = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
+        if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR && (f = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
             o = this.scaledHeight - 20;
             p = i + 91 + 6;
             if (arm == Arm.RIGHT) {
@@ -954,8 +955,10 @@ extends DrawableHelper {
         if (entity == null) {
             return;
         }
-        float f = MathHelper.clamp(1.0f - entity.getBrightnessAtEyes(), 0.0f, 1.0f);
-        this.vignetteDarkness += (f - this.vignetteDarkness) * 0.01f;
+        BlockPos blockPos = new BlockPos(entity.getX(), entity.getEyeY(), entity.getZ());
+        float f = LightmapTextureManager.getBrightness(entity.world.getDimension(), entity.world.getLightLevel(blockPos));
+        float g = MathHelper.clamp(1.0f - f, 0.0f, 1.0f);
+        this.vignetteDarkness += (g - this.vignetteDarkness) * 0.01f;
     }
 
     private void renderVignetteOverlay(Entity entity) {
@@ -1140,7 +1143,7 @@ extends DrawableHelper {
         if (this.client.shouldBlockMessages(sender)) {
             return;
         }
-        if (this.client.options.hideMatchedNames && this.client.shouldBlockMessages(this.extractSender(message))) {
+        if (this.client.options.getHideMatchedNames().getValue().booleanValue() && this.client.shouldBlockMessages(this.extractSender(message))) {
             return;
         }
         for (ClientChatListener clientChatListener : this.listeners.get((Object)type)) {
@@ -1186,7 +1189,7 @@ extends DrawableHelper {
 
     private void renderAutosaveIndicator(MatrixStack matrices) {
         int i;
-        if (this.client.options.showAutosaveIndicator && (this.autosaveIndicatorAlpha > 0.0f || this.lastAutosaveIndicatorAlpha > 0.0f) && (i = MathHelper.floor(255.0f * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0f, 1.0f))) > 8) {
+        if (this.client.options.getShowAutosaveIndicator().getValue().booleanValue() && (this.autosaveIndicatorAlpha > 0.0f || this.lastAutosaveIndicatorAlpha > 0.0f) && (i = MathHelper.floor(255.0f * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0f, 1.0f))) > 8) {
             TextRenderer textRenderer = this.getTextRenderer();
             int j = textRenderer.getWidth(SAVING_LEVEL_TEXT);
             int k = 0xFFFFFF | i << 24 & 0xFF000000;

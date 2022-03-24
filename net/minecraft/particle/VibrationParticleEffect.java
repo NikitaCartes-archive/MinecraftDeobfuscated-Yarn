@@ -15,13 +15,15 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.Vibration;
 import net.minecraft.world.event.BlockPositionSource;
+import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.event.PositionSourceType;
 
 public class VibrationParticleEffect
 implements ParticleEffect {
-    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Vibration.CODEC.fieldOf("vibration")).forGetter(effect -> effect.vibration)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
+    public static final Codec<VibrationParticleEffect> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)PositionSource.CODEC.fieldOf("destination")).forGetter(effect -> effect.destination), ((MapCodec)Codec.INT.fieldOf("arrival_in_ticks")).forGetter(vibrationParticleEffect -> vibrationParticleEffect.arrivalInTicks)).apply((Applicative<VibrationParticleEffect, ?>)instance, VibrationParticleEffect::new));
     public static final ParticleEffect.Factory<VibrationParticleEffect> PARAMETERS_FACTORY = new ParticleEffect.Factory<VibrationParticleEffect>(){
 
         @Override
@@ -33,22 +35,16 @@ implements ParticleEffect {
             stringReader.expect(' ');
             float h = (float)stringReader.readDouble();
             stringReader.expect(' ');
-            float i = (float)stringReader.readDouble();
-            stringReader.expect(' ');
-            float j = (float)stringReader.readDouble();
-            stringReader.expect(' ');
-            float k = (float)stringReader.readDouble();
-            stringReader.expect(' ');
-            int l = stringReader.readInt();
+            int i = stringReader.readInt();
             BlockPos blockPos = new BlockPos(f, g, h);
-            BlockPos blockPos2 = new BlockPos(i, j, k);
-            return new VibrationParticleEffect(new Vibration(blockPos, new BlockPositionSource(blockPos2), l));
+            return new VibrationParticleEffect(new BlockPositionSource(blockPos), i);
         }
 
         @Override
         public VibrationParticleEffect read(ParticleType<VibrationParticleEffect> particleType, PacketByteBuf packetByteBuf) {
-            Vibration vibration = Vibration.readFromBuf(packetByteBuf);
-            return new VibrationParticleEffect(vibration);
+            PositionSource positionSource = PositionSourceType.read(packetByteBuf);
+            int i = packetByteBuf.readVarInt();
+            return new VibrationParticleEffect(positionSource, i);
         }
 
         @Override
@@ -61,32 +57,39 @@ implements ParticleEffect {
             return this.read(type, reader);
         }
     };
-    private final Vibration vibration;
+    private final PositionSource destination;
+    private final int arrivalInTicks;
 
-    public VibrationParticleEffect(Vibration vibration) {
-        this.vibration = vibration;
+    public VibrationParticleEffect(PositionSource positionSource, int i) {
+        this.destination = positionSource;
+        this.arrivalInTicks = i;
     }
 
     @Override
     public void write(PacketByteBuf buf) {
-        Vibration.writeToBuf(buf, this.vibration);
+        PositionSourceType.write(this.destination, buf);
+        buf.writeVarInt(this.arrivalInTicks);
     }
 
     @Override
     public String asString() {
-        BlockPos blockPos = this.vibration.getOrigin();
-        double d = blockPos.getX();
-        double e = blockPos.getY();
-        double f = blockPos.getZ();
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %d", Registry.PARTICLE_TYPE.getId(this.getType()), d, e, f, d, e, f, this.vibration.getArrivalInTicks());
+        Vec3d vec3d = this.destination.getPos(null).get();
+        double d = vec3d.getX();
+        double e = vec3d.getY();
+        double f = vec3d.getZ();
+        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %d", Registry.PARTICLE_TYPE.getId(this.getType()), d, e, f, this.arrivalInTicks);
     }
 
     public ParticleType<VibrationParticleEffect> getType() {
         return ParticleTypes.VIBRATION;
     }
 
-    public Vibration getVibration() {
-        return this.vibration;
+    public PositionSource getVibration() {
+        return this.destination;
+    }
+
+    public int getArrivalInTicks() {
+        return this.arrivalInTicks;
     }
 }
 

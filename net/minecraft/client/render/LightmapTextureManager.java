@@ -11,10 +11,13 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 
 /**
  * The lightmap texture manager maintains a texture containing the RGBA overlay for each of the 16&times;16 sky and block light combinations.
@@ -85,6 +88,19 @@ implements AutoCloseable {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
+    private float getDarknessFactor(float f) {
+        StatusEffectInstance statusEffectInstance;
+        if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS) && (statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS)) != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
+            return statusEffectInstance.getFactorCalculationData().get().lerp(f);
+        }
+        return 0.0f;
+    }
+
+    private float getDarkness(LivingEntity livingEntity, float f, float g) {
+        float h = 0.45f * f;
+        return Math.max(0.0f, MathHelper.cos(((float)livingEntity.age - g) * (float)Math.PI * 0.025f) * h);
+    }
+
     public void update(float delta) {
         if (!this.dirty) {
             return;
@@ -97,56 +113,66 @@ implements AutoCloseable {
         }
         float f = clientWorld.getStarBrightness(1.0f);
         float g = clientWorld.getLightningTicksLeft() > 0 ? 1.0f : f * 0.95f + 0.05f;
-        float h = this.client.player.getUnderwaterVisibility();
-        float i = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (h > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? h : 0.0f);
+        float h = this.client.options.getDarknessEffectScale().getValue().floatValue();
+        float i = this.getDarknessFactor(delta) * h;
+        float j = this.getDarkness(this.client.player, i, delta) * h;
+        float k = this.client.player.getUnderwaterVisibility();
+        float l = this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION) ? GameRenderer.getNightVisionStrength(this.client.player, delta) : (k > 0.0f && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER) ? k : 0.0f);
         Vec3f vec3f = new Vec3f(f, f, 1.0f);
         vec3f.lerp(new Vec3f(1.0f, 1.0f, 1.0f), 0.35f);
-        float j = this.flickerIntensity + 1.5f;
+        float m = this.flickerIntensity + 1.5f;
         Vec3f vec3f2 = new Vec3f();
-        for (int k = 0; k < 16; ++k) {
-            for (int l = 0; l < 16; ++l) {
-                float s;
+        for (int n = 0; n < 16; ++n) {
+            for (int o = 0; o < 16; ++o) {
+                float v;
                 Vec3f vec3f4;
-                float r;
-                float n;
-                float m = this.getBrightness(clientWorld, k) * g;
-                float o = n = this.getBrightness(clientWorld, l) * j;
-                float p = n * ((n * 0.6f + 0.4f) * 0.6f + 0.4f);
-                float q = n * (n * n * 0.6f + 0.4f);
-                vec3f2.set(o, p, q);
-                if (clientWorld.getDimensionEffects().shouldBrightenLighting()) {
+                float u;
+                float q;
+                float p = LightmapTextureManager.getBrightness(clientWorld.getDimension(), n) * g;
+                float r = q = LightmapTextureManager.getBrightness(clientWorld.getDimension(), o) * m;
+                float s = q * ((q * 0.6f + 0.4f) * 0.6f + 0.4f);
+                float t = q * (q * q * 0.6f + 0.4f);
+                vec3f2.set(r, s, t);
+                boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
+                if (bl) {
                     vec3f2.lerp(new Vec3f(0.99f, 1.12f, 1.0f), 0.25f);
+                    vec3f2.clamp(0.0f, 1.0f);
                 } else {
                     Vec3f vec3f3 = vec3f.copy();
-                    vec3f3.scale(m);
+                    vec3f3.scale(p);
                     vec3f2.add(vec3f3);
                     vec3f2.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
                     if (this.renderer.getSkyDarkness(delta) > 0.0f) {
-                        r = this.renderer.getSkyDarkness(delta);
+                        u = this.renderer.getSkyDarkness(delta);
                         vec3f4 = vec3f2.copy();
                         vec3f4.multiplyComponentwise(0.7f, 0.6f, 0.6f);
-                        vec3f2.lerp(vec3f4, r);
+                        vec3f2.lerp(vec3f4, u);
                     }
                 }
-                vec3f2.clamp(0.0f, 1.0f);
-                if (i > 0.0f && (s = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()))) < 1.0f) {
-                    r = 1.0f / s;
+                if (l > 0.0f && (v = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()))) < 1.0f) {
+                    u = 1.0f / v;
                     vec3f4 = vec3f2.copy();
-                    vec3f4.scale(r);
-                    vec3f2.lerp(vec3f4, i);
+                    vec3f4.scale(u);
+                    vec3f2.lerp(vec3f4, l);
                 }
-                float s2 = (float)this.client.options.gamma;
+                if (!bl) {
+                    if (j > 0.0f) {
+                        vec3f2.add(-j, -j, -j);
+                    }
+                    vec3f2.clamp(0.0f, 1.0f);
+                }
+                float v2 = this.client.options.getGamma().getValue().floatValue();
                 Vec3f vec3f5 = vec3f2.copy();
                 vec3f5.modify(this::easeOutQuart);
-                vec3f2.lerp(vec3f5, s2);
+                vec3f2.lerp(vec3f5, Math.max(0.0f, v2 - i));
                 vec3f2.lerp(new Vec3f(0.75f, 0.75f, 0.75f), 0.04f);
                 vec3f2.clamp(0.0f, 1.0f);
                 vec3f2.scale(255.0f);
-                int t = 255;
-                int u = (int)vec3f2.getX();
-                int v = (int)vec3f2.getY();
-                int w = (int)vec3f2.getZ();
-                this.image.setColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
+                int w = 255;
+                int x = (int)vec3f2.getX();
+                int y = (int)vec3f2.getY();
+                int z = (int)vec3f2.getZ();
+                this.image.setColor(o, n, 0xFF000000 | z << 16 | y << 8 | x);
             }
         }
         this.texture.upload();
@@ -169,8 +195,10 @@ implements AutoCloseable {
         return 1.0f - f * f * f * f;
     }
 
-    private float getBrightness(World world, int lightLevel) {
-        return world.getDimension().getBrightness(lightLevel);
+    public static float getBrightness(DimensionType dimensionType, int i) {
+        float f = (float)i / 15.0f;
+        float g = f / (4.0f - 3.0f * f);
+        return MathHelper.lerp(dimensionType.ambientLight(), g, 1.0f);
     }
 
     public static int pack(int block, int sky) {

@@ -162,7 +162,7 @@ implements Font {
                             int q;
                             BitmapFontGlyph bitmapFontGlyph;
                             int p = n++;
-                            if (o == 0 || o == 32 || (bitmapFontGlyph = int2ObjectMap.put(o, new BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
+                            if (o == 0 || (bitmapFontGlyph = int2ObjectMap.put(o, new BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)(q = this.findCharacterStartX(nativeImage, k, l, p, m)) * f)) + 1, this.ascent))) == null) continue;
                             LOGGER.warn("Codepoint '{}' declared multiple times in {}", (Object)Integer.toHexString(o), (Object)this.filename);
                         }
                     }

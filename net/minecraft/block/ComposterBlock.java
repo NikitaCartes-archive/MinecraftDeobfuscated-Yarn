@@ -73,13 +73,14 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.3f, Items.ACACIA_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.BIRCH_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.AZALEA_LEAVES);
+        ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.OAK_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.SPRUCE_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.BIRCH_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.JUNGLE_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.ACACIA_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.DARK_OAK_SAPLING);
-        ComposterBlock.registerCompostableItem(0.3f, Items.field_37508);
+        ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_PROPAGULE);
         ComposterBlock.registerCompostableItem(0.3f, Items.BEETROOT_SEEDS);
         ComposterBlock.registerCompostableItem(0.3f, Items.DRIED_KELP);
         ComposterBlock.registerCompostableItem(0.3f, Items.GRASS);

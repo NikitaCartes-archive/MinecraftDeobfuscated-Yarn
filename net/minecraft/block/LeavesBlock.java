@@ -7,6 +7,9 @@ import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Waterloggable;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -25,15 +28,17 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class LeavesBlock
-extends Block {
+extends Block
+implements Waterloggable {
     public static final int MAX_DISTANCE = 7;
     public static final IntProperty DISTANCE = Properties.DISTANCE_1_7;
     public static final BooleanProperty PERSISTENT = Properties.PERSISTENT;
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private static final int field_31112 = 1;
 
     public LeavesBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(DISTANCE, 7)).with(PERSISTENT, false)).with(WATERLOGGED, false));
     }
 
     @Override
@@ -48,10 +53,14 @@ extends Block {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (!state.get(PERSISTENT).booleanValue() && state.get(DISTANCE) == 7) {
+        if (this.shouldDecay(state)) {
             LeavesBlock.dropStacks(state, world, pos);
             world.removeBlock(pos, false);
         }
+    }
+
+    protected boolean shouldDecay(BlockState state) {
+        return state.get(PERSISTENT) == false && state.get(DISTANCE) == 7;
     }
 
     @Override
@@ -66,8 +75,11 @@ extends Block {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        int i = LeavesBlock.getDistanceFromLog(neighborState) + 1;
-        if (i != 1 || state.get(DISTANCE) != i) {
+        int i;
+        if (state.get(WATERLOGGED).booleanValue()) {
+            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        }
+        if ((i = LeavesBlock.getDistanceFromLog(neighborState) + 1) != 1 || state.get(DISTANCE) != i) {
             world.createAndScheduleBlockTick(pos, this, 1);
         }
         return state;
@@ -95,6 +107,14 @@ extends Block {
     }
 
     @Override
+    public FluidState getFluidState(BlockState state) {
+        if (state.get(WATERLOGGED).booleanValue()) {
+            return Fluids.WATER.getStill(false);
+        }
+        return super.getFluidState(state);
+    }
+
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (!world.hasRain(pos.up())) {
             return;
@@ -115,12 +135,14 @@ extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(DISTANCE, PERSISTENT);
+        builder.add(DISTANCE, PERSISTENT, WATERLOGGED);
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return LeavesBlock.updateDistanceFromLogs((BlockState)this.getDefaultState().with(PERSISTENT, true), ctx.getWorld(), ctx.getBlockPos());
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
+        BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(PERSISTENT, true)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return LeavesBlock.updateDistanceFromLogs(blockState, ctx.getWorld(), ctx.getBlockPos());
     }
 }
 

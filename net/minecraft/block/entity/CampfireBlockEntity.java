@@ -11,6 +11,7 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -18,6 +19,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
+import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.ItemScatterer;
@@ -35,6 +37,7 @@ implements Clearable {
     private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
     private final int[] cookingTimes = new int[4];
     private final int[] cookingTotalTimes = new int[4];
+    private final RecipeManager.MatchGetter<Inventory, CampfireCookingRecipe> matchGetter = RecipeManager.createCachedMatchGetter(RecipeType.CAMPFIRE_COOKING);
 
     public CampfireBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.CAMPFIRE, pos, state);
@@ -50,7 +53,7 @@ implements Clearable {
             campfire.cookingTimes[n] = campfire.cookingTimes[n] + 1;
             if (campfire.cookingTimes[i] < campfire.cookingTotalTimes[i]) continue;
             SimpleInventory inventory = new SimpleInventory(itemStack);
-            ItemStack itemStack2 = world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
+            ItemStack itemStack2 = campfire.matchGetter.getFirstMatch(inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
             world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
@@ -137,7 +140,7 @@ implements Clearable {
         if (this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)) {
             return Optional.empty();
         }
-        return this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
+        return this.matchGetter.getFirstMatch(new SimpleInventory(item), this.world);
     }
 
     public boolean addItem(ItemStack item, int cookTime) {

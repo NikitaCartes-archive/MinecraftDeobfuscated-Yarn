@@ -4,7 +4,6 @@
 package net.minecraft.item;
 
 import java.util.Random;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -57,7 +56,7 @@ extends Item {
             this.setRotations(armorStandEntity, world.random);
             serverWorld.spawnEntityAndPassengers(armorStandEntity);
             world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
-            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.ENTITY_PLACE, armorStandEntity);
+            armorStandEntity.emitGameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
         }
         itemStack.decrement(1);
         return ActionResult.success(world.isClient);

@@ -4,12 +4,14 @@
 package net.minecraft.world.gen.densityfunction;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Function;
+import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.dynamic.RegistryElementCodec;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
+import org.jetbrains.annotations.Nullable;
 
 public interface DensityFunction {
     public static final Codec<DensityFunction> field_37057 = DensityFunctionTypes.field_37061;
@@ -32,7 +34,7 @@ public interface DensityFunction {
 
     public double maxValue();
 
-    public Codec<? extends DensityFunction> getCodec();
+    public CodecHolder<? extends DensityFunction> getCodec();
 
     default public DensityFunction clamp(double min, double max) {
         return new DensityFunctionTypes.Clamp(this, min, max);
@@ -87,12 +89,37 @@ public interface DensityFunction {
 
         @Override
         default public DensityFunction apply(DensityFunctionVisitor visitor) {
-            return (DensityFunction)visitor.apply(this);
+            return visitor.apply(this);
         }
     }
 
-    public static interface DensityFunctionVisitor
-    extends Function<DensityFunction, DensityFunction> {
+    public static interface DensityFunctionVisitor {
+        public DensityFunction apply(DensityFunction var1);
+
+        default public class_7270 method_42358(class_7270 arg) {
+            return arg;
+        }
+    }
+
+    public record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
+        public static final Codec<class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.CODEC.xmap(registryEntry -> new class_7270((RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>)registryEntry, null), class_7270::noiseData);
+
+        public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
+            this(registryEntry, null);
+        }
+
+        public double method_42356(double d, double e, double f) {
+            return this.noise == null ? 0.0 : this.noise.sample(d, e, f);
+        }
+
+        public double method_42355() {
+            return this.noise == null ? 2.0 : this.noise.method_40554();
+        }
+
+        @Nullable
+        public DoublePerlinNoiseSampler noise() {
+            return this.noise;
+        }
     }
 
     public static interface class_6911 {

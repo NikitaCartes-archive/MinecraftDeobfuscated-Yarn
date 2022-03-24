@@ -92,6 +92,7 @@ import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.entity.model.TurtleEntityModel;
 import net.minecraft.client.render.entity.model.VexEntityModel;
 import net.minecraft.client.render.entity.model.VillagerResemblingModel;
+import net.minecraft.client.render.entity.model.WardenEntityModel;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
@@ -260,6 +261,7 @@ public class EntityModels {
         builder.put(EntityModelLayers.VEX, VexEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.VILLAGER, texturedModelData17);
         builder.put(EntityModelLayers.VINDICATOR, texturedModelData8);
+        builder.put(EntityModelLayers.WARDEN, WardenEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.WANDERING_TRADER, texturedModelData17);
         builder.put(EntityModelLayers.WITCH, WitchEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.WITHER, WitherEntityModel.getTexturedModelData(Dilation.NONE));
@@ -282,12 +284,14 @@ public class EntityModels {
         builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN, texturedModelData11);
         builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR, texturedModelData4);
         builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR, texturedModelData3);
-        TexturedModelData texturedModelData19 = BoatEntityModel.getTexturedModelData();
+        TexturedModelData texturedModelData19 = BoatEntityModel.getTexturedModelData(false);
+        TexturedModelData texturedModelData20 = BoatEntityModel.getTexturedModelData(true);
         for (BoatEntity.Type type : BoatEntity.Type.values()) {
             builder.put(EntityModelLayers.createBoat(type), texturedModelData19);
+            builder.put(EntityModelLayers.createChestBoat(type), texturedModelData20);
         }
-        TexturedModelData texturedModelData20 = SignBlockEntityRenderer.getTexturedModelData();
-        SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData20));
+        TexturedModelData texturedModelData21 = SignBlockEntityRenderer.getTexturedModelData();
+        SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData21));
         ImmutableMap<EntityModelLayer, TexturedModelData> immutableMap = builder.build();
         List list = EntityModelLayers.getLayers().filter(layer -> !immutableMap.containsKey(layer)).collect(Collectors.toList());
         if (!list.isEmpty()) {

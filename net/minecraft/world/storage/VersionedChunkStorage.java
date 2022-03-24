@@ -36,6 +36,10 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(directory, dsync, "chunk");
     }
 
+    public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
+        return this.worker.needsBlending(chunkPos, checkRadius);
+    }
+
     public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound nbt, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey) {
         int i = VersionedChunkStorage.getDataVersion(nbt);
         if (i < 1493 && (nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {

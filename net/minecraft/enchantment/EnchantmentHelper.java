@@ -41,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 public class EnchantmentHelper {
     private static final String ID_KEY = "id";
     private static final String LEVEL_KEY = "lvl";
+    private static final float field_38222 = 0.15f;
 
     public static NbtCompound createNbt(@Nullable Identifier id, int lvl) {
         NbtCompound nbtCompound = new NbtCompound();
@@ -213,6 +214,10 @@ public class EnchantmentHelper {
             i = j;
         }
         return i;
+    }
+
+    public static float getSwiftSneakSpeedBoost(LivingEntity livingEntity) {
+        return (float)EnchantmentHelper.getEquipmentLevel(Enchantments.SWIFT_SNEAK, livingEntity) * 0.15f;
     }
 
     public static int getKnockback(LivingEntity entity) {

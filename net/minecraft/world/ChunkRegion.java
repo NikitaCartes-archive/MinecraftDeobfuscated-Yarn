@@ -34,6 +34,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.HeightLimitView;
@@ -107,6 +108,10 @@ implements StructureWorldAccess {
         this.lowerCorner = chunks.get(0).getPos();
         this.upperCorner = chunks.get(chunks.size() - 1).getPos();
         this.structureAccessor = world.getStructureAccessor().forRegion(this);
+    }
+
+    public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
+        return this.world.getChunkManager().threadedAnvilChunkStorage.needsBlending(chunkPos, checkRadius);
     }
 
     public ChunkPos getCenterPos() {
@@ -397,7 +402,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+    public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
     }
 
     @Override

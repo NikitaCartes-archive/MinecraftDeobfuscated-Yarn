@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -74,6 +75,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class HorseBaseEntity
 extends AnimalEntity
 implements InventoryChangedListener,
+RideableInventory,
 JumpingMount,
 Saddleable {
     public static final int field_30413 = 400;
@@ -398,6 +400,7 @@ Saddleable {
         return 400;
     }
 
+    @Override
     public void openInventory(PlayerEntity player) {
         if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(player)) && this.isTame()) {
             player.openHorseInventory(this, this.items);
@@ -471,7 +474,7 @@ Saddleable {
         }
         if (bl) {
             this.playEatingAnimation();
-            this.emitGameEvent(GameEvent.EAT, this.getCameraBlockPos());
+            this.emitGameEvent(GameEvent.EAT);
         }
         return bl;
     }
@@ -658,12 +661,12 @@ Saddleable {
         if (!this.isAlive()) {
             return;
         }
-        if (!(this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled())) {
+        LivingEntity livingEntity = this.getPrimaryPassenger();
+        if (!this.hasPassengers() || livingEntity == null) {
             this.airStrafingSpeed = 0.02f;
             super.travel(movementInput);
             return;
         }
-        LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
         this.setYaw(livingEntity.getYaw());
         this.prevYaw = this.getYaw();
         this.setPitch(livingEntity.getPitch() * 0.5f);
@@ -773,11 +776,6 @@ Saddleable {
         child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
         double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus();
         child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
-    }
-
-    @Override
-    public boolean canBeControlledByRider() {
-        return this.getPrimaryPassenger() instanceof LivingEntity;
     }
 
     public float getEatingGrassAnimationProgress(float tickDelta) {
@@ -960,8 +958,13 @@ Saddleable {
 
     @Override
     @Nullable
-    public Entity getPrimaryPassenger() {
-        return this.getFirstPassenger();
+    public LivingEntity getPrimaryPassenger() {
+        Entity entity;
+        if (this.isSaddled() && (entity = this.getFirstPassenger()) instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)entity;
+            return livingEntity;
+        }
+        return null;
     }
 
     @Nullable
@@ -1018,6 +1021,12 @@ Saddleable {
 
     public boolean areInventoriesDifferent(Inventory inventory) {
         return this.items != inventory;
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getPrimaryPassenger() {
+        return this.getPrimaryPassenger();
     }
 }
 

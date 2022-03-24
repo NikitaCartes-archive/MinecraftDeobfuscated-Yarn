@@ -61,6 +61,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
 import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
@@ -91,6 +92,7 @@ AutoCloseable {
     public static final int MAX_Y = 20000000;
     public static final int MIN_Y = -20000000;
     protected final List<BlockEntityTickInvoker> blockEntityTickers = Lists.newArrayList();
+    protected final NeighborUpdater neighborUpdater;
     private final List<BlockEntityTickInvoker> pendingBlockEntityTickers = Lists.newArrayList();
     private boolean iteratingTickingBlockEntities;
     private final Thread thread;
@@ -104,7 +106,7 @@ AutoCloseable {
     protected float thunderGradient;
     public final Random random = new Random();
     final DimensionType dimension;
-    private final RegistryEntry<DimensionType> field_36402;
+    private final RegistryEntry<DimensionType> dimensionEntry;
     protected final MutableWorldProperties properties;
     private final Supplier<Profiler> profiler;
     public final boolean isClient;
@@ -113,28 +115,29 @@ AutoCloseable {
     private final RegistryKey<World> registryKey;
     private long tickOrder;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> registryEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed) {
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
         this.profiler = profiler;
         this.properties = properties;
-        this.field_36402 = registryEntry;
-        this.dimension = registryEntry.value();
+        this.dimensionEntry = dimension;
+        this.dimension = dimension.value();
         this.registryKey = registryRef;
         this.isClient = isClient;
-        this.border = this.dimension.getCoordinateScale() != 1.0 ? new WorldBorder(){
+        this.border = this.dimension.coordinateScale() != 1.0 ? new WorldBorder(){
 
             @Override
             public double getCenterX() {
-                return super.getCenterX() / World.this.dimension.getCoordinateScale();
+                return super.getCenterX() / World.this.dimension.coordinateScale();
             }
 
             @Override
             public double getCenterZ() {
-                return super.getCenterZ() / World.this.dimension.getCoordinateScale();
+                return super.getCenterZ() / World.this.dimension.coordinateScale();
             }
         } : new WorldBorder();
         this.thread = Thread.currentThread();
         this.biomeAccess = new BiomeAccess(this, seed);
         this.debugWorld = debugWorld;
+        this.neighborUpdater = new ChainRestrictedNeighborUpdater(this, maxChainedNeighborUpdates);
     }
 
     @Override
@@ -313,15 +316,12 @@ AutoCloseable {
     public void scheduleBlockRerenderIfNeeded(BlockPos pos, BlockState old, BlockState updated) {
     }
 
-    public abstract NeighborUpdater getNeighborUpdater();
-
     /**
      * Emits a neighbor update to all 6 neighboring blocks of {@code pos}.
      * 
      * @see #updateNeighborsExcept(BlockPos, Block, Direction)
      */
     public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
-        this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, null);
     }
 
     /**
@@ -331,7 +331,6 @@ AutoCloseable {
      * @see #updateNeighborsAlways(BlockPos, Block)
      */
     public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-        this.getNeighborUpdater().updateNeighbors(pos, sourceBlock, direction);
     }
 
     /**
@@ -341,11 +340,14 @@ AutoCloseable {
      * @see #updateNeighborsAlways(BlockPos, Block)
      */
     public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-        this.getNeighborUpdater().updateNeighbor(pos, sourceBlock, sourcePos);
     }
 
     public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-        this.getNeighborUpdater().updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
+    }
+
+    @Override
+    public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
+        this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, neighborState, pos, neighborPos, flags, maxUpdateDepth);
     }
 
     @Override
@@ -929,8 +931,8 @@ AutoCloseable {
         return this.dimension;
     }
 
-    public RegistryEntry<DimensionType> method_40134() {
-        return this.field_36402;
+    public RegistryEntry<DimensionType> getDimensionEntry() {
+        return this.dimensionEntry;
     }
 
     public RegistryKey<World> getRegistryKey() {
@@ -991,24 +993,6 @@ AutoCloseable {
     }
 
     protected abstract EntityLookup<Entity> getEntityLookup();
-
-    protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
-        int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
-        int j = ChunkSectionPos.getSectionCoord(pos.getZ() - range);
-        int k = ChunkSectionPos.getSectionCoord(pos.getX() + range);
-        int l = ChunkSectionPos.getSectionCoord(pos.getZ() + range);
-        int m = ChunkSectionPos.getSectionCoord(pos.getY() - range);
-        int n = ChunkSectionPos.getSectionCoord(pos.getY() + range);
-        for (int o = i; o <= k; ++o) {
-            for (int p = j; p <= l; ++p) {
-                WorldChunk chunk = this.getChunkManager().getWorldChunk(o, p);
-                if (chunk == null) continue;
-                for (int q = m; q <= n; ++q) {
-                    ((Chunk)chunk).getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
-                }
-            }
-        }
-    }
 
     @Override
     public long getTickOrder() {

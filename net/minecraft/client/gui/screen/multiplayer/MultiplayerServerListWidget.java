@@ -262,7 +262,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             } else if (m >= entryWidth - j - 15 - 2 && m <= entryWidth - 15 - 2 && n >= 0 && n <= 8) {
                 this.screen.setTooltip(list2);
             }
-            if (this.client.options.touchscreen || hovered) {
+            if (this.client.options.getTouchscreen().getValue().booleanValue() || hovered) {
                 RenderSystem.setShaderTexture(0, SERVER_SELECTION_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.setShader(GameRenderer::getPositionTexShader);

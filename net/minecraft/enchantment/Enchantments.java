@@ -32,6 +32,7 @@ import net.minecraft.enchantment.RiptideEnchantment;
 import net.minecraft.enchantment.SilkTouchEnchantment;
 import net.minecraft.enchantment.SoulSpeedEnchantment;
 import net.minecraft.enchantment.SweepingEnchantment;
+import net.minecraft.enchantment.SwiftSneakEnchantment;
 import net.minecraft.enchantment.ThornsEnchantment;
 import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.enchantment.VanishingCurseEnchantment;
@@ -52,6 +53,7 @@ public class Enchantments {
     public static final Enchantment FROST_WALKER = Enchantments.register("frost_walker", new FrostWalkerEnchantment(Enchantment.Rarity.RARE, EquipmentSlot.FEET));
     public static final Enchantment BINDING_CURSE = Enchantments.register("binding_curse", new BindingCurseEnchantment(Enchantment.Rarity.VERY_RARE, ALL_ARMOR));
     public static final Enchantment SOUL_SPEED = Enchantments.register("soul_speed", new SoulSpeedEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.FEET));
+    public static final Enchantment SWIFT_SNEAK = Enchantments.register("swift_sneak", new SwiftSneakEnchantment(Enchantment.Rarity.VERY_RARE, EquipmentSlot.LEGS));
     public static final Enchantment SHARPNESS = Enchantments.register("sharpness", new DamageEnchantment(Enchantment.Rarity.COMMON, 0, EquipmentSlot.MAINHAND));
     public static final Enchantment SMITE = Enchantments.register("smite", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 1, EquipmentSlot.MAINHAND));
     public static final Enchantment BANE_OF_ARTHROPODS = Enchantments.register("bane_of_arthropods", new DamageEnchantment(Enchantment.Rarity.UNCOMMON, 2, EquipmentSlot.MAINHAND));

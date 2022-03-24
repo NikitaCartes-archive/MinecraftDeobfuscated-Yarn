@@ -18,6 +18,7 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureType;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockBox;
@@ -107,25 +108,47 @@ public abstract class StructureFeature {
 
     private static boolean method_41613(class_7150 arg, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, Predicate<RegistryEntry<Biome>> predicate) {
         BlockPos blockPos = arg.position();
-        return predicate.test(chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.sampler()));
+        return predicate.test(chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.getMultiNoiseSampler()));
     }
 
     public void postPlace(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, ChunkPos chunkPos, StructurePiecesList structurePiecesList) {
     }
 
-    public static int[] method_41611(class_7149 arg, int i, int j, int k, int l) {
+    private static int[] method_41611(class_7149 arg, int i, int j, int k, int l) {
         ChunkGenerator chunkGenerator = arg.chunkGenerator();
         HeightLimitView heightLimitView = arg.heightAccessor();
         NoiseConfig noiseConfig = arg.randomState();
         return new int[]{chunkGenerator.getHeightInGround(i, k, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig), chunkGenerator.getHeightInGround(i, k + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig), chunkGenerator.getHeightInGround(i + j, k, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig), chunkGenerator.getHeightInGround(i + j, k + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig)};
     }
 
-    public static int method_41610(class_7149 arg, int i, int j) {
+    protected static int method_41610(class_7149 arg, int i, int j) {
         ChunkPos chunkPos = arg.chunkPos();
         int k = chunkPos.getStartX();
         int l = chunkPos.getStartZ();
-        int[] is = StructureFeature.method_41611(arg, k, i, l, j);
+        return StructureFeature.method_42381(arg, k, l, i, j);
+    }
+
+    protected static int method_42381(class_7149 arg, int i, int j, int k, int l) {
+        int[] is = StructureFeature.method_41611(arg, i, k, j, l);
         return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
+    }
+
+    @Deprecated
+    protected BlockPos method_42382(class_7149 arg, BlockRotation blockRotation) {
+        int i = 5;
+        int j = 5;
+        if (blockRotation == BlockRotation.CLOCKWISE_90) {
+            i = -5;
+        } else if (blockRotation == BlockRotation.CLOCKWISE_180) {
+            i = -5;
+            j = -5;
+        } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
+            j = -5;
+        }
+        ChunkPos chunkPos = arg.chunkPos();
+        int k = chunkPos.getOffsetX(7);
+        int l = chunkPos.getOffsetZ(7);
+        return new BlockPos(k, StructureFeature.method_42381(arg, k, l, i, j), l);
     }
 
     public abstract Optional<class_7150> method_38676(class_7149 var1);

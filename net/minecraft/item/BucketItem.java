@@ -119,7 +119,7 @@ implements FluidModificationItem {
         if (!bl2) {
             return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null);
         }
-        if (world.getDimension().isUltrawarm() && this.fluid.isIn(FluidTags.WATER)) {
+        if (world.getDimension().ultrawarm() && this.fluid.isIn(FluidTags.WATER)) {
             int i = pos.getX();
             int j = pos.getY();
             int k = pos.getZ();

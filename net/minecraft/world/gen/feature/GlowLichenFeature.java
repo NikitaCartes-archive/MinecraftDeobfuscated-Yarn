@@ -17,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.GlowLichenFeatureConfig;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -47,7 +48,7 @@ extends Feature<GlowLichenFeatureConfig> {
             for (int i = 0; i < glowLichenFeatureConfig.searchRange; ++i) {
                 mutable.set((Vec3i)blockPos, direction);
                 BlockState blockState = structureWorldAccess.getBlockState(mutable);
-                if (!GlowLichenFeature.isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.field_37709)) continue block0;
+                if (!GlowLichenFeature.isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.lichen)) continue block0;
                 if (!GlowLichenFeature.generate(structureWorldAccess, mutable, blockState, glowLichenFeatureConfig, random, list2)) continue;
                 return true;
             }
@@ -60,14 +61,14 @@ extends Feature<GlowLichenFeatureConfig> {
         for (Direction direction : directions) {
             BlockState blockState = world.getBlockState(mutable.set((Vec3i)pos, direction));
             if (!blockState.isIn(config.canPlaceOn)) continue;
-            BlockState blockState2 = config.field_37709.withDirection(state, world, pos, direction);
+            BlockState blockState2 = config.lichen.withDirection(state, world, pos, direction);
             if (blockState2 == null) {
                 return false;
             }
             world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
             world.getChunk(pos).markBlockForPostProcessing(pos);
             if (random.nextFloat() < config.spreadChance) {
-                config.field_37709.method_41432().method_41447(blockState2, world, pos, direction, random, true);
+                config.lichen.getGrower().grow(blockState2, (WorldAccess)world, pos, direction, random, true);
             }
             return true;
         }

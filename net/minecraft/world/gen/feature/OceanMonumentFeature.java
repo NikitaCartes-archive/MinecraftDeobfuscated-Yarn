@@ -42,7 +42,7 @@ extends StructureFeature {
     public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
         int i = arg.chunkPos().getOffsetX(9);
         int j = arg.chunkPos().getOffsetZ(9);
-        Set<RegistryEntry<Biome>> set = arg.biomeSource().getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.randomState().sampler());
+        Set<RegistryEntry<Biome>> set = arg.biomeSource().getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.randomState().getMultiNoiseSampler());
         for (RegistryEntry<Biome> registryEntry : set) {
             if (registryEntry.isIn(BiomeTags.REQUIRED_OCEAN_MONUMENT_SURROUNDING)) continue;
             return Optional.empty();

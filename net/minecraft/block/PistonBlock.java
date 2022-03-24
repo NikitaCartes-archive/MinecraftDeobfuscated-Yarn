@@ -176,7 +176,7 @@ extends FacingBlock {
             if (!this.move(world, pos, direction, true)) return false;
             world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), Block.NOTIFY_ALL | Block.MOVED);
             world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.25f + 0.6f);
-            world.emitGameEvent(GameEvent.PISTON_EXTEND, pos);
+            world.emitGameEvent(null, GameEvent.PISTON_EXTEND, pos);
             return true;
         } else {
             if (type != 1 && type != 2) return true;
@@ -210,7 +210,7 @@ extends FacingBlock {
                 world.removeBlock(pos.offset(direction), false);
             }
             world.playSound(null, pos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.15f + 0.6f);
-            world.emitGameEvent(GameEvent.PISTON_CONTRACT, pos);
+            world.emitGameEvent(null, GameEvent.PISTON_CONTRACT, pos);
         }
         return true;
     }

@@ -210,7 +210,7 @@ extends Block {
         if (!this.getDefaultState().isOf(sourceBlock) && bl != state.get(POWERED)) {
             if (bl != state.get(OPEN)) {
                 this.playOpenCloseSound(world, pos, bl);
-                world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+                world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             }
             world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), Block.NOTIFY_LISTENERS);
         }

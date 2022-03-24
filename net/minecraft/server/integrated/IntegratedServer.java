@@ -91,12 +91,12 @@ extends MinecraftServer {
             return;
         }
         super.tick(shouldKeepTicking);
-        int i = Math.max(2, this.client.options.viewDistance);
+        int i = Math.max(2, this.client.options.getViewDistance().getValue());
         if (i != this.getPlayerManager().getViewDistance()) {
             LOGGER.info("Changing view distance to {}, from {}", (Object)i, (Object)this.getPlayerManager().getViewDistance());
             this.getPlayerManager().setViewDistance(i);
         }
-        if ((j = Math.max(2, this.client.options.simulationDistance)) != this.simulationDistance) {
+        if ((j = Math.max(2, this.client.options.getSimulationDistance().getValue())) != this.simulationDistance) {
             LOGGER.info("Changing simulation distance to {}, from {}", (Object)j, (Object)this.simulationDistance);
             this.getPlayerManager().setSimulationDistance(j);
             this.simulationDistance = j;
@@ -245,7 +245,7 @@ extends MinecraftServer {
 
     @Override
     public int adjustTrackingDistance(int initialDistance) {
-        return (int)(this.client.options.entityDistanceScaling * (float)initialDistance);
+        return (int)(this.client.options.getEntityDistanceScaling().getValue() * (double)initialDistance);
     }
 
     @Override

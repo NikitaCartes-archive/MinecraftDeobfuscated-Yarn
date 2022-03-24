@@ -21,7 +21,7 @@ import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -438,7 +438,7 @@ public class ClientPlayerInteractionManager {
     }
 
     public boolean hasRidingInventory() {
-        return this.client.player.hasVehicle() && this.client.player.getVehicle() instanceof HorseBaseEntity;
+        return this.client.player.hasVehicle() && this.client.player.getVehicle() instanceof RideableInventory;
     }
 
     public boolean isFlyingLocked() {

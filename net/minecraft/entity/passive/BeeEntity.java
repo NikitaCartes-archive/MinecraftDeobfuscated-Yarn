@@ -76,6 +76,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
@@ -680,6 +681,9 @@ Flutterer {
 
         PollinateGoal() {
             this.flowerPredicate = state -> {
+                if (state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED).booleanValue()) {
+                    return false;
+                }
                 if (state.isIn(BlockTags.FLOWERS)) {
                     if (state.isOf(Blocks.SUNFLOWER)) {
                         return state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;

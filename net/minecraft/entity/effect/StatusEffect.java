@@ -6,6 +6,7 @@ package net.minecraft.entity.effect;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -14,6 +15,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
@@ -28,6 +30,7 @@ public class StatusEffect {
     private final int color;
     @Nullable
     private String translationKey;
+    private Supplier<StatusEffectInstance.FactorCalculationData> factorCalculationDataSupplier = () -> null;
 
     @Nullable
     public static StatusEffect byRawId(int rawId) {
@@ -38,9 +41,13 @@ public class StatusEffect {
         return Registry.STATUS_EFFECT.getRawId(type);
     }
 
-    protected StatusEffect(StatusEffectCategory category, int color) {
-        this.category = category;
+    protected StatusEffect(StatusEffectCategory statusEffectCategory, int color) {
+        this.category = statusEffectCategory;
         this.color = color;
+    }
+
+    public Supplier<StatusEffectInstance.FactorCalculationData> getFactorCalculationDataSupplier() {
+        return this.factorCalculationDataSupplier;
     }
 
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
@@ -138,6 +145,11 @@ public class StatusEffect {
     public StatusEffect addAttributeModifier(EntityAttribute attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
         EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(uuid), this::getTranslationKey, amount, operation);
         this.attributeModifiers.put(attribute, entityAttributeModifier);
+        return this;
+    }
+
+    public StatusEffect setFactorCalculationDataSupplier(Supplier<StatusEffectInstance.FactorCalculationData> supplier) {
+        this.factorCalculationDataSupplier = supplier;
         return this;
     }
 

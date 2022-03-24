@@ -99,6 +99,7 @@ import net.minecraft.client.render.entity.VexEntityRenderer;
 import net.minecraft.client.render.entity.VillagerEntityRenderer;
 import net.minecraft.client.render.entity.VindicatorEntityRenderer;
 import net.minecraft.client.render.entity.WanderingTraderEntityRenderer;
+import net.minecraft.client.render.entity.WardenEntityRenderer;
 import net.minecraft.client.render.entity.WitchEntityRenderer;
 import net.minecraft.client.render.entity.WitherEntityRenderer;
 import net.minecraft.client.render.entity.WitherSkeletonEntityRenderer;
@@ -170,9 +171,10 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.BAT, BatEntityRenderer::new);
         EntityRenderers.register(EntityType.BEE, BeeEntityRenderer::new);
         EntityRenderers.register(EntityType.BLAZE, BlazeEntityRenderer::new);
-        EntityRenderers.register(EntityType.BOAT, BoatEntityRenderer::new);
+        EntityRenderers.register(EntityType.BOAT, context -> new BoatEntityRenderer(context, false));
         EntityRenderers.register(EntityType.CAT, CatEntityRenderer::new);
         EntityRenderers.register(EntityType.CAVE_SPIDER, CaveSpiderEntityRenderer::new);
+        EntityRenderers.register(EntityType.CHEST_BOAT, context -> new BoatEntityRenderer(context, true));
         EntityRenderers.register(EntityType.CHEST_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.CHEST_MINECART));
         EntityRenderers.register(EntityType.CHICKEN, ChickenEntityRenderer::new);
         EntityRenderers.register(EntityType.COD, CodEntityRenderer::new);
@@ -266,6 +268,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.VEX, VexEntityRenderer::new);
         EntityRenderers.register(EntityType.VILLAGER, VillagerEntityRenderer::new);
         EntityRenderers.register(EntityType.VINDICATOR, VindicatorEntityRenderer::new);
+        EntityRenderers.register(EntityType.WARDEN, WardenEntityRenderer::new);
         EntityRenderers.register(EntityType.WANDERING_TRADER, WanderingTraderEntityRenderer::new);
         EntityRenderers.register(EntityType.WITCH, WitchEntityRenderer::new);
         EntityRenderers.register(EntityType.WITHER, WitherEntityRenderer::new);

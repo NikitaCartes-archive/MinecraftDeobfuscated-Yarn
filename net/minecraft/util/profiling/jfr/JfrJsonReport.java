@@ -87,8 +87,8 @@ public class JfrJsonReport {
                 jsonObject.addProperty("level", sample.worldKey());
                 jsonObject.addProperty("chunkPosX", sample.chunkPos().x);
                 jsonObject.addProperty("chunkPosZ", sample.chunkPos().z);
-                jsonObject.addProperty("worldPosX", sample.centerPos().x);
-                jsonObject.addProperty("worldPosZ", sample.centerPos().z);
+                jsonObject.addProperty("worldPosX", sample.centerPos().x());
+                jsonObject.addProperty("worldPosZ", sample.centerPos().z());
                 return jsonObject;
             };
             jsonObject2.add("fastest", function.apply(longRunningSampleStatistics.fastestSample()));

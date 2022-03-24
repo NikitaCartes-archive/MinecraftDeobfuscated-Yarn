@@ -10,11 +10,11 @@ import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LichenGrower;
+import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_7118;
-import net.minecraft.class_7124;
-import net.minecraft.class_7128;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -34,11 +34,11 @@ import net.minecraft.world.WorldAccess;
 
 public class SculkVeinBlock
 extends AbstractLichenBlock
-implements class_7124,
+implements SculkSpreadable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-    private final class_7118 field_37632 = new class_7118(new class_7131(class_7118.field_37595));
-    private final class_7118 field_37633 = new class_7118(new class_7131(class_7118.class_7123.SAME_POSITION));
+    private final LichenGrower allGrowTypeGrower = new LichenGrower(new SculkVeinGrowChecker(LichenGrower.GROW_TYPES));
+    private final LichenGrower samePositionOnlyGrower = new LichenGrower(new SculkVeinGrowChecker(LichenGrower.GrowType.SAME_POSITION));
 
     public SculkVeinBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -46,87 +46,87 @@ Waterloggable {
     }
 
     @Override
-    public class_7118 method_41432() {
-        return this.field_37632;
+    public LichenGrower getGrower() {
+        return this.allGrowTypeGrower;
     }
 
-    public class_7118 method_41516() {
-        return this.field_37633;
+    public LichenGrower getSamePositionOnlyGrower() {
+        return this.samePositionOnlyGrower;
     }
 
-    public static boolean method_41514(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, Collection<Direction> collection) {
+    public static boolean place(WorldAccess world, BlockPos pos, BlockState state, Collection<Direction> directions) {
         boolean bl = false;
-        BlockState blockState2 = Blocks.SCULK_VEIN.getDefaultState();
-        for (Direction direction : collection) {
-            BlockPos blockPos2;
-            if (!SculkVeinBlock.canGrowOn(worldAccess, direction, blockPos2 = blockPos.offset(direction), worldAccess.getBlockState(blockPos2))) continue;
-            blockState2 = (BlockState)blockState2.with(SculkVeinBlock.getProperty(direction), true);
+        BlockState blockState = Blocks.SCULK_VEIN.getDefaultState();
+        for (Direction direction : directions) {
+            BlockPos blockPos;
+            if (!SculkVeinBlock.canGrowOn(world, direction, blockPos = pos.offset(direction), world.getBlockState(blockPos))) continue;
+            blockState = (BlockState)blockState.with(SculkVeinBlock.getProperty(direction), true);
             bl = true;
         }
         if (!bl) {
             return false;
         }
-        if (!blockState.getFluidState().isEmpty()) {
-            blockState2 = (BlockState)blockState2.with(WATERLOGGED, true);
+        if (!state.getFluidState().isEmpty()) {
+            blockState = (BlockState)blockState.with(WATERLOGGED, true);
         }
-        worldAccess.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
+        world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
         return true;
     }
 
     @Override
-    public void method_41468(WorldAccess worldAccess, BlockState blockState, BlockPos blockPos, Random random) {
-        if (!blockState.isOf(this)) {
+    public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, Random random) {
+        if (!state.isOf(this)) {
             return;
         }
         for (Direction direction : DIRECTIONS) {
             BooleanProperty booleanProperty = SculkVeinBlock.getProperty(direction);
-            if (!blockState.get(booleanProperty).booleanValue() || !worldAccess.getBlockState(blockPos.offset(direction)).isOf(Blocks.SCULK)) continue;
-            blockState = (BlockState)blockState.with(booleanProperty, false);
+            if (!state.get(booleanProperty).booleanValue() || !world.getBlockState(pos.offset(direction)).isOf(Blocks.SCULK)) continue;
+            state = (BlockState)state.with(booleanProperty, false);
         }
-        if (!SculkVeinBlock.hasAnyDirection(blockState)) {
-            FluidState fluidState = worldAccess.getFluidState(blockPos);
-            blockState = (fluidState.isEmpty() ? Blocks.AIR : Blocks.WATER).getDefaultState();
+        if (!SculkVeinBlock.hasAnyDirection(state)) {
+            FluidState fluidState = world.getFluidState(pos);
+            state = (fluidState.isEmpty() ? Blocks.AIR : Blocks.WATER).getDefaultState();
         }
-        worldAccess.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
-        class_7124.super.method_41468(worldAccess, blockState, blockPos, random);
+        world.setBlockState(pos, state, Block.NOTIFY_ALL);
+        SculkSpreadable.super.spreadAtSamePosition(world, state, pos, random);
     }
 
     @Override
-    public int method_41471(class_7128.class_7129 arg, WorldAccess worldAccess, BlockPos blockPos, Random random, class_7128 arg2, boolean bl) {
-        if (bl && this.method_41515(arg2, worldAccess, arg.method_41495(), random)) {
-            return arg.method_41508() - 1;
+    public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+        if (shouldConvertToBlock && this.convertToBlock(spreadManager, world, cursor.getPos(), random)) {
+            return cursor.getCharge() - 1;
         }
-        return random.nextInt(arg2.method_41490()) == 0 ? MathHelper.floor((float)arg.method_41508() * 0.5f) : arg.method_41508();
+        return random.nextInt(spreadManager.getSpreadChance()) == 0 ? MathHelper.floor((float)cursor.getCharge() * 0.5f) : cursor.getCharge();
     }
 
-    private boolean method_41515(class_7128 arg, WorldAccess worldAccess, BlockPos blockPos, Random random) {
-        BlockState blockState = worldAccess.getBlockState(blockPos);
-        TagKey<Block> tagKey = arg.method_41487();
+    private boolean convertToBlock(SculkSpreadManager spreadManager, WorldAccess world, BlockPos pos, Random random) {
+        BlockState blockState = world.getBlockState(pos);
+        TagKey<Block> tagKey = spreadManager.getReplaceableTag();
         for (Direction direction : Direction.shuffle(random)) {
-            BlockPos blockPos2;
-            if (!SculkVeinBlock.hasDirection(blockState, direction) || !worldAccess.getBlockState(blockPos2 = blockPos.offset(direction)).isIn(tagKey)) continue;
+            BlockPos blockPos;
+            if (!SculkVeinBlock.hasDirection(blockState, direction) || !world.getBlockState(blockPos = pos.offset(direction)).isIn(tagKey)) continue;
             BlockState blockState2 = Blocks.SCULK.getDefaultState();
-            worldAccess.setBlockState(blockPos2, blockState2, Block.NOTIFY_ALL);
-            worldAccess.playSound(null, blockPos2, SoundEvents.BLOCK_SCULK_SPREAD, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            this.field_37632.method_41452(blockState2, worldAccess, blockPos2, arg.method_41492());
+            world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
+            world.playSound(null, blockPos, SoundEvents.BLOCK_SCULK_SPREAD, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            this.allGrowTypeGrower.grow(blockState2, world, blockPos, spreadManager.isWorldGen());
             Direction direction2 = direction.getOpposite();
             for (Direction direction3 : DIRECTIONS) {
-                BlockPos blockPos3;
+                BlockPos blockPos2;
                 BlockState blockState3;
-                if (direction3 == direction2 || !(blockState3 = worldAccess.getBlockState(blockPos3 = blockPos2.offset(direction3))).isOf(this)) continue;
-                this.method_41468(worldAccess, blockState3, blockPos3, random);
+                if (direction3 == direction2 || !(blockState3 = world.getBlockState(blockPos2 = blockPos.offset(direction3))).isOf(this)) continue;
+                this.spreadAtSamePosition(world, blockState3, blockPos2, random);
             }
             return true;
         }
         return false;
     }
 
-    public static boolean method_41513(WorldAccess worldAccess, BlockState blockState, BlockPos blockPos) {
-        if (!blockState.isOf(Blocks.SCULK_VEIN)) {
+    public static boolean veinCoversSculkReplaceable(WorldAccess world, BlockState state, BlockPos pos) {
+        if (!state.isOf(Blocks.SCULK_VEIN)) {
             return false;
         }
         for (Direction direction : DIRECTIONS) {
-            if (!SculkVeinBlock.hasDirection(blockState, direction) || !worldAccess.getBlockState(blockPos.offset(direction)).isIn(BlockTags.SCULK_REPLACEABLE)) continue;
+            if (!SculkVeinBlock.hasDirection(state, direction) || !world.getBlockState(pos.offset(direction)).isIn(BlockTags.SCULK_REPLACEABLE)) continue;
             return true;
         }
         return false;
@@ -164,40 +164,40 @@ Waterloggable {
         return PistonBehavior.DESTROY;
     }
 
-    class class_7131
-    extends class_7118.class_7119 {
-        private final class_7118.class_7123[] field_37635;
+    class SculkVeinGrowChecker
+    extends LichenGrower.LichenGrowChecker {
+        private final LichenGrower.GrowType[] growTypes;
 
-        public class_7131(class_7118.class_7123 ... args) {
+        public SculkVeinGrowChecker(LichenGrower.GrowType ... growTypes) {
             super(SculkVeinBlock.this);
-            this.field_37635 = args;
+            this.growTypes = growTypes;
         }
 
         @Override
-        public boolean method_41458(BlockView blockView, BlockPos blockPos, BlockPos blockPos2, Direction direction, BlockState blockState) {
-            BlockPos blockPos3;
-            BlockState blockState2 = blockView.getBlockState(blockPos2.offset(direction));
-            if (blockState2.isOf(Blocks.SCULK) || blockState2.isOf(Blocks.SCULK_CATALYST) || blockState2.isOf(Blocks.MOVING_PISTON)) {
+        public boolean canGrow(BlockView world, BlockPos pos, BlockPos growPos, Direction direction, BlockState state) {
+            BlockPos blockPos;
+            BlockState blockState = world.getBlockState(growPos.offset(direction));
+            if (blockState.isOf(Blocks.SCULK) || blockState.isOf(Blocks.SCULK_CATALYST) || blockState.isOf(Blocks.MOVING_PISTON)) {
                 return false;
             }
-            if (blockPos.getManhattanDistance(blockPos2) == 2 && blockView.getBlockState(blockPos3 = blockPos.offset(direction.getOpposite())).isSideSolidFullSquare(blockView, blockPos3, direction)) {
+            if (pos.getManhattanDistance(growPos) == 2 && world.getBlockState(blockPos = pos.offset(direction.getOpposite())).isSideSolidFullSquare(world, blockPos, direction)) {
                 return false;
             }
-            FluidState fluidState = blockState.getFluidState();
+            FluidState fluidState = state.getFluidState();
             if (!fluidState.isEmpty() && !fluidState.isOf(Fluids.WATER)) {
                 return false;
             }
-            return blockState.getMaterial().isReplaceable() || super.method_41458(blockView, blockPos, blockPos2, direction, blockState);
+            return state.getMaterial().isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
         }
 
         @Override
-        public class_7118.class_7123[] method_41460() {
-            return this.field_37635;
+        public LichenGrower.GrowType[] getGrowTypes() {
+            return this.growTypes;
         }
 
         @Override
-        public boolean method_41462(BlockState blockState) {
-            return !blockState.isOf(Blocks.SCULK_VEIN);
+        public boolean canGrow(BlockState state) {
+            return !state.isOf(Blocks.SCULK_VEIN);
         }
     }
 }

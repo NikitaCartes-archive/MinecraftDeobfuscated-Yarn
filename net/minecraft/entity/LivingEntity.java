@@ -77,6 +77,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
@@ -1524,7 +1525,7 @@ extends Entity {
         this.setHealth(h - amount);
         this.getDamageTracker().onDamage(source, h, amount);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - amount);
-        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGED);
     }
 
     public DamageTracker getDamageTracker() {
@@ -1912,7 +1913,7 @@ extends Entity {
         return 0.8f;
     }
 
-    public boolean canWalkOnFluid(FluidState fluidState) {
+    public boolean canWalkOnFluid(FluidState state) {
         return false;
     }
 
@@ -3028,7 +3029,7 @@ extends Entity {
 
     public ItemStack eatFood(World world, ItemStack stack) {
         if (stack.isFood()) {
-            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getCameraBlockPos());
+            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getEyePos());
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(stack, world, this);
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
@@ -3176,6 +3177,10 @@ extends Entity {
         this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);
         this.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
+    }
+
+    public boolean disablesShield() {
+        return this.getMainHandStack().getItem() instanceof AxeItem;
     }
 
     public record FallSounds(SoundEvent small, SoundEvent big) {

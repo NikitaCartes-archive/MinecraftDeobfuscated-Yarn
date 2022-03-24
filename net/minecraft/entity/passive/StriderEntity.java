@@ -180,8 +180,8 @@ Saddleable {
     }
 
     @Override
-    public boolean canWalkOnFluid(FluidState fluidState) {
-        return fluidState.isIn(FluidTags.LAVA);
+    public boolean canWalkOnFluid(FluidState state) {
+        return state.isIn(FluidTags.LAVA);
     }
 
     @Override
@@ -192,16 +192,6 @@ Saddleable {
     }
 
     @Override
-    public boolean canBeControlledByRider() {
-        Entity entity = this.getPrimaryPassenger();
-        if (!(entity instanceof PlayerEntity)) {
-            return false;
-        }
-        PlayerEntity playerEntity = (PlayerEntity)entity;
-        return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
-    }
-
-    @Override
     public boolean canSpawn(WorldView world) {
         return world.doesNotIntersectEntities(this);
     }
@@ -209,7 +199,16 @@ Saddleable {
     @Override
     @Nullable
     public Entity getPrimaryPassenger() {
-        return this.getFirstPassenger();
+        Entity entity = this.getFirstPassenger();
+        return entity != null && this.canEntityControl(entity) ? entity : null;
+    }
+
+    private boolean canEntityControl(Entity entity) {
+        if (entity instanceof PlayerEntity) {
+            PlayerEntity playerEntity = (PlayerEntity)entity;
+            return playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
+        }
+        return false;
     }
 
     @Override
@@ -292,10 +291,12 @@ Saddleable {
         } else if (this.isEscapingDanger() && this.random.nextInt(60) == 0) {
             this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0f, this.getSoundPitch());
         }
-        BlockState blockState = this.world.getBlockState(this.getBlockPos());
-        BlockState blockState2 = this.getLandingBlockState();
-        boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
-        this.setCold(!bl);
+        if (!this.isAiDisabled()) {
+            BlockState blockState = this.world.getBlockState(this.getBlockPos());
+            BlockState blockState2 = this.getLandingBlockState();
+            boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
+            this.setCold(!bl);
+        }
         super.tick();
         this.updateFloating();
         this.checkBlockCollision();

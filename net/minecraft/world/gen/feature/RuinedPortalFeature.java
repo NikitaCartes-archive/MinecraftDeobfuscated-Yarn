@@ -102,7 +102,7 @@ extends StructureFeature {
         BlockPos blockPos4 = new BlockPos(blockPos2.getX(), j, blockPos2.getZ());
         return Optional.of(new StructureFeature.class_7150(blockPos4, structurePiecesCollector -> {
             if (lv4.canBeCold()) {
-                properties.cold = RuinedPortalFeature.isColdAt(blockPos4, arg.chunkGenerator().getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ()), noiseConfig.sampler()));
+                properties.cold = RuinedPortalFeature.isColdAt(blockPos4, arg.chunkGenerator().getBiomeSource().getBiome(BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ()), noiseConfig.getMultiNoiseSampler()));
             }
             structurePiecesCollector.addPiece(new RuinedPortalStructurePiece(arg.structureTemplateManager(), blockPos4, lv4.placement(), properties, identifier, structure, blockRotation, blockMirror, blockPos));
         }));

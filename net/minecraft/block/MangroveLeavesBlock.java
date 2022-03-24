@@ -34,7 +34,7 @@ implements Fertilizable {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
-        if (random.nextInt(5) != 0 || state.get(PERSISTENT).booleanValue()) {
+        if (random.nextInt(5) != 0 || state.get(PERSISTENT).booleanValue() || this.shouldDecay(state)) {
             return;
         }
         BlockPos blockPos = pos.down();

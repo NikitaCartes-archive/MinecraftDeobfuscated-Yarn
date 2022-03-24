@@ -54,6 +54,8 @@ public class GameEvent {
     public static final GameEvent STEP = GameEvent.register("step");
     public static final GameEvent SWIM = GameEvent.register("swim");
     public static final GameEvent WOLF_SHAKING = GameEvent.register("wolf_shaking");
+    public static final GameEvent SCULK_SENSOR_TENDRILS_CLICKING = GameEvent.register("sculk_sensor_tendrils_clicking");
+    public static final GameEvent SHRIEK = GameEvent.register("shriek", 32);
     public static final int DEFAULT_RANGE = 16;
     private final String id;
     private final int range;

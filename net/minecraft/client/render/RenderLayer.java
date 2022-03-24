@@ -68,6 +68,10 @@ extends RenderPhase {
         MultiPhaseParameters multiPhaseParameters = MultiPhaseParameters.builder().shader(ENTITY_TRANSLUCENT_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build((boolean)affectsOutline);
         return RenderLayer.of("entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, true, true, multiPhaseParameters);
     });
+    private static final BiFunction<Identifier, Boolean, RenderLayer> ENTITY_TRANSLUCENT_EMISSIVE = Util.memoize((texture, affectsOutline) -> {
+        MultiPhaseParameters multiPhaseParameters = MultiPhaseParameters.builder().shader(ENTITY_TRANSLUCENT_EMISSIVE_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).cull(DISABLE_CULLING).writeMaskState(COLOR_MASK).overlay(ENABLE_OVERLAY_COLOR).build((boolean)affectsOutline);
+        return RenderLayer.of("entity_translucent_emissive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, true, true, multiPhaseParameters);
+    });
     private static final Function<Identifier, RenderLayer> ENTITY_SMOOTH_CUTOUT = Util.memoize(texture -> {
         MultiPhaseParameters multiPhaseParameters = MultiPhaseParameters.builder().shader(ENTITY_SMOOTH_CUTOUT_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(true);
         return RenderLayer.of("entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, multiPhaseParameters);
@@ -202,6 +206,14 @@ extends RenderPhase {
 
     public static RenderLayer getEntityTranslucent(Identifier texture) {
         return RenderLayer.getEntityTranslucent(texture, true);
+    }
+
+    public static RenderLayer getEntityTranslucentEmissive(Identifier texture, boolean affectsOutline) {
+        return ENTITY_TRANSLUCENT_EMISSIVE.apply(texture, affectsOutline);
+    }
+
+    public static RenderLayer getEntityTranslucentEmissive(Identifier texture) {
+        return RenderLayer.getEntityTranslucentEmissive(texture, true);
     }
 
     public static RenderLayer getEntitySmoothCutout(Identifier texture) {

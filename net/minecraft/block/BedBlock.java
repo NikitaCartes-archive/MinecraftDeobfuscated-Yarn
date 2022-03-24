@@ -121,7 +121,7 @@ implements BlockEntityProvider {
      * @see net.minecraft.world.dimension.DimensionType#isBedWorking()
      */
     public static boolean isBedWorking(World world) {
-        return world.getDimension().isBedWorking();
+        return world.getDimension().bedWorks();
     }
 
     /**

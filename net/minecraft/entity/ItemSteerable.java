@@ -21,8 +21,8 @@ public interface ItemSteerable {
         if (!entity.isAlive()) {
             return false;
         }
-        Entity entity2 = entity.getFirstPassenger();
-        if (!(entity.hasPassengers() && entity.canBeControlledByRider() && entity2 instanceof PlayerEntity)) {
+        Entity entity2 = entity.getPrimaryPassenger();
+        if (!entity.hasPassengers() || !(entity2 instanceof PlayerEntity)) {
             entity.stepHeight = 0.5f;
             entity.airStrafingSpeed = 0.02f;
             this.setMovementInput(movementInput);

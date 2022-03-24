@@ -73,10 +73,13 @@ public class Blender {
         if (chunkRegion == null) {
             return NO_BLENDING;
         }
+        ChunkPos chunkPos = chunkRegion.getCenterPos();
+        if (!chunkRegion.needsBlending(chunkPos, field_35503)) {
+            return NO_BLENDING;
+        }
         Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<BlendingData>();
         Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<BlendingData>();
         int i = MathHelper.square(field_35503 + 1);
-        ChunkPos chunkPos = chunkRegion.getCenterPos();
         for (int j = -field_35503; j <= field_35503; ++j) {
             for (int k = -field_35503; k <= field_35503; ++k) {
                 int m;

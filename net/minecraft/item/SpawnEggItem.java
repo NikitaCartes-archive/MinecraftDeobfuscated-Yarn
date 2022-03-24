@@ -110,7 +110,7 @@ extends Item {
             itemStack.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        world.emitGameEvent(GameEvent.ENTITY_PLACE, user);
+        user.emitGameEvent(GameEvent.ENTITY_PLACE);
         return TypedActionResult.consume(itemStack);
     }
 

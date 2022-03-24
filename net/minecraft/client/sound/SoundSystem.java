@@ -105,7 +105,8 @@ public class SoundSystem {
             return;
         }
         try {
-            this.soundEngine.init("".equals(this.settings.soundDevice) ? null : this.settings.soundDevice, this.settings.directionalAudio);
+            String string = this.settings.getSoundDevice().getValue();
+            this.soundEngine.init("".equals(string) ? null : string, this.settings.getDirectionalAudio().getValue());
             this.listener.init();
             this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
             this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
@@ -192,7 +193,7 @@ public class SoundSystem {
         if (bl) {
             this.lastSoundDeviceCheckTime = l;
             if (this.deviceChangeStatus.compareAndSet(DeviceChangeStatus.NO_CHANGE, DeviceChangeStatus.ONGOING)) {
-                String string = this.settings.soundDevice;
+                String string = this.settings.getSoundDevice().getValue();
                 Util.getIoWorkerExecutor().execute(() -> {
                     if ("".equals(string)) {
                         if (this.soundEngine.updateDeviceSpecifier()) {
