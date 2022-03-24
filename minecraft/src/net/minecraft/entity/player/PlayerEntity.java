@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Dynamic;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +24,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.RespawnAnchorBlock;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
+import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -60,7 +63,6 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -69,6 +71,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -111,8 +114,10 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
 
 public abstract class PlayerEntity extends LivingEntity {
+	private static final Logger field_38197 = LogUtils.getLogger();
 	public static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 	public static final int field_30643 = 16;
 	public static final int field_30644 = 20;
@@ -146,6 +151,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public final PlayerScreenHandler playerScreenHandler;
 	public ScreenHandler currentScreenHandler;
 	protected HungerManager hungerManager = new HungerManager();
+	protected SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	protected int abilityResyncCountdown;
 	public float prevStrideDistance;
 	public float strideDistance;
@@ -251,6 +257,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateCapeAngles();
 		if (!this.world.isClient) {
 			this.hungerManager.update(this);
+			this.sculkShriekerWarningManager.tick();
 			this.incrementStat(Stats.PLAY_TIME);
 			this.incrementStat(Stats.TOTAL_WORLD_TIME);
 			if (this.isAlive()) {
@@ -770,6 +777,13 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.setScore(nbt.getInt("Score"));
 		this.hungerManager.readNbt(nbt);
+		if (nbt.contains("warden_spawn_tracker", NbtElement.COMPOUND_TYPE)) {
+			SculkShriekerWarningManager.CODEC
+				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("warden_spawn_tracker")))
+				.resultOrPartial(field_38197::error)
+				.ifPresent(sculkShriekerWarningManager -> this.sculkShriekerWarningManager = sculkShriekerWarningManager);
+		}
+
 		this.abilities.readNbt(nbt);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
@@ -798,6 +812,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		nbt.putInt("XpSeed", this.enchantmentTableSeed);
 		nbt.putInt("Score", this.getScore());
 		this.hungerManager.writeNbt(nbt);
+		SculkShriekerWarningManager.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.sculkShriekerWarningManager)
+			.resultOrPartial(field_38197::error)
+			.ifPresent(nbtElement -> nbt.put("warden_spawn_tracker", nbtElement));
 		this.abilities.writeNbt(nbt);
 		nbt.put("EnderItems", this.enderChestInventory.toNbtList());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -861,7 +879,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	protected void takeShieldHit(LivingEntity attacker) {
 		super.takeShieldHit(attacker);
-		if (attacker.getMainHandStack().getItem() instanceof AxeItem) {
+		if (attacker.disablesShield()) {
 			this.disableShield(true);
 		}
 	}
@@ -1740,6 +1758,10 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.hungerManager.addExhaustion(exhaustion);
 			}
 		}
+	}
+
+	public SculkShriekerWarningManager getSculkShriekerWarningManager() {
+		return this.sculkShriekerWarningManager;
 	}
 
 	public HungerManager getHungerManager() {

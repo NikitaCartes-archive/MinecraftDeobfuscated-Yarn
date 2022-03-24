@@ -30,9 +30,9 @@ public abstract class StructurePlacement {
 	private final StructurePlacement.FrequencyReductionMethod frequencyReductionMethod;
 	private final float frequency;
 	private final int salt;
-	private final Optional<StructurePlacement.class_7152> exclusionZone;
+	private final Optional<StructurePlacement.ExclusionZone> exclusionZone;
 
-	protected static <S extends StructurePlacement> P5<Mu<S>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.class_7152>> method_41637(
+	protected static <S extends StructurePlacement> P5<Mu<S>, Vec3i, StructurePlacement.FrequencyReductionMethod, Float, Integer, Optional<StructurePlacement.ExclusionZone>> method_41637(
 		Instance<S> instance
 	) {
 		return instance.group(
@@ -42,7 +42,7 @@ public abstract class StructurePlacement {
 				.forGetter(StructurePlacement::getFrequencyReductionMethod),
 			Codec.floatRange(0.0F, 1.0F).optionalFieldOf("frequency", 1.0F).forGetter(StructurePlacement::getFrequency),
 			Codecs.NONNEGATIVE_INT.fieldOf("salt").forGetter(StructurePlacement::getSalt),
-			StructurePlacement.class_7152.field_37781.optionalFieldOf("exclusion_zone").forGetter(StructurePlacement::getExclusionZone)
+			StructurePlacement.ExclusionZone.CODEC.optionalFieldOf("exclusion_zone").forGetter(StructurePlacement::getExclusionZone)
 		);
 	}
 
@@ -51,7 +51,7 @@ public abstract class StructurePlacement {
 		StructurePlacement.FrequencyReductionMethod frequencyReductionMethod,
 		float frequency,
 		int salt,
-		Optional<StructurePlacement.class_7152> exclusionZone
+		Optional<StructurePlacement.ExclusionZone> exclusionZone
 	) {
 		this.locateOffset = locateOffset;
 		this.frequencyReductionMethod = frequencyReductionMethod;
@@ -76,23 +76,23 @@ public abstract class StructurePlacement {
 		return this.salt;
 	}
 
-	protected Optional<StructurePlacement.class_7152> getExclusionZone() {
+	protected Optional<StructurePlacement.ExclusionZone> getExclusionZone() {
 		return this.exclusionZone;
 	}
 
-	public boolean method_41639(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long l, int i, int j) {
-		if (!this.isStartChunk(chunkGenerator, noiseConfig, l, i, j)) {
+	public boolean shouldGenerate(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
+		if (!this.isStartChunk(chunkGenerator, noiseConfig, seed, x, z)) {
 			return false;
 		} else {
-			return this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(l, this.salt, i, j, this.frequency)
+			return this.frequency < 1.0F && !this.frequencyReductionMethod.shouldGenerate(seed, this.salt, x, z, this.frequency)
 				? false
-				: !this.exclusionZone.isPresent() || !((StructurePlacement.class_7152)this.exclusionZone.get()).method_41648(chunkGenerator, noiseConfig, l, i, j);
+				: !this.exclusionZone.isPresent() || !((StructurePlacement.ExclusionZone)this.exclusionZone.get()).shouldExclude(chunkGenerator, noiseConfig, seed, x, z);
 		}
 	}
 
-	protected abstract boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long l, int i, int j);
+	protected abstract boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z);
 
-	public BlockPos method_41636(ChunkPos chunkPos) {
+	public BlockPos getLocatePos(ChunkPos chunkPos) {
 		return new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ()).add(this.getLocateOffset());
 	}
 
@@ -123,6 +123,21 @@ public abstract class StructurePlacement {
 		chunkRandom.setSeed((long)(l ^ m << 4) ^ seed);
 		chunkRandom.nextInt();
 		return chunkRandom.nextInt((int)(1.0F / frequency)) == 0;
+	}
+
+	@Deprecated
+	public static record ExclusionZone(RegistryEntry<StructureSet> otherSet, int chunkCount) {
+		public static final Codec<StructurePlacement.ExclusionZone> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, StructureSet.CODEC, false).fieldOf("other_set").forGetter(StructurePlacement.ExclusionZone::otherSet),
+						Codec.intRange(1, 16).fieldOf("chunk_count").forGetter(StructurePlacement.ExclusionZone::chunkCount)
+					)
+					.apply(instance, StructurePlacement.ExclusionZone::new)
+		);
+
+		boolean shouldExclude(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
+			return chunkGenerator.shouldStructureGenerateInRange(this.otherSet, noiseConfig, seed, x, z, this.chunkCount);
+		}
 	}
 
 	public static enum FrequencyReductionMethod implements StringIdentifiable {
@@ -166,20 +181,5 @@ public abstract class StructurePlacement {
 	@FunctionalInterface
 	public interface GenerationPredicate {
 		boolean shouldGenerate(long seed, int i, int j, int k, float chance);
-	}
-
-	@Deprecated
-	public static record class_7152(RegistryEntry<StructureSet> otherSet, int chunkCount) {
-		public static final Codec<StructurePlacement.class_7152> field_37781 = RecordCodecBuilder.create(
-			instance -> instance.group(
-						RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, StructureSet.CODEC, false).fieldOf("other_set").forGetter(StructurePlacement.class_7152::otherSet),
-						Codec.intRange(1, 16).fieldOf("chunk_count").forGetter(StructurePlacement.class_7152::chunkCount)
-					)
-					.apply(instance, StructurePlacement.class_7152::new)
-		);
-
-		boolean method_41648(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long l, int i, int j) {
-			return chunkGenerator.method_41053(this.otherSet, noiseConfig, l, i, j, this.chunkCount);
-		}
 	}
 }

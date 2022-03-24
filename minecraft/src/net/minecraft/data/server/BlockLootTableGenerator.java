@@ -1428,7 +1428,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(
 			Blocks.MANGROVE_PROPAGULE,
 			applyExplosionDecay(
-				Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.field_37508)))
+				Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.MANGROVE_PROPAGULE)))
 			)
 		);
 		this.addDrop(
@@ -1831,6 +1831,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_PORTAL, dropsNothing());
 		this.addDrop(Blocks.BUDDING_AMETHYST, dropsNothing());
 		this.addDrop(Blocks.POWDER_SNOW, dropsNothing());
+		this.addDrop(Blocks.FROGSPAWN, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {

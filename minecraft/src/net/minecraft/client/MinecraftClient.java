@@ -97,7 +97,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.option.Option;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
@@ -534,7 +533,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			LOGGER.error("Couldn't set icon", (Throwable)var9);
 		}
 
-		this.window.setFramerateLimit(this.options.maxFps);
+		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
 		this.mouse = new Mouse(this);
 		this.mouse.setup(this.window.getHandle());
 		this.keyboard = new Keyboard(this);
@@ -568,7 +567,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.setPhase("Post startup");
 		this.blockColors = BlockColors.create();
 		this.itemColors = ItemColors.create(this.blockColors);
-		this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
+		this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.getMipmapLevels().getValue());
 		this.resourceManager.registerReloader(this.bakedModelManager);
 		this.entityModelLoader = new EntityModelLoader();
 		this.resourceManager.registerReloader(this.entityModelLoader);
@@ -617,12 +616,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			this.window.setWindowedSize(this.framebuffer.textureWidth, this.framebuffer.textureHeight);
 			TinyFileDialogs.tinyfd_messageBox("Minecraft", stringBuilder.toString(), "ok", "error", false);
-		} else if (this.options.fullscreen && !this.window.isFullscreen()) {
+		} else if (this.options.getFullscreen().getValue() && !this.window.isFullscreen()) {
 			this.window.toggleFullscreen();
-			this.options.fullscreen = this.window.isFullscreen();
+			this.options.getFullscreen().setValue(this.window.isFullscreen());
 		}
 
-		this.window.setVsync(this.options.enableVsync);
+		this.window.setVsync(this.options.getEnableVsync().getValue());
 		this.window.setRawMouseMotion(this.options.getRawMouseInput().getValue());
 		this.window.logOnGlError();
 		this.onResolutionChanged();
@@ -809,7 +808,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void handleGlErrorByDisableVsync(int error, long description) {
-		this.options.enableVsync = false;
+		this.options.getEnableVsync().setValue(false);
 		this.options.write();
 	}
 
@@ -859,7 +858,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean forcesUnicodeFont() {
-		return this.options.forceUnicodeFont;
+		return this.options.getForceUnicodeFont().getValue();
 	}
 
 	public CompletableFuture<Void> reloadResources() {
@@ -1162,7 +1161,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.swap("updateDisplay");
 		this.window.swapBuffers();
 		int k = this.getFramerateLimit();
-		if ((double)k < Option.FRAMERATE_LIMIT.getMax()) {
+		if (k < 260) {
 			RenderSystem.limitDisplayFPS(k);
 		}
 
@@ -1209,10 +1208,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.fpsDebugString = String.format(
 				"%d fps T: %s%s%s%s B: %d%s",
 				currentFps,
-				(double)this.options.maxFps == Option.FRAMERATE_LIMIT.getMax() ? "inf" : this.options.maxFps,
-				this.options.enableVsync ? " vsync" : "",
-				this.options.graphicsMode,
-				this.options.cloudRenderMode == CloudRenderMode.OFF ? "" : (this.options.cloudRenderMode == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"),
+				k == 260 ? "inf" : k,
+				this.options.getEnableVsync().getValue() ? " vsync" : "",
+				this.options.getGraphicsMode().getValue(),
+				this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF
+					? ""
+					: (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"),
 				this.options.getBiomeBlendRadius().getValue(),
 				string
 			);
@@ -1271,7 +1272,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	@Override
 	public void onResolutionChanged() {
-		int i = this.window.calculateScaleFactor(this.options.guiScale, this.forcesUnicodeFont());
+		int i = this.window.calculateScaleFactor(this.options.getGuiScale().getValue(), this.forcesUnicodeFont());
 		this.window.setScaleFactor((double)i);
 		if (this.currentScreen != null) {
 			this.currentScreen.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
@@ -2139,7 +2140,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public MinecraftClient.ChatRestriction getChatRestriction() {
-		if (this.options.chatVisibility == ChatVisibility.HIDDEN) {
+		if (this.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) {
 			return MinecraftClient.ChatRestriction.DISABLED_BY_OPTIONS;
 		} else if (!this.onlineChatEnabled) {
 			return MinecraftClient.ChatRestriction.DISABLED_BY_LAUNCHER;
@@ -2164,11 +2165,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isFancyGraphicsOrBetter() {
-		return instance.options.graphicsMode.getId() >= GraphicsMode.FANCY.getId();
+		return instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FANCY.getId();
 	}
 
 	public static boolean isFabulousGraphicsOrBetter() {
-		return !instance.gameRenderer.isRenderingPanorama() && instance.options.graphicsMode.getId() >= GraphicsMode.FABULOUS.getId();
+		return !instance.gameRenderer.isRenderingPanorama() && instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FABULOUS.getId();
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
@@ -2303,7 +2304,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 			}
 
-			systemDetails.addSection("Graphics mode", options.graphicsMode.toString());
+			systemDetails.addSection("Graphics mode", options.getGraphicsMode().getValue().toString());
 			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
@@ -2541,7 +2542,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean hasReducedDebugInfo() {
-		return this.player != null && this.player.hasReducedDebugInfo() || this.options.reducedDebugInfo;
+		return this.player != null && this.player.hasReducedDebugInfo() || this.options.getReducedDebugInfo().getValue();
 	}
 
 	public ToastManager getToastManager() {

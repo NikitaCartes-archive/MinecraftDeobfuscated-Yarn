@@ -28,6 +28,7 @@ public class ItemModelGenerator {
 
 	public void register() {
 		this.register(Items.ACACIA_BOAT, Models.GENERATED);
+		this.register(Items.ACACIA_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.AMETHYST_SHARD, Models.GENERATED);
 		this.register(Items.APPLE, Models.GENERATED);
 		this.register(Items.ARMOR_STAND, Models.GENERATED);
@@ -38,6 +39,7 @@ public class ItemModelGenerator {
 		this.register(Items.BEETROOT, Models.GENERATED);
 		this.register(Items.BEETROOT_SOUP, Models.GENERATED);
 		this.register(Items.BIRCH_BOAT, Models.GENERATED);
+		this.register(Items.BIRCH_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.BLACK_DYE, Models.GENERATED);
 		this.register(Items.BLAZE_POWDER, Models.GENERATED);
 		this.register(Items.BLAZE_ROD, Models.HANDHELD);
@@ -88,6 +90,7 @@ public class ItemModelGenerator {
 		this.register(Items.CREEPER_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.CYAN_DYE, Models.GENERATED);
 		this.register(Items.DARK_OAK_BOAT, Models.GENERATED);
+		this.register(Items.DARK_OAK_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.DIAMOND, Models.GENERATED);
 		this.register(Items.DIAMOND_AXE, Models.HANDHELD);
 		this.register(Items.DIAMOND_BOOTS, Models.GENERATED);
@@ -161,6 +164,7 @@ public class ItemModelGenerator {
 		this.register(Items.IRON_SWORD, Models.HANDHELD);
 		this.register(Items.ITEM_FRAME, Models.GENERATED);
 		this.register(Items.JUNGLE_BOAT, Models.GENERATED);
+		this.register(Items.JUNGLE_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.KNOWLEDGE_BOOK, Models.GENERATED);
 		this.register(Items.LAPIS_LAZULI, Models.GENERATED);
 		this.register(Items.LAVA_BUCKET, Models.GENERATED);
@@ -172,6 +176,7 @@ public class ItemModelGenerator {
 		this.register(Items.MAGENTA_DYE, Models.GENERATED);
 		this.register(Items.MAGMA_CREAM, Models.GENERATED);
 		this.register(Items.MANGROVE_BOAT, Models.GENERATED);
+		this.register(Items.MANGROVE_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.MAP, Models.GENERATED);
 		this.register(Items.MELON_SLICE, Models.GENERATED);
 		this.register(Items.MILK_BUCKET, Models.GENERATED);
@@ -209,6 +214,7 @@ public class ItemModelGenerator {
 		this.register(Items.NETHER_BRICK, Models.GENERATED);
 		this.register(Items.NETHER_STAR, Models.GENERATED);
 		this.register(Items.OAK_BOAT, Models.GENERATED);
+		this.register(Items.OAK_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.ORANGE_DYE, Models.GENERATED);
 		this.register(Items.PAINTING, Models.GENERATED);
 		this.register(Items.PAPER, Models.GENERATED);
@@ -244,6 +250,7 @@ public class ItemModelGenerator {
 		this.register(Items.SPECTRAL_ARROW, Models.GENERATED);
 		this.register(Items.SPIDER_EYE, Models.GENERATED);
 		this.register(Items.SPRUCE_BOAT, Models.GENERATED);
+		this.register(Items.SPRUCE_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.SPYGLASS, Models.GENERATED);
 		this.register(Items.STICK, Models.HANDHELD);
 		this.register(Items.STONE_AXE, Models.HANDHELD);

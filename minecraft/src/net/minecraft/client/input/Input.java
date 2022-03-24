@@ -15,7 +15,7 @@ public class Input {
 	public boolean jumping;
 	public boolean sneaking;
 
-	public void tick(boolean slowDown) {
+	public void tick(boolean slowDown, float f) {
 	}
 
 	public Vec2f getMovementInput() {

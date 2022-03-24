@@ -57,30 +57,31 @@ public class ChatHud extends DrawableHelper {
 				matrices.push();
 				matrices.translate(4.0, 8.0, 0.0);
 				matrices.scale(f, f, 1.0F);
-				double d = this.client.options.chatOpacity * 0.9F + 0.1F;
-				double e = this.client.options.textBackgroundOpacity;
-				double g = 9.0 * (this.client.options.chatLineSpacing + 1.0);
-				double h = -8.0 * (this.client.options.chatLineSpacing + 1.0) + 4.0 * this.client.options.chatLineSpacing;
-				int l = 0;
+				double d = this.client.options.getChtOpacity().getValue() * 0.9F + 0.1F;
+				double e = this.client.options.getTextBackgroundOpacity().getValue();
+				double g = this.client.options.getChatLineSpacing().getValue();
+				double h = 9.0 * (g + 1.0);
+				double l = -8.0 * (g + 1.0) + 4.0 * g;
+				int m = 0;
 
-				for (int m = 0; m + this.scrolledLines < this.visibleMessages.size() && m < i; m++) {
-					ChatHudLine<OrderedText> chatHudLine = (ChatHudLine<OrderedText>)this.visibleMessages.get(m + this.scrolledLines);
+				for (int n = 0; n + this.scrolledLines < this.visibleMessages.size() && n < i; n++) {
+					ChatHudLine<OrderedText> chatHudLine = (ChatHudLine<OrderedText>)this.visibleMessages.get(n + this.scrolledLines);
 					if (chatHudLine != null) {
-						int n = tickDelta - chatHudLine.getCreationTick();
-						if (n < 200 || bl) {
-							double o = bl ? 1.0 : getMessageOpacityMultiplier(n);
-							int p = (int)(255.0 * o * d);
-							int q = (int)(255.0 * o * e);
-							l++;
-							if (p > 3) {
-								int r = 0;
-								double s = (double)(-m) * g;
+						int o = tickDelta - chatHudLine.getCreationTick();
+						if (o < 200 || bl) {
+							double p = bl ? 1.0 : getMessageOpacityMultiplier(o);
+							int q = (int)(255.0 * p * d);
+							int r = (int)(255.0 * p * e);
+							m++;
+							if (q > 3) {
+								int s = 0;
+								double t = (double)(-n) * h;
 								matrices.push();
 								matrices.translate(0.0, 0.0, 50.0);
-								fill(matrices, -4, (int)(s - g), 0 + k + 4, (int)s, q << 24);
+								fill(matrices, -4, (int)(t - h), 0 + k + 4, (int)t, r << 24);
 								RenderSystem.enableBlend();
 								matrices.translate(0.0, 0.0, 50.0);
-								this.client.textRenderer.drawWithShadow(matrices, chatHudLine.getText(), 0.0F, (float)((int)(s + h)), 16777215 + (p << 24));
+								this.client.textRenderer.drawWithShadow(matrices, chatHudLine.getText(), 0.0F, (float)((int)(t + l)), 16777215 + (q << 24));
 								RenderSystem.disableBlend();
 								matrices.pop();
 							}
@@ -89,30 +90,30 @@ public class ChatHud extends DrawableHelper {
 				}
 
 				if (!this.messageQueue.isEmpty()) {
-					int mx = (int)(128.0 * d);
-					int t = (int)(255.0 * e);
+					int nx = (int)(128.0 * d);
+					int u = (int)(255.0 * e);
 					matrices.push();
 					matrices.translate(0.0, 0.0, 50.0);
-					fill(matrices, -2, 0, k + 4, 9, t << 24);
+					fill(matrices, -2, 0, k + 4, 9, u << 24);
 					RenderSystem.enableBlend();
 					matrices.translate(0.0, 0.0, 50.0);
-					this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("chat.queue", this.messageQueue.size()), 0.0F, 1.0F, 16777215 + (mx << 24));
+					this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("chat.queue", this.messageQueue.size()), 0.0F, 1.0F, 16777215 + (nx << 24));
 					matrices.pop();
 					RenderSystem.disableBlend();
 				}
 
 				if (bl) {
-					int mx = 9;
-					int t = j * mx;
-					int n = l * mx;
-					int u = this.scrolledLines * n / j;
-					int v = n * n / t;
-					if (t != n) {
-						int p = u > 0 ? 170 : 96;
-						int q = this.hasUnreadNewMessages ? 13382451 : 3355562;
+					int nx = 9;
+					int u = j * nx;
+					int o = m * nx;
+					int v = this.scrolledLines * o / j;
+					int w = o * o / u;
+					if (u != o) {
+						int q = v > 0 ? 170 : 96;
+						int r = this.hasUnreadNewMessages ? 13382451 : 3355562;
 						matrices.translate(-4.0, 0.0, 0.0);
-						fill(matrices, 0, -u, 2, -u - v, q + (p << 24));
-						fill(matrices, 2, -u, 1, -u - v, 13421772 + (p << 24));
+						fill(matrices, 0, -v, 2, -v - w, r + (q << 24));
+						fill(matrices, 2, -v, 1, -v - w, 13421772 + (q << 24));
 					}
 				}
 
@@ -122,7 +123,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	private boolean isChatHidden() {
-		return this.client.options.chatVisibility == ChatVisibility.HIDDEN;
+		return this.client.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN;
 	}
 
 	private static double getMessageOpacityMultiplier(int age) {
@@ -242,7 +243,7 @@ public class ChatHud extends DrawableHelper {
 			double d = x - 2.0;
 			double e = (double)this.client.getWindow().getScaledHeight() - y - 40.0;
 			d = (double)MathHelper.floor(d / this.getChatScale());
-			e = (double)MathHelper.floor(e / (this.getChatScale() * (this.client.options.chatLineSpacing + 1.0)));
+			e = (double)MathHelper.floor(e / (this.getChatScale() * (this.client.options.getChatLineSpacing().getValue() + 1.0)));
 			if (!(d < 0.0) && !(e < 0.0)) {
 				int i = Math.min(this.getVisibleLineCount(), this.visibleMessages.size());
 				if (d <= (double)MathHelper.floor((double)this.getWidth() / this.getChatScale()) && e < (double)(9 * i + i)) {
@@ -272,18 +273,18 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public int getWidth() {
-		return getWidth(this.client.options.chatWidth);
+		return getWidth(this.client.options.getChatWidth().getValue());
 	}
 
 	public int getHeight() {
 		return getHeight(
 			this.isChatFocused() ? this.client.options.getChatHeightFocused().getValue() : this.client.options.getChatHeightUnfocused().getValue()
-				/ (this.client.options.chatLineSpacing + 1.0)
+				/ (this.client.options.getChatLineSpacing().getValue() + 1.0)
 		);
 	}
 
 	public double getChatScale() {
-		return this.client.options.chatScale;
+		return this.client.options.getChatScale().getValue();
 	}
 
 	public static int getWidth(double widthOption) {
@@ -309,7 +310,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	private long getChatDelayMillis() {
-		return (long)(this.client.options.chatDelay * 1000.0);
+		return (long)(this.client.options.getChatDelay().getValue() * 1000.0);
 	}
 
 	private void processMessageQueue() {
@@ -323,7 +324,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public void queueMessage(Text message) {
-		if (this.client.options.chatDelay <= 0.0) {
+		if (this.client.options.getChatDelay().getValue() <= 0.0) {
 			this.addMessage(message);
 		} else {
 			long l = System.currentTimeMillis();

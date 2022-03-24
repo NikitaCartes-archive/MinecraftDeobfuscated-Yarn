@@ -331,7 +331,7 @@ public class DebugHud extends DrawableHelper {
 				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
 				NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
 				chunkGenerator.getDebugHudText(list, noiseConfig, blockPos);
-				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.sampler();
+				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.getMultiNoiseSampler();
 				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
@@ -549,8 +549,9 @@ public class DebugHud extends DrawableHelper {
 		this.drawHorizontalLine(matrices, x, x + n - 1, r - 1, -1);
 		this.drawVerticalLine(matrices, x, r - 60, r, -1);
 		this.drawVerticalLine(matrices, x + n - 1, r - 60, r, -1);
-		if (showFps && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+		int t = this.client.options.getMaxFps().getValue();
+		if (showFps && t > 0 && t <= 250) {
+			this.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)t), -16711681);
 		}
 
 		String string = p + " ms min";

@@ -33,7 +33,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class DebugChunkGenerator extends ChunkGenerator {
 	public static final Codec<DebugChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> method_41042(instance)
+		instance -> createStructureSetRegistryGetter(instance)
 				.and(RegistryOps.createRegistryCodec(Registry.BIOME_KEY).forGetter(debugChunkGenerator -> debugChunkGenerator.biomeRegistry))
 				.apply(instance, instance.stable(DebugChunkGenerator::new))
 	);
@@ -125,10 +125,10 @@ public class DebugChunkGenerator extends ChunkGenerator {
 		ChunkRegion chunkRegion,
 		long seed,
 		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
+		BiomeAccess world,
 		StructureAccessor structureAccessor,
 		Chunk chunk,
-		GenerationStep.Carver carver
+		GenerationStep.Carver carverStep
 	) {
 	}
 

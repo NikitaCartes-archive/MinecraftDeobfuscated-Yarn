@@ -2,14 +2,20 @@ package net.minecraft.world.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 public class SimpleNeighborUpdater implements NeighborUpdater {
-	private final ServerWorld world;
+	private final World world;
 
-	public SimpleNeighborUpdater(ServerWorld world) {
+	public SimpleNeighborUpdater(World world) {
 		this.world = world;
+	}
+
+	@Override
+	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
+		NeighborUpdater.replaceWithStateForNeighborUpdate(this.world, direction, neighborState, pos, neighborPos, flags, maxUpdateDepth - 1);
 	}
 
 	@Override

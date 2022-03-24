@@ -7,6 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.registry.Registry;
@@ -121,7 +123,12 @@ public abstract class FoliagePlacer {
 
 	protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
 		if (TreeFeature.canReplace(world, pos)) {
-			replacer.accept(pos, config.foliageProvider.getBlockState(random, pos));
+			BlockState blockState = config.foliageProvider.getBlockState(random, pos);
+			if (blockState.contains(Properties.WATERLOGGED)) {
+				blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(world.testFluidState(pos, fluidState -> fluidState.isEqualAndStill(Fluids.WATER))));
+			}
+
+			replacer.accept(pos, blockState);
 		}
 	}
 

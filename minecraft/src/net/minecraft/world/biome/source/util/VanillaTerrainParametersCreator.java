@@ -135,20 +135,20 @@ public class VanillaTerrainParametersCreator {
 		Spline.Builder<C, I> builder = Spline.builder(toFloatFunction, toFloatFunction2);
 		float g = -0.7F;
 		float h = -1.0F;
-		float i = method_42046(-1.0F, f, -0.7F);
+		float i = getOffsetValue(-1.0F, f, -0.7F);
 		float j = 1.0F;
-		float k = method_42046(1.0F, f, -0.7F);
+		float k = getOffsetValue(1.0F, f, -0.7F);
 		float l = method_42045(f);
 		float m = -0.65F;
 		if (-0.65F < l && l < 1.0F) {
-			float n = method_42046(-0.65F, f, -0.7F);
+			float n = getOffsetValue(-0.65F, f, -0.7F);
 			float o = -0.75F;
-			float p = method_42046(-0.75F, f, -0.7F);
+			float p = getOffsetValue(-0.75F, f, -0.7F);
 			float q = method_42047(i, p, -1.0F, -0.75F);
 			builder.add(-1.0F, i, q);
 			builder.method_41294(-0.75F, p);
 			builder.method_41294(-0.65F, n);
-			float r = method_42046(l, f, -0.7F);
+			float r = getOffsetValue(l, f, -0.7F);
 			float s = method_42047(r, k, l, 1.0F);
 			float t = 0.01F;
 			builder.method_41294(l - 0.01F, r);
@@ -169,7 +169,7 @@ public class VanillaTerrainParametersCreator {
 		return builder.build();
 	}
 
-	private static float method_42046(float f, float g, float h) {
+	private static float getOffsetValue(float f, float g, float h) {
 		float i = 1.17F;
 		float j = 0.46082947F;
 		float k = 1.0F - (1.0F - g) * 0.5F;

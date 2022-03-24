@@ -180,11 +180,11 @@ public class Blocks {
 	public static final Block JUNGLE_LOG = register("jungle_log", createLogBlock(MapColor.DIRT_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block ACACIA_LOG = register("acacia_log", createLogBlock(MapColor.ORANGE, MapColor.STONE_GRAY));
 	public static final Block DARK_OAK_LOG = register("dark_oak_log", createLogBlock(MapColor.BROWN, MapColor.BROWN));
-	public static final Block MANGROVE_LOG = register("mangrove_log", createLogBlock(MapColor.ORANGE, MapColor.STONE_GRAY));
+	public static final Block MANGROVE_LOG = register("mangrove_log", createLogBlock(MapColor.RED, MapColor.SPRUCE_BROWN));
 	public static final Block MANGROVE_ROOTS = register(
 		"mangrove_roots",
 		new MangroveRootsBlock(
-			AbstractBlock.Settings.of(Material.WOOD)
+			AbstractBlock.Settings.of(Material.WOOD, MapColor.SPRUCE_BROWN)
 				.strength(0.7F)
 				.ticksRandomly()
 				.sounds(BlockSoundGroup.MANGROVE_ROOTS)
@@ -196,7 +196,8 @@ public class Blocks {
 		)
 	);
 	public static final Block MUDDY_MANGROVE_ROOTS = register(
-		"muddy_mangrove_roots", new PillarBlock(AbstractBlock.Settings.of(Material.SOIL).strength(0.7F).sounds(BlockSoundGroup.MUDDY_MANGROVE_ROOTS))
+		"muddy_mangrove_roots",
+		new PillarBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.SPRUCE_BROWN).strength(0.7F).sounds(BlockSoundGroup.MUDDY_MANGROVE_ROOTS))
 	);
 	public static final Block STRIPPED_SPRUCE_LOG = register("stripped_spruce_log", createLogBlock(MapColor.SPRUCE_BROWN, MapColor.SPRUCE_BROWN));
 	public static final Block STRIPPED_BIRCH_LOG = register("stripped_birch_log", createLogBlock(MapColor.PALE_YELLOW, MapColor.PALE_YELLOW));
@@ -916,7 +917,7 @@ public class Blocks {
 	public static final Block MANGROVE_TRAPDOOR = register(
 		"mangrove_trapdoor",
 		new TrapdoorBlock(
-			AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)
+			AbstractBlock.Settings.of(Material.WOOD, MapColor.RED).strength(3.0F).sounds(BlockSoundGroup.WOOD).nonOpaque().allowsSpawning(Blocks::never)
 		)
 	);
 	public static final Block STONE_BRICKS = register("stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(1.5F, 6.0F)));
@@ -933,7 +934,8 @@ public class Blocks {
 		"packed_mud", new Block(AbstractBlock.Settings.copy(DIRT).strength(1.0F, 3.0F).sounds(BlockSoundGroup.PACKED_MUD))
 	);
 	public static final Block MUD_BRICKS = register(
-		"mud_bricks", new Block(AbstractBlock.Settings.of(Material.STONE).strength(1.5F, 3.0F).sounds(BlockSoundGroup.MUD_BRICKS))
+		"mud_bricks",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(1.5F, 3.0F).sounds(BlockSoundGroup.MUD_BRICKS))
 	);
 	public static final Block INFESTED_STONE = register("infested_stone", new InfestedBlock(STONE, AbstractBlock.Settings.of(Material.ORGANIC_PRODUCT)));
 	public static final Block INFESTED_COBBLESTONE = register(
@@ -1749,7 +1751,7 @@ public class Blocks {
 		"dark_oak_slab", new SlabBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block MANGROVE_SLAB = register(
-		"mangrove_slab", new SlabBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.OAK_TAN).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
+		"mangrove_slab", new SlabBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.RED).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block STONE_SLAB = register(
 		"stone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0F, 6.0F))
@@ -1776,7 +1778,8 @@ public class Blocks {
 		"stone_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(2.0F, 6.0F))
 	);
 	public static final Block MUD_BRICK_SLAB = register(
-		"mud_brick_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN).requiresTool().strength(2.0F, 6.0F))
+		"mud_brick_slab",
+		new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN).requiresTool().strength(1.5F, 3.0F).sounds(BlockSoundGroup.MUD_BRICKS))
 	);
 	public static final Block NETHER_BRICK_SLAB = register(
 		"nether_brick_slab",
@@ -3335,6 +3338,7 @@ public class Blocks {
 		"mud",
 		new MudBlock(
 			AbstractBlock.Settings.copy(DIRT)
+				.mapColor(MapColor.TERRACOTTA_CYAN)
 				.allowsSpawning(Blocks::always)
 				.solidBlock(Blocks::always)
 				.blockVision(Blocks::always)
@@ -3413,8 +3417,7 @@ public class Blocks {
 		new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT))
 	);
 	public static final Block FROGSPAWN = register(
-		"frogspawn",
-		new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().dropsNothing().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN))
+		"frogspawn", new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN))
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {

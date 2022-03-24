@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.util.Arrays;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,8 +19,7 @@ import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpaceFont implements Font {
-	static final EmptyGlyphRenderer EMPTY_GLYPH_RENDERER = new EmptyGlyphRenderer();
-	private final Int2ObjectMap<SpaceFont.EmptyGlyph> codePointsToGlyphs;
+	private final Int2ObjectMap<Glyph.EmptyGlyph> codePointsToGlyphs;
 
 	public SpaceFont(Int2FloatMap codePointsToAdvances) {
 		this.codePointsToGlyphs = new Int2ObjectOpenHashMap<>(codePointsToAdvances.size());
@@ -57,13 +55,5 @@ public class SpaceFont implements Font {
 		}
 
 		return resourceManager -> new SpaceFont(int2FloatMap);
-	}
-
-	@Environment(EnvType.CLIENT)
-	interface EmptyGlyph extends Glyph {
-		@Override
-		default GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
-			return SpaceFont.EMPTY_GLYPH_RENDERER;
-		}
 	}
 }

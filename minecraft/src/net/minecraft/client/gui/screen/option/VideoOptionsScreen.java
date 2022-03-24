@@ -14,7 +14,6 @@ import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
-import net.minecraft.client.option.Option;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.Monitor;
@@ -41,28 +40,28 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
 
-	private static Option[] getOptions(GameOptions gameOptions) {
-		return new Option[]{
-			Option.GRAPHICS,
-			Option.RENDER_DISTANCE,
+	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
+		return new SimpleOption[]{
+			gameOptions.getGraphicsMode(),
+			gameOptions.getViewDistance(),
 			gameOptions.getChunkBuilderMode(),
-			Option.SIMULATION_DISTANCE,
+			gameOptions.getSimulationDistance(),
 			gameOptions.getAo(),
-			Option.FRAMERATE_LIMIT,
-			Option.VSYNC,
-			Option.VIEW_BOBBING,
-			Option.GUI_SCALE,
-			Option.ATTACK_INDICATOR,
-			Option.GAMMA,
-			Option.CLOUDS,
-			Option.FULLSCREEN,
-			Option.PARTICLES,
-			Option.MIPMAP_LEVELS,
-			Option.ENTITY_SHADOWS,
-			Option.DISTORTION_EFFECT_SCALE,
-			Option.ENTITY_DISTANCE_SCALING,
-			Option.FOV_EFFECT_SCALE,
-			Option.SHOW_AUTOSAVE_INDICATOR
+			gameOptions.getMaxFps(),
+			gameOptions.getEnableVsync(),
+			gameOptions.getBobView(),
+			gameOptions.getGuiScale(),
+			gameOptions.getAttackIndicator(),
+			gameOptions.getGamma(),
+			gameOptions.getCloudRenderMod(),
+			gameOptions.getFullscreen(),
+			gameOptions.getParticles(),
+			gameOptions.getMipmapLevels(),
+			gameOptions.getEntityShadows(),
+			gameOptions.getDistortionEffectScale(),
+			gameOptions.getEntityDistanceScaling(),
+			gameOptions.getFovEffectScale(),
+			gameOptions.getShowAutosaveIndicator()
 		};
 	}
 
@@ -70,11 +69,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		super(parent, options, new TranslatableText("options.videoTitle"));
 		this.warningManager = parent.client.getVideoWarningManager();
 		this.warningManager.reset();
-		if (options.graphicsMode == GraphicsMode.FABULOUS) {
+		if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
 			this.warningManager.acceptAfterWarnings();
 		}
 
-		this.mipmapLevels = options.mipmapLevels;
+		this.mipmapLevels = options.getMipmapLevels().getValue();
 	}
 
 	@Override
@@ -95,7 +94,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		TranslatableText translatableText = new TranslatableText("options.fullscreen.resolution");
 		SimpleOption<Integer> simpleOption = new SimpleOption<>(
 			"options.fullscreen.resolution",
-			Option.emptyTooltipFactoryGetter(),
+			SimpleOption.emptyTooltipFactoryGetter(),
 			value -> {
 				if (monitor == null) {
 					return new TranslatableText("options.fullscreen.unavailable");
@@ -105,7 +104,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 						: GameOptions.getGenericValueText(translatableText, new LiteralText(monitor.getVideoMode(value).toString()));
 				}
 			},
-			new SimpleOption.IntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
+			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
 			j,
 			value -> {
 				if (monitor != null) {
@@ -126,8 +125,8 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void removed() {
-		if (this.gameOptions.mipmapLevels != this.mipmapLevels) {
-			this.client.setMipmapLevels(this.gameOptions.mipmapLevels);
+		if (this.gameOptions.getMipmapLevels().getValue() != this.mipmapLevels) {
+			this.client.setMipmapLevels(this.gameOptions.getMipmapLevels().getValue());
 			this.client.reloadResourcesConcurrently();
 		}
 
@@ -136,9 +135,9 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		int i = this.gameOptions.guiScale;
+		int i = this.gameOptions.getGuiScale().getValue();
 		if (super.mouseClicked(mouseX, mouseY, button)) {
-			if (this.gameOptions.guiScale != i) {
+			if (this.gameOptions.getGuiScale().getValue() != i) {
 				this.client.onResolutionChanged();
 			}
 
@@ -164,7 +163,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 				this.client
 					.setScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, buttonx -> {
-						this.gameOptions.graphicsMode = GraphicsMode.FABULOUS;
+						this.gameOptions.getGraphicsMode().setValue(GraphicsMode.FABULOUS);
 						MinecraftClient.getInstance().worldRenderer.reload();
 						this.warningManager.acceptAfterWarnings();
 						this.client.setScreen(this);
@@ -182,11 +181,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		int i = this.gameOptions.guiScale;
+		int i = this.gameOptions.getGuiScale().getValue();
 		if (super.mouseReleased(mouseX, mouseY, button)) {
 			return true;
 		} else if (this.list.mouseReleased(mouseX, mouseY, button)) {
-			if (this.gameOptions.guiScale != i) {
+			if (this.gameOptions.getGuiScale().getValue() != i) {
 				this.client.onResolutionChanged();
 			}
 

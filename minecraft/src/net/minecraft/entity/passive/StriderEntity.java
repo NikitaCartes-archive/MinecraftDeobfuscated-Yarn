@@ -171,8 +171,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public boolean canWalkOnFluid(FluidState fluidState) {
-		return fluidState.isIn(FluidTags.LAVA);
+	public boolean canWalkOnFluid(FluidState state) {
+		return state.isIn(FluidTags.LAVA);
 	}
 
 	@Override
@@ -183,13 +183,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public boolean canBeControlledByRider() {
-		return !(this.getPrimaryPassenger() instanceof PlayerEntity playerEntity)
-			? false
-			: playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
-	}
-
-	@Override
 	public boolean canSpawn(WorldView world) {
 		return world.doesNotIntersectEntities(this);
 	}
@@ -197,7 +190,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		return this.getFirstPassenger();
+		Entity entity = this.getFirstPassenger();
+		return entity != null && this.canEntityControl(entity) ? entity : null;
+	}
+
+	private boolean canEntityControl(Entity entity) {
+		return !(entity instanceof PlayerEntity playerEntity)
+			? false
+			: playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
 	}
 
 	@Override
@@ -296,10 +296,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
 		}
 
-		BlockState blockState = this.world.getBlockState(this.getBlockPos());
-		BlockState blockState2 = this.getLandingBlockState();
-		boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
-		this.setCold(!bl);
+		if (!this.isAiDisabled()) {
+			BlockState blockState = this.world.getBlockState(this.getBlockPos());
+			BlockState blockState2 = this.getLandingBlockState();
+			boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
+			this.setCold(!bl);
+		}
+
 		super.tick();
 		this.updateFloating();
 		this.checkBlockCollision();

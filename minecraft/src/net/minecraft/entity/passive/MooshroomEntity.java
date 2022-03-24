@@ -56,7 +56,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getBrightness(pos) - 0.5F;
+		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getPhototaxisFavor(pos);
 	}
 
 	public static boolean canSpawn(EntityType<MooshroomEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

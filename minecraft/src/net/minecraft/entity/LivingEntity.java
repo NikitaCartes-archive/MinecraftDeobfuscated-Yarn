@@ -62,6 +62,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
@@ -1682,7 +1683,7 @@ public abstract class LivingEntity extends Entity {
 				this.setHealth(h - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
-				this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGED);
 			}
 		}
 	}
@@ -2118,7 +2119,7 @@ public abstract class LivingEntity extends Entity {
 		return 0.8F;
 	}
 
-	public boolean canWalkOnFluid(FluidState fluidState) {
+	public boolean canWalkOnFluid(FluidState state) {
 		return false;
 	}
 
@@ -3347,7 +3348,7 @@ public abstract class LivingEntity extends Entity {
 
 	public ItemStack eatFood(World world, ItemStack stack) {
 		if (stack.isFood()) {
-			world.emitGameEvent(this, GameEvent.EAT, this.getCameraBlockPos());
+			world.emitGameEvent(this, GameEvent.EAT, this.getEyePos());
 			world.playSound(
 				null,
 				this.getX(),
@@ -3496,6 +3497,10 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(
 			(double)((float)packet.getVelocityX() / 8000.0F), (double)((float)packet.getVelocityY() / 8000.0F), (double)((float)packet.getVelocityZ() / 8000.0F)
 		);
+	}
+
+	public boolean disablesShield() {
+		return this.getMainHandStack().getItem() instanceof AxeItem;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

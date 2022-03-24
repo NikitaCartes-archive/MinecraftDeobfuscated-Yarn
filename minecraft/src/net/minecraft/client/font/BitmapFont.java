@@ -161,7 +161,7 @@ public class BitmapFont implements Font {
 
 						for (int o : (int[])this.chars.get(m)) {
 							int p = n++;
-							if (o != 0 && o != 32) {
+							if (o != 0) {
 								int q = this.findCharacterStartX(nativeImage, k, l, p, m);
 								BitmapFont.BitmapFontGlyph bitmapFontGlyph = int2ObjectMap.put(
 									o, new BitmapFont.BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)q * f)) + 1, this.ascent)

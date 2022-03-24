@@ -72,6 +72,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
@@ -1075,7 +1076,9 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		private static final int field_30301 = 20;
 		private static final int field_30302 = 60;
 		private final Predicate<BlockState> flowerPredicate = state -> {
-			if (state.isIn(BlockTags.FLOWERS)) {
+			if (state.contains(Properties.WATERLOGGED) && (Boolean)state.get(Properties.WATERLOGGED)) {
+				return false;
+			} else if (state.isIn(BlockTags.FLOWERS)) {
 				return state.isOf(Blocks.SUNFLOWER) ? state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
 			} else {
 				return false;

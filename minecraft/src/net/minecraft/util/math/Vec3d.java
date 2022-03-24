@@ -1,6 +1,9 @@
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
 import java.util.EnumSet;
+import java.util.List;
+import net.minecraft.util.Util;
 
 /**
  * An immutable vector composed of 3 doubles.
@@ -15,6 +18,12 @@ import java.util.EnumSet;
  * @see Vec3f
  */
 public class Vec3d implements Position {
+	public static final Codec<Vec3d> CODEC = Codec.DOUBLE
+		.listOf()
+		.comapFlatMap(
+			list -> Util.toArray(list, 3).map(listx -> new Vec3d((Double)listx.get(0), (Double)listx.get(1), (Double)listx.get(2))),
+			vec3d -> List.of(vec3d.getX(), vec3d.getY(), vec3d.getZ())
+		);
 	/**
 	 * The zero vector (0, 0, 0).
 	 */

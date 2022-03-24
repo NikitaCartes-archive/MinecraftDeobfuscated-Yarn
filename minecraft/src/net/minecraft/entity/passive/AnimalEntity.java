@@ -81,7 +81,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) ? 10.0F : world.getBrightness(pos) - 0.5F;
+		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) ? 10.0F : world.getPhototaxisFavor(pos);
 	}
 
 	@Override
@@ -140,14 +140,14 @@ public abstract class AnimalEntity extends PassiveEntity {
 			if (!this.world.isClient && i == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 				return ActionResult.SUCCESS;
 			}
 
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp(toGrowUpAge(-i), true);
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+				this.emitGameEvent(GameEvent.MOB_INTERACT);
 				return ActionResult.success(this.world.isClient);
 			}
 

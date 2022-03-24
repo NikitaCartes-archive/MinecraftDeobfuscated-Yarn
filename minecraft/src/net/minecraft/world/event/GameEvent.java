@@ -51,6 +51,8 @@ public class GameEvent {
 	public static final GameEvent STEP = register("step");
 	public static final GameEvent SWIM = register("swim");
 	public static final GameEvent WOLF_SHAKING = register("wolf_shaking");
+	public static final GameEvent SCULK_SENSOR_TENDRILS_CLICKING = register("sculk_sensor_tendrils_clicking");
+	public static final GameEvent SHRIEK = register("shriek", 32);
 	public static final int DEFAULT_RANGE = 16;
 	private final String id;
 	private final int range;

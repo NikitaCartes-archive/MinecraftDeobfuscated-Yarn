@@ -2,115 +2,145 @@ package net.minecraft.util.math.noise;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.stream.IntStream;
+import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.chunk.NoiseSamplingConfig;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class InterpolatedNoiseSampler implements DensityFunction.class_6913 {
-	public static final InterpolatedNoiseSampler field_37205 = new InterpolatedNoiseSampler(
-		new Xoroshiro128PlusPlusRandom(0L), new NoiseSamplingConfig(1.0, 1.0, 80.0, 160.0), 4, 8
+	private static final Codec<Double> field_38269 = Codec.doubleRange(0.001, 1000.0);
+	private static final MapCodec<InterpolatedNoiseSampler> field_38270 = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(
+					field_38269.fieldOf("xz_scale").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.xzScale),
+					field_38269.fieldOf("y_scale").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.yScale),
+					field_38269.fieldOf("xz_factor").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.field_38273),
+					field_38269.fieldOf("y_factor").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.field_38274),
+					Codec.doubleRange(1.0, 8.0).fieldOf("smear_scale_multiplier").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.field_38275)
+				)
+				.apply(instance, InterpolatedNoiseSampler::method_42384)
 	);
-	public static final Codec<InterpolatedNoiseSampler> CODEC = Codec.unit(field_37205);
+	public static final CodecHolder<InterpolatedNoiseSampler> CODEC = CodecHolder.of(field_38270);
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
+	private final double field_38271;
+	private final double field_38272;
+	private final double field_38273;
+	private final double field_38274;
+	private final double field_38275;
+	private final double field_36630;
 	private final double xzScale;
 	private final double yScale;
-	private final double xzMainScale;
-	private final double yMainScale;
-	private final int cellWidth;
-	private final int cellHeight;
-	private final double field_36630;
+
+	public static InterpolatedNoiseSampler method_42384(double d, double e, double f, double g, double h) {
+		return new InterpolatedNoiseSampler(new Xoroshiro128PlusPlusRandom(0L), d, e, f, g, h);
+	}
 
 	private InterpolatedNoiseSampler(
 		OctavePerlinNoiseSampler lowerInterpolatedNoise,
 		OctavePerlinNoiseSampler upperInterpolatedNoise,
 		OctavePerlinNoiseSampler interpolationNoise,
-		NoiseSamplingConfig config,
-		int cellWidth,
-		int cellHeight
+		double d,
+		double e,
+		double f,
+		double g,
+		double h
 	) {
 		this.lowerInterpolatedNoise = lowerInterpolatedNoise;
 		this.upperInterpolatedNoise = upperInterpolatedNoise;
 		this.interpolationNoise = interpolationNoise;
-		this.xzScale = 684.412 * config.xzScale();
-		this.yScale = 684.412 * config.yScale();
-		this.xzMainScale = this.xzScale / config.xzFactor();
-		this.yMainScale = this.yScale / config.yFactor();
-		this.cellWidth = cellWidth;
-		this.cellHeight = cellHeight;
-		this.field_36630 = lowerInterpolatedNoise.method_40556(this.yScale);
+		this.xzScale = d;
+		this.yScale = e;
+		this.field_38273 = f;
+		this.field_38274 = g;
+		this.field_38275 = h;
+		this.field_38271 = 684.412 * this.xzScale;
+		this.field_38272 = 684.412 * this.yScale;
+		this.field_36630 = lowerInterpolatedNoise.method_40556(this.field_38272);
 	}
 
-	public InterpolatedNoiseSampler(AbstractRandom random, NoiseSamplingConfig config, int cellWidth, int cellHeight) {
+	@VisibleForTesting
+	public InterpolatedNoiseSampler(AbstractRandom random, double d, double e, double f, double g, double h) {
 		this(
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-15, 0)),
 			OctavePerlinNoiseSampler.createLegacy(random, IntStream.rangeClosed(-7, 0)),
-			config,
-			cellWidth,
-			cellHeight
+			d,
+			e,
+			f,
+			g,
+			h
 		);
+	}
+
+	public InterpolatedNoiseSampler method_42386(AbstractRandom abstractRandom) {
+		return new InterpolatedNoiseSampler(abstractRandom, this.xzScale, this.yScale, this.field_38273, this.field_38274, this.field_38275);
 	}
 
 	@Override
 	public double sample(DensityFunction.NoisePos pos) {
-		int i = Math.floorDiv(pos.blockX(), this.cellWidth);
-		int j = Math.floorDiv(pos.blockY(), this.cellHeight);
-		int k = Math.floorDiv(pos.blockZ(), this.cellWidth);
-		double d = 0.0;
-		double e = 0.0;
-		double f = 0.0;
+		double d = (double)pos.blockX() * this.field_38271;
+		double e = (double)pos.blockY() * this.field_38272;
+		double f = (double)pos.blockZ() * this.field_38271;
+		double g = d / this.field_38273;
+		double h = e / this.field_38274;
+		double i = f / this.field_38273;
+		double j = this.field_38272 * this.field_38275;
+		double k = j / this.field_38274;
+		double l = 0.0;
+		double m = 0.0;
+		double n = 0.0;
 		boolean bl = true;
-		double g = 1.0;
+		double o = 1.0;
 
-		for (int l = 0; l < 8; l++) {
-			PerlinNoiseSampler perlinNoiseSampler = this.interpolationNoise.getOctave(l);
+		for (int p = 0; p < 8; p++) {
+			PerlinNoiseSampler perlinNoiseSampler = this.interpolationNoise.getOctave(p);
 			if (perlinNoiseSampler != null) {
-				f += perlinNoiseSampler.sample(
-						OctavePerlinNoiseSampler.maintainPrecision((double)i * this.xzMainScale * g),
-						OctavePerlinNoiseSampler.maintainPrecision((double)j * this.yMainScale * g),
-						OctavePerlinNoiseSampler.maintainPrecision((double)k * this.xzMainScale * g),
-						this.yMainScale * g,
-						(double)j * this.yMainScale * g
+				n += perlinNoiseSampler.sample(
+						OctavePerlinNoiseSampler.maintainPrecision(g * o),
+						OctavePerlinNoiseSampler.maintainPrecision(h * o),
+						OctavePerlinNoiseSampler.maintainPrecision(i * o),
+						k * o,
+						h * o
 					)
-					/ g;
+					/ o;
 			}
 
-			g /= 2.0;
+			o /= 2.0;
 		}
 
-		double h = (f / 10.0 + 1.0) / 2.0;
-		boolean bl2 = h >= 1.0;
-		boolean bl3 = h <= 0.0;
-		g = 1.0;
+		double q = (n / 10.0 + 1.0) / 2.0;
+		boolean bl2 = q >= 1.0;
+		boolean bl3 = q <= 0.0;
+		o = 1.0;
 
-		for (int m = 0; m < 16; m++) {
-			double n = OctavePerlinNoiseSampler.maintainPrecision((double)i * this.xzScale * g);
-			double o = OctavePerlinNoiseSampler.maintainPrecision((double)j * this.yScale * g);
-			double p = OctavePerlinNoiseSampler.maintainPrecision((double)k * this.xzScale * g);
-			double q = this.yScale * g;
+		for (int r = 0; r < 16; r++) {
+			double s = OctavePerlinNoiseSampler.maintainPrecision(d * o);
+			double t = OctavePerlinNoiseSampler.maintainPrecision(e * o);
+			double u = OctavePerlinNoiseSampler.maintainPrecision(f * o);
+			double v = j * o;
 			if (!bl2) {
-				PerlinNoiseSampler perlinNoiseSampler2 = this.lowerInterpolatedNoise.getOctave(m);
+				PerlinNoiseSampler perlinNoiseSampler2 = this.lowerInterpolatedNoise.getOctave(r);
 				if (perlinNoiseSampler2 != null) {
-					d += perlinNoiseSampler2.sample(n, o, p, q, (double)j * q) / g;
+					l += perlinNoiseSampler2.sample(s, t, u, v, e * o) / o;
 				}
 			}
 
 			if (!bl3) {
-				PerlinNoiseSampler perlinNoiseSampler2 = this.upperInterpolatedNoise.getOctave(m);
+				PerlinNoiseSampler perlinNoiseSampler2 = this.upperInterpolatedNoise.getOctave(r);
 				if (perlinNoiseSampler2 != null) {
-					e += perlinNoiseSampler2.sample(n, o, p, q, (double)j * q) / g;
+					m += perlinNoiseSampler2.sample(s, t, u, v, e * o) / o;
 				}
 			}
 
-			g /= 2.0;
+			o /= 2.0;
 		}
 
-		return MathHelper.clampedLerp(d / 512.0, e / 512.0, h) / 128.0;
+		return MathHelper.clampedLerp(l / 512.0, m / 512.0, q) / 128.0;
 	}
 
 	@Override
@@ -133,20 +163,14 @@ public class InterpolatedNoiseSampler implements DensityFunction.class_6913 {
 		this.interpolationNoise.addDebugInfo(info);
 		info.append(
 				String.format(
-					", xzScale=%.3f, yScale=%.3f, xzMainScale=%.3f, yMainScale=%.3f, cellWidth=%d, cellHeight=%d",
-					this.xzScale,
-					this.yScale,
-					this.xzMainScale,
-					this.yMainScale,
-					this.cellWidth,
-					this.cellHeight
+					", xzScale=%.3f, yScale=%.3f, xzMainScale=%.3f, yMainScale=%.3f, cellWidth=4, cellHeight=8", 684.412, 684.412, 8.555150000000001, 4.277575000000001
 				)
 			)
 			.append('}');
 	}
 
 	@Override
-	public Codec<? extends DensityFunction> getCodec() {
+	public CodecHolder<? extends DensityFunction> getCodec() {
 		return CODEC;
 	}
 }

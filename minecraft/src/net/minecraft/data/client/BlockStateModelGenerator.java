@@ -60,7 +60,7 @@ public class BlockStateModelGenerator {
 	final Map<Block, BlockStateModelGenerator.StateFactory> stoneStateFactories = ImmutableMap.<Block, BlockStateModelGenerator.StateFactory>builder()
 		.put(Blocks.STONE, BlockStateModelGenerator::createStoneState)
 		.put(Blocks.DEEPSLATE, BlockStateModelGenerator::createDeepslateState)
-		.put(Blocks.MUD_BRICKS, BlockStateModelGenerator::method_42039)
+		.put(Blocks.MUD_BRICKS, BlockStateModelGenerator::createMudBrickState)
 		.build();
 	final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE))
@@ -162,11 +162,11 @@ public class BlockStateModelGenerator {
 		return createBlockStateWithTwoModelAndRandomInversion(block, modelId, identifier);
 	}
 
-	private static BlockStateSupplier method_42039(
-		Block block, Identifier identifier, TextureMap textureMap, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer
+	private static BlockStateSupplier createMudBrickState(
+		Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
 	) {
-		Identifier identifier2 = Models.CUBE_NORTH_WEST_MIRRORED_ALL.upload(block, textureMap, biConsumer);
-		return createSingletonBlockState(block, identifier2);
+		Identifier identifier = Models.CUBE_NORTH_WEST_MIRRORED_ALL.upload(block, textures, modelCollector);
+		return createSingletonBlockState(block, identifier);
 	}
 
 	private static BlockStateSupplier createDeepslateState(
@@ -2507,7 +2507,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(lantern).coordinate(createBooleanModelMap(Properties.HANGING, identifier2, identifier)));
 	}
 
-	private void method_42033() {
+	private void registerMuddyMangroveRoots() {
 		TextureMap textureMap = TextureMap.sideEnd(
 			TextureMap.getSubId(Blocks.MUDDY_MANGROVE_ROOTS, "_side"), TextureMap.getSubId(Blocks.MUDDY_MANGROVE_ROOTS, "_top")
 		);
@@ -2515,8 +2515,8 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createAxisRotatedBlockState(Blocks.MUDDY_MANGROVE_ROOTS, identifier));
 	}
 
-	private void method_42034() {
-		this.registerItemModel(Items.field_37508);
+	private void registerMangrovePropagule() {
+		this.registerItemModel(Items.MANGROVE_PROPAGULE);
 		Block block = Blocks.MANGROVE_PROPAGULE;
 		BlockStateVariantMap.DoubleProperty<Boolean, Integer> doubleProperty = BlockStateVariantMap.create(PropaguleBlock.HANGING, PropaguleBlock.AGE);
 		Identifier identifier = ModelIds.getBlockModelId(block);
@@ -2733,7 +2733,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.LILY_PAD, ModelIds.getBlockModelId(Blocks.LILY_PAD)));
 	}
 
-	private void method_42035() {
+	private void registerFrogspawn() {
 		this.registerItemModel(Blocks.FROGSPAWN);
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.FROGSPAWN, ModelIds.getBlockModelId(Blocks.FROGSPAWN)));
 	}
@@ -2897,7 +2897,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void method_42037() {
+	private void registerSculkShrieker() {
 		Identifier identifier = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
 		Identifier identifier2 = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
 		this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
@@ -3371,7 +3371,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
 	}
 
-	private void method_42038() {
+	private void registerSculkCatalyst() {
 		Identifier identifier = TextureMap.getSubId(Blocks.SCULK_CATALYST, "_bottom");
 		TextureMap textureMap = new TextureMap()
 			.put(TextureKey.BOTTOM, identifier)
@@ -3723,10 +3723,10 @@ public class BlockStateModelGenerator {
 		this.registerMagmaBlock();
 		this.registerJigsaw();
 		this.registerSculkSensor();
-		this.method_42037();
-		this.method_42035();
-		this.method_42034();
-		this.method_42033();
+		this.registerSculkShrieker();
+		this.registerFrogspawn();
+		this.registerMangrovePropagule();
+		this.registerMuddyMangroveRoots();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -4139,7 +4139,7 @@ public class BlockStateModelGenerator {
 		this.registerCooker(Blocks.SMOKER, TexturedModel.ORIENTABLE_WITH_BOTTOM);
 		this.registerRedstone();
 		this.registerRespawnAnchor();
-		this.method_42038();
+		this.registerSculkCatalyst();
 		this.registerInfested(Blocks.CHISELED_STONE_BRICKS, Blocks.INFESTED_CHISELED_STONE_BRICKS);
 		this.registerInfested(Blocks.COBBLESTONE, Blocks.INFESTED_COBBLESTONE);
 		this.registerInfested(Blocks.CRACKED_STONE_BRICKS, Blocks.INFESTED_CRACKED_STONE_BRICKS);

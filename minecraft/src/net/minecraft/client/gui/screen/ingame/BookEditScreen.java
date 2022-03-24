@@ -286,22 +286,23 @@ public class BookEditScreen extends Screen {
 			this.currentPageSelectionManager.cut();
 			return true;
 		} else {
+			SelectionManager.SelectionType selectionType = Screen.hasControlDown() ? SelectionManager.SelectionType.WORD : SelectionManager.SelectionType.CHARACTER;
 			switch (keyCode) {
 				case 257:
 				case 335:
 					this.currentPageSelectionManager.insert("\n");
 					return true;
 				case 259:
-					this.currentPageSelectionManager.delete(-1);
+					this.currentPageSelectionManager.delete(-1, selectionType);
 					return true;
 				case 261:
-					this.currentPageSelectionManager.delete(1);
+					this.currentPageSelectionManager.delete(1, selectionType);
 					return true;
 				case 262:
-					this.currentPageSelectionManager.moveCursor(1, Screen.hasShiftDown());
+					this.currentPageSelectionManager.moveCursor(1, Screen.hasShiftDown(), selectionType);
 					return true;
 				case 263:
-					this.currentPageSelectionManager.moveCursor(-1, Screen.hasShiftDown());
+					this.currentPageSelectionManager.moveCursor(-1, Screen.hasShiftDown(), selectionType);
 					return true;
 				case 264:
 					this.moveDownLine();
@@ -342,16 +343,24 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void moveToLineStart() {
-		int i = this.currentPageSelectionManager.getSelectionStart();
-		int j = this.getPageContent().getLineStart(i);
-		this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
+		if (Screen.hasControlDown()) {
+			this.currentPageSelectionManager.moveCursorToStart(Screen.hasShiftDown());
+		} else {
+			int i = this.currentPageSelectionManager.getSelectionStart();
+			int j = this.getPageContent().getLineStart(i);
+			this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
+		}
 	}
 
 	private void moveToLineEnd() {
-		BookEditScreen.PageContent pageContent = this.getPageContent();
-		int i = this.currentPageSelectionManager.getSelectionStart();
-		int j = pageContent.getLineEnd(i);
-		this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
+		if (Screen.hasControlDown()) {
+			this.currentPageSelectionManager.moveCursorToEnd(Screen.hasShiftDown());
+		} else {
+			BookEditScreen.PageContent pageContent = this.getPageContent();
+			int i = this.currentPageSelectionManager.getSelectionStart();
+			int j = pageContent.getLineEnd(i);
+			this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
+		}
 	}
 
 	private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {

@@ -86,7 +86,7 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource source, ColumnPos pos) throws CommandSyntaxException {
-		ChunkPos chunkPos = new ChunkPos(ChunkSectionPos.getSectionCoord(pos.x), ChunkSectionPos.getSectionCoord(pos.z));
+		ChunkPos chunkPos = pos.toChunkPos();
 		ServerWorld serverWorld = source.getWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
@@ -127,10 +127,10 @@ public class ForceLoadCommand {
 	}
 
 	private static int executeChange(ServerCommandSource source, ColumnPos from, ColumnPos to, boolean forceLoaded) throws CommandSyntaxException {
-		int i = Math.min(from.x, to.x);
-		int j = Math.min(from.z, to.z);
-		int k = Math.max(from.x, to.x);
-		int l = Math.max(from.z, to.z);
+		int i = Math.min(from.x(), to.x());
+		int j = Math.min(from.z(), to.z());
+		int k = Math.max(from.x(), to.x());
+		int l = Math.max(from.z(), to.z());
 		if (i >= -30000000 && j >= -30000000 && k < 30000000 && l < 30000000) {
 			int m = ChunkSectionPos.getSectionCoord(i);
 			int n = ChunkSectionPos.getSectionCoord(j);

@@ -39,7 +39,8 @@ public class OceanMonumentFeature extends StructureFeature {
 		int i = arg.chunkPos().getOffsetX(9);
 		int j = arg.chunkPos().getOffsetZ(9);
 
-		for (RegistryEntry<Biome> registryEntry : arg.biomeSource().getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.randomState().sampler())) {
+		for (RegistryEntry<Biome> registryEntry : arg.biomeSource()
+			.getBiomesInArea(i, arg.chunkGenerator().getSeaLevel(), j, 29, arg.randomState().getMultiNoiseSampler())) {
 			if (!registryEntry.isIn(BiomeTags.REQUIRED_OCEAN_MONUMENT_SURROUNDING)) {
 				return Optional.empty();
 			}

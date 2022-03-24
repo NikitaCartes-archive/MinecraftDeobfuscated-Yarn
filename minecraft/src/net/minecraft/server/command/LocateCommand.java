@@ -48,7 +48,7 @@ public class LocateCommand {
 		if (pair == null) {
 			throw FAILED_EXCEPTION.create(structureFeature.asString());
 		} else {
-			return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success");
+			return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success", false);
 		}
 	}
 
@@ -57,7 +57,8 @@ public class LocateCommand {
 		RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature,
 		BlockPos currentPos,
 		Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry,
-		String successMessage
+		String successMessage,
+		boolean bl
 	) {
 		BlockPos blockPos = structurePosAndEntry.getFirst();
 		String string = structureFeature.getKey()
@@ -65,11 +66,14 @@ public class LocateCommand {
 				key -> key.getValue().toString(),
 				key -> "#" + key.id() + " (" + (String)structurePosAndEntry.getSecond().getKey().map(keyx -> keyx.getValue().toString()).orElse("[unregistered]") + ")"
 			);
-		int i = MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
-		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), "~", blockPos.getZ()))
+		int i = bl
+			? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos)))
+			: MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
+		String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
+		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), string2, blockPos.getZ()))
 			.styled(
 				style -> style.withColor(Formatting.GREEN)
-						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
+						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ()))
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 			);
 		source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);

@@ -7,11 +7,11 @@ import net.minecraft.util.registry.Registry;
 public class ParticleTypes {
 	public static final DefaultParticleType AMBIENT_ENTITY_EFFECT = register("ambient_entity_effect", false);
 	public static final DefaultParticleType ANGRY_VILLAGER = register("angry_villager", false);
-	public static final ParticleType<BlockStateParticleEffect> BLOCK = register(
-		"block", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
+	public static final ParticleType<BlockStateParticleEffect> BLOCK = method_42022(
+		"block", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
-	public static final ParticleType<BlockStateParticleEffect> BLOCK_MARKER = register(
-		"block_marker", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
+	public static final ParticleType<BlockStateParticleEffect> BLOCK_MARKER = method_42022(
+		"block_marker", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType BUBBLE = register("bubble", false);
 	public static final DefaultParticleType CLOUD = register("cloud", false);
@@ -23,9 +23,11 @@ public class ParticleTypes {
 	public static final DefaultParticleType LANDING_LAVA = register("landing_lava", false);
 	public static final DefaultParticleType DRIPPING_WATER = register("dripping_water", false);
 	public static final DefaultParticleType FALLING_WATER = register("falling_water", false);
-	public static final ParticleType<DustParticleEffect> DUST = register("dust", DustParticleEffect.PARAMETERS_FACTORY, particleType -> DustParticleEffect.CODEC);
-	public static final ParticleType<DustColorTransitionParticleEffect> DUST_COLOR_TRANSITION = register(
-		"dust_color_transition", DustColorTransitionParticleEffect.FACTORY, particleType -> DustColorTransitionParticleEffect.CODEC
+	public static final ParticleType<DustParticleEffect> DUST = method_42022(
+		"dust", false, DustParticleEffect.PARAMETERS_FACTORY, particleType -> DustParticleEffect.CODEC
+	);
+	public static final ParticleType<DustColorTransitionParticleEffect> DUST_COLOR_TRANSITION = method_42022(
+		"dust_color_transition", false, DustColorTransitionParticleEffect.FACTORY, particleType -> DustColorTransitionParticleEffect.CODEC
 	);
 	public static final DefaultParticleType EFFECT = register("effect", false);
 	public static final DefaultParticleType ELDER_GUARDIAN = register("elder_guardian", true);
@@ -35,15 +37,15 @@ public class ParticleTypes {
 	public static final DefaultParticleType ENTITY_EFFECT = register("entity_effect", false);
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
-	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
-		"falling_dust", BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
+	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = method_42022(
+		"falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
 	public static final DefaultParticleType SCULK_SOUL = register("sculk_soul", false);
 	public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = method_42022(
-		"sculk_charge", SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC, true
+		"sculk_charge", true, SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC
 	);
 	public static final DefaultParticleType SCULK_CHARGE_POP = register("sculk_charge_pop", true);
 	public static final DefaultParticleType SOUL_FIRE_FLAME = register("soul_fire_flame", false);
@@ -53,11 +55,11 @@ public class ParticleTypes {
 	public static final DefaultParticleType COMPOSTER = register("composter", false);
 	public static final DefaultParticleType HEART = register("heart", false);
 	public static final DefaultParticleType INSTANT_EFFECT = register("instant_effect", false);
-	public static final ParticleType<ItemStackParticleEffect> ITEM = register(
-		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::createCodec
+	public static final ParticleType<ItemStackParticleEffect> ITEM = method_42022(
+		"item", false, ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::createCodec
 	);
-	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
-		"vibration", VibrationParticleEffect.PARAMETERS_FACTORY, particleType -> VibrationParticleEffect.CODEC
+	public static final ParticleType<VibrationParticleEffect> VIBRATION = method_42022(
+		"vibration", true, VibrationParticleEffect.PARAMETERS_FACTORY, particleType -> VibrationParticleEffect.CODEC
 	);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);
@@ -110,20 +112,17 @@ public class ParticleTypes {
 	public static final DefaultParticleType WAX_OFF = register("wax_off", true);
 	public static final DefaultParticleType ELECTRIC_SPARK = register("electric_spark", true);
 	public static final DefaultParticleType SCRAPE = register("scrape", true);
+	public static final ParticleType<ShriekParticleEffect> SHRIEK = method_42022(
+		"shriek", false, ShriekParticleEffect.FACTORY, particleType -> ShriekParticleEffect.CODEC
+	);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {
 		return Registry.register(Registry.PARTICLE_TYPE, name, new DefaultParticleType(alwaysShow));
 	}
 
-	private static <T extends ParticleEffect> ParticleType<T> register(
-		String name, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function
-	) {
-		return method_42022(name, factory, function, false);
-	}
-
 	private static <T extends ParticleEffect> ParticleType<T> method_42022(
-		String string, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function, boolean bl
+		String string, boolean bl, ParticleEffect.Factory<T> factory, Function<ParticleType<T>, Codec<T>> function
 	) {
 		return Registry.register(Registry.PARTICLE_TYPE, string, new ParticleType<T>(bl, factory) {
 			@Override

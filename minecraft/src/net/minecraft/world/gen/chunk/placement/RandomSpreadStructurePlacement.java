@@ -37,7 +37,7 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
 		StructurePlacement.FrequencyReductionMethod frequencyReductionMethod,
 		float f,
 		int i,
-		Optional<StructurePlacement.class_7152> optional,
+		Optional<StructurePlacement.ExclusionZone> optional,
 		int j,
 		int k,
 		SpreadType spreadType
@@ -76,9 +76,9 @@ public class RandomSpreadStructurePlacement extends StructurePlacement {
 	}
 
 	@Override
-	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long l, int i, int j) {
-		ChunkPos chunkPos = this.getStartChunk(l, i, j);
-		return chunkPos.x == i && chunkPos.z == j;
+	protected boolean isStartChunk(ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, long seed, int x, int z) {
+		ChunkPos chunkPos = this.getStartChunk(seed, x, z);
+		return chunkPos.x == x && chunkPos.z == z;
 	}
 
 	@Override

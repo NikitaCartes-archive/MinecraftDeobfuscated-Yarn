@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
@@ -14,23 +14,23 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 			parent,
 			options,
 			new TranslatableText("options.chat.title"),
-			new Option[]{
-				Option.VISIBILITY,
-				Option.CHAT_COLOR,
-				Option.CHAT_LINKS,
-				Option.CHAT_LINKS_PROMPT,
-				Option.CHAT_OPACITY,
-				Option.TEXT_BACKGROUND_OPACITY,
-				Option.CHAT_SCALE,
-				Option.CHAT_LINE_SPACING,
-				Option.CHAT_DELAY_INSTANT,
-				Option.CHAT_WIDTH,
+			new SimpleOption[]{
+				options.getChatVisibility(),
+				options.getChatColors(),
+				options.getChatLinks(),
+				options.getChatLinksPrompt(),
+				options.getChtOpacity(),
+				options.getTextBackgroundOpacity(),
+				options.getChatScale(),
+				options.getChatLineSpacing(),
+				options.getChatDelay(),
+				options.getChatWidth(),
 				options.getChatHeightFocused(),
 				options.getChatHeightUnfocused(),
-				Option.NARRATOR,
-				Option.AUTO_SUGGESTIONS,
-				Option.HIDE_MATCHED_NAMES,
-				Option.REDUCED_DEBUG_INFO
+				options.getNarrator(),
+				options.getAutoSuggestions(),
+				options.getHideMatchedNames(),
+				options.getReducedDebugInfo()
 			}
 		);
 	}

@@ -194,7 +194,12 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public <U> Optional<U> getOptionalMemory(MemoryModuleType<U> type) {
-		return ((Optional)this.memories.get(type)).map(Memory::getValue);
+		Optional<? extends Memory<?>> optional = (Optional<? extends Memory<?>>)this.memories.get(type);
+		if (optional == null) {
+			throw new IllegalStateException("Unregistered memory fetched: " + type);
+		} else {
+			return optional.map(Memory::getValue);
+		}
 	}
 
 	public <U> long getMemory(MemoryModuleType<U> type) {
@@ -402,10 +407,11 @@ public class Brain<E extends LivingEntity> {
 		for (Entry<MemoryModuleType<?>, Optional<? extends Memory<?>>> entry : this.memories.entrySet()) {
 			if (((Optional)entry.getValue()).isPresent()) {
 				Memory<?> memory = (Memory<?>)((Optional)entry.getValue()).get();
-				memory.tick();
 				if (memory.isExpired()) {
 					this.forget((MemoryModuleType)entry.getKey());
 				}
+
+				memory.tick();
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.StructureType;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockBox;
@@ -132,7 +133,9 @@ public abstract class StructureFeature {
 		BlockPos blockPos = arg.position();
 		return predicate.test(
 			chunkGenerator.getBiomeSource()
-				.getBiome(BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.sampler())
+				.getBiome(
+					BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.getMultiNoiseSampler()
+				)
 		);
 	}
 
@@ -147,7 +150,7 @@ public abstract class StructureFeature {
 	) {
 	}
 
-	public static int[] method_41611(StructureFeature.class_7149 arg, int i, int j, int k, int l) {
+	private static int[] method_41611(StructureFeature.class_7149 arg, int i, int j, int k, int l) {
 		ChunkGenerator chunkGenerator = arg.chunkGenerator();
 		HeightLimitView heightLimitView = arg.heightAccessor();
 		NoiseConfig noiseConfig = arg.randomState();
@@ -159,12 +162,35 @@ public abstract class StructureFeature {
 		};
 	}
 
-	public static int method_41610(StructureFeature.class_7149 arg, int i, int j) {
+	protected static int method_41610(StructureFeature.class_7149 arg, int i, int j) {
 		ChunkPos chunkPos = arg.chunkPos();
 		int k = chunkPos.getStartX();
 		int l = chunkPos.getStartZ();
-		int[] is = method_41611(arg, k, i, l, j);
+		return method_42381(arg, k, l, i, j);
+	}
+
+	protected static int method_42381(StructureFeature.class_7149 arg, int i, int j, int k, int l) {
+		int[] is = method_41611(arg, i, k, j, l);
 		return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
+	}
+
+	@Deprecated
+	protected BlockPos method_42382(StructureFeature.class_7149 arg, BlockRotation blockRotation) {
+		int i = 5;
+		int j = 5;
+		if (blockRotation == BlockRotation.CLOCKWISE_90) {
+			i = -5;
+		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
+			i = -5;
+			j = -5;
+		} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
+			j = -5;
+		}
+
+		ChunkPos chunkPos = arg.chunkPos();
+		int k = chunkPos.getOffsetX(7);
+		int l = chunkPos.getOffsetZ(7);
+		return new BlockPos(k, method_42381(arg, k, l, i, j), l);
 	}
 
 	public abstract Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg);

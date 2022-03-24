@@ -38,7 +38,7 @@ public class CarverContext extends HeightContext {
 
 	@Deprecated
 	public Optional<BlockState> applyMaterialRule(Function<BlockPos, RegistryEntry<Biome>> posToBiome, Chunk chunk, BlockPos pos, boolean hasFluid) {
-		return this.field_37706.surfaceBuilder().applyMaterialRule(this.field_37707, this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
+		return this.field_37706.getSurfaceBuilder().applyMaterialRule(this.field_37707, this, posToBiome, chunk, this.chunkNoiseSampler, pos, hasFluid);
 	}
 
 	@Deprecated

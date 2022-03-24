@@ -87,7 +87,7 @@ public class TitleScreen extends Screen {
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
-		return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
+		return this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui != null;
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
+		if (this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui == null) {
 			this.realmsNotificationGui = new RealmsNotificationsScreen();
 		}
 
@@ -273,7 +273,7 @@ public class TitleScreen extends Screen {
 				new TranslatableText("menu.playdemo"),
 				button -> {
 					if (bl) {
-						this.client.method_41735().start("Demo_World");
+						this.client.method_41735().start(this, "Demo_World");
 					} else {
 						DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
 						this.client

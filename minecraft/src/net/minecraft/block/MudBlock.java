@@ -32,4 +32,9 @@ public class MudBlock extends Block {
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
+
+	@Override
+	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+		return 0.2F;
+	}
 }

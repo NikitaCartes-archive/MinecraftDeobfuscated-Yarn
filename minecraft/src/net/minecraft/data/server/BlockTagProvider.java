@@ -855,6 +855,7 @@ public class BlockTagProvider extends AbstractTagProvider<Block> {
 				Blocks.BIRCH_LEAVES,
 				Blocks.AZALEA_LEAVES,
 				Blocks.FLOWERING_AZALEA_LEAVES,
+				Blocks.MANGROVE_LEAVES,
 				Blocks.SCULK_SENSOR,
 				Blocks.MOSS_BLOCK,
 				Blocks.MOSS_CARPET,

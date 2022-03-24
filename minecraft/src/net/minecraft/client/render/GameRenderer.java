@@ -197,6 +197,8 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	private static Shader renderTypeEntityTranslucentShader;
 	@Nullable
+	private static Shader renderTypeEntityTranslucentEmissiveShader;
+	@Nullable
 	private static Shader renderTypeEntitySmoothCutoutShader;
 	@Nullable
 	private static Shader renderTypeBeaconBeamShader;
@@ -493,6 +495,12 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			);
 			list2.add(
 				Pair.of(
+					new Shader(manager, "rendertype_entity_translucent_emissive", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
+					shader -> renderTypeEntityTranslucentEmissiveShader = shader
+				)
+			);
+			list2.add(
+				Pair.of(
 					new Shader(manager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL),
 					shader -> renderTypeEntitySmoothCutoutShader = shader
 				)
@@ -718,7 +726,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 
 			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 			if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
-				d *= (double)MathHelper.lerp(this.client.options.fovEffectScale, 1.0F, 0.85714287F);
+				d *= MathHelper.lerp(this.client.options.getFovEffectScale().getValue(), 1.0, 0.85714287F);
 			}
 
 			return d;
@@ -777,7 +785,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			entry.getNormalMatrix().loadIdentity();
 			matrices.push();
 			this.bobViewWhenHurt(matrices, tickDelta);
-			if (this.client.options.bobView) {
+			if (this.client.options.getBobView().getValue()) {
 				this.bobView(matrices, tickDelta);
 			}
 
@@ -804,7 +812,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				this.bobViewWhenHurt(matrices, tickDelta);
 			}
 
-			if (this.client.options.bobView) {
+			if (this.client.options.getBobView().getValue()) {
 				this.bobView(matrices, tickDelta);
 			}
 		}
@@ -844,7 +852,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	public void render(float tickDelta, long startTime, boolean tick) {
 		if (!this.client.isWindowFocused()
 			&& this.client.options.pauseOnLostFocus
-			&& (!this.client.options.touchscreen || !this.client.mouse.wasRightButtonClicked())) {
+			&& (!this.client.options.getTouchscreen().getValue() || !this.client.mouse.wasRightButtonClicked())) {
 			if (Util.getMeasuringTimeMs() - this.lastWindowFocusedTime > 500L) {
 				this.client.openPauseMenu(false);
 			}
@@ -893,8 +901,9 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
 					float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
-					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && this.client.options.distortionEffectScale < 1.0F) {
-						this.renderNausea(f * (1.0F - this.client.options.distortionEffectScale));
+					float g = this.client.options.getDistortionEffectScale().getValue().floatValue();
+					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && g < 1.0F) {
+						this.renderNausea(f * (1.0F - g));
 					}
 				}
 
@@ -1040,27 +1049,26 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		boolean bl = this.shouldRenderBlockOutline();
 		this.client.getProfiler().swap("camera");
 		Camera camera = this.camera;
-		this.viewDistance = (float)(this.client.options.getViewDistance() * 16);
+		this.viewDistance = (float)(this.client.options.getClampedViewDistance() * 16);
 		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
 		matrixStack.peek().getPositionMatrix().multiply(this.getBasicProjectionMatrix(d));
 		this.bobViewWhenHurt(matrixStack, tickDelta);
-		if (this.client.options.bobView) {
+		if (this.client.options.getBobView().getValue()) {
 			this.bobView(matrixStack, tickDelta);
 		}
 
-		float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength)
-			* this.client.options.distortionEffectScale
-			* this.client.options.distortionEffectScale;
-		if (f > 0.0F) {
+		float f = this.client.options.getDistortionEffectScale().getValue().floatValue();
+		float g = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength) * f * f;
+		if (g > 0.0F) {
 			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
-			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
-			g *= g;
+			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;
+			h *= h;
 			Vec3f vec3f = new Vec3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
 			matrixStack.multiply(vec3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
-			matrixStack.scale(1.0F / g, 1.0F, 1.0F);
-			float h = -((float)this.ticks + tickDelta) * (float)i;
-			matrixStack.multiply(vec3f.getDegreesQuaternion(h));
+			matrixStack.scale(1.0F / h, 1.0F, 1.0F);
+			float j = -((float)this.ticks + tickDelta) * (float)i;
+			matrixStack.multiply(vec3f.getDegreesQuaternion(j));
 		}
 
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
@@ -1332,6 +1340,11 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	public static Shader getRenderTypeEntityTranslucentShader() {
 		return renderTypeEntityTranslucentShader;
+	}
+
+	@Nullable
+	public static Shader getRenderTypeEntityTranslucentEmissiveShader() {
+		return renderTypeEntityTranslucentEmissiveShader;
 	}
 
 	@Nullable

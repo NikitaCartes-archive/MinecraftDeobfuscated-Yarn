@@ -2,8 +2,8 @@ package net.minecraft.world.event.listener;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 
@@ -26,5 +26,5 @@ public interface GameEventListener {
 	 * 
 	 * @return {@code true} if the game event has been accepted by this listener
 	 */
-	boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos);
+	boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos);
 }

@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_7118;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -60,14 +59,14 @@ public abstract class AbstractLichenBlock extends Block {
 		this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
 	}
 
-	public static Set<Direction> method_41440(BlockState blockState) {
-		if (!(blockState.getBlock() instanceof AbstractLichenBlock)) {
+	public static Set<Direction> collectDirections(BlockState state) {
+		if (!(state.getBlock() instanceof AbstractLichenBlock)) {
 			return Set.of();
 		} else {
 			Set<Direction> set = EnumSet.noneOf(Direction.class);
 
 			for (Direction direction : Direction.values()) {
-				if (hasDirection(blockState, direction)) {
+				if (hasDirection(state, direction)) {
 					set.add(direction);
 				}
 			}
@@ -77,14 +76,14 @@ public abstract class AbstractLichenBlock extends Block {
 	}
 
 	@Nullable
-	public static Set<Direction> method_41437(byte b) {
-		if (b == -1) {
+	public static Set<Direction> flagToDirections(byte flag) {
+		if (flag == -1) {
 			return null;
 		} else {
 			Set<Direction> set = EnumSet.noneOf(Direction.class);
 
 			for (Direction direction : Direction.values()) {
-				if ((b & (byte)(1 << direction.ordinal())) > 0) {
+				if ((flag & (byte)(1 << direction.ordinal())) > 0) {
 					set.add(direction);
 				}
 			}
@@ -93,13 +92,13 @@ public abstract class AbstractLichenBlock extends Block {
 		}
 	}
 
-	public static byte method_41439(@Nullable Collection<Direction> collection) {
-		if (collection == null) {
+	public static byte directionsToFlag(@Nullable Collection<Direction> directions) {
+		if (directions == null) {
 			return -1;
 		} else {
 			byte b = 0;
 
-			for (Direction direction : collection) {
+			for (Direction direction : directions) {
 				b = (byte)(b | 1 << direction.ordinal());
 			}
 
@@ -279,5 +278,5 @@ public abstract class AbstractLichenBlock extends Block {
 		return Arrays.stream(DIRECTIONS).anyMatch(direction -> !hasDirection(state, direction));
 	}
 
-	public abstract class_7118 method_41432();
+	public abstract LichenGrower getGrower();
 }

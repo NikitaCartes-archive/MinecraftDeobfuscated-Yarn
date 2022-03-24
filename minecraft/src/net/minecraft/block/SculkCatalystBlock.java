@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventListener;
 
 public class SculkCatalystBlock extends BlockWithEntity {
-	public static final int field_37603 = 8;
+	public static final int BLOOM_DURATION = 8;
 	public static final BooleanProperty BLOOM = Properties.BLOOM;
 	private final IntProvider experience = ConstantIntProvider.create(20);
 
@@ -57,7 +57,7 @@ public class SculkCatalystBlock extends BlockWithEntity {
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
+	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
 		return blockEntity instanceof SculkCatalystBlockEntity ? (SculkCatalystBlockEntity)blockEntity : null;
 	}
 

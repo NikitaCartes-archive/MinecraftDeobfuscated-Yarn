@@ -36,7 +36,7 @@ public class GlassBottleItem extends Item {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-			world.emitGameEvent(user, GameEvent.FLUID_PICKUP, user.getBlockPos());
+			user.emitGameEvent(GameEvent.FLUID_PICKUP);
 			return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
 			HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);

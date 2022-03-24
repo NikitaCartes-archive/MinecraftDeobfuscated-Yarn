@@ -16,7 +16,6 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
@@ -69,6 +68,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.LargeEntitySpawnHelper;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -891,8 +891,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= requiredCount) {
-				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
-				if (ironGolemEntity != null) {
+				if (LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
 					list.forEach(GolemLastSeenSensor::rememberIronGolem);
 				}
 			}
@@ -901,49 +900,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	public boolean canSummonGolem(long time) {
 		return !this.hasRecentlySlept(this.world.getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
-	}
-
-	@Nullable
-	private IronGolemEntity spawnIronGolem(ServerWorld world) {
-		BlockPos blockPos = this.getBlockPos();
-
-		for (int i = 0; i < 10; i++) {
-			double d = (double)(world.random.nextInt(16) - 8);
-			double e = (double)(world.random.nextInt(16) - 8);
-			BlockPos blockPos2 = this.getHighestOpenPositionOnOffset(blockPos, d, e);
-			if (blockPos2 != null) {
-				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
-				if (ironGolemEntity != null) {
-					if (ironGolemEntity.canSpawn(world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(world)) {
-						world.spawnEntityAndPassengers(ironGolemEntity);
-						return ironGolemEntity;
-					}
-
-					ironGolemEntity.discard();
-				}
-			}
-		}
-
-		return null;
-	}
-
-	@Nullable
-	private BlockPos getHighestOpenPositionOnOffset(BlockPos pos, double x, double z) {
-		int i = 6;
-		BlockPos blockPos = pos.add(x, 6.0, z);
-		BlockState blockState = this.world.getBlockState(blockPos);
-
-		for (int j = 6; j >= -6; j--) {
-			BlockPos blockPos2 = blockPos;
-			BlockState blockState2 = blockState;
-			blockPos = blockPos.down();
-			blockState = this.world.getBlockState(blockPos);
-			if ((blockState2.isAir() || blockState2.getMaterial().isLiquid()) && blockState.getMaterial().blocksLight()) {
-				return blockPos2;
-			}
-		}
-
-		return null;
 	}
 
 	@Override

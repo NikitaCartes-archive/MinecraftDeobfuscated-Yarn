@@ -68,7 +68,6 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
-import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -119,16 +118,14 @@ import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
-import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionOptions;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
@@ -171,7 +168,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ServerWorldProperties worldProperties;
 	final EntityList entityList = new EntityList();
 	private final ServerEntityManager<Entity> entityManager;
-	private final NeighborUpdater neighborUpdater;
 	public boolean savingDisabled;
 	private final SleepManager sleepManager;
 	private int idleTimeout;
@@ -200,22 +196,21 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		RegistryKey<World> worldKey,
 		DimensionOptions dimensionOptions,
 		WorldGenerationProgressListener worldGenerationProgressListener,
-		boolean bl,
-		long l,
-		List<Spawner> list,
-		boolean bl2
+		boolean debugWorld,
+		long seed,
+		List<Spawner> spawners,
+		boolean shouldTickTime
 	) {
-		super(properties, worldKey, dimensionOptions.getDimensionTypeEntry(), server::getProfiler, false, bl, l);
-		this.shouldTickTime = bl2;
+		super(properties, worldKey, dimensionOptions.getDimensionTypeEntry(), server::getProfiler, false, debugWorld, seed, server.getMaxChainedNeighborUpdates());
+		this.shouldTickTime = shouldTickTime;
 		this.server = server;
-		this.spawners = list;
+		this.spawners = spawners;
 		this.worldProperties = properties;
 		ChunkGenerator chunkGenerator = dimensionOptions.getChunkGenerator();
-		boolean bl3 = server.syncChunkWrites();
+		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
-		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl3, server);
+		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
-		this.neighborUpdater = new ChainRestrictedNeighborUpdater(this);
 		this.chunkManager = new ServerChunkManager(
 			this,
 			session,
@@ -225,7 +220,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			chunkGenerator,
 			server.getPlayerManager().getViewDistance(),
 			server.getPlayerManager().getSimulationDistance(),
-			bl3,
+			bl,
 			worldGenerationProgressListener,
 			this.entityManager::updateTrackingStatus,
 			() -> server.getOverworld().getPersistentStateManager()
@@ -236,12 +231,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager()
-			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.method_40134()));
+			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimensionEntry()));
 		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
 
-		long m = server.getSaveProperties().getGeneratorOptions().getSeed();
+		long l = server.getSaveProperties().getGeneratorOptions().getSeed();
 		this.structureLocator = new StructureLocator(
 			this.chunkManager.getChunkIoWorker(),
 			this.getRegistryManager(),
@@ -251,12 +246,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.chunkManager.getNoiseConfig(),
 			this,
 			chunkGenerator.getBiomeSource(),
-			m,
+			l,
 			dataFixer
 		);
 		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
-		if (this.getDimension().hasEnderDragonFight()) {
-			this.enderDragonFight = new EnderDragonFight(this, m, server.getSaveProperties().getDragonFight());
+		if (this.getRegistryKey() == World.END && this.getDimensionEntry().matchesKey(DimensionTypes.THE_END)) {
+			this.enderDragonFight = new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight());
 		} else {
 			this.enderDragonFight = null;
 		}
@@ -288,7 +283,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getChunkManager().getChunkGenerator().getBiomeSource().getBiome(biomeX, biomeY, biomeZ, this.getChunkManager().getNoiseConfig().sampler());
+		return this.getChunkManager()
+			.getChunkGenerator()
+			.getBiomeSource()
+			.getBiome(biomeX, biomeY, biomeZ, this.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
 	}
 
 	public StructureAccessor getStructureAccessor() {
@@ -983,12 +981,30 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public int getLogicalHeight() {
-		return this.getDimension().getLogicalHeight();
+		return this.getDimension().logicalHeight();
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
-		this.emitGameEvent(entity, event, pos, event.getRange());
+	public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+		int i = event.getRange();
+		BlockPos blockPos = new BlockPos(pos);
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
+		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
+		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
+		int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
+		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
+		int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+
+		for (int p = j; p <= m; p++) {
+			for (int q = l; q <= o; q++) {
+				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
+				if (chunk != null) {
+					for (int r = k; r <= n; r++) {
+						chunk.getGameEventDispatcher(r).dispatch(event, entity, pos);
+					}
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1021,6 +1037,26 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				this.duringListenerUpdate = false;
 			}
 		}
+	}
+
+	@Override
+	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
+		this.neighborUpdater.updateNeighbors(pos, sourceBlock, null);
+	}
+
+	@Override
+	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
+		this.neighborUpdater.updateNeighbors(pos, sourceBlock, direction);
+	}
+
+	@Override
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
+		this.neighborUpdater.updateNeighbor(pos, sourceBlock, sourcePos);
+	}
+
+	@Override
+	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+		this.neighborUpdater.updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
 	}
 
 	@Override
@@ -1118,13 +1154,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public StructureManager getStructureManager() {
 		return this.server.getStructureManager();
-	}
-
-	public void sendVibrationPacket(Vibration vibration) {
-		BlockPos blockPos = vibration.getOrigin();
-		VibrationS2CPacket vibrationS2CPacket = new VibrationS2CPacket(vibration);
-		this.players
-			.forEach(player -> this.sendToPlayerIfNearby(player, false, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), vibrationS2CPacket));
 	}
 
 	/**
@@ -1246,18 +1275,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> biomeEntryPredicate, BlockPos pos, int radius, int blockCheckInterval) {
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(
+		Predicate<RegistryEntry<Biome>> predicate, BlockPos pos, int radius, int horizontalBlockCheckInterval, int verticalBlockCheckInterval
+	) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
-			.locateBiome(
-				pos.getX(), pos.getY(), pos.getZ(), radius, blockCheckInterval, biomeEntryPredicate, this.random, true, this.getChunkManager().getNoiseConfig().sampler()
+			.method_42310(
+				pos, radius, horizontalBlockCheckInterval, verticalBlockCheckInterval, predicate, this.getChunkManager().getNoiseConfig().getMultiNoiseSampler(), this
 			);
-	}
-
-	@Override
-	public NeighborUpdater getNeighborUpdater() {
-		return this.neighborUpdater;
 	}
 
 	@Override
@@ -1807,6 +1833,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					ServerWorld.this.dragonParts.put(enderDragonPart.getId(), enderDragonPart);
 				}
 			}
+
+			entity.updateEventHandler(EntityGameEventHandler::onEntitySetPosCallback);
 		}
 
 		public void stopTracking(Entity entity) {
@@ -1831,10 +1859,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 			}
 
-			EntityGameEventHandler entityGameEventHandler = entity.getGameEventHandler();
-			if (entityGameEventHandler != null) {
-				entityGameEventHandler.onEntityRemoval(entity.world);
-			}
+			entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
 		}
 	}
 }

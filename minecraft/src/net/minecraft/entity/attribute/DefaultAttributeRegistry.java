@@ -34,6 +34,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -144,6 +145,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.VEX, VexEntity.createVexAttributes().build())
 		.put(EntityType.VILLAGER, VillagerEntity.createVillagerAttributes().build())
 		.put(EntityType.VINDICATOR, VindicatorEntity.createVindicatorAttributes().build())
+		.put(EntityType.WARDEN, WardenEntity.addAttributes().build())
 		.put(EntityType.WANDERING_TRADER, MobEntity.createMobAttributes().build())
 		.put(EntityType.WITCH, WitchEntity.createWitchAttributes().build())
 		.put(EntityType.WITHER, WitherEntity.createWitherAttributes().build())

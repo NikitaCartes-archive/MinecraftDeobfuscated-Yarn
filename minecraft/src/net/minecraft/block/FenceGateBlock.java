@@ -149,7 +149,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), Block.NOTIFY_LISTENERS);
 				if ((Boolean)state.get(OPEN) != bl) {
 					world.syncWorldEvent(null, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
-					world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+					world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 				}
 			}
 		}

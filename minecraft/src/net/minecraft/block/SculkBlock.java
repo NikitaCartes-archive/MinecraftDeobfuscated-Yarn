@@ -1,8 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.class_7124;
-import net.minecraft.class_7128;
+import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.property.Properties;
@@ -11,64 +10,64 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.world.WorldAccess;
 
-public class SculkBlock extends OreBlock implements class_7124 {
+public class SculkBlock extends OreBlock implements SculkSpreadable {
 	public SculkBlock(AbstractBlock.Settings settings) {
 		super(settings, ConstantIntProvider.create(1));
 	}
 
 	@Override
-	public int method_41471(class_7128.class_7129 arg, WorldAccess worldAccess, BlockPos blockPos, Random random, class_7128 arg2, boolean bl) {
-		int i = arg.method_41508();
-		if (i != 0 && random.nextInt(arg2.method_41490()) == 0) {
-			BlockPos blockPos2 = arg.method_41495();
-			boolean bl2 = blockPos2.isWithinDistance(blockPos, (double)arg2.method_41489());
-			if (!bl2 && method_41474(worldAccess, blockPos2)) {
-				int j = arg2.method_41488();
+	public int spread(
+		SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock
+	) {
+		int i = cursor.getCharge();
+		if (i != 0 && random.nextInt(spreadManager.getSpreadChance()) == 0) {
+			BlockPos blockPos = cursor.getPos();
+			boolean bl = blockPos.isWithinDistance(catalystPos, (double)spreadManager.getMaxDistance());
+			if (!bl && shouldNotDecay(world, blockPos)) {
+				int j = spreadManager.getExtraBlockChance();
 				if (random.nextInt(j) < i) {
-					BlockPos blockPos3 = blockPos2.up();
-					BlockState blockState = this.method_41475(worldAccess, blockPos3, random, arg2.method_41492());
-					worldAccess.setBlockState(blockPos3, blockState, Block.NOTIFY_ALL);
-					worldAccess.playSound(null, blockPos2, blockState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+					BlockPos blockPos2 = blockPos.up();
+					BlockState blockState = this.getExtraBlockState(world, blockPos2, random, spreadManager.isWorldGen());
+					world.setBlockState(blockPos2, blockState, Block.NOTIFY_ALL);
+					world.playSound(null, blockPos, blockState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
 				return Math.max(0, i - j);
 			} else {
-				return random.nextInt(arg2.method_41491()) != 0 ? i : i - (bl2 ? 1 : method_41476(arg2, blockPos2, blockPos, i));
+				return random.nextInt(spreadManager.getDecayChance()) != 0 ? i : i - (bl ? 1 : getDecay(spreadManager, blockPos, catalystPos, i));
 			}
 		} else {
 			return i;
 		}
 	}
 
-	private static int method_41476(class_7128 arg, BlockPos blockPos, BlockPos blockPos2, int i) {
-		int j = arg.method_41489();
-		float f = MathHelper.square((float)Math.sqrt(blockPos.getSquaredDistance(blockPos2)) - (float)j);
-		int k = MathHelper.square(24 - j);
-		float g = Math.min(1.0F, f / (float)k);
-		return Math.max(1, (int)((float)i * g * 0.5F));
+	private static int getDecay(SculkSpreadManager spreadManager, BlockPos cursorPos, BlockPos catalystPos, int charge) {
+		int i = spreadManager.getMaxDistance();
+		float f = MathHelper.square((float)Math.sqrt(cursorPos.getSquaredDistance(catalystPos)) - (float)i);
+		int j = MathHelper.square(24 - i);
+		float g = Math.min(1.0F, f / (float)j);
+		return Math.max(1, (int)((float)charge * g * 0.5F));
 	}
 
-	private BlockState method_41475(WorldAccess worldAccess, BlockPos blockPos, Random random, boolean bl) {
+	private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, Random random, boolean allowShrieker) {
 		Block block;
-		if (bl) {
+		if (allowShrieker) {
 			block = random.nextInt(11) == 0 ? Blocks.SCULK_SHRIEKER : Blocks.SCULK_SENSOR;
 		} else {
 			block = Blocks.SCULK_SENSOR;
 		}
 
 		BlockState blockState = block.getDefaultState();
-		return !worldAccess.getFluidState(blockPos).isEmpty() && block instanceof Waterloggable
-			? blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true))
-			: blockState;
+		return !world.getFluidState(pos).isEmpty() && block instanceof Waterloggable ? blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)) : blockState;
 	}
 
-	private static boolean method_41474(WorldAccess worldAccess, BlockPos blockPos) {
-		BlockState blockState = worldAccess.getBlockState(blockPos.up());
+	private static boolean shouldNotDecay(WorldAccess world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos.up());
 		if (blockState.isAir() || blockState.isOf(Blocks.WATER) && blockState.getFluidState().isOf(Fluids.WATER)) {
 			int i = 0;
 
-			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 2, 4))) {
-				BlockState blockState2 = worldAccess.getBlockState(blockPos2);
+			for (BlockPos blockPos : BlockPos.iterate(pos.add(-4, 0, -4), pos.add(4, 2, 4))) {
+				BlockState blockState2 = world.getBlockState(blockPos);
 				if (blockState2.isOf(Blocks.SCULK_SENSOR) || blockState2.isOf(Blocks.SCULK_SHRIEKER)) {
 					i++;
 				}
@@ -85,7 +84,7 @@ public class SculkBlock extends OreBlock implements class_7124 {
 	}
 
 	@Override
-	public boolean method_41472() {
+	public boolean shouldConvertToSpreadable() {
 		return false;
 	}
 }

@@ -2,11 +2,11 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_7124;
-import net.minecraft.class_7128;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SculkSpreadable;
+import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
@@ -22,26 +22,26 @@ public class SculkPatchFeature extends Feature<SculkPatchFeatureConfig> {
 	public boolean generate(FeatureContext<SculkPatchFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
-		if (!this.method_41571(structureWorldAccess, blockPos)) {
+		if (!this.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
 			SculkPatchFeatureConfig sculkPatchFeatureConfig = context.getConfig();
 			Random random = context.getRandom();
-			class_7128 lv = class_7128.method_41485();
+			SculkSpreadManager sculkSpreadManager = SculkSpreadManager.createWorldGen();
 			int i = sculkPatchFeatureConfig.spreadRounds() + sculkPatchFeatureConfig.growthRounds();
 
 			for (int j = 0; j < i; j++) {
 				for (int k = 0; k < sculkPatchFeatureConfig.chargeCount(); k++) {
-					lv.method_41482(blockPos, sculkPatchFeatureConfig.amountPerCharge());
+					sculkSpreadManager.spread(blockPos, sculkPatchFeatureConfig.amountPerCharge());
 				}
 
 				boolean bl = j < sculkPatchFeatureConfig.spreadRounds();
 
 				for (int l = 0; l < sculkPatchFeatureConfig.spreadAttempts(); l++) {
-					lv.method_41479(structureWorldAccess, blockPos, random, bl);
+					sculkSpreadManager.tick(structureWorldAccess, blockPos, random, bl);
 				}
 
-				lv.method_41494();
+				sculkSpreadManager.clearCursors();
 			}
 
 			BlockPos blockPos2 = blockPos.down();
@@ -54,14 +54,14 @@ public class SculkPatchFeature extends Feature<SculkPatchFeatureConfig> {
 		}
 	}
 
-	private boolean method_41571(WorldAccess worldAccess, BlockPos blockPos) {
-		BlockState blockState = worldAccess.getBlockState(blockPos);
-		if (blockState.getBlock() instanceof class_7124) {
+	private boolean canGenerate(WorldAccess world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
+		if (blockState.getBlock() instanceof SculkSpreadable) {
 			return true;
 		} else {
 			return !blockState.isAir() && (!blockState.isOf(Blocks.WATER) || !blockState.getFluidState().isStill())
 				? false
-				: Direction.stream().map(blockPos::offset).anyMatch(blockPosx -> worldAccess.getBlockState(blockPosx).isFullCube(worldAccess, blockPosx));
+				: Direction.stream().map(pos::offset).anyMatch(pos2 -> world.getBlockState(pos2).isFullCube(world, pos2));
 		}
 	}
 }

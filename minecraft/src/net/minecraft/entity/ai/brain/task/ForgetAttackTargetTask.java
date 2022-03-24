@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -13,27 +13,33 @@ import net.minecraft.server.world.ServerWorld;
 public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private static final int REMEMBER_TIME = 200;
 	private final Predicate<LivingEntity> alternativeCondition;
-	private final Consumer<E> forgetCallback;
+	private final BiConsumer<E, LivingEntity> forgetCallback;
+	private final boolean field_38102;
 
-	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, Consumer<E> forgetCallback) {
+	public ForgetAttackTargetTask(Predicate<LivingEntity> condition, BiConsumer<E, LivingEntity> biConsumer, boolean bl) {
 		super(
 			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
 		);
 		this.alternativeCondition = condition;
-		this.forgetCallback = forgetCallback;
+		this.forgetCallback = biConsumer;
+		this.field_38102 = bl;
+	}
+
+	public ForgetAttackTargetTask(Predicate<LivingEntity> predicate, BiConsumer<E, LivingEntity> biConsumer) {
+		this(predicate, biConsumer, true);
 	}
 
 	public ForgetAttackTargetTask(Predicate<LivingEntity> alternativeCondition) {
-		this(alternativeCondition, mobEntity -> {
+		this(alternativeCondition, (mobEntity, livingEntity) -> {
 		});
 	}
 
-	public ForgetAttackTargetTask(Consumer<E> forgetCallback) {
-		this(target -> false, forgetCallback);
+	public ForgetAttackTargetTask(BiConsumer<E, LivingEntity> biConsumer) {
+		this(target -> false, biConsumer);
 	}
 
 	public ForgetAttackTargetTask() {
-		this(target -> false, mobEntity -> {
+		this(target -> false, (mobEntity, livingEntity) -> {
 		});
 	}
 
@@ -41,7 +47,7 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 		LivingEntity livingEntity = this.getAttackTarget(mobEntity);
 		if (!mobEntity.canTarget(livingEntity)) {
 			this.forgetAttackTarget(mobEntity);
-		} else if (cannotReachTarget(mobEntity)) {
+		} else if (this.field_38102 && cannotReachTarget(mobEntity)) {
 			this.forgetAttackTarget(mobEntity);
 		} else if (this.isAttackTargetDead(mobEntity)) {
 			this.forgetAttackTarget(mobEntity);
@@ -71,7 +77,7 @@ public class ForgetAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void forgetAttackTarget(E entity) {
-		this.forgetCallback.accept(entity);
+		this.forgetCallback.accept(entity, this.getAttackTarget(entity));
 		entity.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 	}
 }

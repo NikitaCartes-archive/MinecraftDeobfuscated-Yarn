@@ -152,7 +152,7 @@ public class Explosion {
 	}
 
 	public void collectBlocksAndDamageEntities() {
-		this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new BlockPos(this.x, this.y, this.z));
+		this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new Vec3d(this.x, this.y, this.z));
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		int i = 16;
 

@@ -41,7 +41,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 					for (int i = 0; i < glowLichenFeatureConfig.searchRange; i++) {
 						mutable.set(blockPos, direction);
 						BlockState blockState = structureWorldAccess.getBlockState(mutable);
-						if (!isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.field_37709)) {
+						if (!isAirOrWater(blockState) && !blockState.isOf(glowLichenFeatureConfig.lichen)) {
 							break;
 						}
 
@@ -64,7 +64,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 		for (Direction direction : directions) {
 			BlockState blockState = world.getBlockState(mutable.set(pos, direction));
 			if (blockState.isIn(config.canPlaceOn)) {
-				BlockState blockState2 = config.field_37709.withDirection(state, world, pos, direction);
+				BlockState blockState2 = config.lichen.withDirection(state, world, pos, direction);
 				if (blockState2 == null) {
 					return false;
 				}
@@ -72,7 +72,7 @@ public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 				world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
 				world.getChunk(pos).markBlockForPostProcessing(pos);
 				if (random.nextFloat() < config.spreadChance) {
-					config.field_37709.method_41432().method_41447(blockState2, world, pos, direction, random, true);
+					config.lichen.getGrower().grow(blockState2, world, pos, direction, random, true);
 				}
 
 				return true;

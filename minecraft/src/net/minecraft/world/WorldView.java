@@ -79,12 +79,12 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default int getBottomY() {
-		return this.getDimension().getMinimumY();
+		return this.getDimension().minimumY();
 	}
 
 	@Override
 	default int getHeight() {
-		return this.getDimension().getHeight();
+		return this.getDimension().height();
 	}
 
 	/**
@@ -128,9 +128,15 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		}
 	}
 
+	default float getPhototaxisFavor(BlockPos pos) {
+		return this.getBrightness(pos) - 0.5F;
+	}
+
 	@Deprecated
 	default float getBrightness(BlockPos pos) {
-		return this.getDimension().getBrightness(this.getLightLevel(pos));
+		float f = (float)this.getLightLevel(pos) / 15.0F;
+		float g = f / (4.0F - 3.0F * f);
+		return MathHelper.lerp(this.getDimension().ambientLight(), g, 1.0F);
 	}
 
 	default int getStrongRedstonePower(BlockPos pos, Direction direction) {

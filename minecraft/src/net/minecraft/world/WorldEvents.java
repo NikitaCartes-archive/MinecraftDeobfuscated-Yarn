@@ -500,4 +500,10 @@ public class WorldEvents {
 	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.World, net.minecraft.util.math.BlockPos, java.util.Random) SculkSpreadManager#tick}
 	 */
 	public static final int SCULK_CHARGE = 3006;
+	/**
+	 * A sculk shrieker shrieks.
+	 * <br>Spawns shriek particles and plays the shriek sound event.
+	 * <br>Called by {@link net.minecraft.block.SculkShriekerBlock#shriek(net.minecraft.world.World, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos) SculkShriekerBlock#shriek}
+	 */
+	public static final int SCULK_SHRIEKS = 3007;
 }

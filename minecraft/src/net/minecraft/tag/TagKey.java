@@ -10,7 +10,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 
 public record TagKey<T>(RegistryKey<? extends Registry<T>> registry, Identifier id) {
-	private static final Interner<TagKey<?>> INTERNER = Interners.newStrongInterner();
+	private static final Interner<TagKey<?>> INTERNER = Interners.newWeakInterner();
 
 	@Deprecated
 	public TagKey(RegistryKey<? extends Registry<T>> registry, Identifier id) {

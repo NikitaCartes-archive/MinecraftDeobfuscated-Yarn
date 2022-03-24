@@ -1,8 +1,10 @@
 package net.minecraft.world.gen.densityfunction;
 
 import com.mojang.serialization.Codec;
-import java.util.function.Function;
+import javax.annotation.Nullable;
+import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.dynamic.RegistryElementCodec;
+import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.Blender;
@@ -27,7 +29,7 @@ public interface DensityFunction {
 
 	double maxValue();
 
-	Codec<? extends DensityFunction> getCodec();
+	CodecHolder<? extends DensityFunction> getCodec();
 
 	default DensityFunction clamp(double min, double max) {
 		return new DensityFunctionTypes.Clamp(this, min, max);
@@ -57,7 +59,12 @@ public interface DensityFunction {
 		return DensityFunctionTypes.method_40490(this, DensityFunctionTypes.class_6925.Type.SQUEEZE);
 	}
 
-	public interface DensityFunctionVisitor extends Function<DensityFunction, DensityFunction> {
+	public interface DensityFunctionVisitor {
+		DensityFunction apply(DensityFunction densityFunction);
+
+		default DensityFunction.class_7270 method_42358(DensityFunction.class_7270 arg) {
+			return arg;
+		}
 	}
 
 	public interface NoisePos {
@@ -89,7 +96,24 @@ public interface DensityFunction {
 
 		@Override
 		default DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return (DensityFunction)visitor.apply(this);
+			return visitor.apply(this);
+		}
+	}
+
+	public static record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
+		public static final Codec<DensityFunction.class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.CODEC
+			.xmap(registryEntry -> new DensityFunction.class_7270(registryEntry, null), DensityFunction.class_7270::noiseData);
+
+		public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
+			this(registryEntry, null);
+		}
+
+		public double method_42356(double d, double e, double f) {
+			return this.noise == null ? 0.0 : this.noise.sample(d, e, f);
+		}
+
+		public double method_42355() {
+			return this.noise == null ? 2.0 : this.noise.method_40554();
 		}
 	}
 }

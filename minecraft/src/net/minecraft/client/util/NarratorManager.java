@@ -65,7 +65,7 @@ public class NarratorManager implements ClientChatListener {
 	}
 
 	private static NarratorMode getNarratorOption() {
-		return MinecraftClient.getInstance().options.narrator;
+		return MinecraftClient.getInstance().options.getNarrator().getValue();
 	}
 
 	private void debugPrintMessage(String message) {

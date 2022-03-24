@@ -120,7 +120,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			OrderedText orderedText = this.displayName;
 			MultilineText multilineText = this.description;
-			if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
+			if (this.isSelectable() && (this.client.options.getTouchscreen().getValue() || hovered)) {
 				RenderSystem.setShaderTexture(0, PackListWidget.RESOURCE_PACKS_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);

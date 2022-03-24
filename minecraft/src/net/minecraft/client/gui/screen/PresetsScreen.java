@@ -133,7 +133,7 @@ public class PresetsScreen extends Screen {
 			if (list.isEmpty()) {
 				return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry, structureSetRegistry);
 			} else {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.method_41139());
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.getStructureOverrides());
 				RegistryKey<Biome> registryKey = BIOME_KEY;
 				if (iterator.hasNext()) {
 					try {

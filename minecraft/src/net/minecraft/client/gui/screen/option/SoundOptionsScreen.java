@@ -10,7 +10,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.SoundSliderWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundCategory;
@@ -45,10 +44,10 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 			k++;
 		}
 
-		this.addDrawableChild(Option.AUDIO_DEVICE.createButton(this.gameOptions, this.width / 2 - 155, i + 22 * (k >> 1), 310));
+		this.addDrawableChild(this.gameOptions.getSoundDevice().createButton(this.gameOptions, this.width / 2 - 155, i + 22 * (k >> 1), 310));
 		k += 2;
-		this.addDrawableChild(Option.SUBTITLES.createButton(this.gameOptions, this.width / 2 - 155, i + 22 * (k >> 1), 150));
-		this.directionalAudioButton = Option.DIRECTIONAL_AUDIO.createButton(this.gameOptions, this.width / 2 + 5, i + 22 * (k >> 1), 150);
+		this.addDrawableChild(this.gameOptions.getShowSubtitles().createButton(this.gameOptions, this.width / 2 - 155, i + 22 * (k >> 1), 150));
+		this.directionalAudioButton = this.gameOptions.getDirectionalAudio().createButton(this.gameOptions, this.width / 2 + 5, i + 22 * (k >> 1), 150);
 		this.addDrawableChild(this.directionalAudioButton);
 		k += 2;
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, i + 22 * (k >> 1), 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));

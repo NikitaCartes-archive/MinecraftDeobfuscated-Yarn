@@ -434,7 +434,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			worldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0F);
 		} else {
 			ServerChunkManager serverChunkManager = world.getChunkManager();
-			ChunkPos chunkPos = new ChunkPos(serverChunkManager.getNoiseConfig().sampler().findBestSpawnPosition());
+			ChunkPos chunkPos = new ChunkPos(serverChunkManager.getNoiseConfig().getMultiNoiseSampler().findBestSpawnPosition());
 			int i = serverChunkManager.getChunkGenerator().getSpawnHeight(world);
 			if (i < world.getBottomY()) {
 				BlockPos blockPos = chunkPos.getStartPos();

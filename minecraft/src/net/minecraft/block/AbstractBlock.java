@@ -425,6 +425,11 @@ public abstract class AbstractBlock {
 		return Block.isShapeFullCube(state.getCollisionShape(world, pos));
 	}
 
+	@Deprecated
+	public boolean isCullingShapeFullCube(BlockState state, BlockView world, BlockPos pos) {
+		return Block.isShapeFullCube(state.getCullingShape(world, pos));
+	}
+
 	/**
 	 * @deprecated Consider calling {@link AbstractBlockState#getCameraCollisionShape} instead. See <a href="#deprecated-methods">the class javadoc</a>.
 	 */
@@ -770,9 +775,7 @@ public abstract class AbstractBlock {
 
 			for (Direction direction : AbstractBlock.DIRECTIONS) {
 				mutable.set(pos, direction);
-				BlockState blockState = world.getBlockState(mutable);
-				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
-				Block.replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
+				world.replaceWithStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), mutable, pos, flags, maxUpdateDepth);
 			}
 		}
 
@@ -1155,9 +1158,6 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
-		/**
-		 * Specifies that a block drops nothing when broken.
-		 */
 		public AbstractBlock.Settings dropsNothing() {
 			this.lootTableId = LootTables.EMPTY;
 			return this;

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
@@ -104,9 +105,21 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Boolean> ATE_RECENTLY = register("ate_recently");
 	public static final MemoryModuleType<BlockPos> NEAREST_REPELLENT = register("nearest_repellent");
 	public static final MemoryModuleType<Boolean> PACIFIED = register("pacified");
+	public static final MemoryModuleType<LivingEntity> ROAR_TARGET = register("roar_target");
+	public static final MemoryModuleType<BlockPos> DISTURBANCE_LOCATION = register("disturbance_location");
+	public static final MemoryModuleType<Unit> RECENT_PROJECTILE = register("recent_projectile", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> IS_SNIFFING = register("is_sniffing", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> IS_EMERGING = register("is_emerging", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> ROAR_SOUND_DELAY = register("roar_sound_delay", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> DIG_COOLDOWN = register("dig_cooldown", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> ROAR_SOUND_COOLDOWN = register("roar_sound_cooldown", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> SNIFF_COOLDOWN = register("sniff_cooldown", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> TOUCH_COOLDOWN = register("touch_cooldown", Codec.unit(Unit.INSTANCE));
+	public static final MemoryModuleType<Unit> VIBRATION_COOLDOWN = register("vibration_cooldown", Codec.unit(Unit.INSTANCE));
 	private final Optional<Codec<Memory<U>>> codec;
 
-	private MemoryModuleType(Optional<Codec<U>> codec) {
+	@VisibleForTesting
+	public MemoryModuleType(Optional<Codec<U>> codec) {
 		this.codec = codec.map(Memory::createCodec);
 	}
 

@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -31,7 +31,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	private final Function<T, Text> valueToText;
 	private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
 	private final CyclingButtonWidget.UpdateCallback<T> callback;
-	private final Option.TooltipFactory<T> tooltipFactory;
+	private final SimpleOption.TooltipFactory<T> tooltipFactory;
 	private final boolean optionTextOmitted;
 
 	CyclingButtonWidget(
@@ -47,7 +47,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		Function<T, Text> valueToText,
 		Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory,
 		CyclingButtonWidget.UpdateCallback<T> callback,
-		Option.TooltipFactory<T> tooltipFactory,
+		SimpleOption.TooltipFactory<T> tooltipFactory,
 		boolean optionTextOmitted
 	) {
 		super(x, y, width, height, message);
@@ -212,7 +212,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		@Nullable
 		private T value;
 		private final Function<T, Text> valueToText;
-		private Option.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
+		private SimpleOption.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
 		private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
 		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.<T>of());
 		private boolean optionTextOmitted;
@@ -272,7 +272,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * 
 		 * <p>If this is not called, the values simply won't have tooltips.
 		 */
-		public CyclingButtonWidget.Builder<T> tooltip(Option.TooltipFactory<T> tooltipFactory) {
+		public CyclingButtonWidget.Builder<T> tooltip(SimpleOption.TooltipFactory<T> tooltipFactory) {
 			this.tooltipFactory = tooltipFactory;
 			return this;
 		}

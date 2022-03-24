@@ -64,7 +64,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	static final Identifier WORLD_ICON = new Identifier("realms", "textures/gui/realms/world_icon.png");
 	private static final Identifier REALMS = new Identifier("realms", "textures/gui/title/realms.png");
 	private static final Identifier CONFIGURE_ICON = new Identifier("realms", "textures/gui/realms/configure_icon.png");
-	private static final Identifier QUESTIONMARK = new Identifier("realms", "textures/gui/realms/questionmark.png");
 	private static final Identifier NEWS_ICON = new Identifier("realms", "textures/gui/realms/news_icon.png");
 	private static final Identifier POPUP = new Identifier("realms", "textures/gui/realms/popup.png");
 	private static final Identifier DARKEN = new Identifier("realms", "textures/gui/realms/darken.png");
@@ -90,7 +89,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Text CLOSED_TEXT = new TranslatableText("mco.selectServer.closed");
 	private static final Text LEAVE_TEXT = new TranslatableText("mco.selectServer.leave");
 	private static final Text CONFIGURE_TEXT = new TranslatableText("mco.selectServer.configure");
-	private static final Text INFO_TEXT = new TranslatableText("mco.selectServer.info");
 	private static final Text NEWS_TEXT = new TranslatableText("mco.news");
 	static final Text UNINITIALIZED_BUTTON_NARRATION = new TranslatableText("gui.narrate.button", UNINITIALIZED_TEXT);
 	static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
@@ -254,9 +252,13 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.width / 2 + 100, this.height - 32, 90, 20, new TranslatableText("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())
 			)
 		);
-		this.pendingInvitesButton = this.addDrawableChild(new RealmsMainScreen.PendingInvitesButton());
 		this.newsButton = this.addDrawableChild(new RealmsMainScreen.NewsButton());
-		this.showPopupButton = this.addDrawableChild(new RealmsMainScreen.ShowPopupButton());
+		this.showPopupButton = this.addDrawableChild(
+			new ButtonWidget(
+				this.width - 90, 6, 80, 20, new TranslatableText("mco.selectServer.purchase"), buttonWidget -> this.popupOpenedByUser = !this.popupOpenedByUser
+			)
+		);
+		this.pendingInvitesButton = this.addDrawableChild(new RealmsMainScreen.PendingInvitesButton());
 		this.closeButton = this.addDrawableChild(new RealmsMainScreen.CloseButton());
 		this.createTrialButton = this.addDrawableChild(
 			new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, new TranslatableText("mco.selectServer.trial"), button -> {
@@ -1031,21 +1033,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	void renderMoreInfo(MatrixStack matrices, int mouseX, int mouseY, int x, int y, boolean hovered) {
-		boolean bl = false;
-		if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
-			bl = true;
-		}
-
-		RenderSystem.setShaderTexture(0, QUESTIONMARK);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		float f = hovered ? 20.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 20, 20, 40, 20);
-		if (bl) {
-			this.setTooltips(INFO_TEXT);
-		}
-	}
-
 	void renderNews(MatrixStack matrices, int mouseX, int mouseY, boolean hasUnread, int x, int y, boolean hovered, boolean active) {
 		boolean bl = false;
 		if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
@@ -1157,7 +1144,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class NewsButton extends ButtonWidget {
 		public NewsButton() {
-			super(RealmsMainScreen.this.width - 62, 6, 20, 20, new TranslatableText("mco.news"), button -> {
+			super(RealmsMainScreen.this.width - 115, 6, 20, 20, new TranslatableText("mco.news"), button -> {
 				if (RealmsMainScreen.this.newsLink != null) {
 					Util.getOperatingSystem().open(RealmsMainScreen.this.newsLink);
 					if (RealmsMainScreen.this.hasUnreadNews) {
@@ -1468,25 +1455,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		@Override
 		public RealmsServer getRealmsServer() {
 			return null;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	class ShowPopupButton extends ButtonWidget {
-		public ShowPopupButton() {
-			super(
-				RealmsMainScreen.this.width - 37,
-				6,
-				20,
-				20,
-				new TranslatableText("mco.selectServer.info"),
-				button -> RealmsMainScreen.this.popupOpenedByUser = !RealmsMainScreen.this.popupOpenedByUser
-			);
-		}
-
-		@Override
-		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			RealmsMainScreen.this.renderMoreInfo(matrices, mouseX, mouseY, this.x, this.y, this.isHovered());
 		}
 	}
 }

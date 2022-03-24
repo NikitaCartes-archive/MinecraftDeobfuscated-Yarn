@@ -199,7 +199,7 @@ public class TadpoleEntity extends FishEntity {
 		this.decrementItem(player, stack);
 		this.increaseAge(PassiveEntity.toGrowUpAge(this.getTicksUntilGrowth()));
 		this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
-		this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
+		this.emitGameEvent(GameEvent.MOB_INTERACT);
 	}
 
 	private void decrementItem(PlayerEntity player, ItemStack stack) {

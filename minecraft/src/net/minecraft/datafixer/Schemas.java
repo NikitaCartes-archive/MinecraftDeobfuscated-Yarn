@@ -212,6 +212,8 @@ import net.minecraft.datafixer.schema.Schema2832;
 import net.minecraft.datafixer.schema.Schema2842;
 import net.minecraft.datafixer.schema.Schema3076;
 import net.minecraft.datafixer.schema.Schema3078;
+import net.minecraft.datafixer.schema.Schema3081;
+import net.minecraft.datafixer.schema.Schema3082;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -845,6 +847,10 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema158, "Added Sculk Shrieker", TypeReferences.BLOCK_ENTITY));
 		Schema schema159 = builder.addSchema(3079, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema159, "Blending Data Fix v3079"));
+		Schema schema160 = builder.addSchema(3081, Schema3081::new);
+		builder.addFixer(new ChoiceTypesFix(schema160, "Added Warden", TypeReferences.ENTITY));
+		Schema schema161 = builder.addSchema(3082, Schema3082::new);
+		builder.addFixer(new ChoiceTypesFix(schema161, "Added Chest Boat", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {
@@ -852,6 +858,6 @@ public class Schemas {
 	}
 
 	private static UnaryOperator<String> replacing(String old, String current) {
-		return string3 -> Objects.equals(string3, old) ? current : string3;
+		return string -> Objects.equals(string, old) ? current : string;
 	}
 }

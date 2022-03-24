@@ -870,6 +870,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.register(EntityType.VEX, LootTable.builder());
 		this.register(EntityType.VILLAGER, LootTable.builder());
+		this.register(EntityType.WARDEN, LootTable.builder());
 		this.register(EntityType.WANDERING_TRADER, LootTable.builder());
 		this.register(
 			EntityType.VINDICATOR,

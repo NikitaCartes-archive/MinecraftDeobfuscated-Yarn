@@ -432,7 +432,7 @@ public class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 		ShapelessRecipeJsonBuilder.create(Blocks.MUDDY_MANGROVE_ROOTS, 1)
 			.input(Blocks.MUD)
-			.input(Items.field_37513)
+			.input(Items.MANGROVE_ROOTS)
 			.criterion("has_mangrove_roots", conditionsFromItem(Blocks.MANGROVE_ROOTS))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(Blocks.ACTIVATOR_RAIL, 6)
@@ -655,6 +655,41 @@ public class RecipeProvider implements DataProvider {
 			.pattern("A")
 			.pattern("B")
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.ACACIA_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.ACACIA_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.BIRCH_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.BIRCH_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.DARK_OAK_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.DARK_OAK_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.JUNGLE_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.JUNGLE_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.OAK_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.OAK_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.SPRUCE_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.SPRUCE_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
+			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(Items.MANGROVE_CHEST_BOAT)
+			.input(Blocks.CHEST)
+			.input(Items.MANGROVE_BOAT)
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
 			.offerTo(exporter);
 		createChiseledBlockRecipe(Blocks.CHISELED_QUARTZ_BLOCK, Ingredient.ofItems(Blocks.QUARTZ_SLAB))
 			.criterion("has_chiseled_quartz_block", conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK))

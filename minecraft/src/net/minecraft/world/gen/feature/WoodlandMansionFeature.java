@@ -38,36 +38,17 @@ public class WoodlandMansionFeature extends StructureFeature {
 	@Override
 	public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
 		BlockRotation blockRotation = BlockRotation.random(arg.random());
-		int i = 5;
-		int j = 5;
-		if (blockRotation == BlockRotation.CLOCKWISE_90) {
-			i = -5;
-		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-			i = -5;
-			j = -5;
-		} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-			j = -5;
-		}
-
-		int k = arg.chunkPos().getOffsetX(7);
-		int l = arg.chunkPos().getOffsetZ(7);
-		int[] is = method_41611(arg, k, i, l, j);
-		int m = Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
-		if (m < 60) {
-			return Optional.empty();
-		} else {
-			BlockPos blockPos = new BlockPos(k, m, l);
-			return Optional.of(
+		BlockPos blockPos = this.method_42382(arg, blockRotation);
+		return blockPos.getY() < 60
+			? Optional.empty()
+			: Optional.of(
 				new StructureFeature.class_7150(blockPos, structurePiecesCollector -> this.method_41696(structurePiecesCollector, arg, blockPos, blockRotation))
 			);
-		}
 	}
 
 	private void method_41696(StructurePiecesCollector structurePiecesCollector, StructureFeature.class_7149 arg, BlockPos blockPos, BlockRotation blockRotation) {
-		ChunkPos chunkPos = arg.chunkPos();
-		BlockPos blockPos2 = new BlockPos(chunkPos.getCenterX(), blockPos.getY() + 1, chunkPos.getCenterZ());
 		List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
-		WoodlandMansionGenerator.addPieces(arg.structureTemplateManager(), blockPos2, blockRotation, list, arg.random());
+		WoodlandMansionGenerator.addPieces(arg.structureTemplateManager(), blockPos, blockRotation, list, arg.random());
 		list.forEach(structurePiecesCollector::addPiece);
 	}
 

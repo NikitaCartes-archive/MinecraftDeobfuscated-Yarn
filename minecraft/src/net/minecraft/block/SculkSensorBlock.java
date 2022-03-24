@@ -10,7 +10,10 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkSensorBlockEntity;
 import net.minecraft.block.enums.SculkSensorPhase;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -133,6 +136,15 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
+	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+		if (!world.isClient() && isInactive(state) && entity.getType() != EntityType.WARDEN) {
+			setActive(entity, world, pos, state, 1);
+		}
+
+		super.onSteppedOn(world, pos, state, entity);
+	}
+
+	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
@@ -178,7 +190,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
+	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
 		return blockEntity instanceof SculkSensorBlockEntity ? ((SculkSensorBlockEntity)blockEntity).getEventListener() : null;
 	}
 
@@ -228,10 +240,14 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		updateNeighbors(world, pos);
 	}
 
-	public static void setActive(World world, BlockPos pos, BlockState state, int power) {
+	public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
 		world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
 		updateNeighbors(world, pos);
+		if (entity instanceof PlayerEntity) {
+			world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
+		}
+
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(
 				null,

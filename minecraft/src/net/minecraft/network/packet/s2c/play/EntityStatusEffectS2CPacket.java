@@ -1,5 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.network.Packet;
@@ -16,6 +17,8 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 	private final byte amplifier;
 	private final int duration;
 	private final byte flags;
+	@Nullable
+	private final StatusEffectInstance.FactorCalculationData factorCalculationData;
 
 	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
 		this.entityId = entityId;
@@ -41,6 +44,7 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		}
 
 		this.flags = b;
+		this.factorCalculationData = (StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().orElse(null);
 	}
 
 	public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
@@ -49,6 +53,12 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		this.amplifier = buf.readByte();
 		this.duration = buf.readVarInt();
 		this.flags = buf.readByte();
+		boolean bl = buf.readBoolean();
+		if (bl) {
+			this.factorCalculationData = buf.decode(StatusEffectInstance.FactorCalculationData.CODEC);
+		} else {
+			this.factorCalculationData = null;
+		}
 	}
 
 	@Override
@@ -58,6 +68,11 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeByte(this.amplifier);
 		buf.writeVarInt(this.duration);
 		buf.writeByte(this.flags);
+		boolean bl = this.factorCalculationData != null;
+		buf.writeBoolean(bl);
+		if (bl) {
+			buf.encode(StatusEffectInstance.FactorCalculationData.CODEC, this.factorCalculationData);
+		}
 	}
 
 	public boolean isPermanent() {
@@ -94,5 +109,10 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 
 	public boolean shouldShowIcon() {
 		return (this.flags & 4) == 4;
+	}
+
+	@Nullable
+	public StatusEffectInstance.FactorCalculationData getFactorCalculationData() {
+		return this.factorCalculationData;
 	}
 }

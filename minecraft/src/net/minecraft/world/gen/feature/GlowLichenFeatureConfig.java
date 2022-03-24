@@ -20,9 +20,9 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 					Registry.BLOCK
 						.getCodec()
 						.fieldOf("block")
-						.<Block>flatXmap(GlowLichenFeatureConfig::method_41573, DataResult::success)
+						.<Block>flatXmap(GlowLichenFeatureConfig::validateBlock, DataResult::success)
 						.orElse((AbstractLichenBlock)Blocks.GLOW_LICHEN)
-						.forGetter(glowLichenFeatureConfig -> glowLichenFeatureConfig.field_37709),
+						.forGetter(config -> config.lichen),
 					Codec.intRange(1, 64).fieldOf("search_range").orElse(10).forGetter(config -> config.searchRange),
 					Codec.BOOL.fieldOf("can_place_on_floor").orElse(false).forGetter(config -> config.placeOnFloor),
 					Codec.BOOL.fieldOf("can_place_on_ceiling").orElse(false).forGetter(config -> config.placeOnCeiling),
@@ -32,7 +32,7 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 				)
 				.apply(instance, GlowLichenFeatureConfig::new)
 	);
-	public final AbstractLichenBlock field_37709;
+	public final AbstractLichenBlock lichen;
 	public final int searchRange;
 	public final boolean placeOnFloor;
 	public final boolean placeOnCeiling;
@@ -41,32 +41,38 @@ public class GlowLichenFeatureConfig implements FeatureConfig {
 	public final RegistryEntryList<Block> canPlaceOn;
 	public final List<Direction> directions;
 
-	private static DataResult<AbstractLichenBlock> method_41573(Block block) {
+	private static DataResult<AbstractLichenBlock> validateBlock(Block block) {
 		return block instanceof AbstractLichenBlock abstractLichenBlock
 			? DataResult.success(abstractLichenBlock)
 			: DataResult.error("Growth block should be a multiface block");
 	}
 
 	public GlowLichenFeatureConfig(
-		AbstractLichenBlock abstractLichenBlock, int i, boolean bl, boolean bl2, boolean bl3, float f, RegistryEntryList<Block> registryEntryList
+		AbstractLichenBlock lichen,
+		int searchRange,
+		boolean placeOnFloor,
+		boolean placeOnCeiling,
+		boolean placeOnWalls,
+		float spreadChance,
+		RegistryEntryList<Block> canPlaceOn
 	) {
-		this.field_37709 = abstractLichenBlock;
-		this.searchRange = i;
-		this.placeOnFloor = bl;
-		this.placeOnCeiling = bl2;
-		this.placeOnWalls = bl3;
-		this.spreadChance = f;
-		this.canPlaceOn = registryEntryList;
+		this.lichen = lichen;
+		this.searchRange = searchRange;
+		this.placeOnFloor = placeOnFloor;
+		this.placeOnCeiling = placeOnCeiling;
+		this.placeOnWalls = placeOnWalls;
+		this.spreadChance = spreadChance;
+		this.canPlaceOn = canPlaceOn;
 		List<Direction> list = Lists.<Direction>newArrayList();
-		if (bl2) {
+		if (placeOnCeiling) {
 			list.add(Direction.UP);
 		}
 
-		if (bl) {
+		if (placeOnFloor) {
 			list.add(Direction.DOWN);
 		}
 
-		if (bl3) {
+		if (placeOnWalls) {
 			Direction.Type.HORIZONTAL.forEach(list::add);
 		}
 

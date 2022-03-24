@@ -44,6 +44,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.PointedDripstoneBlock;
+import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -82,6 +83,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.SculkChargeParticleEffect;
+import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -411,7 +413,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			WorldView worldView = this.client.world;
 			BlockPos blockPos = new BlockPos(camera.getPos());
 			BlockPos blockPos2 = null;
-			int i = (int)(100.0F * f * f) / (this.client.options.particles == ParticlesMode.DECREASED ? 2 : 1);
+			int i = (int)(100.0F * f * f) / (this.client.options.getParticles().getValue() == ParticlesMode.DECREASED ? 2 : 1);
 
 			for (int j = 0; j < i; j++) {
 				int k = random.nextInt(21) - 10;
@@ -424,7 +426,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
 					&& biome.doesNotSnow(blockPos3)) {
 					blockPos2 = blockPos3.down();
-					if (this.client.options.particles == ParticlesMode.MINIMAL) {
+					if (this.client.options.getParticles().getValue() == ParticlesMode.MINIMAL) {
 						break;
 					}
 
@@ -524,11 +526,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					.findFirst()
 					.map(resourcePack -> new LiteralText(resourcePack.getName()))
 					.orElse(null);
-				this.client.options.graphicsMode = GraphicsMode.FANCY;
+				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
 				this.client.onResourceReloadFailure(shaderException, text);
 			} else {
 				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
-				this.client.options.graphicsMode = GraphicsMode.FANCY;
+				this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
 				this.client.options.write();
 				LOGGER.error(LogUtils.FATAL_MARKER, string2, (Throwable)shaderException);
 				this.client.cleanUpAfterCrash();
@@ -722,7 +724,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.cloudsDirty = true;
 			this.builtChunks.clear();
 			RenderLayers.setFancyGraphicsOrBetter(MinecraftClient.isFancyGraphicsOrBetter());
-			this.viewDistance = this.client.options.getViewDistance();
+			this.viewDistance = this.client.options.getClampedViewDistance();
 			if (this.chunks != null) {
 				this.chunks.clear();
 			}
@@ -732,7 +734,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.noCullingBlockEntities.clear();
 			}
 
-			this.chunks = new BuiltChunkStorage(this.chunkBuilder, this.world, this.client.options.getViewDistance(), this);
+			this.chunks = new BuiltChunkStorage(this.chunkBuilder, this.world, this.client.options.getClampedViewDistance(), this);
 			if (this.field_34808 != null) {
 				try {
 					this.field_34808.get();
@@ -812,7 +814,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, boolean spectator) {
 		Vec3d vec3d = camera.getPos();
-		if (this.client.options.getViewDistance() != this.viewDistance) {
+		if (this.client.options.getClampedViewDistance() != this.viewDistance) {
 			this.reload();
 		}
 
@@ -965,7 +967,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BlockPos blockPos = new BlockPos(MathHelper.floor(vec3d.x / 16.0) * 16, MathHelper.floor(vec3d.y / 16.0) * 16, MathHelper.floor(vec3d.z / 16.0) * 16);
 		BlockPos blockPos2 = blockPos.add(8, 8, 8);
 		Entity.setRenderDistanceMultiplier(
-			MathHelper.clamp((double)this.client.options.getViewDistance() / 8.0, 1.0, 2.5) * (double)this.client.options.entityDistanceScaling
+			MathHelper.clamp((double)this.client.options.getClampedViewDistance() / 8.0, 1.0, 2.5) * this.client.options.getEntityDistanceScaling().getValue()
 		);
 
 		while (!queue.isEmpty()) {
@@ -1138,7 +1140,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		profiler.swap("clear");
-		BackgroundRenderer.render(camera, tickDelta, this.client.world, this.client.options.getViewDistance(), gameRenderer.getSkyDarkness(tickDelta));
+		BackgroundRenderer.render(camera, tickDelta, this.client.world, this.client.options.getClampedViewDistance(), gameRenderer.getSkyDarkness(tickDelta));
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(16640, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
@@ -1146,9 +1148,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionShader);
-		this.renderSky(matrices, positionMatrix, tickDelta, camera, bl3, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3));
+		this.renderSky(
+			matrices, positionMatrix, tickDelta, camera, bl3, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3, tickDelta)
+		);
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3, tickDelta);
 		profiler.swap("terrain_setup");
 		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
 		profiler.swap("compilechunks");
@@ -2289,7 +2293,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private void renderWorldBorder(Camera camera) {
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		WorldBorder worldBorder = this.world.getWorldBorder();
-		double d = (double)(this.client.options.getViewDistance() * 16);
+		double d = (double)(this.client.options.getClampedViewDistance() * 16);
 		if (!(camera.getPos().x < worldBorder.getBoundEast() - d)
 			|| !(camera.getPos().x > worldBorder.getBoundWest() + d)
 			|| !(camera.getPos().z < worldBorder.getBoundSouth() - d)
@@ -2710,7 +2714,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	}
 
 	private ParticlesMode getRandomParticleSpawnChance(boolean canSpawnOnMinimal) {
-		ParticlesMode particlesMode = this.client.options.particles;
+		ParticlesMode particlesMode = this.client.options.getParticles().getValue();
 		if (canSpawnOnMinimal && particlesMode == ParticlesMode.MINIMAL && this.world.random.nextInt(10) == 0) {
 			particlesMode = ParticlesMode.DECREASED;
 		}
@@ -3155,7 +3159,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ad), intProvider, direction2, supplier, g);
 						}
 					} else {
-						for (Direction direction3 : AbstractLichenBlock.method_41437((byte)data)) {
+						for (Direction direction3 : AbstractLichenBlock.flagToDirections((byte)data)) {
 							float ae = direction3 == Direction.UP ? (float) Math.PI : 0.0F;
 							double af = 0.35;
 							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ae), intProvider, direction3, supplier, 0.35);
@@ -3184,6 +3188,26 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							);
 					}
 				}
+				break;
+			case 3007:
+				for (int jx = 0; jx < 10; jx++) {
+					this.world
+						.addParticle(
+							new ShriekParticleEffect(jx * 5), false, (double)pos.getX() + 0.5, (double)pos.getY() + SculkShriekerBlock.TOP, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0
+						);
+				}
+
+				this.world
+					.playSound(
+						(double)pos.getX() + 0.5,
+						(double)pos.getY() + SculkShriekerBlock.TOP,
+						(double)pos.getZ() + 0.5,
+						SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK,
+						SoundCategory.BLOCKS,
+						2.0F,
+						0.6F + this.world.random.nextFloat() * 0.4F,
+						false
+					);
 		}
 	}
 

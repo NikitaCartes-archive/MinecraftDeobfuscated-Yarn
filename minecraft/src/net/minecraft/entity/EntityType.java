@@ -55,6 +55,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.StrayEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
@@ -117,6 +118,7 @@ import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -181,6 +183,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
+	);
+	public static final EntityType<ChestBoatEntity> CHEST_BOAT = register(
+		"chest_boat", EntityType.Builder.<ChestBoatEntity>create(ChestBoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
 	);
 	public static final EntityType<CatEntity> CAT = register(
 		"cat", EntityType.Builder.create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
@@ -542,6 +547,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
 		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
+	);
+	public static final EntityType<WardenEntity> WARDEN = register(
+		"warden", EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(10).makeFireImmune()
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)

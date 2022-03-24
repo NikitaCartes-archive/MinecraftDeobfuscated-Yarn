@@ -12,7 +12,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
@@ -22,15 +22,15 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 		this.centerListVertically = false;
 	}
 
-	public int addSingleOptionEntry(Option option) {
+	public int addSingleOptionEntry(SimpleOption<?> option) {
 		return this.addEntry(ButtonListWidget.ButtonEntry.create(this.client.options, this.width, option));
 	}
 
-	public void addOptionEntry(Option firstOption, @Nullable Option secondOption) {
+	public void addOptionEntry(SimpleOption<?> firstOption, @Nullable SimpleOption<?> secondOption) {
 		this.addEntry(ButtonListWidget.ButtonEntry.create(this.client.options, this.width, firstOption, secondOption));
 	}
 
-	public void addAll(Option[] options) {
+	public void addAll(SimpleOption<?>[] options) {
 		for (int i = 0; i < options.length; i += 2) {
 			this.addOptionEntry(options[i], i < options.length - 1 ? options[i + 1] : null);
 		}
@@ -47,7 +47,7 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 	}
 
 	@Nullable
-	public ClickableWidget getButtonFor(Option option) {
+	public ClickableWidget getButtonFor(SimpleOption<?> option) {
 		for (ButtonListWidget.ButtonEntry buttonEntry : this.children()) {
 			ClickableWidget clickableWidget = (ClickableWidget)buttonEntry.optionsToButtons.get(option);
 			if (clickableWidget != null) {
@@ -72,19 +72,19 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonE
 
 	@Environment(EnvType.CLIENT)
 	protected static class ButtonEntry extends ElementListWidget.Entry<ButtonListWidget.ButtonEntry> {
-		final Map<Option, ClickableWidget> optionsToButtons;
+		final Map<SimpleOption<?>, ClickableWidget> optionsToButtons;
 		final List<ClickableWidget> buttons;
 
-		private ButtonEntry(Map<Option, ClickableWidget> optionsToButtons) {
+		private ButtonEntry(Map<SimpleOption<?>, ClickableWidget> optionsToButtons) {
 			this.optionsToButtons = optionsToButtons;
 			this.buttons = ImmutableList.copyOf(optionsToButtons.values());
 		}
 
-		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, Option option) {
+		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, SimpleOption<?> option) {
 			return new ButtonListWidget.ButtonEntry(ImmutableMap.of(option, option.createButton(options, width / 2 - 155, 0, 310)));
 		}
 
-		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, Option firstOption, @Nullable Option secondOption) {
+		public static ButtonListWidget.ButtonEntry create(GameOptions options, int width, SimpleOption<?> firstOption, @Nullable SimpleOption<?> secondOption) {
 			ClickableWidget clickableWidget = firstOption.createButton(options, width / 2 - 155, 0, 150);
 			return secondOption == null
 				? new ButtonListWidget.ButtonEntry(ImmutableMap.of(firstOption, clickableWidget))

@@ -71,28 +71,32 @@ public class Blender {
 		if (chunkRegion == null) {
 			return NO_BLENDING;
 		} else {
-			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
-			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
-			int i = MathHelper.square(field_35503 + 1);
 			ChunkPos chunkPos = chunkRegion.getCenterPos();
+			if (!chunkRegion.needsBlending(chunkPos, field_35503)) {
+				return NO_BLENDING;
+			} else {
+				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
+				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
+				int i = MathHelper.square(field_35503 + 1);
 
-			for (int j = -field_35503; j <= field_35503; j++) {
-				for (int k = -field_35503; k <= field_35503; k++) {
-					if (j * j + k * k <= i) {
-						int l = chunkPos.x + j;
-						int m = chunkPos.z + k;
-						BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, l, m);
-						if (blendingData != null) {
-							long2ObjectOpenHashMap.put(ChunkPos.toLong(l, m), blendingData);
-							if (j >= -field_35505 && j <= field_35505 && k >= -field_35505 && k <= field_35505) {
-								long2ObjectOpenHashMap2.put(ChunkPos.toLong(l, m), blendingData);
+				for (int j = -field_35503; j <= field_35503; j++) {
+					for (int k = -field_35503; k <= field_35503; k++) {
+						if (j * j + k * k <= i) {
+							int l = chunkPos.x + j;
+							int m = chunkPos.z + k;
+							BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, l, m);
+							if (blendingData != null) {
+								long2ObjectOpenHashMap.put(ChunkPos.toLong(l, m), blendingData);
+								if (j >= -field_35505 && j <= field_35505 && k >= -field_35505 && k <= field_35505) {
+									long2ObjectOpenHashMap2.put(ChunkPos.toLong(l, m), blendingData);
+								}
 							}
 						}
 					}
 				}
-			}
 
-			return long2ObjectOpenHashMap.isEmpty() && long2ObjectOpenHashMap2.isEmpty() ? NO_BLENDING : new Blender(long2ObjectOpenHashMap, long2ObjectOpenHashMap2);
+				return long2ObjectOpenHashMap.isEmpty() && long2ObjectOpenHashMap2.isEmpty() ? NO_BLENDING : new Blender(long2ObjectOpenHashMap, long2ObjectOpenHashMap2);
+			}
 		}
 	}
 

@@ -24,14 +24,14 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public class FlatChunkGenerator extends ChunkGenerator {
 	public static final Codec<FlatChunkGenerator> CODEC = RecordCodecBuilder.create(
-		instance -> method_41042(instance)
+		instance -> createStructureSetRegistryGetter(instance)
 				.and(FlatChunkGeneratorConfig.CODEC.fieldOf("settings").forGetter(FlatChunkGenerator::getConfig))
 				.apply(instance, instance.stable(FlatChunkGenerator::new))
 	);
 	private final FlatChunkGeneratorConfig config;
 
-	public FlatChunkGenerator(Registry<StructureSet> structureFeatureRegistry, FlatChunkGeneratorConfig config) {
-		super(structureFeatureRegistry, config.method_41139(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
+	public FlatChunkGenerator(Registry<StructureSet> structureSetRegistry, FlatChunkGeneratorConfig config) {
+		super(structureSetRegistry, config.getStructureOverrides(), new FixedBiomeSource(config.createBiome()), new FixedBiomeSource(config.getBiome()));
 		this.config = config;
 	}
 
@@ -119,10 +119,10 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		ChunkRegion chunkRegion,
 		long seed,
 		NoiseConfig noiseConfig,
-		BiomeAccess biomeAccess,
+		BiomeAccess world,
 		StructureAccessor structureAccessor,
 		Chunk chunk,
-		GenerationStep.Carver carver
+		GenerationStep.Carver carverStep
 	) {
 	}
 

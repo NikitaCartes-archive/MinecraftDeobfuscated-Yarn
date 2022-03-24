@@ -3,7 +3,6 @@ package net.minecraft.world.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -11,22 +10,13 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 public interface NeighborUpdater {
 	Direction[] UPDATE_ORDER = new Direction[]{Direction.WEST, Direction.EAST, Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH};
-	NeighborUpdater NOOP = new NeighborUpdater() {
-		@Override
-		public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-		}
 
-		@Override
-		public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		}
-
-		@Override
-		public void updateNeighbors(BlockPos pos, Block sourceBlock, @Nullable Direction except) {
-		}
-	};
+	void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth);
 
 	void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos);
 
@@ -40,7 +30,15 @@ public interface NeighborUpdater {
 		}
 	}
 
-	static void tryNeighborUpdate(ServerWorld world, BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	static void replaceWithStateForNeighborUpdate(
+		WorldAccess world, Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
+	) {
+		BlockState blockState = world.getBlockState(pos);
+		BlockState blockState2 = blockState.getStateForNeighborUpdate(direction, neighborState, world, pos, neighborPos);
+		Block.replace(blockState, blockState2, world, pos, flags, maxUpdateDepth);
+	}
+
+	static void tryNeighborUpdate(World world, BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		try {
 			state.neighborUpdate(world, pos, sourceBlock, sourcePos, notify);
 		} catch (Throwable var9) {
