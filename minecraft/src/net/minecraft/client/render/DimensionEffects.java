@@ -37,7 +37,7 @@ public abstract class DimensionEffects {
 	}
 
 	public static DimensionEffects byDimensionType(DimensionType dimensionType) {
-		return BY_IDENTIFIER.get(dimensionType.getEffects());
+		return BY_IDENTIFIER.get(dimensionType.effects());
 	}
 
 	/**

@@ -734,7 +734,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						destination.method_40134(),
+						destination.getDimensionEntry(),
 						destination.getRegistryKey(),
 						BiomeAccess.hashSeed(destination.getSeed()),
 						this.interactionManager.getGameMode(),
@@ -846,7 +846,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
 		if (this.isSleeping() || !this.isAlive()) {
 			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
-		} else if (!this.world.getDimension().isNatural()) {
+		} else if (!this.world.getDimension().natural()) {
 			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 		} else if (!this.isBedTooFarAway(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
@@ -1448,7 +1448,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.networkHandler
 				.sendPacket(
 					new PlayerRespawnS2CPacket(
-						targetWorld.method_40134(),
+						targetWorld.getDimensionEntry(),
 						targetWorld.getRegistryKey(),
 						BiomeAccess.hashSeed(targetWorld.getSeed()),
 						this.interactionManager.getGameMode(),

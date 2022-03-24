@@ -91,12 +91,12 @@ public class FrogEntity extends AnimalEntity {
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<OptionalInt> TARGET = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 	private static final int field_37459 = 5;
-	public final AnimationState longJumping = new AnimationState();
-	public final AnimationState croaking = new AnimationState();
-	public final AnimationState usingTongue = new AnimationState();
-	public final AnimationState walking = new AnimationState();
-	public final AnimationState swimming = new AnimationState();
-	public final AnimationState idlingInWater = new AnimationState();
+	public final AnimationState longJumpingAnimationState = new AnimationState();
+	public final AnimationState croakingAnimationState = new AnimationState();
+	public final AnimationState usingTongueAnimationState = new AnimationState();
+	public final AnimationState walkingAnimationState = new AnimationState();
+	public final AnimationState swimmingAnimationState = new AnimationState();
+	public final AnimationState idlingInWaterAnimationState = new AnimationState();
 
 	public FrogEntity(EntityType<? extends AnimalEntity> entityType, World world) {
 		super(entityType, world);
@@ -198,20 +198,20 @@ public class FrogEntity extends AnimalEntity {
 	public void tick() {
 		if (this.world.isClient()) {
 			if (this.shouldWalk()) {
-				this.walking.startIfNotRunning();
+				this.walkingAnimationState.startIfNotRunning();
 			} else {
-				this.walking.stop();
+				this.walkingAnimationState.stop();
 			}
 
 			if (this.shouldSwim()) {
-				this.idlingInWater.stop();
-				this.swimming.startIfNotRunning();
+				this.idlingInWaterAnimationState.stop();
+				this.swimmingAnimationState.startIfNotRunning();
 			} else if (this.isInsideWaterOrBubbleColumn()) {
-				this.swimming.stop();
-				this.idlingInWater.startIfNotRunning();
+				this.swimmingAnimationState.stop();
+				this.idlingInWaterAnimationState.startIfNotRunning();
 			} else {
-				this.swimming.stop();
-				this.idlingInWater.stop();
+				this.swimmingAnimationState.stop();
+				this.idlingInWaterAnimationState.stop();
 			}
 		}
 
@@ -223,19 +223,19 @@ public class FrogEntity extends AnimalEntity {
 		if (POSE.equals(data)) {
 			EntityPose entityPose = this.getPose();
 			if (entityPose == EntityPose.LONG_JUMPING) {
-				this.longJumping.start();
+				this.longJumpingAnimationState.start();
 			} else {
-				this.longJumping.stop();
+				this.longJumpingAnimationState.stop();
 			}
 
 			if (entityPose == EntityPose.CROAKING) {
-				this.croaking.start();
+				this.croakingAnimationState.start();
 			} else {
-				this.croaking.stop();
+				this.croakingAnimationState.stop();
 			}
 
 			if (entityPose == EntityPose.USING_TONGUE) {
-				this.usingTongue.start();
+				this.usingTongueAnimationState.start();
 			}
 		}
 

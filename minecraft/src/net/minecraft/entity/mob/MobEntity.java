@@ -75,6 +75,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class MobEntity extends LivingEntity {
 	private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -255,6 +256,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public void onEatingGrass() {
+		this.emitGameEvent(GameEvent.EAT);
 	}
 
 	@Override
@@ -1067,10 +1069,6 @@ public abstract class MobEntity extends LivingEntity {
 		return entityData;
 	}
 
-	public boolean canBeControlledByRider() {
-		return false;
-	}
-
 	public void setPersistent() {
 		this.persistent = true;
 	}
@@ -1339,7 +1337,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean isLogicalSideForUpdatingMovement() {
-		return this.canBeControlledByRider() && super.isLogicalSideForUpdatingMovement();
+		return this.hasPrimaryPassenger() && super.isLogicalSideForUpdatingMovement();
 	}
 
 	@Override
@@ -1384,6 +1382,11 @@ public abstract class MobEntity extends LivingEntity {
 
 	public double squaredAttackRange(LivingEntity target) {
 		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + target.getWidth());
+	}
+
+	public boolean isInAttackRange(LivingEntity entity) {
+		double d = this.squaredDistanceTo(entity.getX(), entity.getY(), entity.getZ());
+		return d <= this.squaredAttackRange(entity);
 	}
 
 	@Override

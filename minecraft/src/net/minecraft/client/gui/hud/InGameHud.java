@@ -31,6 +31,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -390,7 +391,7 @@ public class InGameHud extends DrawableHelper {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.getReducedDebugInfo().getValue()) {
 					Camera camera = this.client.gameRenderer.getCamera();
 					MatrixStack matrixStack = RenderSystem.getModelViewStack();
 					matrixStack.push();
@@ -408,7 +409,7 @@ public class InGameHud extends DrawableHelper {
 					);
 					int i = 15;
 					this.drawTexture(matrices, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
+					if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0F) {
@@ -551,7 +552,7 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			if (this.client.options.attackIndicator == AttackIndicator.HOTBAR) {
+			if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR) {
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				if (f < 1.0F) {
 					int o = this.scaledHeight - 20;
@@ -1034,8 +1035,10 @@ public class InGameHud extends DrawableHelper {
 
 	private void updateVignetteDarkness(Entity entity) {
 		if (entity != null) {
-			float f = MathHelper.clamp(1.0F - entity.getBrightnessAtEyes(), 0.0F, 1.0F);
-			this.vignetteDarkness += (f - this.vignetteDarkness) * 0.01F;
+			BlockPos blockPos = new BlockPos(entity.getX(), entity.getEyeY(), entity.getZ());
+			float f = LightmapTextureManager.getBrightness(entity.world.getDimension(), entity.world.getLightLevel(blockPos));
+			float g = MathHelper.clamp(1.0F - f, 0.0F, 1.0F);
+			this.vignetteDarkness += (g - this.vignetteDarkness) * 0.01F;
 		}
 	}
 
@@ -1235,7 +1238,7 @@ public class InGameHud extends DrawableHelper {
 
 	public void addChatMessage(MessageType type, Text message, UUID sender) {
 		if (!this.client.shouldBlockMessages(sender)) {
-			if (!this.client.options.hideMatchedNames || !this.client.shouldBlockMessages(this.extractSender(message))) {
+			if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
 				for(ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
 					clientChatListener.onChatMessage(type, message, sender);
 				}
@@ -1280,7 +1283,7 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void renderAutosaveIndicator(MatrixStack matrices) {
-		if (this.client.options.showAutosaveIndicator && (this.autosaveIndicatorAlpha > 0.0F || this.lastAutosaveIndicatorAlpha > 0.0F)) {
+		if (this.client.options.getShowAutosaveIndicator().getValue() && (this.autosaveIndicatorAlpha > 0.0F || this.lastAutosaveIndicatorAlpha > 0.0F)) {
 			int i = MathHelper.floor(
 				255.0F * MathHelper.clamp(MathHelper.lerp(this.client.getTickDelta(), this.lastAutosaveIndicatorAlpha, this.autosaveIndicatorAlpha), 0.0F, 1.0F)
 			);

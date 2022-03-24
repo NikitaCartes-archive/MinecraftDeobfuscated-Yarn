@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class PropaguleBlock extends SaplingBlock {
+public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_37589 = 4;
 	private static final VoxelShape[] SHAPES = new VoxelShape[]{

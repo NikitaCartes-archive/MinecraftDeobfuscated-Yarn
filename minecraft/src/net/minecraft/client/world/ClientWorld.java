@@ -78,7 +78,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.BiomeParticleConfig;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityHandler;
@@ -173,12 +172,12 @@ public class ClientWorld extends World {
 		boolean debugWorld,
 		long seed
 	) {
-		super(properties, registryRef, dimensionTypeEntry, profiler, true, debugWorld, seed);
+		super(properties, registryRef, dimensionTypeEntry, profiler, true, debugWorld, seed, 1000000);
 		this.networkHandler = networkHandler;
 		this.chunkManager = new ClientChunkManager(this, loadDistance);
 		this.clientWorldProperties = properties;
 		this.worldRenderer = worldRenderer;
-		this.dimensionEffects = DimensionEffects.byDimensionType(dimensionTypeEntry.value());
+		this.dimensionEffects = DimensionEffects.byDimensionType((DimensionType)dimensionTypeEntry.value());
 		this.setSpawnPos(new BlockPos(8, 64, 8), 0.0F);
 		this.simulationDistance = simulationDistance;
 		this.calculateAmbientDarkness();
@@ -564,11 +563,6 @@ public class ClientWorld extends World {
 		this.worldRenderer.scheduleBlockRerenderIfNeeded(pos, old, updated);
 	}
 
-	@Override
-	public NeighborUpdater getNeighborUpdater() {
-		return NeighborUpdater.NOOP;
-	}
-
 	public void scheduleBlockRenders(int x, int y, int z) {
 		this.worldRenderer.scheduleBlockRenders(x, y, z);
 	}
@@ -815,7 +809,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+	public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
 	}
 
 	public Map<String, MapState> getMapStates() {

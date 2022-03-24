@@ -53,27 +53,27 @@ public class SurfaceBuilder {
 	private final DoublePerlinNoiseSampler surfaceNoise;
 	private final DoublePerlinNoiseSampler surfaceSecondaryNoise;
 
-	public SurfaceBuilder(Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BlockState defaultState, int seaLevel, RandomDeriver randomDeriver) {
+	public SurfaceBuilder(NoiseConfig noiseConfig, BlockState defaultState, int seaLevel, RandomDeriver randomDeriver) {
 		this.defaultState = defaultState;
 		this.seaLevel = seaLevel;
 		this.randomDeriver = randomDeriver;
-		this.terracottaBandsOffsetNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
+		this.terracottaBandsOffsetNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.CLAY_BANDS_OFFSET);
 		this.terracottaBands = createTerracottaBands(randomDeriver.createRandom(new Identifier("clay_bands")));
-		this.surfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.SURFACE);
-		this.surfaceSecondaryNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.SURFACE_SECONDARY);
-		this.badlandsPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR);
-		this.badlandsPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
-		this.badlandsSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.BADLANDS_SURFACE);
-		this.icebergPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR);
-		this.icebergPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
-		this.icebergSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, randomDeriver, NoiseParametersKeys.ICEBERG_SURFACE);
+		this.surfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE);
+		this.surfaceSecondaryNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE_SECONDARY);
+		this.badlandsPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR);
+		this.badlandsPillarRoofNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
+		this.badlandsSurfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_SURFACE);
+		this.icebergPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_PILLAR);
+		this.icebergPillarRoofNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
+		this.icebergSurfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_SURFACE);
 	}
 
 	public void buildSurface(
 		NoiseConfig noiseConfig,
 		BiomeAccess biomeAccess,
-		Registry<Biome> registry,
-		boolean bl,
+		Registry<Biome> biomeRegistry,
+		boolean useLegacyRandom,
 		HeightContext heightContext,
 		Chunk chunk,
 		ChunkNoiseSampler chunkNoiseSampler,
@@ -105,7 +105,7 @@ public class SurfaceBuilder {
 			}
 		};
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
-			this, noiseConfig, chunk, chunkNoiseSampler, biomeAccess::getBiome, registry, heightContext
+			this, noiseConfig, chunk, chunkNoiseSampler, biomeAccess::getBiome, biomeRegistry, heightContext
 		);
 		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)materialRule.apply(materialRuleContext);
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
@@ -116,7 +116,7 @@ public class SurfaceBuilder {
 				int n = j + l;
 				int o = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, k, l) + 1;
 				mutable.setX(m).setZ(n);
-				RegistryEntry<Biome> registryEntry = biomeAccess.getBiome(mutable2.set(m, bl ? 0 : o, n));
+				RegistryEntry<Biome> registryEntry = biomeAccess.getBiome(mutable2.set(m, useLegacyRandom ? 0 : o, n));
 				if (registryEntry.matchesKey(BiomeKeys.ERODED_BADLANDS)) {
 					this.placeBadlandsPillar(blockColumn, m, n, o, chunk);
 				}

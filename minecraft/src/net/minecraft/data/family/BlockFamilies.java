@@ -121,7 +121,7 @@ public class BlockFamilies {
 		.group("wooden")
 		.unlockCriterionName("has_planks")
 		.build();
-	public static final BlockFamily field_38007 = register(Blocks.MANGROVE_PLANKS)
+	public static final BlockFamily MANGROVE = register(Blocks.MANGROVE_PLANKS)
 		.button(Blocks.MANGROVE_BUTTON)
 		.slab(Blocks.MANGROVE_SLAB)
 		.stairs(Blocks.MANGROVE_STAIRS)
@@ -134,7 +134,7 @@ public class BlockFamilies {
 		.group("wooden")
 		.unlockCriterionName("has_planks")
 		.build();
-	public static final BlockFamily field_38008 = register(Blocks.MUD_BRICKS)
+	public static final BlockFamily MUD_BRICK = register(Blocks.MUD_BRICKS)
 		.wall(Blocks.MUD_BRICK_WALL)
 		.stairs(Blocks.MUD_BRICK_STAIRS)
 		.slab(Blocks.MUD_BRICK_SLAB)

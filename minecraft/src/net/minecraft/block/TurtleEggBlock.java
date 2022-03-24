@@ -42,7 +42,10 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		this.tryBreakEgg(world, state, pos, entity, 100);
+		if (!entity.bypassesSteppingEffects()) {
+			this.tryBreakEgg(world, state, pos, entity, 100);
+		}
+
 		super.onSteppedOn(world, pos, state, entity);
 	}
 

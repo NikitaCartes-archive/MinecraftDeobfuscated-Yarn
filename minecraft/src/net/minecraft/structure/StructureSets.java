@@ -48,7 +48,7 @@ public interface StructureSets {
 			StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_1,
 			0.2F,
 			165745296,
-			Optional.of(new StructurePlacement.class_7152(VILLAGES, 10)),
+			Optional.of(new StructurePlacement.ExclusionZone(VILLAGES, 10)),
 			32,
 			8,
 			SpreadType.LINEAR

@@ -152,7 +152,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 				this.updateNeighbors(state, world, pos);
 				this.playClickSound(null, world, pos, false);
-				world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
+				world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
 			}
 		}
 	}

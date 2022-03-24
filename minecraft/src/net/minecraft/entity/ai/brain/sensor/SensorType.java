@@ -32,6 +32,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
 	public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = register("frog_attackables", FrogAttackablesSensor::new);
 	public static final SensorType<IsInWaterSensor> IS_IN_WATER = register("is_in_water", IsInWaterSensor::new);
+	public static final SensorType<WardenAttackablesSensor> WARDEN_ENTITY_SENSOR = register("warden_entity_sensor", WardenAttackablesSensor::new);
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> factory) {

@@ -12,17 +12,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3080;
+	public static final int WORLD_VERSION = 3082;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "22w11a";
+	public static final String VERSION_NAME = "22w12a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 74;
+	public static final int field_29736 = 75;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = true;
@@ -113,6 +113,7 @@ public class SharedConstants {
 	public static final int CHUNK_WIDTH = 16;
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
+	public static final int field_38052 = 1000000;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	public static final int TICKS_PER_SECOND = 20;
 	public static final int TICKS_PER_MINUTE = 1200;
@@ -173,7 +174,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741898;
+		return 1073741899;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

@@ -18,6 +18,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.client.render.debug.NameGenerator;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -32,6 +33,7 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -47,6 +49,7 @@ import net.minecraft.util.StringHelper;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.raid.Raid;
@@ -115,7 +118,7 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void sendGameEvent(World world, GameEvent event, BlockPos pos) {
+	public static void sendGameEvent(World world, GameEvent event, Vec3d vec3d) {
 	}
 
 	public static void sendGameEventListener(World world, GameEventListener eventListener) {
@@ -147,6 +150,13 @@ public class DebugInfoSender {
 			buf.writeBoolean(bl);
 		} else {
 			buf.writeBoolean(false);
+		}
+
+		if (entity.getType() == EntityType.WARDEN) {
+			WardenEntity wardenEntity = (WardenEntity)entity;
+			buf.writeInt(wardenEntity.getAnger());
+		} else {
+			buf.writeInt(-1);
 		}
 
 		buf.writeCollection(brain.getPossibleActivities(), (bufx, activity) -> bufx.writeString(activity.getId()));

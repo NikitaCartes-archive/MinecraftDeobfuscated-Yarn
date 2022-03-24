@@ -134,15 +134,15 @@ public class RavagerEntity extends RaiderEntity {
 		return 2.1;
 	}
 
-	@Override
-	public boolean canBeControlledByRider() {
-		return !this.isAiDisabled() && this.getPrimaryPassenger() instanceof LivingEntity;
-	}
-
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		return this.getFirstPassenger();
+		Entity entity = this.getFirstPassenger();
+		return entity != null && this.canBecomePrimaryPassenger(entity) ? entity : null;
+	}
+
+	private boolean canBecomePrimaryPassenger(Entity entity) {
+		return !this.isAiDisabled() && entity instanceof LivingEntity;
 	}
 
 	@Override
@@ -257,7 +257,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
 
-			this.world.emitGameEvent(this, GameEvent.RAVAGER_ROAR, this.getCameraBlockPos());
+			this.world.emitGameEvent(this, GameEvent.RAVAGER_ROAR, this.getEyePos());
 		}
 	}
 

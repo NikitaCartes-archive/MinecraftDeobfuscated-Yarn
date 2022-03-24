@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -128,21 +130,27 @@ public class MaterialRules {
 		return MaterialRules.TerracottaBandsMaterialRule.INSTANCE;
 	}
 
+	static <A> Codec<? extends A> register(Registry<Codec<? extends A>> registry, String id, CodecHolder<? extends A> codecHolder) {
+		return Registry.register(registry, id, codecHolder.codec());
+	}
+
 	static record AboveYMaterialCondition(YOffset anchor, int surfaceDepthMultiplier, boolean addStoneDepth) implements MaterialRules.MaterialCondition {
 		final YOffset anchor;
 		final int surfaceDepthMultiplier;
 		final boolean addStoneDepth;
-		static final Codec<MaterialRules.AboveYMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						YOffset.OFFSET_CODEC.fieldOf("anchor").forGetter(MaterialRules.AboveYMaterialCondition::anchor),
-						Codec.intRange(-20, 20).fieldOf("surface_depth_multiplier").forGetter(MaterialRules.AboveYMaterialCondition::surfaceDepthMultiplier),
-						Codec.BOOL.fieldOf("add_stone_depth").forGetter(MaterialRules.AboveYMaterialCondition::addStoneDepth)
-					)
-					.apply(instance, MaterialRules.AboveYMaterialCondition::new)
+		static final CodecHolder<MaterialRules.AboveYMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							YOffset.OFFSET_CODEC.fieldOf("anchor").forGetter(MaterialRules.AboveYMaterialCondition::anchor),
+							Codec.intRange(-20, 20).fieldOf("surface_depth_multiplier").forGetter(MaterialRules.AboveYMaterialCondition::surfaceDepthMultiplier),
+							Codec.BOOL.fieldOf("add_stone_depth").forGetter(MaterialRules.AboveYMaterialCondition::addStoneDepth)
+						)
+						.apply(instance, MaterialRules.AboveYMaterialCondition::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -164,21 +172,22 @@ public class MaterialRules {
 	}
 
 	static final class BiomeMaterialCondition implements MaterialRules.MaterialCondition {
-		static final Codec<MaterialRules.BiomeMaterialCondition> CONDITION_CODEC = RegistryKey.createCodec(Registry.BIOME_KEY)
-			.listOf()
-			.fieldOf("biome_is")
-			.<MaterialRules.BiomeMaterialCondition>xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.field_36414)
-			.codec();
-		private final List<RegistryKey<Biome>> field_36414;
-		final Predicate<RegistryKey<Biome>> field_36415;
+		static final CodecHolder<MaterialRules.BiomeMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RegistryKey.createCodec(Registry.BIOME_KEY)
+				.listOf()
+				.fieldOf("biome_is")
+				.xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
+		);
+		private final List<RegistryKey<Biome>> biomes;
+		final Predicate<RegistryKey<Biome>> predicate;
 
-		BiomeMaterialCondition(List<RegistryKey<Biome>> list) {
-			this.field_36414 = list;
-			this.field_36415 = Set.copyOf(list)::contains;
+		BiomeMaterialCondition(List<RegistryKey<Biome>> biomes) {
+			this.biomes = biomes;
+			this.predicate = Set.copyOf(biomes)::contains;
 		}
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -190,7 +199,7 @@ public class MaterialRules {
 
 				@Override
 				protected boolean test() {
-					return ((RegistryEntry)this.context.biomeSupplier.get()).matches(BiomeMaterialCondition.this.field_36415);
+					return ((RegistryEntry)this.context.biomeSupplier.get()).matches(BiomeMaterialCondition.this.predicate);
 				}
 			}
 
@@ -201,31 +210,32 @@ public class MaterialRules {
 			if (this == object) {
 				return true;
 			} else {
-				return object instanceof MaterialRules.BiomeMaterialCondition biomeMaterialCondition ? this.field_36414.equals(biomeMaterialCondition.field_36414) : false;
+				return object instanceof MaterialRules.BiomeMaterialCondition biomeMaterialCondition ? this.biomes.equals(biomeMaterialCondition.biomes) : false;
 			}
 		}
 
 		public int hashCode() {
-			return this.field_36414.hashCode();
+			return this.biomes.hashCode();
 		}
 
 		public String toString() {
-			return "BiomeConditionSource[biomes=" + this.field_36414 + "]";
+			return "BiomeConditionSource[biomes=" + this.biomes + "]";
 		}
 	}
 
 	static record BlockMaterialRule(BlockState resultState, MaterialRules.SimpleBlockStateRule rule) implements MaterialRules.MaterialRule {
-		static final Codec<MaterialRules.BlockMaterialRule> RULE_CODEC = BlockState.CODEC
-			.<MaterialRules.BlockMaterialRule>xmap(MaterialRules.BlockMaterialRule::new, MaterialRules.BlockMaterialRule::resultState)
-			.fieldOf("result_state")
-			.codec();
+		static final CodecHolder<MaterialRules.BlockMaterialRule> RULE_CODEC = CodecHolder.of(
+			BlockState.CODEC
+				.<MaterialRules.BlockMaterialRule>xmap(MaterialRules.BlockMaterialRule::new, MaterialRules.BlockMaterialRule::resultState)
+				.fieldOf("result_state")
+		);
 
 		BlockMaterialRule(BlockState resultState) {
 			this(resultState, new MaterialRules.SimpleBlockStateRule(resultState));
 		}
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialRule> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialRule> codec() {
 			return RULE_CODEC;
 		}
 
@@ -247,16 +257,18 @@ public class MaterialRules {
 	}
 
 	static record ConditionMaterialRule(MaterialRules.MaterialCondition ifTrue, MaterialRules.MaterialRule thenRun) implements MaterialRules.MaterialRule {
-		static final Codec<MaterialRules.ConditionMaterialRule> RULE_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						MaterialRules.MaterialCondition.CODEC.fieldOf("if_true").forGetter(MaterialRules.ConditionMaterialRule::ifTrue),
-						MaterialRules.MaterialRule.CODEC.fieldOf("then_run").forGetter(MaterialRules.ConditionMaterialRule::thenRun)
-					)
-					.apply(instance, MaterialRules.ConditionMaterialRule::new)
+		static final CodecHolder<MaterialRules.ConditionMaterialRule> RULE_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							MaterialRules.MaterialCondition.CODEC.fieldOf("if_true").forGetter(MaterialRules.ConditionMaterialRule::ifTrue),
+							MaterialRules.MaterialRule.CODEC.fieldOf("then_run").forGetter(MaterialRules.ConditionMaterialRule::thenRun)
+						)
+						.apply(instance, MaterialRules.ConditionMaterialRule::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialRule> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialRule> codec() {
 			return RULE_CODEC;
 		}
 
@@ -294,10 +306,10 @@ public class MaterialRules {
 	static enum HoleMaterialCondition implements MaterialRules.MaterialCondition {
 		INSTANCE;
 
-		static final Codec<MaterialRules.HoleMaterialCondition> CONDITION_CODEC = Codec.unit(INSTANCE);
+		static final CodecHolder<MaterialRules.HoleMaterialCondition> CONDITION_CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -363,36 +375,38 @@ public class MaterialRules {
 	}
 
 	public interface MaterialCondition extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BooleanSupplier> {
-		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION.getCodec().dispatch(MaterialRules.MaterialCondition::codec, Function.identity());
+		Codec<MaterialRules.MaterialCondition> CODEC = Registry.MATERIAL_CONDITION
+			.getCodec()
+			.dispatch(materialCondition -> materialCondition.codec().codec(), Function.identity());
 
 		static Codec<? extends MaterialRules.MaterialCondition> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialCondition>> registry) {
-			Registry.register(registry, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "y_above", MaterialRules.AboveYMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "water", MaterialRules.WaterMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "temperature", MaterialRules.TemperatureMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "steep", MaterialRules.SteepMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "not", MaterialRules.NotMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "hole", MaterialRules.HoleMaterialCondition.CONDITION_CODEC);
-			Registry.register(registry, "above_preliminary_surface", MaterialRules.SurfaceMaterialCondition.CONDITION_CODEC);
-			return Registry.register(registry, "stone_depth", MaterialRules.StoneDepthMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "biome", MaterialRules.BiomeMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "noise_threshold", MaterialRules.NoiseThresholdMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "vertical_gradient", MaterialRules.VerticalGradientMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "y_above", MaterialRules.AboveYMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "water", MaterialRules.WaterMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "temperature", MaterialRules.TemperatureMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "steep", MaterialRules.SteepMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "not", MaterialRules.NotMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "hole", MaterialRules.HoleMaterialCondition.CONDITION_CODEC);
+			MaterialRules.register(registry, "above_preliminary_surface", MaterialRules.SurfaceMaterialCondition.CONDITION_CODEC);
+			return MaterialRules.register(registry, "stone_depth", MaterialRules.StoneDepthMaterialCondition.CONDITION_CODEC);
 		}
 
-		Codec<? extends MaterialRules.MaterialCondition> codec();
+		CodecHolder<? extends MaterialRules.MaterialCondition> codec();
 	}
 
 	public interface MaterialRule extends Function<MaterialRules.MaterialRuleContext, MaterialRules.BlockStateRule> {
-		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(MaterialRules.MaterialRule::codec, Function.identity());
+		Codec<MaterialRules.MaterialRule> CODEC = Registry.MATERIAL_RULE.getCodec().dispatch(materialRule -> materialRule.codec().codec(), Function.identity());
 
 		static Codec<? extends MaterialRules.MaterialRule> registerAndGetDefault(Registry<Codec<? extends MaterialRules.MaterialRule>> registry) {
-			Registry.register(registry, "bandlands", MaterialRules.TerracottaBandsMaterialRule.RULE_CODEC);
-			Registry.register(registry, "block", MaterialRules.BlockMaterialRule.RULE_CODEC);
-			Registry.register(registry, "sequence", MaterialRules.SequenceMaterialRule.RULE_CODEC);
-			return Registry.register(registry, "condition", MaterialRules.ConditionMaterialRule.RULE_CODEC);
+			MaterialRules.register(registry, "bandlands", MaterialRules.TerracottaBandsMaterialRule.RULE_CODEC);
+			MaterialRules.register(registry, "block", MaterialRules.BlockMaterialRule.RULE_CODEC);
+			MaterialRules.register(registry, "sequence", MaterialRules.SequenceMaterialRule.RULE_CODEC);
+			return MaterialRules.register(registry, "condition", MaterialRules.ConditionMaterialRule.RULE_CODEC);
 		}
 
-		Codec<? extends MaterialRules.MaterialRule> codec();
+		CodecHolder<? extends MaterialRules.MaterialRule> codec();
 	}
 
 	protected static final class MaterialRuleContext {
@@ -405,7 +419,7 @@ public class MaterialRules {
 		final MaterialRules.BooleanSupplier steepSlopePredicate = new MaterialRules.MaterialRuleContext.SteepSlopePredicate(this);
 		final MaterialRules.BooleanSupplier negativeRunDepthPredicate = new MaterialRules.MaterialRuleContext.NegativeRunDepthPredicate(this);
 		final MaterialRules.BooleanSupplier surfacePredicate = new MaterialRules.MaterialRuleContext.SurfacePredicate();
-		final NoiseConfig field_37703;
+		final NoiseConfig noiseConfig;
 		final Chunk chunk;
 		private final ChunkNoiseSampler chunkNoiseSampler;
 		private final Function<BlockPos, RegistryEntry<Biome>> posToBiome;
@@ -433,15 +447,15 @@ public class MaterialRules {
 			NoiseConfig noiseConfig,
 			Chunk chunk,
 			ChunkNoiseSampler chunkNoiseSampler,
-			Function<BlockPos, RegistryEntry<Biome>> function,
+			Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 			Registry<Biome> registry,
 			HeightContext heightContext
 		) {
 			this.surfaceBuilder = surfaceBuilder;
-			this.field_37703 = noiseConfig;
+			this.noiseConfig = noiseConfig;
 			this.chunk = chunk;
 			this.chunkNoiseSampler = chunkNoiseSampler;
-			this.posToBiome = function;
+			this.posToBiome = posToBiome;
 			this.heightContext = heightContext;
 		}
 
@@ -569,22 +583,24 @@ public class MaterialRules {
 		implements MaterialRules.MaterialCondition {
 		final double minThreshold;
 		final double maxThreshold;
-		static final Codec<MaterialRules.NoiseThresholdMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
-						Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
-						Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
-					)
-					.apply(instance, MaterialRules.NoiseThresholdMaterialCondition::new)
+		static final CodecHolder<MaterialRules.NoiseThresholdMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
+							Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
+							Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
+						)
+						.apply(instance, MaterialRules.NoiseThresholdMaterialCondition::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
-			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.field_37703.getOrCreateSampler(this.noise);
+			final DoublePerlinNoiseSampler doublePerlinNoiseSampler = materialRuleContext.noiseConfig.getOrCreateSampler(this.noise);
 
 			class NoiseThresholdPredicate extends MaterialRules.HorizontalLazyAbstractPredicate {
 				NoiseThresholdPredicate() {
@@ -603,13 +619,14 @@ public class MaterialRules {
 	}
 
 	static record NotMaterialCondition(MaterialRules.MaterialCondition target) implements MaterialRules.MaterialCondition {
-		static final Codec<MaterialRules.NotMaterialCondition> CONDITION_CODEC = MaterialRules.MaterialCondition.CODEC
-			.<MaterialRules.NotMaterialCondition>xmap(MaterialRules.NotMaterialCondition::new, MaterialRules.NotMaterialCondition::target)
-			.fieldOf("invert")
-			.codec();
+		static final CodecHolder<MaterialRules.NotMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			MaterialRules.MaterialCondition.CODEC
+				.<MaterialRules.NotMaterialCondition>xmap(MaterialRules.NotMaterialCondition::new, MaterialRules.NotMaterialCondition::target)
+				.fieldOf("invert")
+		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -638,14 +655,15 @@ public class MaterialRules {
 	}
 
 	static record SequenceMaterialRule(List<MaterialRules.MaterialRule> sequence) implements MaterialRules.MaterialRule {
-		static final Codec<MaterialRules.SequenceMaterialRule> RULE_CODEC = MaterialRules.MaterialRule.CODEC
-			.listOf()
-			.<MaterialRules.SequenceMaterialRule>xmap(MaterialRules.SequenceMaterialRule::new, MaterialRules.SequenceMaterialRule::sequence)
-			.fieldOf("sequence")
-			.codec();
+		static final CodecHolder<MaterialRules.SequenceMaterialRule> RULE_CODEC = CodecHolder.of(
+			MaterialRules.MaterialRule.CODEC
+				.listOf()
+				.<MaterialRules.SequenceMaterialRule>xmap(MaterialRules.SequenceMaterialRule::new, MaterialRules.SequenceMaterialRule::sequence)
+				.fieldOf("sequence")
+		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialRule> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialRule> codec() {
 			return RULE_CODEC;
 		}
 
@@ -677,10 +695,10 @@ public class MaterialRules {
 	static enum SteepMaterialCondition implements MaterialRules.MaterialCondition {
 		INSTANCE;
 
-		static final Codec<MaterialRules.SteepMaterialCondition> CONDITION_CODEC = Codec.unit(INSTANCE);
+		static final CodecHolder<MaterialRules.SteepMaterialCondition> CONDITION_CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -694,18 +712,20 @@ public class MaterialRules {
 		final int offset;
 		final boolean addSurfaceDepth;
 		final int secondaryDepthRange;
-		static final Codec<MaterialRules.StoneDepthMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.INT.fieldOf("offset").forGetter(MaterialRules.StoneDepthMaterialCondition::offset),
-						Codec.BOOL.fieldOf("add_surface_depth").forGetter(MaterialRules.StoneDepthMaterialCondition::addSurfaceDepth),
-						Codec.INT.fieldOf("secondary_depth_range").forGetter(MaterialRules.StoneDepthMaterialCondition::secondaryDepthRange),
-						VerticalSurfaceType.CODEC.fieldOf("surface_type").forGetter(MaterialRules.StoneDepthMaterialCondition::surfaceType)
-					)
-					.apply(instance, MaterialRules.StoneDepthMaterialCondition::new)
+		static final CodecHolder<MaterialRules.StoneDepthMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							Codec.INT.fieldOf("offset").forGetter(MaterialRules.StoneDepthMaterialCondition::offset),
+							Codec.BOOL.fieldOf("add_surface_depth").forGetter(MaterialRules.StoneDepthMaterialCondition::addSurfaceDepth),
+							Codec.INT.fieldOf("secondary_depth_range").forGetter(MaterialRules.StoneDepthMaterialCondition::secondaryDepthRange),
+							VerticalSurfaceType.CODEC.fieldOf("surface_type").forGetter(MaterialRules.StoneDepthMaterialCondition::surfaceType)
+						)
+						.apply(instance, MaterialRules.StoneDepthMaterialCondition::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -735,10 +755,10 @@ public class MaterialRules {
 	static enum SurfaceMaterialCondition implements MaterialRules.MaterialCondition {
 		INSTANCE;
 
-		static final Codec<MaterialRules.SurfaceMaterialCondition> CONDITION_CODEC = Codec.unit(INSTANCE);
+		static final CodecHolder<MaterialRules.SurfaceMaterialCondition> CONDITION_CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -750,10 +770,10 @@ public class MaterialRules {
 	static enum TemperatureMaterialCondition implements MaterialRules.MaterialCondition {
 		INSTANCE;
 
-		static final Codec<MaterialRules.TemperatureMaterialCondition> CONDITION_CODEC = Codec.unit(INSTANCE);
+		static final CodecHolder<MaterialRules.TemperatureMaterialCondition> CONDITION_CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
@@ -765,10 +785,10 @@ public class MaterialRules {
 	static enum TerracottaBandsMaterialRule implements MaterialRules.MaterialRule {
 		INSTANCE;
 
-		static final Codec<MaterialRules.TerracottaBandsMaterialRule> RULE_CODEC = Codec.unit(INSTANCE);
+		static final CodecHolder<MaterialRules.TerracottaBandsMaterialRule> RULE_CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialRule> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialRule> codec() {
 			return RULE_CODEC;
 		}
 
@@ -779,24 +799,26 @@ public class MaterialRules {
 
 	static record VerticalGradientMaterialCondition(Identifier randomName, YOffset trueAtAndBelow, YOffset falseAtAndAbove)
 		implements MaterialRules.MaterialCondition {
-		static final Codec<MaterialRules.VerticalGradientMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Identifier.CODEC.fieldOf("random_name").forGetter(MaterialRules.VerticalGradientMaterialCondition::randomName),
-						YOffset.OFFSET_CODEC.fieldOf("true_at_and_below").forGetter(MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow),
-						YOffset.OFFSET_CODEC.fieldOf("false_at_and_above").forGetter(MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove)
-					)
-					.apply(instance, MaterialRules.VerticalGradientMaterialCondition::new)
+		static final CodecHolder<MaterialRules.VerticalGradientMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							Identifier.CODEC.fieldOf("random_name").forGetter(MaterialRules.VerticalGradientMaterialCondition::randomName),
+							YOffset.OFFSET_CODEC.fieldOf("true_at_and_below").forGetter(MaterialRules.VerticalGradientMaterialCondition::trueAtAndBelow),
+							YOffset.OFFSET_CODEC.fieldOf("false_at_and_above").forGetter(MaterialRules.VerticalGradientMaterialCondition::falseAtAndAbove)
+						)
+						.apply(instance, MaterialRules.VerticalGradientMaterialCondition::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 
 		public MaterialRules.BooleanSupplier apply(MaterialRules.MaterialRuleContext materialRuleContext) {
 			final int i = this.trueAtAndBelow().getY(materialRuleContext.heightContext);
 			final int j = this.falseAtAndAbove().getY(materialRuleContext.heightContext);
-			final RandomDeriver randomDeriver = materialRuleContext.field_37703.getOrCreateRandomDeriver(this.randomName());
+			final RandomDeriver randomDeriver = materialRuleContext.noiseConfig.getOrCreateRandomDeriver(this.randomName());
 
 			class VerticalGradientPredicate extends MaterialRules.FullLazyAbstractPredicate {
 				VerticalGradientPredicate() {
@@ -826,17 +848,19 @@ public class MaterialRules {
 		final int offset;
 		final int surfaceDepthMultiplier;
 		final boolean addStoneDepth;
-		static final Codec<MaterialRules.WaterMaterialCondition> CONDITION_CODEC = RecordCodecBuilder.create(
-			instance -> instance.group(
-						Codec.INT.fieldOf("offset").forGetter(MaterialRules.WaterMaterialCondition::offset),
-						Codec.intRange(-20, 20).fieldOf("surface_depth_multiplier").forGetter(MaterialRules.WaterMaterialCondition::surfaceDepthMultiplier),
-						Codec.BOOL.fieldOf("add_stone_depth").forGetter(MaterialRules.WaterMaterialCondition::addStoneDepth)
-					)
-					.apply(instance, MaterialRules.WaterMaterialCondition::new)
+		static final CodecHolder<MaterialRules.WaterMaterialCondition> CONDITION_CODEC = CodecHolder.of(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							Codec.INT.fieldOf("offset").forGetter(MaterialRules.WaterMaterialCondition::offset),
+							Codec.intRange(-20, 20).fieldOf("surface_depth_multiplier").forGetter(MaterialRules.WaterMaterialCondition::surfaceDepthMultiplier),
+							Codec.BOOL.fieldOf("add_stone_depth").forGetter(MaterialRules.WaterMaterialCondition::addStoneDepth)
+						)
+						.apply(instance, MaterialRules.WaterMaterialCondition::new)
+			)
 		);
 
 		@Override
-		public Codec<? extends MaterialRules.MaterialCondition> codec() {
+		public CodecHolder<? extends MaterialRules.MaterialCondition> codec() {
 			return CONDITION_CODEC;
 		}
 

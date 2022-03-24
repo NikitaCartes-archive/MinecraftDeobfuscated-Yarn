@@ -155,7 +155,10 @@ public class RuinedPortalFeature extends StructureFeature {
 								arg.chunkGenerator()
 									.getBiomeSource()
 									.getBiome(
-										BiomeCoords.fromBlock(blockPos4.getX()), BiomeCoords.fromBlock(blockPos4.getY()), BiomeCoords.fromBlock(blockPos4.getZ()), noiseConfig.sampler()
+										BiomeCoords.fromBlock(blockPos4.getX()),
+										BiomeCoords.fromBlock(blockPos4.getY()),
+										BiomeCoords.fromBlock(blockPos4.getZ()),
+										noiseConfig.getMultiNoiseSampler()
 									)
 							);
 						}

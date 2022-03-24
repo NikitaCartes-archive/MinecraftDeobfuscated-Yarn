@@ -13,7 +13,9 @@ public class ChunkPos {
 	private static final long field_30953 = 32L;
 	private static final long field_30954 = 4294967295L;
 	private static final int field_30955 = 5;
+	public static final int field_38224 = 32;
 	private static final int field_30956 = 31;
+	public static final int field_38225 = 31;
 	public final int x;
 	public final int z;
 	private static final int field_30957 = 1664525;
@@ -33,6 +35,14 @@ public class ChunkPos {
 	public ChunkPos(long pos) {
 		this.x = (int)pos;
 		this.z = (int)(pos >> 32);
+	}
+
+	public static ChunkPos fromRegion(int x, int z) {
+		return new ChunkPos(x << 5, z << 5);
+	}
+
+	public static ChunkPos fromRegionCenter(int x, int z) {
+		return new ChunkPos((x << 5) + 31, (z << 5) + 31);
 	}
 
 	public long toLong() {
@@ -56,8 +66,12 @@ public class ChunkPos {
 	}
 
 	public int hashCode() {
-		int i = 1664525 * this.x + 1013904223;
-		int j = 1664525 * (this.z ^ -559038737) + 1013904223;
+		return hashCode(this.x, this.z);
+	}
+
+	public static int hashCode(int x, int z) {
+		int i = 1664525 * x + 1013904223;
+		int j = 1664525 * (z ^ -559038737) + 1013904223;
 		return i ^ j;
 	}
 

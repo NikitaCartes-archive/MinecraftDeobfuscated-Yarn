@@ -14,6 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.toast.SystemToast;
@@ -55,8 +56,8 @@ public class IntegratedServerLoader {
 		this.storage = storage;
 	}
 
-	public void start(String levelName) {
-		this.start(levelName, false, true);
+	public void start(Screen parent, String levelName) {
+		this.start(parent, levelName, false, true);
 	}
 
 	public void createAndStart(String levelName, LevelInfo levelInfo, DynamicRegistryManager dynamicRegistryManager, GeneratorOptions generatorOptions) {
@@ -148,7 +149,7 @@ public class IntegratedServerLoader {
 		return (SaveLoader)completableFuture.get();
 	}
 
-	private void start(String levelName, boolean safeMode, boolean canShowBackupPrompt) {
+	private void start(Screen parent, String levelName, boolean safeMode, boolean canShowBackupPrompt) {
 		LevelStorage.Session session = this.createSession(levelName);
 		if (session != null) {
 			ResourcePackManager resourcePackManager = createDataPackManager(session);
@@ -156,9 +157,9 @@ public class IntegratedServerLoader {
 			SaveLoader saveLoader;
 			try {
 				saveLoader = this.createSaveLoader(session, safeMode, resourcePackManager);
-			} catch (Exception var10) {
-				LOGGER.warn("Failed to load datapacks, can't proceed with server load", var10);
-				this.client.setScreen(new DatapackFailureScreen(() -> this.start(levelName, true, canShowBackupPrompt)));
+			} catch (Exception var11) {
+				LOGGER.warn("Failed to load datapacks, can't proceed with server load", var11);
+				this.client.setScreen(new DatapackFailureScreen(() -> this.start(parent, levelName, true, canShowBackupPrompt)));
 				close(session, levelName);
 				return;
 			}
@@ -169,7 +170,7 @@ public class IntegratedServerLoader {
 			if (!canShowBackupPrompt || !bl && !bl2) {
 				this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
 			} else {
-				this.showBackupPromptScreen(levelName, bl, () -> this.start(levelName, safeMode, false));
+				this.showBackupPromptScreen(parent, levelName, bl, () -> this.start(parent, levelName, safeMode, false));
 				saveLoader.close();
 				close(session, levelName);
 			}
@@ -184,7 +185,7 @@ public class IntegratedServerLoader {
 		}
 	}
 
-	private void showBackupPromptScreen(String levelName, boolean customized, Runnable callback) {
+	private void showBackupPromptScreen(Screen parent, String levelName, boolean customized, Runnable callback) {
 		Text text;
 		Text text2;
 		if (customized) {
@@ -195,7 +196,7 @@ public class IntegratedServerLoader {
 			text2 = new TranslatableText("selectWorld.backupWarning.experimental");
 		}
 
-		this.client.setScreen(new BackupPromptScreen(null, (backup, eraseCache) -> {
+		this.client.setScreen(new BackupPromptScreen(parent, (backup, eraseCache) -> {
 			if (backup) {
 				EditWorldScreen.onBackupConfirm(this.storage, levelName);
 			}

@@ -31,6 +31,10 @@ public class VersionedChunkStorage implements AutoCloseable {
 		this.worker = new StorageIoWorker(directory, dsync, "chunk");
 	}
 
+	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
+		return this.worker.needsBlending(chunkPos, checkRadius);
+	}
+
 	public NbtCompound updateChunkNbt(
 		RegistryKey<World> worldKey,
 		Supplier<PersistentStateManager> persistentStateManagerFactory,

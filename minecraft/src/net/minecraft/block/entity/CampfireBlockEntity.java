@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
+import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.ItemScatterer;
@@ -29,6 +30,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	private final DefaultedList<ItemStack> itemsBeingCooked = DefaultedList.ofSize(4, ItemStack.EMPTY);
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
+	private final RecipeManager.MatchGetter<Inventory, CampfireCookingRecipe> matchGetter = RecipeManager.createCachedMatchGetter(RecipeType.CAMPFIRE_COOKING);
 
 	public CampfireBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.CAMPFIRE, pos, state);
@@ -44,10 +46,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 				campfire.cookingTimes[i]++;
 				if (campfire.cookingTimes[i] >= campfire.cookingTotalTimes[i]) {
 					Inventory inventory = new SimpleInventory(itemStack);
-					ItemStack itemStack2 = (ItemStack)world.getRecipeManager()
-						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world)
-						.map(recipe -> recipe.craft(inventory))
-						.orElse(itemStack);
+					ItemStack itemStack2 = (ItemStack)campfire.matchGetter.getFirstMatch(inventory, world).map(recipe -> recipe.craft(inventory)).orElse(itemStack);
 					ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
 					campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
 					world.updateListeners(pos, state, state, Block.NOTIFY_ALL);
@@ -148,7 +147,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new SimpleInventory(item), this.world);
+			: this.matchGetter.getFirstMatch(new SimpleInventory(item), this.world);
 	}
 
 	public boolean addItem(ItemStack item, int cookTime) {

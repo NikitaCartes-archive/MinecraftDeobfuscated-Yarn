@@ -181,6 +181,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.WAX_OFF, GlowParticle.WaxOffFactory::new);
 		this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
 		this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
+		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

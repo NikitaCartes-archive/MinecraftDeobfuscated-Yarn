@@ -120,7 +120,7 @@ public class ModelPredicateProviderRegistry {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorld.getDimension().isNatural()) {
+						if (clientWorld.getDimension().natural()) {
 							d = (double)clientWorld.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();
@@ -213,7 +213,7 @@ public class ModelPredicateProviderRegistry {
 	
 				@Nullable
 				private BlockPos getSpawnPos(ClientWorld world) {
-					return world.getDimension().isNatural() ? world.getSpawnPos() : null;
+					return world.getDimension().natural() ? world.getSpawnPos() : null;
 				}
 	
 				@Nullable

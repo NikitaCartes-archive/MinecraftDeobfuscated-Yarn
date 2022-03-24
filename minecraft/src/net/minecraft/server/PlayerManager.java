@@ -172,7 +172,7 @@ public abstract class PlayerManager {
 				player.interactionManager.getPreviousGameMode(),
 				this.server.getWorldRegistryKeys(),
 				this.registryManager,
-				serverWorld2.method_40134(),
+				serverWorld2.getDimensionEntry(),
 				serverWorld2.getRegistryKey(),
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
@@ -480,7 +480,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.world.method_40134(),
+					serverPlayerEntity.world.getDimensionEntry(),
 					serverPlayerEntity.world.getRegistryKey(),
 					BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),

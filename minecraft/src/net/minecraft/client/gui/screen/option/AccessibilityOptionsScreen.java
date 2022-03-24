@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.Option;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
@@ -15,22 +15,23 @@ import net.minecraft.util.Util;
 public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
 
-	private static Option[] getOptions(GameOptions gameOptions) {
-		return new Option[]{
-			Option.NARRATOR,
-			Option.SUBTITLES,
-			Option.TEXT_BACKGROUND_OPACITY,
-			Option.TEXT_BACKGROUND,
-			Option.CHAT_OPACITY,
-			Option.CHAT_LINE_SPACING,
-			Option.CHAT_DELAY_INSTANT,
-			Option.AUTO_JUMP,
-			Option.SNEAK_TOGGLED,
-			Option.SPRINT_TOGGLED,
-			Option.DISTORTION_EFFECT_SCALE,
-			Option.FOV_EFFECT_SCALE,
+	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
+		return new SimpleOption[]{
+			gameOptions.getNarrator(),
+			gameOptions.getShowSubtitles(),
+			gameOptions.getTextBackgroundOpacity(),
+			gameOptions.getBackgroundForChatOnly(),
+			gameOptions.getChtOpacity(),
+			gameOptions.getChatLineSpacing(),
+			gameOptions.getChatDelay(),
+			gameOptions.getAutoJump(),
+			gameOptions.getSneakToggled(),
+			gameOptions.getSprintToggled(),
+			gameOptions.getDistortionEffectScale(),
+			gameOptions.getFovEffectScale(),
 			gameOptions.getMonochromeLogo(),
-			gameOptions.getHideLightningFlashes()
+			gameOptions.getHideLightningFlashes(),
+			gameOptions.getDarknessEffectScale()
 		};
 	}
 

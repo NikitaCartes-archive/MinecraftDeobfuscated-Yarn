@@ -21,4 +21,12 @@ public interface Glyph {
 	}
 
 	GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> glyphRendererGetter);
+
+	@Environment(EnvType.CLIENT)
+	public interface EmptyGlyph extends Glyph {
+		@Override
+		default GlyphRenderer bake(Function<RenderableGlyph, GlyphRenderer> function) {
+			return EmptyGlyphRenderer.field_38311;
+		}
+	}
 }

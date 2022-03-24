@@ -309,7 +309,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-					if (!this.client.options.chatLinks) {
+					if (!this.client.options.getChatLinks().getValue()) {
 						return false;
 					}
 
@@ -324,7 +324,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
 						}
 
-						if (this.client.options.chatLinksPrompt) {
+						if (this.client.options.getChatLinksPrompt().getValue()) {
 							this.clickedLink = uRI;
 							this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {

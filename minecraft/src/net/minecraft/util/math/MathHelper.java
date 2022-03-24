@@ -3,6 +3,7 @@ package net.minecraft.util.math;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -958,6 +959,35 @@ public class MathHelper {
 	 */
 	public static int roundDownToMultiple(double a, int b) {
 		return floor(a / (double)b) * b;
+	}
+
+	public static IntStream stream(int seed, int lowerBound, int upperBound) {
+		return stream(seed, lowerBound, upperBound, 1);
+	}
+
+	public static IntStream stream(int seed, int lowerBound, int upperBound, int steps) {
+		if (lowerBound > upperBound) {
+			throw new IllegalArgumentException("upperbound %d expected to be > lowerBound %d".formatted(upperBound, lowerBound));
+		} else if (steps < 1) {
+			throw new IllegalArgumentException("steps expected to be >= 1, was %d".formatted(steps));
+		} else {
+			return seed >= lowerBound && seed <= upperBound ? IntStream.iterate(seed, i -> {
+				int m = Math.abs(seed - i);
+				return seed - m >= lowerBound || seed + m <= upperBound;
+			}, i -> {
+				boolean bl = i <= seed;
+				int n = Math.abs(seed - i);
+				boolean bl2 = seed + n + steps <= upperBound;
+				if (!bl || !bl2) {
+					int o = seed - n - (bl ? steps : 0);
+					if (o >= lowerBound) {
+						return o;
+					}
+				}
+
+				return seed + n + steps;
+			}) : IntStream.empty();
+		}
 	}
 
 	static {

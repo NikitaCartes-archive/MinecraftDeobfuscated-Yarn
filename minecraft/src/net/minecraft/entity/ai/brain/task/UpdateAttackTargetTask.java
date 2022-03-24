@@ -15,8 +15,13 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private final Function<E, Optional<? extends LivingEntity>> targetGetter;
 
 	public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter) {
+		this(startCondition, targetGetter, 60);
+	}
+
+	public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter, int duration) {
 		super(
-			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
+			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED),
+			duration
 		);
 		this.startCondition = startCondition;
 		this.targetGetter = targetGetter;

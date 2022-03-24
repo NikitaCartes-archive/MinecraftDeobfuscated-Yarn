@@ -193,7 +193,7 @@ public interface DispenserBehavior {
 				}
 
 				stack.decrement(1);
-				pointer.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, pointer.getPos());
+				pointer.getWorld().emitGameEvent(null, GameEvent.ENTITY_PLACE, pointer.getPos());
 				return stack;
 			}
 		};

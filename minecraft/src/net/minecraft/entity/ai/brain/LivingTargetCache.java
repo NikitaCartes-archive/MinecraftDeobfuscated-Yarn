@@ -23,7 +23,7 @@ public class LivingTargetCache {
 		this.entities = entities;
 		Object2BooleanOpenHashMap<LivingEntity> object2BooleanOpenHashMap = new Object2BooleanOpenHashMap<>(entities.size());
 		Predicate<LivingEntity> predicate = entity -> Sensor.testTargetPredicate(owner, entity);
-		this.targetPredicate = entity -> object2BooleanOpenHashMap.computeBooleanIfAbsent(entity, predicate);
+		this.targetPredicate = entity -> object2BooleanOpenHashMap.computeIfAbsent(entity, predicate);
 	}
 
 	public static LivingTargetCache empty() {
@@ -38,6 +38,11 @@ public class LivingTargetCache {
 		}
 
 		return Optional.empty();
+	}
+
+	@SafeVarargs
+	public final Optional<LivingEntity> findAny(Predicate<LivingEntity>... predicates) {
+		return (Optional<LivingEntity>)Stream.of(predicates).map(this::findFirst).filter(Optional::isPresent).findAny().orElse(Optional.empty());
 	}
 
 	public Iterable<LivingEntity> iterate(Predicate<LivingEntity> predicate) {

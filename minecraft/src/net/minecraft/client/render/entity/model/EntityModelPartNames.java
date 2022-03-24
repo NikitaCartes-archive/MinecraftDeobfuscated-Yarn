@@ -272,4 +272,7 @@ public class EntityModelPartNames {
 	 * The key of an eyes model part, whose value is {@value}.
 	 */
 	public static final String EYES = "eyes";
+	public static final String field_38329 = "right_tendril";
+	public static final String field_38330 = "left_tendril";
+	public static final String field_38331 = "bone";
 }
