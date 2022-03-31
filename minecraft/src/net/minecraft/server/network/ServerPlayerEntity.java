@@ -564,7 +564,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void onDeath(DamageSource source) {
-		this.emitGameEvent(GameEvent.ENTITY_DYING);
+		this.emitGameEvent(GameEvent.ENTITY_DIE);
 		boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
@@ -955,7 +955,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 	}
 
 	@Override

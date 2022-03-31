@@ -1,41 +1,68 @@
 package net.minecraft.world.event;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPositionSource implements PositionSource {
 	public static final Codec<EntityPositionSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.INT.fieldOf("source_entity_id").forGetter(positionSource -> positionSource.entityId),
-					Codec.FLOAT.fieldOf("y_offset").forGetter(entityPositionSource -> entityPositionSource.yOffset)
+					Codecs.UUID.fieldOf("source_entity").forGetter(EntityPositionSource::getUuid),
+					Codec.FLOAT.fieldOf("y_offset").orElse(0.0F).forGetter(entityPositionSource -> entityPositionSource.yOffset)
 				)
-				.apply(instance, EntityPositionSource::new)
+				.apply(instance, (uUID, float_) -> new EntityPositionSource(Either.right(Either.left(uUID)), float_))
 	);
-	final int entityId;
-	private Optional<Entity> entity = Optional.empty();
+	private Either<Entity, Either<UUID, Integer>> source;
 	final float yOffset;
 
-	public EntityPositionSource(Entity entity, float f) {
-		this(entity.getId(), f);
+	public EntityPositionSource(Entity entity, float yOffset) {
+		this(Either.left(entity), yOffset);
 	}
 
-	EntityPositionSource(int entityId, float f) {
-		this.entityId = entityId;
-		this.yOffset = f;
+	EntityPositionSource(Either<Entity, Either<UUID, Integer>> source, float yOffset) {
+		this.source = source;
+		this.yOffset = yOffset;
 	}
 
 	@Override
 	public Optional<Vec3d> getPos(World world) {
-		if (this.entity.isEmpty()) {
-			this.entity = Optional.ofNullable(world.getEntityById(this.entityId));
+		if (this.source.left().isEmpty()) {
+			this.findEntityInWorld(world);
 		}
 
-		return this.entity.map(entity -> entity.getPos().add(0.0, (double)this.yOffset, 0.0));
+		return this.source.left().map(entity -> entity.getPos().add(0.0, (double)this.yOffset, 0.0));
+	}
+
+	private void findEntityInWorld(World world) {
+		this.source
+			.<Optional>map(
+				Optional::of,
+				either -> Optional.ofNullable(
+						(Entity)either.map(uuid -> world instanceof ServerWorld serverWorld ? serverWorld.getEntity(uuid) : null, world::getEntityById)
+					)
+			)
+			.ifPresent(entity -> this.source = Either.left(entity));
+	}
+
+	private UUID getUuid() {
+		return this.source.map(Entity::getUuid, either -> either.map(Function.identity(), integer -> {
+				throw new RuntimeException("Unable to get entityId from uuid");
+			}));
+	}
+
+	int getEntityId() {
+		return this.source.<Integer>map(Entity::getId, either -> either.map(uUID -> {
+				throw new IllegalStateException("Unable to get entityId from uuid");
+			}, Function.identity()));
 	}
 
 	@Override
@@ -45,11 +72,11 @@ public class EntityPositionSource implements PositionSource {
 
 	public static class Type implements PositionSourceType<EntityPositionSource> {
 		public EntityPositionSource readFromBuf(PacketByteBuf packetByteBuf) {
-			return new EntityPositionSource(packetByteBuf.readVarInt(), packetByteBuf.readFloat());
+			return new EntityPositionSource(Either.right(Either.right(packetByteBuf.readVarInt())), packetByteBuf.readFloat());
 		}
 
 		public void writeToBuf(PacketByteBuf packetByteBuf, EntityPositionSource entityPositionSource) {
-			packetByteBuf.writeVarInt(entityPositionSource.entityId);
+			packetByteBuf.writeVarInt(entityPositionSource.getEntityId());
 			packetByteBuf.writeFloat(entityPositionSource.yOffset);
 		}
 

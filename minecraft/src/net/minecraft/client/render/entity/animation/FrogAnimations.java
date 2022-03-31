@@ -5,36 +5,39 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class FrogAnimations {
-	public static final Animation CROAKING = Animation.Builder.create(4.5F)
-		.looping()
+	public static final Animation CROAKING = Animation.Builder.create(3.0F)
 		.addBoneAnimation(
 			"croaking_body",
 			new Transformation(
 				Transformation.Targets.TRANSLATE,
-				new Keyframe(0.6667F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
-				new Keyframe(0.7083F, AnimationHelper.method_41823(0.0F, 1.0F, 0.0F), Transformation.Interpolations.field_37884),
-				new Keyframe(3.2083F, AnimationHelper.method_41823(0.0F, 1.0F, 0.0F), Transformation.Interpolations.field_37884),
-				new Keyframe(3.25F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)
+				new Keyframe(0.0F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.375F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.4167F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.4583F, AnimationHelper.method_41823(0.0F, 1.0F, 0.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(2.9583F, AnimationHelper.method_41823(0.0F, 1.0F, 0.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(3.0F, AnimationHelper.method_41823(0.0F, 0.0F, 0.0F), Transformation.Interpolations.field_37884)
 			)
 		)
 		.addBoneAnimation(
 			"croaking_body",
 			new Transformation(
 				Transformation.Targets.SCALE,
-				new Keyframe(0.6667F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(0.0F, AnimationHelper.method_41822(0.0, 0.0, 0.0), Transformation.Interpolations.field_37884),
+				new Keyframe(0.375F, AnimationHelper.method_41822(0.0, 0.0, 0.0), Transformation.Interpolations.field_37884),
+				new Keyframe(0.4167F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(0.4583F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(0.5417F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.625F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
 				new Keyframe(0.7083F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
-				new Keyframe(0.7917F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
-				new Keyframe(0.875F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
-				new Keyframe(0.9583F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(2.25F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(2.3333F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
+				new Keyframe(2.4167F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
 				new Keyframe(2.5F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
-				new Keyframe(2.5833F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
+				new Keyframe(2.5833F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
 				new Keyframe(2.6667F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
-				new Keyframe(2.75F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
-				new Keyframe(2.8333F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
-				new Keyframe(2.9167F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
-				new Keyframe(3.125F, AnimationHelper.method_41822(1.3F, 2.1F, 1.8F), Transformation.Interpolations.field_37884),
-				new Keyframe(3.2083F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
-				new Keyframe(3.25F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884)
+				new Keyframe(2.875F, AnimationHelper.method_41822(1.3F, 2.1F, 1.6F), Transformation.Interpolations.field_37884),
+				new Keyframe(2.9583F, AnimationHelper.method_41822(1.0, 1.0, 1.0), Transformation.Interpolations.field_37884),
+				new Keyframe(3.0F, AnimationHelper.method_41822(0.0, 0.0, 0.0), Transformation.Interpolations.field_37884)
 			)
 		)
 		.build();

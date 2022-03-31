@@ -352,7 +352,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 		this.keyToEntry.values().forEach(entry -> map.put(entry, new ArrayList()));
 		tagEntries.forEach((tag, entries) -> {
 			for (RegistryEntry<T> registryEntry : entries) {
-				if (!registryEntry.setRegistry(this)) {
+				if (!registryEntry.matchesRegistry(this)) {
 					throw new IllegalStateException("Can't create named set " + tag + " containing value " + registryEntry + " from outside registry " + this);
 				}
 

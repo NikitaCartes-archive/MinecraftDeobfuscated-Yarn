@@ -48,6 +48,7 @@ public class EntityModels {
 		TexturedModelData texturedModelData16 = SkeletonEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData17 = TexturedModelData.of(VillagerResemblingModel.getModelData(), 64, 64);
 		TexturedModelData texturedModelData18 = SpiderEntityModel.getTexturedModelData();
+		builder.put(EntityModelLayers.ALLAY, AllayEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND, ArmorStandEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND_INNER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(HAT_DILATION));
 		builder.put(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(ARMOR_DILATION));

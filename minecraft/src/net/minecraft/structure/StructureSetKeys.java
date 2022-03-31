@@ -21,6 +21,7 @@ public interface StructureSetKeys {
 	RegistryKey<StructureSet> NETHER_COMPLEXES = of("nether_complexes");
 	RegistryKey<StructureSet> NETHER_FOSSILS = of("nether_fossils");
 	RegistryKey<StructureSet> END_CITIES = of("end_cities");
+	RegistryKey<StructureSet> ANCIENT_CITIES = of("ancient_cities");
 	RegistryKey<StructureSet> STRONGHOLDS = of("strongholds");
 
 	private static RegistryKey<StructureSet> of(String id) {

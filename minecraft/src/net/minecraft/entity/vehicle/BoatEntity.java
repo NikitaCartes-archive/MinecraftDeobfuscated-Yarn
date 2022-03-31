@@ -161,7 +161,7 @@ public class BoatEntity extends Entity {
 			this.setDamageWobbleTicks(10);
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
 			this.scheduleVelocityUpdate();
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
 			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -683,7 +683,7 @@ public class BoatEntity extends Entity {
 			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
 			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(passenger);
-			if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
+			if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
 				int j = passenger.getId() % 2 == 0 ? 90 : 270;
 				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
 				passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
@@ -765,7 +765,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		this.fallVelocity = this.getVelocity().y;
 		if (!this.hasVehicle()) {
 			if (onGround) {

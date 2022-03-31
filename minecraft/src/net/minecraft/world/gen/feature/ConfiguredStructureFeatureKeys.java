@@ -36,6 +36,7 @@ public interface ConfiguredStructureFeatureKeys {
 	RegistryKey<StructureFeature> RUINED_PORTAL_MOUNTAIN = of("ruined_portal_mountain");
 	RegistryKey<StructureFeature> RUINED_PORTAL_OCEAN = of("ruined_portal_ocean");
 	RegistryKey<StructureFeature> RUINED_PORTAL_NETHER = of("ruined_portal_nether");
+	RegistryKey<StructureFeature> ANCIENT_CITY = of("ancient_city");
 
 	private static RegistryKey<StructureFeature> of(String id) {
 		return RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, new Identifier(id));

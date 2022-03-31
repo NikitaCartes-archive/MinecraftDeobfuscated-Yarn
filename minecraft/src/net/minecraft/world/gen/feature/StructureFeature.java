@@ -1,13 +1,14 @@
 package net.minecraft.world.gen.feature;
 
-import com.mojang.datafixers.Products.P4;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.StructureManager;
@@ -35,80 +36,70 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureTerrainAdaptation;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public abstract class StructureFeature {
-	public static final Codec<StructureFeature> field_37744 = Registry.STRUCTURE_TYPE.getCodec().dispatch(StructureFeature::getType, StructureType::codec);
-	public static final Codec<RegistryEntry<StructureFeature>> field_37745 = RegistryElementCodec.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, field_37744);
-	private final RegistryEntryList<Biome> validBiomes;
-	private final Map<SpawnGroup, StructureSpawns> structureSpawns;
-	private final GenerationStep.Feature featureGenerationStep;
-	private final boolean adaptNoise;
+	public static final Codec<StructureFeature> FEATURE_CODEC = Registry.STRUCTURE_TYPE.getCodec().dispatch(StructureFeature::getType, StructureType::codec);
+	public static final Codec<RegistryEntry<StructureFeature>> FEATURE_ENTRY_CODEC = RegistryElementCodec.of(
+		Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, FEATURE_CODEC
+	);
+	protected final StructureFeature.Config config;
 
-	public static <S extends StructureFeature> P4<Mu<S>, RegistryEntryList<Biome>, Map<SpawnGroup, StructureSpawns>, GenerationStep.Feature, Boolean> method_41608(
-		Instance<S> instance
-	) {
-		return instance.group(
-			RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes").forGetter(StructureFeature::getValidBiomes),
-			Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values()))
-				.fieldOf("spawn_overrides")
-				.forGetter(StructureFeature::getStructureSpawns),
-			GenerationStep.Feature.CODEC.fieldOf("step").forGetter(StructureFeature::getFeatureGenerationStep),
-			Codec.BOOL.optionalFieldOf("adapt_noise", Boolean.valueOf(false)).forGetter(StructureFeature::shouldAdaptNoise)
-		);
+	public static <S extends StructureFeature> RecordCodecBuilder<S, StructureFeature.Config> configCodecBuilder(Instance<S> instance) {
+		return StructureFeature.Config.CODEC.forGetter(feature -> feature.config);
 	}
 
-	protected StructureFeature(
-		RegistryEntryList<Biome> validBiomes, Map<SpawnGroup, StructureSpawns> structureSpawns, GenerationStep.Feature featureGenerationStep, boolean adaptNoise
-	) {
-		this.validBiomes = validBiomes;
-		this.structureSpawns = structureSpawns;
-		this.featureGenerationStep = featureGenerationStep;
-		this.adaptNoise = adaptNoise;
+	public static <S extends StructureFeature> Codec<S> createCodec(Function<StructureFeature.Config, S> featureCreator) {
+		return RecordCodecBuilder.create(instance -> instance.group(configCodecBuilder(instance)).apply(instance, featureCreator));
+	}
+
+	protected StructureFeature(StructureFeature.Config config) {
+		this.config = config;
 	}
 
 	public RegistryEntryList<Biome> getValidBiomes() {
-		return this.validBiomes;
+		return this.config.biomes;
 	}
 
 	public Map<SpawnGroup, StructureSpawns> getStructureSpawns() {
-		return this.structureSpawns;
+		return this.config.spawnOverrides;
 	}
 
 	public GenerationStep.Feature getFeatureGenerationStep() {
-		return this.featureGenerationStep;
+		return this.config.step;
 	}
 
-	public boolean shouldAdaptNoise() {
-		return this.adaptNoise;
+	public StructureTerrainAdaptation getTerrainAdaptation() {
+		return this.config.terrainAdaptation;
 	}
 
 	public BlockBox expandBoxIfShouldAdaptNoise(BlockBox box) {
-		return this.shouldAdaptNoise() ? box.expand(12) : box;
+		return this.getTerrainAdaptation() != StructureTerrainAdaptation.NONE ? box.expand(12) : box;
 	}
 
-	public StructureStart method_41614(
+	public StructureStart createStructureStart(
 		DynamicRegistryManager dynamicRegistryManager,
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
 		NoiseConfig noiseConfig,
 		StructureManager structureManager,
-		long l,
+		long seed,
 		ChunkPos chunkPos,
-		int i,
-		HeightLimitView heightLimitView,
-		Predicate<RegistryEntry<Biome>> predicate
+		int references,
+		HeightLimitView world,
+		Predicate<RegistryEntry<Biome>> validBiomes
 	) {
-		Optional<StructureFeature.class_7150> optional = this.method_38676(
-			new StructureFeature.class_7149(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureManager, l, chunkPos, heightLimitView, predicate)
+		Optional<StructureFeature.StructurePosition> optional = this.getStructurePosition(
+			new StructureFeature.Context(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureManager, seed, chunkPos, world, validBiomes)
 		);
-		if (optional.isPresent() && method_41613((StructureFeature.class_7150)optional.get(), chunkGenerator, noiseConfig, predicate)) {
+		if (optional.isPresent() && isBiomeValid((StructureFeature.StructurePosition)optional.get(), chunkGenerator, noiseConfig, validBiomes)) {
 			StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
-			((StructureFeature.class_7150)optional.get()).generator().accept(structurePiecesCollector);
-			StructureStart structureStart = new StructureStart(this, chunkPos, i, structurePiecesCollector.toList());
+			((StructureFeature.StructurePosition)optional.get()).generator().accept(structurePiecesCollector);
+			StructureStart structureStart = new StructureStart(this, chunkPos, references, structurePiecesCollector.toList());
 			if (structureStart.hasChildren()) {
 				return structureStart;
 			}
@@ -117,21 +108,21 @@ public abstract class StructureFeature {
 		return StructureStart.DEFAULT;
 	}
 
-	protected static Optional<StructureFeature.class_7150> method_41612(
-		StructureFeature.class_7149 arg, Heightmap.Type type, Consumer<StructurePiecesCollector> consumer
+	protected static Optional<StructureFeature.StructurePosition> getStructurePosition(
+		StructureFeature.Context context, Heightmap.Type heightmap, Consumer<StructurePiecesCollector> generator
 	) {
-		ChunkPos chunkPos = arg.chunkPos();
+		ChunkPos chunkPos = context.chunkPos();
 		int i = chunkPos.getCenterX();
 		int j = chunkPos.getCenterZ();
-		int k = arg.chunkGenerator().getHeightInGround(i, j, type, arg.heightAccessor(), arg.randomState());
-		return Optional.of(new StructureFeature.class_7150(new BlockPos(i, k, j), consumer));
+		int k = context.chunkGenerator().getHeightInGround(i, j, heightmap, context.world(), context.noiseConfig());
+		return Optional.of(new StructureFeature.StructurePosition(new BlockPos(i, k, j), generator));
 	}
 
-	private static boolean method_41613(
-		StructureFeature.class_7150 arg, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, Predicate<RegistryEntry<Biome>> predicate
+	private static boolean isBiomeValid(
+		StructureFeature.StructurePosition result, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, Predicate<RegistryEntry<Biome>> validBiomes
 	) {
-		BlockPos blockPos = arg.position();
-		return predicate.test(
+		BlockPos blockPos = result.position();
+		return validBiomes.test(
 			chunkGenerator.getBiomeSource()
 				.getBiome(
 					BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.getMultiNoiseSampler()
@@ -140,96 +131,125 @@ public abstract class StructureFeature {
 	}
 
 	public void postPlace(
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox blockBox,
+		BlockBox box,
 		ChunkPos chunkPos,
-		StructurePiecesList structurePiecesList
+		StructurePiecesList pieces
 	) {
 	}
 
-	private static int[] method_41611(StructureFeature.class_7149 arg, int i, int j, int k, int l) {
-		ChunkGenerator chunkGenerator = arg.chunkGenerator();
-		HeightLimitView heightLimitView = arg.heightAccessor();
-		NoiseConfig noiseConfig = arg.randomState();
+	private static int[] getCornerHeights(StructureFeature.Context context, int x, int width, int z, int height) {
+		ChunkGenerator chunkGenerator = context.chunkGenerator();
+		HeightLimitView heightLimitView = context.world();
+		NoiseConfig noiseConfig = context.noiseConfig();
 		return new int[]{
-			chunkGenerator.getHeightInGround(i, k, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
-			chunkGenerator.getHeightInGround(i, k + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
-			chunkGenerator.getHeightInGround(i + j, k, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
-			chunkGenerator.getHeightInGround(i + j, k + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig)
+			chunkGenerator.getHeightInGround(x, z, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
+			chunkGenerator.getHeightInGround(x, z + height, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
+			chunkGenerator.getHeightInGround(x + width, z, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig),
+			chunkGenerator.getHeightInGround(x + width, z + height, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView, noiseConfig)
 		};
 	}
 
-	protected static int method_41610(StructureFeature.class_7149 arg, int i, int j) {
-		ChunkPos chunkPos = arg.chunkPos();
-		int k = chunkPos.getStartX();
-		int l = chunkPos.getStartZ();
-		return method_42381(arg, k, l, i, j);
+	protected static int getMinCornerHeight(StructureFeature.Context context, int width, int height) {
+		ChunkPos chunkPos = context.chunkPos();
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
+		return getMinCornerHeight(context, i, j, width, height);
 	}
 
-	protected static int method_42381(StructureFeature.class_7149 arg, int i, int j, int k, int l) {
-		int[] is = method_41611(arg, i, k, j, l);
+	protected static int getMinCornerHeight(StructureFeature.Context context, int x, int z, int width, int height) {
+		int[] is = getCornerHeights(context, x, width, z, height);
 		return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
 	}
 
 	@Deprecated
-	protected BlockPos method_42382(StructureFeature.class_7149 arg, BlockRotation blockRotation) {
+	protected BlockPos getShiftedPos(StructureFeature.Context context, BlockRotation rotation) {
 		int i = 5;
 		int j = 5;
-		if (blockRotation == BlockRotation.CLOCKWISE_90) {
+		if (rotation == BlockRotation.CLOCKWISE_90) {
 			i = -5;
-		} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
+		} else if (rotation == BlockRotation.CLOCKWISE_180) {
 			i = -5;
 			j = -5;
-		} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
+		} else if (rotation == BlockRotation.COUNTERCLOCKWISE_90) {
 			j = -5;
 		}
 
-		ChunkPos chunkPos = arg.chunkPos();
+		ChunkPos chunkPos = context.chunkPos();
 		int k = chunkPos.getOffsetX(7);
 		int l = chunkPos.getOffsetZ(7);
-		return new BlockPos(k, method_42381(arg, k, l, i, j), l);
+		return new BlockPos(k, getMinCornerHeight(context, k, l, i, j), l);
 	}
 
-	public abstract Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg);
+	public abstract Optional<StructureFeature.StructurePosition> getStructurePosition(StructureFeature.Context context);
 
 	public abstract StructureType<?> getType();
 
-	public static record class_7149(
-		DynamicRegistryManager registryAccess,
+	public static record Config(
+		RegistryEntryList<Biome> biomes, Map<SpawnGroup, StructureSpawns> spawnOverrides, GenerationStep.Feature step, StructureTerrainAdaptation terrainAdaptation
+	) {
+		public static final MapCodec<StructureFeature.Config> CODEC = RecordCodecBuilder.mapCodec(
+			instance -> instance.group(
+						RegistryCodecs.entryList(Registry.BIOME_KEY).fieldOf("biomes").forGetter(StructureFeature.Config::biomes),
+						Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values()))
+							.fieldOf("spawn_overrides")
+							.forGetter(StructureFeature.Config::spawnOverrides),
+						GenerationStep.Feature.CODEC.fieldOf("step").forGetter(StructureFeature.Config::step),
+						StructureTerrainAdaptation.CODEC
+							.optionalFieldOf("terrain_adaptation", StructureTerrainAdaptation.NONE)
+							.forGetter(StructureFeature.Config::terrainAdaptation)
+					)
+					.apply(instance, StructureFeature.Config::new)
+		);
+	}
+
+	public static record Context(
+		DynamicRegistryManager dynamicRegistryManager,
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
-		NoiseConfig randomState,
-		StructureManager structureTemplateManager,
+		NoiseConfig noiseConfig,
+		StructureManager structureManager,
 		ChunkRandom random,
 		long seed,
 		ChunkPos chunkPos,
-		HeightLimitView heightAccessor,
-		Predicate<RegistryEntry<Biome>> validBiome
+		HeightLimitView world,
+		Predicate<RegistryEntry<Biome>> biomePredicate
 	) {
-		public class_7149(
+		public Context(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			BiomeSource biomeSource,
 			NoiseConfig noiseConfig,
 			StructureManager structureManager,
-			long l,
+			long seed,
 			ChunkPos chunkPos,
-			HeightLimitView heightLimitView,
-			Predicate<RegistryEntry<Biome>> predicate
+			HeightLimitView world,
+			Predicate<RegistryEntry<Biome>> biomePredicate
 		) {
-			this(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureManager, method_41619(l, chunkPos), l, chunkPos, heightLimitView, predicate);
+			this(
+				dynamicRegistryManager,
+				chunkGenerator,
+				biomeSource,
+				noiseConfig,
+				structureManager,
+				createChunkRandom(seed, chunkPos),
+				seed,
+				chunkPos,
+				world,
+				biomePredicate
+			);
 		}
 
-		private static ChunkRandom method_41619(long l, ChunkPos chunkPos) {
+		private static ChunkRandom createChunkRandom(long seed, ChunkPos chunkPos) {
 			ChunkRandom chunkRandom = new ChunkRandom(new AtomicSimpleRandom(0L));
-			chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
+			chunkRandom.setCarverSeed(seed, chunkPos.x, chunkPos.z);
 			return chunkRandom;
 		}
 	}
 
-	public static record class_7150(BlockPos position, Consumer<StructurePiecesCollector> generator) {
+	public static record StructurePosition(BlockPos position, Consumer<StructurePiecesCollector> generator) {
 	}
 }

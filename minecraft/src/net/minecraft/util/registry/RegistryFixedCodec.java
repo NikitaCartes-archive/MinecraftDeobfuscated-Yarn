@@ -23,7 +23,7 @@ public final class RegistryFixedCodec<E> implements Codec<RegistryEntry<E>> {
 		if (dynamicOps instanceof RegistryOps<?> registryOps) {
 			Optional<? extends Registry<E>> optional = registryOps.getRegistry(this.registry);
 			if (optional.isPresent()) {
-				if (!registryEntry.setRegistry((Registry<E>)optional.get())) {
+				if (!registryEntry.matchesRegistry((Registry<E>)optional.get())) {
 					return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
 				}
 

@@ -96,7 +96,7 @@ public class EndCrystalEntity extends Entity {
 			return false;
 		} else {
 			if (!this.isRemoved() && !this.world.isClient) {
-				this.remove(Entity.RemovalReason.KILLED);
+				super.kill();
 				if (!source.isExplosive()) {
 					this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0F, Explosion.DestructionType.DESTROY);
 				}

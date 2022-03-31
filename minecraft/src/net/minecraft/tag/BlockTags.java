@@ -10,7 +10,7 @@ public final class BlockTags {
 	public static final TagKey<Block> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Block> WOODEN_BUTTONS = of("wooden_buttons");
 	public static final TagKey<Block> BUTTONS = of("buttons");
-	public static final TagKey<Block> CARPETS = of("carpets");
+	public static final TagKey<Block> WOOL_CARPETS = of("wool_carpets");
 	public static final TagKey<Block> WOODEN_DOORS = of("wooden_doors");
 	public static final TagKey<Block> WOODEN_STAIRS = of("wooden_stairs");
 	public static final TagKey<Block> WOODEN_SLABS = of("wooden_slabs");
@@ -132,6 +132,8 @@ public final class BlockTags {
 	public static final TagKey<Block> FROG_PREFER_JUMP_TO = of("frog_prefer_jump_to");
 	public static final TagKey<Block> SCULK_REPLACEABLE = of("sculk_replaceable");
 	public static final TagKey<Block> SCULK_REPLACEABLE_WORLD_GEN = of("sculk_replaceable_world_gen");
+	public static final TagKey<Block> ANCIENT_CITY_CENTER_REPLACEABLE = of("ancient_city_center_replaceable");
+	public static final TagKey<Block> ANCIENT_CITY_REPLACEABLE = of("ancient_city_replaceable");
 	public static final TagKey<Block> ANIMALS_SPAWNABLE_ON = of("animals_spawnable_on");
 	public static final TagKey<Block> AXOLOTLS_SPAWNABLE_ON = of("axolotls_spawnable_on");
 	public static final TagKey<Block> GOATS_SPAWNABLE_ON = of("goats_spawnable_on");

@@ -16,28 +16,37 @@ import net.minecraft.util.math.MathHelper;
 public class WardenEntityRenderer extends MobEntityRenderer<WardenEntity, WardenEntityModel<WardenEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/warden/warden.png");
 	private static final Identifier BIOLUMINESCENT_LAYER_TEXTURE = new Identifier("textures/entity/warden/warden_bioluminescent_layer.png");
-	private static final Identifier EARS_TEXTURE = new Identifier("textures/entity/warden/warden_ears.png");
 	private static final Identifier HEART_TEXTURE = new Identifier("textures/entity/warden/warden_heart.png");
 	private static final Identifier PULSATING_SPOTS_1_TEXTURE = new Identifier("textures/entity/warden/warden_pulsating_spots_1.png");
 	private static final Identifier PULSATING_SPOTS_2_TEXTURE = new Identifier("textures/entity/warden/warden_pulsating_spots_2.png");
 
 	public WardenEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WardenEntityModel<>(context.getPart(EntityModelLayers.WARDEN)), 0.5F);
-		this.addFeature(new WardenFeatureRenderer<>(this, BIOLUMINESCENT_LAYER_TEXTURE, (warden, tickDelta, animationProgress) -> 1.0F));
+		this.addFeature(
+			new WardenFeatureRenderer<>(this, BIOLUMINESCENT_LAYER_TEXTURE, (warden, tickDelta, animationProgress) -> 1.0F, WardenEntityModel::method_42740)
+		);
 		this.addFeature(
 			new WardenFeatureRenderer<>(
-				this, PULSATING_SPOTS_1_TEXTURE, (warden, tickDelta, animationProgress) -> Math.max(0.0F, MathHelper.cos(animationProgress * 0.045F) * 0.25F)
+				this,
+				PULSATING_SPOTS_1_TEXTURE,
+				(warden, tickDelta, animationProgress) -> Math.max(0.0F, MathHelper.cos(animationProgress * 0.045F) * 0.25F),
+				WardenEntityModel::method_42741
 			)
 		);
 		this.addFeature(
 			new WardenFeatureRenderer<>(
 				this,
 				PULSATING_SPOTS_2_TEXTURE,
-				(warden, tickDelta, animationProgress) -> Math.max(0.0F, MathHelper.cos(animationProgress * 0.045F + (float) Math.PI) * 0.25F)
+				(warden, tickDelta, animationProgress) -> Math.max(0.0F, MathHelper.cos(animationProgress * 0.045F + (float) Math.PI) * 0.25F),
+				WardenEntityModel::method_42741
 			)
 		);
-		this.addFeature(new WardenFeatureRenderer<>(this, EARS_TEXTURE, (warden, tickDelta, animationProgress) -> warden.getEarPitch(tickDelta)));
-		this.addFeature(new WardenFeatureRenderer<>(this, HEART_TEXTURE, (warden, tickDelta, animationProgress) -> warden.getHeartPitch(tickDelta)));
+		this.addFeature(
+			new WardenFeatureRenderer<>(this, TEXTURE, (warden, tickDelta, animationProgress) -> warden.getEarPitch(tickDelta), WardenEntityModel::method_42738)
+		);
+		this.addFeature(
+			new WardenFeatureRenderer<>(this, HEART_TEXTURE, (warden, tickDelta, animationProgress) -> warden.getHeartPitch(tickDelta), WardenEntityModel::method_42739)
+		);
 	}
 
 	public void render(WardenEntity wardenEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

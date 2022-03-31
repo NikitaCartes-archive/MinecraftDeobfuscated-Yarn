@@ -2,6 +2,8 @@ package net.minecraft.entity.vehicle;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -26,6 +28,11 @@ public class MinecartEntity extends AbstractMinecartEntity {
 		} else {
 			return ActionResult.SUCCESS;
 		}
+	}
+
+	@Override
+	protected Item getItem() {
+		return Items.MINECART;
 	}
 
 	@Override

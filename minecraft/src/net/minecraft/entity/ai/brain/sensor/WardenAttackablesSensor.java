@@ -24,6 +24,8 @@ public class WardenAttackablesSensor extends Sensor<LivingEntity> {
 						entityx -> WardenEntity.isValidTarget(entityx) && entityx.getType() != EntityType.PLAYER
 					)
 			)
-			.ifPresent(entityx -> entity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entityx));
+			.ifPresentOrElse(
+				entityx -> entity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entityx), () -> entity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE)
+			);
 	}
 }

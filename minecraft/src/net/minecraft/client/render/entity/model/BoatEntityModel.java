@@ -160,7 +160,7 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 			modelPartData.addChild(
 				"chest_lock",
 				ModelPartBuilder.create().uv(0, 59).cuboid(0.0F, 0.0F, 0.0F, 2.0F, 4.0F, 1.0F),
-				ModelTransform.of(-1.0F, -7.0F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
+				ModelTransform.of(-1.0F, -6.0F, -1.0F, 0.0F, (float) (-Math.PI / 2), 0.0F)
 			);
 		}
 

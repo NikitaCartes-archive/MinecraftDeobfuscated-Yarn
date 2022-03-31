@@ -3419,6 +3419,10 @@ public class Blocks {
 	public static final Block FROGSPAWN = register(
 		"frogspawn", new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN))
 	);
+	public static final Block REINFORCED_DEEPSLATE = register(
+		"reinforced_deepslate",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.DEEPSLATE).strength(55.0F, 1200.0F))
+	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;

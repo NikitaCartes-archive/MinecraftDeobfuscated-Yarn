@@ -131,7 +131,7 @@ public class BellBlock extends BlockWithEntity {
 
 			((BellBlockEntity)blockEntity).activate(direction);
 			world.playSound(null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
-			world.emitGameEvent(entity, GameEvent.RING_BELL, pos);
+			world.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, pos);
 			return true;
 		} else {
 			return false;

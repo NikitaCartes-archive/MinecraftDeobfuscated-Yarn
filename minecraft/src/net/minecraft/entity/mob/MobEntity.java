@@ -68,6 +68,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -82,6 +83,13 @@ public abstract class MobEntity extends LivingEntity {
 	private static final int AI_DISABLED_FLAG = 1;
 	private static final int LEFT_HANDED_FLAG = 2;
 	private static final int ATTACKING_FLAG = 4;
+	/**
+	 * The minimum additional experience a mob will drop per item of equipment they have.
+	 * 
+	 * @see MobEntity#getXpToDrop
+	 */
+	protected static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
+	private static final Vec3i ITEM_PICK_UP_RANGE_EXPANDER = new Vec3i(1, 0, 1);
 	/**
 	 * The base chance (before applying local difficulty) that this mob will spawn with equipment.
 	 * 
@@ -107,12 +115,6 @@ public abstract class MobEntity extends LivingEntity {
 	 */
 	public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25F;
 	public static final String LEASH_KEY = "Leash";
-	/**
-	 * The minimum additional experience a mob will drop per item of equipment they have.
-	 * 
-	 * @see MobEntity#getXpToDrop
-	 */
-	private static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
 	public static final int field_35039 = 2;
 	public int ambientSoundChance;
@@ -553,7 +555,10 @@ public abstract class MobEntity extends LivingEntity {
 		super.tickMovement();
 		this.world.getProfiler().push("looting");
 		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-			for (ItemEntity itemEntity : this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
+			Vec3i vec3i = this.getItemPickUpRangeExpander();
+
+			for (ItemEntity itemEntity : this.world
+				.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
 				if (!itemEntity.isRemoved() && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(itemEntity.getStack())) {
 					this.loot(itemEntity);
 				}
@@ -561,6 +566,10 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		this.world.getProfiler().pop();
+	}
+
+	protected Vec3i getItemPickUpRangeExpander() {
+		return ITEM_PICK_UP_RANGE_EXPANDER;
 	}
 
 	protected void loot(ItemEntity item) {
@@ -583,7 +592,6 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.equipLootStack(equipmentSlot, equipment);
-			this.onEquipStack(equipment);
 			return true;
 		} else {
 			return false;
@@ -900,6 +908,7 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
+		this.onEquipStack(stack, true);
 		switch (slot.getType()) {
 			case HAND:
 				this.handItems.set(slot.getEntitySlotId(), stack);
@@ -1118,7 +1127,12 @@ public abstract class MobEntity extends LivingEntity {
 				return actionResult;
 			} else {
 				actionResult = this.interactMob(player, hand);
-				return actionResult.isAccepted() ? actionResult : super.interact(player, hand);
+				if (actionResult.isAccepted()) {
+					this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+					return actionResult;
+				} else {
+					return super.interact(player, hand);
+				}
 			}
 		}
 	}

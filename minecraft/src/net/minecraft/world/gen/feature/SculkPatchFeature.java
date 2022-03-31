@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.util.math.BlockPos;
@@ -48,6 +49,18 @@ public class SculkPatchFeature extends Feature<SculkPatchFeatureConfig> {
 			if (random.nextFloat() <= sculkPatchFeatureConfig.catalystChance()
 				&& structureWorldAccess.getBlockState(blockPos2).isFullCube(structureWorldAccess, blockPos2)) {
 				structureWorldAccess.setBlockState(blockPos, Blocks.SCULK_CATALYST.getDefaultState(), Block.NOTIFY_ALL);
+			}
+
+			int k = sculkPatchFeatureConfig.extraRareGrowths().get(random);
+
+			for (int l = 0; l < k; l++) {
+				BlockPos blockPos3 = blockPos.add(random.nextInt(5) - 2, 0, random.nextInt(5) - 2);
+				if (structureWorldAccess.getBlockState(blockPos3).isAir()
+					&& structureWorldAccess.getBlockState(blockPos3.down()).isSideSolidFullSquare(structureWorldAccess, blockPos3.down(), Direction.UP)) {
+					structureWorldAccess.setBlockState(
+						blockPos3, Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, Boolean.valueOf(true)), Block.NOTIFY_ALL
+					);
+				}
 			}
 
 			return true;

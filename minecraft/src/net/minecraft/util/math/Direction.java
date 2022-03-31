@@ -2,7 +2,6 @@ package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -12,8 +11,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -31,8 +28,8 @@ public enum Direction implements StringIdentifiable {
 	WEST(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
-	public static final Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
-	public static final Codec<Direction> VERTICAL_CODEC = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
+	public static final StringIdentifiable.Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values);
+	public static final com.mojang.serialization.Codec<Direction> VERTICAL_CODEC = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;
@@ -41,8 +38,6 @@ public enum Direction implements StringIdentifiable {
 	private final Direction.AxisDirection direction;
 	private final Vec3i vector;
 	private static final Direction[] ALL = values();
-	private static final Map<String, Direction> NAME_MAP = (Map<String, Direction>)Arrays.stream(ALL)
-		.collect(Collectors.toMap(Direction::getName, direction -> direction));
 	private static final Direction[] VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
 	private static final Direction[] HORIZONTAL = (Direction[])Arrays.stream(ALL)
 		.filter(direction -> direction.getAxis().isHorizontal())
@@ -266,7 +261,7 @@ public enum Direction implements StringIdentifiable {
 
 	@Nullable
 	public static Direction byName(@Nullable String name) {
-		return name == null ? null : (Direction)NAME_MAP.get(name.toLowerCase(Locale.ROOT));
+		return (Direction)CODEC.byId(name);
 	}
 
 	public static Direction byId(int id) {
@@ -403,9 +398,7 @@ public enum Direction implements StringIdentifiable {
 		};
 
 		public static final Direction.Axis[] VALUES = values();
-		public static final Codec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values, Direction.Axis::fromName);
-		private static final Map<String, Direction.Axis> BY_NAME = (Map<String, Direction.Axis>)Arrays.stream(VALUES)
-			.collect(Collectors.toMap(Direction.Axis::getName, axis -> axis));
+		public static final StringIdentifiable.Codec<Direction.Axis> CODEC = StringIdentifiable.createCodec(Direction.Axis::values);
 		private final String name;
 
 		Axis(String name) {
@@ -414,7 +407,7 @@ public enum Direction implements StringIdentifiable {
 
 		@Nullable
 		public static Direction.Axis fromName(String name) {
-			return (Direction.Axis)BY_NAME.get(name.toLowerCase(Locale.ROOT));
+			return (Direction.Axis)CODEC.byId(name);
 		}
 
 		public String getName() {

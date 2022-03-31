@@ -32,7 +32,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.slf4j.Logger;
 
@@ -101,10 +100,6 @@ public abstract class StructurePiece {
 	}
 
 	protected abstract void writeNbt(StructureContext context, NbtCompound nbt);
-
-	public StructureWeightType getWeightType() {
-		return StructureWeightType.BEARD;
-	}
 
 	public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 	}

@@ -6,7 +6,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Optional;
-import javax.annotation.Nullable;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.dynamic.Codecs;
@@ -146,8 +145,8 @@ public abstract class StructurePlacement {
 		LEGACY_TYPE_2("legacy_type_2", StructurePlacement::legacyType2ShouldGenerate),
 		LEGACY_TYPE_3("legacy_type_3", StructurePlacement::legacyType3ShouldGenerate);
 
-		public static final Codec<StructurePlacement.FrequencyReductionMethod> CODEC = StringIdentifiable.createCodec(
-			StructurePlacement.FrequencyReductionMethod::values, StructurePlacement.FrequencyReductionMethod::get
+		public static final com.mojang.serialization.Codec<StructurePlacement.FrequencyReductionMethod> CODEC = StringIdentifiable.createCodec(
+			StructurePlacement.FrequencyReductionMethod::values
 		);
 		private final String name;
 		private final StructurePlacement.GenerationPredicate generationPredicate;
@@ -159,17 +158,6 @@ public abstract class StructurePlacement {
 
 		public boolean shouldGenerate(long seed, int i, int j, int k, float chance) {
 			return this.generationPredicate.shouldGenerate(seed, i, j, k, chance);
-		}
-
-		@Nullable
-		public static StructurePlacement.FrequencyReductionMethod get(String name) {
-			for (StructurePlacement.FrequencyReductionMethod frequencyReductionMethod : values()) {
-				if (frequencyReductionMethod.name.equals(name)) {
-					return frequencyReductionMethod;
-				}
-			}
-
-			return null;
 		}
 
 		@Override

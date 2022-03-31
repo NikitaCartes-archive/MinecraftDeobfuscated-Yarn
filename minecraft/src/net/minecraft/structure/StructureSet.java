@@ -35,7 +35,7 @@ public record StructureSet(List<StructureSet.WeightedEntry> structures, Structur
 	public static record WeightedEntry(RegistryEntry<StructureFeature> structure, int weight) {
 		public static final Codec<StructureSet.WeightedEntry> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						StructureFeature.field_37745.fieldOf("structure").forGetter(StructureSet.WeightedEntry::structure),
+						StructureFeature.FEATURE_ENTRY_CODEC.fieldOf("structure").forGetter(StructureSet.WeightedEntry::structure),
 						Codecs.POSITIVE_INT.fieldOf("weight").forGetter(StructureSet.WeightedEntry::weight)
 					)
 					.apply(instance, StructureSet.WeightedEntry::new)

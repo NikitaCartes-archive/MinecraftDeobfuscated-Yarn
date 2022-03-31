@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,6 +18,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -66,6 +68,15 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	public void dropItems(DamageSource source) {
 		super.dropItems(source);
 		this.onBroken(source, this.world, this);
+	}
+
+	@Override
+	public void remove(Entity.RemovalReason reason) {
+		if (!this.world.isClient && reason.shouldDestroy()) {
+			ItemScatterer.spawn(this.world, this, this);
+		}
+
+		super.remove(reason);
 	}
 
 	@Override

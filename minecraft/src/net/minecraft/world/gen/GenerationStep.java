@@ -1,10 +1,5 @@
 package net.minecraft.world.gen;
 
-import com.mojang.serialization.Codec;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.minecraft.util.StringIdentifiable;
 
 public class GenerationStep {
@@ -12,9 +7,7 @@ public class GenerationStep {
 		AIR("air"),
 		LIQUID("liquid");
 
-		public static final Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values, GenerationStep.Carver::byName);
-		private static final Map<String, GenerationStep.Carver> BY_NAME = (Map<String, GenerationStep.Carver>)Arrays.stream(values())
-			.collect(Collectors.toMap(GenerationStep.Carver::getName, carver -> carver));
+		public static final com.mojang.serialization.Codec<GenerationStep.Carver> CODEC = StringIdentifiable.createCodec(GenerationStep.Carver::values);
 		private final String name;
 
 		private Carver(String name) {
@@ -23,11 +16,6 @@ public class GenerationStep {
 
 		public String getName() {
 			return this.name;
-		}
-
-		@Nullable
-		public static GenerationStep.Carver byName(String name) {
-			return (GenerationStep.Carver)BY_NAME.get(name);
 		}
 
 		@Override
@@ -49,9 +37,7 @@ public class GenerationStep {
 		VEGETAL_DECORATION("vegetal_decoration"),
 		TOP_LAYER_MODIFICATION("top_layer_modification");
 
-		public static final Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values, GenerationStep.Feature::get);
-		private static final Map<String, GenerationStep.Feature> VALUES = (Map<String, GenerationStep.Feature>)Arrays.stream(values())
-			.collect(Collectors.toMap(GenerationStep.Feature::getName, feature -> feature));
+		public static final com.mojang.serialization.Codec<GenerationStep.Feature> CODEC = StringIdentifiable.createCodec(GenerationStep.Feature::values);
 		private final String name;
 
 		private Feature(String name) {
@@ -60,11 +46,6 @@ public class GenerationStep {
 
 		public String getName() {
 			return this.name;
-		}
-
-		@Nullable
-		public static GenerationStep.Feature get(String name) {
-			return (GenerationStep.Feature)VALUES.get(name);
 		}
 
 		@Override

@@ -616,11 +616,9 @@ public class PandaEntity extends AnimalEntity {
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-				this.emitGameEvent(GameEvent.MOB_INTERACT);
 			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
-				this.emitGameEvent(GameEvent.MOB_INTERACT);
 			} else {
 				if (this.world.isClient || this.isSitting() || this.isTouchingWater()) {
 					return ActionResult.PASS;

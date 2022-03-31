@@ -344,11 +344,11 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		public static final Codec<StatusEffectInstance.FactorCalculationData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.NONNEGATIVE_INT.fieldOf("padding_duration").forGetter(data -> data.paddingDuration),
-						Codec.FLOAT.fieldOf("factor_target").forGetter(data -> data.factorTarget),
-						Codec.FLOAT.fieldOf("factor_current").forGetter(data -> data.factorCurrent),
-						Codecs.NONNEGATIVE_INT.fieldOf("effect_changed_timestamp").forGetter(data -> data.effectChangedTimestamp),
-						Codec.FLOAT.fieldOf("factor_previous_frame").forGetter(data -> data.factorPreviousFrame),
-						Codec.BOOL.fieldOf("had_effect_last_tick").forGetter(data -> data.hadEffectLastTick)
+						Codec.FLOAT.fieldOf("factor_target").orElse(1.0F).forGetter(data -> data.factorTarget),
+						Codec.FLOAT.fieldOf("factor_current").orElse(0.0F).forGetter(data -> data.factorCurrent),
+						Codecs.NONNEGATIVE_INT.fieldOf("effect_changed_timestamp").orElse(0).forGetter(data -> data.effectChangedTimestamp),
+						Codec.FLOAT.fieldOf("factor_previous_frame").orElse(0.0F).forGetter(data -> data.factorPreviousFrame),
+						Codec.BOOL.fieldOf("had_effect_last_tick").orElse(false).forGetter(data -> data.hadEffectLastTick)
 					)
 					.apply(instance, StatusEffectInstance.FactorCalculationData::new)
 		);

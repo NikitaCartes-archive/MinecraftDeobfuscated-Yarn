@@ -62,7 +62,7 @@ public interface DynamicRegistryManager {
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
 		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
 		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, StructureFeature.field_37744);
+		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, StructureFeature.FEATURE_CODEC);
 		register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.CODEC);
 		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
 		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);

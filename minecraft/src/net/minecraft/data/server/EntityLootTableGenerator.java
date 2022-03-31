@@ -55,6 +55,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 	}
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
+		this.register(EntityType.ALLAY, LootTable.builder());
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
 		this.register(EntityType.AXOLOTL, LootTable.builder());
 		this.register(EntityType.BAT, LootTable.builder());

@@ -186,6 +186,7 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.add(BiomeKeys.NETHER_WASTES)
 			.add(BiomeKeys.SOUL_SAND_VALLEY)
 			.add(BiomeKeys.WARPED_FOREST);
+		this.getOrCreateTagBuilder(BiomeTags.ANCIENT_CITY_HAS_STRUCTURE).add(BiomeKeys.DEEP_DARK);
 		this.getOrCreateTagBuilder(BiomeTags.RUINED_PORTAL_NETHER_HAS_STRUCTURE).addTag(BiomeTags.IS_NETHER);
 		this.getOrCreateTagBuilder(BiomeTags.END_CITY_HAS_STRUCTURE).add(BiomeKeys.END_HIGHLANDS).add(BiomeKeys.END_MIDLANDS);
 		this.getOrCreateTagBuilder(BiomeTags.PRODUCES_CORALS_FROM_BONEMEAL).add(BiomeKeys.WARM_OCEAN);
@@ -198,10 +199,20 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)
 			.add(BiomeKeys.SNOWY_PLAINS)
 			.add(BiomeKeys.ICE_SPIKES)
-			.addTag(BiomeTags.IS_MOUNTAIN)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.FROZEN_OCEAN)
+			.add(BiomeKeys.DEEP_FROZEN_OCEAN)
+			.add(BiomeKeys.GROVE)
+			.add(BiomeKeys.DEEP_DARK)
+			.add(BiomeKeys.FROZEN_RIVER)
+			.add(BiomeKeys.SNOWY_TAIGA)
+			.add(BiomeKeys.SNOWY_BEACH)
 			.addTag(BiomeTags.IS_END);
 		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_WARM_VARIANT_FROGS)
 			.add(BiomeKeys.DESERT)
+			.add(BiomeKeys.WARM_OCEAN)
 			.addTag(BiomeTags.IS_JUNGLE)
 			.addTag(BiomeTags.IS_SAVANNA)
 			.addTag(BiomeTags.IS_NETHER)

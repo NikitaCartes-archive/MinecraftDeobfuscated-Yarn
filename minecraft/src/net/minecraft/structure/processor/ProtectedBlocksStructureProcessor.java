@@ -26,11 +26,11 @@ public class ProtectedBlocksStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo structureBlockInfo,
-		Structure.StructureBlockInfo structureBlockInfo2,
+		Structure.StructureBlockInfo originalBlockInfo,
+		Structure.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		return Feature.notInBlockTagPredicate(this.protectedBlocksTag).test(world.getBlockState(structureBlockInfo2.pos)) ? structureBlockInfo2 : null;
+		return Feature.notInBlockTagPredicate(this.protectedBlocksTag).test(world.getBlockState(currentBlockInfo.pos)) ? currentBlockInfo : null;
 	}
 
 	@Override

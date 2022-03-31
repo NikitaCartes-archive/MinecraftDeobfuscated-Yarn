@@ -368,7 +368,10 @@ public class UndergroundConfiguredFeatures {
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH = ConfiguredFeatures.register(
-		"sculk_patch", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, 0.5F)
+		"sculk_patch_deep_dark", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, ConstantIntProvider.create(0), 0.5F)
+	);
+	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> field_38477 = ConfiguredFeatures.register(
+		"sculk_patch_ancient_city", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5F)
 	);
 	private static final AbstractLichenBlock SCULK_VEIN_BLOCK = (AbstractLichenBlock)Blocks.SCULK_VEIN;
 	public static final RegistryEntry<ConfiguredFeature<GlowLichenFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register(

@@ -299,7 +299,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		if (!this.isTouchingWater()) {
 			this.checkWaterState();
 		}
@@ -311,15 +311,15 @@ public abstract class LivingEntity extends Entity {
 
 		if (!this.world.isClient && this.fallDistance > 3.0F && onGround) {
 			float f = (float)MathHelper.ceil(this.fallDistance - 3.0F);
-			if (!landedState.isAir()) {
+			if (!state.isAir()) {
 				double d = Math.min((double)(0.2F + f / 15.0F), 2.5);
 				int i = (int)(150.0 * d);
 				((ServerWorld)this.world)
-					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, landedState), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15F);
+					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15F);
 			}
 		}
 
-		super.fall(heightDifference, onGround, landedState, landedPosition);
+		super.fall(heightDifference, onGround, state, landedPosition);
 	}
 
 	public boolean canBreatheInWater() {
@@ -689,11 +689,16 @@ public abstract class LivingEntity extends Entity {
 		this.noDrag = noDrag;
 	}
 
-	protected void onEquipStack(ItemStack stack) {
-		SoundEvent soundEvent = stack.getEquipSound();
-		if (!stack.isEmpty() && soundEvent != null && !this.isSpectator()) {
-			this.emitGameEvent(GameEvent.EQUIP);
-			this.playSound(soundEvent, 1.0F, 1.0F);
+	protected void onEquipStack(ItemStack stack, boolean bl) {
+		if (!stack.isEmpty() && !this.isSpectator()) {
+			if (bl) {
+				this.emitGameEvent(GameEvent.EQUIP);
+			}
+
+			SoundEvent soundEvent = stack.getEquipSound();
+			if (soundEvent != null) {
+				this.playSound(soundEvent, 1.0F, 1.0F);
+			}
 		}
 	}
 
@@ -1367,7 +1372,7 @@ public abstract class LivingEntity extends Entity {
 				this.wakeUp();
 			}
 
-			this.emitGameEvent(GameEvent.ENTITY_DYING);
+			this.emitGameEvent(GameEvent.ENTITY_DIE);
 			if (!this.world.isClient && this.hasCustomName()) {
 				field_36332.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
 			}
@@ -1683,7 +1688,7 @@ public abstract class LivingEntity extends Entity {
 				this.setHealth(h - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
-				this.emitGameEvent(GameEvent.ENTITY_DAMAGED);
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
 			}
 		}
 	}
@@ -2741,7 +2746,7 @@ public abstract class LivingEntity extends Entity {
 						itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
 					}
 
-					this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
+					this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
 				}
 			} else {
 				bl = false;
@@ -3348,7 +3353,6 @@ public abstract class LivingEntity extends Entity {
 
 	public ItemStack eatFood(World world, ItemStack stack) {
 		if (stack.isFood()) {
-			world.emitGameEvent(this, GameEvent.EAT, this.getEyePos());
 			world.playSound(
 				null,
 				this.getX(),
@@ -3364,7 +3368,7 @@ public abstract class LivingEntity extends Entity {
 				stack.decrement(1);
 			}
 
-			this.emitGameEvent(GameEvent.EAT);
+			world.emitGameEvent(this, GameEvent.EAT, this.getEyePos());
 		}
 
 		return stack;

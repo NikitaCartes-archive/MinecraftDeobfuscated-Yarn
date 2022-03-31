@@ -36,18 +36,18 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo structureBlockInfo,
-		Structure.StructureBlockInfo structureBlockInfo2,
+		Structure.StructureBlockInfo originalBlockInfo,
+		Structure.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		Random random = data.getRandom(structureBlockInfo2.pos);
-		BlockState blockState = structureBlockInfo2.state;
-		BlockPos blockPos = structureBlockInfo2.pos;
+		Random random = data.getRandom(currentBlockInfo.pos);
+		BlockState blockState = currentBlockInfo.state;
+		BlockPos blockPos = currentBlockInfo.pos;
 		BlockState blockState2 = null;
 		if (blockState.isOf(Blocks.STONE_BRICKS) || blockState.isOf(Blocks.STONE) || blockState.isOf(Blocks.CHISELED_STONE_BRICKS)) {
 			blockState2 = this.processBlocks(random);
 		} else if (blockState.isIn(BlockTags.STAIRS)) {
-			blockState2 = this.processStairs(random, structureBlockInfo2.state);
+			blockState2 = this.processStairs(random, currentBlockInfo.state);
 		} else if (blockState.isIn(BlockTags.SLABS)) {
 			blockState2 = this.processSlabs(random);
 		} else if (blockState.isIn(BlockTags.WALLS)) {
@@ -56,7 +56,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 			blockState2 = this.processObsidian(random);
 		}
 
-		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos, blockState2, structureBlockInfo2.nbt) : structureBlockInfo2;
+		return blockState2 != null ? new Structure.StructureBlockInfo(blockPos, blockState2, currentBlockInfo.nbt) : currentBlockInfo;
 	}
 
 	@Nullable

@@ -128,6 +128,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		.collect(ImmutableSet.toImmutableSet());
 	private static final float[] SAPLING_DROP_CHANCE = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 	private static final float[] JUNGLE_SAPLING_DROP_CHANCE = new float[]{0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F};
+	private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 	private final Map<Identifier, LootTable.Builder> lootTables = Maps.<Identifier, LootTable.Builder>newHashMap();
 
 	private static <T> T applyExplosionDecay(ItemConvertible drop, LootFunctionConsumingBuilder<T> builder) {
@@ -501,7 +502,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						((LeafEntry.Builder)applyExplosionDecay(
 								leaves, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
 							))
-							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, LEAVES_STICK_DROP_CHANCE))
 					)
 			);
 	}
@@ -515,6 +516,21 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.with(
 						((LeafEntry.Builder)addSurvivesExplosionCondition(leaves, ItemEntry.builder(Items.APPLE)))
 							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F))
+					)
+			);
+	}
+
+	private static LootTable.Builder mangroveLeavesDrop(Block leaves) {
+		return dropsWithShears(leaves)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
+					.with(
+						((LeafEntry.Builder)applyExplosionDecay(
+								Blocks.MANGROVE_LEAVES, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
+							))
+							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, LEAVES_STICK_DROP_CHANCE))
 					)
 			);
 	}
@@ -1049,7 +1065,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDropWithSilkTouch(Blocks.SCULK);
 		this.addDropWithSilkTouch(Blocks.SCULK_CATALYST);
 		this.addDropWithSilkTouch(Blocks.SCULK_VEIN);
-		this.addDrop(Blocks.SCULK_SHRIEKER, dropsNothing());
+		this.addDropWithSilkTouch(Blocks.SCULK_SHRIEKER);
 		this.addDrop(Blocks.COPPER_BLOCK);
 		this.addDrop(Blocks.EXPOSED_COPPER);
 		this.addDrop(Blocks.WEATHERED_COPPER);
@@ -1533,7 +1549,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::glowLichenDrops);
 		this.addDrop(Blocks.HANGING_ROOTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SMALL_DRIPLEAF, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.MANGROVE_LEAVES, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.MANGROVE_LEAVES, BlockLootTableGenerator::mangroveLeavesDrop);
 		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
 		this.addDrop(Blocks.LARGE_FERN, blockx -> tallGrassDrops(blockx, Blocks.FERN));
 		this.addDrop(Blocks.TALL_GRASS, blockx -> tallGrassDrops(blockx, Blocks.GRASS));
@@ -1832,6 +1848,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BUDDING_AMETHYST, dropsNothing());
 		this.addDrop(Blocks.POWDER_SNOW, dropsNothing());
 		this.addDrop(Blocks.FROGSPAWN, dropsNothing());
+		this.addDrop(Blocks.REINFORCED_DEEPSLATE, dropsNothing());
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (Block block : Registry.BLOCK) {

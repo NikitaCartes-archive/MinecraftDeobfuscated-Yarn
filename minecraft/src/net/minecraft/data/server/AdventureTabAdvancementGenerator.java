@@ -558,23 +558,37 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/fall_from_world_height");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Blocks.SCULK_CATALYST,
+				new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.title"),
+				new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.criterion("kill_mob_near_sculk_catalyst", OnKilledCriterion.Conditions.createKillMobNearSculkCatalyst())
+			.build(consumer, "adventure/kill_mob_near_sculk_catalyst");
 	}
 
-	private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {
+	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
 		for (EntityType<?> entityType : MONSTERS) {
-			task.criterion(
+			builder.criterion(
 				Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
 			);
 		}
 
-		return task;
+		return builder;
 	}
 
-	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder task, List<RegistryKey<Biome>> biomes) {
+	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
 		for (RegistryKey<Biome> registryKey : biomes) {
-			task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
+			builder.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
 		}
 
-		return task;
+		return builder;
 	}
 }

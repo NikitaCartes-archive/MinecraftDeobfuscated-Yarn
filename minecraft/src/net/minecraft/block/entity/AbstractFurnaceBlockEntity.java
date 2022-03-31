@@ -165,7 +165,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.STICK, 100);
 		addFuel(map, ItemTags.SAPLINGS, 100);
 		addFuel(map, Items.BOWL, 100);
-		addFuel(map, ItemTags.CARPETS, 67);
+		addFuel(map, ItemTags.WOOL_CARPETS, 67);
 		addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
 		addFuel(map, Items.CROSSBOW, 300);
 		addFuel(map, Blocks.BAMBOO, 50);
@@ -254,12 +254,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		ItemStack itemStack = blockEntity.inventory.get(1);
-		boolean bl3 = !itemStack.isEmpty() && !blockEntity.inventory.get(0).isEmpty();
-		if (!blockEntity.isBurning() && !bl3) {
-			if (!blockEntity.isBurning() && blockEntity.cookTime > 0) {
-				blockEntity.cookTime = MathHelper.clamp(blockEntity.cookTime - 2, 0, blockEntity.cookTimeTotal);
-			}
-		} else {
+		boolean bl3 = !blockEntity.inventory.get(0).isEmpty();
+		boolean bl4 = !itemStack.isEmpty();
+		if (blockEntity.isBurning() || bl4 && bl3) {
 			Recipe<?> recipe;
 			if (bl3) {
 				recipe = (Recipe<?>)blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null);
@@ -273,7 +270,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				blockEntity.fuelTime = blockEntity.burnTime;
 				if (blockEntity.isBurning()) {
 					bl2 = true;
-					if (!itemStack.isEmpty()) {
+					if (bl4) {
 						Item item = itemStack.getItem();
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
@@ -298,6 +295,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			} else {
 				blockEntity.cookTime = 0;
 			}
+		} else if (!blockEntity.isBurning() && blockEntity.cookTime > 0) {
+			blockEntity.cookTime = MathHelper.clamp(blockEntity.cookTime - 2, 0, blockEntity.cookTimeTotal);
 		}
 
 		if (bl != blockEntity.isBurning()) {

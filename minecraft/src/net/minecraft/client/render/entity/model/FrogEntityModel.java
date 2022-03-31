@@ -29,6 +29,7 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 	private final ModelPart rightArm;
 	private final ModelPart leftLeg;
 	private final ModelPart rightLEg;
+	private final ModelPart field_38448;
 
 	public FrogEntityModel(ModelPart root) {
 		this.root = root.getChild(EntityModelPartNames.ROOT);
@@ -40,6 +41,7 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
 		this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
 		this.rightLEg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
+		this.field_38448 = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -68,35 +70,32 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 			ModelPartBuilder.create().uv(26, 5).cuboid(-3.5F, -0.1F, -2.9F, 7.0F, 2.0F, 3.0F, new Dilation(-0.1F)),
 			ModelTransform.pivot(0.0F, -1.0F, -5.0F)
 		);
-		ModelPartData modelPartData6 = modelPartData3.addChild(EntityModelPartNames.TONGUE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -1.0F, 1.0F));
-		modelPartData6.addChild(
-			EntityModelPartNames.TONGUE_RL,
-			ModelPartBuilder.create().uv(24, 13).cuboid(-2.0F, -7.0F, 0.1F, 4.0F, 7.0F, 0.0F),
-			ModelTransform.of(0.0F, 0.0F, 0.0F, 1.5708F, 0.0F, 0.0F)
+		ModelPartData modelPartData6 = modelPartData3.addChild(
+			EntityModelPartNames.TONGUE, ModelPartBuilder.create().uv(17, 13).cuboid(-2.0F, 0.0F, -7.1F, 4.0F, 0.0F, 7.0F), ModelTransform.pivot(0.0F, -1.01F, 1.0F)
 		);
 		ModelPartData modelPartData7 = modelPartData3.addChild(
 			EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create().uv(0, 32).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 3.0F, 3.0F), ModelTransform.pivot(4.0F, -1.0F, -6.5F)
 		);
 		modelPartData7.addChild(
-			EntityModelPartNames.LEFT_HAND, ModelPartBuilder.create().uv(18, 40).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(0.0F, 3.0F, -1.0F)
+			EntityModelPartNames.LEFT_HAND, ModelPartBuilder.create().uv(18, 40).cuboid(-4.0F, 0.01F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(0.0F, 3.0F, -1.0F)
 		);
 		ModelPartData modelPartData8 = modelPartData3.addChild(
 			EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, 38).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 3.0F, 3.0F), ModelTransform.pivot(-4.0F, -1.0F, -6.5F)
 		);
 		modelPartData8.addChild(
-			EntityModelPartNames.RIGHT_HAND, ModelPartBuilder.create().uv(2, 40).cuboid(-4.0F, 3.0F, -5.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(0.0F, 0.0F, 0.0F)
+			EntityModelPartNames.RIGHT_HAND, ModelPartBuilder.create().uv(2, 40).cuboid(-4.0F, 0.01F, -5.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(0.0F, 3.0F, 0.0F)
 		);
 		ModelPartData modelPartData9 = modelPartData2.addChild(
 			EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create().uv(14, 25).cuboid(-1.0F, 0.0F, -2.0F, 3.0F, 3.0F, 4.0F), ModelTransform.pivot(3.5F, -3.0F, 4.0F)
 		);
 		modelPartData9.addChild(
-			EntityModelPartNames.LEFT_FOOT, ModelPartBuilder.create().uv(2, 32).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(2.0F, 3.0F, 0.0F)
+			EntityModelPartNames.LEFT_FOOT, ModelPartBuilder.create().uv(2, 32).cuboid(-4.0F, 0.01F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(2.0F, 3.0F, 0.0F)
 		);
 		ModelPartData modelPartData10 = modelPartData2.addChild(
 			EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 25).cuboid(-2.0F, 0.0F, -2.0F, 3.0F, 3.0F, 4.0F), ModelTransform.pivot(-3.5F, -3.0F, 4.0F)
 		);
 		modelPartData10.addChild(
-			EntityModelPartNames.RIGHT_FOOT, ModelPartBuilder.create().uv(18, 32).cuboid(-4.0F, 0.0F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(-2.0F, 3.0F, 0.0F)
+			EntityModelPartNames.RIGHT_FOOT, ModelPartBuilder.create().uv(18, 32).cuboid(-4.0F, 0.01F, -4.0F, 8.0F, 0.0F, 8.0F), ModelTransform.pivot(-2.0F, 3.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 48, 48);
 	}
@@ -110,6 +109,7 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 		this.runAnimation(frogEntity.walkingAnimationState, FrogAnimations.WALKING, l);
 		this.runAnimation(frogEntity.swimmingAnimationState, FrogAnimations.SWIMMING, l);
 		this.runAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, l);
+		this.field_38448.visible = frogEntity.croakingAnimationState.isRunning();
 	}
 
 	private void runAnimation(AnimationState animationState, Animation animation, long time) {

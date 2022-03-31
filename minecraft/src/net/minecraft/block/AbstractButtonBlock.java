@@ -100,7 +100,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		} else {
 			this.powerOn(state, world, pos);
 			this.playClickSound(player, world, pos, true);
-			world.emitGameEvent(player, GameEvent.BLOCK_PRESS, pos);
+			world.emitGameEvent(player, GameEvent.BLOCK_ACTIVATE, pos);
 			return ActionResult.success(world.isClient);
 		}
 	}
@@ -152,7 +152,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 				this.updateNeighbors(state, world, pos);
 				this.playClickSound(null, world, pos, false);
-				world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
+				world.emitGameEvent(null, GameEvent.BLOCK_DEACTIVATE, pos);
 			}
 		}
 	}
@@ -172,7 +172,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_ALL);
 			this.updateNeighbors(state, world, pos);
 			this.playClickSound(null, world, pos, bl);
-			world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);
+			world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
 		}
 
 		if (bl) {

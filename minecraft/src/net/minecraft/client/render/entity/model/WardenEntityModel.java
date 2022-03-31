@@ -1,5 +1,7 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelData;
@@ -31,8 +33,14 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 	protected final ModelPart leftTendril;
 	protected final ModelPart leftLeg;
 	protected final ModelPart leftArm;
+	protected final ModelPart field_38449;
 	protected final ModelPart rightArm;
 	protected final ModelPart rightLeg;
+	protected final ModelPart field_38450;
+	private final List<ModelPart> field_38451;
+	private final List<ModelPart> field_38452;
+	private final List<ModelPart> field_38453;
+	private final List<ModelPart> field_38454;
 
 	public WardenEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityCutoutNoCull);
@@ -46,6 +54,12 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
 		this.rightTendril = this.head.getChild("right_tendril");
 		this.leftTendril = this.head.getChild("left_tendril");
+		this.field_38450 = this.body.getChild("right_ribcage");
+		this.field_38449 = this.body.getChild("left_ribcage");
+		this.field_38451 = ImmutableList.of(this.leftTendril, this.rightTendril);
+		this.field_38452 = ImmutableList.of(this.body);
+		this.field_38453 = ImmutableList.of(this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+		this.field_38454 = ImmutableList.of(this.body, this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -54,6 +68,14 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-9.0F, -13.0F, -4.0F, 18.0F, 21.0F, 11.0F), ModelTransform.pivot(0.0F, -21.0F, 0.0F)
+		);
+		modelPartData3.addChild(
+			"right_ribcage", ModelPartBuilder.create().uv(79, 11).cuboid(-2.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F), ModelTransform.pivot(-7.0F, -2.0F, -4.0F)
+		);
+		modelPartData3.addChild(
+			"left_ribcage",
+			ModelPartBuilder.create().uv(79, 11).mirrored().cuboid(-7.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F).mirrored(false),
+			ModelTransform.pivot(7.0F, -2.0F, -4.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData3.addChild(
 			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 32).cuboid(-8.0F, -16.0F, -5.0F, 16.0F, 16.0F, 10.0F), ModelTransform.pivot(0.0F, -13.0F, 0.0F)
@@ -86,30 +108,53 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 	public void setAngles(T wardenEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		float k = h - (float)wardenEntity.age;
-		float l = Math.min(0.5F, 3.0F * g);
-		float m = h * 0.1F;
-		float n = f * 0.8662F;
-		float o = MathHelper.cos(n);
-		float p = MathHelper.sin(n);
-		float q = MathHelper.cos(m);
-		float r = MathHelper.sin(m);
-		float s = Math.min(0.35F, l);
-		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.head.yaw = i * (float) (Math.PI / 180.0);
-		this.head.roll += 0.3F * p * l;
-		this.head.roll += 0.06F * q;
-		this.head.pitch = this.head.pitch + 1.2F * MathHelper.cos(n + (float) (Math.PI / 2)) * s;
-		this.head.pitch += 0.06F * r;
-		this.body.roll = 0.1F * p * l;
-		this.body.roll += 0.025F * r;
-		this.body.pitch = 1.0F * o * s;
-		this.body.pitch += 0.025F * q;
-		this.leftLeg.pitch = 1.0F * o * l;
-		this.rightLeg.pitch = 1.0F * MathHelper.cos(n + (float) Math.PI) * l;
-		this.leftArm.pitch = -(0.8F * o * l);
+		long l = Util.getMeasuringTimeMs();
+		this.method_42735(i, j);
+		this.method_42737(f, g);
+		this.method_42734(h);
+		this.method_42736(wardenEntity, h, k);
+		this.runAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, l);
+		this.runAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, l);
+		this.runAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, l);
+		this.runAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, l);
+		this.runAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, l);
+	}
+
+	private void method_42735(float f, float g) {
+		this.head.pitch = g * (float) (Math.PI / 180.0);
+		this.head.yaw = f * (float) (Math.PI / 180.0);
+	}
+
+	private void method_42734(float f) {
+		float g = f * 0.1F;
+		float h = MathHelper.cos(g);
+		float i = MathHelper.sin(g);
+		this.head.roll += 0.06F * h;
+		this.head.pitch += 0.06F * i;
+		this.body.roll += 0.025F * i;
+		this.body.pitch += 0.025F * h;
+	}
+
+	private void method_42737(float f, float g) {
+		float h = Math.min(0.5F, 3.0F * g);
+		float i = f * 0.8662F;
+		float j = MathHelper.cos(i);
+		float k = MathHelper.sin(i);
+		float l = Math.min(0.35F, h);
+		this.head.roll += 0.3F * k * h;
+		this.head.pitch = this.head.pitch + 1.2F * MathHelper.cos(i + (float) (Math.PI / 2)) * l;
+		this.body.roll = 0.1F * k * h;
+		this.body.pitch = 1.0F * j * l;
+		this.leftLeg.pitch = 1.0F * j * h;
+		this.rightLeg.pitch = 1.0F * MathHelper.cos(i + (float) Math.PI) * h;
+		this.leftArm.pitch = -(0.8F * j * h);
 		this.leftArm.roll = 0.0F;
-		this.rightArm.pitch = -(0.8F * p * l);
+		this.rightArm.pitch = -(0.8F * k * h);
 		this.rightArm.roll = 0.0F;
+		this.method_42742();
+	}
+
+	private void method_42742() {
 		this.leftArm.yaw = 0.0F;
 		this.leftArm.pivotZ = 1.0F;
 		this.leftArm.pivotX = 13.0F;
@@ -118,15 +163,12 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.rightArm.pivotZ = 1.0F;
 		this.rightArm.pivotX = -13.0F;
 		this.rightArm.pivotY = -13.0F;
-		float t = wardenEntity.getEarPitch(k) * (float)(Math.cos((double)h * 2.25) * Math.PI * 0.1F);
-		this.leftTendril.pitch = t;
-		this.rightTendril.pitch = -t;
-		long u = Util.getMeasuringTimeMs();
-		this.runAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, u);
-		this.runAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, u);
-		this.runAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, u);
-		this.runAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, u);
-		this.runAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, u);
+	}
+
+	private void method_42736(T wardenEntity, float f, float g) {
+		float h = wardenEntity.getEarPitch(g) * (float)(Math.cos((double)f * 2.25) * Math.PI * 0.1F);
+		this.leftTendril.pitch = h;
+		this.rightTendril.pitch = -h;
 	}
 
 	public void runAnimation(AnimationState animationState, Animation animation, long time) {
@@ -136,5 +178,21 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 	@Override
 	public ModelPart getPart() {
 		return this.root;
+	}
+
+	public List<ModelPart> method_42738() {
+		return this.field_38451;
+	}
+
+	public List<ModelPart> method_42739() {
+		return this.field_38452;
+	}
+
+	public List<ModelPart> method_42740() {
+		return this.field_38453;
+	}
+
+	public List<ModelPart> method_42741() {
+		return this.field_38454;
 	}
 }

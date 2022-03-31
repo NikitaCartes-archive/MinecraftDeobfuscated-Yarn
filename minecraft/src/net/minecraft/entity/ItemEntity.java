@@ -252,7 +252,7 @@ public class ItemEntity extends Entity {
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
 			if (this.health <= 0) {
 				this.getStack().onItemEntityDestroyed(this);
 				this.discard();

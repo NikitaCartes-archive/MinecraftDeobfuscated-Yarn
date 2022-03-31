@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LivingTargetCache;
+import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -67,14 +68,16 @@ public class LookTargetUtil {
 	}
 
 	public static void walkTowards(LivingEntity entity, Entity target, float speed, int completionRange) {
-		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), speed, completionRange);
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
-		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
+		walkTowards(entity, new EntityLookTarget(target, true), speed, completionRange);
 	}
 
 	public static void walkTowards(LivingEntity entity, BlockPos target, float speed, int completionRange) {
-		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), speed, completionRange);
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(target));
+		walkTowards(entity, new BlockPosLookTarget(target), speed, completionRange);
+	}
+
+	public static void walkTowards(LivingEntity entity, LookTarget target, float speed, int completionRange) {
+		WalkTarget walkTarget = new WalkTarget(target, speed, completionRange);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, target);
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 

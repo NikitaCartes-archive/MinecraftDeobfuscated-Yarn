@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.Map;
 import java.util.Optional;
@@ -21,14 +22,24 @@ public class WardenAngerManager {
 		instance -> instance.group(Codec.unboundedMap(Codecs.UUID, Codecs.NONNEGATIVE_INT).fieldOf("suspects").forGetter(angerManager -> angerManager.suspects))
 				.apply(instance, WardenAngerManager::new)
 	);
-	private Object2IntMap<UUID> suspects;
+	private final Object2IntMap<UUID> suspects;
 
 	public WardenAngerManager(Map<UUID, Integer> suspects) {
 		this.suspects = new Object2IntOpenHashMap<>(suspects);
 	}
 
 	public void tick() {
-		this.suspects.keySet().forEach(uuid -> this.suspects.computeInt(uuid, (uuidx, anger) -> anger <= 1 ? null : Math.max(0, anger - 1)));
+		ObjectIterator<Entry<UUID>> objectIterator = this.suspects.object2IntEntrySet().iterator();
+
+		while (objectIterator.hasNext()) {
+			Entry<UUID> entry = (Entry<UUID>)objectIterator.next();
+			int i = entry.getIntValue();
+			if (i <= 1) {
+				objectIterator.remove();
+			} else {
+				entry.setValue(Math.max(0, i - 1));
+			}
+		}
 	}
 
 	public int increaseAngerAt(Entity entity, int amount) {

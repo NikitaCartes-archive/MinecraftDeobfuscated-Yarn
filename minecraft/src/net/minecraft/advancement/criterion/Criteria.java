@@ -54,6 +54,7 @@ public class Criteria {
 	public static final UsingItemCriterion USING_ITEM = register(new UsingItemCriterion());
 	public static final TravelCriterion FALL_FROM_HEIGHT = register(new TravelCriterion(new Identifier("fall_from_height")));
 	public static final TravelCriterion RIDE_ENTITY_IN_LAVA = register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
+	public static final OnKilledCriterion KILL_MOB_NEAR_SCULK_CATALYST = register(new OnKilledCriterion(new Identifier("kill_mob_near_sculk_catalyst")));
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

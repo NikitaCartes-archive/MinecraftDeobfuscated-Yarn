@@ -945,7 +945,7 @@ public final class VanillaBiomeParameters {
 
 	private RegistryKey<Biome> getBadlandsBiome(int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (humidity < 2) {
-			return weirdness.max() < 0L ? BiomeKeys.ERODED_BADLANDS : BiomeKeys.BADLANDS;
+			return weirdness.max() < 0L ? BiomeKeys.BADLANDS : BiomeKeys.ERODED_BADLANDS;
 		} else {
 			return humidity < 3 ? BiomeKeys.BADLANDS : BiomeKeys.WOODED_BADLANDS;
 		}

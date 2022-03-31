@@ -224,7 +224,7 @@ public class PistonBlock extends FacingBlock {
 			return false;
 		} else if (state.isAir()) {
 			return true;
-		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
+		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR) || state.isOf(Blocks.REINFORCED_DEEPSLATE)) {
 			return false;
 		} else if (direction == Direction.DOWN && pos.getY() == world.getBottomY()) {
 			return false;

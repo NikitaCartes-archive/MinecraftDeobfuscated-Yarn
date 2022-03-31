@@ -6,6 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.world.event.GameEvent;
 
 public class SaddleItem extends Item {
 	public SaddleItem(Item.Settings settings) {
@@ -19,6 +20,7 @@ public class SaddleItem extends Item {
 			if (!saddleable.isSaddled() && saddleable.canBeSaddled()) {
 				if (!user.world.isClient) {
 					saddleable.saddle(SoundCategory.NEUTRAL);
+					entity.world.emitGameEvent(entity, GameEvent.EQUIP, entity.getPos());
 					stack.decrement(1);
 				}
 

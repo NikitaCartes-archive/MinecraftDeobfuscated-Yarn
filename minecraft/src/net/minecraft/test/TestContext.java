@@ -38,6 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Heightmap;
 
 public class TestContext {
@@ -333,6 +334,17 @@ public class TestContext {
 		throw new PositionedException("Expected " + item.getName().getString() + " item", blockPos, pos, this.test.getTick());
 	}
 
+	public void dontExpectItemAt(Item item, BlockPos pos, double radius) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+
+		for (Entity entity : this.getWorld().getEntitiesByType(EntityType.ITEM, new Box(blockPos).expand(radius), Entity::isAlive)) {
+			ItemEntity itemEntity = (ItemEntity)entity;
+			if (itemEntity.getStack().getItem().equals(item)) {
+				throw new PositionedException("Did not expect " + item.getName().getString() + " item", blockPos, pos, this.test.getTick());
+			}
+		}
+	}
+
 	public void dontExpectEntity(EntityType<?> type) {
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, this.getTestBox(), Entity::isAlive);
 		if (!list.isEmpty()) {
@@ -402,7 +414,9 @@ public class TestContext {
 	public void expectContainerWith(BlockPos pos, Item item) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockEntity blockEntity = this.getWorld().getBlockEntity(blockPos);
-		if (blockEntity instanceof LockableContainerBlockEntity && ((LockableContainerBlockEntity)blockEntity).count(item) != 1) {
+		if (!(blockEntity instanceof LockableContainerBlockEntity)) {
+			throw new GameTestException("Expected a container at " + pos + ", found " + Registry.BLOCK_ENTITY_TYPE.getId(blockEntity.getType()));
+		} else if (((LockableContainerBlockEntity)blockEntity).count(item) != 1) {
 			throw new GameTestException("Container should contain: " + item);
 		}
 	}

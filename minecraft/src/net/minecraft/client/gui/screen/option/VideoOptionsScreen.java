@@ -90,18 +90,16 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			j = (Integer)optional.map(monitor::findClosestVideoModeIndex).orElse(-1);
 		}
 
-		String string = "options.fullscreen.resolution";
-		TranslatableText translatableText = new TranslatableText("options.fullscreen.resolution");
 		SimpleOption<Integer> simpleOption = new SimpleOption<>(
 			"options.fullscreen.resolution",
-			SimpleOption.emptyTooltipFactoryGetter(),
-			value -> {
+			SimpleOption.emptyTooltip(),
+			(text, value) -> {
 				if (monitor == null) {
 					return new TranslatableText("options.fullscreen.unavailable");
 				} else {
 					return value == -1
-						? GameOptions.getGenericValueText(translatableText, new TranslatableText("options.fullscreen.current"))
-						: GameOptions.getGenericValueText(translatableText, new LiteralText(monitor.getVideoMode(value).toString()));
+						? GameOptions.getGenericValueText(text, new TranslatableText("options.fullscreen.current"))
+						: GameOptions.getGenericValueText(text, new LiteralText(monitor.getVideoMode(value).toString()));
 				}
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),

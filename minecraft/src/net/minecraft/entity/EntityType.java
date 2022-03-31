@@ -63,6 +63,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -155,6 +156,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
+	public static final EntityType<AllayEntity> ALLAY = register(
+		"allay", EntityType.Builder.create(AllayEntity::new, SpawnGroup.CREATURE).setDimensions(0.35F, 0.6F).maxTrackingRange(8).trackingTickInterval(2)
+	);
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
 		"area_effect_cloud",
 		EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, SpawnGroup.MISC)

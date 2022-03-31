@@ -10,7 +10,7 @@ public final class ItemTags {
 	public static final TagKey<Item> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Item> WOODEN_BUTTONS = of("wooden_buttons");
 	public static final TagKey<Item> BUTTONS = of("buttons");
-	public static final TagKey<Item> CARPETS = of("carpets");
+	public static final TagKey<Item> WOOL_CARPETS = of("wool_carpets");
 	public static final TagKey<Item> WOODEN_DOORS = of("wooden_doors");
 	public static final TagKey<Item> WOODEN_STAIRS = of("wooden_stairs");
 	public static final TagKey<Item> WOODEN_SLABS = of("wooden_slabs");

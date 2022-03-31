@@ -381,6 +381,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void kill() {
 		this.remove(Entity.RemovalReason.KILLED);
+		this.emitGameEvent(GameEvent.ENTITY_DIE);
 	}
 
 	public final void discard() {
@@ -403,9 +404,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void remove(Entity.RemovalReason reason) {
 		this.setRemoved(reason);
-		if (reason == Entity.RemovalReason.KILLED) {
-			this.emitGameEvent(GameEvent.ENTITY_KILLED);
-		}
 	}
 
 	public void onRemoved() {
@@ -721,7 +719,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								this.playStepSound(blockPos, blockState);
 							}
 
-							if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+							if (moveEffect.emitsGameEvents()) {
 								this.emitGameEvent(GameEvent.STEP);
 							}
 						}
@@ -1072,13 +1070,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return false;
 	}
 
-	protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
-				landedState.getBlock().onLandedUpon(this.world, landedState, landedPosition, this, this.fallDistance);
-				if (!landedState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
-					this.emitGameEvent(GameEvent.HIT_GROUND);
-				}
+				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
+				this.emitGameEvent(GameEvent.HIT_GROUND);
 			}
 
 			this.onLanding();

@@ -3208,6 +3208,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						0.6F + this.world.random.nextFloat() * 0.4F,
 						false
 					);
+				break;
+			case 3008:
+				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.ALLAY_DUST, UniformIntProvider.create(3, 5));
 		}
 	}
 

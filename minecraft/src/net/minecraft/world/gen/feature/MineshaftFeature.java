@@ -2,14 +2,10 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.structure.StructureType;
@@ -17,41 +13,36 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.StructureSpawns;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.random.ChunkRandom;
 
 public class MineshaftFeature extends StructureFeature {
 	public static final Codec<MineshaftFeature> CODEC = RecordCodecBuilder.create(
-		instance -> method_41608(instance)
-				.and(MineshaftFeature.Type.CODEC.fieldOf("mineshaft_type").forGetter(mineshaftFeature -> mineshaftFeature.field_37802))
+		instance -> instance.group(
+					configCodecBuilder(instance), MineshaftFeature.Type.CODEC.fieldOf("mineshaft_type").forGetter(mineshaftFeature -> mineshaftFeature.field_37802)
+				)
 				.apply(instance, MineshaftFeature::new)
 	);
 	private final MineshaftFeature.Type field_37802;
 
-	public MineshaftFeature(
-		RegistryEntryList<Biome> registryEntryList, Map<SpawnGroup, StructureSpawns> map, GenerationStep.Feature feature, boolean bl, MineshaftFeature.Type type
-	) {
-		super(registryEntryList, map, feature, bl);
+	public MineshaftFeature(StructureFeature.Config config, MineshaftFeature.Type type) {
+		super(config);
 		this.field_37802 = type;
 	}
 
 	@Override
-	public Optional<StructureFeature.class_7150> method_38676(StructureFeature.class_7149 arg) {
-		arg.random().nextDouble();
-		ChunkPos chunkPos = arg.chunkPos();
+	public Optional<StructureFeature.StructurePosition> getStructurePosition(StructureFeature.Context context) {
+		context.random().nextDouble();
+		ChunkPos chunkPos = context.chunkPos();
 		BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
-		return Optional.of(new StructureFeature.class_7150(blockPos, structurePiecesCollector -> this.addPieces(structurePiecesCollector, blockPos, arg)));
+		return Optional.of(new StructureFeature.StructurePosition(blockPos, structurePiecesCollector -> this.addPieces(structurePiecesCollector, blockPos, context)));
 	}
 
-	private void addPieces(StructurePiecesCollector structurePiecesCollector, BlockPos blockPos, StructureFeature.class_7149 arg) {
-		ChunkPos chunkPos = arg.chunkPos();
-		ChunkRandom chunkRandom = arg.random();
-		ChunkGenerator chunkGenerator = arg.chunkGenerator();
+	private void addPieces(StructurePiecesCollector structurePiecesCollector, BlockPos blockPos, StructureFeature.Context context) {
+		ChunkPos chunkPos = context.chunkPos();
+		ChunkRandom chunkRandom = context.random();
+		ChunkGenerator chunkGenerator = context.chunkGenerator();
 		MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 			0, chunkRandom, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), this.field_37802
 		);
@@ -60,7 +51,7 @@ public class MineshaftFeature extends StructureFeature {
 		int i = chunkGenerator.getSeaLevel();
 		if (this.field_37802 == MineshaftFeature.Type.MESA) {
 			BlockPos blockPos2 = structurePiecesCollector.getBoundingBox().getCenter();
-			int j = chunkGenerator.getHeight(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, arg.heightAccessor(), arg.randomState());
+			int j = chunkGenerator.getHeight(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world(), context.noiseConfig());
 			int k = j <= i ? i : MathHelper.nextBetween(chunkRandom, i, j);
 			int l = k - blockPos2.getY();
 			structurePiecesCollector.shift(l);
@@ -78,9 +69,7 @@ public class MineshaftFeature extends StructureFeature {
 		NORMAL("normal", Blocks.OAK_LOG, Blocks.OAK_PLANKS, Blocks.OAK_FENCE),
 		MESA("mesa", Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
 
-		public static final Codec<MineshaftFeature.Type> CODEC = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
-		private static final Map<String, MineshaftFeature.Type> BY_NAME = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
-			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
+		public static final com.mojang.serialization.Codec<MineshaftFeature.Type> CODEC = StringIdentifiable.createCodec(MineshaftFeature.Type::values);
 		private final String name;
 		private final BlockState log;
 		private final BlockState planks;
@@ -95,10 +84,6 @@ public class MineshaftFeature extends StructureFeature {
 
 		public String getName() {
 			return this.name;
-		}
-
-		private static MineshaftFeature.Type byName(String name) {
-			return (MineshaftFeature.Type)BY_NAME.get(name);
 		}
 
 		public static MineshaftFeature.Type byIndex(int index) {

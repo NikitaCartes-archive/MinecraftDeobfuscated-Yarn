@@ -544,6 +544,61 @@ public class StructureProcessorLists {
 			new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
 		)
 	);
+	public static final RegistryEntry<StructureProcessorList> ANCIENT_CITY_START_DEGRADATION = register(
+		"ancient_city_start_degradation",
+		ImmutableList.of(
+			new BlockRotStructureProcessor(BlockTags.ANCIENT_CITY_CENTER_REPLACEABLE, 0.98F),
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_BRICKS, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_BRICKS.getDefaultState()
+					),
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_TILES, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_TILES.getDefaultState()
+					),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SOUL_LANTERN, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState())
+				)
+			),
+			new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
+		)
+	);
+	public static final RegistryEntry<StructureProcessorList> ANCIENT_CITY_GENERIC_DEGRADATION = register(
+		"ancient_city_generic_degradation",
+		ImmutableList.of(
+			new BlockRotStructureProcessor(BlockTags.ANCIENT_CITY_REPLACEABLE, 0.95F),
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_BRICKS, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_BRICKS.getDefaultState()
+					),
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_TILES, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_TILES.getDefaultState()
+					),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SOUL_LANTERN, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState())
+				)
+			),
+			new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
+		)
+	);
+	public static final RegistryEntry<StructureProcessorList> ANCIENT_CITY_WALLS_DEGRADATION = register(
+		"ancient_city_walls_degradation",
+		ImmutableList.of(
+			new BlockRotStructureProcessor(BlockTags.ANCIENT_CITY_REPLACEABLE, 0.95F),
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_BRICKS, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_BRICKS.getDefaultState()
+					),
+					new StructureProcessorRule(
+						new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_TILES, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_DEEPSLATE_TILES.getDefaultState()
+					),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.DEEPSLATE_TILE_SLAB, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SOUL_LANTERN, 0.05F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState())
+				)
+			),
+			new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
+		)
+	);
 
 	private static RegistryEntry<StructureProcessorList> register(String id, ImmutableList<StructureProcessor> processorList) {
 		Identifier identifier = new Identifier(id);

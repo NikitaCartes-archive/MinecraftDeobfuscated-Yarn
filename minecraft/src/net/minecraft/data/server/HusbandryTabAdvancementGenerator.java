@@ -58,6 +58,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		EntityType.GOAT,
 		EntityType.AXOLOTL
 	};
+	private static final EntityType<?>[] EGG_LAYING_ANIMALS = new EntityType[]{EntityType.TURTLE, EntityType.FROG};
 	private static final Item[] FISH_ITEMS = new Item[]{Items.COD, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.SALMON};
 	private static final Item[] FISH_BUCKET_ITEMS = new Item[]{Items.COD_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.PUFFERFISH_BUCKET, Items.SALMON_BUCKET};
 	private static final Item[] FOOD_ITEMS = new Item[]{
@@ -345,6 +346,37 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "husbandry/wax_off");
+		Advancement advancement10 = Advancement.Builder.create()
+			.parent(advancement)
+			.criterion(
+				Registry.ITEM.getId(Items.TADPOLE_BUCKET).getPath(),
+				FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(Items.TADPOLE_BUCKET).build())
+			)
+			.display(
+				Items.TADPOLE_BUCKET,
+				new TranslatableText("advancements.husbandry.tadpole_in_a_bucket.title"),
+				new TranslatableText("advancements.husbandry.tadpole_in_a_bucket.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(consumer, "husbandry/tadpole_in_a_bucket");
+		Advancement.Builder.create()
+			.parent(advancement10)
+			.display(
+				Items.VERDANT_FROGLIGHT,
+				new TranslatableText("advancements.husbandry.froglights.title"),
+				new TranslatableText("advancements.husbandry.froglights.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.criterion("froglights", InventoryChangedCriterion.Conditions.items(Items.OCHRE_FROGLIGHT, Items.PEARLESCENT_FROGLIGHT, Items.VERDANT_FROGLIGHT))
+			.build(consumer, "husbandry/froglights");
 		Advancement.Builder.create()
 			.parent(advancement)
 			.criterion(
@@ -408,50 +440,53 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.build(consumer, "husbandry/make_a_sign_glow");
 	}
 
-	private Advancement.Builder requireFoodItemsEaten(Advancement.Builder task) {
+	private Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
 		for (Item item : FOOD_ITEMS) {
-			task.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
+			builder.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
 		}
 
-		return task;
+		return builder;
 	}
 
-	private Advancement.Builder requireListedAnimalsBred(Advancement.Builder task) {
+	private Advancement.Builder requireListedAnimalsBred(Advancement.Builder builder) {
 		for (EntityType<?> entityType : BREEDABLE_ANIMALS) {
-			task.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(entityType)));
+			builder.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(entityType)));
 		}
 
-		task.criterion(
-			EntityType.getId(EntityType.TURTLE).toString(),
-			BredAnimalsCriterion.Conditions.create(
-				EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.ANY
-			)
-		);
-		return task;
+		for (EntityType<?> entityType : EGG_LAYING_ANIMALS) {
+			builder.criterion(
+				EntityType.getId(entityType).toString(),
+				BredAnimalsCriterion.Conditions.create(
+					EntityPredicate.Builder.create().type(entityType).build(), EntityPredicate.Builder.create().type(entityType).build(), EntityPredicate.ANY
+				)
+			);
+		}
+
+		return builder;
 	}
 
-	private Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder task) {
+	private Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
 		for (Item item : FISH_BUCKET_ITEMS) {
-			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
+			builder.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
 		}
 
-		return task;
+		return builder;
 	}
 
-	private Advancement.Builder requireListedFishCaught(Advancement.Builder task) {
+	private Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
 		for (Item item : FISH_ITEMS) {
-			task.criterion(
+			builder.criterion(
 				Registry.ITEM.getId(item).getPath(),
 				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().items(item).build())
 			);
 		}
 
-		return task;
+		return builder;
 	}
 
-	private Advancement.Builder requireAllCatsTamed(Advancement.Builder task) {
+	private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
 		CatEntity.TEXTURES
-			.forEach((type, id) -> task.criterion(id.getPath(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().type(id).build())));
-		return task;
+			.forEach((type, id) -> builder.criterion(id.getPath(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().type(id).build())));
+		return builder;
 	}
 }

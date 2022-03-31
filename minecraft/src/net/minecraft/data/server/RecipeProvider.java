@@ -649,48 +649,18 @@ public class RecipeProvider implements DataProvider {
 				)
 			)
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(Items.CHEST_MINECART)
-			.input('A', Blocks.CHEST)
-			.input('B', Items.MINECART)
-			.pattern("A")
-			.pattern("B")
+		ShapelessRecipeJsonBuilder.create(Items.CHEST_MINECART)
+			.input(Blocks.CHEST)
+			.input(Items.MINECART)
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.ACACIA_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.ACACIA_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.BIRCH_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.BIRCH_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.DARK_OAK_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.DARK_OAK_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.JUNGLE_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.JUNGLE_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.OAK_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.OAK_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.SPRUCE_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.SPRUCE_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
-		ShapelessRecipeJsonBuilder.create(Items.MANGROVE_CHEST_BOAT)
-			.input(Blocks.CHEST)
-			.input(Items.MANGROVE_BOAT)
-			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
-			.offerTo(exporter);
+		offerChestBoatRecipe(exporter, Items.ACACIA_CHEST_BOAT, Items.ACACIA_BOAT);
+		offerChestBoatRecipe(exporter, Items.BIRCH_CHEST_BOAT, Items.BIRCH_BOAT);
+		offerChestBoatRecipe(exporter, Items.DARK_OAK_CHEST_BOAT, Items.DARK_OAK_BOAT);
+		offerChestBoatRecipe(exporter, Items.JUNGLE_CHEST_BOAT, Items.JUNGLE_BOAT);
+		offerChestBoatRecipe(exporter, Items.OAK_CHEST_BOAT, Items.OAK_BOAT);
+		offerChestBoatRecipe(exporter, Items.SPRUCE_CHEST_BOAT, Items.SPRUCE_BOAT);
+		offerChestBoatRecipe(exporter, Items.MANGROVE_CHEST_BOAT, Items.MANGROVE_BOAT);
 		createChiseledBlockRecipe(Blocks.CHISELED_QUARTZ_BLOCK, Ingredient.ofItems(Blocks.QUARTZ_SLAB))
 			.criterion("has_chiseled_quartz_block", conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK))
 			.criterion("has_quartz_block", conditionsFromItem(Blocks.QUARTZ_BLOCK))
@@ -1016,11 +986,9 @@ public class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.criterion("has_cobblestone", conditionsFromTag(ItemTags.STONE_CRAFTING_MATERIALS))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(Items.FURNACE_MINECART)
-			.input('A', Blocks.FURNACE)
-			.input('B', Items.MINECART)
-			.pattern("A")
-			.pattern("B")
+		ShapelessRecipeJsonBuilder.create(Items.FURNACE_MINECART)
+			.input(Blocks.FURNACE)
+			.input(Items.MINECART)
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(Items.GLASS_BOTTLE, 3)
@@ -1184,11 +1152,9 @@ public class RecipeProvider implements DataProvider {
 			.pattern(" I ")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(Items.HOPPER_MINECART)
-			.input('A', Blocks.HOPPER)
-			.input('B', Items.MINECART)
-			.pattern("A")
-			.pattern("B")
+		ShapelessRecipeJsonBuilder.create(Items.HOPPER_MINECART)
+			.input(Blocks.HOPPER)
+			.input(Items.MINECART)
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(Items.IRON_AXE)
@@ -1925,11 +1891,9 @@ public class RecipeProvider implements DataProvider {
 			.pattern("X#X")
 			.criterion("has_gunpowder", conditionsFromItem(Items.GUNPOWDER))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(Items.TNT_MINECART)
-			.input('A', Blocks.TNT)
-			.input('B', Items.MINECART)
-			.pattern("A")
-			.pattern("B")
+		ShapelessRecipeJsonBuilder.create(Items.TNT_MINECART)
+			.input(Blocks.TNT)
+			.input(Items.MINECART)
 			.criterion("has_minecart", conditionsFromItem(Items.MINECART))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(Blocks.TORCH, 4)
@@ -2798,6 +2762,15 @@ public class RecipeProvider implements DataProvider {
 			.pattern("###")
 			.group("boat")
 			.criterion("in_water", requireEnteringFluid(Blocks.WATER))
+			.offerTo(exporter);
+	}
+
+	private static void offerChestBoatRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
+		ShapelessRecipeJsonBuilder.create(output)
+			.input(Blocks.CHEST)
+			.input(input)
+			.group("chest_boat")
+			.criterion("has_boat", conditionsFromTag(ItemTags.BOATS))
 			.offerTo(exporter);
 	}
 

@@ -1842,19 +1842,18 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
 		if (slot == EquipmentSlot.MAINHAND) {
-			this.onEquipStack(stack);
+			this.onEquipStack(stack, false);
 			this.inventory.main.set(this.inventory.selectedSlot, stack);
 		} else if (slot == EquipmentSlot.OFFHAND) {
-			this.onEquipStack(stack);
+			this.onEquipStack(stack, true);
 			this.inventory.offHand.set(0, stack);
 		} else if (slot.getType() == EquipmentSlot.Type.ARMOR) {
-			this.onEquipStack(stack);
+			this.onEquipStack(stack, true);
 			this.inventory.armor.set(slot.getEntitySlotId(), stack);
 		}
 	}
 
 	public boolean giveItemStack(ItemStack stack) {
-		this.onEquipStack(stack);
 		return this.inventory.insertStack(stack);
 	}
 

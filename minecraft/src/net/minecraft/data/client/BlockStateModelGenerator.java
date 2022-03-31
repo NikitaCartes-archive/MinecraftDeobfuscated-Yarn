@@ -2898,11 +2898,11 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerSculkShrieker() {
-		Identifier identifier = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
-		Identifier identifier2 = ModelIds.getBlockModelId(Blocks.SCULK_SHRIEKER);
+		Identifier identifier = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, TextureMap.method_42753(false), this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, "_can_summon", TextureMap.method_42753(true), this.modelCollector);
 		this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
 		this.blockStateCollector
-			.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(createBooleanModelMap(Properties.SHRIEKING, identifier2, identifier)));
+			.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(createBooleanModelMap(Properties.CAN_SUMMON, identifier2, identifier)));
 	}
 
 	private void registerScaffolding() {
@@ -3752,6 +3752,7 @@ public class BlockStateModelGenerator {
 		this.registerRotatable(Blocks.SAND);
 		this.registerRotatable(Blocks.RED_SAND);
 		this.registerMirrorable(Blocks.BEDROCK);
+		this.registerSingleton(Blocks.REINFORCED_DEEPSLATE, TexturedModel.CUBE_BOTTOM_TOP);
 		this.registerAxisRotated(Blocks.HAY_BLOCK, TexturedModel.CUBE_COLUMN, TexturedModel.CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.PURPUR_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);
 		this.registerAxisRotated(Blocks.QUARTZ_PILLAR, TexturedModel.END_FOR_TOP_CUBE_COLUMN, TexturedModel.END_FOR_TOP_CUBE_COLUMN_HORIZONTAL);

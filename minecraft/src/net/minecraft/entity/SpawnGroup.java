@@ -1,9 +1,5 @@
 package net.minecraft.entity;
 
-import com.mojang.serialization.Codec;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 
 /**
@@ -29,9 +25,7 @@ public enum SpawnGroup implements StringIdentifiable {
 	 * A codec that encodes and decodes a spawn group from and to its
 	 * {@linkplain #getName() name} string.
 	 */
-	public static final Codec<SpawnGroup> CODEC = StringIdentifiable.createCodec(SpawnGroup::values, SpawnGroup::byName);
-	private static final Map<String, SpawnGroup> BY_NAME = (Map<String, SpawnGroup>)Arrays.stream(values())
-		.collect(Collectors.toMap(SpawnGroup::getName, spawnGroup -> spawnGroup));
+	public static final com.mojang.serialization.Codec<SpawnGroup> CODEC = StringIdentifiable.createCodec(SpawnGroup::values);
 	private final int capacity;
 	private final boolean peaceful;
 	private final boolean rare;
@@ -59,19 +53,6 @@ public enum SpawnGroup implements StringIdentifiable {
 	@Override
 	public String asString() {
 		return this.name;
-	}
-
-	/**
-	 * Finds the spawn group with the given {@code name}, or {@code null} if no
-	 * group has the given {@code name}.
-	 * 
-	 * @see #getName()
-	 * @return the found group, or {@code null}
-	 * 
-	 * @param name the name of the group
-	 */
-	public static SpawnGroup byName(String name) {
-		return (SpawnGroup)BY_NAME.get(name);
 	}
 
 	/**
