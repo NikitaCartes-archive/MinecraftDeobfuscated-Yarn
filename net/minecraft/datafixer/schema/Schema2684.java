@@ -3,10 +3,12 @@
  */
 package net.minecraft.datafixer.schema;
 
+import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class Schema2684
@@ -16,9 +18,15 @@ extends IdentifierNormalizingSchema {
     }
 
     @Override
+    public void registerTypes(Schema schema, Map<String, Supplier<TypeTemplate>> map, Map<String, Supplier<TypeTemplate>> map2) {
+        super.registerTypes(schema, map, map2);
+        schema.registerType(false, TypeReferences.GAME_EVENT_NAME, () -> DSL.constType(Schema2684.getIdentifierType()));
+    }
+
+    @Override
     public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-        schema.registerSimple(map, "minecraft:sculk_sensor");
+        schema.register(map, "minecraft:sculk_sensor", () -> DSL.optionalFields("listener", DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema)))));
         return map;
     }
 }

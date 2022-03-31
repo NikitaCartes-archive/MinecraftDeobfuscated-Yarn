@@ -37,6 +37,7 @@ import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -222,7 +223,7 @@ extends Entity {
         this.setDamageWobbleTicks(10);
         this.scheduleVelocityUpdate();
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
-        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
         boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
             this.removeAllPassengers();
@@ -245,15 +246,17 @@ extends Entity {
     }
 
     public void dropItems(DamageSource damageSource) {
-        this.remove(Entity.RemovalReason.KILLED);
+        this.kill();
         if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-            ItemStack itemStack = new ItemStack(Items.MINECART);
+            ItemStack itemStack = new ItemStack(this.getItem());
             if (this.hasCustomName()) {
                 itemStack.setCustomName(this.getCustomName());
             }
             this.dropStack(itemStack);
         }
     }
+
+    abstract Item getItem();
 
     @Override
     public void animateDamage() {
@@ -365,7 +368,7 @@ extends Entity {
         this.firstUpdate = false;
     }
 
-    protected double getMaxOffRailSpeed() {
+    protected double getMaxSpeed() {
         return (this.isTouchingWater() ? 4.0 : 8.0) / 20.0;
     }
 
@@ -373,7 +376,7 @@ extends Entity {
     }
 
     protected void moveOffRail() {
-        double d = this.getMaxOffRailSpeed();
+        double d = this.getMaxSpeed();
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(MathHelper.clamp(vec3d.x, -d, d), vec3d.y, MathHelper.clamp(vec3d.z, -d, d));
         if (this.onGround) {
@@ -482,7 +485,7 @@ extends Entity {
         f = p + i * s;
         this.setPosition(d, e, f);
         t = this.hasPassengers() ? 0.75 : 1.0;
-        u = this.getMaxOffRailSpeed();
+        u = this.getMaxSpeed();
         vec3d2 = this.getVelocity();
         this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
         if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {

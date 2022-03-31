@@ -12,12 +12,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
@@ -103,8 +100,7 @@ public class StructurePool {
         TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
         RIGID("rigid", ImmutableList.of());
 
-        public static final Codec<Projection> CODEC;
-        private static final Map<String, Projection> PROJECTIONS_BY_ID;
+        public static final StringIdentifiable.Codec<Projection> CODEC;
         private final String id;
         private final ImmutableList<StructureProcessor> processors;
 
@@ -118,7 +114,7 @@ public class StructurePool {
         }
 
         public static Projection getById(String id) {
-            return PROJECTIONS_BY_ID.get(id);
+            return CODEC.byId(id);
         }
 
         public ImmutableList<StructureProcessor> getProcessors() {
@@ -131,8 +127,7 @@ public class StructurePool {
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(Projection::values, Projection::getById);
-            PROJECTIONS_BY_ID = Arrays.stream(Projection.values()).collect(Collectors.toMap(Projection::getId, projection -> projection));
+            CODEC = StringIdentifiable.createCodec(Projection::values);
         }
     }
 }

@@ -122,6 +122,7 @@ public class Models {
     public static final Model TEMPLATE_THREE_CANDLES = Models.block("template_three_candles", TextureKey.ALL, TextureKey.PARTICLE);
     public static final Model TEMPLATE_FOUR_CANDLES = Models.block("template_four_candles", TextureKey.ALL, TextureKey.PARTICLE);
     public static final Model TEMPLATE_CAKE_WITH_CANDLE = Models.block("template_cake_with_candle", TextureKey.CANDLE, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE);
+    public static final Model TEMPLATE_SCULK_SHRIEKER = Models.block("template_sculk_shrieker", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE, TextureKey.INNER_TOP);
 
     private static Model make(TextureKey ... requiredTextureKeys) {
         return new Model(Optional.empty(), Optional.empty(), requiredTextureKeys);

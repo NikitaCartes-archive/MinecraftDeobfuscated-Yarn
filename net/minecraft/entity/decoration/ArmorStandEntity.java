@@ -153,14 +153,13 @@ extends LivingEntity {
     @Override
     public void equipStack(EquipmentSlot slot, ItemStack stack) {
         this.processEquippedStack(stack);
+        this.onEquipStack(stack, true);
         switch (slot.getType()) {
             case HAND: {
-                this.onEquipStack(stack);
                 this.heldItems.set(slot.getEntitySlotId(), stack);
                 break;
             }
             case ARMOR: {
-                this.onEquipStack(stack);
                 this.armorItems.set(slot.getEntitySlotId(), stack);
             }
         }
@@ -443,7 +442,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.world.sendEntityStatus(this, (byte)32);
-            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
             this.lastHitTime = l;
         }
         return true;
@@ -483,7 +482,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.setHealth(f);
-            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, damageSource.getAttacker());
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGE, damageSource.getAttacker());
         }
     }
 
@@ -600,6 +599,7 @@ extends LivingEntity {
     @Override
     public void kill() {
         this.remove(Entity.RemovalReason.KILLED);
+        this.emitGameEvent(GameEvent.ENTITY_DIE);
     }
 
     @Override

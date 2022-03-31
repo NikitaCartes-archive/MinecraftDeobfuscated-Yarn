@@ -7,7 +7,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -22,8 +21,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.WardenAngerManager;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -92,8 +90,6 @@ implements SculkSensorListener.Callback {
     private static final int field_38156 = 20;
     private static final int field_38157 = 100;
     private static final int field_38158 = 20;
-    protected static final List<SensorType<? extends Sensor<? super WardenEntity>>> SENSORS = List.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.WARDEN_ENTITY_SENSOR);
-    protected static final List<MemoryModuleType<?>> MEMORY_MODULES = List.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.ROAR_TARGET, MemoryModuleType.DISTURBANCE_LOCATION, MemoryModuleType.RECENT_PROJECTILE, MemoryModuleType.IS_SNIFFING, MemoryModuleType.IS_EMERGING, MemoryModuleType.ROAR_SOUND_DELAY, MemoryModuleType.DIG_COOLDOWN, MemoryModuleType.ROAR_SOUND_COOLDOWN, MemoryModuleType.SNIFF_COOLDOWN, MemoryModuleType.TOUCH_COOLDOWN, MemoryModuleType.VIBRATION_COOLDOWN);
     private static final int field_38159 = 30;
     private static final float field_38160 = 4.5f;
     private static final float field_38161 = 0.7f;
@@ -107,7 +103,7 @@ implements SculkSensorListener.Callback {
     public AnimationState diggingAnimationState = new AnimationState();
     public AnimationState attackingAnimationState = new AnimationState();
     private final EntityGameEventHandler gameEventHandler;
-    private final SculkSensorListener vibrationListener;
+    private SculkSensorListener vibrationListener;
     private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyMap());
 
     public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -116,6 +112,7 @@ implements SculkSensorListener.Callback {
         this.gameEventHandler = new EntityGameEventHandler(this.vibrationListener);
         this.experiencePoints = 5;
         this.getNavigation().setCanSwim(true);
+        this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0f);
     }
 
     @Override
@@ -347,13 +344,9 @@ implements SculkSensorListener.Callback {
         super.onTrackedDataSet(data);
     }
 
-    protected Brain.Profile<WardenEntity> createBrainProfile() {
-        return Brain.createProfile(MEMORY_MODULES, SENSORS);
-    }
-
     @Override
     protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return WardenBrain.create(this, this.createBrainProfile().deserialize(dynamic));
+        return WardenBrain.create(this, dynamic);
     }
 
     public Brain<WardenEntity> getBrain() {
@@ -403,6 +396,7 @@ implements SculkSensorListener.Callback {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         WardenAngerManager.CODEC.encodeStart(NbtOps.INSTANCE, this.angerManager).resultOrPartial(field_38138::error).ifPresent(angerNbt -> nbt.put("anger", (NbtElement)angerNbt));
+        SculkSensorListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.vibrationListener).resultOrPartial(field_38138::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
     }
 
     @Override
@@ -413,6 +407,11 @@ implements SculkSensorListener.Callback {
                 this.angerManager = angerManager;
             });
             this.updateAnger();
+        }
+        if (nbt.contains("listener", 10)) {
+            SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38138::error).ifPresent(sculkSensorListener -> {
+                this.vibrationListener = sculkSensorListener;
+            });
         }
     }
 
@@ -529,23 +528,21 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, int delay) {
+    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
         this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
         world.sendEntityStatus(this, (byte)61);
         this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0f, this.getSoundPitch());
         BlockPos blockPos = pos;
-        if (entity instanceof ProjectileEntity) {
-            Entity entity2;
-            ProjectileEntity projectileEntity = (ProjectileEntity)entity;
-            if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE) && WardenEntity.isValidTarget(entity2 = projectileEntity.getOwner()) && this.isInRange(entity2, 30.0)) {
-                blockPos = entity2.getBlockPos();
-                this.increaseAngerAt(entity2);
+        if (sourceEntity != null) {
+            if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE) && WardenEntity.isValidTarget(sourceEntity) && this.isInRange(sourceEntity, 30.0)) {
+                blockPos = sourceEntity.getBlockPos();
+                this.increaseAngerAt(sourceEntity);
             }
             this.getBrain().remember(MemoryModuleType.RECENT_PROJECTILE, Unit.INSTANCE, 100L);
         } else {
             this.increaseAngerAt(entity);
         }
-        if (this.getAngriness() != Angriness.ANGRY && (entity instanceof ProjectileEntity || this.angerManager.getPrimeSuspect(world).map(suspect -> suspect == entity).orElse(true).booleanValue())) {
+        if (this.getAngriness() != Angriness.ANGRY && (sourceEntity != null || this.angerManager.getPrimeSuspect(world).map(suspect -> suspect == entity).orElse(true).booleanValue())) {
             WardenBrain.lookAtDisturbance(this, blockPos);
         }
     }

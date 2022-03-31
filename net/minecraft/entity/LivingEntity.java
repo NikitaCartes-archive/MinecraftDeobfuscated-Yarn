@@ -307,7 +307,7 @@ extends Entity {
     }
 
     @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
+    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
         if (!this.isTouchingWater()) {
             this.checkWaterState();
         }
@@ -317,13 +317,13 @@ extends Entity {
         }
         if (!this.world.isClient && this.fallDistance > 3.0f && onGround) {
             float f = MathHelper.ceil(this.fallDistance - 3.0f);
-            if (!landedState.isAir()) {
+            if (!state.isAir()) {
                 double d = Math.min((double)(0.2f + f / 15.0f), 2.5);
                 int i = (int)(150.0 * d);
-                ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, landedState), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15f);
+                ((ServerWorld)this.world).spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15f);
             }
         }
-        super.fall(heightDifference, onGround, landedState, landedPosition);
+        super.fall(heightDifference, onGround, state, landedPosition);
     }
 
     public boolean canBreatheInWater() {
@@ -646,13 +646,17 @@ extends Entity {
         this.noDrag = noDrag;
     }
 
-    protected void onEquipStack(ItemStack stack) {
-        SoundEvent soundEvent = stack.getEquipSound();
-        if (stack.isEmpty() || soundEvent == null || this.isSpectator()) {
+    protected void onEquipStack(ItemStack stack, boolean bl) {
+        SoundEvent soundEvent;
+        if (stack.isEmpty() || this.isSpectator()) {
             return;
         }
-        this.emitGameEvent(GameEvent.EQUIP);
-        this.playSound(soundEvent, 1.0f, 1.0f);
+        if (bl) {
+            this.emitGameEvent(GameEvent.EQUIP);
+        }
+        if ((soundEvent = stack.getEquipSound()) != null) {
+            this.playSound(soundEvent, 1.0f, 1.0f);
+        }
     }
 
     @Override
@@ -1241,7 +1245,7 @@ extends Entity {
         if (this.isSleeping()) {
             this.wakeUp();
         }
-        this.emitGameEvent(GameEvent.ENTITY_DYING);
+        this.emitGameEvent(GameEvent.ENTITY_DIE);
         if (!this.world.isClient && this.hasCustomName()) {
             field_36332.info("Named entity {} died: {}", (Object)this, (Object)this.getDamageTracker().getDeathMessage().getString());
         }
@@ -1525,7 +1529,7 @@ extends Entity {
         this.setHealth(h - amount);
         this.getDamageTracker().onDamage(source, h, amount);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - amount);
-        this.emitGameEvent(GameEvent.ENTITY_DAMAGED);
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
     }
 
     public DamageTracker getDamageTracker() {
@@ -2452,7 +2456,7 @@ extends Entity {
                     if (j % 2 == 0) {
                         itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
                     }
-                    this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
+                    this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
                 }
             } else {
                 bl = false;
@@ -3029,13 +3033,12 @@ extends Entity {
 
     public ItemStack eatFood(World world, ItemStack stack) {
         if (stack.isFood()) {
-            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getEyePos());
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(stack, world, this);
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            this.emitGameEvent(GameEvent.EAT);
+            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getEyePos());
         }
         return stack;
     }

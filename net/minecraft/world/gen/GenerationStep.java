@@ -4,11 +4,7 @@
 package net.minecraft.world.gen;
 
 import com.mojang.serialization.Codec;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
-import org.jetbrains.annotations.Nullable;
 
 public class GenerationStep {
 
@@ -18,7 +14,6 @@ public class GenerationStep {
         LIQUID("liquid");
 
         public static final Codec<Carver> CODEC;
-        private static final Map<String, Carver> BY_NAME;
         private final String name;
 
         private Carver(String name) {
@@ -29,19 +24,13 @@ public class GenerationStep {
             return this.name;
         }
 
-        @Nullable
-        public static Carver byName(String name) {
-            return BY_NAME.get(name);
-        }
-
         @Override
         public String asString() {
             return this.name;
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(Carver::values, Carver::byName);
-            BY_NAME = Arrays.stream(Carver.values()).collect(Collectors.toMap(Carver::getName, carver -> carver));
+            CODEC = StringIdentifiable.createCodec(Carver::values);
         }
     }
 
@@ -60,7 +49,6 @@ public class GenerationStep {
         TOP_LAYER_MODIFICATION("top_layer_modification");
 
         public static final Codec<Feature> CODEC;
-        private static final Map<String, Feature> VALUES;
         private final String name;
 
         private Feature(String name) {
@@ -71,19 +59,13 @@ public class GenerationStep {
             return this.name;
         }
 
-        @Nullable
-        public static Feature get(String name) {
-            return VALUES.get(name);
-        }
-
         @Override
         public String asString() {
             return this.name;
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(Feature::values, Feature::get);
-            VALUES = Arrays.stream(Feature.values()).collect(Collectors.toMap(Feature::getName, feature -> feature));
+            CODEC = StringIdentifiable.createCodec(Feature::values);
         }
     }
 }

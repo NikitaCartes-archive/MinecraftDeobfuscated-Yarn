@@ -177,15 +177,15 @@ extends Block {
             if (wireConnection == WireConnection.NONE || world.getBlockState(mutable.set((Vec3i)pos, direction)).isOf(this)) continue;
             mutable.move(Direction.DOWN);
             BlockState blockState = world.getBlockState(mutable);
-            if (!blockState.isOf(Blocks.OBSERVER)) {
+            if (blockState.isOf(this)) {
                 Vec3i blockPos = mutable.offset(direction.getOpposite());
-                world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, (BlockPos)blockPos, flags, maxUpdateDepth);
+                world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos), mutable, (BlockPos)blockPos, flags, maxUpdateDepth);
             }
             mutable.set((Vec3i)pos, direction).move(Direction.UP);
             BlockState blockState2 = world.getBlockState(mutable);
-            if (blockState2.isOf(Blocks.OBSERVER)) continue;
+            if (!blockState2.isOf(this)) continue;
             Vec3i blockPos2 = mutable.offset(direction.getOpposite());
-            world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, (BlockPos)blockPos2, flags, maxUpdateDepth);
+            world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState((BlockPos)blockPos2), mutable, (BlockPos)blockPos2, flags, maxUpdateDepth);
         }
     }
 

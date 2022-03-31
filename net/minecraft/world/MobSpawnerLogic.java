@@ -200,8 +200,8 @@ public abstract class MobSpawnerLogic {
         return this.renderedEntity;
     }
 
-    public boolean method_8275(World world, int i) {
-        if (i == 1) {
+    public boolean handleStatus(World world, int status) {
+        if (status == 1) {
             if (world.isClient) {
                 this.spawnDelay = this.minSpawnDelay;
             }

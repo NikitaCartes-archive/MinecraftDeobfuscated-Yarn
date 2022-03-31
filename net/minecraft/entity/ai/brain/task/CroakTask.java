@@ -14,7 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class CroakTask
 extends Task<FrogEntity> {
-    private static final int field_37424 = 40;
+    private static final int field_37424 = 60;
     private static final int field_37425 = 100;
     private int runningTicks;
 
@@ -23,8 +23,13 @@ extends Task<FrogEntity> {
     }
 
     @Override
+    protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
+        return frogEntity.getPose() == EntityPose.STANDING;
+    }
+
+    @Override
     protected boolean shouldKeepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-        return this.runningTicks < 40;
+        return this.runningTicks < 60;
     }
 
     @Override

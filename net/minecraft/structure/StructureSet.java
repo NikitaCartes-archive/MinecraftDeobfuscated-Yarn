@@ -32,7 +32,7 @@ public record StructureSet(List<WeightedEntry> structures, StructurePlacement pl
     }
 
     public record WeightedEntry(RegistryEntry<StructureFeature> structure, int weight) {
-        public static final Codec<WeightedEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructureFeature.field_37745.fieldOf("structure")).forGetter(WeightedEntry::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(WeightedEntry::weight)).apply((Applicative<WeightedEntry, ?>)instance, WeightedEntry::new));
+        public static final Codec<WeightedEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructureFeature.FEATURE_ENTRY_CODEC.fieldOf("structure")).forGetter(WeightedEntry::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(WeightedEntry::weight)).apply((Applicative<WeightedEntry, ?>)instance, WeightedEntry::new));
     }
 }
 

@@ -14,7 +14,7 @@ public final class BlockTags {
     public static final TagKey<Block> STONE_BRICKS = BlockTags.of("stone_bricks");
     public static final TagKey<Block> WOODEN_BUTTONS = BlockTags.of("wooden_buttons");
     public static final TagKey<Block> BUTTONS = BlockTags.of("buttons");
-    public static final TagKey<Block> CARPETS = BlockTags.of("carpets");
+    public static final TagKey<Block> WOOL_CARPETS = BlockTags.of("wool_carpets");
     public static final TagKey<Block> WOODEN_DOORS = BlockTags.of("wooden_doors");
     public static final TagKey<Block> WOODEN_STAIRS = BlockTags.of("wooden_stairs");
     public static final TagKey<Block> WOODEN_SLABS = BlockTags.of("wooden_slabs");
@@ -136,6 +136,8 @@ public final class BlockTags {
     public static final TagKey<Block> FROG_PREFER_JUMP_TO = BlockTags.of("frog_prefer_jump_to");
     public static final TagKey<Block> SCULK_REPLACEABLE = BlockTags.of("sculk_replaceable");
     public static final TagKey<Block> SCULK_REPLACEABLE_WORLD_GEN = BlockTags.of("sculk_replaceable_world_gen");
+    public static final TagKey<Block> ANCIENT_CITY_CENTER_REPLACEABLE = BlockTags.of("ancient_city_center_replaceable");
+    public static final TagKey<Block> ANCIENT_CITY_REPLACEABLE = BlockTags.of("ancient_city_replaceable");
     public static final TagKey<Block> ANIMALS_SPAWNABLE_ON = BlockTags.of("animals_spawnable_on");
     public static final TagKey<Block> AXOLOTLS_SPAWNABLE_ON = BlockTags.of("axolotls_spawnable_on");
     public static final TagKey<Block> GOATS_SPAWNABLE_ON = BlockTags.of("goats_spawnable_on");

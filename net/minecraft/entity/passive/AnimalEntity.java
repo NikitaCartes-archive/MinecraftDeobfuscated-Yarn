@@ -30,7 +30,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AnimalEntity
@@ -144,13 +143,11 @@ extends PassiveEntity {
             if (!this.world.isClient && i == 0 && this.canEat()) {
                 this.eat(player, hand, itemStack);
                 this.lovePlayer(player);
-                this.emitGameEvent(GameEvent.MOB_INTERACT);
                 return ActionResult.SUCCESS;
             }
             if (this.isBaby()) {
                 this.eat(player, hand, itemStack);
                 this.growUp(AnimalEntity.toGrowUpAge(-i), true);
-                this.emitGameEvent(GameEvent.MOB_INTERACT);
                 return ActionResult.success(this.world.isClient);
             }
             if (this.world.isClient) {

@@ -1103,7 +1103,7 @@ implements WindowEventHandler {
         while (Util.getMeasuringTimeMs() >= this.nextDebugInfoUpdateTime + 1000L) {
             Object string = this.gpuUtilizationPercentage > 0.0 ? " GPU: " + (this.gpuUtilizationPercentage > 100.0 ? Formatting.RED + "100%" : Math.round(this.gpuUtilizationPercentage) + "%") : "";
             currentFps = this.fpsCounter;
-            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d%s", new Object[]{currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string});
+            this.fpsDebugString = String.format("%d fps T: %s%s%s%s B: %d%s", currentFps, k == 260 ? "inf" : Integer.valueOf(k), this.options.getEnableVsync().getValue() != false ? " vsync" : "", this.options.getGraphicsMode().getValue(), this.options.getCloudRenderMod().getValue() == CloudRenderMode.OFF ? "" : (this.options.getCloudRenderMod().getValue() == CloudRenderMode.FAST ? " fast-clouds" : " fancy-clouds"), this.options.getBiomeBlendRadius().getValue(), string);
             this.nextDebugInfoUpdateTime += 1000L;
             this.fpsCounter = 0;
         }

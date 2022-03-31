@@ -20,8 +20,8 @@ implements PositionSource {
     public static final Codec<BlockPositionSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("pos")).forGetter(blockPositionSource -> blockPositionSource.pos)).apply((Applicative<BlockPositionSource, ?>)instance, BlockPositionSource::new));
     final BlockPos pos;
 
-    public BlockPositionSource(BlockPos blockPos) {
-        this.pos = blockPos;
+    public BlockPositionSource(BlockPos pos) {
+        this.pos = pos;
     }
 
     @Override

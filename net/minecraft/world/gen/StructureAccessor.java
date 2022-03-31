@@ -47,8 +47,8 @@ public class StructureAccessor {
         return new StructureAccessor(region, this.options, this.locator);
     }
 
-    public List<StructureStart> method_41035(ChunkSectionPos chunkSectionPos, Predicate<StructureFeature> predicate) {
-        Map<StructureFeature, LongSet> map = this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
+    public List<StructureStart> method_41035(ChunkPos chunkPos, Predicate<StructureFeature> predicate) {
+        Map<StructureFeature, LongSet> map = this.world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
         ImmutableList.Builder builder = ImmutableList.builder();
         for (Map.Entry<StructureFeature, LongSet> entry : map.entrySet()) {
             StructureFeature structureFeature = entry.getKey();
@@ -115,7 +115,7 @@ public class StructureAccessor {
 
     public StructureStart getStructureContaining(BlockPos pos, TagKey<StructureFeature> structureFeatureTag) {
         Registry<StructureFeature> registry = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-        for (StructureStart structureStart : this.method_41035(ChunkSectionPos.from(pos), structureFeature -> registry.getEntry(registry.getRawId((StructureFeature)structureFeature)).map(registryEntry -> registryEntry.isIn(structureFeatureTag)).orElse(false))) {
+        for (StructureStart structureStart : this.method_41035(new ChunkPos(pos), structureFeature -> registry.getEntry(registry.getRawId((StructureFeature)structureFeature)).map(registryEntry -> registryEntry.isIn(structureFeatureTag)).orElse(false))) {
             if (!this.structureContains(pos, structureStart)) continue;
             return structureStart;
         }

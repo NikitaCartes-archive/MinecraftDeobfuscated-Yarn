@@ -14,7 +14,7 @@ public final class ItemTags {
     public static final TagKey<Item> STONE_BRICKS = ItemTags.of("stone_bricks");
     public static final TagKey<Item> WOODEN_BUTTONS = ItemTags.of("wooden_buttons");
     public static final TagKey<Item> BUTTONS = ItemTags.of("buttons");
-    public static final TagKey<Item> CARPETS = ItemTags.of("carpets");
+    public static final TagKey<Item> WOOL_CARPETS = ItemTags.of("wool_carpets");
     public static final TagKey<Item> WOODEN_DOORS = ItemTags.of("wooden_doors");
     public static final TagKey<Item> WOODEN_STAIRS = ItemTags.of("wooden_stairs");
     public static final TagKey<Item> WOODEN_SLABS = ItemTags.of("wooden_slabs");

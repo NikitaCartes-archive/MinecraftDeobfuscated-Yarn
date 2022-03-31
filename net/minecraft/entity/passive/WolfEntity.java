@@ -220,7 +220,7 @@ implements Angerable {
         } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
             if (this.shakeProgress == 0.0f) {
                 this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
-                this.emitGameEvent(GameEvent.WOLF_SHAKING);
+                this.emitGameEvent(GameEvent.ENTITY_SHAKE);
             }
             this.lastShakeProgress = this.shakeProgress;
             this.shakeProgress += 0.05f;
@@ -362,7 +362,6 @@ implements Angerable {
                     itemStack.decrement(1);
                 }
                 this.heal(item.getFoodComponent().getHunger());
-                this.emitGameEvent(GameEvent.MOB_INTERACT);
                 return ActionResult.SUCCESS;
             }
             if (item instanceof DyeItem) {

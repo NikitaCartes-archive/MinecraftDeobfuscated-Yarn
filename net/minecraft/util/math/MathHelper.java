@@ -861,6 +861,10 @@ public class MathHelper {
         return n * n;
     }
 
+    public static float magnitude(float n) {
+        return n * n * n;
+    }
+
     public static double clampedLerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
         return MathHelper.clampedLerp(start, end, MathHelper.getLerpProgress(lerpValue, lerpStart, lerpEnd));
     }

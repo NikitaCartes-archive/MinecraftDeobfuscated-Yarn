@@ -97,20 +97,21 @@ implements Consumer<Consumer<Advancement>> {
         Advancement.Builder.create().parent(advancement2).display(Items.JUKEBOX, (Text)new TranslatableText("advancements.adventure.play_jukebox_in_meadows.title"), (Text)new TranslatableText("advancements.adventure.play_jukebox_in_meadows.description"), null, AdvancementFrame.TASK, true, true, false).criterion("play_jukebox_in_meadows", ItemUsedOnBlockCriterion.Conditions.create(LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()), ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS))).build(consumer, "adventure/play_jukebox_in_meadows");
         Advancement.Builder.create().parent(advancement10).display(Items.SPYGLASS, (Text)new TranslatableText("advancements.adventure.spyglass_at_dragon.title"), (Text)new TranslatableText("advancements.adventure.spyglass_at_dragon.description"), null, AdvancementFrame.TASK, true, true, false).criterion("spyglass_at_dragon", AdventureTabAdvancementGenerator.createLookingAtEntityUsing(EntityType.ENDER_DRAGON, Items.SPYGLASS)).build(consumer, "adventure/spyglass_at_dragon");
         Advancement.Builder.create().parent(advancement).display(Items.WATER_BUCKET, (Text)new TranslatableText("advancements.adventure.fall_from_world_height.title"), (Text)new TranslatableText("advancements.adventure.fall_from_world_height.description"), null, AdvancementFrame.TASK, true, true, false).criterion("fall_from_world_height", TravelCriterion.Conditions.fallFromHeight(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atMost(-59.0))), DistancePredicate.y(NumberRange.FloatRange.atLeast(379.0)), LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0)))).build(consumer, "adventure/fall_from_world_height");
+        Advancement.Builder.create().parent(advancement).display(Blocks.SCULK_CATALYST, (Text)new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.title"), (Text)new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.description"), null, AdvancementFrame.CHALLENGE, true, true, false).criterion("kill_mob_near_sculk_catalyst", OnKilledCriterion.Conditions.createKillMobNearSculkCatalyst()).build(consumer, "adventure/kill_mob_near_sculk_catalyst");
     }
 
-    private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {
+    private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
         for (EntityType<?> entityType : MONSTERS) {
-            task.criterion(Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType)));
+            builder.criterion(Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType)));
         }
-        return task;
+        return builder;
     }
 
-    protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder task, List<RegistryKey<Biome>> biomes) {
+    protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
         for (RegistryKey<Biome> registryKey : biomes) {
-            task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
+            builder.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
         }
-        return task;
+        return builder;
     }
 
     @Override

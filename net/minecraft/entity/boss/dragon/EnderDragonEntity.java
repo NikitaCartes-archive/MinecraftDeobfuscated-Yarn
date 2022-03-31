@@ -51,6 +51,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -467,6 +468,7 @@ implements Monster {
     @Override
     public void kill() {
         this.remove(Entity.RemovalReason.KILLED);
+        this.emitGameEvent(GameEvent.ENTITY_DIE);
         if (this.fight != null) {
             this.fight.updateFight(this);
             this.fight.dragonKilled(this);
@@ -509,6 +511,7 @@ implements Monster {
                 this.fight.dragonKilled(this);
             }
             this.remove(Entity.RemovalReason.KILLED);
+            this.emitGameEvent(GameEvent.ENTITY_DIE);
         }
     }
 

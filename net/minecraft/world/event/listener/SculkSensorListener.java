@@ -9,7 +9,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -58,7 +60,7 @@ implements GameEventListener {
                 --this.delay;
                 if (this.delay <= 0) {
                     this.delay = 0;
-                    this.callback.accept(serverWorld, this, new BlockPos(this.vibration.pos), this.vibration.gameEvent, this.vibration.getEntity(serverWorld).orElse(null), this.distance);
+                    this.callback.accept(serverWorld, this, new BlockPos(this.vibration.pos), this.vibration.gameEvent, this.vibration.getEntity(serverWorld).orElse(null), this.vibration.getOwner(serverWorld).orElse(null), this.distance);
                     this.vibration = null;
                 }
             }
@@ -103,6 +105,7 @@ implements GameEventListener {
         this.vibration = new Vibration(gameEvent, this.distance, start, entity);
         this.delay = this.distance;
         world.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), start.x, start.y, start.z, 1, 0.0, 0.0, 0.0, 0.0);
+        this.callback.onListen();
     }
 
     private static boolean isOccluded(World world, Vec3d start, Vec3d end) {
@@ -121,6 +124,7 @@ implements GameEventListener {
                 return false;
             }
             if (entity != null) {
+                BlockState blockState;
                 if (entity.isSpectator()) {
                     return false;
                 }
@@ -130,33 +134,57 @@ implements GameEventListener {
                 if (entity.occludeVibrationSignals()) {
                     return false;
                 }
+                if (gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_ON_OCCLUDING_BLOCK) && (blockState = entity.getWorld().getBlockState(entity.getLandingPos())).isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+                    return false;
+                }
             }
             return true;
         }
 
         public boolean accepts(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5);
 
-        public void accept(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5, int var6);
+        public void accept(ServerWorld var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5, @Nullable Entity var6, int var7);
+
+        default public void onListen() {
+        }
     }
 
-    public record Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable Entity entity) {
-        public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.GAME_EVENT.getCodec().fieldOf("game_event")).forGetter(Vibration::gameEvent), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("distance")).forGetter(Vibration::distance), ((MapCodec)Vec3d.CODEC.fieldOf("pos")).forGetter(Vibration::pos), ((MapCodec)Codecs.UUID.fieldOf("source")).orElse(null).forGetter(Vibration::uuid)).apply((Applicative<Vibration, ?>)instance, Vibration::new));
+    public record Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
+        public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registry.GAME_EVENT.getCodec().fieldOf("game_event")).forGetter(Vibration::gameEvent), ((MapCodec)Codecs.NONNEGATIVE_INT.fieldOf("distance")).forGetter(Vibration::distance), ((MapCodec)Vec3d.CODEC.fieldOf("pos")).forGetter(Vibration::pos), Codecs.UUID.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())), Codecs.UUID.optionalFieldOf("projectile_owner").forGetter(vibration -> Optional.ofNullable(vibration.projectileOwnerUuid()))).apply((Applicative<Vibration, ?>)instance, (gameEvent, integer, vec3d, optional, optional2) -> new Vibration((GameEvent)gameEvent, (int)integer, (Vec3d)vec3d, optional.orElse(null), optional2.orElse(null))));
 
-        public Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid) {
-            this(gameEvent, distance, pos, uuid, null);
+        public Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID sourceUuid) {
+            this(gameEvent, distance, pos, uuid, sourceUuid, null);
         }
 
         public Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable Entity entity) {
-            this(gameEvent, distance, pos, entity == null ? null : entity.getUuid(), entity);
+            this(gameEvent, distance, pos, entity == null ? null : entity.getUuid(), Vibration.getOwnerUuid(entity), entity);
+        }
+
+        @Nullable
+        private static UUID getOwnerUuid(@Nullable Entity entity) {
+            ProjectileEntity projectileEntity;
+            if (entity instanceof ProjectileEntity && (projectileEntity = (ProjectileEntity)entity).getOwner() != null) {
+                return projectileEntity.getOwner().getUuid();
+            }
+            return null;
         }
 
         public Optional<Entity> getEntity(ServerWorld world) {
             return Optional.ofNullable(this.entity).or(() -> Optional.ofNullable(this.uuid).map(world::getEntity));
         }
 
+        public Optional<Entity> getOwner(ServerWorld world) {
+            return this.getEntity(world).filter(entity -> entity instanceof ProjectileEntity).map(entity -> (ProjectileEntity)entity).map(ProjectileEntity::getOwner).or(() -> Optional.ofNullable(this.projectileOwnerUuid).map(world::getEntity));
+        }
+
         @Nullable
         public UUID uuid() {
             return this.uuid;
+        }
+
+        @Nullable
+        public UUID projectileOwnerUuid() {
+            return this.projectileOwnerUuid;
         }
 
         @Nullable

@@ -84,6 +84,10 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.PLAYER_KILLED_ENTITY.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(killedEntityPredicateBuilder.build()), killingBlowBuilder.build());
         }
 
+        public static Conditions createKillMobNearSculkCatalyst() {
+            return new Conditions(Criteria.KILL_MOB_NEAR_SCULK_CATALYST.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, DamageSourcePredicate.EMPTY);
+        }
+
         public static Conditions createEntityKilledPlayer(EntityPredicate killerEntityPredicate) {
             return new Conditions(Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(killerEntityPredicate), DamageSourcePredicate.EMPTY);
         }

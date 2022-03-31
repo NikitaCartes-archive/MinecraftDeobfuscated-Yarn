@@ -21,7 +21,7 @@ extends Task<E> {
     private final float speed;
 
     public WalkToNearestVisibleWantedItemTask(float speed, boolean requiresWalkTarget, int radius) {
-        this(livingEntity -> true, speed, requiresWalkTarget, radius);
+        this(entity -> true, speed, requiresWalkTarget, radius);
     }
 
     public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float speed, boolean requiresWalkTarget, int radius) {
@@ -33,12 +33,16 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld world, E entity) {
-        return this.startCondition.test(entity) && this.getNearestVisibleWantedItem(entity).isInRange((Entity)entity, this.radius);
+        return !this.isInPickupCooldown(entity) && this.startCondition.test(entity) && this.getNearestVisibleWantedItem(entity).isInRange((Entity)entity, this.radius);
     }
 
     @Override
     protected void run(ServerWorld world, E entity, long time) {
         LookTargetUtil.walkTowards(entity, this.getNearestVisibleWantedItem(entity), this.speed, 0);
+    }
+
+    private boolean isInPickupCooldown(E entity) {
+        return ((LivingEntity)entity).getBrain().isMemoryInState(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS, MemoryModuleState.VALUE_PRESENT);
     }
 
     private ItemEntity getNearestVisibleWantedItem(E entity) {

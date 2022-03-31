@@ -7,11 +7,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.stream.Collectors;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
@@ -156,7 +153,6 @@ public class BiomeEffects {
 
         private final String name;
         public static final Codec<GrassColorModifier> CODEC;
-        private static final Map<String, GrassColorModifier> BY_NAME;
 
         public abstract int getModifiedGrassColor(double var1, double var3, int var5);
 
@@ -173,13 +169,8 @@ public class BiomeEffects {
             return this.name;
         }
 
-        public static GrassColorModifier byName(String name) {
-            return BY_NAME.get(name);
-        }
-
         static {
-            CODEC = StringIdentifiable.createCodec(GrassColorModifier::values, GrassColorModifier::byName);
-            BY_NAME = Arrays.stream(GrassColorModifier.values()).collect(Collectors.toMap(GrassColorModifier::getName, grassColorModifier -> grassColorModifier));
+            CODEC = StringIdentifiable.createCodec(GrassColorModifier::values);
         }
     }
 

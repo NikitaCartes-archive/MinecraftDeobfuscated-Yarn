@@ -5,6 +5,7 @@ package net.minecraft.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.FluidModificationItem;
@@ -18,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class PowderSnowBucketItem
@@ -57,6 +59,7 @@ implements FluidModificationItem {
             if (!world.isClient) {
                 world.setBlockState(pos, this.getBlock().getDefaultState(), Block.NOTIFY_ALL);
             }
+            world.emitGameEvent((Entity)player, GameEvent.FLUID_PLACE, pos);
             world.playSound(player, pos, this.placeSound, SoundCategory.BLOCKS, 1.0f, 1.0f);
             return true;
         }

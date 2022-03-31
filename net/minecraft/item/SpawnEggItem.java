@@ -72,6 +72,7 @@ extends Item {
             mobSpawnerLogic.setEntityId(entityType);
             blockEntity.markDirty();
             world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
+            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
             itemStack.decrement(1);
             return ActionResult.CONSUME;
         }
@@ -103,14 +104,15 @@ extends Item {
             return TypedActionResult.fail(itemStack);
         }
         EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
-        if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
+        Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false);
+        if (entity == null) {
             return TypedActionResult.pass(itemStack);
         }
         if (!user.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        user.emitGameEvent(GameEvent.ENTITY_PLACE);
+        world.emitGameEvent((Entity)user, GameEvent.ENTITY_PLACE, entity.getPos());
         return TypedActionResult.consume(itemStack);
     }
 

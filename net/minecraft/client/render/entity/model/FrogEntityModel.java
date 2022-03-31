@@ -35,6 +35,7 @@ extends SinglePartEntityModel<T> {
     private final ModelPart rightArm;
     private final ModelPart leftLeg;
     private final ModelPart rightLEg;
+    private final ModelPart field_38448;
 
     public FrogEntityModel(ModelPart root) {
         this.root = root.getChild(EntityModelPartNames.ROOT);
@@ -46,6 +47,7 @@ extends SinglePartEntityModel<T> {
         this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
         this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
         this.rightLEg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
+        this.field_38448 = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -58,16 +60,15 @@ extends SinglePartEntityModel<T> {
         modelPartData5.addChild(EntityModelPartNames.RIGHT_EYE, ModelPartBuilder.create().uv(0, 0).cuboid(-1.5f, -1.0f, -1.5f, 3.0f, 2.0f, 3.0f), ModelTransform.pivot(-1.5f, -3.0f, -6.5f));
         modelPartData5.addChild(EntityModelPartNames.LEFT_EYE, ModelPartBuilder.create().uv(0, 5).cuboid(-1.5f, -1.0f, -1.5f, 3.0f, 2.0f, 3.0f), ModelTransform.pivot(2.5f, -3.0f, -6.5f));
         modelPartData3.addChild(EntityModelPartNames.CROAKING_BODY, ModelPartBuilder.create().uv(26, 5).cuboid(-3.5f, -0.1f, -2.9f, 7.0f, 2.0f, 3.0f, new Dilation(-0.1f)), ModelTransform.pivot(0.0f, -1.0f, -5.0f));
-        ModelPartData modelPartData6 = modelPartData3.addChild(EntityModelPartNames.TONGUE, ModelPartBuilder.create(), ModelTransform.pivot(0.0f, -1.0f, 1.0f));
-        modelPartData6.addChild(EntityModelPartNames.TONGUE_RL, ModelPartBuilder.create().uv(24, 13).cuboid(-2.0f, -7.0f, 0.1f, 4.0f, 7.0f, 0.0f), ModelTransform.of(0.0f, 0.0f, 0.0f, 1.5708f, 0.0f, 0.0f));
+        ModelPartData modelPartData6 = modelPartData3.addChild(EntityModelPartNames.TONGUE, ModelPartBuilder.create().uv(17, 13).cuboid(-2.0f, 0.0f, -7.1f, 4.0f, 0.0f, 7.0f), ModelTransform.pivot(0.0f, -1.01f, 1.0f));
         ModelPartData modelPartData7 = modelPartData3.addChild(EntityModelPartNames.LEFT_ARM, ModelPartBuilder.create().uv(0, 32).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 3.0f, 3.0f), ModelTransform.pivot(4.0f, -1.0f, -6.5f));
-        modelPartData7.addChild(EntityModelPartNames.LEFT_HAND, ModelPartBuilder.create().uv(18, 40).cuboid(-4.0f, 0.0f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(0.0f, 3.0f, -1.0f));
+        modelPartData7.addChild(EntityModelPartNames.LEFT_HAND, ModelPartBuilder.create().uv(18, 40).cuboid(-4.0f, 0.01f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(0.0f, 3.0f, -1.0f));
         ModelPartData modelPartData8 = modelPartData3.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(0, 38).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, 3.0f, 3.0f), ModelTransform.pivot(-4.0f, -1.0f, -6.5f));
-        modelPartData8.addChild(EntityModelPartNames.RIGHT_HAND, ModelPartBuilder.create().uv(2, 40).cuboid(-4.0f, 3.0f, -5.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(0.0f, 0.0f, 0.0f));
+        modelPartData8.addChild(EntityModelPartNames.RIGHT_HAND, ModelPartBuilder.create().uv(2, 40).cuboid(-4.0f, 0.01f, -5.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(0.0f, 3.0f, 0.0f));
         ModelPartData modelPartData9 = modelPartData2.addChild(EntityModelPartNames.LEFT_LEG, ModelPartBuilder.create().uv(14, 25).cuboid(-1.0f, 0.0f, -2.0f, 3.0f, 3.0f, 4.0f), ModelTransform.pivot(3.5f, -3.0f, 4.0f));
-        modelPartData9.addChild(EntityModelPartNames.LEFT_FOOT, ModelPartBuilder.create().uv(2, 32).cuboid(-4.0f, 0.0f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(2.0f, 3.0f, 0.0f));
+        modelPartData9.addChild(EntityModelPartNames.LEFT_FOOT, ModelPartBuilder.create().uv(2, 32).cuboid(-4.0f, 0.01f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(2.0f, 3.0f, 0.0f));
         ModelPartData modelPartData10 = modelPartData2.addChild(EntityModelPartNames.RIGHT_LEG, ModelPartBuilder.create().uv(0, 25).cuboid(-2.0f, 0.0f, -2.0f, 3.0f, 3.0f, 4.0f), ModelTransform.pivot(-3.5f, -3.0f, 4.0f));
-        modelPartData10.addChild(EntityModelPartNames.RIGHT_FOOT, ModelPartBuilder.create().uv(18, 32).cuboid(-4.0f, 0.0f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(-2.0f, 3.0f, 0.0f));
+        modelPartData10.addChild(EntityModelPartNames.RIGHT_FOOT, ModelPartBuilder.create().uv(18, 32).cuboid(-4.0f, 0.01f, -4.0f, 8.0f, 0.0f, 8.0f), ModelTransform.pivot(-2.0f, 3.0f, 0.0f));
         return TexturedModelData.of(modelData, 48, 48);
     }
 
@@ -81,6 +82,7 @@ extends SinglePartEntityModel<T> {
         this.runAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, l);
         this.runAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING, l);
         this.runAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, l);
+        this.field_38448.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();
     }
 
     private void runAnimation(AnimationState animationState, Animation animation, long time) {

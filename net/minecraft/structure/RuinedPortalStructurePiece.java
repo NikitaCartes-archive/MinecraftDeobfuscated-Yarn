@@ -11,10 +11,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -256,8 +253,7 @@ extends SimpleStructurePiece {
         UNDERGROUND("underground"),
         IN_NETHER("in_nether");
 
-        public static final Codec<VerticalPlacement> field_37811;
-        private static final Map<String, VerticalPlacement> VERTICAL_PLACEMENTS;
+        public static final StringIdentifiable.Codec<VerticalPlacement> field_37811;
         private final String id;
 
         private VerticalPlacement(String id) {
@@ -269,7 +265,7 @@ extends SimpleStructurePiece {
         }
 
         public static VerticalPlacement getFromId(String id) {
-            return VERTICAL_PLACEMENTS.get(id);
+            return field_37811.byId(id);
         }
 
         @Override
@@ -278,8 +274,7 @@ extends SimpleStructurePiece {
         }
 
         static {
-            field_37811 = StringIdentifiable.createCodec(VerticalPlacement::values, VerticalPlacement::getFromId);
-            VERTICAL_PLACEMENTS = Arrays.stream(VerticalPlacement.values()).collect(Collectors.toMap(VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
+            field_37811 = StringIdentifiable.createCodec(VerticalPlacement::values);
         }
     }
 

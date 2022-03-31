@@ -27,13 +27,13 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo originalBlockInfo, Structure.StructureBlockInfo currentBlockInfo, StructurePlacementData data) {
         BlockState blockState2;
-        BlockState blockState = structureBlockInfo2.state;
+        BlockState blockState = currentBlockInfo.state;
         if (!blockState.isOf(Blocks.JIGSAW)) {
-            return structureBlockInfo2;
+            return currentBlockInfo;
         }
-        String string = structureBlockInfo2.nbt.getString("final_state");
+        String string = currentBlockInfo.nbt.getString("final_state");
         try {
             BlockArgumentParser.BlockResult blockResult = BlockArgumentParser.block(Registry.BLOCK, string, true);
             blockState2 = blockResult.blockState();
@@ -43,7 +43,7 @@ extends StructureProcessor {
         if (blockState2.isOf(Blocks.STRUCTURE_VOID)) {
             return null;
         }
-        return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, null);
+        return new Structure.StructureBlockInfo(currentBlockInfo.pos, blockState2, null);
     }
 
     @Override

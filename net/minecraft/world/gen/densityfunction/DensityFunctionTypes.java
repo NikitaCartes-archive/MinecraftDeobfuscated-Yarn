@@ -11,11 +11,9 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.CodecHolder;
@@ -512,7 +510,6 @@ public final class DensityFunctionTypes {
             TYPE1("type_1", DensityFunctions.CaveScaler::scaleTunnels, 2.0),
             TYPE2("type_2", DensityFunctions.CaveScaler::scaleCaves, 3.0);
 
-            private static final Map<String, RarityValueMapper> TYPES_MAP;
             public static final Codec<RarityValueMapper> CODEC;
             private final String name;
             final Double2DoubleFunction scaleFunction;
@@ -530,8 +527,7 @@ public final class DensityFunctionTypes {
             }
 
             static {
-                TYPES_MAP = Arrays.stream(RarityValueMapper.values()).collect(Collectors.toMap(RarityValueMapper::asString, rarityValueMapper -> rarityValueMapper));
-                CODEC = StringIdentifiable.createCodec(RarityValueMapper::values, TYPES_MAP::get);
+                CODEC = StringIdentifiable.createCodec(RarityValueMapper::values);
             }
         }
     }

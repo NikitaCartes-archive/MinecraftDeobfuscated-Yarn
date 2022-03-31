@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.OreBlock;
+import net.minecraft.block.SculkShriekerBlock;
 import net.minecraft.block.SculkSpreadable;
-import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.sound.SoundCategory;
@@ -60,9 +60,8 @@ implements SculkSpreadable {
     }
 
     private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, Random random, boolean allowShrieker) {
-        Block block = allowShrieker ? (random.nextInt(11) == 0 ? Blocks.SCULK_SHRIEKER : Blocks.SCULK_SENSOR) : Blocks.SCULK_SENSOR;
-        BlockState blockState = block.getDefaultState();
-        if (!world.getFluidState(pos).isEmpty() && block instanceof Waterloggable) {
+        BlockState blockState = random.nextInt(11) == 0 ? (BlockState)Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, allowShrieker) : Blocks.SCULK_SENSOR.getDefaultState();
+        if (blockState.contains(Properties.WATERLOGGED) && !world.getFluidState(pos).isEmpty()) {
             return (BlockState)blockState.with(Properties.WATERLOGGED, true);
         }
         return blockState;

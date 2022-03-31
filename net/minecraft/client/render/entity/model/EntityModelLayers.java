@@ -17,6 +17,7 @@ import net.minecraft.util.SignType;
 public class EntityModelLayers {
     private static final String MAIN = "main";
     private static final Set<EntityModelLayer> LAYERS = Sets.newHashSet();
+    public static final EntityModelLayer ALLAY = EntityModelLayers.registerMain("allay");
     public static final EntityModelLayer ARMOR_STAND = EntityModelLayers.registerMain("armor_stand");
     public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = EntityModelLayers.createInnerArmor("armor_stand");
     public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = EntityModelLayers.createOuterArmor("armor_stand");

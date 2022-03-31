@@ -23,8 +23,8 @@ extends BlockEntity {
     private final MobSpawnerLogic logic = new MobSpawnerLogic(){
 
         @Override
-        public void sendStatus(World world, BlockPos pos, int i) {
-            world.addSyncedBlockEvent(pos, Blocks.SPAWNER, i, 0);
+        public void sendStatus(World world, BlockPos pos, int status) {
+            world.addSyncedBlockEvent(pos, Blocks.SPAWNER, status, 0);
         }
 
         @Override
@@ -74,7 +74,7 @@ extends BlockEntity {
 
     @Override
     public boolean onSyncedBlockEvent(int type, int data) {
-        if (this.logic.method_8275(this.world, type)) {
+        if (this.logic.handleStatus(this.world, type)) {
             return true;
         }
         return super.onSyncedBlockEvent(type, data);

@@ -53,12 +53,12 @@ extends StructureProcessor {
     }
 
     @Override
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
-        Block block = this.replacementMap.get(structureBlockInfo2.state.getBlock());
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo originalBlockInfo, Structure.StructureBlockInfo currentBlockInfo, StructurePlacementData data) {
+        Block block = this.replacementMap.get(currentBlockInfo.state.getBlock());
         if (block == null) {
-            return structureBlockInfo2;
+            return currentBlockInfo;
         }
-        BlockState blockState = structureBlockInfo2.state;
+        BlockState blockState = currentBlockInfo.state;
         BlockState blockState2 = block.getDefaultState();
         if (blockState.contains(StairsBlock.FACING)) {
             blockState2 = (BlockState)blockState2.with(StairsBlock.FACING, blockState.get(StairsBlock.FACING));
@@ -69,7 +69,7 @@ extends StructureProcessor {
         if (blockState.contains(SlabBlock.TYPE)) {
             blockState2 = (BlockState)blockState2.with(SlabBlock.TYPE, blockState.get(SlabBlock.TYPE));
         }
-        return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, structureBlockInfo2.nbt);
+        return new Structure.StructureBlockInfo(currentBlockInfo.pos, blockState2, currentBlockInfo.nbt);
     }
 
     @Override

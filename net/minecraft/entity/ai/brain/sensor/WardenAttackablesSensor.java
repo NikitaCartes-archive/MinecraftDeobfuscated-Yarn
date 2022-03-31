@@ -21,7 +21,7 @@ extends Sensor<LivingEntity> {
 
     @Override
     protected void sense(ServerWorld world, LivingEntity entity2) {
-        entity2.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(memory -> memory.findAny(entity -> WardenEntity.isValidTarget(entity) && entity.getType() == EntityType.PLAYER, entity -> WardenEntity.isValidTarget(entity) && entity.getType() != EntityType.PLAYER)).ifPresent(entity -> entity2.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity));
+        entity2.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).flatMap(memory -> memory.findAny(entity -> WardenEntity.isValidTarget(entity) && entity.getType() == EntityType.PLAYER, entity -> WardenEntity.isValidTarget(entity) && entity.getType() != EntityType.PLAYER)).ifPresentOrElse(entity -> entity2.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity), () -> entity2.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE));
     }
 }
 

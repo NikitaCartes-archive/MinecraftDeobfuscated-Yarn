@@ -43,19 +43,21 @@ extends BlockWithEntity
 implements Waterloggable {
     public static final BooleanProperty SHRIEKING = Properties.SHRIEKING;
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    public static final BooleanProperty CAN_SUMMON = Properties.CAN_SUMMON;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     private static final int SHRIEK_DURATION = 90;
     public static final double TOP = SHAPE.getMax(Direction.Axis.Y);
 
     public SculkShriekerBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHRIEKING, false)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHRIEKING, false)).with(WATERLOGGED, false)).with(CAN_SUMMON, false));
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(SHRIEKING);
         builder.add(WATERLOGGED);
+        builder.add(CAN_SUMMON);
     }
 
     @Override
@@ -71,7 +73,9 @@ implements Waterloggable {
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(SHRIEKING).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(SHRIEKING, false), Block.NOTIFY_ALL);
-            SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).ifPresent(warningManager -> warningManager.warn(world, pos));
+            if (state.get(CAN_SUMMON).booleanValue()) {
+                SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).ifPresent(warningManager -> warningManager.warn(world, pos));
+            }
         }
     }
 
@@ -86,18 +90,18 @@ implements Waterloggable {
     }
 
     public static boolean canShriek(ServerWorld world, BlockPos pos, BlockState state) {
-        return state.get(SHRIEKING) == false && SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).map(warningManager -> warningManager.canIncreaseWarningLevel(world, pos)).orElse(false) != false;
+        return state.get(SHRIEKING) == false && (state.get(CAN_SUMMON) == false || SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).map(warningManager -> warningManager.canIncreaseWarningLevel(world, pos)).orElse(false) != false);
     }
 
     public static void shriek(ServerWorld world, BlockState state, BlockPos pos) {
         if (!SculkShriekerBlock.canShriek(world, pos, state)) {
             return;
         }
-        SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).filter(warningManager -> warningManager.warnNearbyPlayers(world, pos)).ifPresent(warningManager -> {
+        if (!state.get(CAN_SUMMON).booleanValue() || SculkShriekerBlock.getClosestPlayerWarningManager(world, pos).filter(warningManager -> warningManager.warnNearbyPlayers(world, pos)).isPresent()) {
             world.setBlockState(pos, (BlockState)state.with(SHRIEKING, true), Block.NOTIFY_LISTENERS);
             world.createAndScheduleBlockTick(pos, state.getBlock(), 90);
             world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, pos, 0);
-        });
+        }
     }
 
     private static Optional<SculkShriekerWarningManager> getClosestPlayerWarningManager(ServerWorld world, BlockPos pos) {

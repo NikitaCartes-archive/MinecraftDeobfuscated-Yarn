@@ -391,14 +391,14 @@ implements DataProvider {
         ShapedRecipeJsonBuilder.create(Blocks.CAULDRON).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern("# #").pattern("###").criterion("has_water_bucket", RecipeProvider.conditionsFromItem(Items.WATER_BUCKET)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.COMPOSTER).input(Character.valueOf('#'), ItemTags.WOODEN_SLABS).pattern("# #").pattern("# #").pattern("###").criterion("has_wood_slab", RecipeProvider.conditionsFromTag(ItemTags.WOODEN_SLABS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.CHEST).input(Character.valueOf('#'), ItemTags.PLANKS).pattern("###").pattern("# #").pattern("###").criterion("has_lots_of_items", new InventoryChangedCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(Items.CHEST_MINECART).input(Character.valueOf('A'), Blocks.CHEST).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.ACACIA_CHEST_BOAT).input(Blocks.CHEST).input(Items.ACACIA_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.BIRCH_CHEST_BOAT).input(Blocks.CHEST).input(Items.BIRCH_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.DARK_OAK_CHEST_BOAT).input(Blocks.CHEST).input(Items.DARK_OAK_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.JUNGLE_CHEST_BOAT).input(Blocks.CHEST).input(Items.JUNGLE_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.OAK_CHEST_BOAT).input(Blocks.CHEST).input(Items.OAK_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.SPRUCE_CHEST_BOAT).input(Blocks.CHEST).input(Items.SPRUCE_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
-        ShapelessRecipeJsonBuilder.create(Items.MANGROVE_CHEST_BOAT).input(Blocks.CHEST).input(Items.MANGROVE_BOAT).criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(Items.CHEST_MINECART).input(Blocks.CHEST).input(Items.MINECART).criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.ACACIA_CHEST_BOAT, Items.ACACIA_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.BIRCH_CHEST_BOAT, Items.BIRCH_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.DARK_OAK_CHEST_BOAT, Items.DARK_OAK_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.JUNGLE_CHEST_BOAT, Items.JUNGLE_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.OAK_CHEST_BOAT, Items.OAK_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.SPRUCE_CHEST_BOAT, Items.SPRUCE_BOAT);
+        RecipeProvider.offerChestBoatRecipe(exporter, Items.MANGROVE_CHEST_BOAT, Items.MANGROVE_BOAT);
         RecipeProvider.createChiseledBlockRecipe(Blocks.CHISELED_QUARTZ_BLOCK, Ingredient.ofItems(Blocks.QUARTZ_SLAB)).criterion("has_chiseled_quartz_block", RecipeProvider.conditionsFromItem(Blocks.CHISELED_QUARTZ_BLOCK)).criterion("has_quartz_block", RecipeProvider.conditionsFromItem(Blocks.QUARTZ_BLOCK)).criterion("has_quartz_pillar", RecipeProvider.conditionsFromItem(Blocks.QUARTZ_PILLAR)).offerTo(exporter);
         RecipeProvider.createChiseledBlockRecipe(Blocks.CHISELED_STONE_BRICKS, Ingredient.ofItems(Blocks.STONE_BRICK_SLAB)).criterion("has_tag", RecipeProvider.conditionsFromTag(ItemTags.STONE_BRICKS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.CLAY).input(Character.valueOf('#'), Items.CLAY_BALL).pattern("##").pattern("##").criterion("has_clay_ball", RecipeProvider.conditionsFromItem(Items.CLAY_BALL)).offerTo(exporter);
@@ -450,7 +450,7 @@ implements DataProvider {
         ShapelessRecipeJsonBuilder.create(Items.FLINT_AND_STEEL).input(Items.IRON_INGOT).input(Items.FLINT).criterion("has_flint", RecipeProvider.conditionsFromItem(Items.FLINT)).criterion("has_obsidian", RecipeProvider.conditionsFromItem(Blocks.OBSIDIAN)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.FLOWER_POT).input(Character.valueOf('#'), Items.BRICK).pattern("# #").pattern(" # ").criterion("has_brick", RecipeProvider.conditionsFromItem(Items.BRICK)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.FURNACE).input(Character.valueOf('#'), ItemTags.STONE_CRAFTING_MATERIALS).pattern("###").pattern("# #").pattern("###").criterion("has_cobblestone", RecipeProvider.conditionsFromTag(ItemTags.STONE_CRAFTING_MATERIALS)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(Items.FURNACE_MINECART).input(Character.valueOf('A'), Blocks.FURNACE).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(Items.FURNACE_MINECART).input(Blocks.FURNACE).input(Items.MINECART).criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Items.GLASS_BOTTLE, 3).input(Character.valueOf('#'), Blocks.GLASS).pattern("# #").pattern(" # ").criterion("has_glass", RecipeProvider.conditionsFromItem(Blocks.GLASS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.GLASS_PANE, 16).input(Character.valueOf('#'), Blocks.GLASS).pattern("###").pattern("###").criterion("has_glass", RecipeProvider.conditionsFromItem(Blocks.GLASS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.GLOWSTONE).input(Character.valueOf('#'), Items.GLOWSTONE_DUST).pattern("##").pattern("##").criterion("has_glowstone_dust", RecipeProvider.conditionsFromItem(Items.GLOWSTONE_DUST)).offerTo(exporter);
@@ -477,7 +477,7 @@ implements DataProvider {
         ShapedRecipeJsonBuilder.create(Blocks.HONEY_BLOCK, 1).input(Character.valueOf('S'), Items.HONEY_BOTTLE).pattern("SS").pattern("SS").criterion("has_honey_bottle", RecipeProvider.conditionsFromItem(Items.HONEY_BOTTLE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.HONEYCOMB_BLOCK).input(Character.valueOf('H'), Items.HONEYCOMB).pattern("HH").pattern("HH").criterion("has_honeycomb", RecipeProvider.conditionsFromItem(Items.HONEYCOMB)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.HOPPER).input(Character.valueOf('C'), Blocks.CHEST).input(Character.valueOf('I'), Items.IRON_INGOT).pattern("I I").pattern("ICI").pattern(" I ").criterion("has_iron_ingot", RecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(Items.HOPPER_MINECART).input(Character.valueOf('A'), Blocks.HOPPER).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(Items.HOPPER_MINECART).input(Blocks.HOPPER).input(Items.MINECART).criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Items.IRON_AXE).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("XX").pattern("X#").pattern(" #").criterion("has_iron_ingot", RecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.IRON_BARS, 16).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("###").pattern("###").criterion("has_iron_ingot", RecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Items.IRON_BOOTS).input(Character.valueOf('X'), Items.IRON_INGOT).pattern("X X").pattern("X X").criterion("has_iron_ingot", RecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
@@ -608,7 +608,7 @@ implements DataProvider {
         ShapelessRecipeJsonBuilder.create(Items.SUGAR, 3).input(Items.HONEY_BOTTLE).group("sugar").criterion("has_honey_bottle", RecipeProvider.conditionsFromItem(Items.HONEY_BOTTLE)).offerTo(exporter, RecipeProvider.convertBetween(Items.SUGAR, Items.HONEY_BOTTLE));
         ShapedRecipeJsonBuilder.create(Blocks.TARGET).input(Character.valueOf('H'), Items.HAY_BLOCK).input(Character.valueOf('R'), Items.REDSTONE).pattern(" R ").pattern("RHR").pattern(" R ").criterion("has_redstone", RecipeProvider.conditionsFromItem(Items.REDSTONE)).criterion("has_hay_block", RecipeProvider.conditionsFromItem(Blocks.HAY_BLOCK)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.TNT).input(Character.valueOf('#'), Ingredient.ofItems(Blocks.SAND, Blocks.RED_SAND)).input(Character.valueOf('X'), Items.GUNPOWDER).pattern("X#X").pattern("#X#").pattern("X#X").criterion("has_gunpowder", RecipeProvider.conditionsFromItem(Items.GUNPOWDER)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(Items.TNT_MINECART).input(Character.valueOf('A'), Blocks.TNT).input(Character.valueOf('B'), Items.MINECART).pattern("A").pattern("B").criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(Items.TNT_MINECART).input(Blocks.TNT).input(Items.MINECART).criterion("has_minecart", RecipeProvider.conditionsFromItem(Items.MINECART)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.TORCH, 4).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('X'), Ingredient.ofItems(Items.COAL, Items.CHARCOAL)).pattern("X").pattern("#").criterion("has_stone_pickaxe", RecipeProvider.conditionsFromItem(Items.STONE_PICKAXE)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.SOUL_TORCH, 4).input(Character.valueOf('X'), Ingredient.ofItems(Items.COAL, Items.CHARCOAL)).input(Character.valueOf('#'), Items.STICK).input(Character.valueOf('S'), ItemTags.SOUL_FIRE_BASE_BLOCKS).pattern("X").pattern("#").pattern("S").criterion("has_soul_sand", RecipeProvider.conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.LANTERN).input(Character.valueOf('#'), Items.TORCH).input(Character.valueOf('X'), Items.IRON_NUGGET).pattern("XXX").pattern("X#X").pattern("XXX").criterion("has_iron_nugget", RecipeProvider.conditionsFromItem(Items.IRON_NUGGET)).criterion("has_iron_ingot", RecipeProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
@@ -987,6 +987,10 @@ implements DataProvider {
 
     private static void offerBoatRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
         ShapedRecipeJsonBuilder.create(output).input(Character.valueOf('#'), input).pattern("# #").pattern("###").group("boat").criterion("in_water", RecipeProvider.requireEnteringFluid(Blocks.WATER)).offerTo(exporter);
+    }
+
+    private static void offerChestBoatRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
+        ShapelessRecipeJsonBuilder.create(output).input(Blocks.CHEST).input(input).group("chest_boat").criterion("has_boat", RecipeProvider.conditionsFromTag(ItemTags.BOATS)).offerTo(exporter);
     }
 
     private static CraftingRecipeJsonBuilder createTransmutationRecipe(ItemConvertible output, Ingredient input) {

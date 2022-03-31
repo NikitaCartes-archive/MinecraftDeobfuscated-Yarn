@@ -277,6 +277,8 @@ public class EntityModelPartNames {
     public static final String EYES = "eyes";
     public static final String field_38329 = "right_tendril";
     public static final String field_38330 = "left_tendril";
+    public static final String field_38457 = "right_ribcage";
+    public static final String field_38458 = "left_ribcage";
     public static final String field_38331 = "bone";
 }
 

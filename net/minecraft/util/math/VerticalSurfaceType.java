@@ -16,7 +16,6 @@ public enum VerticalSurfaceType implements StringIdentifiable
     private final Direction direction;
     private final int offset;
     private final String name;
-    private static final VerticalSurfaceType[] VALUES;
 
     private VerticalSurfaceType(Direction direction, int offset, String name) {
         this.direction = direction;
@@ -32,22 +31,13 @@ public enum VerticalSurfaceType implements StringIdentifiable
         return this.offset;
     }
 
-    public static VerticalSurfaceType byName(String name) {
-        for (VerticalSurfaceType verticalSurfaceType : VALUES) {
-            if (!verticalSurfaceType.asString().equals(name)) continue;
-            return verticalSurfaceType;
-        }
-        throw new IllegalArgumentException("Unknown Surface type: " + name);
-    }
-
     @Override
     public String asString() {
         return this.name;
     }
 
     static {
-        CODEC = StringIdentifiable.createCodec(VerticalSurfaceType::values, VerticalSurfaceType::byName);
-        VALUES = VerticalSurfaceType.values();
+        CODEC = StringIdentifiable.createCodec(VerticalSurfaceType::values);
     }
 }
 

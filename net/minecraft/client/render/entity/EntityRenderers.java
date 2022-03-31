@@ -10,6 +10,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.entity.AllayEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.ArrowEntityRenderer;
 import net.minecraft.client.render.entity.AxolotlEntityRenderer;
@@ -164,6 +165,7 @@ public class EntityRenderers {
     }
 
     static {
+        EntityRenderers.register(EntityType.ALLAY, AllayEntityRenderer::new);
         EntityRenderers.register(EntityType.AREA_EFFECT_CLOUD, EmptyEntityRenderer::new);
         EntityRenderers.register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
         EntityRenderers.register(EntityType.ARROW, ArrowEntityRenderer::new);

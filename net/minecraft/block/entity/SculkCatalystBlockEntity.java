@@ -4,6 +4,7 @@
 package net.minecraft.block.entity;
 
 import com.google.common.annotations.VisibleForTesting;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkCatalystBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -11,7 +12,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -46,11 +49,17 @@ implements GameEventListener {
 
     @Override
     public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
-        if (event == GameEvent.ENTITY_DYING && entity instanceof LivingEntity) {
+        if (event == GameEvent.ENTITY_DIE && entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             if (!livingEntity.isExperienceDroppingDisabled()) {
                 this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
                 livingEntity.disableExperienceDropping();
+                LivingEntity livingEntity2 = livingEntity.getAttacker();
+                if (livingEntity2 instanceof ServerPlayerEntity) {
+                    ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity2;
+                    DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();
+                    Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, entity, damageSource);
+                }
                 SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
             }
             return true;

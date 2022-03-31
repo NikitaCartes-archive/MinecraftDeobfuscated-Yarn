@@ -25,16 +25,16 @@ import net.minecraft.util.math.Vec3d;
 
 public class FrogEatEntityTask
 extends Task<FrogEntity> {
-    public static final int field_37479 = 100;
-    public static final int field_37480 = 6;
-    private static final float field_37481 = 1.75f;
-    private static final float field_37482 = 0.75f;
-    private int field_37483;
-    private int field_37484;
+    public static final int RUN_TIME = 100;
+    public static final int CATCH_DURATION = 6;
+    public static final int EAT_DURATION = 10;
+    private static final float MAX_DISTANCE = 1.75f;
+    private static final float VELOCITY_MULTIPLIER = 0.75f;
+    private int eatTick;
+    private int moveToTargetTick;
     private final SoundEvent tongueSound;
     private final SoundEvent eatSound;
     private Vec3d targetPos;
-    private boolean field_37488;
     private Phase phase = Phase.DONE;
 
     public FrogEatEntityTask(SoundEvent tongueSound, SoundEvent eatSound) {
@@ -45,7 +45,7 @@ extends Task<FrogEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-        return super.shouldRun(serverWorld, frogEntity) && FrogEntity.isValidFrogTarget(frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get());
+        return super.shouldRun(serverWorld, frogEntity) && FrogEntity.isValidFrogTarget(frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get()) && frogEntity.getPose() != EntityPose.CROAKING;
     }
 
     @Override
@@ -59,25 +59,25 @@ extends Task<FrogEntity> {
         LookTargetUtil.lookAt(frogEntity, livingEntity);
         frogEntity.setFrogTarget(livingEntity);
         frogEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(livingEntity.getPos(), 2.0f, 0));
-        this.field_37484 = 10;
+        this.moveToTargetTick = 10;
         this.phase = Phase.MOVE_TO_TARGET;
     }
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
         frogEntity.setPose(EntityPose.STANDING);
-        serverWorld.playSoundFromEntity(null, frogEntity, this.eatSound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
-        Optional<Entity> optional = frogEntity.getFrogTarget();
-        if (optional.isPresent()) {
-            Entity entity = optional.get();
-            if (this.field_37488 && entity.isAlive()) {
-                entity.remove(Entity.RemovalReason.KILLED);
-                ItemStack itemStack = FrogEatEntityTask.createDroppedStack(frogEntity, entity);
-                serverWorld.spawnEntity(new ItemEntity(serverWorld, this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), itemStack));
-            }
+    }
+
+    private void eat(ServerWorld world, FrogEntity frog) {
+        Entity entity;
+        world.playSoundFromEntity(null, frog, this.eatSound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
+        Optional<Entity> optional = frog.getFrogTarget();
+        if (optional.isPresent() && (entity = optional.get()).isAlive()) {
+            entity.remove(Entity.RemovalReason.KILLED);
+            ItemStack itemStack = FrogEatEntityTask.createDroppedStack(frog, entity);
+            world.spawnEntity(new ItemEntity(world, this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), itemStack));
         }
-        frogEntity.clearFrogTarget();
-        this.field_37488 = false;
+        frog.clearFrogTarget();
     }
 
     private static ItemStack createDroppedStack(FrogEntity frog, Entity eatenEntity) {
@@ -103,25 +103,30 @@ extends Task<FrogEntity> {
                     frogEntity.setPose(EntityPose.USING_TONGUE);
                     livingEntity.setVelocity(livingEntity.getPos().relativize(frogEntity.getPos()).normalize().multiply(0.75));
                     this.targetPos = livingEntity.getPos();
-                    this.field_37483 = 6;
-                    this.phase = Phase.EAT_ANIMATION;
+                    this.eatTick = 0;
+                    this.phase = Phase.CATCH_ANIMATION;
                     break;
                 }
-                if (this.field_37484 <= 0) {
+                if (this.moveToTargetTick <= 0) {
                     frogEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, new WalkTarget(livingEntity.getPos(), 2.0f, 0));
-                    this.field_37484 = 10;
+                    this.moveToTargetTick = 10;
                     break;
                 }
-                --this.field_37484;
+                --this.moveToTargetTick;
+                break;
+            }
+            case CATCH_ANIMATION: {
+                if (this.eatTick++ < 6) break;
+                this.phase = Phase.EAT_ANIMATION;
+                this.eat(serverWorld, frogEntity);
                 break;
             }
             case EAT_ANIMATION: {
-                if (this.field_37483 <= 0) {
-                    this.field_37488 = true;
+                if (this.eatTick >= 10) {
                     this.phase = Phase.DONE;
                     break;
                 }
-                --this.field_37483;
+                ++this.eatTick;
                 break;
             }
         }
@@ -139,6 +144,7 @@ extends Task<FrogEntity> {
 
     static enum Phase {
         MOVE_TO_TARGET,
+        CATCH_ANIMATION,
         EAT_ANIMATION,
         DONE;
 

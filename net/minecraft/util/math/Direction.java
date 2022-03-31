@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -42,7 +40,7 @@ public enum Direction implements StringIdentifiable
     WEST(4, 5, 1, "west", AxisDirection.NEGATIVE, Axis.X, new Vec3i(-1, 0, 0)),
     EAST(5, 4, 3, "east", AxisDirection.POSITIVE, Axis.X, new Vec3i(1, 0, 0));
 
-    public static final Codec<Direction> CODEC;
+    public static final StringIdentifiable.Codec<Direction> CODEC;
     public static final Codec<Direction> VERTICAL_CODEC;
     private final int id;
     private final int idOpposite;
@@ -52,7 +50,6 @@ public enum Direction implements StringIdentifiable
     private final AxisDirection direction;
     private final Vec3i vector;
     private static final Direction[] ALL;
-    private static final Map<String, Direction> NAME_MAP;
     private static final Direction[] VALUES;
     private static final Direction[] HORIZONTAL;
     private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION;
@@ -309,10 +306,7 @@ public enum Direction implements StringIdentifiable
 
     @Nullable
     public static Direction byName(@Nullable String name) {
-        if (name == null) {
-            return null;
-        }
-        return NAME_MAP.get(name.toLowerCase(Locale.ROOT));
+        return CODEC.byId(name);
     }
 
     public static Direction byId(int id) {
@@ -420,10 +414,9 @@ public enum Direction implements StringIdentifiable
     }
 
     static {
-        CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
+        CODEC = StringIdentifiable.createCodec(Direction::values);
         VERTICAL_CODEC = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
         ALL = Direction.values();
-        NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
         VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
         HORIZONTAL = (Direction[])Arrays.stream(ALL).filter(direction -> direction.getAxis().isHorizontal()).sorted(Comparator.comparingInt(direction -> direction.idHorizontal)).toArray(Direction[]::new);
         VECTOR_TO_DIRECTION = Arrays.stream(ALL).collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction1, direction2) -> {
@@ -492,8 +485,7 @@ public enum Direction implements StringIdentifiable
         };
 
         public static final Axis[] VALUES;
-        public static final Codec<Axis> CODEC;
-        private static final Map<String, Axis> BY_NAME;
+        public static final StringIdentifiable.Codec<Axis> CODEC;
         private final String name;
 
         Axis(String name) {
@@ -502,7 +494,7 @@ public enum Direction implements StringIdentifiable
 
         @Nullable
         public static Axis fromName(String name) {
-            return BY_NAME.get(name.toLowerCase(Locale.ROOT));
+            return CODEC.byId(name);
         }
 
         public String getName() {
@@ -554,8 +546,7 @@ public enum Direction implements StringIdentifiable
 
         static {
             VALUES = Axis.values();
-            CODEC = StringIdentifiable.createCodec(Axis::values, Axis::fromName);
-            BY_NAME = Arrays.stream(VALUES).collect(Collectors.toMap(Axis::getName, axis -> axis));
+            CODEC = StringIdentifiable.createCodec(Axis::values);
         }
     }
 

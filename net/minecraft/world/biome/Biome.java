@@ -9,10 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -258,7 +255,6 @@ public final class Biome {
         SNOW("snow");
 
         public static final Codec<Precipitation> CODEC;
-        private static final Map<String, Precipitation> BY_NAME;
         private final String name;
 
         private Precipitation(String name) {
@@ -269,18 +265,13 @@ public final class Biome {
             return this.name;
         }
 
-        public static Precipitation byName(String name) {
-            return BY_NAME.get(name);
-        }
-
         @Override
         public String asString() {
             return this.name;
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(Precipitation::values, Precipitation::byName);
-            BY_NAME = Arrays.stream(Precipitation.values()).collect(Collectors.toMap(Precipitation::getName, precipitation -> precipitation));
+            CODEC = StringIdentifiable.createCodec(Precipitation::values);
         }
     }
 
@@ -314,7 +305,6 @@ public final class Biome {
 
         private final String name;
         public static final Codec<TemperatureModifier> CODEC;
-        private static final Map<String, TemperatureModifier> BY_NAME;
 
         public abstract float getModifiedTemperature(BlockPos var1, float var2);
 
@@ -331,13 +321,8 @@ public final class Biome {
             return this.name;
         }
 
-        public static TemperatureModifier byName(String name) {
-            return BY_NAME.get(name);
-        }
-
         static {
-            CODEC = StringIdentifiable.createCodec(TemperatureModifier::values, TemperatureModifier::byName);
-            BY_NAME = Arrays.stream(TemperatureModifier.values()).collect(Collectors.toMap(TemperatureModifier::getName, temperatureModifier -> temperatureModifier));
+            CODEC = StringIdentifiable.createCodec(TemperatureModifier::values);
         }
     }
 

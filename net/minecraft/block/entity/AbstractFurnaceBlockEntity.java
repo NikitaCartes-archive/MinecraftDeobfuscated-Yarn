@@ -183,7 +183,7 @@ RecipeInputProvider {
         AbstractFurnaceBlockEntity.addFuel(map, Items.STICK, 100);
         AbstractFurnaceBlockEntity.addFuel(map, ItemTags.SAPLINGS, 100);
         AbstractFurnaceBlockEntity.addFuel(map, Items.BOWL, 100);
-        AbstractFurnaceBlockEntity.addFuel(map, ItemTags.CARPETS, 67);
+        AbstractFurnaceBlockEntity.addFuel(map, ItemTags.WOOL_CARPETS, 67);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
         AbstractFurnaceBlockEntity.addFuel(map, Items.CROSSBOW, 300);
         AbstractFurnaceBlockEntity.addFuel(map, Blocks.BAMBOO, 50);
@@ -259,22 +259,23 @@ RecipeInputProvider {
     }
 
     public static void tick(World world, BlockPos pos, BlockState state, AbstractFurnaceBlockEntity blockEntity) {
-        ItemStack itemStack;
-        boolean bl3;
+        boolean bl4;
         boolean bl = blockEntity.isBurning();
         boolean bl2 = false;
         if (blockEntity.isBurning()) {
             --blockEntity.burnTime;
         }
-        boolean bl4 = bl3 = !(itemStack = blockEntity.inventory.get(1)).isEmpty() && !blockEntity.inventory.get(0).isEmpty();
-        if (blockEntity.isBurning() || bl3) {
+        ItemStack itemStack = blockEntity.inventory.get(1);
+        boolean bl3 = !blockEntity.inventory.get(0).isEmpty();
+        boolean bl5 = bl4 = !itemStack.isEmpty();
+        if (blockEntity.isBurning() || bl4 && bl3) {
             Recipe recipe = bl3 ? (Recipe)blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null) : null;
             int i = blockEntity.getMaxCountPerStack();
             if (!blockEntity.isBurning() && AbstractFurnaceBlockEntity.canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
                 blockEntity.fuelTime = blockEntity.burnTime = blockEntity.getFuelTime(itemStack);
                 if (blockEntity.isBurning()) {
                     bl2 = true;
-                    if (!itemStack.isEmpty()) {
+                    if (bl4) {
                         Item item = itemStack.getItem();
                         itemStack.decrement(1);
                         if (itemStack.isEmpty()) {

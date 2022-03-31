@@ -12,20 +12,11 @@ public enum SpreadType implements StringIdentifiable
     LINEAR("linear"),
     TRIANGULAR("triangular");
 
-    private static final SpreadType[] VALUES;
     public static final Codec<SpreadType> CODEC;
     private final String name;
 
     private SpreadType(String name) {
         this.name = name;
-    }
-
-    public static SpreadType byName(String name) {
-        for (SpreadType spreadType : VALUES) {
-            if (!spreadType.asString().equals(name)) continue;
-            return spreadType;
-        }
-        throw new IllegalArgumentException("Unknown Random Spread type: " + name);
     }
 
     @Override
@@ -42,8 +33,7 @@ public enum SpreadType implements StringIdentifiable
     }
 
     static {
-        VALUES = SpreadType.values();
-        CODEC = StringIdentifiable.createCodec(() -> VALUES, SpreadType::byName);
+        CODEC = StringIdentifiable.createCodec(SpreadType::values);
     }
 }
 

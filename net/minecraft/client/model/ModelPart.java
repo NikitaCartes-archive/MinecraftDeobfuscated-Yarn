@@ -32,6 +32,7 @@ public final class ModelPart {
     public float yScale = 1.0f;
     public float zScale = 1.0f;
     public boolean visible = true;
+    public boolean field_38456;
     private final List<Cuboid> cuboids;
     private final Map<String, ModelPart> children;
     private ModelTransform defaultTransform = ModelTransform.NONE;
@@ -118,7 +119,9 @@ public final class ModelPart {
         }
         matrices.push();
         this.rotate(matrices);
-        this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
+        if (!this.field_38456) {
+            this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
+        }
         for (ModelPart modelPart : this.children.values()) {
             modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
         }

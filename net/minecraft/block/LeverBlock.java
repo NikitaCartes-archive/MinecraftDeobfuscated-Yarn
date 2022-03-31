@@ -95,7 +95,7 @@ extends WallMountedBlock {
         BlockState blockState = this.togglePower(state, world, pos);
         float f = blockState.get(POWERED) != false ? 0.6f : 0.5f;
         world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, f);
-        world.emitGameEvent((Entity)player, blockState.get(POWERED) != false ? GameEvent.BLOCK_SWITCH : GameEvent.BLOCK_UNSWITCH, pos);
+        world.emitGameEvent((Entity)player, blockState.get(POWERED) != false ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
         return ActionResult.CONSUME;
     }
 

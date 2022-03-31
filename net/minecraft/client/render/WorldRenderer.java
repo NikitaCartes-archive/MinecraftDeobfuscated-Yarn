@@ -2504,6 +2504,10 @@ AutoCloseable {
                 ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
                 break;
             }
+            case 3008: {
+                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.ALLAY_DUST, UniformIntProvider.create(3, 5));
+                break;
+            }
             case 2008: {
                 this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
                 break;

@@ -40,6 +40,7 @@ public interface ConfiguredStructureFeatureKeys {
     public static final RegistryKey<StructureFeature> RUINED_PORTAL_MOUNTAIN = ConfiguredStructureFeatureKeys.of("ruined_portal_mountain");
     public static final RegistryKey<StructureFeature> RUINED_PORTAL_OCEAN = ConfiguredStructureFeatureKeys.of("ruined_portal_ocean");
     public static final RegistryKey<StructureFeature> RUINED_PORTAL_NETHER = ConfiguredStructureFeatureKeys.of("ruined_portal_nether");
+    public static final RegistryKey<StructureFeature> ANCIENT_CITY = ConfiguredStructureFeatureKeys.of("ancient_city");
 
     private static RegistryKey<StructureFeature> of(String id) {
         return RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, new Identifier(id));

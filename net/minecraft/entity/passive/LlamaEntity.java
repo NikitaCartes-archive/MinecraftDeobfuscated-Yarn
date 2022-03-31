@@ -55,7 +55,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class LlamaEntity
@@ -189,6 +188,7 @@ implements RangedAttackMob {
 
     @Override
     protected boolean receiveFood(PlayerEntity player, ItemStack item) {
+        SoundEvent soundEvent;
         int i = 0;
         int j = 0;
         float f = 0.0f;
@@ -223,12 +223,8 @@ implements RangedAttackMob {
                 this.addTemper(j);
             }
         }
-        if (bl) {
-            SoundEvent soundEvent;
-            this.emitGameEvent(GameEvent.MOB_INTERACT);
-            if (!this.isSilent() && (soundEvent = this.getEatSound()) != null) {
-                this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
-            }
+        if (bl && !this.isSilent() && (soundEvent = this.getEatSound()) != null) {
+            this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
         }
         return bl;
     }
@@ -314,7 +310,7 @@ implements RangedAttackMob {
 
     @Override
     public boolean isHorseArmor(ItemStack item) {
-        return item.isIn(ItemTags.CARPETS);
+        return item.isIn(ItemTags.WOOL_CARPETS);
     }
 
     @Override

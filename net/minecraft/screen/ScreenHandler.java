@@ -470,8 +470,8 @@ public abstract class ScreenHandler {
                                                         int n = clickType == ClickType.LEFT ? itemStack52.getCount() : 1;
                                                         this.setCursorStack(slot.insertStack(itemStack52, n));
                                                     } else if (itemStack52.getCount() <= slot.getMaxItemCount(itemStack52)) {
-                                                        slot.setStack(itemStack52);
                                                         this.setCursorStack(itemStack5);
+                                                        slot.setStack(itemStack52);
                                                     }
                                                 } else if (ItemStack.canCombine(itemStack5, itemStack52)) {
                                                     Optional<ItemStack> optional2 = slot.tryTakeStackRange(itemStack5.getCount(), itemStack52.getMaxCount() - itemStack52.getCount(), player);

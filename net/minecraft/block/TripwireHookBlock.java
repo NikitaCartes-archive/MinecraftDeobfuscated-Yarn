@@ -173,10 +173,10 @@ extends Block {
     private void playSound(World world, BlockPos pos, boolean attached, boolean on, boolean detached, boolean off) {
         if (on && !off) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_ON, SoundCategory.BLOCKS, 0.4f, 0.6f);
-            world.emitGameEvent(null, GameEvent.BLOCK_PRESS, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_ACTIVATE, pos);
         } else if (!on && off) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_OFF, SoundCategory.BLOCKS, 0.4f, 0.5f);
-            world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
+            world.emitGameEvent(null, GameEvent.BLOCK_DEACTIVATE, pos);
         } else if (attached && !detached) {
             world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_ATTACH, SoundCategory.BLOCKS, 0.4f, 0.7f);
             world.emitGameEvent(null, GameEvent.BLOCK_ATTACH, pos);

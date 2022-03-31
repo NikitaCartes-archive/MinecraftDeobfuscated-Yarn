@@ -33,7 +33,7 @@ implements Vanishable {
                 itemStack.damage(i, user, p -> p.sendToolBreakStatus(hand));
             }
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-            user.emitGameEvent(GameEvent.FISHING_ROD_REEL_IN);
+            user.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
         } else {
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
             if (!world.isClient) {
@@ -42,7 +42,7 @@ implements Vanishable {
                 world.spawnEntity(new FishingBobberEntity(user, world, j, i));
             }
             user.incrementStat(Stats.USED.getOrCreateStat(this));
-            user.emitGameEvent(GameEvent.FISHING_ROD_CAST);
+            user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
         }
         return TypedActionResult.success(itemStack, world.isClient());
     }

@@ -7,6 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -18,8 +20,8 @@ extends AbstractMinecartEntity {
     private final MobSpawnerLogic logic = new MobSpawnerLogic(){
 
         @Override
-        public void sendStatus(World world, BlockPos pos, int i) {
-            world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
+        public void sendStatus(World world, BlockPos pos, int status) {
+            world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)status);
         }
     };
     private final Runnable ticker;
@@ -32,6 +34,11 @@ extends AbstractMinecartEntity {
     public SpawnerMinecartEntity(World world, double x, double y, double z) {
         super(EntityType.SPAWNER_MINECART, world, x, y, z);
         this.ticker = this.getTicker(world);
+    }
+
+    @Override
+    protected Item getItem() {
+        return Items.MINECART;
     }
 
     private Runnable getTicker(World world) {
@@ -62,7 +69,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public void handleStatus(byte status) {
-        this.logic.method_8275(this.world, status);
+        this.logic.handleStatus(this.world, status);
     }
 
     @Override

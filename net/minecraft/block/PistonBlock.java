@@ -222,7 +222,7 @@ extends FacingBlock {
         if (state.isAir()) {
             return true;
         }
-        if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
+        if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR) || state.isOf(Blocks.REINFORCED_DEEPSLATE)) {
             return false;
         }
         if (direction == Direction.DOWN && pos.getY() == world.getBottomY()) {

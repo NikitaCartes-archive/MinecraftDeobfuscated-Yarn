@@ -33,11 +33,11 @@ extends StructureProcessor {
 
     @Override
     @Nullable
-    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2, StructurePlacementData data) {
-        if (this.blocks.contains(structureBlockInfo2.state.getBlock())) {
+    public Structure.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot, Structure.StructureBlockInfo originalBlockInfo, Structure.StructureBlockInfo currentBlockInfo, StructurePlacementData data) {
+        if (this.blocks.contains(currentBlockInfo.state.getBlock())) {
             return null;
         }
-        return structureBlockInfo2;
+        return currentBlockInfo;
     }
 
     @Override

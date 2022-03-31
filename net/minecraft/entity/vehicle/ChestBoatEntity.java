@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.vehicle;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.damage.DamageSource;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.VehicleInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,6 +23,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -74,6 +77,14 @@ VehicleInventory {
     public void dropItems(DamageSource source) {
         super.dropItems(source);
         this.onBroken(source, this.world, this);
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        if (!this.world.isClient && reason.shouldDestroy()) {
+            ItemScatterer.spawn(this.world, this, (Inventory)this);
+        }
+        super.remove(reason);
     }
 
     @Override

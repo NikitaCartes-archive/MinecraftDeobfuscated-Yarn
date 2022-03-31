@@ -35,7 +35,7 @@ extends Item {
         if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
-            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
+            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
             bl = true;
         } else if (AbstractFireBlock.canPlaceAt(world, blockPos = blockPos.offset(context.getSide()), context.getPlayerFacing())) {
             this.playUseSound(world, blockPos);

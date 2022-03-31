@@ -32,12 +32,12 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
         return context -> context.isBiomeValid(heightmapType);
     }
 
-    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, NoiseConfig randomState, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiome, StructureManager structureTemplateManager, DynamicRegistryManager registryManager) {
+    public record Context<C extends FeatureConfig>(ChunkGenerator chunkGenerator, BiomeSource biomeSource, NoiseConfig noiseConfig, long seed, ChunkPos chunkPos, C config, HeightLimitView world, Predicate<RegistryEntry<Biome>> validBiome, StructureManager structureManager, DynamicRegistryManager registryManager) {
         public boolean isBiomeValid(Heightmap.Type heightmapType) {
             int i = this.chunkPos.getCenterX();
             int j = this.chunkPos.getCenterZ();
-            int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world, this.randomState);
-            RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j), this.randomState.getMultiNoiseSampler());
+            int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world, this.noiseConfig);
+            RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeSource().getBiome(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j), this.noiseConfig.getMultiNoiseSampler());
             return this.validBiome.test(registryEntry);
         }
     }

@@ -74,6 +74,7 @@ public class TypeReferences {
      * A type reference which refers to an item's identifier.
      */
     public static final DSL.TypeReference ITEM_NAME = () -> "item_name";
+    public static final DSL.TypeReference GAME_EVENT_NAME = () -> "game_event_name";
     public static final DSL.TypeReference UNTAGGED_SPAWNER = () -> "untagged_spawner";
     public static final DSL.TypeReference STRUCTURE_FEATURE = () -> "structure_feature";
     public static final DSL.TypeReference OBJECTIVE = () -> "objective";

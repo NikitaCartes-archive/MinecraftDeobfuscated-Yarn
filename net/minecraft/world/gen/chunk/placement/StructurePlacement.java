@@ -23,7 +23,6 @@ import net.minecraft.world.gen.chunk.placement.StructurePlacementType;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.ChunkRandom;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class StructurePlacement {
     public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT.getCodec().dispatch(StructurePlacement::getType, StructurePlacementType::codec);
@@ -131,22 +130,13 @@ public abstract class StructurePlacement {
             return this.generationPredicate.shouldGenerate(seed, i, j, k, chance);
         }
 
-        @Nullable
-        public static FrequencyReductionMethod get(String name) {
-            for (FrequencyReductionMethod frequencyReductionMethod : FrequencyReductionMethod.values()) {
-                if (!frequencyReductionMethod.name.equals(name)) continue;
-                return frequencyReductionMethod;
-            }
-            return null;
-        }
-
         @Override
         public String asString() {
             return this.name;
         }
 
         static {
-            CODEC = StringIdentifiable.createCodec(FrequencyReductionMethod::values, FrequencyReductionMethod::get);
+            CODEC = StringIdentifiable.createCodec(FrequencyReductionMethod::values);
         }
     }
 

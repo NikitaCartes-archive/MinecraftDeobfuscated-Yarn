@@ -3,8 +3,8 @@
  */
 package net.minecraft.world.gen;
 
+import com.google.common.annotations.VisibleForTesting;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
@@ -13,14 +13,11 @@ import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.StructureWeightType;
+import net.minecraft.world.gen.StructureTerrainAdaptation;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
@@ -38,39 +35,42 @@ implements DensityFunctionTypes.class_7050 {
             }
         }
     });
-    private final ObjectList<StructurePiece> pieces;
-    private final ObjectList<JigsawJunction> junctions;
-    private final ObjectListIterator<StructurePiece> pieceIterator;
+    private final ObjectListIterator<class_7301> pieceIterator;
     private final ObjectListIterator<JigsawJunction> junctionIterator;
 
-    protected StructureWeightSampler(StructureAccessor structureAccessor, Chunk chunk) {
-        ChunkPos chunkPos = chunk.getPos();
+    public static StructureWeightSampler method_42695(StructureAccessor structureAccessor, ChunkPos chunkPos) {
         int i = chunkPos.getStartX();
         int j = chunkPos.getStartZ();
-        this.junctions = new ObjectArrayList<JigsawJunction>(32);
-        this.pieces = new ObjectArrayList<StructurePiece>(10);
-        structureAccessor.method_41035(ChunkSectionPos.from(chunk), StructureFeature::shouldAdaptNoise).forEach(start -> {
-            for (StructurePiece structurePiece : start.getChildren()) {
+        ObjectArrayList objectList = new ObjectArrayList(10);
+        ObjectArrayList objectList2 = new ObjectArrayList(32);
+        structureAccessor.method_41035(chunkPos, structureFeature -> structureFeature.getTerrainAdaptation() != StructureTerrainAdaptation.NONE).forEach(structureStart -> {
+            StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getFeature().getTerrainAdaptation();
+            for (StructurePiece structurePiece : structureStart.getChildren()) {
                 if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;
                 if (structurePiece instanceof PoolStructurePiece) {
                     PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
                     StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
                     if (projection == StructurePool.Projection.RIGID) {
-                        this.pieces.add(poolStructurePiece);
+                        objectList.add(new class_7301(poolStructurePiece.getBoundingBox(), structureTerrainAdaptation, poolStructurePiece.getGroundLevelDelta()));
                     }
                     for (JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
                         int k = jigsawJunction.getSourceX();
                         int l = jigsawJunction.getSourceZ();
                         if (k <= i - 12 || l <= j - 12 || k >= i + 15 + 12 || l >= j + 15 + 12) continue;
-                        this.junctions.add(jigsawJunction);
+                        objectList2.add(jigsawJunction);
                     }
                     continue;
                 }
-                this.pieces.add(structurePiece);
+                objectList.add(new class_7301(structurePiece.getBoundingBox(), structureTerrainAdaptation, 0));
             }
         });
-        this.pieceIterator = this.pieces.iterator();
-        this.junctionIterator = this.junctions.iterator();
+        return new StructureWeightSampler((ObjectListIterator<class_7301>)objectList.iterator(), (ObjectListIterator<JigsawJunction>)objectList2.iterator());
+    }
+
+    @VisibleForTesting
+    public StructureWeightSampler(ObjectListIterator<class_7301> objectListIterator, ObjectListIterator<JigsawJunction> objectListIterator2) {
+        this.pieceIterator = objectListIterator;
+        this.junctionIterator = objectListIterator2;
     }
 
     @Override
@@ -82,28 +82,35 @@ implements DensityFunctionTypes.class_7050 {
         int k = pos.blockZ();
         double d = 0.0;
         while (this.pieceIterator.hasNext()) {
-            StructurePiece structurePiece = (StructurePiece)this.pieceIterator.next();
-            BlockBox blockBox = structurePiece.getBoundingBox();
-            l = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
-            m = j - (blockBox.getMinY() + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
+            class_7301 lv = (class_7301)this.pieceIterator.next();
+            BlockBox blockBox = lv.box();
+            l = lv.groundLevelDelta();
+            m = Math.max(0, Math.max(blockBox.getMinX() - i, i - blockBox.getMaxX()));
             int n = Math.max(0, Math.max(blockBox.getMinZ() - k, k - blockBox.getMaxZ()));
-            StructureWeightType structureWeightType = structurePiece.getWeightType();
-            if (structureWeightType == StructureWeightType.BURY) {
-                d += StructureWeightSampler.getMagnitudeWeight(l, m, n);
-                continue;
-            }
-            if (structureWeightType != StructureWeightType.BEARD) continue;
-            d += StructureWeightSampler.getStructureWeight(l, m, n) * 0.8;
+            int o = blockBox.getMinY() + l;
+            int p = j - o;
+            int q = switch (lv.terrainAdjustment()) {
+                default -> throw new IncompatibleClassChangeError();
+                case StructureTerrainAdaptation.NONE -> 0;
+                case StructureTerrainAdaptation.BURY, StructureTerrainAdaptation.BEARD_THIN -> p;
+                case StructureTerrainAdaptation.BEARD_BOX -> Math.max(0, Math.max(o - j, j - blockBox.getMaxY()));
+            };
+            d += (switch (lv.terrainAdjustment()) {
+                default -> throw new IncompatibleClassChangeError();
+                case StructureTerrainAdaptation.NONE -> 0.0;
+                case StructureTerrainAdaptation.BURY -> StructureWeightSampler.getMagnitudeWeight(m, q, n);
+                case StructureTerrainAdaptation.BEARD_THIN, StructureTerrainAdaptation.BEARD_BOX -> StructureWeightSampler.getStructureWeight(m, q, n, p) * 0.8;
+            });
         }
-        this.pieceIterator.back(this.pieces.size());
+        this.pieceIterator.back(Integer.MAX_VALUE);
         while (this.junctionIterator.hasNext()) {
             JigsawJunction jigsawJunction = (JigsawJunction)this.junctionIterator.next();
-            int o = i - jigsawJunction.getSourceX();
+            int r = i - jigsawJunction.getSourceX();
             l = j - jigsawJunction.getSourceGroundY();
             m = k - jigsawJunction.getSourceZ();
-            d += StructureWeightSampler.getStructureWeight(o, l, m) * 0.4;
+            d += StructureWeightSampler.getStructureWeight(r, l, m, l) * 0.4;
         }
-        this.junctionIterator.back(this.junctions.size());
+        this.junctionIterator.back(Integer.MAX_VALUE);
         return d;
     }
 
@@ -125,20 +132,21 @@ implements DensityFunctionTypes.class_7050 {
     /**
      * Gets the structure weight from the array from the given position, or 0 if the position is out of bounds.
      */
-    private static double getStructureWeight(int x, int y, int z) {
-        int i = x + 12;
-        int j = y + 12;
-        int k = z + 12;
-        if (i < 0 || i >= 24) {
+    private static double getStructureWeight(int x, int y, int z, int i) {
+        int j = x + 12;
+        int k = y + 12;
+        int l = z + 12;
+        if (!(StructureWeightSampler.method_42692(j) && StructureWeightSampler.method_42692(k) && StructureWeightSampler.method_42692(l))) {
             return 0.0;
         }
-        if (j < 0 || j >= 24) {
-            return 0.0;
-        }
-        if (k < 0 || k >= 24) {
-            return 0.0;
-        }
-        return STRUCTURE_WEIGHT_TABLE[k * 24 * 24 + i * 24 + j];
+        double d = (double)i + 0.5;
+        double e = MathHelper.squaredMagnitude(x, d, z);
+        double f = -d * MathHelper.fastInverseSqrt(e / 2.0) / 2.0;
+        return f * (double)STRUCTURE_WEIGHT_TABLE[l * 24 * 24 + j * 24 + k];
+    }
+
+    private static boolean method_42692(int i) {
+        return i >= 0 && i < 24;
     }
 
     /**
@@ -146,12 +154,17 @@ implements DensityFunctionTypes.class_7050 {
      * <p>The weight increases as x and z approach {@code (0, 0)}, and positive y values make the weight negative while negative y values make the weight positive.
      */
     private static double calculateStructureWeight(int x, int y, int z) {
-        double d = x * x + z * z;
-        double e = (double)y + 0.5;
-        double f = e * e;
-        double g = Math.pow(Math.E, -(f / 16.0 + d / 16.0));
-        double h = -e * MathHelper.fastInverseSqrt(f / 2.0 + d / 2.0) / 2.0;
-        return h * g;
+        return StructureWeightSampler.method_42693(x, (double)y + 0.5, z);
+    }
+
+    private static double method_42693(int i, double d, int j) {
+        double e = MathHelper.squaredMagnitude(i, d, j);
+        double f = Math.pow(Math.E, -e / 16.0);
+        return f;
+    }
+
+    @VisibleForTesting
+    public record class_7301(BlockBox box, StructureTerrainAdaptation terrainAdjustment, int groundLevelDelta) {
     }
 }
 

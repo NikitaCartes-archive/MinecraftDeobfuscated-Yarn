@@ -1197,6 +1197,7 @@ public class Blocks {
     public static final Block VERDANT_FROGLIGHT = Blocks.register("verdant_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
     public static final Block PEARLESCENT_FROGLIGHT = Blocks.register("pearlescent_froglight", new PillarBlock(AbstractBlock.Settings.of(Material.DECORATION).breakInstantly().luminance(state -> 15).sounds(BlockSoundGroup.FROGLIGHT)));
     public static final Block FROGSPAWN = Blocks.register("frogspawn", new FrogspawnBlock(AbstractBlock.Settings.of(Material.FROGSPAWN).breakInstantly().nonOpaque().noCollision().sounds(BlockSoundGroup.FROGSPAWN)));
+    public static final Block REINFORCED_DEEPSLATE = Blocks.register("reinforced_deepslate", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.DEEPSLATE_GRAY).sounds(BlockSoundGroup.DEEPSLATE).strength(55.0f, 1200.0f)));
 
     private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;

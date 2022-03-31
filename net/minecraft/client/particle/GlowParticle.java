@@ -56,6 +56,32 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
+    public static class class_7309
+    implements ParticleFactory<DefaultParticleType> {
+        private static final double field_38459 = 0.01;
+        private final SpriteProvider field_38460;
+
+        public class_7309(SpriteProvider spriteProvider) {
+            this.field_38460 = spriteProvider;
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.field_38460);
+            if (clientWorld.random.nextBoolean()) {
+                glowParticle.setColor(0.39f, 0.98f, 1.0f);
+            } else {
+                glowParticle.setColor(0.13f, 0.81f, 1.0f);
+            }
+            glowParticle.setVelocity(g * 0.01, h * 0.01, i * 0.01);
+            int j = 20;
+            int k = 40;
+            glowParticle.setMaxAge(clientWorld.random.nextInt(20, 40));
+            return glowParticle;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
     public static class ScrapeFactory
     implements ParticleFactory<DefaultParticleType> {
         private final double field_29573 = 0.01;

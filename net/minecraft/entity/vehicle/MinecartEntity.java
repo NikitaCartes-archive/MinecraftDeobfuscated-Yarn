@@ -6,6 +6,8 @@ package net.minecraft.entity.vehicle;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -32,6 +34,11 @@ extends AbstractMinecartEntity {
             return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
         }
         return ActionResult.SUCCESS;
+    }
+
+    @Override
+    protected Item getItem() {
+        return Items.MINECART;
     }
 
     @Override

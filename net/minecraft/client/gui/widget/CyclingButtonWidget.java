@@ -187,7 +187,7 @@ implements OrderableTooltip {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static interface Values<T> {
+    public static interface Values<T> {
         public List<T> getCurrent();
 
         public List<T> getDefaults();
@@ -247,8 +247,7 @@ implements OrderableTooltip {
         }
 
         public Builder<T> values(Collection<T> values) {
-            this.values = Values.of(values);
-            return this;
+            return this.values(Values.of(values));
         }
 
         @SafeVarargs
@@ -257,12 +256,15 @@ implements OrderableTooltip {
         }
 
         public Builder<T> values(List<T> defaults, List<T> alternatives) {
-            this.values = Values.of(HAS_ALT_DOWN, defaults, alternatives);
-            return this;
+            return this.values(Values.of(HAS_ALT_DOWN, defaults, alternatives));
         }
 
         public Builder<T> values(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
-            this.values = Values.of(alternativeToggle, defaults, alternatives);
+            return this.values(Values.of(alternativeToggle, defaults, alternatives));
+        }
+
+        public Builder<T> values(Values<T> values) {
+            this.values = values;
             return this;
         }
 

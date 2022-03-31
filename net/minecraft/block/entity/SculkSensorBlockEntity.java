@@ -70,12 +70,17 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, int delay) {
+    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
         BlockState blockState = this.getCachedState();
         if (SculkSensorBlock.isInactive(blockState)) {
             this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
             SculkSensorBlock.setActive(entity, world, this.pos, blockState, SculkSensorBlockEntity.getPower(delay, listener.getRange()));
         }
+    }
+
+    @Override
+    public void onListen() {
+        this.markDirty();
     }
 
     public static int getPower(int distance, int range) {
