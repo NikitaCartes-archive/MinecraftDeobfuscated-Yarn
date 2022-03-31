@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 public class MobSpawnerBlockEntity extends BlockEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void sendStatus(World world, BlockPos pos, int i) {
-			world.addSyncedBlockEvent(pos, Blocks.SPAWNER, i, 0);
+		public void sendStatus(World world, BlockPos pos, int status) {
+			world.addSyncedBlockEvent(pos, Blocks.SPAWNER, status, 0);
 		}
 
 		@Override
@@ -66,7 +66,7 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 
 	@Override
 	public boolean onSyncedBlockEvent(int type, int data) {
-		return this.logic.method_8275(this.world, type) ? true : super.onSyncedBlockEvent(type, data);
+		return this.logic.handleStatus(this.world, type) ? true : super.onSyncedBlockEvent(type, data);
 	}
 
 	@Override

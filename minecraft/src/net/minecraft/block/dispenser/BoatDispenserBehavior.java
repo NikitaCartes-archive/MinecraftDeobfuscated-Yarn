@@ -2,6 +2,7 @@ package net.minecraft.block.dispenser;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPointer;
@@ -13,9 +14,15 @@ import net.minecraft.world.WorldEvents;
 public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	private final ItemDispenserBehavior itemDispenser = new ItemDispenserBehavior();
 	private final BoatEntity.Type boatType;
+	private final boolean chest;
 
 	public BoatDispenserBehavior(BoatEntity.Type type) {
-		this.boatType = type;
+		this(type, false);
+	}
+
+	public BoatDispenserBehavior(BoatEntity.Type boatType, boolean chest) {
+		this.boatType = boatType;
+		this.chest = chest;
 	}
 
 	@Override
@@ -37,7 +44,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 			g = 0.0;
 		}
 
-		BoatEntity boatEntity = new BoatEntity(world, d, e + g, f);
+		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, d, e + g, f) : new BoatEntity(world, d, e + g, f));
 		boatEntity.setBoatType(this.boatType);
 		boatEntity.setYaw(direction.asRotation());
 		world.spawnEntity(boatEntity);

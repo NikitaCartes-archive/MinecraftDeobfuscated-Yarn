@@ -28,13 +28,13 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo structureBlockInfo,
-		Structure.StructureBlockInfo structureBlockInfo2,
+		Structure.StructureBlockInfo originalBlockInfo,
+		Structure.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		BlockState blockState = structureBlockInfo2.state;
+		BlockState blockState = currentBlockInfo.state;
 		if (blockState.isOf(Blocks.JIGSAW)) {
-			String string = structureBlockInfo2.nbt.getString("final_state");
+			String string = currentBlockInfo.nbt.getString("final_state");
 
 			BlockState blockState2;
 			try {
@@ -44,9 +44,9 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var11);
 			}
 
-			return blockState2.isOf(Blocks.STRUCTURE_VOID) ? null : new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockState2, null);
+			return blockState2.isOf(Blocks.STRUCTURE_VOID) ? null : new Structure.StructureBlockInfo(currentBlockInfo.pos, blockState2, null);
 		} else {
-			return structureBlockInfo2;
+			return currentBlockInfo;
 		}
 	}
 

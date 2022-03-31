@@ -131,6 +131,9 @@ public class Models {
 	public static final Model TEMPLATE_CAKE_WITH_CANDLE = block(
 		"template_cake_with_candle", TextureKey.CANDLE, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE
 	);
+	public static final Model TEMPLATE_SCULK_SHRIEKER = block(
+		"template_sculk_shrieker", TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.TOP, TextureKey.PARTICLE, TextureKey.INNER_TOP
+	);
 
 	private static Model make(TextureKey... requiredTextureKeys) {
 		return new Model(Optional.empty(), Optional.empty(), requiredTextureKeys);

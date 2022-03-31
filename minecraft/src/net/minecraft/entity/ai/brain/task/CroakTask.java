@@ -8,7 +8,7 @@ import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class CroakTask extends Task<FrogEntity> {
-	private static final int field_37424 = 40;
+	private static final int field_37424 = 60;
 	private static final int field_37425 = 100;
 	private int runningTicks;
 
@@ -16,8 +16,12 @@ public class CroakTask extends Task<FrogEntity> {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), 100);
 	}
 
+	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
+		return frogEntity.getPose() == EntityPose.STANDING;
+	}
+
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		return this.runningTicks < 40;
+		return this.runningTicks < 60;
 	}
 
 	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {

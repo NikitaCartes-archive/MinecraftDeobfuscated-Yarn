@@ -6,10 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -360,9 +357,7 @@ public final class Biome {
 		RAIN("rain"),
 		SNOW("snow");
 
-		public static final Codec<Biome.Precipitation> CODEC = StringIdentifiable.createCodec(Biome.Precipitation::values, Biome.Precipitation::byName);
-		private static final Map<String, Biome.Precipitation> BY_NAME = (Map<String, Biome.Precipitation>)Arrays.stream(values())
-			.collect(Collectors.toMap(Biome.Precipitation::getName, precipitation -> precipitation));
+		public static final com.mojang.serialization.Codec<Biome.Precipitation> CODEC = StringIdentifiable.createCodec(Biome.Precipitation::values);
 		private final String name;
 
 		private Precipitation(String name) {
@@ -371,10 +366,6 @@ public final class Biome {
 
 		public String getName() {
 			return this.name;
-		}
-
-		public static Biome.Precipitation byName(String name) {
-			return (Biome.Precipitation)BY_NAME.get(name);
 		}
 
 		@Override
@@ -408,11 +399,7 @@ public final class Biome {
 		};
 
 		private final String name;
-		public static final Codec<Biome.TemperatureModifier> CODEC = StringIdentifiable.createCodec(
-			Biome.TemperatureModifier::values, Biome.TemperatureModifier::byName
-		);
-		private static final Map<String, Biome.TemperatureModifier> BY_NAME = (Map<String, Biome.TemperatureModifier>)Arrays.stream(values())
-			.collect(Collectors.toMap(Biome.TemperatureModifier::getName, temperatureModifier -> temperatureModifier));
+		public static final com.mojang.serialization.Codec<Biome.TemperatureModifier> CODEC = StringIdentifiable.createCodec(Biome.TemperatureModifier::values);
 
 		public abstract float getModifiedTemperature(BlockPos pos, float temperature);
 
@@ -427,10 +414,6 @@ public final class Biome {
 		@Override
 		public String asString() {
 			return this.name;
-		}
-
-		public static Biome.TemperatureModifier byName(String name) {
-			return (Biome.TemperatureModifier)BY_NAME.get(name);
 		}
 	}
 

@@ -180,10 +180,10 @@ public class TripwireHookBlock extends Block {
 	private void playSound(World world, BlockPos pos, boolean attached, boolean on, boolean detached, boolean off) {
 		if (on && !off) {
 			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_ON, SoundCategory.BLOCKS, 0.4F, 0.6F);
-			world.emitGameEvent(null, GameEvent.BLOCK_PRESS, pos);
+			world.emitGameEvent(null, GameEvent.BLOCK_ACTIVATE, pos);
 		} else if (!on && off) {
 			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_CLICK_OFF, SoundCategory.BLOCKS, 0.4F, 0.5F);
-			world.emitGameEvent(null, GameEvent.BLOCK_UNPRESS, pos);
+			world.emitGameEvent(null, GameEvent.BLOCK_DEACTIVATE, pos);
 		} else if (attached && !detached) {
 			world.playSound(null, pos, SoundEvents.BLOCK_TRIPWIRE_ATTACH, SoundCategory.BLOCKS, 0.4F, 0.7F);
 			world.emitGameEvent(null, GameEvent.BLOCK_ATTACH, pos);

@@ -236,6 +236,8 @@ public class FrogEntity extends AnimalEntity {
 
 			if (entityPose == EntityPose.USING_TONGUE) {
 				this.usingTongueAnimationState.start();
+			} else {
+				this.usingTongueAnimationState.stop();
 			}
 		}
 

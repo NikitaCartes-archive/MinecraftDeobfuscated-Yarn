@@ -61,7 +61,14 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	}
 
 	@Override
-	public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, int delay) {
+	public void accept(
+		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
+	) {
 		SculkShriekerBlock.shriek(world, this.getCachedState(), this.getPos());
+	}
+
+	@Override
+	public void onListen() {
+		this.markDirty();
 	}
 }

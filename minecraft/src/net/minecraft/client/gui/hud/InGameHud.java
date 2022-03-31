@@ -120,13 +120,13 @@ public class InGameHud extends DrawableHelper {
 	private final SpectatorHud spectatorHud;
 	private final PlayerListHud playerListHud;
 	private final BossBarHud bossBarHud;
-	private int titleTotalTicks;
+	private int titleRemainTicks;
 	@Nullable
 	private Text title;
 	@Nullable
 	private Text subtitle;
 	private int titleFadeInTicks;
-	private int titleRemainTicks;
+	private int titleStayTicks;
 	private int titleFadeOutTicks;
 	private int lastHealthValue;
 	private int renderHealthValue;
@@ -164,7 +164,7 @@ public class InGameHud extends DrawableHelper {
 
 	public void setDefaultTitleFade() {
 		this.titleFadeInTicks = 10;
-		this.titleRemainTicks = 70;
+		this.titleStayTicks = 70;
 		this.titleFadeOutTicks = 20;
 	}
 
@@ -298,16 +298,16 @@ public class InGameHud extends DrawableHelper {
 				this.client.getProfiler().pop();
 			}
 
-			if (this.title != null && this.titleTotalTicks > 0) {
+			if (this.title != null && this.titleRemainTicks > 0) {
 				this.client.getProfiler().push("titleAndSubtitle");
-				float h = (float)this.titleTotalTicks - tickDelta;
+				float h = (float)this.titleRemainTicks - tickDelta;
 				int l = 255;
-				if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-					float o = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - h;
+				if (this.titleRemainTicks > this.titleFadeOutTicks + this.titleStayTicks) {
+					float o = (float)(this.titleFadeInTicks + this.titleStayTicks + this.titleFadeOutTicks) - h;
 					l = (int)(o * 255.0F / (float)this.titleFadeInTicks);
 				}
 
-				if (this.titleTotalTicks <= this.titleFadeOutTicks) {
+				if (this.titleRemainTicks <= this.titleFadeOutTicks) {
 					l = (int)(h * 255.0F / (float)this.titleFadeOutTicks);
 				}
 
@@ -1152,9 +1152,9 @@ public class InGameHud extends DrawableHelper {
 			--this.overlayRemaining;
 		}
 
-		if (this.titleTotalTicks > 0) {
-			--this.titleTotalTicks;
-			if (this.titleTotalTicks <= 0) {
+		if (this.titleRemainTicks > 0) {
+			--this.titleRemainTicks;
+			if (this.titleRemainTicks <= 0) {
 				this.title = null;
 				this.subtitle = null;
 			}
@@ -1203,15 +1203,15 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (remainTicks >= 0) {
-			this.titleRemainTicks = remainTicks;
+			this.titleStayTicks = remainTicks;
 		}
 
 		if (fadeOutTicks >= 0) {
 			this.titleFadeOutTicks = fadeOutTicks;
 		}
 
-		if (this.titleTotalTicks > 0) {
-			this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
+		if (this.titleRemainTicks > 0) {
+			this.titleRemainTicks = this.titleFadeInTicks + this.titleStayTicks + this.titleFadeOutTicks;
 		}
 	}
 
@@ -1221,13 +1221,13 @@ public class InGameHud extends DrawableHelper {
 
 	public void setTitle(Text title) {
 		this.title = title;
-		this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
+		this.titleRemainTicks = this.titleFadeInTicks + this.titleStayTicks + this.titleFadeOutTicks;
 	}
 
 	public void clearTitle() {
 		this.title = null;
 		this.subtitle = null;
-		this.titleTotalTicks = 0;
+		this.titleRemainTicks = 0;
 	}
 
 	public UUID extractSender(Text message) {

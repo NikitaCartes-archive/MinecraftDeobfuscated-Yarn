@@ -1,27 +1,28 @@
 package net.minecraft.util;
 
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+public enum Arm implements TranslatableOption {
+	LEFT(0, "options.mainHand.left"),
+	RIGHT(1, "options.mainHand.right");
 
-public enum Arm {
-	LEFT(new TranslatableText("options.mainHand.left")),
-	RIGHT(new TranslatableText("options.mainHand.right"));
+	private final int id;
+	private final String translationKey;
 
-	private final Text optionName;
-
-	private Arm(Text optionName) {
-		this.optionName = optionName;
+	private Arm(int id, String translationKey) {
+		this.id = id;
+		this.translationKey = translationKey;
 	}
 
 	public Arm getOpposite() {
 		return this == LEFT ? RIGHT : LEFT;
 	}
 
-	public String toString() {
-		return this.optionName.getString();
+	@Override
+	public int getId() {
+		return this.id;
 	}
 
-	public Text getOptionName() {
-		return this.optionName;
+	@Override
+	public String getTranslationKey() {
+		return this.translationKey;
 	}
 }

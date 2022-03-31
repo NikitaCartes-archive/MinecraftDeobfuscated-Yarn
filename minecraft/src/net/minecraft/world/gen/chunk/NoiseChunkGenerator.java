@@ -125,7 +125,12 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	private ChunkNoiseSampler method_41537(Chunk chunk, StructureAccessor structureAccessor, Blender blender, NoiseConfig noiseConfig) {
 		return ChunkNoiseSampler.create(
-			chunk, noiseConfig, new StructureWeightSampler(structureAccessor, chunk), (ChunkGeneratorSettings)this.settings.value(), this.fluidLevelSampler, blender
+			chunk,
+			noiseConfig,
+			StructureWeightSampler.method_42695(structureAccessor, chunk.getPos()),
+			(ChunkGeneratorSettings)this.settings.value(),
+			this.fluidLevelSampler,
+			blender
 		);
 	}
 

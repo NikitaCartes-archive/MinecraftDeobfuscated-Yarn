@@ -50,7 +50,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
 	private static final int MAX_STRENGTH = 5;
@@ -219,23 +218,20 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			}
 		}
 
-		if (bl) {
-			this.emitGameEvent(GameEvent.MOB_INTERACT);
-			if (!this.isSilent()) {
-				SoundEvent soundEvent = this.getEatSound();
-				if (soundEvent != null) {
-					this.world
-						.playSound(
-							null,
-							this.getX(),
-							this.getY(),
-							this.getZ(),
-							this.getEatSound(),
-							this.getSoundCategory(),
-							1.0F,
-							1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
-						);
-				}
+		if (bl && !this.isSilent()) {
+			SoundEvent soundEvent = this.getEatSound();
+			if (soundEvent != null) {
+				this.world
+					.playSound(
+						null,
+						this.getX(),
+						this.getY(),
+						this.getZ(),
+						this.getEatSound(),
+						this.getSoundCategory(),
+						1.0F,
+						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+					);
 			}
 		}
 
@@ -326,7 +322,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 
 	@Override
 	public boolean isHorseArmor(ItemStack item) {
-		return item.isIn(ItemTags.CARPETS);
+		return item.isIn(ItemTags.WOOL_CARPETS);
 	}
 
 	@Override

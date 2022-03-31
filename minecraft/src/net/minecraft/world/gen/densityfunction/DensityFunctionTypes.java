@@ -8,11 +8,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.CodecHolder;
@@ -968,12 +966,8 @@ public final class DensityFunctionTypes {
 			TYPE1("type_1", DensityFunctions.CaveScaler::scaleTunnels, 2.0),
 			TYPE2("type_2", DensityFunctions.CaveScaler::scaleCaves, 3.0);
 
-			private static final Map<String, DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> TYPES_MAP = (Map<String, DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper>)Arrays.stream(
-					values()
-				)
-				.collect(Collectors.toMap(DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::asString, rarityValueMapper -> rarityValueMapper));
-			public static final Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
-				DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::values, TYPES_MAP::get
+			public static final com.mojang.serialization.Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
+				DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::values
 			);
 			private final String name;
 			final Double2DoubleFunction scaleFunction;

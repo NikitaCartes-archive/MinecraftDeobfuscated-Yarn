@@ -743,7 +743,7 @@ public class RenderSystem {
 			runnable.run();
 		} else {
 			SimpleOption<GraphicsMode> simpleOption = MinecraftClient.getInstance().options.getGraphicsMode();
-			GraphicsMode graphicsMode = (GraphicsMode)simpleOption.getValue();
+			GraphicsMode graphicsMode = simpleOption.getValue();
 			simpleOption.setValue(GraphicsMode.FANCY);
 			runnable.run();
 			simpleOption.setValue(graphicsMode);

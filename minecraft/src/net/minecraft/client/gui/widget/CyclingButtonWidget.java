@@ -230,8 +230,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * Sets the option values for this button.
 		 */
 		public CyclingButtonWidget.Builder<T> values(Collection<T> values) {
-			this.values = CyclingButtonWidget.Values.of(values);
-			return this;
+			return this.values(CyclingButtonWidget.Values.of(values));
 		}
 
 		/**
@@ -250,8 +249,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * when clicking the built button.
 		 */
 		public CyclingButtonWidget.Builder<T> values(List<T> defaults, List<T> alternatives) {
-			this.values = CyclingButtonWidget.Values.of(CyclingButtonWidget.HAS_ALT_DOWN, defaults, alternatives);
-			return this;
+			return this.values(CyclingButtonWidget.Values.of(CyclingButtonWidget.HAS_ALT_DOWN, defaults, alternatives));
 		}
 
 		/**
@@ -263,7 +261,11 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * when clicking the built button.
 		 */
 		public CyclingButtonWidget.Builder<T> values(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
-			this.values = CyclingButtonWidget.Values.of(alternativeToggle, defaults, alternatives);
+			return this.values(CyclingButtonWidget.Values.of(alternativeToggle, defaults, alternatives));
+		}
+
+		public CyclingButtonWidget.Builder<T> values(CyclingButtonWidget.Values<T> values) {
+			this.values = values;
 			return this;
 		}
 
@@ -362,7 +364,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	}
 
 	@Environment(EnvType.CLIENT)
-	interface Values<T> {
+	public interface Values<T> {
 		List<T> getCurrent();
 
 		List<T> getDefaults();

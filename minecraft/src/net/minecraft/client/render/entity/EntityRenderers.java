@@ -67,6 +67,7 @@ public class EntityRenderers {
 	}
 
 	static {
+		register(EntityType.ALLAY, AllayEntityRenderer::new);
 		register(EntityType.AREA_EFFECT_CLOUD, EmptyEntityRenderer::new);
 		register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
 		register(EntityType.ARROW, ArrowEntityRenderer::new);

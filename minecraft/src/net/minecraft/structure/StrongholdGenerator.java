@@ -29,7 +29,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class StrongholdGenerator {
@@ -701,11 +700,6 @@ public class StrongholdGenerator {
 		public Piece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
 			super(structurePieceType, nbtCompound);
 			this.entryDoor = StrongholdGenerator.Piece.EntranceType.valueOf(nbtCompound.getString("EntryDoor"));
-		}
-
-		@Override
-		public StructureWeightType getWeightType() {
-			return StructureWeightType.BURY;
 		}
 
 		@Override

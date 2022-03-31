@@ -225,16 +225,16 @@ public class RedstoneWireBlock extends Block {
 			if (wireConnection != WireConnection.NONE && !world.getBlockState(mutable.set(pos, direction)).isOf(this)) {
 				mutable.move(Direction.DOWN);
 				BlockState blockState = world.getBlockState(mutable);
-				if (!blockState.isOf(Blocks.OBSERVER)) {
+				if (blockState.isOf(this)) {
 					BlockPos blockPos = mutable.offset(direction.getOpposite());
-					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, blockPos, flags, maxUpdateDepth);
+					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), mutable, blockPos, flags, maxUpdateDepth);
 				}
 
 				mutable.set(pos, direction).move(Direction.UP);
 				BlockState blockState2 = world.getBlockState(mutable);
-				if (!blockState2.isOf(Blocks.OBSERVER)) {
+				if (blockState2.isOf(this)) {
 					BlockPos blockPos2 = mutable.offset(direction.getOpposite());
-					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), state, mutable, blockPos2, flags, maxUpdateDepth);
+					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), mutable, blockPos2, flags, maxUpdateDepth);
 				}
 			}
 		}

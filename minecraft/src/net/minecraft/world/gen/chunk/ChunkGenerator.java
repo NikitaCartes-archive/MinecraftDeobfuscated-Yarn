@@ -90,7 +90,6 @@ import org.slf4j.Logger;
  * Biome placement starts here, however all vanilla and most modded chunk generators delegate this to a {@linkplain net.minecraft.world.biome.source.BiomeSource biome source}.
  */
 public abstract class ChunkGenerator {
-	public static final int field_37658 = 8;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.getCodec().dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	protected final Registry<StructureSet> structureSetRegistry;
@@ -698,7 +697,7 @@ public abstract class ChunkGenerator {
 		int i = getStructureReferences(structureAccessor, chunk, chunkSectionPos, structureFeature);
 		RegistryEntryList<Biome> registryEntryList = structureFeature.getValidBiomes();
 		Predicate<RegistryEntry<Biome>> predicate = registryEntry -> registryEntryList.contains(this.filterBiome(registryEntry));
-		StructureStart structureStart = structureFeature.method_41614(
+		StructureStart structureStart = structureFeature.createStructureStart(
 			dynamicRegistryManager, this, this.populationSource, noiseConfig, structureManager, l, chunkPos, i, chunk, predicate
 		);
 		if (structureStart.hasChildren()) {

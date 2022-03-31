@@ -6,11 +6,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -333,13 +330,9 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		UNDERGROUND("underground"),
 		IN_NETHER("in_nether");
 
-		public static final Codec<RuinedPortalStructurePiece.VerticalPlacement> field_37811 = StringIdentifiable.createCodec(
-			RuinedPortalStructurePiece.VerticalPlacement::values, RuinedPortalStructurePiece.VerticalPlacement::getFromId
+		public static final StringIdentifiable.Codec<RuinedPortalStructurePiece.VerticalPlacement> field_37811 = StringIdentifiable.createCodec(
+			RuinedPortalStructurePiece.VerticalPlacement::values
 		);
-		private static final Map<String, RuinedPortalStructurePiece.VerticalPlacement> VERTICAL_PLACEMENTS = (Map<String, RuinedPortalStructurePiece.VerticalPlacement>)Arrays.stream(
-				values()
-			)
-			.collect(Collectors.toMap(RuinedPortalStructurePiece.VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
 		private final String id;
 
 		private VerticalPlacement(String id) {
@@ -351,7 +344,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 
 		public static RuinedPortalStructurePiece.VerticalPlacement getFromId(String id) {
-			return (RuinedPortalStructurePiece.VerticalPlacement)VERTICAL_PLACEMENTS.get(id);
+			return (RuinedPortalStructurePiece.VerticalPlacement)field_37811.byId(id);
 		}
 
 		@Override

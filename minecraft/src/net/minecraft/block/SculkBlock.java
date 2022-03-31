@@ -50,15 +50,16 @@ public class SculkBlock extends OreBlock implements SculkSpreadable {
 	}
 
 	private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, Random random, boolean allowShrieker) {
-		Block block;
-		if (allowShrieker) {
-			block = random.nextInt(11) == 0 ? Blocks.SCULK_SHRIEKER : Blocks.SCULK_SENSOR;
+		BlockState blockState;
+		if (random.nextInt(11) == 0) {
+			blockState = Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, Boolean.valueOf(allowShrieker));
 		} else {
-			block = Blocks.SCULK_SENSOR;
+			blockState = Blocks.SCULK_SENSOR.getDefaultState();
 		}
 
-		BlockState blockState = block.getDefaultState();
-		return !world.getFluidState(pos).isEmpty() && block instanceof Waterloggable ? blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true)) : blockState;
+		return blockState.contains(Properties.WATERLOGGED) && !world.getFluidState(pos).isEmpty()
+			? blockState.with(Properties.WATERLOGGED, Boolean.valueOf(true))
+			: blockState;
 	}
 
 	private static boolean shouldNotDecay(WorldAccess world, BlockPos pos) {

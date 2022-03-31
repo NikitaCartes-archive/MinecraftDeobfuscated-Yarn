@@ -2171,12 +2171,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isFancyGraphicsOrBetter() {
-		return ((GraphicsMode)instance.options.getGraphicsMode().getValue()).getId() >= GraphicsMode.FANCY.getId();
+		return instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FANCY.getId();
 	}
 
 	public static boolean isFabulousGraphicsOrBetter() {
-		return !instance.gameRenderer.isRenderingPanorama()
-			&& ((GraphicsMode)instance.options.getGraphicsMode().getValue()).getId() >= GraphicsMode.FABULOUS.getId();
+		return !instance.gameRenderer.isRenderingPanorama() && instance.options.getGraphicsMode().getValue().getId() >= GraphicsMode.FABULOUS.getId();
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
@@ -2311,7 +2310,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 			}
 
-			systemDetails.addSection("Graphics mode", ((GraphicsMode)options.getGraphicsMode().getValue()).toString());
+			systemDetails.addSection("Graphics mode", options.getGraphicsMode().getValue().toString());
 			systemDetails.addSection("Resource Packs", (Supplier<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 

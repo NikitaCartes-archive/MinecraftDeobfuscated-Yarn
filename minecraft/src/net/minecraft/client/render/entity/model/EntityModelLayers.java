@@ -13,6 +13,7 @@ import net.minecraft.util.SignType;
 public class EntityModelLayers {
 	private static final String MAIN = "main";
 	private static final Set<EntityModelLayer> LAYERS = Sets.<EntityModelLayer>newHashSet();
+	public static final EntityModelLayer ALLAY = registerMain("allay");
 	public static final EntityModelLayer ARMOR_STAND = registerMain("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = createInnerArmor("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = createOuterArmor("armor_stand");

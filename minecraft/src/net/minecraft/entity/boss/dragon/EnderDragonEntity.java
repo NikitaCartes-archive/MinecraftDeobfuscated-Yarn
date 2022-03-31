@@ -46,6 +46,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.slf4j.Logger;
 
@@ -532,6 +533,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Override
 	public void kill() {
 		this.remove(Entity.RemovalReason.KILLED);
+		this.emitGameEvent(GameEvent.ENTITY_DIE);
 		if (this.fight != null) {
 			this.fight.updateFight(this);
 			this.fight.dragonKilled(this);
@@ -581,6 +583,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			}
 
 			this.remove(Entity.RemovalReason.KILLED);
+			this.emitGameEvent(GameEvent.ENTITY_DIE);
 		}
 	}
 

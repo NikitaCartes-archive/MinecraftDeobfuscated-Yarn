@@ -293,6 +293,16 @@ public class TextureMap {
 			.put(TextureKey.CONTENT, content);
 	}
 
+	public static TextureMap method_42753(boolean bl) {
+		String string = bl ? "_can_summon" : "";
+		return new TextureMap()
+			.put(TextureKey.PARTICLE, getSubId(Blocks.SCULK_SHRIEKER, "_bottom"))
+			.put(TextureKey.SIDE, getSubId(Blocks.SCULK_SHRIEKER, "_side"))
+			.put(TextureKey.TOP, getSubId(Blocks.SCULK_SHRIEKER, "_top"))
+			.put(TextureKey.INNER_TOP, getSubId(Blocks.SCULK_SHRIEKER, string + "_inner_top"))
+			.put(TextureKey.BOTTOM, getSubId(Blocks.SCULK_SHRIEKER, "_bottom"));
+	}
+
 	public static TextureMap layer0(Item item) {
 		return new TextureMap().put(TextureKey.LAYER0, getId(item));
 	}

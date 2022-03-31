@@ -491,10 +491,10 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
-				this.emitGameEvent(GameEvent.SHULKER_CLOSE);
+				this.emitGameEvent(GameEvent.CONTAINER_CLOSE);
 			} else {
 				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);
-				this.emitGameEvent(GameEvent.SHULKER_OPEN);
+				this.emitGameEvent(GameEvent.CONTAINER_OPEN);
 			}
 		}
 

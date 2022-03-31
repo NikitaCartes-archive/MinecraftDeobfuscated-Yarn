@@ -52,7 +52,6 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.event.GameEvent;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
 	/**
@@ -290,7 +289,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
-				this.emitGameEvent(GameEvent.MOB_INTERACT);
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}

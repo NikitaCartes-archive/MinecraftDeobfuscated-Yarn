@@ -49,6 +49,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> NETHER_FORTRESS_HAS_STRUCTURE = of("has_structure/nether_fortress");
 	public static final TagKey<Biome> NETHER_FOSSIL_HAS_STRUCTURE = of("has_structure/nether_fossil");
 	public static final TagKey<Biome> BASTION_REMNANT_HAS_STRUCTURE = of("has_structure/bastion_remnant");
+	public static final TagKey<Biome> ANCIENT_CITY_HAS_STRUCTURE = of("has_structure/ancient_city");
 	public static final TagKey<Biome> RUINED_PORTAL_NETHER_HAS_STRUCTURE = of("has_structure/ruined_portal_nether");
 	public static final TagKey<Biome> END_CITY_HAS_STRUCTURE = of("has_structure/end_city");
 	public static final TagKey<Biome> REQUIRED_OCEAN_MONUMENT_SURROUNDING = of("required_ocean_monument_surrounding");

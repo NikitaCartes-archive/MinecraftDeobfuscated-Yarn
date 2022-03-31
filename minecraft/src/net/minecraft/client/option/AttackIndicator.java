@@ -4,10 +4,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum AttackIndicator {
+public enum AttackIndicator implements TranslatableOption {
 	OFF(0, "options.off"),
 	CROSSHAIR(1, "options.attack.crosshair"),
 	HOTBAR(2, "options.attack.hotbar");
@@ -23,10 +24,12 @@ public enum AttackIndicator {
 		this.translationKey = translationKey;
 	}
 
+	@Override
 	public int getId() {
 		return this.id;
 	}
 
+	@Override
 	public String getTranslationKey() {
 		return this.translationKey;
 	}
