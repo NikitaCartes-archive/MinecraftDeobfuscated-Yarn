@@ -2,8 +2,10 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.item.Items;
 
 public class CreeperIgniteGoal extends Goal {
 	private final CreeperEntity creeper;
@@ -18,7 +20,9 @@ public class CreeperIgniteGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		LivingEntity livingEntity = this.creeper.getTarget();
-		return this.creeper.getFuseSpeed() > 0 || livingEntity != null && this.creeper.squaredDistanceTo(livingEntity) < 9.0;
+		return livingEntity != null && livingEntity.isInSneakingPose() && livingEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)
+			? false
+			: this.creeper.getFuseSpeed() > 0 || livingEntity != null && this.creeper.squaredDistanceTo(livingEntity) < 9.0;
 	}
 
 	@Override
@@ -39,14 +43,28 @@ public class CreeperIgniteGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (this.target == null) {
-			this.creeper.setFuseSpeed(-1);
-		} else if (this.creeper.squaredDistanceTo(this.target) > 49.0) {
-			this.creeper.setFuseSpeed(-1);
-		} else if (!this.creeper.getVisibilityCache().canSee(this.target)) {
-			this.creeper.setFuseSpeed(-1);
-		} else {
-			this.creeper.setFuseSpeed(1);
+		if (!this.creeper.field_38527) {
+			if (this.target == null) {
+				this.creeper.setFuseSpeed(-1);
+				return;
+			}
+
+			if (this.target.isInSneakingPose() && this.target.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+				this.creeper.setFuseSpeed(-1);
+				return;
+			}
+
+			if (this.creeper.squaredDistanceTo(this.target) > 49.0) {
+				this.creeper.setFuseSpeed(-1);
+				return;
+			}
+
+			if (!this.creeper.getVisibilityCache().canSee(this.target)) {
+				this.creeper.setFuseSpeed(-1);
+				return;
+			}
 		}
+
+		this.creeper.setFuseSpeed(1);
 	}
 }

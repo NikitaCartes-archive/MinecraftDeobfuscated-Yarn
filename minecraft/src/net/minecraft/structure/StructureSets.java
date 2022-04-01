@@ -1,8 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.List;
-import java.util.Optional;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryEntry;
@@ -11,8 +9,8 @@ import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.SpreadType;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
-import net.minecraft.world.gen.feature.StructureFeature;
 
 public interface StructureSets {
 	RegistryEntry<StructureSet> VILLAGES = register(
@@ -41,21 +39,7 @@ public interface StructureSets {
 		StructureSetKeys.SWAMP_HUTS, ConfiguredStructureFeatures.SWAMP_HUT, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357620)
 	);
 	RegistryEntry<StructureSet> PILLAGER_OUTPOSTS = register(
-		StructureSetKeys.PILLAGER_OUTPOSTS,
-		ConfiguredStructureFeatures.PILLAGER_OUTPOST,
-		new RandomSpreadStructurePlacement(
-			Vec3i.ZERO,
-			StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_1,
-			0.2F,
-			165745296,
-			Optional.of(new StructurePlacement.ExclusionZone(VILLAGES, 10)),
-			32,
-			8,
-			SpreadType.LINEAR
-		)
-	);
-	RegistryEntry<StructureSet> field_38475 = register(
-		StructureSetKeys.ANCIENT_CITIES, ConfiguredStructureFeatures.field_38476, new RandomSpreadStructurePlacement(24, 8, SpreadType.LINEAR, 20083232)
+		StructureSetKeys.PILLAGER_OUTPOSTS, ConfiguredStructureFeatures.PILLAGER_OUTPOST, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 165745296)
 	);
 	RegistryEntry<StructureSet> OCEAN_MONUMENTS = register(
 		StructureSetKeys.OCEAN_MONUMENTS, ConfiguredStructureFeatures.MONUMENT, new RandomSpreadStructurePlacement(32, 5, SpreadType.TRIANGULAR, 10387313)
@@ -66,17 +50,13 @@ public interface StructureSets {
 	RegistryEntry<StructureSet> BURIED_TREASURES = register(
 		StructureSetKeys.BURIED_TREASURES,
 		ConfiguredStructureFeatures.BURIED_TREASURE,
-		new RandomSpreadStructurePlacement(
-			new Vec3i(9, 0, 9), StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_2, 0.01F, 0, Optional.empty(), 1, 0, SpreadType.LINEAR
-		)
+		new RandomSpreadStructurePlacement(1, 0, SpreadType.LINEAR, 0, new Vec3i(9, 0, 9))
 	);
 	RegistryEntry<StructureSet> MINESHAFTS = register(
 		StructureSetKeys.MINESHAFTS,
 		new StructureSet(
 			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT), StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT_MESA)),
-			new RandomSpreadStructurePlacement(
-				Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_3, 0.004F, 0, Optional.empty(), 1, 0, SpreadType.LINEAR
-			)
+			new RandomSpreadStructurePlacement(1, 0, SpreadType.LINEAR, 0)
 		)
 	);
 	RegistryEntry<StructureSet> RUINED_PORTALS = register(
@@ -122,9 +102,7 @@ public interface StructureSets {
 		StructureSetKeys.END_CITIES, ConfiguredStructureFeatures.END_CITY, new RandomSpreadStructurePlacement(20, 11, SpreadType.TRIANGULAR, 10387313)
 	);
 	RegistryEntry<StructureSet> STRONGHOLDS = register(
-		StructureSetKeys.STRONGHOLDS,
-		ConfiguredStructureFeatures.STRONGHOLD,
-		new ConcentricRingsStructurePlacement(32, 3, 128, BuiltinRegistries.BIOME.getOrCreateEntryList(BiomeTags.STRONGHOLD_BIASED_TO))
+		StructureSetKeys.STRONGHOLDS, ConfiguredStructureFeatures.STRONGHOLD, new ConcentricRingsStructurePlacement(32, 3, 128)
 	);
 
 	static RegistryEntry<StructureSet> initAndGetDefault() {
@@ -136,7 +114,7 @@ public interface StructureSets {
 	}
 
 	static RegistryEntry<StructureSet> register(
-		RegistryKey<StructureSet> key, RegistryEntry<StructureFeature> configuredStructureFigure, StructurePlacement placement
+		RegistryKey<StructureSet> key, RegistryEntry<ConfiguredStructureFeature<?, ?>> configuredStructureFigure, StructurePlacement placement
 	) {
 		return register(key, new StructureSet(configuredStructureFigure, placement));
 	}

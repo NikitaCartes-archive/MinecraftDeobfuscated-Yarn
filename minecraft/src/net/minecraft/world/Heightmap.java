@@ -1,16 +1,21 @@
 package net.minecraft.world;
 
+import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.collection.PaletteStorage;
 import net.minecraft.util.math.BlockPos;
@@ -150,10 +155,15 @@ public class Heightmap {
 			state -> (state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock)
 		);
 
-		public static final com.mojang.serialization.Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values);
+		public static final Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values, Heightmap.Type::byName);
 		private final String name;
 		private final Heightmap.Purpose purpose;
 		private final Predicate<BlockState> blockPredicate;
+		private static final Map<String, Heightmap.Type> BY_NAME = Util.make(Maps.<String, Heightmap.Type>newHashMap(), hashMap -> {
+			for (Heightmap.Type type : values()) {
+				hashMap.put(type.name, type);
+			}
+		});
 
 		private Type(String name, Heightmap.Purpose purpose, Predicate<BlockState> blockPredicate) {
 			this.name = name;
@@ -171,6 +181,11 @@ public class Heightmap {
 
 		public boolean isStoredServerSide() {
 			return this.purpose != Heightmap.Purpose.WORLDGEN;
+		}
+
+		@Nullable
+		public static Heightmap.Type byName(String name) {
+			return (Heightmap.Type)BY_NAME.get(name);
 		}
 
 		public Predicate<BlockState> getBlockPredicate() {

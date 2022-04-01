@@ -3,8 +3,10 @@ package net.minecraft.client.render.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7323;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayers;
@@ -15,6 +17,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -22,6 +25,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
@@ -58,12 +62,27 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 	) {
 		try {
 			BlockRenderType blockRenderType = state.getRenderType();
-			return blockRenderType != BlockRenderType.MODEL
-				? false
-				: this.blockModelRenderer
-					.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
-		} catch (Throwable var11) {
-			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
+			if (blockRenderType != BlockRenderType.MODEL) {
+				return false;
+			} else {
+				Item item = class_7323.method_42881(state);
+				if (item != null) {
+					ItemStack itemStack = new ItemStack(item);
+					BakedModel bakedModel = MinecraftClient.getInstance().getItemRenderer().getModel(itemStack, null, null, 4);
+					matrices.push();
+					matrices.translate(0.0, 0.5, 0.0);
+					matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(1.55F));
+					boolean bl = this.blockModelRenderer
+						.render(world, bakedModel, state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
+					matrices.pop();
+					return bl;
+				} else {
+					return this.blockModelRenderer
+						.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
+				}
+			}
+		} catch (Throwable var13) {
+			CrashReport crashReport = CrashReport.create(var13, "Tesselating block in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
 			CrashReportSection.addBlockInfo(crashReportSection, world, pos, state);
 			throw new CrashException(crashReport);

@@ -1,13 +1,9 @@
 package net.minecraft.village;
 
-import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.MerchantScreenHandler;
-import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
 
 public interface Merchant {
 	void setCustomer(@Nullable PlayerEntity customer);
@@ -33,18 +29,6 @@ public interface Merchant {
 
 	default boolean canRefreshTrades() {
 		return false;
-	}
-
-	default void sendOffers(PlayerEntity player, Text test, int levelProgress) {
-		OptionalInt optionalInt = player.openHandledScreen(
-			new SimpleNamedScreenHandlerFactory((syncId, playerInventory, playerx) -> new MerchantScreenHandler(syncId, playerInventory, this), test)
-		);
-		if (optionalInt.isPresent()) {
-			TradeOfferList tradeOfferList = this.getOffers();
-			if (!tradeOfferList.isEmpty()) {
-				player.sendTradeOffers(optionalInt.getAsInt(), tradeOfferList, levelProgress, this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
-			}
-		}
 	}
 
 	boolean isClient();

@@ -329,8 +329,8 @@ public class Format4ResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-		return this.parent.findResources(type, namespace, prefix, allowedPathPredicate);
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+		return this.parent.findResources(type, namespace, prefix, maxDepth, pathFilter);
 	}
 
 	@Override

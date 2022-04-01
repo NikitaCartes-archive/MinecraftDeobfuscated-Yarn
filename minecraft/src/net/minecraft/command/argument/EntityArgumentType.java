@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
@@ -40,6 +39,8 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableText("argument.entity.selector.not_allowed")
 	);
+	private static final byte SINGLE_TARGET_MASK = 1;
+	private static final byte PLAYERS_ONLY_MASK = 2;
 	final boolean singleTarget;
 	final boolean playersOnly;
 
@@ -120,9 +121,10 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		if (context.getSource() instanceof CommandSource commandSource) {
+		if (context.getSource() instanceof CommandSource) {
 			StringReader stringReader = new StringReader(builder.getInput());
 			stringReader.setCursor(builder.getStart());
+			CommandSource commandSource = (CommandSource)context.getSource();
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader, commandSource.hasPermissionLevel(2));
 
 			try {
@@ -145,54 +147,28 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return EXAMPLES;
 	}
 
-	public static class Serializer implements ArgumentSerializer<EntityArgumentType, EntityArgumentType.Serializer.Properties> {
-		private static final byte SINGLE_FLAG = 1;
-		private static final byte PLAYERS_ONLY_FLAG = 2;
-
-		public void writePacket(EntityArgumentType.Serializer.Properties properties, PacketByteBuf packetByteBuf) {
-			int i = 0;
-			if (properties.single) {
-				i |= 1;
+	public static class Serializer implements ArgumentSerializer<EntityArgumentType> {
+		public void toPacket(EntityArgumentType entityArgumentType, PacketByteBuf packetByteBuf) {
+			byte b = 0;
+			if (entityArgumentType.singleTarget) {
+				b = (byte)(b | 1);
 			}
 
-			if (properties.playersOnly) {
-				i |= 2;
+			if (entityArgumentType.playersOnly) {
+				b = (byte)(b | 2);
 			}
 
-			packetByteBuf.writeByte(i);
+			packetByteBuf.writeByte(b);
 		}
 
-		public EntityArgumentType.Serializer.Properties fromPacket(PacketByteBuf packetByteBuf) {
+		public EntityArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 			byte b = packetByteBuf.readByte();
-			return new EntityArgumentType.Serializer.Properties((b & 1) != 0, (b & 2) != 0);
+			return new EntityArgumentType((b & 1) != 0, (b & 2) != 0);
 		}
 
-		public void writeJson(EntityArgumentType.Serializer.Properties properties, JsonObject jsonObject) {
-			jsonObject.addProperty("amount", properties.single ? "single" : "multiple");
-			jsonObject.addProperty("type", properties.playersOnly ? "players" : "entities");
-		}
-
-		public EntityArgumentType.Serializer.Properties getArgumentTypeProperties(EntityArgumentType entityArgumentType) {
-			return new EntityArgumentType.Serializer.Properties(entityArgumentType.singleTarget, entityArgumentType.playersOnly);
-		}
-
-		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<EntityArgumentType> {
-			final boolean single;
-			final boolean playersOnly;
-
-			Properties(boolean single, boolean playersOnly) {
-				this.single = single;
-				this.playersOnly = playersOnly;
-			}
-
-			public EntityArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
-				return new EntityArgumentType(this.single, this.playersOnly);
-			}
-
-			@Override
-			public ArgumentSerializer<EntityArgumentType, ?> getSerializer() {
-				return Serializer.this;
-			}
+		public void toJson(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
+			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
+			jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
 		}
 	}
 }

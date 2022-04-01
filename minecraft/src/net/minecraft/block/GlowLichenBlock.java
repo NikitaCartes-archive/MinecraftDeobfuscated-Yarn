@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.ToIntFunction;
+import net.minecraft.class_7325;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -18,7 +19,7 @@ import net.minecraft.world.WorldAccess;
 
 public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable, Waterloggable {
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	private final LichenGrower grower = new LichenGrower(this);
+	private final class_7325 field_38562 = new class_7325(this);
 
 	public GlowLichenBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -62,7 +63,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		return Direction.stream().anyMatch(direction -> this.grower.canGrow(state, world, pos, direction.getOpposite()));
+		return Direction.method_43008().anyMatch(direction -> this.field_38562.method_42892(state, world, pos, direction.getOpposite()));
 	}
 
 	@Override
@@ -72,7 +73,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		this.grower.grow(state, world, pos, random);
+		this.field_38562.method_42901(state, world, pos, random);
 	}
 
 	@Override
@@ -86,7 +87,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 	}
 
 	@Override
-	public LichenGrower getGrower() {
-		return this.grower;
+	public class_7325 method_42882() {
+		return this.field_38562;
 	}
 }

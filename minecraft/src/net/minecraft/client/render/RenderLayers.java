@@ -37,9 +37,8 @@ public class RenderLayers {
 		map.put(Blocks.DARK_OAK_LEAVES, renderLayer2);
 		map.put(Blocks.AZALEA_LEAVES, renderLayer2);
 		map.put(Blocks.FLOWERING_AZALEA_LEAVES, renderLayer2);
-		map.put(Blocks.MANGROVE_ROOTS, renderLayer2);
-		map.put(Blocks.MANGROVE_LEAVES, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getCutout();
+		map.put(Blocks.GENERIC_ITEM_BLOCK, renderLayer3);
 		map.put(Blocks.OAK_SAPLING, renderLayer3);
 		map.put(Blocks.SPRUCE_SAPLING, renderLayer3);
 		map.put(Blocks.BIRCH_SAPLING, renderLayer3);
@@ -112,7 +111,6 @@ public class RenderLayers {
 		map.put(Blocks.DARK_OAK_TRAPDOOR, renderLayer3);
 		map.put(Blocks.CRIMSON_TRAPDOOR, renderLayer3);
 		map.put(Blocks.WARPED_TRAPDOOR, renderLayer3);
-		map.put(Blocks.MANGROVE_TRAPDOOR, renderLayer3);
 		map.put(Blocks.ATTACHED_PUMPKIN_STEM, renderLayer3);
 		map.put(Blocks.ATTACHED_MELON_STEM, renderLayer3);
 		map.put(Blocks.PUMPKIN_STEM, renderLayer3);
@@ -131,7 +129,6 @@ public class RenderLayers {
 		map.put(Blocks.POTTED_JUNGLE_SAPLING, renderLayer3);
 		map.put(Blocks.POTTED_ACACIA_SAPLING, renderLayer3);
 		map.put(Blocks.POTTED_DARK_OAK_SAPLING, renderLayer3);
-		map.put(Blocks.POTTED_MANGROVE_PROPAGULE, renderLayer3);
 		map.put(Blocks.POTTED_FERN, renderLayer3);
 		map.put(Blocks.POTTED_DANDELION, renderLayer3);
 		map.put(Blocks.POTTED_POPPY, renderLayer3);
@@ -168,7 +165,6 @@ public class RenderLayers {
 		map.put(Blocks.JUNGLE_DOOR, renderLayer3);
 		map.put(Blocks.ACACIA_DOOR, renderLayer3);
 		map.put(Blocks.DARK_OAK_DOOR, renderLayer3);
-		map.put(Blocks.MANGROVE_DOOR, renderLayer3);
 		map.put(Blocks.END_ROD, renderLayer3);
 		map.put(Blocks.CHORUS_PLANT, renderLayer3);
 		map.put(Blocks.CHORUS_FLOWER, renderLayer3);
@@ -251,9 +247,6 @@ public class RenderLayers {
 		map.put(Blocks.HANGING_ROOTS, renderLayer3);
 		map.put(Blocks.SCULK_SENSOR, renderLayer3);
 		map.put(Blocks.SCULK_VEIN, renderLayer3);
-		map.put(Blocks.SCULK_SHRIEKER, renderLayer3);
-		map.put(Blocks.MANGROVE_PROPAGULE, renderLayer3);
-		map.put(Blocks.MANGROVE_LOG, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);
 		map.put(Blocks.NETHER_PORTAL, renderLayer4);
@@ -294,7 +287,6 @@ public class RenderLayers {
 		map.put(Blocks.FROSTED_ICE, renderLayer4);
 		map.put(Blocks.BUBBLE_COLUMN, renderLayer4);
 		map.put(Blocks.TINTED_GLASS, renderLayer4);
-		map.put(Blocks.FROGSPAWN, renderLayer4);
 	});
 	private static final Map<Fluid, RenderLayer> FLUIDS = Util.make(Maps.<Fluid, RenderLayer>newHashMap(), map -> {
 		RenderLayer renderLayer = RenderLayer.getTranslucent();

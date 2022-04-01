@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +19,6 @@ import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.JsonDataLoader;
@@ -98,25 +96,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param world the input world
 	 */
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).values().stream().filter(recipe -> recipe.matches(inventory, world)).findFirst();
-	}
-
-	public <C extends Inventory, T extends Recipe<C>> Optional<Pair<Identifier, T>> getFirstMatch(
-		RecipeType<T> type, C inventory, World world, @Nullable Identifier id
-	) {
-		Map<Identifier, T> map = this.getAllOfType(type);
-		if (id != null) {
-			T recipe = (T)map.get(id);
-			if (recipe != null && recipe.matches(inventory, world)) {
-				return Optional.of(Pair.of(id, recipe));
-			}
-		}
-
-		return map.entrySet()
-			.stream()
-			.filter(entry -> ((Recipe)entry.getValue()).matches(inventory, world))
-			.findFirst()
-			.map(entry -> Pair.of((Identifier)entry.getKey(), (Recipe)entry.getValue()));
+		return this.getAllOfType(type).values().stream().flatMap(recipe -> type.match(recipe, world, inventory).stream()).findFirst();
 	}
 
 	/**
@@ -131,7 +111,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param type the desired recipe type
 	 */
 	public <C extends Inventory, T extends Recipe<C>> List<T> listAllOfType(RecipeType<T> type) {
-		return List.copyOf(this.getAllOfType(type).values());
+		return (List<T>)this.getAllOfType(type).values().stream().map(recipe -> recipe).collect(Collectors.toList());
 	}
 
 	/**
@@ -152,13 +132,13 @@ public class RecipeManager extends JsonDataLoader {
 		return (List<T>)this.getAllOfType(type)
 			.values()
 			.stream()
-			.filter(recipe -> recipe.matches(inventory, world))
+			.flatMap(recipe -> type.match(recipe, world, inventory).stream())
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, T> getAllOfType(RecipeType<T> type) {
-		return (Map<Identifier, T>)this.recipes.getOrDefault(type, Collections.emptyMap());
+	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllOfType(RecipeType<T> type) {
+		return (Map<Identifier, Recipe<C>>)this.recipes.getOrDefault(type, Collections.emptyMap());
 	}
 
 	/**
@@ -267,33 +247,5 @@ public class RecipeManager extends JsonDataLoader {
 		});
 		this.recipes = ImmutableMap.copyOf(map);
 		this.recipesById = builder.build();
-	}
-
-	/**
-	 * Creates a cached match getter. This is optimized for getting matches of the same
-	 * recipe repeatedly, such as furnaces.
-	 */
-	public static <C extends Inventory, T extends Recipe<C>> RecipeManager.MatchGetter<C, T> createCachedMatchGetter(RecipeType<T> type) {
-		return new RecipeManager.MatchGetter<C, T>() {
-			@Nullable
-			private Identifier id;
-
-			@Override
-			public Optional<T> getFirstMatch(C inventory, World world) {
-				RecipeManager recipeManager = world.getRecipeManager();
-				Optional<Pair<Identifier, T>> optional = recipeManager.getFirstMatch(type, inventory, world, this.id);
-				if (optional.isPresent()) {
-					Pair<Identifier, T> pair = (Pair<Identifier, T>)optional.get();
-					this.id = pair.getFirst();
-					return Optional.of(pair.getSecond());
-				} else {
-					return Optional.empty();
-				}
-			}
-		};
-	}
-
-	public interface MatchGetter<C extends Inventory, T extends Recipe<C>> {
-		Optional<T> getFirstMatch(C inventory, World world);
 	}
 }

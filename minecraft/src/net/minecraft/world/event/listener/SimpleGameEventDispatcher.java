@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.DebugInfoSender;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 /**
@@ -21,13 +21,13 @@ import net.minecraft.world.event.GameEvent;
  */
 public class SimpleGameEventDispatcher implements GameEventDispatcher {
 	private final List<GameEventListener> listeners = Lists.<GameEventListener>newArrayList();
-	private final Set<GameEventListener> field_37673 = Sets.<GameEventListener>newHashSet();
-	private final List<GameEventListener> field_37674 = Lists.<GameEventListener>newArrayList();
-	private boolean field_37675;
-	private final ServerWorld world;
+	private final Set<GameEventListener> field_38613 = Sets.<GameEventListener>newHashSet();
+	private final List<GameEventListener> field_38614 = Lists.<GameEventListener>newArrayList();
+	private boolean field_38615 = false;
+	private final World world;
 
-	public SimpleGameEventDispatcher(ServerWorld serverWorld) {
-		this.world = serverWorld;
+	public SimpleGameEventDispatcher(World world) {
+		this.world = world;
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 
 	@Override
 	public void addListener(GameEventListener listener) {
-		if (this.field_37675) {
-			this.field_37674.add(listener);
+		if (this.field_38615) {
+			this.field_38614.add(listener);
 		} else {
 			this.listeners.add(listener);
 		}
@@ -48,56 +48,56 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 
 	@Override
 	public void removeListener(GameEventListener listener) {
-		if (this.field_37675) {
-			this.field_37673.add(listener);
+		if (this.field_38615) {
+			this.field_38613.add(listener);
 		} else {
 			this.listeners.remove(listener);
 		}
 	}
 
 	@Override
-	public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d vec3d) {
+	public void dispatch(GameEvent event, @Nullable Entity entity, BlockPos pos) {
 		boolean bl = false;
-		this.field_37675 = true;
+		this.field_38615 = true;
 
 		try {
 			Iterator<GameEventListener> iterator = this.listeners.iterator();
 
 			while (iterator.hasNext()) {
 				GameEventListener gameEventListener = (GameEventListener)iterator.next();
-				if (this.field_37673.remove(gameEventListener)) {
+				if (this.field_38613.remove(gameEventListener)) {
 					iterator.remove();
-				} else if (dispatchTo(this.world, event, entity, vec3d, gameEventListener)) {
+				} else if (this.dispatchTo(this.world, event, entity, pos, gameEventListener)) {
 					bl = true;
 				}
 			}
 		} finally {
-			this.field_37675 = false;
+			this.field_38615 = false;
 		}
 
-		if (!this.field_37674.isEmpty()) {
-			this.listeners.addAll(this.field_37674);
-			this.field_37674.clear();
+		if (!this.field_38614.isEmpty()) {
+			this.listeners.addAll(this.field_38614);
+			this.field_38614.clear();
 		}
 
-		if (!this.field_37673.isEmpty()) {
-			this.listeners.removeAll(this.field_37673);
-			this.field_37673.clear();
+		if (!this.field_38613.isEmpty()) {
+			this.listeners.removeAll(this.field_38613);
+			this.field_38613.clear();
 		}
 
 		if (bl) {
-			DebugInfoSender.sendGameEvent(this.world, event, vec3d);
+			DebugInfoSender.sendGameEvent(this.world, event, pos);
 		}
 	}
 
-	private static boolean dispatchTo(ServerWorld serverWorld, GameEvent gameEvent, @Nullable Entity entity, Vec3d vec3d, GameEventListener gameEventListener) {
-		Optional<Vec3d> optional = gameEventListener.getPositionSource().getPos(serverWorld);
+	private boolean dispatchTo(World world, GameEvent event, @Nullable Entity entity, BlockPos pos, GameEventListener listener) {
+		Optional<BlockPos> optional = listener.getPositionSource().getPos(world);
 		if (optional.isEmpty()) {
 			return false;
 		} else {
-			double d = ((Vec3d)optional.get()).squaredDistanceTo(vec3d);
-			int i = gameEventListener.getRange() * gameEventListener.getRange();
-			return d <= (double)i && gameEventListener.listen(serverWorld, gameEvent, entity, vec3d);
+			double d = ((BlockPos)optional.get()).getSquaredDistance(pos);
+			int i = listener.getRange() * listener.getRange();
+			return d <= (double)i && listener.listen(world, event, entity, pos);
 		}
 	}
 }

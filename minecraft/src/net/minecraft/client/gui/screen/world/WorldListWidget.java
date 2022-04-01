@@ -26,9 +26,9 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
-import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.ProgressScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -110,7 +110,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		if (this.levels.isEmpty()) {
-			CreateWorldScreen.create(this.client, null);
+			this.client.setScreen(CreateWorldScreen.create(null));
 		} else {
 			String string = ((String)searchTextSupplier.get()).toLowerCase(Locale.ROOT);
 
@@ -229,7 +229,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			RenderSystem.enableBlend();
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
-			if (this.client.options.getTouchscreen().getValue() || hovered) {
+			if (this.client.options.touchscreen || hovered) {
 				RenderSystem.setShaderTexture(0, WorldListWidget.WORLD_SELECTION_LOCATION);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -385,7 +385,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void edit() {
-			this.openReadingWorldScreen();
 			String string = this.level.getName();
 
 			try {
@@ -415,7 +414,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			try (
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-				SaveLoader saveLoader = this.client.method_41735().createSaveLoader(session, false);
+				SaveLoader saveLoader = this.client.createSaveLoader(session, false);
 			) {
 				GeneratorOptions generatorOptions = saveLoader.saveProperties().getGeneratorOptions();
 				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
@@ -450,12 +449,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			if (this.client.getLevelStorage().levelExists(this.level.getName())) {
 				this.openReadingWorldScreen();
-				this.client.method_41735().start(this.screen, this.level.getName());
+				this.client.startIntegratedServer(this.level.getName());
 			}
 		}
 
 		private void openReadingWorldScreen() {
-			this.client.setScreenAndRender(new MessageScreen(new TranslatableText("selectWorld.data_read")));
+			this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("selectWorld.data_read")));
 		}
 
 		@Nullable

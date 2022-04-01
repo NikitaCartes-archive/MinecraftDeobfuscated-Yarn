@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -44,6 +45,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -55,6 +57,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -63,7 +66,7 @@ import net.minecraft.world.event.GameEvent;
 public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final int MAX_GRASS_TIMER = 40;
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final Map<DyeColor, ItemConvertible> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
+	private static final Map<DyeColor, Block> DROPS = Util.make(Maps.newEnumMap(DyeColor.class), map -> {
 		map.put(DyeColor.WHITE, Blocks.WHITE_WOOL);
 		map.put(DyeColor.ORANGE, Blocks.ORANGE_WOOL);
 		map.put(DyeColor.MAGENTA, Blocks.MAGENTA_WOOL);
@@ -86,6 +89,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	);
 	private int eatGrassTimer;
 	private EatGrassGoal eatGrassGoal;
+	private boolean field_38517;
 
 	private static float[] getDyedColor(DyeColor color) {
 		if (color == DyeColor.WHITE) {
@@ -338,7 +342,6 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Override
 	public void onEatingGrass() {
-		super.onEatingGrass();
 		this.setSheared(false);
 		if (this.isBaby()) {
 			this.growUp(60);
@@ -384,5 +387,22 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.95F * dimensions.height;
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+		if (this.field_38517 && this.onGround) {
+			this.field_38517 = false;
+			if (!this.isSheared()) {
+				this.sheared(SoundCategory.BLOCKS);
+			}
+		}
+	}
+
+	@Override
+	public void method_42766(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+		super.method_42766(serverPlayerEntity, vec3d);
+		this.field_38517 = true;
 	}
 }

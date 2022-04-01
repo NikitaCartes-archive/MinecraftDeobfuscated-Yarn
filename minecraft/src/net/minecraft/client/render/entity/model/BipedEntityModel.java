@@ -12,7 +12,12 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.mob.EndermanEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -138,12 +143,26 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 	public void animateModel(T livingEntity, float f, float g, float h) {
 		this.leaningPitch = livingEntity.getLeaningPitch(h);
+		if (livingEntity.method_42803() != LivingEntity.class_7316.NONE) {
+			this.leftArmPose = this.rightArmPose = BipedEntityModel.ArmPose.BOW_AND_ARROW;
+		}
+
 		super.animateModel(livingEntity, f, g, h);
 	}
 
 	public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
 		boolean bl = livingEntity.getRoll() > 4;
 		boolean bl2 = livingEntity.isInSwimmingPose();
+		if (!(livingEntity instanceof EndermanEntity) && !(livingEntity instanceof ArmorStandEntity)) {
+			boolean bl3 = livingEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL);
+			this.leftArm.visible = !bl3;
+			this.rightArm.visible = !bl3;
+			this.head.visible = !bl3;
+			if (livingEntity instanceof PlayerEntity playerEntity && playerEntity.isInSneakingPose()) {
+				this.body.visible = this.leftLeg.visible = this.rightLeg.visible = !bl3;
+			}
+		}
+
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		if (bl) {
 			this.head.pitch = (float) (-Math.PI / 4);
@@ -196,17 +215,17 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 
 		this.rightArm.yaw = 0.0F;
 		this.leftArm.yaw = 0.0F;
-		boolean bl3 = livingEntity.getMainArm() == Arm.RIGHT;
+		boolean bl4 = livingEntity.getMainArm() == Arm.RIGHT;
 		if (livingEntity.isUsingItem()) {
-			boolean bl4 = livingEntity.getActiveHand() == Hand.MAIN_HAND;
-			if (bl4 == bl3) {
+			boolean bl5 = livingEntity.getActiveHand() == Hand.MAIN_HAND;
+			if (bl5 == bl4) {
 				this.positionRightArm(livingEntity);
 			} else {
 				this.positionLeftArm(livingEntity);
 			}
 		} else {
-			boolean bl4 = bl3 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
-			if (bl3 != bl4) {
+			boolean bl5 = bl4 ? this.leftArmPose.isTwoHanded() : this.rightArmPose.isTwoHanded();
+			if (bl4 != bl5) {
 				this.positionLeftArm(livingEntity);
 				this.positionRightArm(livingEntity);
 			} else {
@@ -287,9 +306,20 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		}
 
 		this.hat.copyTransform(this.head);
+		if (livingEntity.method_42803() == LivingEntity.class_7316.MOB) {
+			this.leftArm.pitch--;
+			this.rightArm.pitch--;
+			this.leftArm.pivotY -= 2.0F;
+			this.rightArm.pivotY -= 2.0F;
+		}
 	}
 
 	private void positionRightArm(T entity) {
+		if (entity instanceof PlayerEntity && ((PlayerEntity)entity).method_42803() != LivingEntity.class_7316.NONE) {
+			this.rightArm.pitch = this.rightArm.pitch * 0.5F - (float) (Math.PI * 2.0 / 5.0);
+			this.rightArm.yaw = (float) (-Math.PI / 6);
+		}
+
 		switch (this.rightArmPose) {
 			case EMPTY:
 				this.rightArm.yaw = 0.0F;
@@ -325,6 +355,11 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	}
 
 	private void positionLeftArm(T entity) {
+		if (entity instanceof PlayerEntity && ((PlayerEntity)entity).method_42803() != LivingEntity.class_7316.NONE) {
+			this.leftArm.pitch = this.leftArm.pitch * 0.5F - (float) (Math.PI * 2.0 / 5.0);
+			this.leftArm.yaw = (float) (Math.PI / 6);
+		}
+
 		switch (this.leftArmPose) {
 			case EMPTY:
 				this.leftArm.yaw = 0.0F;

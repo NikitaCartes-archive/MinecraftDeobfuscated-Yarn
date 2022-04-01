@@ -2,6 +2,7 @@ package net.minecraft.data.server;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
@@ -40,6 +41,7 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.raid.Raid;
@@ -136,7 +138,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
-		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream().toList())
+		requireListedBiomesVisited(Advancement.Builder.create(), this.getOverworldBiomes())
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
@@ -558,37 +560,32 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				)
 			)
 			.build(consumer, "adventure/fall_from_world_height");
-		Advancement.Builder.create()
-			.parent(advancement)
-			.display(
-				Blocks.SCULK_CATALYST,
-				new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.title"),
-				new TranslatableText("advancements.adventure.kill_mob_near_sculk_catalyst.description"),
-				null,
-				AdvancementFrame.CHALLENGE,
-				true,
-				true,
-				false
-			)
-			.criterion("kill_mob_near_sculk_catalyst", OnKilledCriterion.Conditions.createKillMobNearSculkCatalyst())
-			.build(consumer, "adventure/kill_mob_near_sculk_catalyst");
 	}
 
-	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
+	private List<RegistryKey<Biome>> getOverworldBiomes() {
+		return (List<RegistryKey<Biome>>)MultiNoiseBiomeSource.Preset.OVERWORLD
+			.getBiomeSource(BuiltinRegistries.BIOME)
+			.getBiomes()
+			.stream()
+			.flatMap(biomeEntry -> biomeEntry.getKey().stream())
+			.collect(Collectors.toList());
+	}
+
+	private Advancement.Builder requireListedMobsKilled(Advancement.Builder task) {
 		for (EntityType<?> entityType : MONSTERS) {
-			builder.criterion(
+			task.criterion(
 				Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(entityType))
 			);
 		}
 
-		return builder;
+		return task;
 	}
 
-	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
+	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder task, List<RegistryKey<Biome>> biomes) {
 		for (RegistryKey<Biome> registryKey : biomes) {
-			builder.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
+			task.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
 		}
 
-		return builder;
+		return task;
 	}
 }

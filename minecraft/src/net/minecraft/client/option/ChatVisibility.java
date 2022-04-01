@@ -2,10 +2,9 @@ package net.minecraft.client.option;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
 
-public enum ChatVisibility implements TranslatableOption {
+public enum ChatVisibility {
 	FULL(0, "options.chat.visibility.full"),
 	SYSTEM(1, "options.chat.visibility.system"),
 	HIDDEN(2, "options.chat.visibility.hidden");
@@ -21,12 +20,10 @@ public enum ChatVisibility implements TranslatableOption {
 		this.translationKey = translationKey;
 	}
 
-	@Override
 	public int getId() {
 		return this.id;
 	}
 
-	@Override
 	public String getTranslationKey() {
 		return this.translationKey;
 	}

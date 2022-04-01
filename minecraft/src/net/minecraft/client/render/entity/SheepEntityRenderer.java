@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.SheepWoolFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SheepEntityModel;
@@ -14,6 +15,7 @@ public class SheepEntityRenderer extends MobEntityRenderer<SheepEntity, SheepEnt
 
 	public SheepEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SheepEntityModel<>(context.getPart(EntityModelLayers.SHEEP)), 0.7F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new SheepWoolFeatureRenderer(this, context.getModelLoader()));
 	}
 

@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.file.FileSystemAlreadyExistsException;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
@@ -119,12 +120,12 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		if (resourcePath != null) {
 			try {
-				collectIdentifiers(set, namespace, resourcePath.resolve(type.getDirectory()), prefix, allowedPathPredicate);
-			} catch (IOException var12) {
+				getIdentifiers(set, maxDepth, namespace, resourcePath.resolve(type.getDirectory()), prefix, pathFilter);
+			} catch (IOException var13) {
 			}
 
 			if (type == ResourceType.CLIENT_RESOURCES) {
@@ -132,16 +133,16 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 
 				try {
 					enumeration = resourceClass.getClassLoader().getResources(type.getDirectory() + "/");
-				} catch (IOException var11) {
+				} catch (IOException var12) {
 				}
 
 				while (enumeration != null && enumeration.hasMoreElements()) {
 					try {
 						URI uRI = ((URL)enumeration.nextElement()).toURI();
 						if ("file".equals(uRI.getScheme())) {
-							collectIdentifiers(set, namespace, Paths.get(uRI), prefix, allowedPathPredicate);
+							getIdentifiers(set, maxDepth, namespace, Paths.get(uRI), prefix, pathFilter);
 						}
-					} catch (IOException | URISyntaxException var10) {
+					} catch (IOException | URISyntaxException var11) {
 					}
 				}
 			}
@@ -150,37 +151,36 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 		try {
 			Path path = (Path)TYPE_TO_FILE_SYSTEM.get(type);
 			if (path != null) {
-				collectIdentifiers(set, namespace, path, prefix, allowedPathPredicate);
+				getIdentifiers(set, maxDepth, namespace, path, prefix, pathFilter);
 			} else {
 				LOGGER.error("Can't access assets root for type: {}", type);
 			}
-		} catch (NoSuchFileException | FileNotFoundException var8) {
-		} catch (IOException var9) {
-			LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var9);
+		} catch (NoSuchFileException | FileNotFoundException var9) {
+		} catch (IOException var10) {
+			LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var10);
 		}
 
 		return set;
 	}
 
-	private static void collectIdentifiers(Collection<Identifier> results, String namespace, Path root, String prefix, Predicate<Identifier> allowedPathPredicate) throws IOException {
+	private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
 		Path path = root.resolve(namespace);
-		Stream<Path> stream = Files.walk(path.resolve(prefix));
+		Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
 
 		try {
-			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]))
+			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && pathFilter.test(pathx.getFileName().toString()))
 				.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
-				.filter(allowedPathPredicate)
 				.forEach(results::add);
-		} catch (Throwable var10) {
+		} catch (Throwable var11) {
 			if (stream != null) {
 				try {
 					stream.close();
-				} catch (Throwable var9) {
-					var10.addSuppressed(var9);
+				} catch (Throwable var10) {
+					var11.addSuppressed(var10);
 				}
 			}
 
-			throw var10;
+			throw var11;
 		}
 
 		if (stream != null) {
@@ -340,7 +340,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 
 			@Override
 			public String getResourcePackName() {
-				return DefaultResourcePack.this.getName();
+				return identifier.toString();
 			}
 		};
 	}

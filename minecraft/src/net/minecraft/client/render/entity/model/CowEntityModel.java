@@ -81,6 +81,7 @@ public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
+	@Override
 	public ModelPart getHead() {
 		return this.head;
 	}

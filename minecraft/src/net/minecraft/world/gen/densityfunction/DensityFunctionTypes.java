@@ -7,12 +7,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.function.ToFloatFunction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
@@ -20,16 +20,16 @@ import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.biome.source.TheEndBiomeSource;
+import net.minecraft.world.biome.source.util.VanillaTerrainParameters;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import org.slf4j.Logger;
 
 public final class DensityFunctionTypes {
-	private static final Codec<DensityFunction> CODEC = Registry.DENSITY_FUNCTION_TYPE
-		.getCodec()
-		.dispatch(densityFunction -> densityFunction.getCodec().codec(), Function.identity());
+	private static final Codec<DensityFunction> CODEC = Registry.DENSITY_FUNCTION_TYPE.getCodec().dispatch(DensityFunction::getCodec, Function.identity());
 	protected static final double field_37060 = 1000000.0;
 	static final Codec<Double> CONSTANT_RANGE = Codec.doubleRange(-1000000.0, 1000000.0);
 	public static final Codec<DensityFunction> field_37061 = Codec.either(CONSTANT_RANGE, CODEC)
@@ -63,44 +63,45 @@ public final class DensityFunctionTypes {
 			register(registry, type2.asString(), type2.codec);
 		}
 
+		register(registry, "slide", DensityFunctionTypes.Slide.CODEC);
+
 		for (DensityFunctionTypes.Operation.Type type3 : DensityFunctionTypes.Operation.Type.values()) {
 			register(registry, type3.asString(), type3.codec);
 		}
 
 		register(registry, "spline", DensityFunctionTypes.Spline.CODEC);
+		register(registry, "terrain_shaper_spline", DensityFunctionTypes.TerrainShaperSpline.CODEC);
 		register(registry, "constant", DensityFunctionTypes.Constant.CODEC);
 		return register(registry, "y_clamped_gradient", DensityFunctionTypes.YClampedGradient.CODEC);
 	}
 
 	private static Codec<? extends DensityFunction> register(
-		Registry<Codec<? extends DensityFunction>> registry, String id, CodecHolder<? extends DensityFunction> codecHolder
+		Registry<Codec<? extends DensityFunction>> registry, String id, Codec<? extends DensityFunction> codec
 	) {
-		return Registry.register(registry, id, codecHolder.codec());
+		return Registry.register(registry, id, codec);
 	}
 
-	static <A, O> CodecHolder<O> method_41064(Codec<A> codec, Function<A, O> function, Function<O, A> function2) {
-		return CodecHolder.of(codec.fieldOf("argument").xmap(function, function2));
+	static <A, O> Codec<O> method_41064(Codec<A> codec, Function<A, O> function, Function<O, A> function2) {
+		return codec.fieldOf("argument").xmap(function, function2).codec();
 	}
 
-	static <O> CodecHolder<O> method_41069(Function<DensityFunction, O> function, Function<O, DensityFunction> function2) {
+	static <O> Codec<O> method_41069(Function<DensityFunction, O> function, Function<O, DensityFunction> function2) {
 		return method_41064(DensityFunction.field_37059, function, function2);
 	}
 
-	static <O> CodecHolder<O> method_41068(
+	static <O> Codec<O> method_41068(
 		BiFunction<DensityFunction, DensityFunction, O> biFunction, Function<O, DensityFunction> function, Function<O, DensityFunction> function2
 	) {
-		return CodecHolder.of(
-			RecordCodecBuilder.mapCodec(
-				instance -> instance.group(
-							DensityFunction.field_37059.fieldOf("argument1").forGetter(function), DensityFunction.field_37059.fieldOf("argument2").forGetter(function2)
-						)
-						.apply(instance, biFunction)
-			)
+		return RecordCodecBuilder.create(
+			instance -> instance.group(
+						DensityFunction.field_37059.fieldOf("argument1").forGetter(function), DensityFunction.field_37059.fieldOf("argument2").forGetter(function2)
+					)
+					.apply(instance, biFunction)
 		);
 	}
 
-	static <O> CodecHolder<O> method_41065(MapCodec<O> mapCodec) {
-		return CodecHolder.of(mapCodec);
+	static <O> Codec<O> method_41065(MapCodec<O> mapCodec) {
+		return mapCodec.codec();
 	}
 
 	private DensityFunctionTypes() {
@@ -129,7 +130,7 @@ public final class DensityFunctionTypes {
 	public static DensityFunction noise(
 		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, @Deprecated double xzScale, double yScale, double d, double e
 	) {
-		return method_40484(new DensityFunctionTypes.Noise(new DensityFunction.class_7270(noiseParameters), xzScale, yScale), d, e);
+		return method_40484(new DensityFunctionTypes.Noise(noiseParameters, null, xzScale, yScale), d, e);
 	}
 
 	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double yScale, double d, double e) {
@@ -143,7 +144,7 @@ public final class DensityFunctionTypes {
 	public static DensityFunction shiftedNoise(
 		DensityFunction densityFunction, DensityFunction densityFunction2, double d, RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters
 	) {
-		return new DensityFunctionTypes.ShiftedNoise(densityFunction, zero(), densityFunction2, d, 0.0, new DensityFunction.class_7270(noiseParameters));
+		return new DensityFunctionTypes.ShiftedNoise(densityFunction, zero(), densityFunction2, d, 0.0, noiseParameters, null);
 	}
 
 	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters) {
@@ -151,7 +152,7 @@ public final class DensityFunctionTypes {
 	}
 
 	public static DensityFunction method_40502(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double xzScale, double yScale) {
-		return new DensityFunctionTypes.Noise(new DensityFunction.class_7270(noiseParameters), xzScale, yScale);
+		return new DensityFunctionTypes.Noise(noiseParameters, null, xzScale, yScale);
 	}
 
 	public static DensityFunction noise(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters, double yScale) {
@@ -165,15 +166,15 @@ public final class DensityFunctionTypes {
 	}
 
 	public static DensityFunction shiftA(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters) {
-		return new DensityFunctionTypes.ShiftA(new DensityFunction.class_7270(noiseParameters));
+		return new DensityFunctionTypes.ShiftA(noiseParameters, null);
 	}
 
 	public static DensityFunction shiftB(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters) {
-		return new DensityFunctionTypes.ShiftB(new DensityFunction.class_7270(noiseParameters));
+		return new DensityFunctionTypes.ShiftB(noiseParameters, null);
 	}
 
 	public static DensityFunction shift(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseParameters) {
-		return new DensityFunctionTypes.Shift(new DensityFunction.class_7270(noiseParameters));
+		return new DensityFunctionTypes.Shift(noiseParameters, null);
 	}
 
 	public static DensityFunction blendDensity(DensityFunction densityFunction) {
@@ -189,27 +190,38 @@ public final class DensityFunctionTypes {
 		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry,
 		DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper rarityValueMapper
 	) {
-		return new DensityFunctionTypes.WeirdScaledSampler(densityFunction, new DensityFunction.class_7270(registryEntry), rarityValueMapper);
+		return new DensityFunctionTypes.WeirdScaledSampler(densityFunction, registryEntry, null, rarityValueMapper);
 	}
 
-	public static DensityFunction add(DensityFunction densityFunction, DensityFunction densityFunction2) {
+	public static DensityFunction slide(GenerationShapeConfig generationShapeConfig, DensityFunction densityFunction) {
+		return new DensityFunctionTypes.Slide(generationShapeConfig, densityFunction);
+	}
+
+	public static DensityFunction method_40486(DensityFunction densityFunction, DensityFunction densityFunction2) {
 		return DensityFunctionTypes.Operation.create(DensityFunctionTypes.Operation.Type.ADD, densityFunction, densityFunction2);
 	}
 
-	public static DensityFunction mul(DensityFunction densityFunction, DensityFunction densityFunction2) {
+	public static DensityFunction method_40500(DensityFunction densityFunction, DensityFunction densityFunction2) {
 		return DensityFunctionTypes.Operation.create(DensityFunctionTypes.Operation.Type.MUL, densityFunction, densityFunction2);
 	}
 
-	public static DensityFunction min(DensityFunction densityFunction, DensityFunction densityFunction2) {
+	public static DensityFunction method_40505(DensityFunction densityFunction, DensityFunction densityFunction2) {
 		return DensityFunctionTypes.Operation.create(DensityFunctionTypes.Operation.Type.MIN, densityFunction, densityFunction2);
 	}
 
-	public static DensityFunction max(DensityFunction densityFunction, DensityFunction densityFunction2) {
+	public static DensityFunction method_40508(DensityFunction densityFunction, DensityFunction densityFunction2) {
 		return DensityFunctionTypes.Operation.create(DensityFunctionTypes.Operation.Type.MAX, densityFunction, densityFunction2);
 	}
 
-	public static DensityFunction spline(net.minecraft.util.math.Spline<DensityFunctionTypes.Spline.class_7136, DensityFunctionTypes.Spline.class_7135> spline) {
-		return new DensityFunctionTypes.Spline(spline);
+	public static DensityFunction method_40489(
+		DensityFunction densityFunction,
+		DensityFunction densityFunction2,
+		DensityFunction densityFunction3,
+		DensityFunctionTypes.TerrainShaperSpline.Spline spline,
+		double d,
+		double e
+	) {
+		return new DensityFunctionTypes.TerrainShaperSpline(densityFunction, densityFunction2, densityFunction3, null, spline, d, e);
 	}
 
 	public static DensityFunction zero() {
@@ -231,7 +243,7 @@ public final class DensityFunctionTypes {
 	private static DensityFunction method_40484(DensityFunction densityFunction, double d, double e) {
 		double f = (d + e) * 0.5;
 		double g = (e - d) * 0.5;
-		return add(constant(f), mul(constant(g), densityFunction));
+		return method_40486(constant(f), method_40500(constant(g), densityFunction));
 	}
 
 	public static DensityFunction blendAlpha() {
@@ -243,17 +255,9 @@ public final class DensityFunctionTypes {
 	}
 
 	public static DensityFunction method_40488(DensityFunction densityFunction, DensityFunction densityFunction2, DensityFunction densityFunction3) {
-		if (densityFunction2 instanceof DensityFunctionTypes.Constant constant) {
-			return method_42359(densityFunction, constant.value, densityFunction3);
-		} else {
-			DensityFunction densityFunction4 = cacheOnce(densityFunction);
-			DensityFunction densityFunction5 = add(mul(densityFunction4, constant(-1.0)), constant(1.0));
-			return add(mul(densityFunction2, densityFunction5), mul(densityFunction3, densityFunction4));
-		}
-	}
-
-	public static DensityFunction method_42359(DensityFunction densityFunction, double d, DensityFunction densityFunction2) {
-		return add(mul(densityFunction, add(densityFunction2, constant(-d))), constant(d));
+		DensityFunction densityFunction4 = cacheOnce(densityFunction);
+		DensityFunction densityFunction5 = method_40486(method_40500(densityFunction4, constant(-1.0)), constant(1.0));
+		return method_40486(method_40500(densityFunction2, densityFunction5), method_40500(densityFunction3, densityFunction4));
 	}
 
 	protected static enum Beardifier implements DensityFunctionTypes.class_7050 {
@@ -283,7 +287,7 @@ public final class DensityFunctionTypes {
 	protected static enum BlendAlpha implements DensityFunction.class_6913 {
 		INSTANCE;
 
-		public static final CodecHolder<DensityFunction> CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
+		public static final Codec<DensityFunction> CODEC = Codec.unit(INSTANCE);
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
@@ -306,13 +310,13 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
 	static record BlendDensity(DensityFunction input) implements DensityFunctionTypes.class_6943 {
-		static final CodecHolder<DensityFunctionTypes.BlendDensity> CODEC = DensityFunctionTypes.method_41069(
+		static final Codec<DensityFunctionTypes.BlendDensity> CODEC = DensityFunctionTypes.method_41069(
 			DensityFunctionTypes.BlendDensity::new, DensityFunctionTypes.BlendDensity::input
 		);
 
@@ -323,7 +327,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.BlendDensity(this.input.apply(visitor)));
+			return (DensityFunction)visitor.apply(new DensityFunctionTypes.BlendDensity(this.input.apply(visitor)));
 		}
 
 		@Override
@@ -337,7 +341,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
@@ -345,7 +349,7 @@ public final class DensityFunctionTypes {
 	protected static enum BlendOffset implements DensityFunction.class_6913 {
 		INSTANCE;
 
-		public static final CodecHolder<DensityFunction> CODEC = CodecHolder.of(MapCodec.unit(INSTANCE));
+		public static final Codec<DensityFunction> CODEC = Codec.unit(INSTANCE);
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
@@ -368,7 +372,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
@@ -382,7 +386,7 @@ public final class DensityFunctionTypes {
 					)
 					.apply(instance, DensityFunctionTypes.Clamp::new)
 		);
-		public static final CodecHolder<DensityFunctionTypes.Clamp> CODEC = DensityFunctionTypes.method_41065(field_37083);
+		public static final Codec<DensityFunctionTypes.Clamp> CODEC = DensityFunctionTypes.method_41065(field_37083);
 
 		@Override
 		public double apply(double d) {
@@ -395,13 +399,13 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
 	static record Constant(double value) implements DensityFunction.class_6913 {
-		static final CodecHolder<DensityFunctionTypes.Constant> CODEC = DensityFunctionTypes.method_41064(
+		static final Codec<DensityFunctionTypes.Constant> CODEC = DensityFunctionTypes.method_41064(
 			DensityFunctionTypes.CONSTANT_RANGE, DensityFunctionTypes.Constant::new, DensityFunctionTypes.Constant::value
 		);
 		static final DensityFunctionTypes.Constant ZERO = new DensityFunctionTypes.Constant(0.0);
@@ -427,15 +431,14 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
 	protected static final class EndIslands implements DensityFunction.class_6913 {
-		public static final CodecHolder<DensityFunctionTypes.EndIslands> CODEC = CodecHolder.of(MapCodec.unit(new DensityFunctionTypes.EndIslands(0L)));
-		private static final float field_37677 = -0.9F;
-		private final SimplexNoiseSampler field_36554;
+		public static final Codec<DensityFunctionTypes.EndIslands> CODEC = Codec.unit(new DensityFunctionTypes.EndIslands(0L));
+		final SimplexNoiseSampler field_36554;
 
 		public EndIslands(long seed) {
 			AbstractRandom abstractRandom = new AtomicSimpleRandom(seed);
@@ -443,35 +446,9 @@ public final class DensityFunctionTypes {
 			this.field_36554 = new SimplexNoiseSampler(abstractRandom);
 		}
 
-		private static float method_41529(SimplexNoiseSampler simplexNoiseSampler, int i, int j) {
-			int k = i / 2;
-			int l = j / 2;
-			int m = i % 2;
-			int n = j % 2;
-			float f = 100.0F - MathHelper.sqrt((float)(i * i + j * j)) * 8.0F;
-			f = MathHelper.clamp(f, -100.0F, 80.0F);
-
-			for (int o = -12; o <= 12; o++) {
-				for (int p = -12; p <= 12; p++) {
-					long q = (long)(k + o);
-					long r = (long)(l + p);
-					if (q * q + r * r > 4096L && simplexNoiseSampler.sample((double)q, (double)r) < -0.9F) {
-						float g = (MathHelper.abs((float)q) * 3439.0F + MathHelper.abs((float)r) * 147.0F) % 13.0F + 9.0F;
-						float h = (float)(m - o * 2);
-						float s = (float)(n - p * 2);
-						float t = 100.0F - MathHelper.sqrt(h * h + s * s) * g;
-						t = MathHelper.clamp(t, -100.0F, 80.0F);
-						f = Math.max(f, t);
-					}
-				}
-			}
-
-			return f;
-		}
-
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			return ((double)method_41529(this.field_36554, pos.blockX() / 8, pos.blockZ() / 8) - 8.0) / 128.0;
+			return ((double)TheEndBiomeSource.getNoiseAt(this.field_36554, pos.blockX() / 8, pos.blockZ() / 8) - 8.0) / 128.0;
 		}
 
 		@Override
@@ -485,35 +462,33 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
-	protected static record Noise(DensityFunction.class_7270 noise, @Deprecated double xzScale, double yScale) implements DensityFunction {
+	protected static record Noise(
+		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise, @Deprecated double xzScale, double yScale
+	) implements DensityFunction.class_6913 {
 		public static final MapCodec<DensityFunctionTypes.Noise> field_37090 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.class_7270.field_38248.fieldOf("noise").forGetter(DensityFunctionTypes.Noise::noise),
+						DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise").forGetter(DensityFunctionTypes.Noise::noiseData),
 						Codec.DOUBLE.fieldOf("xz_scale").forGetter(DensityFunctionTypes.Noise::xzScale),
 						Codec.DOUBLE.fieldOf("y_scale").forGetter(DensityFunctionTypes.Noise::yScale)
 					)
-					.apply(instance, DensityFunctionTypes.Noise::new)
+					.apply(instance, DensityFunctionTypes.Noise::of)
 		);
-		public static final CodecHolder<DensityFunctionTypes.Noise> CODEC = DensityFunctionTypes.method_41065(field_37090);
+		public static final Codec<DensityFunctionTypes.Noise> CODEC = DensityFunctionTypes.method_41065(field_37090);
+
+		public static DensityFunctionTypes.Noise of(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Deprecated double xzScale, double yScale) {
+			return new DensityFunctionTypes.Noise(noiseData, null, xzScale, yScale);
+		}
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			return this.noise.method_42356((double)pos.blockX() * this.xzScale, (double)pos.blockY() * this.yScale, (double)pos.blockZ() * this.xzScale);
-		}
-
-		@Override
-		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
-			arg.method_40478(ds, this);
-		}
-
-		@Override
-		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.Noise(visitor.method_42358(this.noise), this.xzScale, this.yScale));
+			return this.noise == null
+				? 0.0
+				: this.noise.sample((double)pos.blockX() * this.xzScale, (double)pos.blockY() * this.yScale, (double)pos.blockZ() * this.xzScale);
 		}
 
 		@Override
@@ -523,11 +498,11 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double maxValue() {
-			return this.noise.method_42355();
+			return this.noise == null ? 2.0 : this.noise.method_40554();
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
@@ -592,7 +567,7 @@ public final class DensityFunctionTypes {
 		DensityFunction argument2();
 
 		@Override
-		default CodecHolder<? extends DensityFunction> getCodec() {
+		default Codec<? extends DensityFunction> getCodec() {
 			return this.type().codec;
 		}
 
@@ -602,7 +577,7 @@ public final class DensityFunctionTypes {
 			MIN("min"),
 			MAX("max");
 
-			final CodecHolder<DensityFunctionTypes.Operation> codec = DensityFunctionTypes.method_41068(
+			final Codec<DensityFunctionTypes.Operation> codec = DensityFunctionTypes.method_41068(
 				(densityFunction, densityFunction2) -> DensityFunctionTypes.Operation.create(this, densityFunction, densityFunction2),
 				DensityFunctionTypes.Operation::argument1,
 				DensityFunctionTypes.Operation::argument2
@@ -632,7 +607,7 @@ public final class DensityFunctionTypes {
 					)
 					.apply(instance, DensityFunctionTypes.RangeChoice::new)
 		);
-		public static final CodecHolder<DensityFunctionTypes.RangeChoice> CODEC = DensityFunctionTypes.method_41065(field_37092);
+		public static final Codec<DensityFunctionTypes.RangeChoice> CODEC = DensityFunctionTypes.method_41065(field_37092);
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
@@ -656,7 +631,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(
+			return (DensityFunction)visitor.apply(
 				new DensityFunctionTypes.RangeChoice(
 					this.input.apply(visitor), this.minInclusive, this.maxExclusive, this.whenInRange.apply(visitor), this.whenOutOfRange.apply(visitor)
 				)
@@ -674,47 +649,15 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
-	@Debug
-	public static record RegistryEntryHolder(RegistryEntry<DensityFunction> function) implements DensityFunction {
-		@Override
-		public double sample(DensityFunction.NoisePos pos) {
-			return this.function.value().sample(pos);
-		}
-
-		@Override
-		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
-			this.function.value().method_40470(ds, arg);
-		}
-
-		@Override
-		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.RegistryEntryHolder(new RegistryEntry.Direct<>(this.function.value().apply(visitor))));
-		}
-
-		@Override
-		public double minValue() {
-			return this.function.value().minValue();
-		}
-
-		@Override
-		public double maxValue() {
-			return this.function.value().maxValue();
-		}
-
-		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
-			throw new UnsupportedOperationException("Calling .codec() on HolderHolder");
-		}
-	}
-
-	protected static record Shift(DensityFunction.class_7270 offsetNoise) implements DensityFunctionTypes.class_6939 {
-		static final CodecHolder<DensityFunctionTypes.Shift> CODEC = DensityFunctionTypes.method_41064(
-			DensityFunction.class_7270.field_38248, DensityFunctionTypes.Shift::new, DensityFunctionTypes.Shift::offsetNoise
+	static record Shift(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler offsetNoise)
+		implements DensityFunctionTypes.class_6939 {
+		static final Codec<DensityFunctionTypes.Shift> CODEC = DensityFunctionTypes.method_41064(
+			DoublePerlinNoiseSampler.NoiseParameters.CODEC, registryEntry -> new DensityFunctionTypes.Shift(registryEntry, null), DensityFunctionTypes.Shift::noiseData
 		);
 
 		@Override
@@ -723,19 +666,22 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.Shift(visitor.method_42358(this.offsetNoise)));
+		public DensityFunctionTypes.class_6939 method_41086(DoublePerlinNoiseSampler doublePerlinNoiseSampler) {
+			return new DensityFunctionTypes.Shift(this.noiseData, doublePerlinNoiseSampler);
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
-	protected static record ShiftA(DensityFunction.class_7270 offsetNoise) implements DensityFunctionTypes.class_6939 {
-		static final CodecHolder<DensityFunctionTypes.ShiftA> CODEC = DensityFunctionTypes.method_41064(
-			DensityFunction.class_7270.field_38248, DensityFunctionTypes.ShiftA::new, DensityFunctionTypes.ShiftA::offsetNoise
+	protected static record ShiftA(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler offsetNoise)
+		implements DensityFunctionTypes.class_6939 {
+		static final Codec<DensityFunctionTypes.ShiftA> CODEC = DensityFunctionTypes.method_41064(
+			DoublePerlinNoiseSampler.NoiseParameters.CODEC,
+			registryEntry -> new DensityFunctionTypes.ShiftA(registryEntry, null),
+			DensityFunctionTypes.ShiftA::noiseData
 		);
 
 		@Override
@@ -744,19 +690,22 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.ShiftA(visitor.method_42358(this.offsetNoise)));
+		public DensityFunctionTypes.class_6939 method_41086(DoublePerlinNoiseSampler doublePerlinNoiseSampler) {
+			return new DensityFunctionTypes.ShiftA(this.noiseData, doublePerlinNoiseSampler);
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
-	protected static record ShiftB(DensityFunction.class_7270 offsetNoise) implements DensityFunctionTypes.class_6939 {
-		static final CodecHolder<DensityFunctionTypes.ShiftB> CODEC = DensityFunctionTypes.method_41064(
-			DensityFunction.class_7270.field_38248, DensityFunctionTypes.ShiftB::new, DensityFunctionTypes.ShiftB::offsetNoise
+	protected static record ShiftB(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler offsetNoise)
+		implements DensityFunctionTypes.class_6939 {
+		static final Codec<DensityFunctionTypes.ShiftB> CODEC = DensityFunctionTypes.method_41064(
+			DoublePerlinNoiseSampler.NoiseParameters.CODEC,
+			registryEntry -> new DensityFunctionTypes.ShiftB(registryEntry, null),
+			DensityFunctionTypes.ShiftB::noiseData
 		);
 
 		@Override
@@ -765,18 +714,24 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.ShiftB(visitor.method_42358(this.offsetNoise)));
+		public DensityFunctionTypes.class_6939 method_41086(DoublePerlinNoiseSampler doublePerlinNoiseSampler) {
+			return new DensityFunctionTypes.ShiftB(this.noiseData, doublePerlinNoiseSampler);
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
 	protected static record ShiftedNoise(
-		DensityFunction shiftX, DensityFunction shiftY, DensityFunction shiftZ, double xzScale, double yScale, DensityFunction.class_7270 noise
+		DensityFunction shiftX,
+		DensityFunction shiftY,
+		DensityFunction shiftZ,
+		double xzScale,
+		double yScale,
+		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData,
+		@Nullable DoublePerlinNoiseSampler noise
 	) implements DensityFunction {
 		private static final MapCodec<DensityFunctionTypes.ShiftedNoise> field_37098 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
@@ -785,18 +740,33 @@ public final class DensityFunctionTypes {
 						DensityFunction.field_37059.fieldOf("shift_z").forGetter(DensityFunctionTypes.ShiftedNoise::shiftZ),
 						Codec.DOUBLE.fieldOf("xz_scale").forGetter(DensityFunctionTypes.ShiftedNoise::xzScale),
 						Codec.DOUBLE.fieldOf("y_scale").forGetter(DensityFunctionTypes.ShiftedNoise::yScale),
-						DensityFunction.class_7270.field_38248.fieldOf("noise").forGetter(DensityFunctionTypes.ShiftedNoise::noise)
+						DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise").forGetter(DensityFunctionTypes.ShiftedNoise::noiseData)
 					)
-					.apply(instance, DensityFunctionTypes.ShiftedNoise::new)
+					.apply(instance, DensityFunctionTypes.ShiftedNoise::create)
 		);
-		public static final CodecHolder<DensityFunctionTypes.ShiftedNoise> CODEC = DensityFunctionTypes.method_41065(field_37098);
+		public static final Codec<DensityFunctionTypes.ShiftedNoise> CODEC = DensityFunctionTypes.method_41065(field_37098);
+
+		public static DensityFunctionTypes.ShiftedNoise create(
+			DensityFunction shiftX,
+			DensityFunction shiftY,
+			DensityFunction shiftZ,
+			double xzScale,
+			double yScale,
+			RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData
+		) {
+			return new DensityFunctionTypes.ShiftedNoise(shiftX, shiftY, shiftZ, xzScale, yScale, noiseData, null);
+		}
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
-			double d = (double)pos.blockX() * this.xzScale + this.shiftX.sample(pos);
-			double e = (double)pos.blockY() * this.yScale + this.shiftY.sample(pos);
-			double f = (double)pos.blockZ() * this.xzScale + this.shiftZ.sample(pos);
-			return this.noise.method_42356(d, e, f);
+			if (this.noise == null) {
+				return 0.0;
+			} else {
+				double d = (double)pos.blockX() * this.xzScale + this.shiftX.sample(pos);
+				double e = (double)pos.blockY() * this.yScale + this.shiftY.sample(pos);
+				double f = (double)pos.blockZ() * this.xzScale + this.shiftZ.sample(pos);
+				return this.noise.sample(d, e, f);
+			}
 		}
 
 		@Override
@@ -806,9 +776,9 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(
+			return (DensityFunction)visitor.apply(
 				new DensityFunctionTypes.ShiftedNoise(
-					this.shiftX.apply(visitor), this.shiftY.apply(visitor), this.shiftZ.apply(visitor), this.xzScale, this.yScale, visitor.method_42358(this.noise)
+					this.shiftX.apply(visitor), this.shiftY.apply(visitor), this.shiftZ.apply(visitor), this.xzScale, this.yScale, this.noiseData, this.noise
 				)
 			);
 		}
@@ -820,37 +790,65 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double maxValue() {
-			return this.noise.method_42355();
+			return this.noise == null ? 2.0 : this.noise.method_40554();
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
 
-	public static record Spline(net.minecraft.util.math.Spline<DensityFunctionTypes.Spline.class_7136, DensityFunctionTypes.Spline.class_7135> spline)
-		implements DensityFunction {
-		private static final Codec<net.minecraft.util.math.Spline<DensityFunctionTypes.Spline.class_7136, DensityFunctionTypes.Spline.class_7135>> field_37678 = net.minecraft.util.math.Spline.createCodec(
-			DensityFunctionTypes.Spline.class_7135.field_37679
+	protected static record Slide(@Nullable GenerationShapeConfig settings, DensityFunction input) implements DensityFunctionTypes.class_6943 {
+		public static final Codec<DensityFunctionTypes.Slide> CODEC = DensityFunctionTypes.method_41069(
+			densityFunction -> new DensityFunctionTypes.Slide(null, densityFunction), DensityFunctionTypes.Slide::input
 		);
-		private static final MapCodec<DensityFunctionTypes.Spline> field_37256 = field_37678.fieldOf("spline")
-			.xmap(DensityFunctionTypes.Spline::new, DensityFunctionTypes.Spline::spline);
-		public static final CodecHolder<DensityFunctionTypes.Spline> CODEC = DensityFunctionTypes.method_41065(field_37256);
 
 		@Override
-		public double sample(DensityFunction.NoisePos pos) {
-			return (double)this.spline.apply(new DensityFunctionTypes.Spline.class_7136(pos));
+		public double method_40518(DensityFunction.NoisePos noisePos, double d) {
+			return this.settings == null ? d : DensityFunctions.method_40542(this.settings, d, (double)noisePos.blockY());
+		}
+
+		@Override
+		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			return (DensityFunction)visitor.apply(new DensityFunctionTypes.Slide(this.settings, this.input.apply(visitor)));
 		}
 
 		@Override
 		public double minValue() {
-			return (double)this.spline.min();
+			return this.settings == null
+				? this.input.minValue()
+				: Math.min(this.input.minValue(), Math.min(this.settings.bottomSlide().target(), this.settings.topSlide().target()));
 		}
 
 		@Override
 		public double maxValue() {
-			return (double)this.spline.max();
+			return this.settings == null
+				? this.input.maxValue()
+				: Math.max(this.input.maxValue(), Math.max(this.settings.bottomSlide().target(), this.settings.topSlide().target()));
+		}
+
+		@Override
+		public Codec<? extends DensityFunction> getCodec() {
+			return CODEC;
+		}
+	}
+
+	public static record Spline(net.minecraft.util.math.Spline<VanillaTerrainParameters.class_7075> spline, double minValue, double maxValue)
+		implements DensityFunction {
+		private static final MapCodec<DensityFunctionTypes.Spline> field_37256 = RecordCodecBuilder.mapCodec(
+			instance -> instance.group(
+						VanillaTerrainParameters.field_37252.fieldOf("spline").forGetter(DensityFunctionTypes.Spline::spline),
+						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("min_value").forGetter(DensityFunctionTypes.Spline::minValue),
+						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("max_value").forGetter(DensityFunctionTypes.Spline::maxValue)
+					)
+					.apply(instance, DensityFunctionTypes.Spline::new)
+		);
+		public static final Codec<DensityFunctionTypes.Spline> CODEC = DensityFunctionTypes.method_41065(field_37256);
+
+		@Override
+		public double sample(DensityFunction.NoisePos pos) {
+			return MathHelper.clamp((double)this.spline.apply(VanillaTerrainParameters.method_41191(pos)), this.minValue, this.maxValue);
 		}
 
 		@Override
@@ -860,89 +858,170 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.Spline(this.spline.method_41187(arg -> arg.method_41530(visitor))));
+			return (DensityFunction)visitor.apply(
+				new DensityFunctionTypes.Spline(
+					this.spline
+						.method_41187(
+							toFloatFunction -> (ToFloatFunction<VanillaTerrainParameters.class_7075>)(toFloatFunction instanceof VanillaTerrainParameters.class_7074 lv
+									? lv.method_41194(visitor)
+									: toFloatFunction)
+						),
+					this.minValue,
+					this.maxValue
+				)
+			);
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
-		}
-
-		public static record class_7135(RegistryEntry<DensityFunction> function) implements ToFloatFunction<DensityFunctionTypes.Spline.class_7136> {
-			public static final Codec<DensityFunctionTypes.Spline.class_7135> field_37679 = DensityFunction.REGISTRY_ENTRY_CODEC
-				.xmap(DensityFunctionTypes.Spline.class_7135::new, DensityFunctionTypes.Spline.class_7135::function);
-
-			public String toString() {
-				Optional<RegistryKey<DensityFunction>> optional = this.function.getKey();
-				if (optional.isPresent()) {
-					RegistryKey<DensityFunction> registryKey = (RegistryKey<DensityFunction>)optional.get();
-					if (registryKey == DensityFunctions.CONTINENTS_OVERWORLD) {
-						return "continents";
-					}
-
-					if (registryKey == DensityFunctions.EROSION_OVERWORLD) {
-						return "erosion";
-					}
-
-					if (registryKey == DensityFunctions.RIDGES_OVERWORLD) {
-						return "weirdness";
-					}
-
-					if (registryKey == DensityFunctions.RIDGES_FOLDED_OVERWORLD) {
-						return "ridges";
-					}
-				}
-
-				return "Coordinate[" + this.function + "]";
-			}
-
-			public float apply(DensityFunctionTypes.Spline.class_7136 arg) {
-				return (float)this.function.value().sample(arg.context());
-			}
-
-			@Override
-			public float min() {
-				return (float)this.function.value().minValue();
-			}
-
-			@Override
-			public float max() {
-				return (float)this.function.value().maxValue();
-			}
-
-			public DensityFunctionTypes.Spline.class_7135 method_41530(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
-				return new DensityFunctionTypes.Spline.class_7135(new RegistryEntry.Direct<>(this.function.value().apply(densityFunctionVisitor)));
-			}
-		}
-
-		public static record class_7136(DensityFunction.NoisePos context) {
 		}
 	}
 
-	protected static record WeirdScaledSampler(
-		DensityFunction input, DensityFunction.class_7270 noise, DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper rarityValueMapper
-	) implements DensityFunctionTypes.class_6943 {
-		private static final MapCodec<DensityFunctionTypes.WeirdScaledSampler> field_37065 = RecordCodecBuilder.mapCodec(
+	@Deprecated
+	public static record TerrainShaperSpline(
+		DensityFunction continentalness,
+		DensityFunction erosion,
+		DensityFunction weirdness,
+		@Nullable VanillaTerrainParameters shaper,
+		DensityFunctionTypes.TerrainShaperSpline.Spline spline,
+		double minValue,
+		double maxValue
+	) implements DensityFunction {
+		private static final MapCodec<DensityFunctionTypes.TerrainShaperSpline> field_37101 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.field_37059.fieldOf("input").forGetter(DensityFunctionTypes.WeirdScaledSampler::input),
-						DensityFunction.class_7270.field_38248.fieldOf("noise").forGetter(DensityFunctionTypes.WeirdScaledSampler::noise),
-						DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper.CODEC
-							.fieldOf("rarity_value_mapper")
-							.forGetter(DensityFunctionTypes.WeirdScaledSampler::rarityValueMapper)
+						DensityFunction.field_37059.fieldOf("continentalness").forGetter(DensityFunctionTypes.TerrainShaperSpline::continentalness),
+						DensityFunction.field_37059.fieldOf("erosion").forGetter(DensityFunctionTypes.TerrainShaperSpline::erosion),
+						DensityFunction.field_37059.fieldOf("weirdness").forGetter(DensityFunctionTypes.TerrainShaperSpline::weirdness),
+						DensityFunctionTypes.TerrainShaperSpline.Spline.CODEC.fieldOf("spline").forGetter(DensityFunctionTypes.TerrainShaperSpline::spline),
+						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("min_value").forGetter(DensityFunctionTypes.TerrainShaperSpline::minValue),
+						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("max_value").forGetter(DensityFunctionTypes.TerrainShaperSpline::maxValue)
 					)
-					.apply(instance, DensityFunctionTypes.WeirdScaledSampler::new)
+					.apply(instance, DensityFunctionTypes.TerrainShaperSpline::method_41094)
 		);
-		public static final CodecHolder<DensityFunctionTypes.WeirdScaledSampler> CODEC = DensityFunctionTypes.method_41065(field_37065);
+		public static final Codec<DensityFunctionTypes.TerrainShaperSpline> CODEC = DensityFunctionTypes.method_41065(field_37101);
+
+		public static DensityFunctionTypes.TerrainShaperSpline method_41094(
+			DensityFunction densityFunction,
+			DensityFunction densityFunction2,
+			DensityFunction densityFunction3,
+			DensityFunctionTypes.TerrainShaperSpline.Spline spline,
+			double d,
+			double e
+		) {
+			return new DensityFunctionTypes.TerrainShaperSpline(densityFunction, densityFunction2, densityFunction3, null, spline, d, e);
+		}
 
 		@Override
-		public double method_40518(DensityFunction.NoisePos noisePos, double d) {
-			double e = this.rarityValueMapper.scaleFunction.get(d);
-			return e * Math.abs(this.noise.method_42356((double)noisePos.blockX() / e, (double)noisePos.blockY() / e, (double)noisePos.blockZ() / e));
+		public double sample(DensityFunction.NoisePos pos) {
+			return this.shaper == null
+				? 0.0
+				: MathHelper.clamp(
+					(double)this.spline
+						.field_37108
+						.apply(
+							this.shaper,
+							VanillaTerrainParameters.createNoisePoint((float)this.continentalness.sample(pos), (float)this.erosion.sample(pos), (float)this.weirdness.sample(pos))
+						),
+					this.minValue,
+					this.maxValue
+				);
+		}
+
+		@Override
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
+			for (int i = 0; i < ds.length; i++) {
+				ds[i] = this.sample(arg.method_40477(i));
+			}
 		}
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.WeirdScaledSampler(this.input.apply(visitor), visitor.method_42358(this.noise), this.rarityValueMapper));
+			return (DensityFunction)visitor.apply(
+				new DensityFunctionTypes.TerrainShaperSpline(
+					this.continentalness.apply(visitor), this.erosion.apply(visitor), this.weirdness.apply(visitor), this.shaper, this.spline, this.minValue, this.maxValue
+				)
+			);
+		}
+
+		@Override
+		public Codec<? extends DensityFunction> getCodec() {
+			return CODEC;
+		}
+
+		public static enum Spline implements StringIdentifiable {
+			OFFSET("offset", VanillaTerrainParameters::getOffset),
+			FACTOR("factor", VanillaTerrainParameters::getFactor),
+			JAGGEDNESS("jaggedness", VanillaTerrainParameters::getPeak);
+
+			private static final Map<String, DensityFunctionTypes.TerrainShaperSpline.Spline> field_37106 = (Map<String, DensityFunctionTypes.TerrainShaperSpline.Spline>)Arrays.stream(
+					values()
+				)
+				.collect(Collectors.toMap(DensityFunctionTypes.TerrainShaperSpline.Spline::asString, spline -> spline));
+			public static final Codec<DensityFunctionTypes.TerrainShaperSpline.Spline> CODEC = StringIdentifiable.createCodec(
+				DensityFunctionTypes.TerrainShaperSpline.Spline::values, field_37106::get
+			);
+			private final String name;
+			final DensityFunctionTypes.TerrainShaperSpline.class_7053 field_37108;
+
+			private Spline(String name, DensityFunctionTypes.TerrainShaperSpline.class_7053 arg) {
+				this.name = name;
+				this.field_37108 = arg;
+			}
+
+			@Override
+			public String asString() {
+				return this.name;
+			}
+		}
+
+		interface class_7053 {
+			float apply(VanillaTerrainParameters vanillaTerrainParameters, VanillaTerrainParameters.NoisePoint noisePoint);
+		}
+	}
+
+	protected static record WeirdScaledSampler(
+		DensityFunction input,
+		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData,
+		@Nullable DoublePerlinNoiseSampler noise,
+		DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper rarityValueMapper
+	) implements DensityFunctionTypes.class_6943 {
+		private static final MapCodec<DensityFunctionTypes.WeirdScaledSampler> field_37065 = RecordCodecBuilder.mapCodec(
+			instance -> instance.group(
+						DensityFunction.field_37059.fieldOf("input").forGetter(DensityFunctionTypes.WeirdScaledSampler::input),
+						DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("noise").forGetter(DensityFunctionTypes.WeirdScaledSampler::noiseData),
+						DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper.CODEC
+							.fieldOf("rarity_value_mapper")
+							.forGetter(DensityFunctionTypes.WeirdScaledSampler::rarityValueMapper)
+					)
+					.apply(instance, DensityFunctionTypes.WeirdScaledSampler::create)
+		);
+		public static final Codec<DensityFunctionTypes.WeirdScaledSampler> CODEC = DensityFunctionTypes.method_41065(field_37065);
+
+		public static DensityFunctionTypes.WeirdScaledSampler create(
+			DensityFunction input,
+			RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData,
+			DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper rarityValueMapper
+		) {
+			return new DensityFunctionTypes.WeirdScaledSampler(input, noiseData, null, rarityValueMapper);
+		}
+
+		@Override
+		public double method_40518(DensityFunction.NoisePos noisePos, double d) {
+			if (this.noise == null) {
+				return 0.0;
+			} else {
+				double e = this.rarityValueMapper.scaleFunction.get(d);
+				return e * Math.abs(this.noise.sample((double)noisePos.blockX() / e, (double)noisePos.blockY() / e, (double)noisePos.blockZ() / e));
+			}
+		}
+
+		@Override
+		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			this.input.apply(visitor);
+			return (DensityFunction)visitor.apply(
+				new DensityFunctionTypes.WeirdScaledSampler(this.input.apply(visitor), this.noiseData, this.noise, this.rarityValueMapper)
+			);
 		}
 
 		@Override
@@ -952,11 +1031,11 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public double maxValue() {
-			return this.rarityValueMapper.field_37072 * this.noise.method_42355();
+			return this.rarityValueMapper.field_37072 * (this.noise == null ? 2.0 : this.noise.method_40554());
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 
@@ -964,8 +1043,12 @@ public final class DensityFunctionTypes {
 			TYPE1("type_1", DensityFunctions.CaveScaler::scaleTunnels, 2.0),
 			TYPE2("type_2", DensityFunctions.CaveScaler::scaleCaves, 3.0);
 
-			public static final com.mojang.serialization.Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
-				DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::values
+			private static final Map<String, DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> TYPES_MAP = (Map<String, DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper>)Arrays.stream(
+					values()
+				)
+				.collect(Collectors.toMap(DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::asString, rarityValueMapper -> rarityValueMapper));
+			public static final Codec<DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper> CODEC = StringIdentifiable.createCodec(
+				DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper::values, TYPES_MAP::get
 			);
 			private final String name;
 			final Double2DoubleFunction scaleFunction;
@@ -990,13 +1073,8 @@ public final class DensityFunctionTypes {
 		DensityFunction wrapped();
 
 		@Override
-		default CodecHolder<? extends DensityFunction> getCodec() {
+		default Codec<? extends DensityFunction> getCodec() {
 			return this.type().codec;
-		}
-
-		@Override
-		default DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(new DensityFunctionTypes.class_6927(this.type(), this.wrapped().apply(visitor)));
 		}
 	}
 
@@ -1012,7 +1090,7 @@ public final class DensityFunctionTypes {
 					)
 					.apply(instance, DensityFunctionTypes.YClampedGradient::new)
 		);
-		public static final CodecHolder<DensityFunctionTypes.YClampedGradient> CODEC = DensityFunctionTypes.method_41065(field_37075);
+		public static final Codec<DensityFunctionTypes.YClampedGradient> CODEC = DensityFunctionTypes.method_41065(field_37075);
 
 		@Override
 		public double sample(DensityFunction.NoisePos pos) {
@@ -1030,7 +1108,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
 		}
 	}
@@ -1087,7 +1165,7 @@ public final class DensityFunctionTypes {
 
 		@Override
 		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
-			return visitor.apply(DensityFunctionTypes.Operation.create(this.type, this.argument1.apply(visitor), this.argument2.apply(visitor)));
+			return (DensityFunction)visitor.apply(DensityFunctionTypes.Operation.create(this.type, this.argument1.apply(visitor), this.argument2.apply(visitor)));
 		}
 	}
 
@@ -1126,7 +1204,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public CodecHolder<? extends DensityFunction> getCodec() {
+		public Codec<? extends DensityFunction> getCodec() {
 			return this.type.codec;
 		}
 
@@ -1139,7 +1217,7 @@ public final class DensityFunctionTypes {
 			SQUEEZE("squeeze");
 
 			private final String name;
-			final CodecHolder<DensityFunctionTypes.class_6925> codec = DensityFunctionTypes.method_41069(
+			final Codec<DensityFunctionTypes.class_6925> codec = DensityFunctionTypes.method_41069(
 				densityFunction -> DensityFunctionTypes.class_6925.method_41079(this, densityFunction), DensityFunctionTypes.class_6925::input
 			);
 
@@ -1166,6 +1244,11 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
+		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			return (DensityFunction)visitor.apply(new DensityFunctionTypes.class_6927(this.type, this.wrapped.apply(visitor)));
+		}
+
+		@Override
 		public double minValue() {
 			return this.wrapped.minValue();
 		}
@@ -1183,7 +1266,7 @@ public final class DensityFunctionTypes {
 			CACHE_ALL_IN_CELL("cache_all_in_cell");
 
 			private final String name;
-			final CodecHolder<DensityFunctionTypes.Wrapper> codec = DensityFunctionTypes.method_41069(
+			final Codec<DensityFunctionTypes.Wrapper> codec = DensityFunctionTypes.method_41069(
 				densityFunction -> new DensityFunctionTypes.class_6927(this, densityFunction), DensityFunctionTypes.Wrapper::wrapped
 			);
 
@@ -1199,8 +1282,8 @@ public final class DensityFunctionTypes {
 	}
 
 	static record class_6929(DensityFunctionTypes.class_6929.SpecificType specificType, DensityFunction input, double minValue, double maxValue, double argument)
-		implements DensityFunctionTypes.class_6932,
-		DensityFunctionTypes.Operation {
+		implements DensityFunctionTypes.Operation,
+		DensityFunctionTypes.class_6932 {
 		@Override
 		public DensityFunctionTypes.Operation.Type type() {
 			return this.specificType == DensityFunctionTypes.class_6929.SpecificType.MUL
@@ -1273,8 +1356,11 @@ public final class DensityFunctionTypes {
 		double apply(double d);
 	}
 
-	interface class_6939 extends DensityFunction {
-		DensityFunction.class_7270 offsetNoise();
+	interface class_6939 extends DensityFunction.class_6913 {
+		RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData();
+
+		@Nullable
+		DoublePerlinNoiseSampler offsetNoise();
 
 		@Override
 		default double minValue() {
@@ -1283,17 +1369,16 @@ public final class DensityFunctionTypes {
 
 		@Override
 		default double maxValue() {
-			return this.offsetNoise().method_42355() * 4.0;
+			DoublePerlinNoiseSampler doublePerlinNoiseSampler = this.offsetNoise();
+			return (doublePerlinNoiseSampler == null ? 2.0 : doublePerlinNoiseSampler.method_40554()) * 4.0;
 		}
 
 		default double method_40525(double d, double e, double f) {
-			return this.offsetNoise().method_42356(d * 0.25, e * 0.25, f * 0.25) * 4.0;
+			DoublePerlinNoiseSampler doublePerlinNoiseSampler = this.offsetNoise();
+			return doublePerlinNoiseSampler == null ? 0.0 : doublePerlinNoiseSampler.sample(d * 0.25, e * 0.25, f * 0.25) * 4.0;
 		}
 
-		@Override
-		default void method_40470(double[] ds, DensityFunction.class_6911 arg) {
-			arg.method_40478(ds, this);
-		}
+		DensityFunctionTypes.class_6939 method_41086(DoublePerlinNoiseSampler doublePerlinNoiseSampler);
 	}
 
 	interface class_6943 extends DensityFunction {
@@ -1317,11 +1402,43 @@ public final class DensityFunctionTypes {
 	}
 
 	public interface class_7050 extends DensityFunction.class_6913 {
-		CodecHolder<DensityFunction> CODEC = CodecHolder.of(MapCodec.unit(DensityFunctionTypes.Beardifier.INSTANCE));
+		Codec<DensityFunction> CODEC = Codec.unit(DensityFunctionTypes.Beardifier.INSTANCE);
 
 		@Override
-		default CodecHolder<? extends DensityFunction> getCodec() {
+		default Codec<? extends DensityFunction> getCodec() {
 			return CODEC;
+		}
+	}
+
+	protected static record class_7051(RegistryEntry<DensityFunction> function) implements DensityFunction {
+		@Override
+		public double sample(DensityFunction.NoisePos pos) {
+			return this.function.value().sample(pos);
+		}
+
+		@Override
+		public void method_40470(double[] ds, DensityFunction.class_6911 arg) {
+			this.function.value().method_40470(ds, arg);
+		}
+
+		@Override
+		public DensityFunction apply(DensityFunction.DensityFunctionVisitor visitor) {
+			return (DensityFunction)visitor.apply(new DensityFunctionTypes.class_7051(new RegistryEntry.Direct<>(this.function.value().apply(visitor))));
+		}
+
+		@Override
+		public double minValue() {
+			return this.function.value().minValue();
+		}
+
+		@Override
+		public double maxValue() {
+			return this.function.value().maxValue();
+		}
+
+		@Override
+		public Codec<? extends DensityFunction> getCodec() {
+			throw new UnsupportedOperationException("Calling .codec() on HolderHolder");
 		}
 	}
 }

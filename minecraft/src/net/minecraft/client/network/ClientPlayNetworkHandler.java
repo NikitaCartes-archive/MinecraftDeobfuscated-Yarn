@@ -83,7 +83,6 @@ import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -222,6 +221,7 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
@@ -231,6 +231,7 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPac
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -240,7 +241,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.HorseScreenHandler;
-import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -266,10 +266,10 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
+import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.ChunkNibbleArray;
@@ -417,6 +417,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		entity.setPitch(0.0F);
 		entity.setId(packet.getId());
 		this.world.addEntity(packet.getId(), entity);
+	}
+
+	@Override
+	public void onVibration(VibrationS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Vibration vibration = packet.getVibration();
+		BlockPos blockPos = vibration.getOrigin();
+		this.world
+			.addImportantParticle(
+				new VibrationParticleEffect(vibration), true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0
+			);
 	}
 
 	@Override
@@ -601,7 +612,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
-		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, i));
+		packet.visitUpdates((pos, state) -> this.world.setBlockState(pos, state, i));
 	}
 
 	@Override
@@ -667,7 +678,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onBlockUpdate(BlockUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.handleBlockUpdate(packet.getPos(), packet.getState(), 19);
+		this.world.setBlockStateWithoutNeighborUpdates(packet.getPos(), packet.getState());
 	}
 
 	@Override
@@ -783,7 +794,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onMobSpawn(MobSpawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		LivingEntity livingEntity = (LivingEntity)EntityType.newInstance(this.world, packet.getEntityTypeId());
+		LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(packet.getEntityTypeId(), this.world);
 		if (livingEntity != null) {
 			livingEntity.readFromPacket(packet);
 			this.world.addEntity(packet.getId(), livingEntity);
@@ -1235,7 +1246,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onCommandTree(CommandTreeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.commandDispatcher = new CommandDispatcher<>(packet.getCommandTree(new CommandRegistryAccess(this.registryManager)));
+		this.commandDispatcher = new CommandDispatcher<>(packet.getCommandTree());
 	}
 
 	@Override
@@ -1336,17 +1347,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity instanceof LivingEntity) {
-			StatusEffect statusEffect = packet.getEffectId();
+			StatusEffect statusEffect = StatusEffect.byRawId(packet.getEffectId());
 			if (statusEffect != null) {
 				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(
-					statusEffect,
-					packet.getDuration(),
-					packet.getAmplifier(),
-					packet.isAmbient(),
-					packet.shouldShowParticles(),
-					packet.shouldShowIcon(),
-					null,
-					Optional.ofNullable(packet.getFactorCalculationData())
+					statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon()
 				);
 				statusEffectInstance.setPermanent(packet.isPermanent());
 				((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
@@ -1869,46 +1873,45 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				}
 
 				boolean bl3 = packetByteBuf.readBoolean();
-				int r = packetByteBuf.readInt();
-				VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string4, string5, p, h, q, position, string6, path2, bl3, r);
+				VillageDebugRenderer.Brain brain = new VillageDebugRenderer.Brain(uUID, o, string4, string5, p, h, q, position, string6, path2, bl3);
+				int r = packetByteBuf.readVarInt();
+
+				for (int s = 0; s < r; s++) {
+					String string7 = packetByteBuf.readString();
+					brain.possibleActivities.add(string7);
+				}
+
 				int s = packetByteBuf.readVarInt();
 
 				for (int t = 0; t < s; t++) {
-					String string7 = packetByteBuf.readString();
-					brain.possibleActivities.add(string7);
+					String string8 = packetByteBuf.readString();
+					brain.runningTasks.add(string8);
 				}
 
 				int t = packetByteBuf.readVarInt();
 
 				for (int u = 0; u < t; u++) {
-					String string8 = packetByteBuf.readString();
-					brain.runningTasks.add(string8);
+					String string9 = packetByteBuf.readString();
+					brain.memories.add(string9);
 				}
 
 				int u = packetByteBuf.readVarInt();
 
 				for (int v = 0; v < u; v++) {
-					String string9 = packetByteBuf.readString();
-					brain.memories.add(string9);
+					BlockPos blockPos3 = packetByteBuf.readBlockPos();
+					brain.pointsOfInterest.add(blockPos3);
 				}
 
 				int v = packetByteBuf.readVarInt();
 
 				for (int w = 0; w < v; w++) {
-					BlockPos blockPos3 = packetByteBuf.readBlockPos();
-					brain.pointsOfInterest.add(blockPos3);
+					BlockPos blockPos4 = packetByteBuf.readBlockPos();
+					brain.potentialJobSites.add(blockPos4);
 				}
 
 				int w = packetByteBuf.readVarInt();
 
 				for (int x = 0; x < w; x++) {
-					BlockPos blockPos4 = packetByteBuf.readBlockPos();
-					brain.potentialJobSites.add(blockPos4);
-				}
-
-				int x = packetByteBuf.readVarInt();
-
-				for (int y = 0; y < x; y++) {
 					String string10 = packetByteBuf.readString();
 					brain.gossips.add(string10);
 				}
@@ -1933,24 +1936,24 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					blockPos6 = packetByteBuf.readBlockPos();
 				}
 
-				int z = packetByteBuf.readInt();
+				int y = packetByteBuf.readInt();
 				boolean bl6 = packetByteBuf.readBoolean();
 				Path path3 = null;
 				if (bl6) {
 					path3 = Path.fromBuffer(packetByteBuf);
 				}
 
-				BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, z);
-				int aa = packetByteBuf.readVarInt();
+				BeeDebugRenderer.Bee bee = new BeeDebugRenderer.Bee(uUID, o, position, path3, blockPos5, blockPos6, y);
+				int z = packetByteBuf.readVarInt();
 
-				for (int r = 0; r < aa; r++) {
+				for (int aa = 0; aa < z; aa++) {
 					String string11 = packetByteBuf.readString();
 					bee.labels.add(string11);
 				}
 
-				int r = packetByteBuf.readVarInt();
+				int aa = packetByteBuf.readVarInt();
 
-				for (int ab = 0; ab < r; ab++) {
+				for (int r = 0; r < aa; r++) {
 					BlockPos blockPos7 = packetByteBuf.readBlockPos();
 					bee.blacklist.add(blockPos7);
 				}
@@ -1960,9 +1963,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				String string2 = packetByteBuf.readString();
 				int j = packetByteBuf.readInt();
-				int ac = packetByteBuf.readInt();
+				int ab = packetByteBuf.readInt();
 				boolean bl7 = packetByteBuf.readBoolean();
-				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string2, j, ac, bl7, this.world.getTime());
+				BeeDebugRenderer.Hive hive = new BeeDebugRenderer.Hive(blockPos2, string2, j, ab, bl7, this.world.getTime());
 				this.client.debugRenderer.beeDebugRenderer.addHive(hive);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_TEST_CLEAR.equals(identifier)) {
 				this.client.debugRenderer.gameTestDebugRenderer.clear();
@@ -1970,12 +1973,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int m = packetByteBuf.readInt();
 				String string12 = packetByteBuf.readString();
-				int ac = packetByteBuf.readInt();
-				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ac);
+				int ab = packetByteBuf.readInt();
+				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, m, string12, ab);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
 				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
-				Vec3d vec3d = new Vec3d(packetByteBuf.readDouble(), packetByteBuf.readDouble(), packetByteBuf.readDouble());
-				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, vec3d);
+				BlockPos blockPos8 = packetByteBuf.readBlockPos();
+				this.client.debugRenderer.gameEventDebugRenderer.addEvent(gameEvent, blockPos8);
 			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
 				Identifier identifier2 = packetByteBuf.readIdentifier();
 				PositionSource positionSource = ((PositionSourceType)Registry.POSITION_SOURCE_TYPE
@@ -2195,15 +2198,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onSetTradeOffers(SetTradeOffersS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
-		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
-			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
-			merchantScreenHandler.setExperienceFromServer(packet.getExperience());
-			merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
-			merchantScreenHandler.setLeveled(packet.isLeveled());
-			merchantScreenHandler.setCanRefreshTrades(packet.isRefreshable());
-		}
 	}
 
 	@Override
@@ -2230,7 +2224,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onPlayerActionResponse(PlayerActionResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.world.handlePlayerActionResponse(packet.sequence());
+		this.client.interactionManager.processPlayerActionResponse(this.world, packet.pos(), packet.state(), packet.action(), packet.approved());
 	}
 
 	private void updateLighting(

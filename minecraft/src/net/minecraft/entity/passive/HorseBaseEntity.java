@@ -18,7 +18,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -69,7 +68,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, RideableInventory, JumpingMount, Saddleable {
+public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
 	public static final int field_30413 = 400;
 	public static final int field_30414 = 499;
 	public static final int field_30415 = 500;
@@ -412,7 +411,6 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return 400;
 	}
 
-	@Override
 	public void openInventory(PlayerEntity player) {
 		if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(player)) && this.isTame()) {
 			player.openHorseInventory(this, this.items);
@@ -493,7 +491,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 		if (bl) {
 			this.playEatingAnimation();
-			this.emitGameEvent(GameEvent.EAT);
+			this.emitGameEvent(GameEvent.EAT, this.getCameraBlockPos());
 		}
 
 		return bl;
@@ -698,8 +696,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	@Override
 	public void travel(Vec3d movementInput) {
 		if (this.isAlive()) {
-			LivingEntity livingEntity = this.getPrimaryPassenger();
-			if (this.hasPassengers() && livingEntity != null) {
+			if (this.hasPassengers() && this.canBeControlledByRider() && this.isSaddled()) {
+				LivingEntity livingEntity = (LivingEntity)this.getPrimaryPassenger();
 				this.setYaw(livingEntity.getYaw());
 				this.prevYaw = this.getYaw();
 				this.setPitch(livingEntity.getPitch() * 0.5F);
@@ -833,6 +831,11 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
 			+ this.getChildMovementSpeedBonus();
 		child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
+	}
+
+	@Override
+	public boolean canBeControlledByRider() {
+		return this.getPrimaryPassenger() instanceof LivingEntity;
 	}
 
 	public float getEatingGrassAnimationProgress(float tickDelta) {
@@ -1021,15 +1024,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Nullable
-	public LivingEntity getPrimaryPassenger() {
-		if (this.isSaddled()) {
-			Entity var2 = this.getFirstPassenger();
-			if (var2 instanceof LivingEntity) {
-				return (LivingEntity)var2;
-			}
-		}
-
-		return null;
+	@Override
+	public Entity getPrimaryPassenger() {
+		return this.getFirstPassenger();
 	}
 
 	@Nullable

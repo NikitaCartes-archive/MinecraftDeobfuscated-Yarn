@@ -7,8 +7,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -33,11 +31,6 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 
 	public CommandBlockMinecartEntity(World world, double x, double y, double z) {
 		super(EntityType.COMMAND_BLOCK_MINECART, world, x, y, z);
-	}
-
-	@Override
-	protected Item getItem() {
-		return Items.MINECART;
 	}
 
 	@Override

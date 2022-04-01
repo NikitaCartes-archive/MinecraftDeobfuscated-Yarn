@@ -127,17 +127,18 @@ public class ChunkData {
 			this.nbt = nbt;
 		}
 
-		private BlockEntityData(PacketByteBuf packetByteBuf) {
-			this.localXz = packetByteBuf.readByte();
-			this.y = packetByteBuf.readShort();
-			this.type = packetByteBuf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
-			this.nbt = packetByteBuf.readNbt();
+		private BlockEntityData(PacketByteBuf buf) {
+			this.localXz = buf.readByte();
+			this.y = buf.readShort();
+			int i = buf.readVarInt();
+			this.type = Registry.BLOCK_ENTITY_TYPE.get(i);
+			this.nbt = buf.readNbt();
 		}
 
 		void write(PacketByteBuf buf) {
 			buf.writeByte(this.localXz);
 			buf.writeShort(this.y);
-			buf.writeRegistryValue(Registry.BLOCK_ENTITY_TYPE, this.type);
+			buf.writeVarInt(Registry.BLOCK_ENTITY_TYPE.getRawId(this.type));
 			buf.writeNbt(this.nbt);
 		}
 

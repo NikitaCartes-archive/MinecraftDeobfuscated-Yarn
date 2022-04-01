@@ -2,9 +2,12 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Shearable;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -33,6 +36,21 @@ public class CactusBlock extends Block {
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
+			Direction[] directions = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+			boolean bl = false;
+
+			for (Direction direction : directions) {
+				BlockPos blockPos = pos.offset(direction);
+				BlockState blockState = world.getBlockState(blockPos);
+				if (blockState.isOf(Blocks.PUMPKIN)) {
+					world.setBlockState(blockPos, Blocks.CARVED_PUMPKIN.getDefaultState(), Block.NO_REDRAW);
+					bl = true;
+				}
+			}
+
+			if (bl) {
+				world.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			}
 		}
 	}
 
@@ -52,7 +70,7 @@ public class CactusBlock extends Block {
 					world.setBlockState(blockPos, this.getDefaultState());
 					BlockState blockState = state.with(AGE, Integer.valueOf(0));
 					world.setBlockState(pos, blockState, Block.NO_REDRAW);
-					world.updateNeighbor(blockState, blockPos, this, pos, false);
+					blockState.neighborUpdate(world, blockPos, this, pos, false);
 				} else {
 					world.setBlockState(pos, state.with(AGE, Integer.valueOf(j + 1)), Block.NO_REDRAW);
 				}
@@ -99,6 +117,9 @@ public class CactusBlock extends Block {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		entity.damage(DamageSource.CACTUS, 1.0F);
+		if (entity instanceof Shearable shearable && shearable.isShearable()) {
+			shearable.sheared(SoundCategory.BLOCKS);
+		}
 	}
 
 	@Override

@@ -50,7 +50,6 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	public ItemStack removeStack(int slot, int amount) {
 		ItemStack itemStack = Inventories.splitStack(this.stacks, slot, amount);
 		if (!itemStack.isEmpty()) {
-			this.handler.onContentChanged(this);
 		}
 
 		return itemStack;
@@ -59,7 +58,6 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	@Override
 	public void setStack(int slot, ItemStack stack) {
 		this.stacks.set(slot, stack);
-		this.handler.onContentChanged(this);
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.NarratorMode;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -164,6 +165,16 @@ public class Keyboard {
 					}
 
 					return true;
+				case 70:
+					Option.RENDER_DISTANCE
+						.set(
+							this.client.options,
+							MathHelper.clamp(
+								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), Option.RENDER_DISTANCE.getMin(), Option.RENDER_DISTANCE.getMax()
+							)
+						);
+					this.debugLog("debug.cycle_renderdistance.message", this.client.options.viewDistance);
+					return true;
 				case 71:
 					boolean bl2 = this.client.debugRenderer.toggleShowChunkBorder();
 					this.debugLog(bl2 ? "debug.chunk_boundaries.on" : "debug.chunk_boundaries.off");
@@ -209,6 +220,7 @@ public class Keyboard {
 					chatHud.addMessage(new TranslatableText("debug.show_hitboxes.help"));
 					chatHud.addMessage(new TranslatableText("debug.copy_location.help"));
 					chatHud.addMessage(new TranslatableText("debug.clear_chat.help"));
+					chatHud.addMessage(new TranslatableText("debug.cycle_renderdistance.help"));
 					chatHud.addMessage(new TranslatableText("debug.chunk_boundaries.help"));
 					chatHud.addMessage(new TranslatableText("debug.advanced_tooltips.help"));
 					chatHud.addMessage(new TranslatableText("debug.inspect.help"));
@@ -329,7 +341,8 @@ public class Keyboard {
 				&& (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).lastKeyCodeUpdateTime <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {
 					this.client.getWindow().toggleFullscreen();
-					this.client.options.getFullscreen().setValue(this.client.getWindow().isFullscreen());
+					this.client.options.fullscreen = this.client.getWindow().isFullscreen();
+					this.client.options.write();
 					return;
 				}
 
@@ -347,8 +360,9 @@ public class Keyboard {
 			if (NarratorManager.INSTANCE.isActive()) {
 				boolean bl = screen == null || !(screen.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)screen.getFocused()).isActive();
 				if (action != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
-					boolean bl2 = this.client.options.getNarrator().getValue() == NarratorMode.OFF;
-					this.client.options.getNarrator().setValue(NarratorMode.byId(this.client.options.getNarrator().getValue().getId() + 1));
+					boolean bl2 = this.client.options.narrator == NarratorMode.OFF;
+					this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
+					NarratorManager.INSTANCE.addToast(this.client.options.narrator);
 					if (screen instanceof SimpleOptionsScreen) {
 						((SimpleOptionsScreen)screen).updateNarratorButtonText();
 					}

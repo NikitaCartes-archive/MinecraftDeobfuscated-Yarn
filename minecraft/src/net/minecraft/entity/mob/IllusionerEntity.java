@@ -208,8 +208,26 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
+	public void method_42824(float f) {
+		if (this.hasVehicle()) {
+			ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
+			PersistentProjectileEntity persistentProjectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
+			Vec3d vec3d = this.getRootVehicle().getRotationVecClient();
+			double d = vec3d.x;
+			double e = vec3d.y;
+			double g = vec3d.z;
+			double h = Math.sqrt(d * d + g * g);
+			persistentProjectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+			this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			this.world.spawnEntity(persistentProjectileEntity);
+		}
+	}
+
+	@Override
 	public IllagerEntity.State getState() {
-		if (this.isSpellcasting()) {
+		if (this.method_42803() != LivingEntity.class_7316.NONE) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
+		} else if (this.isSpellcasting()) {
 			return IllagerEntity.State.SPELLCASTING;
 		} else {
 			return this.isAttacking() ? IllagerEntity.State.BOW_AND_ARROW : IllagerEntity.State.CROSSED;

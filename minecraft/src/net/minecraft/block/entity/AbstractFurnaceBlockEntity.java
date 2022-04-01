@@ -25,7 +25,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeInputProvider;
-import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
@@ -104,13 +103,13 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	};
 	private final Object2IntOpenHashMap<Identifier> recipesUsed = new Object2IntOpenHashMap<>();
-	private final RecipeManager.MatchGetter<Inventory, ? extends AbstractCookingRecipe> matchGetter;
+	private final RecipeType<? extends AbstractCookingRecipe> recipeType;
 
 	protected AbstractFurnaceBlockEntity(
 		BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state, RecipeType<? extends AbstractCookingRecipe> recipeType
 	) {
 		super(blockEntityType, pos, state);
-		this.matchGetter = RecipeManager.createCachedMatchGetter(recipeType);
+		this.recipeType = recipeType;
 	}
 
 	public static Map<Item, Integer> createFuelTimeMap() {
@@ -132,14 +131,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Blocks.JUNGLE_FENCE, 300);
 		addFuel(map, Blocks.DARK_OAK_FENCE, 300);
 		addFuel(map, Blocks.ACACIA_FENCE, 300);
-		addFuel(map, Blocks.MANGROVE_FENCE, 300);
 		addFuel(map, Blocks.OAK_FENCE_GATE, 300);
 		addFuel(map, Blocks.BIRCH_FENCE_GATE, 300);
 		addFuel(map, Blocks.SPRUCE_FENCE_GATE, 300);
 		addFuel(map, Blocks.JUNGLE_FENCE_GATE, 300);
 		addFuel(map, Blocks.DARK_OAK_FENCE_GATE, 300);
 		addFuel(map, Blocks.ACACIA_FENCE_GATE, 300);
-		addFuel(map, Blocks.MANGROVE_FENCE_GATE, 300);
 		addFuel(map, Blocks.NOTE_BLOCK, 300);
 		addFuel(map, Blocks.BOOKSHELF, 300);
 		addFuel(map, Blocks.LECTERN, 300);
@@ -165,12 +162,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Items.STICK, 100);
 		addFuel(map, ItemTags.SAPLINGS, 100);
 		addFuel(map, Items.BOWL, 100);
-		addFuel(map, ItemTags.WOOL_CARPETS, 67);
+		addFuel(map, ItemTags.CARPETS, 67);
 		addFuel(map, Blocks.DRIED_KELP_BLOCK, 4001);
 		addFuel(map, Items.CROSSBOW, 300);
 		addFuel(map, Blocks.BAMBOO, 50);
 		addFuel(map, Blocks.DEAD_BUSH, 100);
-		addFuel(map, Blocks.SCAFFOLDING, 50);
+		addFuel(map, Blocks.SCAFFOLDING, 400);
 		addFuel(map, Blocks.LOOM, 300);
 		addFuel(map, Blocks.BARREL, 300);
 		addFuel(map, Blocks.CARTOGRAPHY_TABLE, 300);
@@ -179,7 +176,6 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		addFuel(map, Blocks.COMPOSTER, 300);
 		addFuel(map, Blocks.AZALEA, 100);
 		addFuel(map, Blocks.FLOWERING_AZALEA, 100);
-		addFuel(map, Blocks.MANGROVE_ROOTS, 300);
 		return map;
 	}
 
@@ -254,23 +250,15 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		ItemStack itemStack = blockEntity.inventory.get(1);
-		boolean bl3 = !blockEntity.inventory.get(0).isEmpty();
-		boolean bl4 = !itemStack.isEmpty();
-		if (blockEntity.isBurning() || bl4 && bl3) {
-			Recipe<?> recipe;
-			if (bl3) {
-				recipe = (Recipe<?>)blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null);
-			} else {
-				recipe = null;
-			}
-
+		if (blockEntity.isBurning() || !itemStack.isEmpty() && !blockEntity.inventory.get(0).isEmpty()) {
+			Recipe<?> recipe = (Recipe<?>)world.getRecipeManager().getFirstMatch(blockEntity.recipeType, blockEntity, world).orElse(null);
 			int i = blockEntity.getMaxCountPerStack();
 			if (!blockEntity.isBurning() && canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
 				blockEntity.burnTime = blockEntity.getFuelTime(itemStack);
 				blockEntity.fuelTime = blockEntity.burnTime;
 				if (blockEntity.isBurning()) {
 					bl2 = true;
-					if (bl4) {
+					if (!itemStack.isEmpty()) {
 						Item item = itemStack.getItem();
 						itemStack.decrement(1);
 						if (itemStack.isEmpty()) {
@@ -285,7 +273,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				blockEntity.cookTime++;
 				if (blockEntity.cookTime == blockEntity.cookTimeTotal) {
 					blockEntity.cookTime = 0;
-					blockEntity.cookTimeTotal = getCookTime(world, blockEntity);
+					blockEntity.cookTimeTotal = getCookTime(world, blockEntity.recipeType, blockEntity);
 					if (craftRecipe(recipe, blockEntity.inventory, i)) {
 						blockEntity.setLastRecipe(recipe);
 					}
@@ -361,8 +349,8 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static int getCookTime(World world, AbstractFurnaceBlockEntity furnace) {
-		return (Integer)furnace.matchGetter.getFirstMatch(furnace, world).map(AbstractCookingRecipe::getCookTime).orElse(200);
+	private static int getCookTime(World world, RecipeType<? extends AbstractCookingRecipe> recipeType, Inventory inventory) {
+		return (Integer)world.getRecipeManager().getFirstMatch(recipeType, inventory, world).map(AbstractCookingRecipe::getCookTime).orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack stack) {
@@ -429,7 +417,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 
 		if (slot == 0 && !bl) {
-			this.cookTimeTotal = getCookTime(this.world, this);
+			this.cookTimeTotal = getCookTime(this.world, this.recipeType, this);
 			this.cookTime = 0;
 			this.markDirty();
 		}

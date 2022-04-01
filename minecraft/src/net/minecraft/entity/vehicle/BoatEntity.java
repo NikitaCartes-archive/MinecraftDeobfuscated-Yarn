@@ -161,11 +161,11 @@ public class BoatEntity extends Entity {
 			this.setDamageWobbleTicks(10);
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
 			this.scheduleVelocityUpdate();
-			this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-					this.dropItems(source);
+					this.dropItem(this.asItem());
 				}
 
 				this.discard();
@@ -175,10 +175,6 @@ public class BoatEntity extends Entity {
 		} else {
 			return true;
 		}
-	}
-
-	protected void dropItems(DamageSource source) {
-		this.dropItem(this.asItem());
 	}
 
 	@Override
@@ -229,8 +225,6 @@ public class BoatEntity extends Entity {
 				return Items.ACACIA_BOAT;
 			case DARK_OAK:
 				return Items.DARK_OAK_BOAT;
-			case MANGROVE:
-				return Items.MANGROVE_BOAT;
 		}
 	}
 
@@ -315,7 +309,7 @@ public class BoatEntity extends Entity {
 						double e = i == 1 ? vec3d.x : -vec3d.x;
 						this.world
 							.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
-						this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new Vec3d(this.getX() + d, this.getY(), this.getZ() + e));
+						this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new BlockPos(this.getX() + d, this.getY(), this.getZ() + e));
 					}
 				}
 
@@ -334,7 +328,7 @@ public class BoatEntity extends Entity {
 				Entity entity = (Entity)list.get(j);
 				if (!entity.hasPassenger(this)) {
 					if (bl
-						&& this.getPassengerList().size() < this.getMaxPassengers()
+						&& this.getPassengerList().size() < 2
 						&& !entity.hasVehicle()
 						&& entity.getWidth() < this.getWidth()
 						&& entity instanceof LivingEntity
@@ -656,14 +650,10 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	protected float getPassengerHorizontalOffset() {
-		return 0.0F;
-	}
-
 	@Override
 	public void updatePassengerPosition(Entity passenger) {
 		if (this.hasPassenger(passenger)) {
-			float f = this.getPassengerHorizontalOffset();
+			float f = 0.0F;
 			float g = (float)((this.isRemoved() ? 0.01F : this.getMountedHeightOffset()) + passenger.getHeightOffset());
 			if (this.getPassengerList().size() > 1) {
 				int i = this.getPassengerList().indexOf(passenger);
@@ -683,7 +673,7 @@ public class BoatEntity extends Entity {
 			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
 			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(passenger);
-			if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
+			if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
 				int j = passenger.getId() % 2 == 0 ? 90 : 270;
 				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
 				passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
@@ -765,7 +755,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState blockState, BlockPos landedPosition) {
 		this.fallVelocity = this.getVelocity().y;
 		if (!this.hasVehicle()) {
 			if (onGround) {
@@ -847,11 +837,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	protected boolean canAddPassenger(Entity passenger) {
-		return this.getPassengerList().size() < this.getMaxPassengers() && !this.isSubmergedIn(FluidTags.WATER);
-	}
-
-	protected int getMaxPassengers() {
-		return 2;
+		return this.getPassengerList().size() < 2 && !this.isSubmergedIn(FluidTags.WATER);
 	}
 
 	@Nullable
@@ -896,8 +882,7 @@ public class BoatEntity extends Entity {
 		BIRCH(Blocks.BIRCH_PLANKS, "birch"),
 		JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
 		ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
-		DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
-		MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove");
+		DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak");
 
 		private final String name;
 		private final Block baseBlock;

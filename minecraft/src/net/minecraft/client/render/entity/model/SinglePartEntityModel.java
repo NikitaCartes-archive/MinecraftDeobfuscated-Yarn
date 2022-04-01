@@ -28,7 +28,7 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 
 	public abstract ModelPart getPart();
 
-	public Optional<ModelPart> getChild(String name) {
-		return this.getPart().traverse().filter(part -> part.hasChild(name)).findFirst().map(part -> part.getChild(name));
+	public Optional<ModelPart> method_42984(String string) {
+		return this.getPart().traverse().filter(modelPart -> modelPart.method_42988(string)).findFirst().map(modelPart -> modelPart.getChild(string));
 	}
 }

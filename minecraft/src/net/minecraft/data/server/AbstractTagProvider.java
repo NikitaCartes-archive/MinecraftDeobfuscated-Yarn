@@ -39,11 +39,6 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		this.registry = registry;
 	}
 
-	@Override
-	public final String getName() {
-		return "Tags for " + this.registry.getKey().getValue();
-	}
-
 	protected abstract void configure();
 
 	@Override

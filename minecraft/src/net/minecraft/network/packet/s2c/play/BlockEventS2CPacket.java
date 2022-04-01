@@ -24,7 +24,7 @@ public class BlockEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pos = buf.readBlockPos();
 		this.type = buf.readUnsignedByte();
 		this.data = buf.readUnsignedByte();
-		this.block = buf.readRegistryValue(Registry.BLOCK);
+		this.block = Registry.BLOCK.get(buf.readVarInt());
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class BlockEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBlockPos(this.pos);
 		buf.writeByte(this.type);
 		buf.writeByte(this.data);
-		buf.writeRegistryValue(Registry.BLOCK, this.block);
+		buf.writeVarInt(Registry.BLOCK.getRawId(this.block));
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

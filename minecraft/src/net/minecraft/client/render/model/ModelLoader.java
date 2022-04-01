@@ -362,54 +362,38 @@ public class ModelLoader {
 						.getAllResources(identifier2)
 						.stream()
 						.map(
-							resourceRef -> {
+							resource -> {
 								try {
-									Resource resource = resourceRef.open();
+									InputStream inputStream = resource.getInputStream();
 
-									Pair var5x;
+									Pair var3x;
 									try {
-										InputStream inputStream = resource.getInputStream();
-
-										try {
-											var5x = Pair.of(
-												resourceRef.getPackName(),
-												ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-											);
-										} catch (Throwable var9x) {
-											if (inputStream != null) {
-												try {
-													inputStream.close();
-												} catch (Throwable var8x) {
-													var9x.addSuppressed(var8x);
-												}
-											}
-
-											throw var9x;
-										}
-
+										var3x = Pair.of(
+											resource.getResourcePackName(),
+											ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+										);
+									} catch (Throwable var6x) {
 										if (inputStream != null) {
-											inputStream.close();
-										}
-									} catch (Throwable var10x) {
-										if (resource != null) {
 											try {
-												resource.close();
-											} catch (Throwable var7x) {
-												var10x.addSuppressed(var7x);
+												inputStream.close();
+											} catch (Throwable var5x) {
+												var6x.addSuppressed(var5x);
 											}
 										}
 
-										throw var10x;
+										throw var6x;
 									}
 
-									if (resource != null) {
-										resource.close();
+									if (inputStream != null) {
+										inputStream.close();
 									}
 
-									return var5x;
-								} catch (Exception var11x) {
+									return var3x;
+								} catch (Exception var7x) {
 									throw new ModelLoader.ModelLoaderException(
-										String.format("Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resourceRef.getPackName(), var11x.getMessage())
+										String.format(
+											"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), var7x.getMessage()
+										)
 									);
 								}
 							}

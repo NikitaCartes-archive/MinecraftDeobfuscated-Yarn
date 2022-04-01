@@ -4,48 +4,66 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.datafixers.util.Either;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.tag.TagKey;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
 
-public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemStackPredicateArgument> {
+public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
-	private final CommandRegistryWrapper<Item> registryWrapper;
+	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
+		id -> new TranslatableText("arguments.item.tag.unknown", id)
+	);
 
-	public ItemPredicateArgumentType(CommandRegistryAccess commandRegistryAccess) {
-		this.registryWrapper = commandRegistryAccess.createWrapper(Registry.ITEM_KEY);
+	public static ItemPredicateArgumentType itemPredicate() {
+		return new ItemPredicateArgumentType();
 	}
 
-	public static ItemPredicateArgumentType itemPredicate(CommandRegistryAccess commandRegistryAccess) {
-		return new ItemPredicateArgumentType(commandRegistryAccess);
+	public ItemPredicateArgumentType.ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
+		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
+		if (itemStringReader.getItem() != null) {
+			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
+			return context -> itemPredicate;
+		} else {
+			TagKey<Item> tagKey = itemStringReader.getId();
+			return commandContext -> {
+				if (!Registry.ITEM.containsTag(tagKey)) {
+					throw UNKNOWN_TAG_EXCEPTION.create(tagKey);
+				} else {
+					return new ItemPredicateArgumentType.TagPredicate(tagKey, itemStringReader.getNbt());
+				}
+			};
+		}
 	}
 
-	public ItemPredicateArgumentType.ItemStackPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
-		Either<ItemStringReader.ItemResult, ItemStringReader.TagResult> either = ItemStringReader.itemOrTag(this.registryWrapper, stringReader);
-		return either.map(item -> getItemStackPredicate(item2 -> item2 == item.item(), item.nbt()), tag -> getItemStackPredicate(tag.tag()::contains, tag.nbt()));
-	}
-
-	public static Predicate<ItemStack> getItemStackPredicate(CommandContext<ServerCommandSource> context, String name) {
-		return context.getArgument(name, ItemPredicateArgumentType.ItemStackPredicateArgument.class);
+	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		return context.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(name, ItemPredicateArgumentType.ItemPredicateArgument.class).create(context);
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return ItemStringReader.getSuggestions(this.registryWrapper, builder, true);
+		StringReader stringReader = new StringReader(builder.getInput());
+		stringReader.setCursor(builder.getStart());
+		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true);
+
+		try {
+			itemStringReader.consume();
+		} catch (CommandSyntaxException var6) {
+		}
+
+		return itemStringReader.getSuggestions(builder, Registry.ITEM);
 	}
 
 	@Override
@@ -53,10 +71,37 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		return EXAMPLES;
 	}
 
-	private static ItemPredicateArgumentType.ItemStackPredicateArgument getItemStackPredicate(Predicate<RegistryEntry<Item>> predicate, @Nullable NbtCompound nbt) {
-		return nbt != null ? stack -> stack.itemMatches(predicate) && NbtHelper.matches(nbt, stack.getNbt(), true) : stack -> stack.itemMatches(predicate);
+	static class ItemPredicate implements Predicate<ItemStack> {
+		private final Item item;
+		@Nullable
+		private final NbtCompound nbt;
+
+		public ItemPredicate(Item item, @Nullable NbtCompound nbt) {
+			this.item = item;
+			this.nbt = nbt;
+		}
+
+		public boolean test(ItemStack itemStack) {
+			return itemStack.isOf(this.item) && NbtHelper.matches(this.nbt, itemStack.getNbt(), true);
+		}
 	}
 
-	public interface ItemStackPredicateArgument extends Predicate<ItemStack> {
+	public interface ItemPredicateArgument {
+		Predicate<ItemStack> create(CommandContext<ServerCommandSource> context) throws CommandSyntaxException;
+	}
+
+	static class TagPredicate implements Predicate<ItemStack> {
+		private final TagKey<Item> tag;
+		@Nullable
+		private final NbtCompound compound;
+
+		public TagPredicate(TagKey<Item> tag, @Nullable NbtCompound nbt) {
+			this.tag = tag;
+			this.compound = nbt;
+		}
+
+		public boolean test(ItemStack itemStack) {
+			return itemStack.isIn(this.tag) && NbtHelper.matches(this.compound, itemStack.getNbt(), true);
+		}
 	}
 }

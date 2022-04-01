@@ -63,9 +63,9 @@ public class GameRules {
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether blocks should drop their items when broken.
 	 */
-	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> DO_TILE_DROPS = register("doTileDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(false));
 	public static final GameRules.Key<GameRules.BooleanRule> DO_ENTITY_DROPS = register(
-		"doEntityDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(true)
+		"doEntityDrops", GameRules.Category.DROPS, GameRules.BooleanRule.create(false)
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> COMMAND_BLOCK_OUTPUT = register(
 		"commandBlockOutput", GameRules.Category.CHAT, GameRules.BooleanRule.create(true)

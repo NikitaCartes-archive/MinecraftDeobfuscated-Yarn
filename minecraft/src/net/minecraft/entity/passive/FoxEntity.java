@@ -739,22 +739,20 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if (!FoxEntity.this.isSleeping() && this.mob.getTarget() == null) {
-				if (FoxEntity.this.world.isThundering() && FoxEntity.this.world.isSkyVisible(this.mob.getBlockPos())) {
-					return this.targetShadedPos();
-				} else if (this.timer > 0) {
-					this.timer--;
-					return false;
-				} else {
-					this.timer = 100;
-					BlockPos blockPos = this.mob.getBlockPos();
-					return FoxEntity.this.world.isDay()
-						&& FoxEntity.this.world.isSkyVisible(blockPos)
-						&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
-						&& this.targetShadedPos();
-				}
-			} else {
+			if (FoxEntity.this.isSleeping() || this.mob.getTarget() != null) {
 				return false;
+			} else if (FoxEntity.this.world.isThundering()) {
+				return true;
+			} else if (this.timer > 0) {
+				this.timer--;
+				return false;
+			} else {
+				this.timer = 100;
+				BlockPos blockPos = this.mob.getBlockPos();
+				return FoxEntity.this.world.isDay()
+					&& FoxEntity.this.world.isSkyVisible(blockPos)
+					&& !((ServerWorld)FoxEntity.this.world).isNearOccupiedPointOfInterest(blockPos)
+					&& this.targetShadedPos();
 			}
 		}
 

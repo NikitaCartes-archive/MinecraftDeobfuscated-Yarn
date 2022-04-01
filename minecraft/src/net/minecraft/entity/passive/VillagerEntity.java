@@ -16,12 +16,12 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -68,19 +68,15 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.LargeEntitySpawnHelper;
 import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
-import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
-import net.minecraft.village.VillagerGossips;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.village.raid.Raid;
@@ -116,9 +112,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	private PlayerEntity lastCustomer;
 	private boolean field_30612;
 	private int foodLevel;
-	private final VillagerGossips gossip = new VillagerGossips();
-	private long gossipStartTime;
-	private long lastGossipDecayTime;
 	private int experience;
 	private long lastRestockTime;
 	private int restocksToday;
@@ -308,8 +301,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (this.getHeadRollingTimeLeft() > 0) {
 			this.setHeadRollingTimeLeft(this.getHeadRollingTimeLeft() - 1);
 		}
-
-		this.decayGossip();
 	}
 
 	@Override
@@ -333,8 +324,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			if (bl) {
 				return ActionResult.success(this.world.isClient);
 			} else {
-				if (!this.world.isClient && !this.offers.isEmpty()) {
-					this.beginTradeWith(player);
+				if (!this.world.isClient && !this.method_42831(player)) {
+					this.sayNo();
 				}
 
 				return ActionResult.success(this.world.isClient);
@@ -349,12 +340,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 	}
 
-	private void beginTradeWith(PlayerEntity customer) {
-		this.prepareOffersFor(customer);
-		this.setCustomer(customer);
-		this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
-	}
-
 	@Override
 	public void setCustomer(@Nullable PlayerEntity customer) {
 		boolean bl = this.getCustomer() != null && customer == null;
@@ -367,16 +352,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	protected void resetCustomer() {
 		super.resetCustomer();
-		this.clearSpecialPrices();
-	}
-
-	/**
-	 * Resets the special price of all the trade offers of this villager.
-	 */
-	private void clearSpecialPrices() {
-		for (TradeOffer tradeOffer : this.getOffers()) {
-			tradeOffer.clearSpecialPrice();
-		}
 	}
 
 	@Override
@@ -461,26 +436,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 	}
 
-	private void prepareOffersFor(PlayerEntity player) {
-		int i = this.getReputation(player);
-		if (i != 0) {
-			for (TradeOffer tradeOffer : this.getOffers()) {
-				tradeOffer.increaseSpecialPrice(-MathHelper.floor((float)i * tradeOffer.getPriceMultiplier()));
-			}
-		}
-
-		if (player.hasStatusEffect(StatusEffects.HERO_OF_THE_VILLAGE)) {
-			StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.HERO_OF_THE_VILLAGE);
-			int j = statusEffectInstance.getAmplifier();
-
-			for (TradeOffer tradeOffer2 : this.getOffers()) {
-				double d = 0.3 + 0.0625 * (double)j;
-				int k = (int)Math.floor(d * (double)tradeOffer2.getOriginalFirstBuyItem().getCount());
-				tradeOffer2.increaseSpecialPrice(-Math.max(k, 1));
-			}
-		}
-	}
-
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
@@ -495,10 +450,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			.resultOrPartial(field_36335::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		nbt.putByte("FoodLevel", (byte)this.foodLevel);
-		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
 		nbt.putInt("Xp", this.experience);
 		nbt.putLong("LastRestock", this.lastRestockTime);
-		nbt.putLong("LastGossipDecay", this.lastGossipDecayTime);
 		nbt.putInt("RestocksToday", this.restocksToday);
 		if (this.natural) {
 			nbt.putBoolean("AssignProfessionWhenSpawned", true);
@@ -522,13 +475,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		NbtList nbtList = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
-		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, nbtList));
 		if (nbt.contains("Xp", NbtElement.INT_TYPE)) {
 			this.experience = nbt.getInt("Xp");
 		}
 
 		this.lastRestockTime = nbt.getLong("LastRestock");
-		this.lastGossipDecayTime = nbt.getLong("LastGossipDecay");
 		this.setCanPickUpLoot(true);
 		if (this.world instanceof ServerWorld) {
 			this.reinitializeBrain((ServerWorld)this.world);
@@ -589,17 +540,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected void afterUsing(TradeOffer offer) {
-		int i = 3 + this.random.nextInt(4);
 		this.experience = this.experience + offer.getMerchantExperience();
 		this.lastCustomer = this.getCustomer();
 		if (this.canLevelUp()) {
 			this.levelUpTimer = 40;
 			this.levelingUp = true;
-			i += 5;
-		}
-
-		if (offer.shouldRewardPlayerExperience()) {
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
 	}
 
@@ -700,10 +645,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 				}
 			}
 		}
-	}
-
-	public int getReputation(PlayerEntity player) {
-		return this.gossip.getReputationFor(player.getUuid(), gossipType -> true);
 	}
 
 	private void depleteFood(int amount) {
@@ -845,7 +786,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	private int getAvailableFood() {
 		SimpleInventory simpleInventory = this.getInventory();
-		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(item -> simpleInventory.count((Item)item.getKey()) * (Integer)item.getValue()).sum();
+		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> simpleInventory.count((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
 	}
 
 	public boolean hasSeedToPlant() {
@@ -861,27 +802,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			TradeOffers.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
 			if (factorys != null) {
 				TradeOfferList tradeOfferList = this.getOffers();
-				this.fillRecipesFromPool(tradeOfferList, factorys, 2);
+				this.fillRecipesFromPool(tradeOfferList, factorys, Integer.MAX_VALUE);
 			}
-		}
-	}
-
-	public void talkWithVillager(ServerWorld world, VillagerEntity villager, long time) {
-		if ((time < this.gossipStartTime || time >= this.gossipStartTime + 1200L) && (time < villager.gossipStartTime || time >= villager.gossipStartTime + 1200L)) {
-			this.gossip.shareGossipFrom(villager.gossip, this.random, 10);
-			this.gossipStartTime = time;
-			villager.gossipStartTime = time;
-			this.summonGolem(world, time, 5);
-		}
-	}
-
-	private void decayGossip() {
-		long l = this.world.getTime();
-		if (this.lastGossipDecayTime == 0L) {
-			this.lastGossipDecayTime = l;
-		} else if (l >= this.lastGossipDecayTime + 24000L) {
-			this.gossip.decay();
-			this.lastGossipDecayTime = l;
 		}
 	}
 
@@ -891,7 +813,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
 			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= requiredCount) {
-				if (LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
+				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
+				if (ironGolemEntity != null) {
 					list.forEach(GolemLastSeenSensor::rememberIronGolem);
 				}
 			}
@@ -902,18 +825,51 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return !this.hasRecentlySlept(this.world.getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
 	}
 
+	@Nullable
+	private IronGolemEntity spawnIronGolem(ServerWorld world) {
+		BlockPos blockPos = this.getBlockPos();
+
+		for (int i = 0; i < 10; i++) {
+			double d = (double)(world.random.nextInt(16) - 8);
+			double e = (double)(world.random.nextInt(16) - 8);
+			BlockPos blockPos2 = this.getHighestOpenPositionOnOffset(blockPos, d, e);
+			if (blockPos2 != null) {
+				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
+				if (ironGolemEntity != null) {
+					if (ironGolemEntity.canSpawn(world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(world)) {
+						world.spawnEntityAndPassengers(ironGolemEntity);
+						return ironGolemEntity;
+					}
+
+					ironGolemEntity.discard();
+				}
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	private BlockPos getHighestOpenPositionOnOffset(BlockPos pos, double x, double z) {
+		int i = 6;
+		BlockPos blockPos = pos.add(x, 6.0, z);
+		BlockState blockState = this.world.getBlockState(blockPos);
+
+		for (int j = 6; j >= -6; j--) {
+			BlockPos blockPos2 = blockPos;
+			BlockState blockState2 = blockState;
+			blockPos = blockPos.down();
+			blockState = this.world.getBlockState(blockPos);
+			if ((blockState2.isAir() || blockState2.getMaterial().isLiquid()) && blockState.getMaterial().blocksLight()) {
+				return blockPos2;
+			}
+		}
+
+		return null;
+	}
+
 	@Override
 	public void onInteractionWith(EntityInteraction interaction, Entity entity) {
-		if (interaction == EntityInteraction.ZOMBIE_VILLAGER_CURED) {
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MAJOR_POSITIVE, 20);
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MINOR_POSITIVE, 25);
-		} else if (interaction == EntityInteraction.TRADE) {
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.TRADING, 2);
-		} else if (interaction == EntityInteraction.VILLAGER_HURT) {
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MINOR_NEGATIVE, 25);
-		} else if (interaction == EntityInteraction.VILLAGER_KILLED) {
-			this.gossip.startGossip(entity.getUuid(), VillageGossipType.MAJOR_NEGATIVE, 25);
-		}
 	}
 
 	@Override
@@ -928,14 +884,6 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	private void clearDailyRestockCount() {
 		this.restockAndUpdateDemandBonus();
 		this.restocksToday = 0;
-	}
-
-	public VillagerGossips getGossip() {
-		return this.gossip;
-	}
-
-	public void readGossipDataNbt(NbtElement nbt) {
-		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, nbt));
 	}
 
 	@Override

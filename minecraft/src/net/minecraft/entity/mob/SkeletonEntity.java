@@ -15,6 +15,7 @@ import net.minecraft.world.WorldEvents;
 
 public class SkeletonEntity extends AbstractSkeletonEntity {
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Integer> field_38529 = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public static final String STRAY_CONVERSION_TIME_KEY = "StrayConversionTime";
 	private int inPowderSnowTime;
 	private int conversionTime;
@@ -27,6 +28,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(CONVERTING, false);
+		this.getDataTracker().startTracking(field_38529, this.world.random.nextDouble() < 0.0625 ? 2 : 0);
 	}
 
 	/**
@@ -38,6 +40,14 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 
 	public void setConverting(boolean converting) {
 		this.dataTracker.set(CONVERTING, converting);
+	}
+
+	public int method_42827() {
+		return this.getDataTracker().get(field_38529);
+	}
+
+	public void method_42828() {
+		this.getDataTracker().set(field_38529, this.method_42827() + 1);
 	}
 
 	@Override
@@ -127,5 +137,11 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 			creeperEntity.onHeadDropped();
 			this.dropItem(Items.SKELETON_SKULL);
 		}
+
+		for (int i = 0; i < this.method_42827(); i++) {
+			this.dropItem(Items.SPYGLASS);
+		}
+
+		this.getDataTracker().set(field_38529, 0);
 	}
 }

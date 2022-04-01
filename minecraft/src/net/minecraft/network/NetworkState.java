@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.class_7366;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -163,6 +164,7 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
@@ -193,6 +195,7 @@ public enum NetworkState {
 					.register(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
 					.register(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
 					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
+					.register(VibrationS2CPacket.class, VibrationS2CPacket::new)
 					.register(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
 					.register(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
 					.register(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)
@@ -340,6 +343,7 @@ public enum NetworkState {
 					.register(UpdateStructureBlockC2SPacket.class, UpdateStructureBlockC2SPacket::new)
 					.register(UpdateSignC2SPacket.class, UpdateSignC2SPacket::new)
 					.register(HandSwingC2SPacket.class, HandSwingC2SPacket::new)
+					.register(class_7366.class, class_7366::new)
 					.register(SpectatorTeleportC2SPacket.class, SpectatorTeleportC2SPacket::new)
 					.register(PlayerInteractBlockC2SPacket.class, PlayerInteractBlockC2SPacket::new)
 					.register(PlayerInteractItemC2SPacket.class, PlayerInteractItemC2SPacket::new)

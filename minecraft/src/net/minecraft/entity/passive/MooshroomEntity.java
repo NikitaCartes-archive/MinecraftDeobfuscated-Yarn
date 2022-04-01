@@ -56,7 +56,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getPhototaxisFavor(pos);
+		return world.getBlockState(pos.down()).isOf(Blocks.MYCELIUM) ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	public static boolean canSpawn(EntityType<MooshroomEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
@@ -202,7 +202,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
-			nbt.putInt("EffectId", StatusEffect.getRawId(this.stewEffect));
+			nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
 			nbt.putInt("EffectDuration", this.stewEffectDuration);
 		}
 	}
@@ -212,7 +212,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 		super.readCustomDataFromNbt(nbt);
 		this.setType(MooshroomEntity.Type.fromName(nbt.getString("Type")));
 		if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
-			this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
+			this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
 		}
 
 		if (nbt.contains("EffectDuration", NbtElement.INT_TYPE)) {

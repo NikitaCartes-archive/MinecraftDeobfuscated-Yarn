@@ -4,11 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
-import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.class_7320;
+import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStackArgumentType;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -18,14 +19,14 @@ import net.minecraft.text.TranslatableText;
 public class GiveCommand {
 	public static final int MAX_STACKS = 100;
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("give")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							CommandManager.argument("item", ItemStackArgumentType.itemStack(commandRegistryAccess))
+							CommandManager.argument("item", ItemStackArgumentType.itemStack())
 								.executes(
 									context -> execute(
 											context.getSource(), ItemStackArgumentType.getItemStackArgument(context, "item"), EntityArgumentType.getPlayers(context, "targets"), 1
@@ -61,14 +62,10 @@ public class GiveCommand {
 					int l = Math.min(i, k);
 					k -= l;
 					ItemStack itemStack = item.createStack(l, false);
-					boolean bl = serverPlayerEntity.getInventory().insertStack(itemStack);
-					if (bl && itemStack.isEmpty()) {
-						itemStack.setCount(1);
-						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
-						if (itemEntity != null) {
-							itemEntity.setDespawnImmediately();
-						}
-
+					if (serverPlayerEntity.method_42803() == LivingEntity.class_7316.NONE && itemStack.getCount() == 1) {
+						serverPlayerEntity.method_42838((BlockState)class_7320.method_42858(itemStack).orElse(null));
+					} else if (!itemStack.isEmpty()) {
+						serverPlayerEntity.dropItem(itemStack, false);
 						serverPlayerEntity.world
 							.playSound(
 								null,
@@ -80,13 +77,6 @@ public class GiveCommand {
 								0.2F,
 								((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F
 							);
-						serverPlayerEntity.currentScreenHandler.sendContentUpdates();
-					} else {
-						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
-						if (itemEntity != null) {
-							itemEntity.resetPickupDelay();
-							itemEntity.setOwner(serverPlayerEntity.getUuid());
-						}
 					}
 				}
 			}

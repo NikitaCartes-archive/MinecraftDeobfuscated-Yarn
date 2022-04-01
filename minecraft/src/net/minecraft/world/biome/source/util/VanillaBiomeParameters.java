@@ -5,22 +5,17 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.annotation.Debug;
-import net.minecraft.util.function.ToFloatFunction;
-import net.minecraft.util.math.Spline;
-import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
-import net.minecraft.world.gen.densityfunction.DensityFunctions;
 
 public final class VanillaBiomeParameters {
-	private static final float MAX_VALLEY_WEIRDNESS = 0.05F;
-	private static final float MAX_LOW_WEIRDNESS = 0.26666668F;
-	public static final float MAX_MID_WEIRDNESS = 0.4F;
+	private static final float field_34500 = 0.05F;
+	private static final float field_35047 = 0.26666668F;
+	public static final float field_35041 = 0.4F;
 	private static final float field_35048 = 0.93333334F;
 	private static final float field_34501 = 0.1F;
-	public static final float MAX_HIGH_WEIRDNESS = 0.56666666F;
+	public static final float field_34502 = 0.56666666F;
 	private static final float field_34503 = 0.7666667F;
 	public static final float field_35042 = -0.11F;
 	public static final float field_35043 = 0.03F;
@@ -58,7 +53,7 @@ public final class VanillaBiomeParameters {
 	private final MultiNoiseUtil.ParameterRange mushroomFieldsContinentalness = MultiNoiseUtil.ParameterRange.of(-1.2F, -1.05F);
 	private final MultiNoiseUtil.ParameterRange deepOceanContinentalness = MultiNoiseUtil.ParameterRange.of(-1.05F, -0.455F);
 	private final MultiNoiseUtil.ParameterRange oceanContinentalness = MultiNoiseUtil.ParameterRange.of(-0.455F, -0.19F);
-	private final MultiNoiseUtil.ParameterRange coastContinentalness = MultiNoiseUtil.ParameterRange.of(-0.19F, -0.11F);
+	private final MultiNoiseUtil.ParameterRange shoreContinentalness = MultiNoiseUtil.ParameterRange.of(-0.19F, -0.11F);
 	private final MultiNoiseUtil.ParameterRange riverContinentalness = MultiNoiseUtil.ParameterRange.of(-0.11F, 0.55F);
 	private final MultiNoiseUtil.ParameterRange nearInlandContinentalness = MultiNoiseUtil.ParameterRange.of(-0.11F, 0.03F);
 	private final MultiNoiseUtil.ParameterRange midInlandContinentalness = MultiNoiseUtil.ParameterRange.of(0.03F, 0.3F);
@@ -128,77 +123,13 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer) {
-		if (!SharedConstants.DEBUG_BIOME_SOURCE) {
-			this.writeOceanBiomes(consumer);
-			this.writeLandBiomes(consumer);
-			this.writeCaveBiomes(consumer);
+	public void writeVanillaBiomeParameters(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
+		if (SharedConstants.DEBUG_BIOME_SOURCE) {
+			VanillaTerrainParametersCreator.createSurfaceParameters(false).writeDebugBiomes(parameters);
 		} else {
-			DensityFunctionTypes.Spline.class_7135 lv = new DensityFunctionTypes.Spline.class_7135(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.CONTINENTS_OVERWORLD)
-			);
-			DensityFunctionTypes.Spline.class_7135 lv2 = new DensityFunctionTypes.Spline.class_7135(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.EROSION_OVERWORLD)
-			);
-			DensityFunctionTypes.Spline.class_7135 lv3 = new DensityFunctionTypes.Spline.class_7135(
-				BuiltinRegistries.DENSITY_FUNCTION.entryOf(DensityFunctions.RIDGES_FOLDED_OVERWORLD)
-			);
-			consumer.accept(
-				Pair.of(
-					MultiNoiseUtil.createNoiseHypercube(
-						this.defaultParameter,
-						this.defaultParameter,
-						this.defaultParameter,
-						this.defaultParameter,
-						MultiNoiseUtil.ParameterRange.of(0.0F),
-						this.defaultParameter,
-						0.01F
-					),
-					BiomeKeys.PLAINS
-				)
-			);
-			if (VanillaTerrainParametersCreator.method_42051(lv2, lv3, -0.15F, 0.0F, 0.0F, 0.1F, 0.0F, -0.03F, false, false, ToFloatFunction.field_37409) instanceof Spline.Implementation<?, ?> implementation
-				)
-			 {
-				RegistryKey<Biome> registryKey = BiomeKeys.DESERT;
-
-				for (float f : implementation.locations()) {
-					consumer.accept(
-						Pair.of(
-							MultiNoiseUtil.createNoiseHypercube(
-								this.defaultParameter,
-								this.defaultParameter,
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(f),
-								MultiNoiseUtil.ParameterRange.of(0.0F),
-								this.defaultParameter,
-								0.0F
-							),
-							registryKey
-						)
-					);
-					registryKey = registryKey == BiomeKeys.DESERT ? BiomeKeys.BADLANDS : BiomeKeys.DESERT;
-				}
-			}
-
-			if (VanillaTerrainParametersCreator.method_42056(lv, lv2, lv3, false) instanceof Spline.Implementation<?, ?> implementation2) {
-				for (float f : implementation2.locations()) {
-					consumer.accept(
-						Pair.of(
-							MultiNoiseUtil.createNoiseHypercube(
-								this.defaultParameter,
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(f),
-								this.defaultParameter,
-								MultiNoiseUtil.ParameterRange.of(0.0F),
-								this.defaultParameter,
-								0.0F
-							),
-							BiomeKeys.SNOWY_TAIGA
-						)
-					);
-				}
-			}
+			this.writeOceanBiomes(parameters);
+			this.writeLandBiomes(parameters);
+			this.writeCaveBiomes(parameters);
 		}
 	}
 
@@ -265,7 +196,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 					this.erosionParameters[0],
 					weirdness,
 					0.0F,
@@ -275,7 +206,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					this.erosionParameters[1],
 					weirdness,
 					0.0F,
@@ -295,7 +226,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[2], this.erosionParameters[3]),
 					weirdness,
 					0.0F,
@@ -321,7 +252,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 					this.erosionParameters[4],
 					weirdness,
 					0.0F,
@@ -331,7 +262,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					this.erosionParameters[5],
 					weirdness,
 					0.0F,
@@ -351,7 +282,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 					this.erosionParameters[6],
 					weirdness,
 					0.0F,
@@ -379,7 +310,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					this.coastContinentalness,
+					this.shoreContinentalness,
 					MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]),
 					weirdness,
 					0.0F,
@@ -415,7 +346,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[2], this.erosionParameters[3]),
 					weirdness,
 					0.0F,
@@ -441,7 +372,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 					this.erosionParameters[4],
 					weirdness,
 					0.0F,
@@ -451,7 +382,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					this.erosionParameters[5],
 					weirdness,
 					0.0F,
@@ -471,7 +402,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 					this.erosionParameters[6],
 					weirdness,
 					0.0F,
@@ -486,7 +417,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.defaultParameter,
 			this.defaultParameter,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[2]),
 			weirdness,
 			0.0F,
@@ -560,7 +491,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.nearInlandContinentalness),
+					MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.nearInlandContinentalness),
 					this.erosionParameters[3],
 					weirdness,
 					0.0F,
@@ -577,7 +508,7 @@ public final class VanillaBiomeParameters {
 					registryKey2
 				);
 				if (weirdness.max() < 0L) {
-					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[4], weirdness, 0.0F, registryKey6);
+					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[4], weirdness, 0.0F, registryKey6);
 					this.writeBiomeParameters(
 						parameters,
 						parameterRange,
@@ -593,7 +524,7 @@ public final class VanillaBiomeParameters {
 						parameters,
 						parameterRange,
 						parameterRange2,
-						MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+						MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 						this.erosionParameters[4],
 						weirdness,
 						0.0F,
@@ -601,7 +532,7 @@ public final class VanillaBiomeParameters {
 					);
 				}
 
-				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey8);
+				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey8);
 				this.writeBiomeParameters(
 					parameters, parameterRange, parameterRange2, this.nearInlandContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey7
 				);
@@ -616,9 +547,9 @@ public final class VanillaBiomeParameters {
 					registryKey4
 				);
 				if (weirdness.max() < 0L) {
-					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey6);
+					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey6);
 				} else {
-					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey);
+					this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey);
 				}
 
 				if (i == 0) {
@@ -642,7 +573,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.defaultParameter,
 			this.defaultParameter,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[2]),
 			weirdness,
 			0.0F,
@@ -714,7 +645,7 @@ public final class VanillaBiomeParameters {
 					parameters,
 					parameterRange,
 					parameterRange2,
-					this.coastContinentalness,
+					this.shoreContinentalness,
 					MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[3], this.erosionParameters[4]),
 					weirdness,
 					0.0F,
@@ -730,7 +661,7 @@ public final class VanillaBiomeParameters {
 					0.0F,
 					registryKey
 				);
-				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey6);
+				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey6);
 				this.writeBiomeParameters(
 					parameters, parameterRange, parameterRange2, this.nearInlandContinentalness, this.erosionParameters[5], weirdness, 0.0F, registryKey5
 				);
@@ -744,7 +675,7 @@ public final class VanillaBiomeParameters {
 					0.0F,
 					registryKey
 				);
-				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey4);
+				this.writeBiomeParameters(parameters, parameterRange, parameterRange2, this.shoreContinentalness, this.erosionParameters[6], weirdness, 0.0F, registryKey4);
 				if (i == 0) {
 					this.writeBiomeParameters(
 						parameters,
@@ -766,7 +697,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.frozenTemperature,
 			this.defaultParameter,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]),
 			weirdness,
 			0.0F,
@@ -776,7 +707,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.nonFrozenTemperatureParameters,
 			this.defaultParameter,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]),
 			weirdness,
 			0.0F,
@@ -806,7 +737,7 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.frozenTemperature,
 			this.defaultParameter,
-			MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+			MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[2], this.erosionParameters[5]),
 			weirdness,
 			0.0F,
@@ -816,20 +747,20 @@ public final class VanillaBiomeParameters {
 			parameters,
 			this.nonFrozenTemperatureParameters,
 			this.defaultParameter,
-			MultiNoiseUtil.ParameterRange.combine(this.coastContinentalness, this.farInlandContinentalness),
+			MultiNoiseUtil.ParameterRange.combine(this.shoreContinentalness, this.farInlandContinentalness),
 			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[2], this.erosionParameters[5]),
 			weirdness,
 			0.0F,
 			BiomeKeys.RIVER
 		);
 		this.writeBiomeParameters(
-			parameters, this.frozenTemperature, this.defaultParameter, this.coastContinentalness, this.erosionParameters[6], weirdness, 0.0F, BiomeKeys.FROZEN_RIVER
+			parameters, this.frozenTemperature, this.defaultParameter, this.shoreContinentalness, this.erosionParameters[6], weirdness, 0.0F, BiomeKeys.FROZEN_RIVER
 		);
 		this.writeBiomeParameters(
 			parameters,
 			this.nonFrozenTemperatureParameters,
 			this.defaultParameter,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			this.erosionParameters[6],
 			weirdness,
 			0.0F,
@@ -897,16 +828,6 @@ public final class VanillaBiomeParameters {
 			0.0F,
 			BiomeKeys.LUSH_CAVES
 		);
-		this.method_41419(
-			parameters,
-			this.defaultParameter,
-			this.defaultParameter,
-			this.defaultParameter,
-			MultiNoiseUtil.ParameterRange.combine(this.erosionParameters[0], this.erosionParameters[1]),
-			this.defaultParameter,
-			0.0F,
-			BiomeKeys.DEEP_DARK
-		);
 	}
 
 	private RegistryKey<Biome> getRegularBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
@@ -945,7 +866,7 @@ public final class VanillaBiomeParameters {
 
 	private RegistryKey<Biome> getBadlandsBiome(int humidity, MultiNoiseUtil.ParameterRange weirdness) {
 		if (humidity < 2) {
-			return weirdness.max() < 0L ? BiomeKeys.BADLANDS : BiomeKeys.ERODED_BADLANDS;
+			return weirdness.max() < 0L ? BiomeKeys.ERODED_BADLANDS : BiomeKeys.BADLANDS;
 		} else {
 			return humidity < 3 ? BiomeKeys.BADLANDS : BiomeKeys.WOODED_BADLANDS;
 		}
@@ -1021,35 +942,15 @@ public final class VanillaBiomeParameters {
 		);
 	}
 
-	private void method_41419(
-		Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> consumer,
-		MultiNoiseUtil.ParameterRange parameterRange,
-		MultiNoiseUtil.ParameterRange parameterRange2,
-		MultiNoiseUtil.ParameterRange parameterRange3,
-		MultiNoiseUtil.ParameterRange parameterRange4,
-		MultiNoiseUtil.ParameterRange parameterRange5,
-		float f,
-		RegistryKey<Biome> registryKey
-	) {
-		consumer.accept(
-			Pair.of(
-				MultiNoiseUtil.createNoiseHypercube(
-					parameterRange, parameterRange2, parameterRange3, parameterRange4, MultiNoiseUtil.ParameterRange.of(1.1F), parameterRange5, f
-				),
-				registryKey
-			)
-		);
-	}
-
 	public static String getWeirdnessDescription(double weirdness) {
-		if (weirdness < (double)DensityFunctions.method_41546(0.05F)) {
+		if (weirdness < (double)VanillaTerrainParameters.getNormalizedWeirdness(0.05F)) {
 			return "Valley";
-		} else if (weirdness < (double)DensityFunctions.method_41546(0.26666668F)) {
+		} else if (weirdness < (double)VanillaTerrainParameters.getNormalizedWeirdness(0.26666668F)) {
 			return "Low";
-		} else if (weirdness < (double)DensityFunctions.method_41546(0.4F)) {
+		} else if (weirdness < (double)VanillaTerrainParameters.getNormalizedWeirdness(0.4F)) {
 			return "Mid";
 		} else {
-			return weirdness < (double)DensityFunctions.method_41546(0.56666666F) ? "High" : "Peak";
+			return weirdness < (double)VanillaTerrainParameters.getNormalizedWeirdness(0.56666666F) ? "High" : "Peak";
 		}
 	}
 
@@ -1061,7 +962,7 @@ public final class VanillaBiomeParameters {
 			return "Deep ocean";
 		} else if (d < (double)this.oceanContinentalness.max()) {
 			return "Ocean";
-		} else if (d < (double)this.coastContinentalness.max()) {
+		} else if (d < (double)this.shoreContinentalness.max()) {
 			return "Coast";
 		} else if (d < (double)this.nearInlandContinentalness.max()) {
 			return "Near inland";
@@ -1115,7 +1016,7 @@ public final class VanillaBiomeParameters {
 			this.mushroomFieldsContinentalness,
 			this.deepOceanContinentalness,
 			this.oceanContinentalness,
-			this.coastContinentalness,
+			this.shoreContinentalness,
 			this.nearInlandContinentalness,
 			this.midInlandContinentalness,
 			this.farInlandContinentalness
@@ -1125,11 +1026,11 @@ public final class VanillaBiomeParameters {
 	@Debug
 	public MultiNoiseUtil.ParameterRange[] getWeirdnessParameters() {
 		return new MultiNoiseUtil.ParameterRange[]{
-			MultiNoiseUtil.ParameterRange.of(-2.0F, DensityFunctions.method_41546(0.05F)),
-			MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.05F), DensityFunctions.method_41546(0.26666668F)),
-			MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.26666668F), DensityFunctions.method_41546(0.4F)),
-			MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.4F), DensityFunctions.method_41546(0.56666666F)),
-			MultiNoiseUtil.ParameterRange.of(DensityFunctions.method_41546(0.56666666F), 2.0F)
+			MultiNoiseUtil.ParameterRange.of(-2.0F, VanillaTerrainParameters.getNormalizedWeirdness(0.05F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.05F), VanillaTerrainParameters.getNormalizedWeirdness(0.26666668F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.26666668F), VanillaTerrainParameters.getNormalizedWeirdness(0.4F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.4F), VanillaTerrainParameters.getNormalizedWeirdness(0.56666666F)),
+			MultiNoiseUtil.ParameterRange.of(VanillaTerrainParameters.getNormalizedWeirdness(0.56666666F), 2.0F)
 		};
 	}
 

@@ -12,7 +12,6 @@ import net.minecraft.util.Util;
 public enum FontType {
 	BITMAP("bitmap", BitmapFont.Loader::fromJson),
 	TTF("ttf", TrueTypeFontLoader::fromJson),
-	SPACE("space", SpaceFont::fromJson),
 	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
 
 	private static final Map<String, FontType> REGISTRY = Util.make(Maps.<String, FontType>newHashMap(), map -> {

@@ -47,7 +47,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.gen.WorldPresets;
+import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.slf4j.Logger;
@@ -87,7 +87,7 @@ public class TitleScreen extends Screen {
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
-		return this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui != null;
+		return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui == null) {
+		if (this.client.options.realmsNotifications && this.realmsNotificationGui == null) {
 			this.realmsNotificationGui = new RealmsNotificationsScreen();
 		}
 
@@ -264,25 +264,14 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsDemo(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
-		this.addDrawableChild(
-			new ButtonWidget(
-				this.width / 2 - 100,
-				y,
-				200,
-				20,
-				new TranslatableText("menu.playdemo"),
-				button -> {
-					if (bl) {
-						this.client.method_41735().start(this, "Demo_World");
-					} else {
-						DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
-						this.client
-							.method_41735()
-							.createAndStart("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
-					}
-				}
-			)
-		);
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
+			if (bl) {
+				this.client.startIntegratedServer("Demo_World");
+			} else {
+				DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
+				this.client.createWorld("Demo_World", MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, GeneratorOptions.createDemo(dynamicRegistryManager));
+			}
+		}));
 		this.buttonResetDemo = this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 100,

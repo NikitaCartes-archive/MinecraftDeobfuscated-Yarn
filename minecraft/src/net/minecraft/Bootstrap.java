@@ -13,6 +13,7 @@ import net.minecraft.block.FireBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.command.EntitySelectorOptions;
+import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
@@ -53,6 +54,7 @@ public class Bootstrap {
 					EntitySelectorOptions.register();
 					DispenserBehavior.registerDefaults();
 					CauldronBehavior.registerBehavior();
+					ArgumentTypes.register();
 					Registry.freezeRegistries();
 					setOutputStreams();
 				}

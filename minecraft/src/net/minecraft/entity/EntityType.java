@@ -55,7 +55,6 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.StrayEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
-import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.WitherSkeletonEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
@@ -63,7 +62,6 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -74,7 +72,6 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.FoxEntity;
-import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseEntity;
@@ -94,7 +91,6 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.StriderEntity;
-import net.minecraft.entity.passive.TadpoleEntity;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -119,7 +115,6 @@ import net.minecraft.entity.projectile.thrown.ExperienceBottleEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.CommandBlockMinecartEntity;
 import net.minecraft.entity.vehicle.FurnaceMinecartEntity;
@@ -156,9 +151,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registry.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
-	public static final EntityType<AllayEntity> ALLAY = register(
-		"allay", EntityType.Builder.create(AllayEntity::new, SpawnGroup.CREATURE).setDimensions(0.35F, 0.6F).maxTrackingRange(8).trackingTickInterval(2)
-	);
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
 		"area_effect_cloud",
 		EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, SpawnGroup.MISC)
@@ -187,9 +179,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
-	);
-	public static final EntityType<ChestBoatEntity> CHEST_BOAT = register(
-		"chest_boat", EntityType.Builder.<ChestBoatEntity>create(ChestBoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
 	);
 	public static final EntityType<CatEntity> CAT = register(
 		"cat", EntityType.Builder.create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
@@ -279,9 +268,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final EntityType<FoxEntity> FOX = register(
 		"fox",
 		EntityType.Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8).allowSpawningInside(Blocks.SWEET_BERRY_BUSH)
-	);
-	public static final EntityType<FrogEntity> FROG = register(
-		"frog", EntityType.Builder.create(FrogEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.5F).maxTrackingRange(10)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
@@ -506,9 +492,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final EntityType<StriderEntity> STRIDER = register(
 		"strider", EntityType.Builder.create(StriderEntity::new, SpawnGroup.CREATURE).makeFireImmune().setDimensions(0.9F, 1.7F).maxTrackingRange(10)
 	);
-	public static final EntityType<TadpoleEntity> TADPOLE = register(
-		"tadpole", EntityType.Builder.create(TadpoleEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.4F).maxTrackingRange(10)
-	);
 	public static final EntityType<EggEntity> EGG = register(
 		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
 	);
@@ -551,9 +534,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	);
 	public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = register(
 		"wandering_trader", EntityType.Builder.create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
-	);
-	public static final EntityType<WardenEntity> WARDEN = register(
-		"warden", EntityType.Builder.create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(10).makeFireImmune()
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
@@ -839,6 +819,11 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return this.factory.create(this, world);
 	}
 
+	@Nullable
+	public static Entity createInstanceFromId(int type, World world) {
+		return newInstance(world, Registry.ENTITY_TYPE.get(type));
+	}
+
 	public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
 		return Util.ifPresentOrElse(
 			fromNbt(nbt).map(entityType -> entityType.create(world)),
@@ -848,7 +833,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	}
 
 	@Nullable
-	public static Entity newInstance(World world, @Nullable EntityType<?> type) {
+	private static Entity newInstance(World world, @Nullable EntityType<?> type) {
 		return type == null ? null : type.create(world);
 	}
 

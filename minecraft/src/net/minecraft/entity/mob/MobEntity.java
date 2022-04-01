@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -58,6 +59,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.TagKey;
@@ -68,7 +70,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -76,20 +78,12 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.event.GameEvent;
 
 public abstract class MobEntity extends LivingEntity {
 	private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int AI_DISABLED_FLAG = 1;
 	private static final int LEFT_HANDED_FLAG = 2;
 	private static final int ATTACKING_FLAG = 4;
-	/**
-	 * The minimum additional experience a mob will drop per item of equipment they have.
-	 * 
-	 * @see MobEntity#getXpToDrop
-	 */
-	protected static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
-	private static final Vec3i ITEM_PICK_UP_RANGE_EXPANDER = new Vec3i(1, 0, 1);
 	/**
 	 * The base chance (before applying local difficulty) that this mob will spawn with equipment.
 	 * 
@@ -115,6 +109,12 @@ public abstract class MobEntity extends LivingEntity {
 	 */
 	public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25F;
 	public static final String LEASH_KEY = "Leash";
+	/**
+	 * The minimum additional experience a mob will drop per item of equipment they have.
+	 * 
+	 * @see MobEntity#getXpToDrop
+	 */
+	private static final int MINIMUM_DROPPED_XP_PER_EQUIPMENT = 1;
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
 	public static final int field_35039 = 2;
 	public int ambientSoundChance;
@@ -148,6 +148,7 @@ public abstract class MobEntity extends LivingEntity {
 	@Nullable
 	private Identifier lootTable;
 	private long lootTableSeed;
+	private static final TrackedData<Optional<BlockState>> field_38511 = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE);
 	@Nullable
 	private Entity holdingEntity;
 	private int holdingEntityId;
@@ -268,13 +269,23 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public void onEatingGrass() {
-		this.emitGameEvent(GameEvent.EAT);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
+		this.dataTracker.startTracking(field_38511, Optional.empty());
 		this.dataTracker.startTracking(MOB_FLAGS, (byte)0);
+	}
+
+	public void method_42807(@Nullable BlockState blockState) {
+		this.dataTracker.set(field_38511, Optional.ofNullable(blockState));
+	}
+
+	@Nullable
+	@Override
+	public BlockState method_42800() {
+		return (BlockState)this.dataTracker.get(field_38511).orElse(null);
 	}
 
 	public int getMinAmbientSoundDelay() {
@@ -391,6 +402,11 @@ public abstract class MobEntity extends LivingEntity {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("CanPickUpLoot", this.canPickUpLoot());
 		nbt.putBoolean("PersistenceRequired", this.persistent);
+		BlockState blockState = this.method_42800();
+		if (blockState != null) {
+			nbt.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+		}
+
 		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
@@ -462,6 +478,15 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
+		BlockState blockState = null;
+		if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE)) {
+			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
+			if (blockState.isAir()) {
+				blockState = null;
+			}
+		}
+
+		this.method_42807(blockState);
 		if (nbt.contains("CanPickUpLoot", NbtElement.BYTE_TYPE)) {
 			this.setCanPickUpLoot(nbt.getBoolean("CanPickUpLoot"));
 		}
@@ -555,10 +580,7 @@ public abstract class MobEntity extends LivingEntity {
 		super.tickMovement();
 		this.world.getProfiler().push("looting");
 		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-			Vec3i vec3i = this.getItemPickUpRangeExpander();
-
-			for (ItemEntity itemEntity : this.world
-				.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
+			for (ItemEntity itemEntity : this.world.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
 				if (!itemEntity.isRemoved() && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(itemEntity.getStack())) {
 					this.loot(itemEntity);
 				}
@@ -566,10 +588,6 @@ public abstract class MobEntity extends LivingEntity {
 		}
 
 		this.world.getProfiler().pop();
-	}
-
-	protected Vec3i getItemPickUpRangeExpander() {
-		return ITEM_PICK_UP_RANGE_EXPANDER;
 	}
 
 	protected void loot(ItemEntity item) {
@@ -592,6 +610,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.equipLootStack(equipmentSlot, equipment);
+			this.onEquipStack(equipment);
 			return true;
 		} else {
 			return false;
@@ -908,7 +927,6 @@ public abstract class MobEntity extends LivingEntity {
 	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		this.processEquippedStack(stack);
-		this.onEquipStack(stack, true);
 		switch (slot.getType()) {
 			case HAND:
 				this.handItems.set(slot.getEntitySlotId(), stack);
@@ -1082,6 +1100,10 @@ public abstract class MobEntity extends LivingEntity {
 		return entityData;
 	}
 
+	public boolean canBeControlledByRider() {
+		return false;
+	}
+
 	public void setPersistent() {
 		this.persistent = true;
 	}
@@ -1127,12 +1149,7 @@ public abstract class MobEntity extends LivingEntity {
 				return actionResult;
 			} else {
 				actionResult = this.interactMob(player, hand);
-				if (actionResult.isAccepted()) {
-					this.emitGameEvent(GameEvent.ENTITY_INTERACT);
-					return actionResult;
-				} else {
-					return super.interact(player, hand);
-				}
+				return actionResult.isAccepted() ? actionResult : super.interact(player, hand);
 			}
 		}
 	}
@@ -1353,7 +1370,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean isLogicalSideForUpdatingMovement() {
-		return this.hasPrimaryPassenger() && super.isLogicalSideForUpdatingMovement();
+		return this.canBeControlledByRider() && super.isLogicalSideForUpdatingMovement();
 	}
 
 	@Override
@@ -1398,11 +1415,6 @@ public abstract class MobEntity extends LivingEntity {
 
 	public double squaredAttackRange(LivingEntity target) {
 		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + target.getWidth());
-	}
-
-	public boolean isInAttackRange(LivingEntity entity) {
-		double d = this.squaredDistanceTo(entity.getX(), entity.getY(), entity.getZ());
-		return d <= this.squaredAttackRange(entity);
 	}
 
 	@Override
@@ -1491,5 +1503,15 @@ public abstract class MobEntity extends LivingEntity {
 	public ItemStack getPickBlockStack() {
 		SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(this.getType());
 		return spawnEggItem == null ? null : new ItemStack(spawnEggItem);
+	}
+
+	public boolean method_42808() {
+		return false;
+	}
+
+	@Override
+	public void method_42766(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+		super.method_42766(serverPlayerEntity, vec3d);
+		this.playAmbientSound();
 	}
 }

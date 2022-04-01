@@ -17,24 +17,23 @@ import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public final class ModelPart {
-	public static final float field_37937 = 1.0F;
+	public static final float field_38657 = 1.0F;
 	public float pivotX;
 	public float pivotY;
 	public float pivotZ;
 	public float pitch;
 	public float yaw;
 	public float roll;
-	public float xScale = 1.0F;
-	public float yScale = 1.0F;
-	public float zScale = 1.0F;
+	public float field_38658 = 1.0F;
+	public float field_38659 = 1.0F;
+	public float field_38660 = 1.0F;
 	public boolean visible = true;
-	public boolean field_38456;
 	private final List<ModelPart.Cuboid> cuboids;
 	private final Map<String, ModelPart> children;
-	private ModelTransform defaultTransform = ModelTransform.NONE;
+	private ModelTransform field_38661 = ModelTransform.NONE;
 
-	public ModelPart(List<ModelPart.Cuboid> cuboids, Map<String, ModelPart> children) {
-		this.cuboids = cuboids;
+	public ModelPart(List<ModelPart.Cuboid> list, Map<String, ModelPart> children) {
+		this.cuboids = list;
 		this.children = children;
 	}
 
@@ -42,16 +41,16 @@ public final class ModelPart {
 		return ModelTransform.of(this.pivotX, this.pivotY, this.pivotZ, this.pitch, this.yaw, this.roll);
 	}
 
-	public ModelTransform getDefaultTransform() {
-		return this.defaultTransform;
+	public ModelTransform method_42990() {
+		return this.field_38661;
 	}
 
-	public void setDefaultTransform(ModelTransform transform) {
-		this.defaultTransform = transform;
+	public void method_42987(ModelTransform modelTransform) {
+		this.field_38661 = modelTransform;
 	}
 
-	public void resetTransform() {
-		this.setTransform(this.defaultTransform);
+	public void method_42992() {
+		this.setTransform(this.field_38661);
 	}
 
 	public void setTransform(ModelTransform rotationData) {
@@ -61,25 +60,26 @@ public final class ModelPart {
 		this.pitch = rotationData.pitch;
 		this.yaw = rotationData.yaw;
 		this.roll = rotationData.roll;
-		this.xScale = 1.0F;
-		this.yScale = 1.0F;
-		this.zScale = 1.0F;
+		this.field_38658 = 1.0F;
+		this.field_38659 = 1.0F;
+		this.field_38660 = 1.0F;
 	}
 
 	public void copyTransform(ModelPart part) {
-		this.xScale = part.xScale;
-		this.yScale = part.yScale;
-		this.zScale = part.zScale;
+		this.field_38658 = part.field_38658;
+		this.field_38659 = part.field_38659;
+		this.field_38660 = part.field_38660;
 		this.pitch = part.pitch;
 		this.yaw = part.yaw;
 		this.roll = part.roll;
 		this.pivotX = part.pivotX;
 		this.pivotY = part.pivotY;
 		this.pivotZ = part.pivotZ;
+		this.visible = part.visible;
 	}
 
-	public boolean hasChild(String child) {
-		return this.children.containsKey(child);
+	public boolean method_42988(String string) {
+		return this.children.containsKey(string);
 	}
 
 	public ModelPart getChild(String name) {
@@ -112,9 +112,7 @@ public final class ModelPart {
 			if (!this.cuboids.isEmpty() || !this.children.isEmpty()) {
 				matrices.push();
 				this.rotate(matrices);
-				if (!this.field_38456) {
-					this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
-				}
+				this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
 
 				for (ModelPart modelPart : this.children.values()) {
 					modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha);
@@ -159,8 +157,8 @@ public final class ModelPart {
 			matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
 		}
 
-		if (this.xScale != 1.0F || this.yScale != 1.0F || this.zScale != 1.0F) {
-			matrices.scale(this.xScale, this.yScale, this.zScale);
+		if (this.field_38658 != 1.0F || this.field_38659 != 1.0F || this.field_38660 != 1.0F) {
+			matrices.scale(this.field_38658, this.field_38659, this.field_38660);
 		}
 	}
 
@@ -178,22 +176,22 @@ public final class ModelPart {
 		return this.cuboids.isEmpty();
 	}
 
-	public void translate(Vec3f vec3f) {
+	public void method_42989(Vec3f vec3f) {
 		this.pivotX = this.pivotX + vec3f.getX();
 		this.pivotY = this.pivotY + vec3f.getY();
 		this.pivotZ = this.pivotZ + vec3f.getZ();
 	}
 
-	public void rotate(Vec3f vec3f) {
+	public void method_42991(Vec3f vec3f) {
 		this.pitch = this.pitch + vec3f.getX();
 		this.yaw = this.yaw + vec3f.getY();
 		this.roll = this.roll + vec3f.getZ();
 	}
 
-	public void scale(Vec3f vec3f) {
-		this.xScale = this.xScale + vec3f.getX();
-		this.yScale = this.yScale + vec3f.getY();
-		this.zScale = this.zScale + vec3f.getZ();
+	public void method_42993(Vec3f vec3f) {
+		this.field_38658 = this.field_38658 + vec3f.getX();
+		this.field_38659 = this.field_38659 + vec3f.getY();
+		this.field_38660 = this.field_38660 + vec3f.getZ();
 	}
 
 	public Stream<ModelPart> traverse() {

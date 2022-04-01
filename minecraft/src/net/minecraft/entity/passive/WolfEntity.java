@@ -216,7 +216,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
 					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-					this.emitGameEvent(GameEvent.ENTITY_SHAKE);
+					this.emitGameEvent(GameEvent.WOLF_SHAKING);
 				}
 
 				this.lastShakeProgress = this.shakeProgress;
@@ -362,6 +362,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					}
 
 					this.heal((float)item.getFoodComponent().getHunger());
+					this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 					return ActionResult.SUCCESS;
 				}
 

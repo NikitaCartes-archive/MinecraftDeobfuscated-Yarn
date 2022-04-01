@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
@@ -18,14 +17,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Stream;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -39,17 +35,9 @@ import org.apache.commons.lang3.mutable.MutableObject;
  * {@link #nonEmptyList(Codec)}.
  */
 public class Codecs {
-	public static final Codec<UUID> UUID = DynamicSerializableUuid.CODEC;
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
-	public static final Codec<Pattern> REGULAR_EXPRESSION = Codec.STRING.comapFlatMap(pattern -> {
-		try {
-			return DataResult.success(Pattern.compile(pattern));
-		} catch (PatternSyntaxException var2) {
-			return DataResult.error("Invalid regex pattern '" + pattern + "': " + var2.getMessage());
-		}
-	}, Pattern::pattern);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -85,20 +73,20 @@ public class Codecs {
 				P object = (P)listx.get(0);
 				P object2 = (P)listx.get(1);
 				return (DataResult)combineFunction.apply(object, object2);
-			}), pair -> ImmutableList.of(leftFunction.apply(pair), rightFunction.apply(pair)));
+			}), object -> ImmutableList.of(leftFunction.apply(object), rightFunction.apply(object)));
 		Codec<I> codec3 = RecordCodecBuilder.create(
 				instance -> instance.group(codec.fieldOf(leftFieldName).forGetter(Pair::getFirst), codec.fieldOf(rightFieldName).forGetter(Pair::getSecond))
 						.apply(instance, Pair::of)
 			)
 			.comapFlatMap(
-				pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), pair -> Pair.of(leftFunction.apply(pair), rightFunction.apply(pair))
+				pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), object -> Pair.of(leftFunction.apply(object), rightFunction.apply(object))
 			);
 		Codec<I> codec4 = new Codecs.Either<>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), com.mojang.datafixers.util.Either::left);
 		return Codec.either(codec, codec4)
-			.comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), pair -> {
-				P object = (P)leftFunction.apply(pair);
-				P object2 = (P)rightFunction.apply(pair);
-				return Objects.equals(object, object2) ? com.mojang.datafixers.util.Either.left(object) : com.mojang.datafixers.util.Either.right(pair);
+			.comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), object -> {
+				P object2 = (P)leftFunction.apply(object);
+				P object3 = (P)rightFunction.apply(object);
+				return Objects.equals(object2, object3) ? com.mojang.datafixers.util.Either.left(object2) : com.mojang.datafixers.util.Either.right(object);
 			});
 	}
 
@@ -135,13 +123,15 @@ public class Codecs {
 			);
 	}
 
-	public static <E> Codec<E> idChecked(Function<E, String> elementToId, Function<String, E> idToElement) {
+	public static <E> Codec<E> method_39508(Function<E, String> function, Function<String, E> function2) {
 		return Codec.STRING
 			.flatXmap(
-				id -> (DataResult)Optional.ofNullable(idToElement.apply(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown element name:" + id)),
-				element -> (DataResult)Optional.ofNullable((String)elementToId.apply(element))
+				string -> (DataResult)Optional.ofNullable(function2.apply(string))
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Element with unknown name: " + element))
+						.orElseGet(() -> DataResult.error("Unknown element name:" + string)),
+				object -> (DataResult)Optional.ofNullable((String)function.apply(object))
+						.map(DataResult::success)
+						.orElseGet(() -> DataResult.error("Element with unknown name: " + object))
 			);
 	}
 
@@ -163,20 +153,20 @@ public class Codecs {
 		};
 	}
 
-	public static <E> Codec<E> withLifecycle(Codec<E> originalCodec, Function<E, Lifecycle> entryLifecycleGetter, Function<E, Lifecycle> lifecycleGetter) {
+	public static <E> Codec<E> withLifecycle(Codec<E> originalCodec, Function<E, Lifecycle> function, Function<E, Lifecycle> function2) {
 		return originalCodec.mapResult(new ResultFunction<E>() {
 			@Override
 			public <T> DataResult<Pair<E, T>> apply(DynamicOps<T> ops, T input, DataResult<Pair<E, T>> result) {
-				return (DataResult<Pair<E, T>>)result.result().map(pair -> result.setLifecycle((Lifecycle)entryLifecycleGetter.apply(pair.getFirst()))).orElse(result);
+				return (DataResult<Pair<E, T>>)result.result().map(pair -> result.setLifecycle((Lifecycle)function.apply(pair.getFirst()))).orElse(result);
 			}
 
 			@Override
 			public <T> DataResult<T> coApply(DynamicOps<T> ops, E input, DataResult<T> result) {
-				return result.setLifecycle((Lifecycle)lifecycleGetter.apply(input));
+				return result.setLifecycle((Lifecycle)function2.apply(input));
 			}
 
 			public String toString() {
-				return "WithLifecycle[" + entryLifecycleGetter + " " + lifecycleGetter + "]";
+				return "WithLifecycle[" + function + " " + function2 + "]";
 			}
 		});
 	}
@@ -265,19 +255,6 @@ public class Codecs {
 
 			return DataResult.success(collection, Lifecycle.stable());
 		};
-	}
-
-	public static <A> Codec<A> exceptionCatching(Codec<A> codec) {
-		return Codec.of(codec, new Decoder<A>() {
-			@Override
-			public <T> DataResult<Pair<A, T>> decode(DynamicOps<T> ops, T input) {
-				try {
-					return codec.decode(ops, input);
-				} catch (Exception var4) {
-					return DataResult.error("Cauch exception decoding " + input + ": " + var4.getMessage());
-				}
-			}
-		});
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

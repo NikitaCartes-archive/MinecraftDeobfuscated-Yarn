@@ -5,8 +5,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -17,11 +17,6 @@ import net.minecraft.world.World;
 
 public class ElderGuardianEntity extends GuardianEntity {
 	public static final float SCALE = EntityType.ELDER_GUARDIAN.getWidth() / EntityType.GUARDIAN.getWidth();
-	private static final int field_38119 = 1200;
-	private static final int field_38115 = 50;
-	private static final int field_38116 = 6000;
-	private static final int field_38117 = 2;
-	private static final int field_38118 = 1200;
 
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);
@@ -66,17 +61,26 @@ public class ElderGuardianEntity extends GuardianEntity {
 	@Override
 	protected void mobTick() {
 		super.mobTick();
+		int i = 1200;
 		if ((this.age + this.getId()) % 1200 == 0) {
-			StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
-			List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(
-				(ServerWorld)this.world, this, this.getPos(), 50.0, statusEffectInstance, 1200
-			);
-			list.forEach(
-				serverPlayerEntity -> serverPlayerEntity.networkHandler
+			StatusEffect statusEffect = StatusEffects.MINING_FATIGUE;
+			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
+				.getPlayers(player -> this.squaredDistanceTo(player) < 2500.0 && player.interactionManager.isSurvivalLike());
+			int j = 2;
+			int k = 6000;
+			int l = 1200;
+
+			for (ServerPlayerEntity serverPlayerEntity : list) {
+				if (!serverPlayerEntity.hasStatusEffect(statusEffect)
+					|| serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() < 2
+					|| serverPlayerEntity.getStatusEffect(statusEffect).getDuration() < 1200) {
+					serverPlayerEntity.networkHandler
 						.sendPacket(
 							new GameStateChangeS2CPacket(GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT, this.isSilent() ? GameStateChangeS2CPacket.DEMO_OPEN_SCREEN : 1.0F)
-						)
-			);
+						);
+					serverPlayerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, 6000, 2), this);
+				}
+			}
 		}
 
 		if (!this.hasPositionTarget()) {

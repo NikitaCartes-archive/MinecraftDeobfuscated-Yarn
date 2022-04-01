@@ -26,7 +26,7 @@ public interface ResourcePack extends AutoCloseable {
 
 	InputStream open(ResourceType type, Identifier id) throws IOException;
 
-	Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate);
+	Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter);
 
 	boolean contains(ResourceType type, Identifier id);
 

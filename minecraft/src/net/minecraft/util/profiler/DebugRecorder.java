@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,15 +72,6 @@ public class DebugRecorder implements Recorder {
 	}
 
 	@Override
-	public synchronized void forceStop() {
-		if (this.isActive()) {
-			this.profiler = DummyProfiler.INSTANCE;
-			this.resultConsumer.accept(EmptyProfileResult.INSTANCE);
-			this.forceStop(this.samplers);
-		}
-	}
-
-	@Override
 	public void startTick() {
 		this.checkState();
 		this.samplers = this.samplerSource.getSamplers(() -> this.profiler);
@@ -109,8 +99,8 @@ public class DebugRecorder implements Recorder {
 				this.profiler = new ProfilerSystem(this.timeGetter, () -> this.ticks, false);
 			} else {
 				this.stopping = false;
-				ProfileResult profileResult = this.timeTracker.getResult();
 				this.profiler = DummyProfiler.INSTANCE;
+				ProfileResult profileResult = this.timeTracker.getResult();
 				this.resultConsumer.accept(profileResult);
 				this.dump(profileResult);
 			}
@@ -137,18 +127,15 @@ public class DebugRecorder implements Recorder {
 		HashSet<Sampler> hashSet = new HashSet(this.samplers);
 		this.dumpExecutor.execute(() -> {
 			Path path = this.dumper.createDump(hashSet, this.deviations, result);
-			this.forceStop(hashSet);
+
+			for (Sampler sampler : hashSet) {
+				sampler.stop();
+			}
+
+			this.deviations.clear();
+			this.timeTracker.disable();
 			this.dumpConsumer.accept(path);
 		});
-	}
-
-	private void forceStop(Collection<Sampler> samplers) {
-		for (Sampler sampler : samplers) {
-			sampler.stop();
-		}
-
-		this.deviations.clear();
-		this.timeTracker.disable();
 	}
 
 	public static void setGlobalDumpConsumer(Consumer<Path> consumer) {

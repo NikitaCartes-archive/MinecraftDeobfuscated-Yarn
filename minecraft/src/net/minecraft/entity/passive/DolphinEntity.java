@@ -247,6 +247,11 @@ public class DolphinEntity extends WaterCreatureEntity {
 		if (this.isAiDisabled()) {
 			this.setAir(this.getMaxAir());
 		} else {
+			if (this.getVehicle() instanceof PlayerEntity playerEntity && playerEntity.isSwimming()) {
+				this.setPitch(playerEntity.getPitch());
+				this.setYaw(playerEntity.getYaw());
+			}
+
 			if (this.isWet()) {
 				this.setMoistness(2400);
 			} else {

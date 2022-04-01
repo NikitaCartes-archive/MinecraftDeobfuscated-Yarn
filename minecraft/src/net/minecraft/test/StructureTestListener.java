@@ -45,7 +45,7 @@ class StructureTestListener implements TestListener {
 	public void onPassed(GameTestState test) {
 		this.successes++;
 		if (!test.isFlaky()) {
-			passTest(test, test.getStructurePath() + " passed! (" + test.getElapsedMilliseconds() + "ms)");
+			passTest(test, test.getStructurePath() + " passed!");
 		} else {
 			if (this.successes >= test.getRequiredSuccesses()) {
 				passTest(test, test + " passed " + this.successes + " times of " + this.attempt + " attempts.");

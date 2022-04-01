@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -11,10 +10,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
@@ -30,6 +32,7 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -40,8 +43,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
@@ -52,6 +53,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.TimeHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -59,8 +61,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.RaycastContext;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -71,9 +76,6 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	);
 	private static final int field_30462 = 400;
 	private static final int field_30461 = 600;
-	private static final TrackedData<Optional<BlockState>> CARRIED_BLOCK = DataTracker.registerData(
-		EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE
-	);
 	private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> PROVOKED = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int lastAngrySoundAge = Integer.MIN_VALUE;
@@ -82,6 +84,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private int angerTime;
 	@Nullable
 	private UUID angryAt;
+	private boolean field_38528;
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
 		super(entityType, world);
@@ -134,7 +137,6 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CARRIED_BLOCK, Optional.empty());
 		this.dataTracker.startTracking(ANGRY, false);
 		this.dataTracker.startTracking(PROVOKED, false);
 	}
@@ -186,27 +188,15 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		BlockState blockState = this.getCarriedBlock();
-		if (blockState != null) {
-			nbt.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
-		}
-
 		this.writeAngerToNbt(nbt);
+		nbt.putBoolean("i_dont_care", this.field_38528);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		BlockState blockState = null;
-		if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE)) {
-			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
-			if (blockState.isAir()) {
-				blockState = null;
-			}
-		}
-
-		this.setCarriedBlock(blockState);
 		this.readAngerFromNbt(this.world, nbt);
+		this.field_38528 = nbt.getBoolean("i_dont_care");
 	}
 
 	boolean isPlayerStaring(PlayerEntity player) {
@@ -303,7 +293,13 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		boolean bl = blockState.getMaterial().blocksMovement();
 		boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
 		if (bl && !bl2) {
-			boolean bl3 = this.teleport(x, y, z, true);
+			boolean bl3;
+			if (this.getRootVehicle() instanceof PlayerEntity playerEntity) {
+				bl3 = playerEntity.teleport(x, y, z, true);
+			} else {
+				bl3 = this.teleport(x, y, z, true);
+			}
+
 			if (bl3 && !this.isSilent()) {
 				this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
 				this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
@@ -333,19 +329,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	@Override
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
-		BlockState blockState = this.getCarriedBlock();
+		BlockState blockState = this.method_42800();
 		if (blockState != null) {
 			this.dropItem(blockState.getBlock());
 		}
-	}
-
-	public void setCarriedBlock(@Nullable BlockState state) {
-		this.dataTracker.set(CARRIED_BLOCK, Optional.ofNullable(state));
-	}
-
-	@Nullable
-	public BlockState getCarriedBlock() {
-		return (BlockState)this.dataTracker.get(CARRIED_BLOCK).orElse(null);
 	}
 
 	@Override
@@ -354,20 +341,24 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			return false;
 		} else if (source instanceof ProjectileDamageSource) {
 			Entity entity = source.getSource();
-			boolean bl;
-			if (entity instanceof PotionEntity) {
-				bl = this.damageFromPotion(source, (PotionEntity)entity, amount);
+			if (entity instanceof FallingBlockEntity) {
+				return super.damage(source, amount);
 			} else {
-				bl = false;
-			}
-
-			for (int i = 0; i < 64; i++) {
-				if (this.teleportRandomly()) {
-					return true;
+				boolean bl;
+				if (entity instanceof PotionEntity) {
+					bl = this.damageFromPotion(source, (PotionEntity)entity, amount);
+				} else {
+					bl = false;
 				}
-			}
 
-			return bl;
+				for (int i = 0; i < 64; i++) {
+					if (this.teleportRandomly()) {
+						return true;
+					}
+				}
+
+				return bl;
+			}
 		} else {
 			boolean bl2 = super.damage(source, amount);
 			if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
@@ -400,7 +391,35 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 	@Override
 	public boolean cannotDespawn() {
-		return super.cannotDespawn() || this.getCarriedBlock() != null;
+		return super.cannotDespawn() || !this.field_38528 && this.method_42803() != LivingEntity.class_7316.NONE;
+	}
+
+	@Nullable
+	@Override
+	public EntityData initialize(
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+	) {
+		ServerWorld serverWorld = world.toServerWorld().getServer().getWorld(World.END);
+		boolean bl = false;
+		if (serverWorld == world) {
+			bl = true;
+		} else if (serverWorld != null) {
+			EnderDragonFight enderDragonFight = serverWorld.getEnderDragonFight();
+			if (enderDragonFight != null && enderDragonFight.hasPreviouslyKilled()) {
+				bl = true;
+			}
+		}
+
+		if (bl) {
+			Random random = world.getRandom();
+			Registry.BLOCK
+				.getRandom(random)
+				.flatMap(registryEntry -> Util.getRandomOrEmpty(((Block)registryEntry.value()).getStateManager().getStates(), random))
+				.ifPresent(this::method_42807);
+			this.field_38528 = true;
+		}
+
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	static class ChasePlayerGoal extends Goal {
@@ -444,7 +463,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public boolean canStart() {
-			if (this.enderman.getCarriedBlock() != null) {
+			if (this.enderman.method_42800() != null) {
 				return false;
 			} else {
 				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(20)) == 0;
@@ -469,7 +488,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				world.removeBlock(blockPos, false);
 				world.emitGameEvent(this.enderman, GameEvent.BLOCK_DESTROY, blockPos);
-				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
+				this.enderman.method_42807(blockState.getBlock().getDefaultState());
 			}
 		}
 	}
@@ -483,7 +502,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 		@Override
 		public boolean canStart() {
-			if (this.enderman.getCarriedBlock() == null) {
+			if (this.enderman.method_42800() == null) {
 				return false;
 			} else {
 				return !this.enderman.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) ? false : this.enderman.getRandom().nextInt(toGoalTicks(2000)) == 0;
@@ -501,13 +520,13 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			BlockState blockState = world.getBlockState(blockPos);
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			BlockState blockState3 = this.enderman.getCarriedBlock();
+			BlockState blockState3 = this.enderman.method_42800();
 			if (blockState3 != null) {
 				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
 				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
 					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
 					world.emitGameEvent(this.enderman, GameEvent.BLOCK_PLACE, blockPos);
-					this.enderman.setCarriedBlock(null);
+					this.enderman.method_42807(null);
 				}
 			}
 		}

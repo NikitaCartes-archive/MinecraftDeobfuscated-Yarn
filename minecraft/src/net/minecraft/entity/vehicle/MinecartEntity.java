@@ -1,9 +1,9 @@
 package net.minecraft.entity.vehicle;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -21,18 +21,26 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		if (player.shouldCancelInteraction()) {
 			return ActionResult.PASS;
-		} else if (this.hasPassengers()) {
-			return ActionResult.PASS;
-		} else if (!this.world.isClient) {
-			return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
-			return ActionResult.SUCCESS;
+			BlockState blockState = player.method_42800();
+			BlockState blockState2 = this.getContainedBlock();
+			if (blockState2.isAir() && blockState != null) {
+				player.method_42838(null);
+				this.setCustomBlock(blockState);
+				return ActionResult.SUCCESS;
+			} else if (!blockState2.isAir() && blockState == null) {
+				player.method_42838(blockState2);
+				this.setCustomBlock(Blocks.AIR.getDefaultState());
+				this.setCustomBlockPresent(false);
+				return ActionResult.SUCCESS;
+			} else if (this.hasPassengers()) {
+				return ActionResult.PASS;
+			} else if (!this.world.isClient) {
+				return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
+			} else {
+				return ActionResult.SUCCESS;
+			}
 		}
-	}
-
-	@Override
-	protected Item getItem() {
-		return Items.MINECART;
 	}
 
 	@Override

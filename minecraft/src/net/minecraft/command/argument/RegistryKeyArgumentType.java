@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -86,39 +85,18 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 		return EXAMPLES;
 	}
 
-	public static class Serializer<T> implements ArgumentSerializer<RegistryKeyArgumentType<T>, RegistryKeyArgumentType.Serializer<T>.Properties> {
-		public void writePacket(RegistryKeyArgumentType.Serializer.Properties properties, PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeIdentifier(properties.registryRef.getValue());
+	public static class Serializer implements ArgumentSerializer<RegistryKeyArgumentType<?>> {
+		public void toPacket(RegistryKeyArgumentType<?> registryKeyArgumentType, PacketByteBuf packetByteBuf) {
+			packetByteBuf.writeIdentifier(registryKeyArgumentType.registryRef.getValue());
 		}
 
-		public RegistryKeyArgumentType.Serializer<T>.Properties fromPacket(PacketByteBuf packetByteBuf) {
+		public RegistryKeyArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
 			Identifier identifier = packetByteBuf.readIdentifier();
-			return new RegistryKeyArgumentType.Serializer.Properties(RegistryKey.ofRegistry(identifier));
+			return new RegistryKeyArgumentType(RegistryKey.ofRegistry(identifier));
 		}
 
-		public void writeJson(RegistryKeyArgumentType.Serializer.Properties properties, JsonObject jsonObject) {
-			jsonObject.addProperty("registry", properties.registryRef.getValue().toString());
-		}
-
-		public RegistryKeyArgumentType.Serializer<T>.Properties getArgumentTypeProperties(RegistryKeyArgumentType<T> registryKeyArgumentType) {
-			return new RegistryKeyArgumentType.Serializer.Properties(registryKeyArgumentType.registryRef);
-		}
-
-		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<RegistryKeyArgumentType<T>> {
-			final RegistryKey<? extends Registry<T>> registryRef;
-
-			Properties(RegistryKey<? extends Registry<T>> registryRef) {
-				this.registryRef = registryRef;
-			}
-
-			public RegistryKeyArgumentType<T> createType(CommandRegistryAccess commandRegistryAccess) {
-				return new RegistryKeyArgumentType<>(this.registryRef);
-			}
-
-			@Override
-			public ArgumentSerializer<RegistryKeyArgumentType<T>, ?> getSerializer() {
-				return Serializer.this;
-			}
+		public void toJson(RegistryKeyArgumentType<?> registryKeyArgumentType, JsonObject jsonObject) {
+			jsonObject.addProperty("registry", registryKeyArgumentType.registryRef.getValue().toString());
 		}
 	}
 }

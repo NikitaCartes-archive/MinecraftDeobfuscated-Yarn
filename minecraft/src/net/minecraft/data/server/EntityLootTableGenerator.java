@@ -55,7 +55,6 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 	}
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
-		this.register(EntityType.ALLAY, LootTable.builder());
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
 		this.register(EntityType.AXOLOTL, LootTable.builder());
 		this.register(EntityType.BAT, LootTable.builder());
@@ -306,7 +305,6 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				)
 		);
 		this.register(EntityType.FOX, LootTable.builder());
-		this.register(EntityType.FROG, LootTable.builder());
 		this.register(
 			EntityType.GHAST,
 			LootTable.builder()
@@ -820,7 +818,6 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 						)
 				)
 		);
-		this.register(EntityType.TADPOLE, LootTable.builder());
 		this.register(
 			EntityType.TRADER_LLAMA,
 			LootTable.builder()
@@ -871,7 +868,6 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.register(EntityType.VEX, LootTable.builder());
 		this.register(EntityType.VILLAGER, LootTable.builder());
-		this.register(EntityType.WARDEN, LootTable.builder());
 		this.register(EntityType.WANDERING_TRADER, LootTable.builder());
 		this.register(
 			EntityType.VINDICATOR,

@@ -6,8 +6,6 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlTimer;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.profiler.ReadableProfiler;
@@ -38,9 +36,6 @@ public class ClientSamplerSource implements SamplerSource {
 		this.samplers.add(Sampler.create("toUpload", SampleType.CHUNK_RENDERING_DISPATCHING, chunkBuilder, ChunkBuilder::getChunksToUpload));
 		this.samplers.add(Sampler.create("freeBufferCount", SampleType.CHUNK_RENDERING_DISPATCHING, chunkBuilder, ChunkBuilder::getFreeBufferCount));
 		this.samplers.add(Sampler.create("toBatchCount", SampleType.CHUNK_RENDERING_DISPATCHING, chunkBuilder, ChunkBuilder::getToBatchCount));
-		if (GlTimer.getInstance().isPresent()) {
-			this.samplers.add(Sampler.create("gpuUtilization", SampleType.GPU, MinecraftClient.getInstance(), MinecraftClient::getGpuUtilizationPercentage));
-		}
 	}
 
 	@Override

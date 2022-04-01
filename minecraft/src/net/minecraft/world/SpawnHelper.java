@@ -23,7 +23,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.annotation.Debug;
@@ -43,9 +42,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
 import net.minecraft.world.gen.feature.NetherFortressFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
 import org.slf4j.Logger;
 
 public final class SpawnHelper {
@@ -257,7 +256,7 @@ public final class SpawnHelper {
 		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos pos
 	) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
-		return spawnGroup == SpawnGroup.WATER_AMBIENT && registryEntry.isIn(BiomeTags.REDUCE_WATER_AMBIENT_SPAWNS) && random.nextFloat() < 0.98F
+		return spawnGroup == SpawnGroup.WATER_AMBIENT && Biome.getCategory(registryEntry) == Biome.Category.RIVER && random.nextFloat() < 0.98F
 			? Optional.empty()
 			: getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, registryEntry).getOrEmpty(random);
 	}
@@ -288,10 +287,10 @@ public final class SpawnHelper {
 
 	public static boolean shouldUseNetherFortressSpawns(BlockPos pos, ServerWorld world, SpawnGroup spawnGroup, StructureAccessor structureAccessor) {
 		if (spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
-			StructureFeature structureFeature = structureAccessor.getRegistryManager()
+			ConfiguredStructureFeature<?, ?> configuredStructureFeature = structureAccessor.method_41036()
 				.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)
 				.get(ConfiguredStructureFeatureKeys.FORTRESS);
-			return structureFeature == null ? false : structureAccessor.getStructureAt(pos, structureFeature).hasChildren();
+			return configuredStructureFeature == null ? false : structureAccessor.getStructureAt(pos, configuredStructureFeature).hasChildren();
 		} else {
 			return false;
 		}

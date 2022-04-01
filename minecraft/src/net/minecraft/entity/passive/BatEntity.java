@@ -192,7 +192,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState blockState, BlockPos landedPosition) {
 	}
 
 	@Override

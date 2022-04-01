@@ -90,8 +90,7 @@ public class SoundSystem {
 	private synchronized void start() {
 		if (!this.started) {
 			try {
-				String string = this.settings.getSoundDevice().getValue();
-				this.soundEngine.init("".equals(string) ? null : string, this.settings.getDirectionalAudio().getValue());
+				this.soundEngine.init("".equals(this.settings.soundDevice) ? null : this.settings.soundDevice);
 				this.listener.init();
 				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.MASTER));
 				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
@@ -176,7 +175,7 @@ public class SoundSystem {
 			if (bl) {
 				this.lastSoundDeviceCheckTime = l;
 				if (this.deviceChangeStatus.compareAndSet(SoundSystem.DeviceChangeStatus.NO_CHANGE, SoundSystem.DeviceChangeStatus.ONGOING)) {
-					String string = this.settings.getSoundDevice().getValue();
+					String string = this.settings.soundDevice;
 					Util.getIoWorkerExecutor().execute(() -> {
 						if ("".equals(string)) {
 							if (this.soundEngine.updateDeviceSpecifier()) {

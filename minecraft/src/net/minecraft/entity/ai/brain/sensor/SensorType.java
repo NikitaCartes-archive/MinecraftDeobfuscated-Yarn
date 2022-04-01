@@ -2,7 +2,6 @@ package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
 import net.minecraft.entity.passive.AxolotlBrain;
-import net.minecraft.entity.passive.FrogBrain;
 import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -29,10 +28,6 @@ public class SensorType<U extends Sensor<?>> {
 		"axolotl_temptations", () -> new TemptationsSensor(AxolotlBrain.getTemptItems())
 	);
 	public static final SensorType<TemptationsSensor> GOAT_TEMPTATIONS = register("goat_temptations", () -> new TemptationsSensor(GoatBrain.getTemptItems()));
-	public static final SensorType<TemptationsSensor> FROG_TEMPTATIONS = register("frog_temptations", () -> new TemptationsSensor(FrogBrain.getTemptItems()));
-	public static final SensorType<FrogAttackablesSensor> FROG_ATTACKABLES = register("frog_attackables", FrogAttackablesSensor::new);
-	public static final SensorType<IsInWaterSensor> IS_IN_WATER = register("is_in_water", IsInWaterSensor::new);
-	public static final SensorType<WardenAttackablesSensor> WARDEN_ENTITY_SENSOR = register("warden_entity_sensor", WardenAttackablesSensor::new);
 	private final Supplier<U> factory;
 
 	private SensorType(Supplier<U> factory) {

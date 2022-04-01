@@ -117,7 +117,7 @@ public class EntityTrackerEntry {
 				this.updatesWithoutVehicle++;
 				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
-				Vec3d vec3d = this.entity.getPos().subtract(this.getLastPos());
+				Vec3d vec3d = this.entity.getPos().subtract(EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ));
 				boolean bl2 = vec3d.lengthSquared() >= 7.6293945E-6F;
 				Packet<?> packet2 = null;
 				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
@@ -291,7 +291,7 @@ public class EntityTrackerEntry {
 	/**
 	 * Decodes lastX/Y/Z into a position vector
 	 */
-	private Vec3d getLastPos() {
+	public Vec3d getLastPos() {
 		return EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ);
 	}
 

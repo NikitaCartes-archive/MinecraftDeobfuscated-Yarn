@@ -91,7 +91,7 @@ public abstract class ProjectileEntity extends Entity {
 	@Override
 	public void tick() {
 		if (!this.shot) {
-			this.emitGameEvent(GameEvent.PROJECTILE_SHOOT, this.getOwner());
+			this.emitGameEvent(GameEvent.PROJECTILE_SHOOT, this.getOwner(), this.getBlockPos());
 			this.shot = true;
 		}
 
@@ -181,7 +181,7 @@ public abstract class ProjectileEntity extends Entity {
 		}
 
 		if (type != HitResult.Type.MISS) {
-			this.emitGameEvent(GameEvent.PROJECTILE_LAND, this);
+			this.emitGameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
 		}
 	}
 

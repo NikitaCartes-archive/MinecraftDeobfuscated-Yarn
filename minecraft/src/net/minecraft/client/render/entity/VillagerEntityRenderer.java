@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7362;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
@@ -17,9 +18,10 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 
 	public VillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new VillagerResemblingModel<>(context.getPart(EntityModelLayers.VILLAGER)), 0.5F);
-		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), true));
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, context.getResourceManager(), "villager"));
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new class_7362<>(this));
 	}
 
 	public Identifier getTexture(VillagerEntity villagerEntity) {

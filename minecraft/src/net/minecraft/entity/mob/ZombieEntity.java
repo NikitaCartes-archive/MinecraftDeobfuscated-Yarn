@@ -48,7 +48,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -415,7 +414,6 @@ public class ZombieEntity extends HostileEntity {
 				world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
 			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
 			if (!this.isSilent()) {
@@ -437,6 +435,11 @@ public class ZombieEntity extends HostileEntity {
 	@Override
 	public boolean canGather(ItemStack stack) {
 		return stack.isOf(Items.GLOW_INK_SAC) ? false : super.canGather(stack);
+	}
+
+	@Override
+	public boolean method_42808() {
+		return true;
 	}
 
 	@Nullable

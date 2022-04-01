@@ -10,7 +10,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -96,8 +95,7 @@ public class InGameOverlayRenderer {
 		RenderSystem.enableTexture();
 		RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		BlockPos blockPos = new BlockPos(client.player.getX(), client.player.getEyeY(), client.player.getZ());
-		float f = LightmapTextureManager.getBrightness(client.player.world.getDimension(), client.player.world.getLightLevel(blockPos));
+		float f = client.player.getBrightnessAtEyes();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(f, f, f, 0.1F);

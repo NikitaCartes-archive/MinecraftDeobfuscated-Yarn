@@ -1,7 +1,7 @@
 package net.minecraft.block.dispenser;
 
+import net.minecraft.class_7320;
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
@@ -36,14 +36,18 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 			e -= 0.15625;
 		}
 
-		ItemEntity itemEntity = new ItemEntity(world, d, e, f, stack);
-		double g = world.random.nextDouble() * 0.1 + 0.2;
-		itemEntity.setVelocity(
-			world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetX() * g,
-			world.random.nextGaussian() * 0.0075F * (double)speed + 0.2F,
-			world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetZ() * g
-		);
-		world.spawnEntity(itemEntity);
+		class_7320.method_42860(world, d, e, f, stack)
+			.ifPresent(
+				fallingBlockEntity -> {
+					double dx = world.random.nextDouble() * 0.1 + 0.3;
+					fallingBlockEntity.setVelocity(
+						world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetX() * dx,
+						world.random.nextGaussian() * 0.0075F * (double)speed + 0.3F,
+						world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetZ() * dx
+					);
+					world.spawnEntity(fallingBlockEntity);
+				}
+			);
 	}
 
 	protected void playSound(BlockPointer pointer) {

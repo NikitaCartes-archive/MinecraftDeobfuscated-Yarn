@@ -1,5 +1,6 @@
 package net.minecraft.structure;
 
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.Random;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -91,11 +91,18 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
 				if (structureBlockInfo2.nbt != null) {
 					String string = structureBlockInfo2.nbt.getString("final_state");
+					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
 					BlockState blockState = Blocks.AIR.getDefaultState();
 
 					try {
-						blockState = BlockArgumentParser.block(Registry.BLOCK, string, true).blockState();
-					} catch (CommandSyntaxException var15) {
+						blockArgumentParser.parse(true);
+						BlockState blockState2 = blockArgumentParser.getBlockState();
+						if (blockState2 != null) {
+							blockState = blockState2;
+						} else {
+							LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
+						}
+					} catch (CommandSyntaxException var16) {
 						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 
@@ -117,17 +124,5 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	@Override
 	public BlockRotation getRotation() {
 		return this.placementData.getRotation();
-	}
-
-	public Structure method_41624() {
-		return this.structure;
-	}
-
-	public BlockPos method_41625() {
-		return this.pos;
-	}
-
-	public StructurePlacementData method_41626() {
-		return this.placementData;
 	}
 }

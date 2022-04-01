@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,7 +35,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	protected void init() {
 		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.client);
 		this.addSelectableChild(this.languageSelectionList);
-		this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
+		this.addDrawableChild(Option.FORCE_UNICODE_FONT.createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height - 38, 150, 20, ScreenTexts.DONE, button -> {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
 			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {

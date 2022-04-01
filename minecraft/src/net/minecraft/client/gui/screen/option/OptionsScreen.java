@@ -13,7 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.option.SimpleOption;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
@@ -24,6 +24,7 @@ import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class OptionsScreen extends Screen {
+	private static final Option[] OPTIONS = new Option[]{Option.FOV};
 	private final Screen parent;
 	private final GameOptions settings;
 	private CyclingButtonWidget<Difficulty> difficultyButton;
@@ -39,10 +40,10 @@ public class OptionsScreen extends Screen {
 	protected void init() {
 		int i = 0;
 
-		for (SimpleOption<?> simpleOption : new SimpleOption[]{this.settings.getFov()}) {
+		for (Option option : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 - 12 + 24 * (i >> 1);
-			this.addDrawableChild(simpleOption.createButton(this.client.options, j, k, 150));
+			this.addDrawableChild(option.createButton(this.client.options, j, k, 150));
 			i++;
 		}
 
@@ -78,7 +79,7 @@ public class OptionsScreen extends Screen {
 					150,
 					20,
 					new TranslatableText("options.online"),
-					button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))
+					buttonWidget -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))
 				)
 			);
 		}
@@ -183,7 +184,7 @@ public class OptionsScreen extends Screen {
 				150,
 				20,
 				new TranslatableText(translationKey),
-				(button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
+				(cyclingButtonWidget, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
 			);
 	}
 

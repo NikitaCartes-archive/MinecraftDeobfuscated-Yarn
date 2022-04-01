@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.class_7325;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -59,14 +60,14 @@ public abstract class AbstractLichenBlock extends Block {
 		this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
 	}
 
-	public static Set<Direction> collectDirections(BlockState state) {
-		if (!(state.getBlock() instanceof AbstractLichenBlock)) {
+	public static Set<Direction> method_42889(BlockState blockState) {
+		if (!(blockState.getBlock() instanceof AbstractLichenBlock)) {
 			return Set.of();
 		} else {
 			Set<Direction> set = EnumSet.noneOf(Direction.class);
 
 			for (Direction direction : Direction.values()) {
-				if (hasDirection(state, direction)) {
+				if (hasDirection(blockState, direction)) {
 					set.add(direction);
 				}
 			}
@@ -76,14 +77,14 @@ public abstract class AbstractLichenBlock extends Block {
 	}
 
 	@Nullable
-	public static Set<Direction> flagToDirections(byte flag) {
-		if (flag == -1) {
+	public static Set<Direction> method_42886(byte b) {
+		if (b == -1) {
 			return null;
 		} else {
 			Set<Direction> set = EnumSet.noneOf(Direction.class);
 
 			for (Direction direction : Direction.values()) {
-				if ((flag & (byte)(1 << direction.ordinal())) > 0) {
+				if ((b & (byte)(1 << direction.ordinal())) > 0) {
 					set.add(direction);
 				}
 			}
@@ -92,13 +93,13 @@ public abstract class AbstractLichenBlock extends Block {
 		}
 	}
 
-	public static byte directionsToFlag(@Nullable Collection<Direction> directions) {
-		if (directions == null) {
+	public static byte method_42888(@Nullable Collection<Direction> collection) {
+		if (collection == null) {
 			return -1;
 		} else {
 			byte b = 0;
 
-			for (Direction direction : directions) {
+			for (Direction direction : collection) {
 				b = (byte)(b | 1 << direction.ordinal());
 			}
 
@@ -171,10 +172,10 @@ public abstract class AbstractLichenBlock extends Block {
 			.orElse(null);
 	}
 
-	public boolean canGrowWithDirection(BlockView world, BlockState state, BlockPos pos, Direction direction) {
-		if (this.canHaveDirection(direction) && (!state.isOf(this) || !hasDirection(state, direction))) {
-			BlockPos blockPos = pos.offset(direction);
-			return canGrowOn(world, direction, blockPos, world.getBlockState(blockPos));
+	public boolean method_42887(BlockView blockView, BlockState blockState, BlockPos blockPos, Direction direction) {
+		if (this.canHaveDirection(direction) && (!blockState.isOf(this) || !hasDirection(blockState, direction))) {
+			BlockPos blockPos2 = blockPos.offset(direction);
+			return canGrowOn(blockView, direction, blockPos2, blockView.getBlockState(blockPos2));
 		} else {
 			return false;
 		}
@@ -182,7 +183,7 @@ public abstract class AbstractLichenBlock extends Block {
 
 	@Nullable
 	public BlockState withDirection(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-		if (!this.canGrowWithDirection(world, state, pos, direction)) {
+		if (!this.method_42887(world, state, pos, direction)) {
 			return null;
 		} else {
 			BlockState blockState;
@@ -278,5 +279,5 @@ public abstract class AbstractLichenBlock extends Block {
 		return Arrays.stream(DIRECTIONS).anyMatch(direction -> !hasDirection(state, direction));
 	}
 
-	public abstract LichenGrower getGrower();
+	public abstract class_7325 method_42882();
 }

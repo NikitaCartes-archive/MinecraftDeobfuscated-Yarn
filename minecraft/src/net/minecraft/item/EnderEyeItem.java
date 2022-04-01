@@ -1,11 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.EndPortalFrameBlock;
-import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,7 +10,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.ConfiguredStructureFeatureTags;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -27,39 +22,6 @@ import net.minecraft.world.WorldEvents;
 public class EnderEyeItem extends Item {
 	public EnderEyeItem(Item.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public ActionResult useOnBlock(ItemUsageContext context) {
-		World world = context.getWorld();
-		BlockPos blockPos = context.getBlockPos();
-		BlockState blockState = world.getBlockState(blockPos);
-		if (!blockState.isOf(Blocks.END_PORTAL_FRAME) || (Boolean)blockState.get(EndPortalFrameBlock.EYE)) {
-			return ActionResult.PASS;
-		} else if (world.isClient) {
-			return ActionResult.SUCCESS;
-		} else {
-			BlockState blockState2 = blockState.with(EndPortalFrameBlock.EYE, Boolean.valueOf(true));
-			Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, world, blockPos);
-			world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-			world.updateComparators(blockPos, Blocks.END_PORTAL_FRAME);
-			context.getStack().decrement(1);
-			world.syncWorldEvent(WorldEvents.END_PORTAL_FRAME_FILLED, blockPos, 0);
-			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
-			if (result != null) {
-				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);
-
-				for (int i = 0; i < 3; i++) {
-					for (int j = 0; j < 3; j++) {
-						world.setBlockState(blockPos2.add(i, 0, j), Blocks.END_PORTAL.getDefaultState(), Block.NOTIFY_LISTENERS);
-					}
-				}
-
-				world.syncGlobalEvent(WorldEvents.END_PORTAL_OPENED, blockPos2.add(1, 0, 1), 0);
-			}
-
-			return ActionResult.CONSUME;
-		}
 	}
 
 	@Override

@@ -9,8 +9,13 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.VillagerDataContainer;
+import net.minecraft.village.VillagerProfession;
 
 /**
  * Represents the model of a villager resembling entity.
@@ -125,8 +130,36 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		boolean bl = false;
-		if (entity instanceof MerchantEntity) {
-			bl = ((MerchantEntity)entity).getHeadRollingTimeLeft() > 0;
+		if (entity instanceof WitchEntity) {
+			this.hat.pivotY = -10.03125F;
+		} else {
+			this.hat.pivotY = this.head.pivotY;
+		}
+
+		boolean bl2;
+		if (entity instanceof MerchantEntity merchantEntity) {
+			bl = merchantEntity.getHeadRollingTimeLeft() > 0;
+			bl2 = merchantEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL);
+			this.root.getChild(EntityModelPartNames.ARMS).visible = !bl2;
+			this.head.visible = !bl2;
+			if (bl2) {
+				this.hat.pivotY = 1.5F;
+				if (entity instanceof VillagerDataContainer villagerDataContainer
+					&& villagerDataContainer.getVillagerData().getProfession() == VillagerProfession.LIBRARIAN) {
+					this.hat.pivotY++;
+				}
+			}
+		} else if (entity instanceof WitchEntity witchEntity) {
+			bl2 = witchEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL);
+			this.root.getChild(EntityModelPartNames.ARMS).visible = !bl2;
+			if (bl2) {
+				this.hat.pivotY = -13.03125F;
+				this.head.pivotY = 6.96875F;
+			} else {
+				this.head.pivotY = 0.0F;
+			}
+		} else {
+			bl2 = false;
 		}
 
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
@@ -142,6 +175,10 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
 		this.rightLeg.yaw = 0.0F;
 		this.leftLeg.yaw = 0.0F;
+		if (bl2) {
+			this.head.pitch = 0.0F;
+			this.head.yaw = 0.0F;
+		}
 	}
 
 	@Override

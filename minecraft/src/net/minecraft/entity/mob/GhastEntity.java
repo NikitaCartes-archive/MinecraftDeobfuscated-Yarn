@@ -266,7 +266,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return this.ghast.getTarget() != null;
+			return this.ghast.hasVehicle() && this.ghast.getRootVehicle() == this.ghast.getTarget() ? false : this.ghast.getTarget() != null;
 		}
 
 		@Override

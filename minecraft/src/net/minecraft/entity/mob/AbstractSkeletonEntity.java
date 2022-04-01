@@ -5,6 +5,7 @@ import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -39,6 +40,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -63,6 +65,11 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
 		super(entityType, world);
 		this.updateAttackType();
+	}
+
+	@Override
+	public boolean method_42808() {
+		return true;
 	}
 
 	@Override
@@ -185,9 +192,48 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		float h;
+		if (this instanceof SkeletonEntity skeletonEntity) {
+			if (skeletonEntity.method_42827() >= 2) {
+				h = 0.0F;
+			} else {
+				h = (float)(14 - this.world.getDifficulty().getId() * 4) / 2.0F;
+			}
+		} else {
+			h = (float)(14 - this.world.getDifficulty().getId() * 4);
+		}
+
+		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, h);
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(persistentProjectileEntity);
+	}
+
+	@Override
+	public void method_42824(float f) {
+		if (this.hasVehicle()) {
+			ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW)));
+			PersistentProjectileEntity persistentProjectileEntity = this.createArrowProjectile(itemStack, f);
+			Entity entity = this.getRootVehicle();
+			Vec3d vec3d = entity.getPos().add(entity.getRotationVecClient().multiply(10.0, 10.0, 10.0));
+			double d = vec3d.getX() - this.getX();
+			double e = vec3d.getY() - persistentProjectileEntity.getY();
+			double g = vec3d.getZ() - this.getZ();
+			double h = Math.sqrt(d * d + g * g);
+			float i;
+			if (this instanceof SkeletonEntity skeletonEntity) {
+				if (skeletonEntity.method_42827() >= 2) {
+					i = 0.0F;
+				} else {
+					i = (float)(14 - this.world.getDifficulty().getId() * 4) / 2.0F;
+				}
+			} else {
+				i = (float)(14 - this.world.getDifficulty().getId() * 4);
+			}
+
+			persistentProjectileEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, i);
+			this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			this.world.spawnEntity(persistentProjectileEntity);
+		}
 	}
 
 	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {

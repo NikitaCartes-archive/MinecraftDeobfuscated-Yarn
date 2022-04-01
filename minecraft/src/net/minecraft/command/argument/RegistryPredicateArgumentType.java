@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
@@ -26,7 +25,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPredicateArgumentType.RegistryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
@@ -58,7 +57,7 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 		return getPredicate(context, name, Registry.BIOME_KEY, INVALID_BIOME_EXCEPTION);
 	}
 
-	public static RegistryPredicateArgumentType.RegistryPredicate<StructureFeature> getConfiguredStructureFeaturePredicate(
+	public static RegistryPredicateArgumentType.RegistryPredicate<ConfiguredStructureFeature<?, ?>> getConfiguredStructureFeaturePredicate(
 		CommandContext<ServerCommandSource> context, String name
 	) throws CommandSyntaxException {
 		return getPredicate(context, name, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
@@ -123,39 +122,18 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 		String asString();
 	}
 
-	public static class Serializer<T> implements ArgumentSerializer<RegistryPredicateArgumentType<T>, RegistryPredicateArgumentType.Serializer<T>.Properties> {
-		public void writePacket(RegistryPredicateArgumentType.Serializer<T>.Properties properties, PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeIdentifier(properties.registryRef.getValue());
+	public static class Serializer implements ArgumentSerializer<RegistryPredicateArgumentType<?>> {
+		public void toPacket(RegistryPredicateArgumentType<?> registryPredicateArgumentType, PacketByteBuf packetByteBuf) {
+			packetByteBuf.writeIdentifier(registryPredicateArgumentType.registryRef.getValue());
 		}
 
-		public RegistryPredicateArgumentType.Serializer<T>.Properties fromPacket(PacketByteBuf packetByteBuf) {
+		public RegistryPredicateArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
 			Identifier identifier = packetByteBuf.readIdentifier();
-			return new RegistryPredicateArgumentType.Serializer.Properties(RegistryKey.ofRegistry(identifier));
+			return new RegistryPredicateArgumentType(RegistryKey.ofRegistry(identifier));
 		}
 
-		public void writeJson(RegistryPredicateArgumentType.Serializer<T>.Properties properties, JsonObject jsonObject) {
-			jsonObject.addProperty("registry", properties.registryRef.getValue().toString());
-		}
-
-		public RegistryPredicateArgumentType.Serializer<T>.Properties getArgumentTypeProperties(RegistryPredicateArgumentType<T> registryPredicateArgumentType) {
-			return new RegistryPredicateArgumentType.Serializer.Properties(registryPredicateArgumentType.registryRef);
-		}
-
-		public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<RegistryPredicateArgumentType<T>> {
-			final RegistryKey<? extends Registry<T>> registryRef;
-
-			Properties(RegistryKey<? extends Registry<T>> registryRef) {
-				this.registryRef = registryRef;
-			}
-
-			public RegistryPredicateArgumentType<T> createType(CommandRegistryAccess commandRegistryAccess) {
-				return new RegistryPredicateArgumentType<>(this.registryRef);
-			}
-
-			@Override
-			public ArgumentSerializer<RegistryPredicateArgumentType<T>, ?> getSerializer() {
-				return Serializer.this;
-			}
+		public void toJson(RegistryPredicateArgumentType<?> registryPredicateArgumentType, JsonObject jsonObject) {
+			jsonObject.addProperty("registry", registryPredicateArgumentType.registryRef.getValue().toString());
 		}
 	}
 

@@ -75,38 +75,45 @@ public class SelectionManager {
 		} else if (Screen.isCut(keyCode)) {
 			this.cut();
 			return true;
+		} else if (keyCode == 259) {
+			this.delete(-1);
+			return true;
 		} else {
-			SelectionManager.SelectionType selectionType = Screen.hasControlDown() ? SelectionManager.SelectionType.WORD : SelectionManager.SelectionType.CHARACTER;
-			if (keyCode == 259) {
-				this.delete(-1, selectionType);
-				return true;
+			if (keyCode == 261) {
+				this.delete(1);
 			} else {
-				if (keyCode == 261) {
-					this.delete(1, selectionType);
-				} else {
-					if (keyCode == 263) {
-						this.moveCursor(-1, Screen.hasShiftDown(), selectionType);
-						return true;
+				if (keyCode == 263) {
+					if (Screen.hasControlDown()) {
+						this.moveCursorPastWord(-1, Screen.hasShiftDown());
+					} else {
+						this.moveCursor(-1, Screen.hasShiftDown());
 					}
 
-					if (keyCode == 262) {
-						this.moveCursor(1, Screen.hasShiftDown(), selectionType);
-						return true;
-					}
-
-					if (keyCode == 268) {
-						this.moveCursorToStart(Screen.hasShiftDown());
-						return true;
-					}
-
-					if (keyCode == 269) {
-						this.moveCursorToEnd(Screen.hasShiftDown());
-						return true;
-					}
+					return true;
 				}
 
-				return false;
+				if (keyCode == 262) {
+					if (Screen.hasControlDown()) {
+						this.moveCursorPastWord(1, Screen.hasShiftDown());
+					} else {
+						this.moveCursor(1, Screen.hasShiftDown());
+					}
+
+					return true;
+				}
+
+				if (keyCode == 268) {
+					this.moveCursorToStart(Screen.hasShiftDown());
+					return true;
+				}
+
+				if (keyCode == 269) {
+					this.moveCursorToEnd(Screen.hasShiftDown());
+					return true;
+				}
 			}
+
+			return false;
 		}
 	}
 
@@ -137,16 +144,6 @@ public class SelectionManager {
 		}
 	}
 
-	public void moveCursor(int offset, boolean shiftDown, SelectionManager.SelectionType selectionType) {
-		switch (selectionType) {
-			case CHARACTER:
-				this.moveCursor(offset, shiftDown);
-				break;
-			case WORD:
-				this.moveCursorPastWord(offset, shiftDown);
-		}
-	}
-
 	public void moveCursor(int offset) {
 		this.moveCursor(offset, false);
 	}
@@ -165,33 +162,18 @@ public class SelectionManager {
 		this.updateSelectionRange(shiftDown);
 	}
 
-	public void delete(int offset, SelectionManager.SelectionType selectionType) {
-		switch (selectionType) {
-			case CHARACTER:
-				this.delete(offset);
-				break;
-			case WORD:
-				this.deleteWord(offset);
-		}
-	}
-
-	public void deleteWord(int offset) {
-		int i = TextHandler.moveCursorByWords((String)this.stringGetter.get(), offset, this.selectionStart, true);
-		this.delete(i - this.selectionStart);
-	}
-
-	public void delete(int offset) {
+	public void delete(int cursorOffset) {
 		String string = (String)this.stringGetter.get();
 		if (!string.isEmpty()) {
 			String string2;
 			if (this.selectionEnd != this.selectionStart) {
 				string2 = this.deleteSelectedText(string);
 			} else {
-				int i = Util.moveCursor(string, this.selectionStart, offset);
+				int i = Util.moveCursor(string, this.selectionStart, cursorOffset);
 				int j = Math.min(i, this.selectionStart);
 				int k = Math.max(i, this.selectionStart);
 				string2 = new StringBuilder(string).delete(j, k).toString();
-				if (offset < 0) {
+				if (cursorOffset < 0) {
 					this.selectionEnd = this.selectionStart = j;
 				}
 			}
@@ -242,7 +224,7 @@ public class SelectionManager {
 		this.moveCursorToStart(false);
 	}
 
-	public void moveCursorToStart(boolean shiftDown) {
+	private void moveCursorToStart(boolean shiftDown) {
 		this.selectionStart = 0;
 		this.updateSelectionRange(shiftDown);
 	}
@@ -251,7 +233,7 @@ public class SelectionManager {
 		this.moveCursorToEnd(false);
 	}
 
-	public void moveCursorToEnd(boolean shiftDown) {
+	private void moveCursorToEnd(boolean shiftDown) {
 		this.selectionStart = ((String)this.stringGetter.get()).length();
 		this.updateSelectionRange(shiftDown);
 	}
@@ -285,11 +267,5 @@ public class SelectionManager {
 
 	public boolean isSelecting() {
 		return this.selectionStart != this.selectionEnd;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static enum SelectionType {
-		CHARACTER,
-		WORD;
 	}
 }

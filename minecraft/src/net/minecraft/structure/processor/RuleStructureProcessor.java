@@ -30,20 +30,20 @@ public class RuleStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData data
 	) {
-		Random random = new Random(MathHelper.hashCode(currentBlockInfo.pos));
-		BlockState blockState = world.getBlockState(currentBlockInfo.pos);
+		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
+		BlockState blockState = world.getBlockState(structureBlockInfo2.pos);
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
-			if (structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, random)) {
-				return new Structure.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
+			if (structureProcessorRule.test(structureBlockInfo2.state, blockState, structureBlockInfo.pos, structureBlockInfo2.pos, pivot, random)) {
+				return new Structure.StructureBlockInfo(structureBlockInfo2.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
 			}
 		}
 
-		return currentBlockInfo;
+		return structureBlockInfo2;
 	}
 
 	@Override

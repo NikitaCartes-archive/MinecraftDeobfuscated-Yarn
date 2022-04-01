@@ -101,11 +101,11 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
 		ZipFile zipFile;
 		try {
 			zipFile = this.getZipFile();
-		} catch (IOException var14) {
+		} catch (IOException var15) {
 			return Collections.emptySet();
 		}
 
@@ -120,9 +120,9 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 				String string3 = zipEntry.getName();
 				if (!string3.endsWith(".mcmeta") && string3.startsWith(string2)) {
 					String string4 = string3.substring(string.length());
-					Identifier identifier = new Identifier(namespace, string4);
-					if (allowedPathPredicate.test(identifier)) {
-						list.add(identifier);
+					String[] strings = string4.split("/");
+					if (strings.length >= maxDepth + 1 && pathFilter.test(strings[strings.length - 1])) {
+						list.add(new Identifier(namespace, string4));
 					}
 				}
 			}

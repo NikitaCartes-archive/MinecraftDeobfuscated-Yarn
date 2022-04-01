@@ -2,7 +2,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7362;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
+import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -19,9 +21,11 @@ public class BipedEntityRenderer<T extends MobEntity, M extends BipedEntityModel
 
 	public BipedEntityRenderer(EntityRendererFactory.Context ctx, M model, float shadowRadius, float scaleX, float scaleY, float scaleZ) {
 		super(ctx, model, shadowRadius);
-		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), scaleX, scaleY, scaleZ));
+		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), scaleX, scaleY, scaleZ, true));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, -0.075F, -0.099999994F, 0.7F));
+		this.addFeature(new class_7362<>(this));
 	}
 
 	public Identifier getTexture(T mobEntity) {

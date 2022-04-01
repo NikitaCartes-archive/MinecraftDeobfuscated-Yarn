@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PolarBearEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -14,6 +15,7 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 
 	public PolarBearEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PolarBearEntityModel<>(context.getPart(EntityModelLayers.POLAR_BEAR)), 0.9F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	public Identifier getTexture(PolarBearEntity polarBearEntity) {

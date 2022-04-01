@@ -7,8 +7,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Items;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +67,17 @@ public class Camera {
 	public void updateEyeHeight() {
 		if (this.focusedEntity != null) {
 			this.lastCameraY = this.cameraY;
-			this.cameraY = this.cameraY + (this.focusedEntity.getStandingEyeHeight() - this.cameraY) * 0.5F;
+			float f;
+			if (!this.thirdPerson
+				&& this.focusedEntity.isInSneakingPose()
+				&& this.focusedEntity instanceof LivingEntity livingEntity
+				&& livingEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+				f = 0.875F;
+			} else {
+				f = this.focusedEntity.getStandingEyeHeight();
+			}
+
+			this.cameraY = this.cameraY + (f - this.cameraY) * 0.5F;
 		}
 	}
 
@@ -167,7 +179,7 @@ public class Camera {
 	public Camera.Projection getProjection() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
-		double e = Math.tan((double)((float)minecraftClient.options.getFov().getValue().intValue() * (float) (Math.PI / 180.0)) / 2.0) * 0.05F;
+		double e = Math.tan(minecraftClient.options.fov * (float) (Math.PI / 180.0) / 2.0) * 0.05F;
 		double f = e * d;
 		Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05F);
 		Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);

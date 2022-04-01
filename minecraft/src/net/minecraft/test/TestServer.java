@@ -16,10 +16,10 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.SaveLoader;
-import net.minecraft.server.SaveLoading;
 import net.minecraft.server.WorldGenerationProgressLogger;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.structure.StructureSet;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.Util;
@@ -31,8 +31,11 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.WorldPresets;
+import net.minecraft.world.gen.chunk.FlatChunkGenerator;
+import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -59,28 +62,43 @@ public class TestServer extends MinecraftServer {
 		if (batches.isEmpty()) {
 			throw new IllegalArgumentException("No test batches were given!");
 		} else {
-			SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, DataPackSettings.SAFE_MODE, false);
-			SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, 4);
+			SaveLoader.FunctionLoaderConfig functionLoaderConfig = new SaveLoader.FunctionLoaderConfig(
+				resourcePackManager, CommandManager.RegistrationEnvironment.DEDICATED, 4, false
+			);
 
 			try {
-				SaveLoader saveLoader = (SaveLoader)SaveLoader.load(
-						serverConfig,
+				SaveLoader saveLoader = (SaveLoader)SaveLoader.ofLoaded(
+						functionLoaderConfig,
+						() -> DataPackSettings.SAFE_MODE,
 						(resourceManager, dataPackSettings) -> {
 							DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
-							GeneratorOptions generatorOptions = immutable.get(Registry.WORLD_PRESET_WORLDGEN)
-								.entryOf(WorldPresets.FLAT)
-								.value()
-								.createGeneratorOptions(0L, false, false);
-							SaveProperties saveProperties = new LevelProperties(TEST_LEVEL, generatorOptions, Lifecycle.stable());
+							Registry<Biome> registry = immutable.get(Registry.BIOME_KEY);
+							Registry<StructureSet> registry2 = immutable.get(Registry.STRUCTURE_SET_KEY);
+							Registry<DimensionType> registry3 = immutable.get(Registry.DIMENSION_TYPE_KEY);
+							SaveProperties saveProperties = new LevelProperties(
+								TEST_LEVEL,
+								new GeneratorOptions(
+									0L,
+									false,
+									false,
+									GeneratorOptions.getRegistryWithReplacedOverworldGenerator(
+										registry3,
+										DimensionType.createDefaultDimensionOptions(immutable, 0L),
+										new FlatChunkGenerator(registry2, FlatChunkGeneratorConfig.getDefaultConfig(registry, registry2))
+									)
+								),
+								Lifecycle.stable()
+							);
 							return Pair.of(saveProperties, immutable);
 						},
 						Util.getMainWorkerExecutor(),
 						Runnable::run
 					)
 					.get();
+				saveLoader.refresh();
 				return new TestServer(thread, session, resourcePackManager, saveLoader, batches, pos);
-			} catch (Exception var8) {
-				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var8);
+			} catch (Exception var7) {
+				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var7);
 				System.exit(-1);
 				throw new IllegalStateException();
 			}

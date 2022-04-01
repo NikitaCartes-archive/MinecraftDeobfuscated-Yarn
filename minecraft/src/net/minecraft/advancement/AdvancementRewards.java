@@ -9,7 +9,6 @@ import com.google.gson.JsonParseException;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -65,11 +64,7 @@ public class AdvancementRewards {
 						);
 					bl = true;
 				} else {
-					ItemEntity itemEntity = player.dropItem(itemStack, false);
-					if (itemEntity != null) {
-						itemEntity.resetPickupDelay();
-						itemEntity.setOwner(player.getUuid());
-					}
+					player.dropItem(itemStack, false);
 				}
 			}
 		}

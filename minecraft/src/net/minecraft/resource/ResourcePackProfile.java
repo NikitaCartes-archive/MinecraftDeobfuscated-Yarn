@@ -26,7 +26,7 @@ import org.slf4j.Logger;
  * 
  * <p>Closing the profile doesn't have any effect.
  */
-public class ResourcePackProfile {
+public class ResourcePackProfile implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final String name;
 	private final Supplier<ResourcePack> packFactory;
@@ -166,6 +166,9 @@ public class ResourcePackProfile {
 
 	public int hashCode() {
 		return this.name.hashCode();
+	}
+
+	public void close() {
 	}
 
 	/**

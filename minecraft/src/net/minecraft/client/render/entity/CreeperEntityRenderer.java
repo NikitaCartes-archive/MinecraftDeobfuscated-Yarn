@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.CreeperChargeFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -16,6 +17,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 
 	public CreeperEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new CreeperEntityModel<>(context.getPart(EntityModelLayers.CREEPER)), 0.5F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new CreeperChargeFeatureRenderer(this, context.getModelLoader()));
 	}
 

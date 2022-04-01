@@ -19,6 +19,8 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_7317;
+import net.minecraft.class_7320;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -62,7 +64,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.AxeItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.FoodComponent;
@@ -240,7 +241,9 @@ public abstract class LivingEntity extends Entity {
 	private float leaningPitch;
 	private float lastLeaningPitch;
 	protected Brain<?> brain;
-	private boolean experienceDroppingDisabled;
+	private boolean field_38505;
+	@Nullable
+	private PlayerEntity field_38506;
 
 	protected LivingEntity(EntityType<? extends LivingEntity> entityType, World world) {
 		super(entityType, world);
@@ -299,7 +302,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState blockState, BlockPos landedPosition) {
 		if (!this.isTouchingWater()) {
 			this.checkWaterState();
 		}
@@ -311,15 +314,15 @@ public abstract class LivingEntity extends Entity {
 
 		if (!this.world.isClient && this.fallDistance > 3.0F && onGround) {
 			float f = (float)MathHelper.ceil(this.fallDistance - 3.0F);
-			if (!state.isAir()) {
+			if (!blockState.isAir()) {
 				double d = Math.min((double)(0.2F + f / 15.0F), 2.5);
 				int i = (int)(150.0 * d);
 				((ServerWorld)this.world)
-					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, state), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15F);
+					.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), this.getX(), this.getY(), this.getZ(), i, 0.0, 0.0, 0.0, 0.15F);
 			}
 		}
 
-		super.fall(heightDifference, onGround, state, landedPosition);
+		super.fall(heightDifference, onGround, blockState, landedPosition);
 	}
 
 	public boolean canBreatheInWater() {
@@ -689,16 +692,11 @@ public abstract class LivingEntity extends Entity {
 		this.noDrag = noDrag;
 	}
 
-	protected void onEquipStack(ItemStack stack, boolean bl) {
-		if (!stack.isEmpty() && !this.isSpectator()) {
-			if (bl) {
-				this.emitGameEvent(GameEvent.EQUIP);
-			}
-
-			SoundEvent soundEvent = stack.getEquipSound();
-			if (soundEvent != null) {
-				this.playSound(soundEvent, 1.0F, 1.0F);
-			}
+	protected void onEquipStack(ItemStack stack) {
+		SoundEvent soundEvent = stack.getEquipSound();
+		if (!stack.isEmpty() && soundEvent != null && !this.isSpectator()) {
+			this.emitGameEvent(GameEvent.EQUIP);
+			this.playSound(soundEvent, 1.0F, 1.0F);
 		}
 	}
 
@@ -1264,6 +1262,11 @@ public abstract class LivingEntity extends Entity {
 				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
 			}
 
+			if (!this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+				this.dropStack(this.getEquippedStack(EquipmentSlot.HEAD));
+				this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+			}
+
 			return bl3;
 		}
 	}
@@ -1372,7 +1375,7 @@ public abstract class LivingEntity extends Entity {
 				this.wakeUp();
 			}
 
-			this.emitGameEvent(GameEvent.ENTITY_DIE);
+			this.emitGameEvent(GameEvent.ENTITY_DYING);
 			if (!this.world.isClient && this.hasCustomName()) {
 				field_36332.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
 			}
@@ -1452,7 +1455,7 @@ public abstract class LivingEntity extends Entity {
 	 */
 	protected void dropXp() {
 		if (this.world instanceof ServerWorld
-			&& !this.isExperienceDroppingDisabled()
+			&& !this.method_42798()
 			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
 			ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getXpToDrop());
 		}
@@ -1511,12 +1514,12 @@ public abstract class LivingEntity extends Entity {
 		return distance > 4 ? this.getFallSounds().big() : this.getFallSounds().small();
 	}
 
-	public void disableExperienceDropping() {
-		this.experienceDroppingDisabled = true;
+	public void method_42797() {
+		this.field_38505 = true;
 	}
 
-	public boolean isExperienceDroppingDisabled() {
-		return this.experienceDroppingDisabled;
+	public boolean method_42798() {
+		return this.field_38505;
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {
@@ -1549,7 +1552,7 @@ public abstract class LivingEntity extends Entity {
 		} else {
 			BlockPos blockPos = this.getBlockPos();
 			BlockState blockState = this.getBlockStateAtPos();
-			if (blockState.isIn(BlockTags.CLIMBABLE)) {
+			if (this.method_42786(blockPos, blockState)) {
 				this.climbingPos = Optional.of(blockPos);
 				return true;
 			} else if (blockState.getBlock() instanceof TrapdoorBlock && this.canEnterTrapdoor(blockPos, blockState)) {
@@ -1688,7 +1691,7 @@ public abstract class LivingEntity extends Entity {
 				this.setHealth(h - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
-				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			}
 		}
 	}
@@ -1984,6 +1987,11 @@ public abstract class LivingEntity extends Entity {
 		return predicate.test(this.getMainHandStack()) || predicate.test(this.getOffHandStack());
 	}
 
+	public ItemStack method_42799() {
+		BlockState blockState = this.method_42800();
+		return blockState == null ? ItemStack.EMPTY : class_7320.method_42867(blockState);
+	}
+
 	public ItemStack getStackInHand(Hand hand) {
 		if (hand == Hand.MAIN_HAND) {
 			return this.getEquippedStack(EquipmentSlot.MAINHAND);
@@ -2124,7 +2132,7 @@ public abstract class LivingEntity extends Entity {
 		return 0.8F;
 	}
 
-	public boolean canWalkOnFluid(FluidState state) {
+	public boolean canWalkOnFluid(FluidState fluidState) {
 		return false;
 	}
 
@@ -2141,9 +2149,17 @@ public abstract class LivingEntity extends Entity {
 		if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
 			double d = 0.08;
 			boolean bl = this.getVelocity().y <= 0.0;
-			if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
+			if (bl
+				&& (
+					this.hasStatusEffect(StatusEffects.SLOW_FALLING)
+						|| this instanceof PlayerEntity && this.hasPassengerType(entity -> entity.getType() == EntityType.CHICKEN)
+				)) {
 				d = 0.01;
 				this.onLanding();
+			}
+
+			if (this instanceof PlayerEntity && this.hasPassengerType(entity -> entity.getType() == EntityType.BEE)) {
+				d = -5.0E-4;
 			}
 
 			FluidState fluidState = this.world.getFluidState(this.getBlockPos());
@@ -2177,7 +2193,7 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				this.setVelocity(vec3d.multiply((double)f, 0.8F, (double)f));
-				Vec3d vec3d2 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
+				Vec3d vec3d2 = this.method_26317(d, bl, this.getVelocity());
 				this.setVelocity(vec3d2);
 				if (this.horizontalCollision && this.doesNotCollide(vec3d2.x, vec3d2.y + 0.6F - this.getY() + e, vec3d2.z)) {
 					this.setVelocity(vec3d2.x, 0.3F, vec3d2.z);
@@ -2188,7 +2204,7 @@ public abstract class LivingEntity extends Entity {
 				this.move(MovementType.SELF, this.getVelocity());
 				if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
 					this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
-					Vec3d vec3d3 = this.applyFluidMovingSpeed(d, bl, this.getVelocity());
+					Vec3d vec3d3 = this.method_26317(d, bl, this.getVelocity());
 					this.setVelocity(vec3d3);
 				} else {
 					this.setVelocity(this.getVelocity().multiply(0.5));
@@ -2302,18 +2318,18 @@ public abstract class LivingEntity extends Entity {
 		return vec3d;
 	}
 
-	public Vec3d applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion) {
+	public Vec3d method_26317(double d, boolean bl, Vec3d vec3d) {
 		if (!this.hasNoGravity() && !this.isSprinting()) {
-			double d;
-			if (falling && Math.abs(motion.y - 0.005) >= 0.003 && Math.abs(motion.y - gravity / 16.0) < 0.003) {
-				d = -0.003;
+			double e;
+			if (bl && Math.abs(vec3d.y - 0.005) >= 0.003 && Math.abs(vec3d.y - d / 16.0) < 0.003) {
+				e = -0.003;
 			} else {
-				d = motion.y - gravity / 16.0;
+				e = vec3d.y - d / 16.0;
 			}
 
-			return new Vec3d(motion.x, d, motion.z);
+			return new Vec3d(vec3d.x, e, vec3d.z);
 		} else {
-			return motion;
+			return vec3d;
 		}
 	}
 
@@ -2356,6 +2372,10 @@ public abstract class LivingEntity extends Entity {
 		super.tick();
 		this.tickActiveItemStack();
 		this.updateLeaningPitch();
+		if (this.field_38506 != null && this.getVelocity().length() < 0.15) {
+			this.method_42804();
+		}
+
 		if (!this.world.isClient) {
 			int i = this.getStuckArrowCount();
 			if (i > 0) {
@@ -2746,7 +2766,7 @@ public abstract class LivingEntity extends Entity {
 						itemStack.damage(1, this, player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
 					}
 
-					this.emitGameEvent(GameEvent.ELYTRA_GLIDE);
+					this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
 				}
 			} else {
 				bl = false;
@@ -3095,6 +3115,7 @@ public abstract class LivingEntity extends Entity {
 		if (!this.world.isClient || this.isUsingItem()) {
 			Hand hand = this.getActiveHand();
 			if (!this.activeItemStack.equals(this.getStackInHand(hand))) {
+				this.method_42801();
 				this.stopUsingItem();
 			} else {
 				if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
@@ -3165,7 +3186,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public boolean isInSwimmingPose() {
-		return super.isInSwimmingPose() || !this.isFallFlying() && this.isInPose(EntityPose.FALL_FLYING);
+		return super.isInSwimmingPose() || !this.isFallFlying() && this.method_42789(EntityPose.FALL_FLYING);
 	}
 
 	public int getRoll() {
@@ -3353,6 +3374,7 @@ public abstract class LivingEntity extends Entity {
 
 	public ItemStack eatFood(World world, ItemStack stack) {
 		if (stack.isFood()) {
+			world.emitGameEvent(this, GameEvent.EAT, this.getCameraBlockPos());
 			world.playSound(
 				null,
 				this.getX(),
@@ -3368,7 +3390,7 @@ public abstract class LivingEntity extends Entity {
 				stack.decrement(1);
 			}
 
-			world.emitGameEvent(this, GameEvent.EAT, this.getEyePos());
+			this.emitGameEvent(GameEvent.EAT);
 		}
 
 		return stack;
@@ -3503,10 +3525,67 @@ public abstract class LivingEntity extends Entity {
 		);
 	}
 
-	public boolean disablesShield() {
-		return this.getMainHandStack().getItem() instanceof AxeItem;
+	@Nullable
+	public BlockState method_42800() {
+		return null;
+	}
+
+	@Override
+	public boolean method_42787() {
+		return this.method_42800() != null && !this.isTouchingWater() && !this.isSpectator() && !this.isInLava() && this.isAlive();
+	}
+
+	public void method_42801() {
+	}
+
+	@Nullable
+	public class_7317 method_42802() {
+		if (this.method_42800() != null) {
+			return class_7317.method_42845(this.method_42800().getBlock());
+		} else {
+			Entity entity = this.getFirstPassenger();
+			return entity != null ? class_7317.method_42842(entity.getType()) : null;
+		}
+	}
+
+	public LivingEntity.class_7316 method_42803() {
+		if (this.method_42800() != null) {
+			return LivingEntity.class_7316.BLOCK;
+		} else {
+			return this.hasPassengerType(entity -> true) ? LivingEntity.class_7316.MOB : LivingEntity.class_7316.NONE;
+		}
+	}
+
+	@Override
+	public void method_42766(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+		super.method_42766(serverPlayerEntity, vec3d);
+		this.method_42796(serverPlayerEntity);
+		this.streamSelfAndPassengers().forEach(entity -> {
+			if (entity instanceof LivingEntity livingEntity) {
+				livingEntity.method_42796(serverPlayerEntity);
+			}
+		});
+	}
+
+	void method_42796(@Nullable ServerPlayerEntity serverPlayerEntity) {
+		this.field_38506 = serverPlayerEntity;
+	}
+
+	void method_42804() {
+		this.field_38506 = null;
+	}
+
+	@Nullable
+	public PlayerEntity method_42805() {
+		return this.field_38506;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {
+	}
+
+	public static enum class_7316 {
+		BLOCK,
+		MOB,
+		NONE;
 	}
 }

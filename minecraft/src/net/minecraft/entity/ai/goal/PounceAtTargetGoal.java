@@ -1,8 +1,10 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
 
 public class PounceAtTargetGoal extends Goal {
@@ -24,6 +26,10 @@ public class PounceAtTargetGoal extends Goal {
 			this.target = this.mob.getTarget();
 			if (this.target == null) {
 				return false;
+			} else if (this.mob.hasVehicle() && this.mob.getRootVehicle() == this.target) {
+				return false;
+			} else if (this.target.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && this.target.isInSneakingPose()) {
+				return false;
 			} else {
 				double d = this.mob.squaredDistanceTo(this.target);
 				if (d < 4.0 || d > 16.0) {
@@ -37,6 +43,16 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
+		if (this.target != null) {
+			if (this.mob.hasVehicle() && this.mob.getRootVehicle() == this.mob.getTarget()) {
+				return false;
+			}
+
+			if (this.target.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && this.target.isInSneakingPose()) {
+				return false;
+			}
+		}
+
 		return !this.mob.isOnGround();
 	}
 

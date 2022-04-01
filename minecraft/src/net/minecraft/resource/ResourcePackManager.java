@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  * builds {@linkplain #createResourcePacks() a list of resource packs} when the
  * resource manager reloads.
  */
-public class ResourcePackManager {
+public class ResourcePackManager implements AutoCloseable {
 	private final Set<ResourcePackProvider> providers;
 	private Map<String, ResourcePackProfile> profiles = ImmutableMap.of();
 	private List<ResourcePackProfile> enabled = ImmutableList.of();
@@ -41,6 +41,7 @@ public class ResourcePackManager {
 
 	public void scanPacks() {
 		List<String> list = (List<String>)this.enabled.stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList());
+		this.close();
 		this.profiles = this.providePackProfiles();
 		this.enabled = this.buildEnabledProfiles(list);
 	}
@@ -94,6 +95,10 @@ public class ResourcePackManager {
 	@Nullable
 	public ResourcePackProfile getProfile(String name) {
 		return (ResourcePackProfile)this.profiles.get(name);
+	}
+
+	public void close() {
+		this.profiles.values().forEach(ResourcePackProfile::close);
 	}
 
 	public boolean hasProfile(String name) {

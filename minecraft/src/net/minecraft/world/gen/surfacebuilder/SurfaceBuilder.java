@@ -1,7 +1,9 @@
 package net.minecraft.world.gen.surfacebuilder;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,6 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -24,9 +27,9 @@ import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.chunk.BlockColumn;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.noise.NoiseParametersKeys;
 import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.random.RandomDeriver;
 
 public class SurfaceBuilder {
@@ -49,35 +52,49 @@ public class SurfaceBuilder {
 	private final DoublePerlinNoiseSampler icebergPillarNoise;
 	private final DoublePerlinNoiseSampler icebergPillarRoofNoise;
 	private final DoublePerlinNoiseSampler icebergSurfaceNoise;
+	private final Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry;
+	private final Map<RegistryKey<DoublePerlinNoiseSampler.NoiseParameters>, DoublePerlinNoiseSampler> noiseSamplers = new ConcurrentHashMap();
+	private final Map<Identifier, RandomDeriver> randomDerivers = new ConcurrentHashMap();
 	private final RandomDeriver randomDeriver;
 	private final DoublePerlinNoiseSampler surfaceNoise;
 	private final DoublePerlinNoiseSampler surfaceSecondaryNoise;
 
-	public SurfaceBuilder(NoiseConfig noiseConfig, BlockState defaultState, int seaLevel, RandomDeriver randomDeriver) {
+	public SurfaceBuilder(
+		Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseRegistry, BlockState defaultState, int seaLevel, long seed, ChunkRandom.RandomProvider randomProvider
+	) {
+		this.noiseRegistry = noiseRegistry;
 		this.defaultState = defaultState;
 		this.seaLevel = seaLevel;
-		this.randomDeriver = randomDeriver;
-		this.terracottaBandsOffsetNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.CLAY_BANDS_OFFSET);
-		this.terracottaBands = createTerracottaBands(randomDeriver.createRandom(new Identifier("clay_bands")));
-		this.surfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE);
-		this.surfaceSecondaryNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.SURFACE_SECONDARY);
-		this.badlandsPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR);
-		this.badlandsPillarRoofNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
-		this.badlandsSurfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.BADLANDS_SURFACE);
-		this.icebergPillarNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_PILLAR);
-		this.icebergPillarRoofNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
-		this.icebergSurfaceNoise = noiseConfig.getOrCreateSampler(NoiseParametersKeys.ICEBERG_SURFACE);
+		this.randomDeriver = randomProvider.create(seed).createRandomDeriver();
+		this.terracottaBandsOffsetNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.CLAY_BANDS_OFFSET);
+		this.terracottaBands = createTerracottaBands(this.randomDeriver.createRandom(new Identifier("clay_bands")));
+		this.surfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.SURFACE);
+		this.surfaceSecondaryNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.SURFACE_SECONDARY);
+		this.badlandsPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR);
+		this.badlandsPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_PILLAR_ROOF);
+		this.badlandsSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.BADLANDS_SURFACE);
+		this.icebergPillarNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR);
+		this.icebergPillarRoofNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_PILLAR_ROOF);
+		this.icebergSurfaceNoise = NoiseParametersKeys.createNoiseSampler(noiseRegistry, this.randomDeriver, NoiseParametersKeys.ICEBERG_SURFACE);
+	}
+
+	protected DoublePerlinNoiseSampler getNoiseSampler(RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> noise) {
+		return (DoublePerlinNoiseSampler)this.noiseSamplers
+			.computeIfAbsent(noise, registryKey2 -> NoiseParametersKeys.createNoiseSampler(this.noiseRegistry, this.randomDeriver, noise));
+	}
+
+	protected RandomDeriver getRandomDeriver(Identifier id) {
+		return (RandomDeriver)this.randomDerivers.computeIfAbsent(id, i -> this.randomDeriver.createRandom(id).createRandomDeriver());
 	}
 
 	public void buildSurface(
-		NoiseConfig noiseConfig,
 		BiomeAccess biomeAccess,
 		Registry<Biome> biomeRegistry,
 		boolean useLegacyRandom,
-		HeightContext heightContext,
+		HeightContext context,
 		Chunk chunk,
 		ChunkNoiseSampler chunkNoiseSampler,
-		MaterialRules.MaterialRule materialRule
+		MaterialRules.MaterialRule surfaceRule
 	) {
 		final BlockPos.Mutable mutable = new BlockPos.Mutable();
 		final ChunkPos chunkPos = chunk.getPos();
@@ -105,9 +122,9 @@ public class SurfaceBuilder {
 			}
 		};
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
-			this, noiseConfig, chunk, chunkNoiseSampler, biomeAccess::getBiome, biomeRegistry, heightContext
+			this, chunk, chunkNoiseSampler, biomeAccess::getBiome, biomeRegistry, context
 		);
-		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)materialRule.apply(materialRuleContext);
+		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)surfaceRule.apply(materialRuleContext);
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
 		for (int k = 0; k < 16; k++) {
@@ -193,7 +210,7 @@ public class SurfaceBuilder {
 		boolean hasFluid
 	) {
 		MaterialRules.MaterialRuleContext materialRuleContext = new MaterialRules.MaterialRuleContext(
-			this, context.method_41570(), chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
+			this, chunk, chunkNoiseSampler, posToBiome, context.getRegistryManager().get(Registry.BIOME_KEY), context
 		);
 		MaterialRules.BlockStateRule blockStateRule = (MaterialRules.BlockStateRule)rule.apply(materialRuleContext);
 		int i = pos.getX();

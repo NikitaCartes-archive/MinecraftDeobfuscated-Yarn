@@ -29,10 +29,10 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 	}
 
 	public void render(MatrixStack matrices) {
-		if (!this.enabled && this.client.options.getShowSubtitles().getValue()) {
+		if (!this.enabled && this.client.options.showSubtitles) {
 			this.client.getSoundManager().registerListener(this);
 			this.enabled = true;
-		} else if (this.enabled && !this.client.options.getShowSubtitles().getValue()) {
+		} else if (this.enabled && !this.client.options.showSubtitles) {
 			this.client.getSoundManager().unregisterListener(this);
 			this.enabled = false;
 		}

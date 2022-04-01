@@ -3,8 +3,6 @@ package net.minecraft.world.explosion;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,24 +17,30 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -152,7 +156,7 @@ public class Explosion {
 	}
 
 	public void collectBlocksAndDamageEntities() {
-		this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new Vec3d(this.x, this.y, this.z));
+		this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new BlockPos(this.x, this.y, this.z));
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		int i = 16;
 
@@ -271,38 +275,55 @@ public class Explosion {
 		}
 
 		if (bl) {
-			ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList = new ObjectArrayList<>();
 			Collections.shuffle(this.affectedBlocks, this.world.random);
+			Inventory inventory = new SimpleInventory(ItemStack.EMPTY);
 
 			for (BlockPos blockPos : this.affectedBlocks) {
 				BlockState blockState = this.world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
-				if (!blockState.isAir()) {
-					BlockPos blockPos2 = blockPos.toImmutable();
-					this.world.getProfiler().push("explosion_blocks");
-					if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
-						BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
-						LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-							.random(this.world.random)
-							.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos))
-							.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
-							.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity)
-							.optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
-						if (this.destructionType == Explosion.DestructionType.DESTROY) {
-							builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
+				if (this.random.nextFloat() > 0.3F) {
+					BlockState blockState2 = Blocks.AIR.getDefaultState();
+					if (!blockState.isAir()) {
+						BlockPos blockPos2 = blockPos.toImmutable();
+						this.world.getProfiler().push("explosion_blocks");
+						if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
+							BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
+							LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+								.random(this.world.random)
+								.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos))
+								.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
+								.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity)
+								.optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
+							if (this.destructionType == Explosion.DestructionType.DESTROY) {
+								builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
+							}
+
+							blockState2 = (BlockState)Util.getRandomOrEmpty(blockState.getDroppedStacks(builder).stream().mapMulti((itemStack, consumer) -> {
+								inventory.setStack(0, itemStack);
+								this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, inventory, this.world).forEach(stonecuttingRecipe -> {
+									if (stonecuttingRecipe.getOutput().getItem() instanceof BlockItem blockItem) {
+										consumer.accept(blockItem.getBlock().getDefaultState());
+									}
+								});
+							}).toList(), this.random).orElse(blockState2);
 						}
 
-						blockState.getDroppedStacks(builder).forEach(stack -> tryMergeStack(objectArrayList, stack, blockPos2));
+						this.world.setBlockState(blockPos, blockState2, Block.NOTIFY_ALL);
+						block.onDestroyedByExplosion(this.world, blockPos, this);
+						this.world.getProfiler().pop();
+					}
+				} else {
+					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+					float f = (float)((double)blockPos.getX() - this.x);
+					float g = (float)((double)blockPos.getZ() - this.z);
+					Vec2f vec2f = new Vec2f(f, g);
+					float h = vec2f.length();
+					if (h > 1.0F) {
+						vec2f = vec2f.multiply(1.0F / h);
 					}
 
-					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-					block.onDestroyedByExplosion(this.world, blockPos, this);
-					this.world.getProfiler().pop();
+					FallingBlockEntity.method_42818(this.world, blockPos, blockState, new Vec3d((double)vec2f.x, 0.6, (double)vec2f.y));
 				}
-			}
-
-			for (Pair<ItemStack, BlockPos> pair : objectArrayList) {
-				Block.dropStack(this.world, pair.getSecond(), pair.getFirst());
 			}
 		}
 
@@ -315,24 +336,6 @@ public class Explosion {
 				}
 			}
 		}
-	}
-
-	private static void tryMergeStack(ObjectArrayList<Pair<ItemStack, BlockPos>> stacks, ItemStack stack, BlockPos pos) {
-		int i = stacks.size();
-
-		for (int j = 0; j < i; j++) {
-			Pair<ItemStack, BlockPos> pair = stacks.get(j);
-			ItemStack itemStack = pair.getFirst();
-			if (ItemEntity.canMerge(itemStack, stack)) {
-				ItemStack itemStack2 = ItemEntity.merge(itemStack, stack, 16);
-				stacks.set(j, Pair.of(itemStack2, pair.getSecond()));
-				if (stack.isEmpty()) {
-					return;
-				}
-			}
-		}
-
-		stacks.add(Pair.of(stack, pos));
 	}
 
 	public DamageSource getDamageSource() {

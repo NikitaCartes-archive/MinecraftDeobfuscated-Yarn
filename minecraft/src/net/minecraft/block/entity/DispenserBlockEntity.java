@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	private static final Random RANDOM = new Random();
-	public static final int field_31340 = 9;
-	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
+	public static final int field_31340 = 1;
+	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
 	protected DispenserBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
@@ -28,7 +28,12 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 
 	@Override
 	public int size() {
-		return 9;
+		return 1;
+	}
+
+	@Override
+	public int getMaxCountPerStack() {
+		return 1;
 	}
 
 	public int chooseNonEmptySlot() {

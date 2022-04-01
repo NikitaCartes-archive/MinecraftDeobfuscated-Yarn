@@ -68,7 +68,6 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
@@ -319,19 +318,14 @@ public class DebugHud extends DrawableHelper {
 						)
 					);
 				}
-
-				if (worldChunk2 != null) {
-					list.add(String.format("Blending: %s", worldChunk2.usesOldNoise() ? "Old" : "New"));
-				}
 			}
 
 			ServerWorld serverWorld = this.getServerWorld();
 			if (serverWorld != null) {
 				ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 				ChunkGenerator chunkGenerator = serverChunkManager.getChunkGenerator();
-				NoiseConfig noiseConfig = serverChunkManager.getNoiseConfig();
-				chunkGenerator.getDebugHudText(list, noiseConfig, blockPos);
-				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = noiseConfig.getMultiNoiseSampler();
+				chunkGenerator.getDebugHudText(list, blockPos);
+				MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler = chunkGenerator.getMultiNoiseSampler();
 				BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 				biomeSource.addDebugInfo(list, blockPos, multiNoiseSampler);
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
@@ -356,7 +350,10 @@ public class DebugHud extends DrawableHelper {
 				list.add("Shader: " + shaderEffect.getName());
 			}
 
-			list.add(this.client.getSoundManager().getDebugString() + String.format(" (Mood %d%%)", Math.round(this.client.player.getMoodPercentage() * 100.0F)));
+			list.add(
+				this.client.getSoundManager().getDebugString()
+					+ String.format(" (Number of ghosts in world: %d)", Math.round(this.client.player.getMoodPercentage() * 100.0F))
+			);
 			return list;
 		}
 	}
@@ -549,9 +546,8 @@ public class DebugHud extends DrawableHelper {
 		this.drawHorizontalLine(matrices, x, x + n - 1, r - 1, -1);
 		this.drawVerticalLine(matrices, x, r - 60, r, -1);
 		this.drawVerticalLine(matrices, x + n - 1, r - 60, r, -1);
-		int t = this.client.options.getMaxFps().getValue();
-		if (showFps && t > 0 && t <= 250) {
-			this.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)t), -16711681);
+		if (showFps && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
+			this.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
 		String string = p + " ms min";

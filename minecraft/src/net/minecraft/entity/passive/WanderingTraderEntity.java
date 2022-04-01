@@ -118,8 +118,6 @@ public class WanderingTraderEntity extends MerchantEntity {
 				return ActionResult.success(this.world.isClient);
 			} else {
 				if (!this.world.isClient) {
-					this.setCustomer(player);
-					this.sendOffers(player, this.getDisplayName(), 1);
 				}
 
 				return ActionResult.success(this.world.isClient);

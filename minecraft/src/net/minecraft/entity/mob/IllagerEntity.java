@@ -22,8 +22,13 @@ public abstract class IllagerEntity extends RaiderEntity {
 		return EntityGroup.ILLAGER;
 	}
 
+	@Override
+	public boolean method_42808() {
+		return true;
+	}
+
 	public IllagerEntity.State getState() {
-		return IllagerEntity.State.CROSSED;
+		return this.method_42803() != LivingEntity.class_7316.NONE ? IllagerEntity.State.CROSSBOW_HOLD : IllagerEntity.State.CROSSED;
 	}
 
 	@Override

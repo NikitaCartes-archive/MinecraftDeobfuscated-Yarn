@@ -80,7 +80,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return -world.getPhototaxisFavor(pos);
+		return 0.5F - world.getBrightness(pos);
 	}
 
 	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {

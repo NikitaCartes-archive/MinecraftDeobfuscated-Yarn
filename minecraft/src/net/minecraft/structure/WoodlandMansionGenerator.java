@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -12,7 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
@@ -1102,32 +1101,23 @@ public class WoodlandMansionGenerator {
 
 				this.addChest(world, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
 			} else {
-				List<MobEntity> list = new ArrayList();
+				IllagerEntity illagerEntity;
 				switch (metadata) {
 					case "Mage":
-						list.add(EntityType.EVOKER.create(world.toServerWorld()));
+						illagerEntity = EntityType.EVOKER.create(world.toServerWorld());
 						break;
 					case "Warrior":
-						list.add(EntityType.VINDICATOR.create(world.toServerWorld()));
-						break;
-					case "Group of Allays":
-						int i = world.getRandom().nextInt(3) + 1;
-
-						for (int j = 0; j < i; j++) {
-							list.add(EntityType.ALLAY.create(world.toServerWorld()));
-						}
+						illagerEntity = EntityType.VINDICATOR.create(world.toServerWorld());
 						break;
 					default:
 						return;
 				}
 
-				for (MobEntity mobEntity : list) {
-					mobEntity.setPersistent();
-					mobEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
-					mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-					world.spawnEntityAndPassengers(mobEntity);
-					world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-				}
+				illagerEntity.setPersistent();
+				illagerEntity.refreshPositionAndAngles(pos, 0.0F, 0.0F);
+				illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+				world.spawnEntityAndPassengers(illagerEntity);
+				world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
 			}
 		}
 	}

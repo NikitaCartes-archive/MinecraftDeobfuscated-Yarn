@@ -16,8 +16,7 @@ public class LocateBiomeCommand {
 		id -> new TranslatableText("commands.locatebiome.notFound", id)
 	);
 	private static final int RADIUS = 6400;
-	private static final int HORIZONTAL_BLOCK_CHECK_INTERVAL = 32;
-	private static final int VERTICAL_BLOCK_CHECK_INTERVAL = 64;
+	private static final int BLOCK_CHECK_INTERVAL = 8;
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -32,11 +31,11 @@ public class LocateBiomeCommand {
 
 	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Biome> biome) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(biome, blockPos, 6400, 32, 64);
+		Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(biome, blockPos, 6400, 8);
 		if (pair == null) {
 			throw NOT_FOUND_EXCEPTION.create(biome.asString());
 		} else {
-			return LocateCommand.sendCoordinates(source, biome, blockPos, pair, "commands.locatebiome.success", true);
+			return LocateCommand.sendCoordinates(source, biome, blockPos, pair, "commands.locatebiome.success");
 		}
 	}
 }

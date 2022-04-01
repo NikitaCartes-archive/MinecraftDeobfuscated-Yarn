@@ -14,7 +14,7 @@ public class CrackParticle extends SpriteBillboardParticle {
 	private final float sampleU;
 	private final float sampleV;
 
-	CrackParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ItemStack stack) {
+	public CrackParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ItemStack stack) {
 		this(world, x, y, z, stack);
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;

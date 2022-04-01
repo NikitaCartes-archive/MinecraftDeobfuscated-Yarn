@@ -49,7 +49,7 @@ public class ArmorStandItem extends Item {
 					world.playSound(
 						null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F
 					);
-					armorStandEntity.emitGameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
+					world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, armorStandEntity);
 				}
 
 				itemStack.decrement(1);

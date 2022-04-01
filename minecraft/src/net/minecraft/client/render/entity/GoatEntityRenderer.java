@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GoatEntityModel;
 import net.minecraft.entity.passive.GoatEntity;
@@ -13,6 +14,7 @@ public class GoatEntityRenderer extends MobEntityRenderer<GoatEntity, GoatEntity
 
 	public GoatEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new GoatEntityModel<>(context.getPart(EntityModelLayers.GOAT)), 0.7F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	public Identifier getTexture(GoatEntity goatEntity) {

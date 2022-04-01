@@ -19,7 +19,7 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	private final ResourceIndex index;
 
 	public DefaultClientResourcePack(PackResourceMetadata metadata, ResourceIndex index) {
-		super(metadata, "minecraft", "realms");
+		super(metadata, "minecraft", "realms", "nothingtoseeheremovealong");
 		this.index = index;
 	}
 
@@ -66,9 +66,9 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, Predicate<Identifier> allowedPathPredicate) {
-		Collection<Identifier> collection = super.findResources(type, namespace, prefix, allowedPathPredicate);
-		collection.addAll(this.index.getFilesRecursively(prefix, namespace, allowedPathPredicate));
+	public Collection<Identifier> findResources(ResourceType type, String namespace, String prefix, int maxDepth, Predicate<String> pathFilter) {
+		Collection<Identifier> collection = super.findResources(type, namespace, prefix, maxDepth, pathFilter);
+		collection.addAll(this.index.getFilesRecursively(prefix, namespace, maxDepth, pathFilter));
 		return collection;
 	}
 }

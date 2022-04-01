@@ -9,8 +9,8 @@ public class DataPackSettings {
 	public static final DataPackSettings SAFE_MODE = new DataPackSettings(ImmutableList.of("vanilla"), ImmutableList.of());
 	public static final Codec<DataPackSettings> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.STRING.listOf().fieldOf("Enabled").forGetter(settings -> settings.enabled),
-					Codec.STRING.listOf().fieldOf("Disabled").forGetter(settings -> settings.disabled)
+					Codec.STRING.listOf().fieldOf("Enabled").forGetter(dataPackSettings -> dataPackSettings.enabled),
+					Codec.STRING.listOf().fieldOf("Disabled").forGetter(dataPackSettings -> dataPackSettings.disabled)
 				)
 				.apply(instance, DataPackSettings::new)
 	);

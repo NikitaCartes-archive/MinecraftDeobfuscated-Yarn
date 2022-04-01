@@ -33,12 +33,9 @@ import net.minecraft.SharedConstants;
 import net.minecraft.util.TopologicalSorts;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.gen.feature.PlacedFeature;
@@ -154,6 +151,8 @@ public abstract class BiomeSource implements BiomeSupplier {
 
 	protected abstract Codec<? extends BiomeSource> getCodec();
 
+	public abstract BiomeSource withSeed(long seed);
+
 	public Set<RegistryEntry<Biome>> getBiomes() {
 		return this.biomes;
 	}
@@ -189,36 +188,6 @@ public abstract class BiomeSource implements BiomeSupplier {
 		int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
 		return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
-	}
-
-	@Nullable
-	public Pair<BlockPos, RegistryEntry<Biome>> method_42310(
-		BlockPos blockPos, int i, int j, int k, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, WorldView worldView
-	) {
-		Set<RegistryEntry<Biome>> set = (Set<RegistryEntry<Biome>>)this.getBiomes().stream().filter(predicate).collect(Collectors.toUnmodifiableSet());
-		if (set.isEmpty()) {
-			return null;
-		} else {
-			int l = Math.floorDiv(i, j);
-			int[] is = MathHelper.stream(blockPos.getY(), worldView.getBottomY(), worldView.getTopY(), k).toArray();
-
-			for (BlockPos.Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, l, Direction.EAST, Direction.SOUTH)) {
-				int m = blockPos.getX() + mutable.getX() * j;
-				int n = blockPos.getZ() + mutable.getZ() * j;
-				int o = BiomeCoords.fromBlock(m);
-				int p = BiomeCoords.fromBlock(n);
-
-				for (int q : is) {
-					int r = BiomeCoords.fromBlock(q);
-					RegistryEntry<Biome> registryEntry = this.getBiome(o, r, p, multiNoiseSampler);
-					if (set.contains(registryEntry)) {
-						return Pair.of(new BlockPos(m, q, n), registryEntry);
-					}
-				}
-			}
-
-			return null;
-		}
 	}
 
 	@Nullable

@@ -187,22 +187,19 @@ public class ChunkHolder {
 	 * @param y chunk section y coordinate
 	 */
 	public void markForLightUpdate(LightType lightType, int y) {
-		Either<Chunk, ChunkHolder.Unloaded> either = (Either<Chunk, ChunkHolder.Unloaded>)this.getValidFutureFor(ChunkStatus.FEATURES).getNow(null);
-		if (either != null) {
-			Chunk chunk = (Chunk)either.left().orElse(null);
-			if (chunk != null) {
-				chunk.setNeedsSaving(true);
-				WorldChunk worldChunk = this.getWorldChunk();
-				if (worldChunk != null) {
-					int i = this.lightingProvider.getBottomY();
-					int j = this.lightingProvider.getTopY();
-					if (y >= i && y <= j) {
-						int k = y - i;
-						if (lightType == LightType.SKY) {
-							this.skyLightUpdateBits.set(k);
-						} else {
-							this.blockLightUpdateBits.set(k);
-						}
+		WorldChunk worldChunk = this.method_41205();
+		if (worldChunk != null) {
+			worldChunk.setNeedsSaving(true);
+			WorldChunk worldChunk2 = this.getWorldChunk();
+			if (worldChunk2 != null) {
+				int i = this.lightingProvider.getBottomY();
+				int j = this.lightingProvider.getTopY();
+				if (y >= i && y <= j) {
+					int k = y - i;
+					if (lightType == LightType.SKY) {
+						this.skyLightUpdateBits.set(k);
+					} else {
+						this.blockLightUpdateBits.set(k);
 					}
 				}
 			}

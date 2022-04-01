@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.command.argument.BlockStateArgument;
@@ -32,7 +31,7 @@ public class FillCommand {
 	static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.fill.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("fill")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -41,7 +40,7 @@ public class FillCommand {
 						.then(
 							CommandManager.argument("to", BlockPosArgumentType.blockPos())
 								.then(
-									CommandManager.argument("block", BlockStateArgumentType.blockState(commandRegistryAccess))
+									CommandManager.argument("block", BlockStateArgumentType.blockState())
 										.executes(
 											context -> execute(
 													context.getSource(),
@@ -63,7 +62,7 @@ public class FillCommand {
 														)
 												)
 												.then(
-													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate(commandRegistryAccess))
+													CommandManager.argument("filter", BlockPredicateArgumentType.blockPredicate())
 														.executes(
 															context -> execute(
 																	context.getSource(),

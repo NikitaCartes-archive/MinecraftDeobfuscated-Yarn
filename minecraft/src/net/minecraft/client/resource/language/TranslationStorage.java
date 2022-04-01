@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.util.Identifier;
@@ -36,16 +35,15 @@ public class TranslationStorage extends Language {
 
 		for (LanguageDefinition languageDefinition : definitions) {
 			bl |= languageDefinition.isRightToLeft();
-			String string = languageDefinition.getCode();
-			String string2 = String.format("lang/%s.json", string);
+			String string = String.format("lang/%s.json", languageDefinition.getCode());
 
-			for (String string3 : resourceManager.getAllNamespaces()) {
+			for (String string2 : resourceManager.getAllNamespaces()) {
 				try {
-					Identifier identifier = new Identifier(string3, string2);
-					load(string, resourceManager.getAllResources(identifier), map);
-				} catch (FileNotFoundException var11) {
-				} catch (Exception var12) {
-					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var12.toString());
+					Identifier identifier = new Identifier(string2, string);
+					load(resourceManager.getAllResources(identifier), map);
+				} catch (FileNotFoundException var10) {
+				} catch (Exception var11) {
+					LOGGER.warn("Skipped language file: {}:{} ({})", string2, string, var11.toString());
 				}
 			}
 		}
@@ -53,48 +51,30 @@ public class TranslationStorage extends Language {
 		return new TranslationStorage(ImmutableMap.copyOf(map), bl);
 	}
 
-	private static void load(String langCode, List<ResourceRef> resourceRefs, Map<String, String> translations) {
-		for (ResourceRef resourceRef : resourceRefs) {
+	private static void load(List<Resource> resources, Map<String, String> translationMap) {
+		for (Resource resource : resources) {
 			try {
-				Resource resource = resourceRef.open();
+				InputStream inputStream = resource.getInputStream();
 
 				try {
-					InputStream inputStream = resource.getInputStream();
-
-					try {
-						Language.load(inputStream, translations::put);
-					} catch (Throwable var11) {
-						if (inputStream != null) {
-							try {
-								inputStream.close();
-							} catch (Throwable var10) {
-								var11.addSuppressed(var10);
-							}
-						}
-
-						throw var11;
-					}
-
+					Language.load(inputStream, translationMap::put);
+				} catch (Throwable var8) {
 					if (inputStream != null) {
-						inputStream.close();
-					}
-				} catch (Throwable var12) {
-					if (resource != null) {
 						try {
-							resource.close();
-						} catch (Throwable var9) {
-							var12.addSuppressed(var9);
+							inputStream.close();
+						} catch (Throwable var7) {
+							var8.addSuppressed(var7);
 						}
 					}
 
-					throw var12;
+					throw var8;
 				}
 
-				if (resource != null) {
-					resource.close();
+				if (inputStream != null) {
+					inputStream.close();
 				}
-			} catch (IOException var13) {
-				LOGGER.warn("Failed to load translations for {} from pack {}", langCode, resourceRef.getPackName(), var13);
+			} catch (IOException var9) {
+				LOGGER.warn("Failed to load translations from {}", resource, var9);
 			}
 		}
 	}

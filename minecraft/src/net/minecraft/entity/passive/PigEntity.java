@@ -76,14 +76,14 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	@Nullable
 	@Override
 	public Entity getPrimaryPassenger() {
-		Entity entity = this.getFirstPassenger();
-		return entity != null && this.canBeControlledByRider(entity) ? entity : null;
+		return this.getFirstPassenger();
 	}
 
-	private boolean canBeControlledByRider(Entity entity) {
-		return this.isSaddled() && entity instanceof PlayerEntity playerEntity
-			? playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK)
-			: false;
+	@Override
+	public boolean canBeControlledByRider() {
+		return !(this.getPrimaryPassenger() instanceof PlayerEntity playerEntity)
+			? false
+			: playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK);
 	}
 
 	@Override

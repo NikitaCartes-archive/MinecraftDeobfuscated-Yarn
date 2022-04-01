@@ -6,6 +6,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 
@@ -32,10 +33,10 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 			new ButtonWidget(j, k, 150, 20, new TranslatableText("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions)))
 		);
 		k += 24;
-		this.addDrawableChild(this.gameOptions.getSneakToggled().createButton(this.gameOptions, i, k, 150));
-		this.addDrawableChild(this.gameOptions.getSprintToggled().createButton(this.gameOptions, j, k, 150));
+		this.addDrawableChild(Option.SNEAK_TOGGLED.createButton(this.gameOptions, i, k, 150));
+		this.addDrawableChild(Option.SPRINT_TOGGLED.createButton(this.gameOptions, j, k, 150));
 		k += 24;
-		this.addDrawableChild(this.gameOptions.getAutoJump().createButton(this.gameOptions, i, k, 150));
+		this.addDrawableChild(Option.AUTO_JUMP.createButton(this.gameOptions, i, k, 150));
 		k += 24;
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, k, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
 	}

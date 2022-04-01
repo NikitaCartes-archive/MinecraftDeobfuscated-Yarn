@@ -65,7 +65,6 @@ public abstract class BuiltinBiomes {
 		register(BiomeKeys.MUSHROOM_FIELDS, OverworldBiomeCreator.createMushroomFields());
 		register(BiomeKeys.DRIPSTONE_CAVES, OverworldBiomeCreator.createDripstoneCaves());
 		register(BiomeKeys.LUSH_CAVES, OverworldBiomeCreator.createLushCaves());
-		register(BiomeKeys.DEEP_DARK, OverworldBiomeCreator.createDeepDark());
 		register(BiomeKeys.NETHER_WASTES, TheNetherBiomeCreator.createNetherWastes());
 		register(BiomeKeys.WARPED_FOREST, TheNetherBiomeCreator.createWarpedForest());
 		register(BiomeKeys.CRIMSON_FOREST, TheNetherBiomeCreator.createCrimsonForest());

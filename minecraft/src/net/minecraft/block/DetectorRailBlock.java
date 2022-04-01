@@ -111,7 +111,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 		for (BlockPos blockPos : railPlacementHelper.getNeighbors()) {
 			BlockState blockState = world.getBlockState(blockPos);
-			world.updateNeighbor(blockState, blockPos, blockState.getBlock(), pos, false);
+			blockState.neighborUpdate(world, blockPos, blockState.getBlock(), pos, false);
 		}
 	}
 

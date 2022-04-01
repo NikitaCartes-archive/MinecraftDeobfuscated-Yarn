@@ -3,8 +3,12 @@ package net.minecraft.client.render.item;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7320;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -14,6 +18,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -300,7 +305,9 @@ public class HeldItemRenderer {
 		if (handRenderType.renderMainHand) {
 			float j = hand == Hand.MAIN_HAND ? f : 0.0F;
 			float k = 1.0F - MathHelper.lerp(tickDelta, this.prevEquipProgressMainHand, this.equipProgressMainHand);
-			this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, j, this.mainHand, k, matrices, vertexConsumers, light);
+			BlockState blockState = (BlockState)Optional.ofNullable(player.method_42800()).orElse(Blocks.AIR.getDefaultState());
+			ItemStack itemStack = class_7320.method_42867(blockState);
+			this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, j, itemStack, k, matrices, vertexConsumers, light);
 		}
 
 		if (handRenderType.renderOffHand) {
@@ -359,6 +366,9 @@ public class HeldItemRenderer {
 			boolean bl = hand == Hand.MAIN_HAND;
 			Arm arm = bl ? player.getMainArm() : player.getMainArm().getOpposite();
 			matrices.push();
+			matrices.push();
+			this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
+			matrices.pop();
 			if (item.isEmpty()) {
 				if (bl && !player.isInvisible()) {
 					this.renderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, arm);
@@ -419,6 +429,8 @@ public class HeldItemRenderer {
 				);
 			} else {
 				boolean bl2 = arm == Arm.RIGHT;
+				ModelTransformation.Mode mode = bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND;
+				BakedModel bakedModel = this.itemRenderer.getModel(item, player.world, player, player.getId() + mode.ordinal());
 				if (player.isUsingItem() && player.getItemUseTimeLeft() > 0 && player.getActiveHand() == hand) {
 					int l = bl2 ? 1 : -1;
 					switch (item.getUseAction()) {
@@ -439,22 +451,22 @@ public class HeldItemRenderer {
 							matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-13.935F));
 							matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)l * 35.3F));
 							matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)l * -9.785F));
-							float mx = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
-							float fxx = mx / 20.0F;
-							fxx = (fxx * fxx + fxx * 2.0F) / 3.0F;
-							if (fxx > 1.0F) {
-								fxx = 1.0F;
+							float gxx = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
+							float hx = gxx / 20.0F;
+							hx = (hx * hx + hx * 2.0F) / 3.0F;
+							if (hx > 1.0F) {
+								hx = 1.0F;
 							}
 
-							if (fxx > 0.1F) {
-								float gx = MathHelper.sin((mx - 0.1F) * 1.3F);
-								float h = fxx - 0.1F;
-								float j = gx * h;
-								matrices.translate((double)(j * 0.0F), (double)(j * 0.004F), (double)(j * 0.0F));
+							if (hx > 0.1F) {
+								float j = MathHelper.sin((gxx - 0.1F) * 1.3F);
+								float k = hx - 0.1F;
+								float m = j * k;
+								matrices.translate((double)(m * 0.0F), (double)(m * 0.004F), (double)(m * 0.0F));
 							}
 
-							matrices.translate((double)(fxx * 0.0F), (double)(fxx * 0.0F), (double)(fxx * 0.04F));
-							matrices.scale(1.0F, 1.0F, 1.0F + fxx * 0.2F);
+							matrices.translate((double)(hx * 0.0F), (double)(hx * 0.0F), (double)(hx * 0.04F));
+							matrices.scale(1.0F, 1.0F, 1.0F + hx * 0.2F);
 							matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion((float)l * 45.0F));
 							break;
 						case SPEAR:
@@ -463,21 +475,21 @@ public class HeldItemRenderer {
 							matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-55.0F));
 							matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)l * 35.3F));
 							matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)l * -9.785F));
-							float m = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
-							float fx = m / 10.0F;
-							if (fx > 1.0F) {
-								fx = 1.0F;
+							float gx = (float)item.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F);
+							float h = gx / 10.0F;
+							if (h > 1.0F) {
+								h = 1.0F;
 							}
 
-							if (fx > 0.1F) {
-								float gx = MathHelper.sin((m - 0.1F) * 1.3F);
-								float h = fx - 0.1F;
-								float j = gx * h;
-								matrices.translate((double)(j * 0.0F), (double)(j * 0.004F), (double)(j * 0.0F));
+							if (h > 0.1F) {
+								float j = MathHelper.sin((gx - 0.1F) * 1.3F);
+								float k = h - 0.1F;
+								float m = j * k;
+								matrices.translate((double)(m * 0.0F), (double)(m * 0.004F), (double)(m * 0.0F));
 							}
 
-							matrices.translate(0.0, 0.0, (double)(fx * 0.2F));
-							matrices.scale(1.0F, 1.0F, 1.0F + fx * 0.2F);
+							matrices.translate(0.0, 0.0, (double)(h * 0.2F));
+							matrices.scale(1.0F, 1.0F, 1.0F + h * 0.2F);
 							matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion((float)l * 45.0F));
 					}
 				} else if (player.isUsingRiptide()) {
@@ -487,24 +499,28 @@ public class HeldItemRenderer {
 					matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)l * 65.0F));
 					matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)l * -85.0F));
 				} else {
-					float n = -0.4F * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
-					float mxx = 0.2F * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) (Math.PI * 2));
-					float fxxx = -0.2F * MathHelper.sin(swingProgress * (float) Math.PI);
-					int o = bl2 ? 1 : -1;
-					matrices.translate((double)((float)o * n), (double)mxx, (double)fxxx);
-					this.applyEquipOffset(matrices, arm, equipProgress);
+					float fx = -0.4F * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) Math.PI);
+					float gxxx = 0.2F * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float) (Math.PI * 2));
+					float hxx = -0.2F * MathHelper.sin(swingProgress * (float) Math.PI);
+					int n = bl2 ? 1 : -1;
+					matrices.translate((double)((float)n * fx), (double)gxxx, (double)hxx);
+					if (bakedModel.hasDepth()) {
+						this.applyEquipOffset(matrices, arm, equipProgress);
+					}
+
 					this.applySwingOffset(matrices, arm, swingProgress);
 				}
 
-				this.renderItem(
-					player,
-					item,
-					bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
-					!bl2,
-					matrices,
-					vertexConsumers,
-					light
-				);
+				if (bakedModel.hasDepth()) {
+					matrices.translate(-0.56, 0.15, 0.0);
+					matrices.scale(1.6F, 1.6F, 1.6F);
+				} else {
+					matrices.translate(-0.2, -0.9, -0.8);
+					matrices.scale(2.3F, 2.3F, 2.3F);
+					matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+				}
+
+				this.itemRenderer.renderItem(item, mode, !bl2, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV, bakedModel);
 			}
 
 			matrices.pop();

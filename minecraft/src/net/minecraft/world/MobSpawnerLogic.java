@@ -248,8 +248,8 @@ public abstract class MobSpawnerLogic {
 		return this.renderedEntity;
 	}
 
-	public boolean handleStatus(World world, int status) {
-		if (status == 1) {
+	public boolean method_8275(World world, int i) {
+		if (i == 1) {
 			if (world.isClient) {
 				this.spawnDelay = this.minSpawnDelay;
 			}
@@ -264,7 +264,7 @@ public abstract class MobSpawnerLogic {
 		this.spawnEntry = spawnEntry;
 	}
 
-	public abstract void sendStatus(World world, BlockPos pos, int status);
+	public abstract void sendStatus(World world, BlockPos pos, int i);
 
 	public double method_8278() {
 		return this.field_9161;

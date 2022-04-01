@@ -44,8 +44,8 @@ public abstract class Particle {
 	protected float green = 1.0F;
 	protected float blue = 1.0F;
 	protected float alpha = 1.0F;
-	protected float angle;
-	protected float prevAngle;
+	public float angle;
+	public float prevAngle;
 	protected float velocityMultiplier = 0.98F;
 	protected boolean field_28787 = false;
 
@@ -95,7 +95,7 @@ public abstract class Particle {
 		this.blue = blue;
 	}
 
-	protected void setAlpha(float alpha) {
+	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 	}
 

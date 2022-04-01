@@ -448,17 +448,21 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		return !this.isPlayingDead() && super.canTakeDamage();
 	}
 
-	public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity livingEntity) {
-		World world = axolotl.world;
-		if (livingEntity.isDead()) {
-			DamageSource damageSource = livingEntity.getRecentDamageSource();
-			if (damageSource != null) {
-				Entity entity = damageSource.getAttacker();
-				if (entity != null && entity.getType() == EntityType.PLAYER) {
-					PlayerEntity playerEntity = (PlayerEntity)entity;
-					List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
-					if (list.contains(playerEntity)) {
-						axolotl.buffPlayer(playerEntity);
+	public static void appreciatePlayer(AxolotlEntity axolotl) {
+		Optional<LivingEntity> optional = axolotl.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET);
+		if (optional.isPresent()) {
+			World world = axolotl.world;
+			LivingEntity livingEntity = (LivingEntity)optional.get();
+			if (livingEntity.isDead()) {
+				DamageSource damageSource = livingEntity.getRecentDamageSource();
+				if (damageSource != null) {
+					Entity entity = damageSource.getAttacker();
+					if (entity != null && entity.getType() == EntityType.PLAYER) {
+						PlayerEntity playerEntity = (PlayerEntity)entity;
+						List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
+						if (list.contains(playerEntity)) {
+							axolotl.buffPlayer(playerEntity);
+						}
 					}
 				}
 			}

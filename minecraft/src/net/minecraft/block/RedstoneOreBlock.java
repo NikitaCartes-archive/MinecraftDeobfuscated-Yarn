@@ -35,10 +35,7 @@ public class RedstoneOreBlock extends Block {
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		if (!entity.bypassesSteppingEffects()) {
-			light(state, world, pos);
-		}
-
+		light(state, world, pos);
 		super.onSteppedOn(world, pos, state, entity);
 	}
 

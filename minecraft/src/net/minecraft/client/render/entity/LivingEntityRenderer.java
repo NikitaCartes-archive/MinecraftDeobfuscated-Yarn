@@ -17,8 +17,11 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -84,7 +87,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			k *= -1.0F;
 		}
 
-		if (livingEntity.isInPose(EntityPose.SLEEPING)) {
+		if (livingEntity.method_42789(EntityPose.SLEEPING)) {
 			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float n = livingEntity.getEyeHeight(EntityPose.STANDING) - 0.1F;
@@ -184,34 +187,38 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void setupTransforms(T entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
-		if (this.isShaking(entity)) {
-			bodyYaw += (float)(Math.cos((double)entity.age * 3.25) * Math.PI * 0.4F);
-		}
-
-		if (!entity.isInPose(EntityPose.SLEEPING)) {
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
-		}
-
-		if (entity.deathTime > 0) {
-			float f = ((float)entity.deathTime + tickDelta - 1.0F) / 20.0F * 1.6F;
-			f = MathHelper.sqrt(f);
-			if (f > 1.0F) {
-				f = 1.0F;
+		if (entity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && entity.isInSneakingPose()) {
+			bodyYaw = 0.0F;
+		} else {
+			if (this.isShaking(entity)) {
+				bodyYaw += (float)(Math.cos((double)entity.age * 3.25) * Math.PI * 0.4F);
 			}
 
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
-		} else if (entity.isUsingRiptide()) {
-			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.getPitch()));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
-		} else if (entity.isInPose(EntityPose.SLEEPING)) {
-			Direction direction = entity.getSleepingDirection();
-			float g = direction != null ? getYaw(direction) : bodyYaw;
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
-		} else if (shouldFlipUpsideDown(entity)) {
-			matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
-			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			if (!entity.method_42789(EntityPose.SLEEPING)) {
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - bodyYaw));
+			}
+
+			if (entity.deathTime > 0) {
+				float f = ((float)entity.deathTime + tickDelta - 1.0F) / 20.0F * 1.6F;
+				f = MathHelper.sqrt(f);
+				if (f > 1.0F) {
+					f = 1.0F;
+				}
+
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
+			} else if (entity.isUsingRiptide()) {
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F - entity.getPitch()));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)entity.age + tickDelta) * -75.0F));
+			} else if (entity.method_42789(EntityPose.SLEEPING)) {
+				Direction direction = entity.getSleepingDirection();
+				float g = direction != null ? getYaw(direction) : bodyYaw;
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+				matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0F));
+			} else if (shouldFlipUpsideDown(entity)) {
+				matrices.translate(0.0, (double)(entity.getHeight() + 0.1F), 0.0);
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			}
 		}
 	}
 
@@ -279,6 +286,6 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		return false;
+		return entity instanceof PigEntity && entity.getVehicle() instanceof PlayerEntity;
 	}
 }

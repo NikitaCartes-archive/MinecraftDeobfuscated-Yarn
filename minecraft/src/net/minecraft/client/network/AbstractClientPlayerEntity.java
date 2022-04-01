@@ -149,6 +149,6 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			}
 		}
 
-		return MathHelper.lerp(MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue(), 1.0F, f);
+		return MathHelper.lerp(MinecraftClient.getInstance().options.fovEffectScale, 1.0F, f);
 	}
 }

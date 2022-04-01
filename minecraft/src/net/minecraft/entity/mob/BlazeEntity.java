@@ -179,7 +179,9 @@ public class BlazeEntity extends HostileEntity {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = this.blaze.getTarget();
-			return livingEntity != null && livingEntity.isAlive() && this.blaze.canTarget(livingEntity);
+			return this.blaze.hasVehicle() && this.blaze.getRootVehicle() == livingEntity
+				? false
+				: livingEntity != null && livingEntity.isAlive() && this.blaze.canTarget(livingEntity);
 		}
 
 		@Override

@@ -252,6 +252,41 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
+	public void method_42824(float f) {
+		if (!this.isDrinking()) {
+			if (this.hasVehicle()) {
+				Vec3d vec3d = this.getRootVehicle().getRotationVecClient();
+				double d = vec3d.x;
+				double e = vec3d.y;
+				double g = vec3d.z;
+				double h = Math.sqrt(d * d + g * g);
+				Potion potion = Potions.HARMING;
+				int i = this.world.random.nextInt(5);
+
+				potion = switch (i) {
+					case 0 -> Potions.HEALING;
+					case 1 -> Potions.REGENERATION;
+					case 2 -> Potions.SLOWNESS;
+					case 3 -> Potions.WEAKNESS;
+					default -> Potions.POISON;
+				};
+				PotionEntity potionEntity = new PotionEntity(this.world, this);
+				potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+				potionEntity.setPitch(potionEntity.getPitch() - -20.0F);
+				potionEntity.setVelocity(d, e + h * 0.2, g, 0.75F, 8.0F);
+				if (!this.isSilent()) {
+					this.world
+						.playSound(
+							null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
+						);
+				}
+
+				this.world.spawnEntity(potionEntity);
+			}
+		}
+	}
+
+	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 1.62F;
 	}

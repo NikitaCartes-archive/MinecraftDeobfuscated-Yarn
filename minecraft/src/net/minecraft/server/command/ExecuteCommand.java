@@ -26,7 +26,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -77,16 +76,16 @@ public class ExecuteCommand {
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
 		count -> new TranslatableText("commands.execute.conditional.fail_count", count)
 	);
-	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
-			consumer.onCommandComplete(context, success, result);
-			consumer2.onCommandComplete(context, success, result);
+	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (resultConsumer, resultConsumer2) -> (context, success, result) -> {
+			resultConsumer.onCommandComplete(context, success, result);
+			resultConsumer2.onCommandComplete(context, success, result);
 		};
 	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
 		LootConditionManager lootConditionManager = context.getSource().getServer().getPredicateManager();
 		return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), builder);
 	};
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register(
 			CommandManager.literal("execute").requires(source -> source.hasPermissionLevel(2))
 		);
@@ -94,8 +93,8 @@ public class ExecuteCommand {
 			CommandManager.literal("execute")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(CommandManager.literal("run").redirect(dispatcher.getRoot()))
-				.then(addConditionArguments(literalCommandNode, CommandManager.literal("if"), true, commandRegistryAccess))
-				.then(addConditionArguments(literalCommandNode, CommandManager.literal("unless"), false, commandRegistryAccess))
+				.then(addConditionArguments(literalCommandNode, CommandManager.literal("if"), true))
+				.then(addConditionArguments(literalCommandNode, CommandManager.literal("unless"), false))
 				.then(CommandManager.literal("as").then(CommandManager.argument("targets", EntityArgumentType.entities()).fork(literalCommandNode, context -> {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
@@ -392,10 +391,7 @@ public class ExecuteCommand {
 	}
 
 	private static ArgumentBuilder<ServerCommandSource, ?> addConditionArguments(
-		CommandNode<ServerCommandSource> root,
-		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder,
-		boolean positive,
-		CommandRegistryAccess commandRegistryAccess
+		CommandNode<ServerCommandSource> root, LiteralArgumentBuilder<ServerCommandSource> argumentBuilder, boolean positive
 	) {
 		argumentBuilder.then(
 				CommandManager.literal("block")
@@ -404,7 +400,7 @@ public class ExecuteCommand {
 							.then(
 								addConditionLogic(
 									root,
-									CommandManager.argument("block", BlockPredicateArgumentType.blockPredicate(commandRegistryAccess)),
+									CommandManager.argument("block", BlockPredicateArgumentType.blockPredicate()),
 									positive,
 									context -> BlockPredicateArgumentType.getBlockPredicate(context, "block")
 											.test(new CachedBlockPosition(context.getSource().getWorld(), BlockPosArgumentType.getLoadedBlockPos(context, "pos"), true))
@@ -550,8 +546,8 @@ public class ExecuteCommand {
 							CommandManager.argument("path", NbtPathArgumentType.nbtPath())
 								.fork(
 									root,
-									context -> getSourceOrEmptyForConditionFork(
-											context, positive, countPathMatches(objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path")) > 0
+									commandContext -> getSourceOrEmptyForConditionFork(
+											commandContext, positive, countPathMatches(objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")) > 0
 										)
 								)
 								.executes(

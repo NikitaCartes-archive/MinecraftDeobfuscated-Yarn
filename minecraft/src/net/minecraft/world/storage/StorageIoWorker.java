@@ -3,10 +3,8 @@ package net.minecraft.world.storage;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,12 +15,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.NbtScanner;
-import net.minecraft.nbt.scanner.SelectiveNbtCollector;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -36,106 +29,15 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
 	private final RegionBasedStorage storage;
 	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
-	private final Long2ObjectLinkedOpenHashMap<CompletableFuture<BitSet>> blendingStatusCaches = new Long2ObjectLinkedOpenHashMap<>();
-	private static final int MAX_CACHE_SIZE = 1024;
 
 	protected StorageIoWorker(Path directory, boolean dsync, String name) {
 		this.storage = new RegionBasedStorage(directory, dsync);
 		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
 	}
 
-	public boolean needsBlending(ChunkPos chunkPos, int checkRadius) {
-		ChunkPos chunkPos2 = new ChunkPos(chunkPos.x - checkRadius, chunkPos.z - checkRadius);
-		ChunkPos chunkPos3 = new ChunkPos(chunkPos.x + checkRadius, chunkPos.z + checkRadius);
-
-		for (int i = chunkPos2.getRegionX(); i <= chunkPos3.getRegionX(); i++) {
-			for (int j = chunkPos2.getRegionZ(); j <= chunkPos3.getRegionZ(); j++) {
-				BitSet bitSet = (BitSet)this.getOrComputeBlendingStatus(i, j).join();
-				if (!bitSet.isEmpty()) {
-					ChunkPos chunkPos4 = ChunkPos.fromRegion(i, j);
-					int k = Math.max(chunkPos2.x - chunkPos4.x, 0);
-					int l = Math.max(chunkPos2.z - chunkPos4.z, 0);
-					int m = Math.min(chunkPos3.x - chunkPos4.x, 31);
-					int n = Math.min(chunkPos3.z - chunkPos4.z, 31);
-
-					for (int o = k; o <= m; o++) {
-						for (int p = l; p <= n; p++) {
-							int q = p * 32 + o;
-							if (bitSet.get(q)) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	private CompletableFuture<BitSet> getOrComputeBlendingStatus(int chunkX, int chunkZ) {
-		long l = ChunkPos.toLong(chunkX, chunkZ);
-		synchronized (this.blendingStatusCaches) {
-			CompletableFuture<BitSet> completableFuture = this.blendingStatusCaches.getAndMoveToFirst(l);
-			if (completableFuture == null) {
-				completableFuture = this.computeBlendingStatus(chunkX, chunkZ);
-				this.blendingStatusCaches.putAndMoveToFirst(l, completableFuture);
-				if (this.blendingStatusCaches.size() > 1024) {
-					this.blendingStatusCaches.removeLast();
-				}
-			}
-
-			return completableFuture;
-		}
-	}
-
-	private CompletableFuture<BitSet> computeBlendingStatus(int chunkX, int chunkZ) {
-		return CompletableFuture.supplyAsync(
-			() -> {
-				ChunkPos chunkPos = ChunkPos.fromRegion(chunkX, chunkZ);
-				ChunkPos chunkPos2 = ChunkPos.fromRegionCenter(chunkX, chunkZ);
-				BitSet bitSet = new BitSet();
-				ChunkPos.stream(chunkPos, chunkPos2)
-					.forEach(
-						chunkPosx -> {
-							SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
-								new NbtScanQuery("Level", NbtInt.TYPE, "DataVersion"),
-								new NbtScanQuery(NbtInt.TYPE, "DataVersion"),
-								new NbtScanQuery("Level", "blending_data", NbtString.TYPE, "old_noise"),
-								new NbtScanQuery(NbtCompound.TYPE, "blending_data")
-							);
-							this.scanChunk(chunkPosx, selectiveNbtCollector).join();
-							if (selectiveNbtCollector.getRoot() instanceof NbtCompound nbtCompound) {
-								int ix = chunkPosx.getRegionRelativeZ() * 32 + chunkPosx.getRegionRelativeX();
-								bitSet.set(ix, this.needsBlending(nbtCompound));
-							}
-						}
-					);
-				return bitSet;
-			},
-			Util.getMainWorkerExecutor()
-		);
-	}
-
-	private boolean needsBlending(NbtCompound nbt) {
-		if (nbt.contains("Level", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("Level");
-			if (nbtCompound.contains("blending_data", NbtElement.COMPOUND_TYPE) || nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-				nbt = nbtCompound;
-			}
-		}
-
-		if (nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("blending_data");
-			return nbtCompound.contains("old_noise", NbtElement.NUMBER_TYPE) ? nbtCompound.getBoolean("old_noise") : true;
-		} else {
-			return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") < 2832 : true;
-		}
-	}
-
 	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {
 		return this.run(() -> {
-			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, pos2 -> new StorageIoWorker.Result(nbt));
+			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.computeIfAbsent(pos, chunkPosx -> new StorageIoWorker.Result(nbt));
 			result.nbt = nbt;
 			return Either.left(result.future);
 		}).thenCompose(Function.identity());
@@ -213,9 +115,9 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
-		return this.executor.askFallible(listener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
+		return this.executor.askFallible(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
 				if (!this.closed.get()) {
-					listener.send((Either)task.get());
+					messageListener.send((Either)task.get());
 				}
 
 				this.writeRemainingResults();
@@ -248,7 +150,9 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
-			this.executor.ask(listener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.SHUTDOWN.ordinal(), () -> listener.send(Unit.INSTANCE))).join();
+			this.executor
+				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.SHUTDOWN.ordinal(), () -> messageListener.send(Unit.INSTANCE)))
+				.join();
 			this.executor.close();
 
 			try {

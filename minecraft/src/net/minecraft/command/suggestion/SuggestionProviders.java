@@ -36,12 +36,12 @@ public class SuggestionProviders {
 			)
 	);
 
-	public static <S extends CommandSource> SuggestionProvider<S> register(Identifier id, SuggestionProvider<CommandSource> provider) {
-		if (REGISTRY.containsKey(id)) {
-			throw new IllegalArgumentException("A command suggestion provider is already registered with the name " + id);
+	public static <S extends CommandSource> SuggestionProvider<S> register(Identifier name, SuggestionProvider<CommandSource> provider) {
+		if (REGISTRY.containsKey(name)) {
+			throw new IllegalArgumentException("A command suggestion provider is already registered with the name " + name);
 		} else {
-			REGISTRY.put(id, provider);
-			return new SuggestionProviders.LocalProvider(id, provider);
+			REGISTRY.put(name, provider);
+			return new SuggestionProviders.LocalProvider(name, provider);
 		}
 	}
 
@@ -49,8 +49,8 @@ public class SuggestionProviders {
 		return (SuggestionProvider<CommandSource>)REGISTRY.getOrDefault(id, ASK_SERVER);
 	}
 
-	public static Identifier computeId(SuggestionProvider<CommandSource> provider) {
-		return provider instanceof SuggestionProviders.LocalProvider ? ((SuggestionProviders.LocalProvider)provider).id : ASK_SERVER_NAME;
+	public static Identifier computeName(SuggestionProvider<CommandSource> provider) {
+		return provider instanceof SuggestionProviders.LocalProvider ? ((SuggestionProviders.LocalProvider)provider).name : ASK_SERVER_NAME;
 	}
 
 	public static SuggestionProvider<CommandSource> getLocalProvider(SuggestionProvider<CommandSource> provider) {
@@ -59,11 +59,11 @@ public class SuggestionProviders {
 
 	protected static class LocalProvider implements SuggestionProvider<CommandSource> {
 		private final SuggestionProvider<CommandSource> provider;
-		final Identifier id;
+		final Identifier name;
 
-		public LocalProvider(Identifier id, SuggestionProvider<CommandSource> provider) {
+		public LocalProvider(Identifier name, SuggestionProvider<CommandSource> provider) {
 			this.provider = provider;
-			this.id = id;
+			this.name = name;
 		}
 
 		@Override

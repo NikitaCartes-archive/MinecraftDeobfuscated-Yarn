@@ -104,7 +104,6 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		map.put(EntityType.STRAY, SoundEvents.ENTITY_PARROT_IMITATE_STRAY);
 		map.put(EntityType.VEX, SoundEvents.ENTITY_PARROT_IMITATE_VEX);
 		map.put(EntityType.VINDICATOR, SoundEvents.ENTITY_PARROT_IMITATE_VINDICATOR);
-		map.put(EntityType.WARDEN, SoundEvents.ENTITY_PARROT_IMITATE_WARDEN);
 		map.put(EntityType.WITCH, SoundEvents.ENTITY_PARROT_IMITATE_WITCH);
 		map.put(EntityType.WITHER, SoundEvents.ENTITY_PARROT_IMITATE_WITHER);
 		map.put(EntityType.WITHER_SKELETON, SoundEvents.ENTITY_PARROT_IMITATE_WITHER_SKELETON);
@@ -311,7 +310,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState blockState, BlockPos landedPosition) {
 	}
 
 	@Override

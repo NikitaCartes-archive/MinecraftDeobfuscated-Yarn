@@ -26,6 +26,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7320;
+import net.minecraft.class_7323;
+import net.minecraft.class_7354;
+import net.minecraft.class_7357;
+import net.minecraft.class_7359;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
@@ -41,6 +46,8 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
@@ -125,9 +132,9 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.FIREWORK, FireworksSparkParticle.ExplosionFactory::new);
 		this.registerFactory(ParticleTypes.FISHING, FishingParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLAME, FlameParticle.Factory::new);
-		this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.SculkSoulFactory::new);
-		this.registerFactory(ParticleTypes.SCULK_CHARGE, SculkChargeParticle.Factory::new);
-		this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, SculkChargePopParticle.Factory::new);
+		this.registerFactory(ParticleTypes.SCULK_SOUL, SoulParticle.class_7361::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE, class_7357.class_7358::new);
+		this.registerFactory(ParticleTypes.SCULK_CHARGE_POP, class_7359.class_7360::new);
 		this.registerFactory(ParticleTypes.SOUL, SoulParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SOUL_FIRE_FLAME, FlameParticle.Factory::new);
 		this.registerFactory(ParticleTypes.FLASH, FireworksSparkParticle.FlashFactory::new);
@@ -170,6 +177,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
 		this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
+		this.registerFactory(ParticleTypes.FOOTSTEP, class_7354.class_7355::new);
 		this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle.FallingDripstoneWaterFactory::new);
 		this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.DripstoneLavaSplashFactory::new);
 		this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.FallingDripstoneLavaFactory::new);
@@ -181,8 +189,6 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.WAX_OFF, GlowParticle.WaxOffFactory::new);
 		this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
 		this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
-		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
-		this.registerFactory(ParticleTypes.ALLAY_DUST, GlowParticle.class_7309::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
@@ -453,37 +459,54 @@ public class ParticleManager implements ResourceReloader {
 		this.groupCounts.clear();
 	}
 
-	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
-		if (!state.isAir()) {
-			VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
+	public void addBlockBreakParticles(BlockPos blockPos, BlockState blockState) {
+		if (!blockState.isAir()) {
+			VoxelShape voxelShape = blockState.getOutlineShape(this.world, blockPos);
 			double d = 0.25;
-			voxelShape.forEachBox(
-				(minX, minY, minZ, maxX, maxY, maxZ) -> {
-					double dx = Math.min(1.0, maxX - minX);
-					double e = Math.min(1.0, maxY - minY);
-					double f = Math.min(1.0, maxZ - minZ);
-					int i = Math.max(2, MathHelper.ceil(dx / 0.25));
-					int j = Math.max(2, MathHelper.ceil(e / 0.25));
-					int k = Math.max(2, MathHelper.ceil(f / 0.25));
+			Item item = class_7323.method_42881(blockState);
+			if (item != null) {
+				ItemStack itemStack = class_7320.method_42867(blockState);
+				if (!itemStack.isEmpty()) {
+					this.method_42998(
+						blockPos, voxelShape, 0.25, (clientWorld, dx, e, f, g, h, i, blockPosx) -> new CrackParticle(clientWorld, dx, e, f, g * 0.1, h * 0.1, i * 0.1, itemStack)
+					);
+					return;
+				}
+			}
 
-					for (int l = 0; l < i; l++) {
-						for (int m = 0; m < j; m++) {
-							for (int n = 0; n < k; n++) {
-								double g = ((double)l + 0.5) / (double)i;
-								double h = ((double)m + 0.5) / (double)j;
-								double o = ((double)n + 0.5) / (double)k;
-								double p = g * dx + minX;
-								double q = h * e + minY;
-								double r = o * f + minZ;
-								this.addParticle(
-									new BlockDustParticle(this.world, (double)pos.getX() + p, (double)pos.getY() + q, (double)pos.getZ() + r, g - 0.5, h - 0.5, o - 0.5, state, pos)
-								);
-							}
+			this.method_42998(
+				blockPos, voxelShape, 0.25, (clientWorld, dx, e, f, g, h, i, blockPosx) -> new BlockDustParticle(clientWorld, dx, e, f, g, h, i, blockState, blockPosx)
+			);
+		}
+	}
+
+	private void method_42998(BlockPos blockPos, VoxelShape voxelShape, double d, ParticleManager.class_7356 arg) {
+		voxelShape.forEachBox(
+			(e, f, g, h, i, j) -> {
+				double k = Math.min(1.0, h - e);
+				double l = Math.min(1.0, i - f);
+				double m = Math.min(1.0, j - g);
+				int n = Math.max(2, MathHelper.ceil(k / d));
+				int o = Math.max(2, MathHelper.ceil(l / d));
+				int p = Math.max(2, MathHelper.ceil(m / d));
+
+				for (int q = 0; q < n; q++) {
+					for (int r = 0; r < o; r++) {
+						for (int s = 0; s < p; s++) {
+							double t = ((double)q + 0.5) / (double)n;
+							double u = ((double)r + 0.5) / (double)o;
+							double v = ((double)s + 0.5) / (double)p;
+							double w = t * k + e;
+							double x = u * l + f;
+							double y = v * m + g;
+							this.addParticle(
+								arg.create(this.world, (double)blockPos.getX() + w, (double)blockPos.getY() + x, (double)blockPos.getZ() + y, t - 0.5, u - 0.5, v - 0.5, blockPos)
+							);
 						}
 					}
 				}
-			);
-		}
+			}
+		);
 	}
 
 	public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
@@ -519,6 +542,15 @@ public class ParticleManager implements ResourceReloader {
 
 			if (direction == Direction.EAST) {
 				d = (double)i + box.maxX + 0.1F;
+			}
+
+			Item item = class_7323.method_42881(blockState);
+			if (item != null) {
+				ItemStack itemStack = class_7320.method_42867(blockState);
+				if (!itemStack.isEmpty()) {
+					this.addParticle(new CrackParticle(this.world, d, e, g, 0.0, 0.0, 0.0, itemStack).move(0.2F).scale(0.6F));
+					return;
+				}
 			}
 
 			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState, pos).move(0.2F).scale(0.6F));
@@ -560,5 +592,10 @@ public class ParticleManager implements ResourceReloader {
 	@Environment(EnvType.CLIENT)
 	interface SpriteAwareFactory<T extends ParticleEffect> {
 		ParticleFactory<T> create(SpriteProvider spriteProvider);
+	}
+
+	@Environment(EnvType.CLIENT)
+	interface class_7356 {
+		Particle create(ClientWorld clientWorld, double d, double e, double f, double g, double h, double i, BlockPos blockPos);
 	}
 }

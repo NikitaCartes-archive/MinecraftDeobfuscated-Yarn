@@ -7,7 +7,6 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Predicate;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemPredicateArgumentType;
 import net.minecraft.item.ItemStack;
@@ -22,7 +21,7 @@ public class ClearCommand {
 		playerCount -> new TranslatableText("clear.failed.multiple", playerCount)
 	);
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("clear")
 				.requires(source -> source.hasPermissionLevel(2))
@@ -31,10 +30,10 @@ public class ClearCommand {
 					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))
 						.then(
-							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess))
+							CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate())
 								.executes(
 									context -> execute(
-											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item"), -1
+											context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemPredicate(context, "item"), -1
 										)
 								)
 								.then(
@@ -43,7 +42,7 @@ public class ClearCommand {
 											context -> execute(
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
-													ItemPredicateArgumentType.getItemStackPredicate(context, "item"),
+													ItemPredicateArgumentType.getItemPredicate(context, "item"),
 													IntegerArgumentType.getInteger(context, "maxCount")
 												)
 										)
@@ -57,6 +56,7 @@ public class ClearCommand {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
+			serverPlayerEntity.method_42801();
 			i += serverPlayerEntity.getInventory().remove(item, maxCount, serverPlayerEntity.playerScreenHandler.getCraftingInput());
 			serverPlayerEntity.currentScreenHandler.sendContentUpdates();
 			serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.getInventory());

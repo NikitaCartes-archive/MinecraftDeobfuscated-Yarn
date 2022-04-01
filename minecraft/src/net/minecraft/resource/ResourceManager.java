@@ -1,9 +1,11 @@
 package net.minecraft.resource;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -41,7 +43,7 @@ public interface ResourceManager extends ResourceFactory {
 	 * 
 	 * @param id the resource identifier to search for
 	 */
-	List<ResourceRef> getAllResources(Identifier id) throws IOException;
+	List<Resource> getAllResources(Identifier id) throws IOException;
 
 	/**
 	 * Returns a sorted list of identifiers matching a path predicate.
@@ -55,11 +57,9 @@ public interface ResourceManager extends ResourceFactory {
 	 * @return the list matching identifiers
 	 * 
 	 * @param startingPath the starting path to begin scanning from
-	 * @param allowedPathPredicate a predicate to determine whether a path should be included or not
+	 * @param pathPredicate a predicate to determine whether a path should be included or not
 	 */
-	Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
-
-	Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
+	Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate);
 
 	/**
 	 * Gets a stream of loaded resource packs in increasing order of priority.
@@ -71,7 +71,7 @@ public interface ResourceManager extends ResourceFactory {
 
 		@Override
 		public Set<String> getAllNamespaces() {
-			return Set.of();
+			return ImmutableSet.of();
 		}
 
 		@Override
@@ -85,18 +85,13 @@ public interface ResourceManager extends ResourceFactory {
 		}
 
 		@Override
-		public List<ResourceRef> getAllResources(Identifier id) throws IOException {
-			throw new FileNotFoundException(id.toString());
+		public List<Resource> getAllResources(Identifier id) {
+			return ImmutableList.of();
 		}
 
 		@Override
-		public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
-			return Map.of();
-		}
-
-		@Override
-		public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
-			return Map.of();
+		public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
+			return ImmutableSet.<Identifier>of();
 		}
 
 		@Override

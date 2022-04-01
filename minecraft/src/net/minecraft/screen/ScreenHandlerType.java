@@ -22,7 +22,6 @@ public class ScreenHandlerType<T extends ScreenHandler> {
 	public static final ScreenHandlerType<HopperScreenHandler> HOPPER = register("hopper", HopperScreenHandler::new);
 	public static final ScreenHandlerType<LecternScreenHandler> LECTERN = register("lectern", (syncId, playerInventory) -> new LecternScreenHandler(syncId));
 	public static final ScreenHandlerType<LoomScreenHandler> LOOM = register("loom", LoomScreenHandler::new);
-	public static final ScreenHandlerType<MerchantScreenHandler> MERCHANT = register("merchant", MerchantScreenHandler::new);
 	public static final ScreenHandlerType<ShulkerBoxScreenHandler> SHULKER_BOX = register("shulker_box", ShulkerBoxScreenHandler::new);
 	public static final ScreenHandlerType<SmithingScreenHandler> SMITHING = register("smithing", SmithingScreenHandler::new);
 	public static final ScreenHandlerType<SmokerScreenHandler> SMOKER = register("smoker", SmokerScreenHandler::new);

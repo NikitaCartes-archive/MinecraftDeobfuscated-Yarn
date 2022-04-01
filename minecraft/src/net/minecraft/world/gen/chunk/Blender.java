@@ -1,11 +1,9 @@
 package net.minecraft.world.gen.chunk;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.ImmutableMap.Builder;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -59,6 +57,8 @@ public class Blender {
 	private static final int field_35503 = BiomeCoords.toChunk(field_35502 + 3);
 	private static final int field_35504 = 2;
 	private static final int field_35505 = BiomeCoords.toChunk(5);
+	private static final double field_36222 = (double)BlendingData.OLD_HEIGHT_LIMIT.getHeight() / 2.0;
+	private static final double field_36223 = (double)BlendingData.OLD_HEIGHT_LIMIT.getBottomY() + field_36222;
 	private static final double field_36224 = 8.0;
 	private final Long2ObjectOpenHashMap<BlendingData> field_36343;
 	private final Long2ObjectOpenHashMap<BlendingData> field_36344;
@@ -71,32 +71,25 @@ public class Blender {
 		if (chunkRegion == null) {
 			return NO_BLENDING;
 		} else {
+			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
+			Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
 			ChunkPos chunkPos = chunkRegion.getCenterPos();
-			if (!chunkRegion.needsBlending(chunkPos, field_35503)) {
-				return NO_BLENDING;
-			} else {
-				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap = new Long2ObjectOpenHashMap<>();
-				Long2ObjectOpenHashMap<BlendingData> long2ObjectOpenHashMap2 = new Long2ObjectOpenHashMap<>();
-				int i = MathHelper.square(field_35503 + 1);
 
+			for (int i = -field_35503; i <= field_35503; i++) {
 				for (int j = -field_35503; j <= field_35503; j++) {
-					for (int k = -field_35503; k <= field_35503; k++) {
-						if (j * j + k * k <= i) {
-							int l = chunkPos.x + j;
-							int m = chunkPos.z + k;
-							BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, l, m);
-							if (blendingData != null) {
-								long2ObjectOpenHashMap.put(ChunkPos.toLong(l, m), blendingData);
-								if (j >= -field_35505 && j <= field_35505 && k >= -field_35505 && k <= field_35505) {
-									long2ObjectOpenHashMap2.put(ChunkPos.toLong(l, m), blendingData);
-								}
-							}
+					int k = chunkPos.x + i;
+					int l = chunkPos.z + j;
+					BlendingData blendingData = BlendingData.getBlendingData(chunkRegion, k, l);
+					if (blendingData != null) {
+						long2ObjectOpenHashMap.put(ChunkPos.toLong(k, l), blendingData);
+						if (i >= -field_35505 && i <= field_35505 && j >= -field_35505 && j <= field_35505) {
+							long2ObjectOpenHashMap2.put(ChunkPos.toLong(k, l), blendingData);
 						}
 					}
 				}
-
-				return long2ObjectOpenHashMap.isEmpty() && long2ObjectOpenHashMap2.isEmpty() ? NO_BLENDING : new Blender(long2ObjectOpenHashMap, long2ObjectOpenHashMap2);
 			}
+
+			return long2ObjectOpenHashMap.isEmpty() && long2ObjectOpenHashMap2.isEmpty() ? NO_BLENDING : new Blender(long2ObjectOpenHashMap, long2ObjectOpenHashMap2);
 		}
 	}
 
@@ -220,24 +213,26 @@ public class Blender {
 
 	public BiomeSupplier getBiomeSupplier(BiomeSupplier biomeSupplier) {
 		return (x, y, z, noise) -> {
-			RegistryEntry<Biome> registryEntry = this.blendBiome(x, y, z);
+			RegistryEntry<Biome> registryEntry = this.blendBiome(x, z);
 			return registryEntry == null ? biomeSupplier.getBiome(x, y, z, noise) : registryEntry;
 		};
 	}
 
 	@Nullable
-	private RegistryEntry<Biome> blendBiome(int x, int y, int i) {
+	private RegistryEntry<Biome> blendBiome(int x, int y) {
+		double d = (double)x + field_35681.sample((double)x, 0.0, (double)y) * 12.0;
+		double e = (double)y + field_35681.sample((double)y, (double)x, 0.0) * 12.0;
 		MutableDouble mutableDouble = new MutableDouble(Double.POSITIVE_INFINITY);
 		MutableObject<RegistryEntry<Biome>> mutableObject = new MutableObject<>();
 		this.field_36343
 			.forEach(
 				(long_, blendingData) -> blendingData.method_40028(
-						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), y, BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (kx, l, registryEntry) -> {
-							double dx = MathHelper.hypot((double)(x - kx), (double)(i - l));
-							if (!(dx > (double)field_35502)) {
-								if (dx < mutableDouble.doubleValue()) {
+						BiomeCoords.fromChunk(ChunkPos.getPackedX(long_)), BiomeCoords.fromChunk(ChunkPos.getPackedZ(long_)), (i, j, registryEntry) -> {
+							double fx = MathHelper.hypot(d - (double)i, e - (double)j);
+							if (!(fx > (double)field_35502)) {
+								if (fx < mutableDouble.doubleValue()) {
 									mutableObject.setValue(registryEntry);
-									mutableDouble.setValue(dx);
+									mutableDouble.setValue(fx);
 								}
 							}
 						}
@@ -246,9 +241,8 @@ public class Blender {
 		if (mutableDouble.doubleValue() == Double.POSITIVE_INFINITY) {
 			return null;
 		} else {
-			double d = field_35681.sample((double)x, 0.0, (double)i) * 12.0;
-			double e = MathHelper.clamp((mutableDouble.doubleValue() + d) / (double)(field_35502 + 1), 0.0, 1.0);
-			return e > 0.5 ? null : mutableObject.getValue();
+			double f = MathHelper.clamp(mutableDouble.doubleValue() / (double)(field_35502 + 1), 0.0, 1.0);
+			return f > 0.5 ? null : mutableObject.getValue();
 		}
 	}
 
@@ -257,35 +251,32 @@ public class Blender {
 		boolean bl = chunk.usesOldNoise();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX(), 0, chunkPos.getStartZ());
-		BlendingData blendingData = chunk.getBlendingData();
-		if (blendingData != null) {
-			int i = blendingData.method_41564().getBottomY();
-			int j = blendingData.method_41564().getTopY() - 1;
-			if (bl) {
-				for (int k = 0; k < 16; k++) {
-					for (int l = 0; l < 16; l++) {
-						tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i - 1, l));
-						tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i, l));
-						tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j, l));
-						tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j + 1, l));
-					}
+		int i = BlendingData.OLD_HEIGHT_LIMIT.getBottomY();
+		int j = BlendingData.OLD_HEIGHT_LIMIT.getTopY() - 1;
+		if (bl) {
+			for (int k = 0; k < 16; k++) {
+				for (int l = 0; l < 16; l++) {
+					tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i - 1, l));
+					tickLeavesAndFluids(chunk, mutable.set(blockPos, k, i, l));
+					tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j, l));
+					tickLeavesAndFluids(chunk, mutable.set(blockPos, k, j + 1, l));
 				}
 			}
+		}
 
-			for (Direction direction : Direction.Type.HORIZONTAL) {
-				if (chunkRegion.getChunk(chunkPos.x + direction.getOffsetX(), chunkPos.z + direction.getOffsetZ()).usesOldNoise() != bl) {
-					int m = direction == Direction.EAST ? 15 : 0;
-					int n = direction == Direction.WEST ? 0 : 15;
-					int o = direction == Direction.SOUTH ? 15 : 0;
-					int p = direction == Direction.NORTH ? 0 : 15;
+		for (Direction direction : Direction.Type.HORIZONTAL) {
+			if (chunkRegion.getChunk(chunkPos.x + direction.getOffsetX(), chunkPos.z + direction.getOffsetZ()).usesOldNoise() != bl) {
+				int m = direction == Direction.EAST ? 15 : 0;
+				int n = direction == Direction.WEST ? 0 : 15;
+				int o = direction == Direction.SOUTH ? 15 : 0;
+				int p = direction == Direction.NORTH ? 0 : 15;
 
-					for (int q = m; q <= n; q++) {
-						for (int r = o; r <= p; r++) {
-							int s = Math.min(j, chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, q, r)) + 1;
+				for (int q = m; q <= n; q++) {
+					for (int r = o; r <= p; r++) {
+						int s = Math.min(j, chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, q, r)) + 1;
 
-							for (int t = i; t < s; t++) {
-								tickLeavesAndFluids(chunk, mutable.set(blockPos, q, t, r));
-							}
+						for (int t = i; t < s; t++) {
+							tickLeavesAndFluids(chunk, mutable.set(blockPos, q, t, r));
 						}
 					}
 				}
@@ -307,52 +298,45 @@ public class Blender {
 
 	public static void method_39809(StructureWorldAccess structureWorldAccess, ProtoChunk protoChunk) {
 		ChunkPos chunkPos = protoChunk.getPos();
-		Builder<EightWayDirection, BlendingData> builder = ImmutableMap.builder();
-
-		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
-			int i = chunkPos.x + eightWayDirection.method_42015();
-			int j = chunkPos.z + eightWayDirection.method_42016();
-			BlendingData blendingData = structureWorldAccess.getChunk(i, j).getBlendingData();
-			if (blendingData != null) {
-				builder.put(eightWayDirection, blendingData);
-			}
-		}
-
-		ImmutableMap<EightWayDirection, BlendingData> immutableMap = builder.build();
-		if (protoChunk.usesOldNoise() || !immutableMap.isEmpty()) {
-			Blender.class_6831 lv = method_39815(protoChunk.getBlendingData(), immutableMap);
-			CarvingMask.MaskPredicate maskPredicate = (ix, jx, k) -> {
-				double d = (double)ix + 0.5 + field_35681.sample((double)ix, (double)jx, (double)k) * 4.0;
-				double e = (double)jx + 0.5 + field_35681.sample((double)jx, (double)k, (double)ix) * 4.0;
-				double f = (double)k + 0.5 + field_35681.sample((double)k, (double)ix, (double)jx) * 4.0;
+		Blender.class_6831 lv = method_39815(protoChunk.usesOldNoise(), BlendingData.getAdjacentChunksWithNoise(structureWorldAccess, chunkPos.x, chunkPos.z, true));
+		if (lv != null) {
+			CarvingMask.MaskPredicate maskPredicate = (i, j, k) -> {
+				double d = (double)i + 0.5 + field_35681.sample((double)i, (double)j, (double)k) * 4.0;
+				double e = (double)j + 0.5 + field_35681.sample((double)j, (double)k, (double)i) * 4.0;
+				double f = (double)k + 0.5 + field_35681.sample((double)k, (double)i, (double)j) * 4.0;
 				return lv.getDistance(d, e, f) < 4.0;
 			};
 			Stream.of(GenerationStep.Carver.values()).map(protoChunk::getOrCreateCarvingMask).forEach(carvingMask -> carvingMask.setMaskPredicate(maskPredicate));
 		}
 	}
 
-	public static Blender.class_6831 method_39815(@Nullable BlendingData blendingData, Map<EightWayDirection, BlendingData> map) {
-		List<Blender.class_6831> list = Lists.<Blender.class_6831>newArrayList();
-		if (blendingData != null) {
-			list.add(method_39812(null, blendingData));
-		}
-
-		map.forEach((eightWayDirection, blendingDatax) -> list.add(method_39812(eightWayDirection, blendingDatax)));
-		return (d, e, f) -> {
-			double g = Double.POSITIVE_INFINITY;
-
-			for (Blender.class_6831 lv : list) {
-				double h = lv.getDistance(d, e, f);
-				if (h < g) {
-					g = h;
-				}
+	@Nullable
+	public static Blender.class_6831 method_39815(boolean bl, Set<EightWayDirection> set) {
+		if (!bl && set.isEmpty()) {
+			return null;
+		} else {
+			List<Blender.class_6831> list = Lists.<Blender.class_6831>newArrayList();
+			if (bl) {
+				list.add(method_39812(null));
 			}
 
-			return g;
-		};
+			set.forEach(eightWayDirection -> list.add(method_39812(eightWayDirection)));
+			return (d, e, f) -> {
+				double g = Double.POSITIVE_INFINITY;
+
+				for (Blender.class_6831 lv : list) {
+					double h = lv.getDistance(d, e, f);
+					if (h < g) {
+						g = h;
+					}
+				}
+
+				return g;
+			};
+		}
 	}
 
-	private static Blender.class_6831 method_39812(@Nullable EightWayDirection eightWayDirection, BlendingData blendingData) {
+	private static Blender.class_6831 method_39812(@Nullable EightWayDirection eightWayDirection) {
 		double d = 0.0;
 		double e = 0.0;
 		if (eightWayDirection != null) {
@@ -364,9 +348,7 @@ public class Blender {
 
 		double f = d;
 		double g = e;
-		double h = (double)blendingData.method_41564().getHeight() / 2.0;
-		double i = (double)blendingData.method_41564().getBottomY() + h;
-		return (hx, ix, j) -> method_39808(hx - 8.0 - f, ix - i, j - 8.0 - g, 8.0, h, 8.0);
+		return (fx, gx, h) -> method_39808(fx - 8.0 - f, gx - field_36223, h - 8.0 - g, 8.0, field_36222, 8.0);
 	}
 
 	private static double method_39808(double d, double e, double f, double g, double h, double i) {

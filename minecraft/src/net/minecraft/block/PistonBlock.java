@@ -82,7 +82,7 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			this.tryMove(world, pos, state);
 		}
@@ -169,7 +169,7 @@ public class PistonBlock extends FacingBlock {
 
 			world.setBlockState(pos, state.with(EXTENDED, Boolean.valueOf(true)), Block.NOTIFY_ALL | Block.MOVED);
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.25F + 0.6F);
-			world.emitGameEvent(null, GameEvent.PISTON_EXTEND, pos);
+			world.emitGameEvent(GameEvent.PISTON_EXTEND, pos);
 		} else if (type == 1 || type == 2) {
 			BlockEntity blockEntity = world.getBlockEntity(pos.offset(direction));
 			if (blockEntity instanceof PistonBlockEntity) {
@@ -213,7 +213,7 @@ public class PistonBlock extends FacingBlock {
 			}
 
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.15F + 0.6F);
-			world.emitGameEvent(null, GameEvent.PISTON_CONTRACT, pos);
+			world.emitGameEvent(GameEvent.PISTON_CONTRACT, pos);
 		}
 
 		return true;
@@ -224,7 +224,7 @@ public class PistonBlock extends FacingBlock {
 			return false;
 		} else if (state.isAir()) {
 			return true;
-		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR) || state.isOf(Blocks.REINFORCED_DEEPSLATE)) {
+		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
 			return false;
 		} else if (direction == Direction.DOWN && pos.getY() == world.getBottomY()) {
 			return false;

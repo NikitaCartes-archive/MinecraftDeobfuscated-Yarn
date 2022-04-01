@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.command.argument.BlockStateArgumentType;
@@ -21,14 +20,14 @@ import net.minecraft.util.math.BlockPos;
 public class SetBlockCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.setblock.failed"));
 
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("setblock")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
 					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 						.then(
-							CommandManager.argument("block", BlockStateArgumentType.blockState(commandRegistryAccess))
+							CommandManager.argument("block", BlockStateArgumentType.blockState())
 								.executes(
 									context -> execute(
 											context.getSource(),

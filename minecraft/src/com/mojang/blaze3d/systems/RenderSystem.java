@@ -17,8 +17,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
-import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.client.render.Shader;
@@ -742,11 +742,11 @@ public class RenderSystem {
 		if (!bl) {
 			runnable.run();
 		} else {
-			SimpleOption<GraphicsMode> simpleOption = MinecraftClient.getInstance().options.getGraphicsMode();
-			GraphicsMode graphicsMode = simpleOption.getValue();
-			simpleOption.setValue(GraphicsMode.FANCY);
+			GameOptions gameOptions = MinecraftClient.getInstance().options;
+			GraphicsMode graphicsMode = gameOptions.graphicsMode;
+			gameOptions.graphicsMode = GraphicsMode.FANCY;
 			runnable.run();
-			simpleOption.setValue(graphicsMode);
+			gameOptions.graphicsMode = graphicsMode;
 		}
 	}
 

@@ -12,23 +12,23 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
 public class ParticleUtil {
-	public static void spawnParticle(World world, BlockPos pos, ParticleEffect effect, IntProvider count) {
+	public static void spawnParticle(World world, BlockPos blockPos, ParticleEffect particleEffect, IntProvider intProvider) {
 		for (Direction direction : Direction.values()) {
-			spawnParticles(world, pos, effect, count, direction, () -> getRandomVelocity(world.random), 0.55);
+			method_42774(world, blockPos, particleEffect, intProvider, direction, () -> method_42775(world.random), 0.55);
 		}
 	}
 
-	public static void spawnParticles(
-		World world, BlockPos pos, ParticleEffect effect, IntProvider count, Direction direction, Supplier<Vec3d> velocity, double offsetMultiplier
+	public static void method_42774(
+		World world, BlockPos blockPos, ParticleEffect particleEffect, IntProvider intProvider, Direction direction, Supplier<Vec3d> supplier, double d
 	) {
-		int i = count.get(world.random);
+		int i = intProvider.get(world.random);
 
 		for (int j = 0; j < i; j++) {
-			spawnParticle(world, pos, direction, effect, (Vec3d)velocity.get(), offsetMultiplier);
+			spawnParticle(world, blockPos, direction, particleEffect, (Vec3d)supplier.get(), d);
 		}
 	}
 
-	private static Vec3d getRandomVelocity(Random random) {
+	private static Vec3d method_42775(Random random) {
 		return new Vec3d(MathHelper.nextDouble(random, -0.5, 0.5), MathHelper.nextDouble(random, -0.5, 0.5), MathHelper.nextDouble(random, -0.5, 0.5));
 	}
 
@@ -50,17 +50,17 @@ public class ParticleUtil {
 		}
 	}
 
-	public static void spawnParticle(World world, BlockPos pos, Direction direction, ParticleEffect effect, Vec3d velocity, double offsetMultiplier) {
-		Vec3d vec3d = Vec3d.ofCenter(pos);
+	public static void spawnParticle(World world, BlockPos pos, Direction direction, ParticleEffect effect, Vec3d vec3d, double d) {
+		Vec3d vec3d2 = Vec3d.ofCenter(pos);
 		int i = direction.getOffsetX();
 		int j = direction.getOffsetY();
 		int k = direction.getOffsetZ();
-		double d = vec3d.x + (i == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)i * offsetMultiplier);
-		double e = vec3d.y + (j == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)j * offsetMultiplier);
-		double f = vec3d.z + (k == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)k * offsetMultiplier);
-		double g = i == 0 ? velocity.getX() : 0.0;
-		double h = j == 0 ? velocity.getY() : 0.0;
-		double l = k == 0 ? velocity.getZ() : 0.0;
-		world.addParticle(effect, d, e, f, g, h, l);
+		double e = vec3d2.x + (i == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)i * d);
+		double f = vec3d2.y + (j == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)j * d);
+		double g = vec3d2.z + (k == 0 ? MathHelper.nextDouble(world.random, -0.5, 0.5) : (double)k * d);
+		double h = i == 0 ? vec3d.getX() : 0.0;
+		double l = j == 0 ? vec3d.getY() : 0.0;
+		double m = k == 0 ? vec3d.getZ() : 0.0;
+		world.addParticle(effect, e, f, g, h, l, m);
 	}
 }

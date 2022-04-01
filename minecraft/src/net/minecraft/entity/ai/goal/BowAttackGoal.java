@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.HostileEntity;
@@ -33,7 +34,15 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 
 	@Override
 	public boolean canStart() {
-		return this.actor.getTarget() == null ? false : this.isHoldingBow();
+		if (this.actor.getTarget() == null) {
+			return false;
+		} else if (this.actor.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+			return false;
+		} else {
+			return this.actor.getTarget().getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && this.actor.getTarget().isInSneakingPose()
+				? false
+				: this.isHoldingBow();
+		}
 	}
 
 	protected boolean isHoldingBow() {
@@ -42,7 +51,15 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isHoldingBow();
+		if (this.actor.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+			return false;
+		} else {
+			return this.actor.getTarget() != null
+					&& this.actor.getTarget().getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)
+					&& this.actor.getTarget().isInSneakingPose()
+				? false
+				: (this.canStart() || !this.actor.getNavigation().isIdle()) && this.isHoldingBow();
+		}
 	}
 
 	@Override
@@ -122,7 +139,12 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 					int i = this.actor.getItemUseTime();
 					if (i >= 20) {
 						this.actor.clearActiveItem();
-						this.actor.attack(livingEntity, BowItem.getPullProgress(i));
+						if (this.actor.hasVehicle() && this.actor.getRootVehicle() == this.actor.getTarget()) {
+							this.actor.method_42824(BowItem.getPullProgress(i));
+						} else {
+							this.actor.attack(livingEntity, BowItem.getPullProgress(i));
+						}
+
 						this.cooldown = this.attackInterval;
 					}
 				}

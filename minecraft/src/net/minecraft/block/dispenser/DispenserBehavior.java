@@ -52,7 +52,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.world.ServerWorld;
@@ -190,7 +189,7 @@ public interface DispenserBehavior {
 				}
 
 				stack.decrement(1);
-				pointer.getWorld().emitGameEvent(null, GameEvent.ENTITY_PLACE, pointer.getPos());
+				pointer.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, pointer.getPos());
 				return stack;
 			}
 		};
@@ -340,14 +339,6 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.JUNGLE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE));
 		DispenserBlock.registerBehavior(Items.DARK_OAK_BOAT, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK));
 		DispenserBlock.registerBehavior(Items.ACACIA_BOAT, new BoatDispenserBehavior(BoatEntity.Type.ACACIA));
-		DispenserBlock.registerBehavior(Items.MANGROVE_BOAT, new BoatDispenserBehavior(BoatEntity.Type.MANGROVE));
-		DispenserBlock.registerBehavior(Items.OAK_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.OAK, true));
-		DispenserBlock.registerBehavior(Items.SPRUCE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.SPRUCE, true));
-		DispenserBlock.registerBehavior(Items.BIRCH_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.BIRCH, true));
-		DispenserBlock.registerBehavior(Items.JUNGLE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.JUNGLE, true));
-		DispenserBlock.registerBehavior(Items.DARK_OAK_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.DARK_OAK, true));
-		DispenserBlock.registerBehavior(Items.ACACIA_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.ACACIA, true));
-		DispenserBlock.registerBehavior(Items.MANGROVE_CHEST_BOAT, new BoatDispenserBehavior(BoatEntity.Type.MANGROVE, true));
 		DispenserBehavior dispenserBehavior = new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 
@@ -372,7 +363,6 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.PUFFERFISH_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.TROPICAL_FISH_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.AXOLOTL_BUCKET, dispenserBehavior);
-		DispenserBlock.registerBehavior(Items.TADPOLE_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.BUCKET, new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior fallbackBehavior = new ItemDispenserBehavior();
 
@@ -612,47 +602,6 @@ public interface DispenserBehavior {
 				}
 			}
 		});
-		DispenserBlock.registerBehavior(
-			Items.POTION,
-			new ItemDispenserBehavior() {
-				private final ItemDispenserBehavior fallback = new ItemDispenserBehavior();
-
-				@Override
-				public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-					if (PotionUtil.getPotion(stack) != Potions.WATER) {
-						return this.fallback.dispense(pointer, stack);
-					} else {
-						ServerWorld serverWorld = pointer.getWorld();
-						BlockPos blockPos = pointer.getPos();
-						BlockPos blockPos2 = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-						if (!serverWorld.getBlockState(blockPos2).isIn(BlockTags.CONVERTABLE_TO_MUD)) {
-							return this.fallback.dispense(pointer, stack);
-						} else {
-							if (!serverWorld.isClient) {
-								for (int i = 0; i < 5; i++) {
-									serverWorld.spawnParticles(
-										ParticleTypes.SPLASH,
-										(double)blockPos.getX() + serverWorld.random.nextDouble(),
-										(double)(blockPos.getY() + 1),
-										(double)blockPos.getZ() + serverWorld.random.nextDouble(),
-										1,
-										0.0,
-										0.0,
-										0.0,
-										1.0
-									);
-								}
-							}
-
-							serverWorld.playSound(null, blockPos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							serverWorld.emitGameEvent(null, GameEvent.FLUID_PLACE, blockPos);
-							serverWorld.setBlockState(blockPos2, Blocks.MUD.getDefaultState());
-							return new ItemStack(Items.GLASS_BOTTLE);
-						}
-					}
-				}
-			}
-		);
 	}
 
 	static void setEntityPosition(BlockPointer pointer, Entity entity, Direction direction) {

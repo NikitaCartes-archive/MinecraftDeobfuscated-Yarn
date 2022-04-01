@@ -13,7 +13,6 @@ import net.minecraft.util.SignType;
 public class EntityModelLayers {
 	private static final String MAIN = "main";
 	private static final Set<EntityModelLayer> LAYERS = Sets.<EntityModelLayer>newHashSet();
-	public static final EntityModelLayer ALLAY = registerMain("allay");
 	public static final EntityModelLayer ARMOR_STAND = registerMain("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = createInnerArmor("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = createOuterArmor("armor_stand");
@@ -60,7 +59,6 @@ public class EntityModelLayers {
 	public static final EntityModelLayer EVOKER = registerMain("evoker");
 	public static final EntityModelLayer EVOKER_FANGS = registerMain("evoker_fangs");
 	public static final EntityModelLayer FOX = registerMain("fox");
-	public static final EntityModelLayer FROG = registerMain("frog");
 	public static final EntityModelLayer FURNACE_MINECART = registerMain("furnace_minecart");
 	public static final EntityModelLayer GHAST = registerMain("ghast");
 	public static final EntityModelLayer GIANT = registerMain("giant");
@@ -137,7 +135,6 @@ public class EntityModelLayers {
 	public static final EntityModelLayer STRAY_OUTER = register("stray", "outer");
 	public static final EntityModelLayer STRIDER = registerMain("strider");
 	public static final EntityModelLayer STRIDER_SADDLE = register("strider", "saddle");
-	public static final EntityModelLayer TADPOLE = registerMain("tadpole");
 	public static final EntityModelLayer TNT_MINECART = registerMain("tnt_minecart");
 	public static final EntityModelLayer TRADER_LLAMA = registerMain("trader_llama");
 	public static final EntityModelLayer TRIDENT = registerMain("trident");
@@ -149,7 +146,6 @@ public class EntityModelLayers {
 	public static final EntityModelLayer VEX = registerMain("vex");
 	public static final EntityModelLayer VILLAGER = registerMain("villager");
 	public static final EntityModelLayer VINDICATOR = registerMain("vindicator");
-	public static final EntityModelLayer WARDEN = registerMain("warden");
 	public static final EntityModelLayer WANDERING_TRADER = registerMain("wandering_trader");
 	public static final EntityModelLayer WITCH = registerMain("witch");
 	public static final EntityModelLayer WITHER = registerMain("wither");
@@ -200,10 +196,6 @@ public class EntityModelLayers {
 
 	public static EntityModelLayer createBoat(BoatEntity.Type type) {
 		return create("boat/" + type.getName(), "main");
-	}
-
-	public static EntityModelLayer createChestBoat(BoatEntity.Type type) {
-		return create("chest_boat/" + type.getName(), "main");
 	}
 
 	public static EntityModelLayer createSign(SignType type) {

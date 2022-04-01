@@ -19,7 +19,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EightWayDirection;
 import net.minecraft.util.math.MathHelper;
@@ -34,11 +33,20 @@ import net.minecraft.world.chunk.Chunk;
 
 public class BlendingData {
 	private static final double field_35514 = 0.1;
+	protected static final HeightLimitView OLD_HEIGHT_LIMIT = new HeightLimitView() {
+		@Override
+		public int getHeight() {
+			return 256;
+		}
+
+		@Override
+		public int getBottomY() {
+			return 0;
+		}
+	};
 	protected static final int field_36280 = 4;
 	protected static final int field_35511 = 8;
 	protected static final int field_36281 = 2;
-	private static final double field_37704 = 1.0;
-	private static final double field_37705 = -1.0;
 	private static final int field_35516 = 2;
 	private static final int field_35683 = BiomeCoords.fromBlock(16);
 	private static final int field_35684 = field_35683 - 1;
@@ -46,7 +54,7 @@ public class BlendingData {
 	private static final int field_35686 = 2 * field_35684 + 1;
 	private static final int field_35687 = 2 * field_35685 + 1;
 	private static final int field_35518 = field_35686 + field_35687;
-	private final HeightLimitView OLD_HEIGHT_LIMIT;
+	private static final int field_35688 = field_35683 + 1;
 	private static final List<Block> SURFACE_BLOCKS = List.of(
 		Blocks.PODZOL,
 		Blocks.GRAVEL,
@@ -61,15 +69,16 @@ public class BlendingData {
 		Blocks.DIRT
 	);
 	protected static final double field_35513 = Double.MAX_VALUE;
+	private final boolean oldNoise;
 	private boolean field_35690;
 	private final double[] heights;
-	private final List<List<RegistryEntry<Biome>>> field_36345;
+	private final List<RegistryEntry<Biome>> field_36345;
 	private final transient double[][] field_35693;
+	private final transient double[] field_35694;
 	private static final Codec<double[]> field_35695 = Codec.DOUBLE.listOf().xmap(Doubles::toArray, Doubles::asList);
 	public static final Codec<BlendingData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.INT.fieldOf("min_section").forGetter(blendingData -> blendingData.OLD_HEIGHT_LIMIT.getBottomSectionCoord()),
-						Codec.INT.fieldOf("max_section").forGetter(blendingData -> blendingData.OLD_HEIGHT_LIMIT.getTopSectionCoord()),
+						Codec.BOOL.fieldOf("old_noise").forGetter(BlendingData::usesOldNoise),
 						field_35695.optionalFieldOf("heights")
 							.forGetter(
 								blendingData -> DoubleStream.of(blendingData.heights).anyMatch(d -> d != Double.MAX_VALUE) ? Optional.of(blendingData.heights) : Optional.empty()
@@ -83,26 +92,29 @@ public class BlendingData {
 		return blendingData.heights.length != field_35518 ? DataResult.error("heights has to be of length " + field_35518) : DataResult.success(blendingData);
 	}
 
-	private BlendingData(int i, int j, Optional<double[]> optional) {
+	private BlendingData(boolean oldNoise, Optional<double[]> optional) {
+		this.oldNoise = oldNoise;
 		this.heights = (double[])optional.orElse(Util.make(new double[field_35518], ds -> Arrays.fill(ds, Double.MAX_VALUE)));
 		this.field_35693 = new double[field_35518][];
-		ObjectArrayList<List<RegistryEntry<Biome>>> objectArrayList = new ObjectArrayList<>(field_35518);
+		this.field_35694 = new double[field_35688 * field_35688];
+		ObjectArrayList<RegistryEntry<Biome>> objectArrayList = new ObjectArrayList<>(field_35518);
 		objectArrayList.size(field_35518);
 		this.field_36345 = objectArrayList;
-		int k = ChunkSectionPos.getBlockCoord(i);
-		int l = ChunkSectionPos.getBlockCoord(j) - k;
-		this.OLD_HEIGHT_LIMIT = HeightLimitView.create(k, l);
+	}
+
+	public boolean usesOldNoise() {
+		return this.oldNoise;
 	}
 
 	@Nullable
 	public static BlendingData getBlendingData(ChunkRegion chunkRegion, int chunkX, int chunkZ) {
 		Chunk chunk = chunkRegion.getChunk(chunkX, chunkZ);
 		BlendingData blendingData = chunk.getBlendingData();
-		if (blendingData == null) {
-			return null;
-		} else {
+		if (blendingData != null && blendingData.usesOldNoise()) {
 			blendingData.method_39572(chunk, getAdjacentChunksWithNoise(chunkRegion, chunkX, chunkZ, false));
 			return blendingData;
+		} else {
+			return null;
 		}
 	}
 
@@ -110,8 +122,14 @@ public class BlendingData {
 		Set<EightWayDirection> set = EnumSet.noneOf(EightWayDirection.class);
 
 		for (EightWayDirection eightWayDirection : EightWayDirection.values()) {
-			int i = chunkX + eightWayDirection.method_42015();
-			int j = chunkZ + eightWayDirection.method_42016();
+			int i = chunkX;
+			int j = chunkZ;
+
+			for (Direction direction : eightWayDirection.getDirections()) {
+				i += direction.getOffsetX();
+				j += direction.getOffsetZ();
+			}
+
 			if (access.getChunk(i, j).usesOldNoise() == newNoise) {
 				set.add(eightWayDirection);
 			}
@@ -122,6 +140,7 @@ public class BlendingData {
 
 	private void method_39572(Chunk chunk, Set<EightWayDirection> set) {
 		if (!this.field_35690) {
+			Arrays.fill(this.field_35694, 1.0);
 			if (set.contains(EightWayDirection.NORTH) || set.contains(EightWayDirection.WEST) || set.contains(EightWayDirection.NORTH_WEST)) {
 				this.method_39347(method_39578(0, 0), chunk, 0, 0);
 			}
@@ -164,32 +183,33 @@ public class BlendingData {
 
 	private void method_39347(int index, Chunk chunk, int x, int z) {
 		if (this.heights[index] == Double.MAX_VALUE) {
-			this.heights[index] = (double)this.getSurfaceHeight(chunk, x, z);
+			this.heights[index] = (double)getSurfaceHeight(chunk, x, z);
 		}
 
-		this.field_35693[index] = this.method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
-		this.field_36345.set(index, this.method_41566(chunk, x, z));
+		this.field_35693[index] = method_39354(chunk, x, z, MathHelper.floor(this.heights[index]));
+		this.field_36345
+			.set(index, chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(MathHelper.floor(this.heights[index])), BiomeCoords.fromBlock(z)));
 	}
 
-	private int getSurfaceHeight(Chunk chunk, int i, int j) {
-		int k;
+	private static int getSurfaceHeight(Chunk chunk, int x, int z) {
+		int i;
 		if (chunk.hasHeightmap(Heightmap.Type.WORLD_SURFACE_WG)) {
-			k = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, i, j) + 1, this.OLD_HEIGHT_LIMIT.getTopY());
+			i = Math.min(chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, x, z) + 1, OLD_HEIGHT_LIMIT.getTopY());
 		} else {
-			k = this.OLD_HEIGHT_LIMIT.getTopY();
+			i = OLD_HEIGHT_LIMIT.getTopY();
 		}
 
-		int l = this.OLD_HEIGHT_LIMIT.getBottomY();
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, k, j);
+		int j = OLD_HEIGHT_LIMIT.getBottomY();
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, i, z);
 
-		while (mutable.getY() > l) {
+		while (mutable.getY() > j) {
 			mutable.move(Direction.DOWN);
 			if (SURFACE_BLOCKS.contains(chunk.getBlockState(mutable).getBlock())) {
 				return mutable.getY();
 			}
 		}
 
-		return l;
+		return j;
 	}
 
 	private static double method_39905(Chunk chunk, BlockPos.Mutable mutable) {
@@ -206,41 +226,29 @@ public class BlendingData {
 		return d;
 	}
 
-	private double[] method_39354(Chunk chunk, int i, int j, int k) {
-		double[] ds = new double[this.method_39576()];
+	private static double[] method_39354(Chunk chunk, int x, int z, int i) {
+		double[] ds = new double[method_39576()];
 		Arrays.fill(ds, -1.0);
-		BlockPos.Mutable mutable = new BlockPos.Mutable(i, this.OLD_HEIGHT_LIMIT.getTopY(), j);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, OLD_HEIGHT_LIMIT.getTopY(), z);
 		double d = method_39906(chunk, mutable);
 
-		for (int l = ds.length - 2; l >= 0; l--) {
+		for (int j = ds.length - 2; j >= 0; j--) {
 			double e = method_39905(chunk, mutable);
 			double f = method_39906(chunk, mutable);
-			ds[l] = (d + e + f) / 15.0;
+			ds[j] = (d + e + f) / 15.0;
 			d = f;
 		}
 
-		int l = this.method_41565(MathHelper.floorDiv(k, 8));
-		if (l >= 0 && l < ds.length - 1) {
-			double e = ((double)k + 0.5) % 8.0 / 8.0;
+		int j = MathHelper.floorDiv(i, 8);
+		if (j >= 1 && j < ds.length) {
+			double e = ((double)i + 0.5) % 8.0 / 8.0;
 			double f = (1.0 - e) / e;
 			double g = Math.max(f, 1.0) * 0.25;
-			ds[l + 1] = -f / g;
-			ds[l] = 1.0 / g;
+			ds[j] = -f / g;
+			ds[j - 1] = 1.0 / g;
 		}
 
 		return ds;
-	}
-
-	private List<RegistryEntry<Biome>> method_41566(Chunk chunk, int i, int j) {
-		ObjectArrayList<RegistryEntry<Biome>> objectArrayList = new ObjectArrayList<>(this.method_41567());
-		objectArrayList.size(this.method_41567());
-
-		for (int k = 0; k < objectArrayList.size(); k++) {
-			int l = k + BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY());
-			objectArrayList.set(k, chunk.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), l, BiomeCoords.fromBlock(j)));
-		}
-
-		return objectArrayList;
 	}
 
 	private static boolean isCollidableAndNotTreeAt(Chunk chunk, BlockPos pos) {
@@ -266,36 +274,30 @@ public class BlendingData {
 		}
 	}
 
-	private double method_39575(@Nullable double[] ds, int i) {
+	private static double method_39575(@Nullable double[] ds, int i) {
 		if (ds == null) {
 			return Double.MAX_VALUE;
 		} else {
-			int j = this.method_41565(i);
+			int j = i - method_39581();
 			return j >= 0 && j < ds.length ? ds[j] * 0.1 : Double.MAX_VALUE;
 		}
 	}
 
 	protected double method_39345(int i, int j, int k) {
-		if (j == this.method_39583()) {
-			return 0.1;
+		if (j == method_39583()) {
+			return this.field_35694[this.method_39569(i, k)] * 0.1;
 		} else if (i == field_35685 || k == field_35685) {
-			return this.method_39575(this.field_35693[method_39582(i, k)], j);
+			return method_39575(this.field_35693[method_39582(i, k)], j);
 		} else {
-			return i != 0 && k != 0 ? Double.MAX_VALUE : this.method_39575(this.field_35693[method_39578(i, k)], j);
+			return i != 0 && k != 0 ? Double.MAX_VALUE : method_39575(this.field_35693[method_39578(i, k)], j);
 		}
 	}
 
-	protected void method_40028(int i, int j, int k, BlendingData.class_6853 arg) {
-		if (j >= BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY()) && j < BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getTopY())) {
-			int l = j - BiomeCoords.fromBlock(this.OLD_HEIGHT_LIMIT.getBottomY());
-
-			for (int m = 0; m < this.field_36345.size(); m++) {
-				if (this.field_36345.get(m) != null) {
-					RegistryEntry<Biome> registryEntry = (RegistryEntry<Biome>)((List)this.field_36345.get(m)).get(l);
-					if (registryEntry != null) {
-						arg.consume(i + method_39343(m), k + method_39352(m), registryEntry);
-					}
-				}
+	protected void method_40028(int i, int j, BlendingData.class_6853 arg) {
+		for (int k = 0; k < this.field_36345.size(); k++) {
+			RegistryEntry<Biome> registryEntry = (RegistryEntry<Biome>)this.field_36345.get(k);
+			if (registryEntry != null) {
+				arg.consume(i + method_39343(k), j + method_39352(k), registryEntry);
 			}
 		}
 	}
@@ -310,9 +312,9 @@ public class BlendingData {
 	}
 
 	protected void method_39346(int i, int j, int k, int l, BlendingData.class_6750 arg) {
-		int m = this.method_39581();
+		int m = method_39581();
 		int n = Math.max(0, k - m);
-		int o = Math.min(this.method_39576(), l - m);
+		int o = Math.min(method_39576(), l - m);
 
 		for (int p = 0; p < this.field_35693.length; p++) {
 			double[] ds = this.field_35693[p];
@@ -327,24 +329,20 @@ public class BlendingData {
 		}
 	}
 
-	private int method_39576() {
-		return this.OLD_HEIGHT_LIMIT.countVerticalSections() * 2;
+	private int method_39569(int i, int j) {
+		return i * field_35688 + j;
 	}
 
-	private int method_41567() {
-		return BiomeCoords.fromChunk(this.OLD_HEIGHT_LIMIT.countVerticalSections());
+	private static int method_39576() {
+		return OLD_HEIGHT_LIMIT.countVerticalSections() * 2;
 	}
 
-	private int method_39581() {
-		return this.method_39583() + 1;
+	private static int method_39581() {
+		return method_39583() + 1;
 	}
 
-	private int method_39583() {
-		return this.OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
-	}
-
-	private int method_41565(int i) {
-		return i - this.method_39581();
+	private static int method_39583() {
+		return OLD_HEIGHT_LIMIT.getBottomSectionCoord() * 2;
 	}
 
 	private static int method_39578(int i, int j) {
@@ -375,10 +373,6 @@ public class BlendingData {
 
 	private static int method_39355(int i) {
 		return i & ~(i >> 31);
-	}
-
-	public HeightLimitView method_41564() {
-		return this.OLD_HEIGHT_LIMIT;
 	}
 
 	protected interface class_6750 {

@@ -9,7 +9,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 
 public class StatusEffects {
-	private static final int field_38093 = 120;
 	public static final StatusEffect SPEED = register(
 		1,
 		"speed",
@@ -111,11 +110,6 @@ public class StatusEffects {
 		}
 	});
 	public static final StatusEffect HERO_OF_THE_VILLAGE = register(32, "hero_of_the_village", new StatusEffect(StatusEffectCategory.BENEFICIAL, 4521796));
-	public static final StatusEffect DARKNESS = register(
-		33,
-		"darkness",
-		new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).setFactorCalculationDataSupplier(() -> new StatusEffectInstance.FactorCalculationData(120))
-	);
 
 	private static StatusEffect register(int rawId, String id, StatusEffect entry) {
 		return Registry.register(Registry.STATUS_EFFECT, rawId, id, entry);

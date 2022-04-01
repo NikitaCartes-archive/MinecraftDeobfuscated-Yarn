@@ -1,8 +1,7 @@
 package net.minecraft.village;
 
 import java.util.ArrayList;
-import javax.annotation.Nullable;
-import net.minecraft.item.ItemStack;
+import net.minecraft.class_7317;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -20,41 +19,17 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 		}
 	}
 
-	@Nullable
-	public TradeOffer getValidOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, int index) {
-		if (index > 0 && index < this.size()) {
-			TradeOffer tradeOffer = (TradeOffer)this.get(index);
-			return tradeOffer.matchesBuyItems(firstBuyItem, secondBuyItem) ? tradeOffer : null;
-		} else {
-			for (int i = 0; i < this.size(); i++) {
-				TradeOffer tradeOffer2 = (TradeOffer)this.get(i);
-				if (tradeOffer2.matchesBuyItems(firstBuyItem, secondBuyItem)) {
-					return tradeOffer2;
-				}
-			}
-
-			return null;
-		}
-	}
-
 	public void toPacket(PacketByteBuf buf) {
 		buf.writeByte((byte)(this.size() & 0xFF));
 
 		for (int i = 0; i < this.size(); i++) {
 			TradeOffer tradeOffer = (TradeOffer)this.get(i);
-			buf.writeItemStack(tradeOffer.getOriginalFirstBuyItem());
-			buf.writeItemStack(tradeOffer.getSellItem());
-			ItemStack itemStack = tradeOffer.getSecondBuyItem();
-			buf.writeBoolean(!itemStack.isEmpty());
-			if (!itemStack.isEmpty()) {
-				buf.writeItemStack(itemStack);
-			}
-
+			buf.encode(class_7317.field_38543, tradeOffer.method_42852());
+			buf.encode(class_7317.field_38543, tradeOffer.getSellItem());
 			buf.writeBoolean(tradeOffer.isDisabled());
 			buf.writeInt(tradeOffer.getUses());
 			buf.writeInt(tradeOffer.getMaxUses());
 			buf.writeInt(tradeOffer.getMerchantExperience());
-			buf.writeInt(tradeOffer.getSpecialPrice());
 			buf.writeFloat(tradeOffer.getPriceMultiplier());
 			buf.writeInt(tradeOffer.getDemandBonus());
 		}
@@ -65,26 +40,19 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 		int i = buf.readByte() & 255;
 
 		for (int j = 0; j < i; j++) {
-			ItemStack itemStack = buf.readItemStack();
-			ItemStack itemStack2 = buf.readItemStack();
-			ItemStack itemStack3 = ItemStack.EMPTY;
-			if (buf.readBoolean()) {
-				itemStack3 = buf.readItemStack();
-			}
-
+			class_7317 lv = buf.decode(class_7317.field_38543);
+			class_7317 lv2 = buf.decode(class_7317.field_38543);
 			boolean bl = buf.readBoolean();
 			int k = buf.readInt();
 			int l = buf.readInt();
 			int m = buf.readInt();
-			int n = buf.readInt();
 			float f = buf.readFloat();
-			int o = buf.readInt();
-			TradeOffer tradeOffer = new TradeOffer(itemStack, itemStack3, itemStack2, k, l, m, f, o);
+			int n = buf.readInt();
+			TradeOffer tradeOffer = new TradeOffer(lv, lv2, k, l, m, f, n);
 			if (bl) {
 				tradeOffer.disable();
 			}
 
-			tradeOffer.setSpecialPrice(n);
 			tradeOfferList.add(tradeOffer);
 		}
 

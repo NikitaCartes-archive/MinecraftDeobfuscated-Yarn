@@ -5,12 +5,12 @@ import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -20,11 +20,9 @@ import net.minecraft.world.event.GameEvent;
 public class BoatItem extends Item {
 	private static final Predicate<Entity> RIDERS = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
 	private final BoatEntity.Type type;
-	private final boolean chest;
 
-	public BoatItem(boolean chest, BoatEntity.Type type, Item.Settings settings) {
+	public BoatItem(BoatEntity.Type type, Item.Settings settings) {
 		super(settings);
-		this.chest = chest;
 		this.type = type;
 	}
 
@@ -50,7 +48,7 @@ public class BoatItem extends Item {
 			}
 
 			if (hitResult.getType() == HitResult.Type.BLOCK) {
-				BoatEntity boatEntity = this.createEntity(world, hitResult);
+				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.setYaw(user.getYaw());
 				if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
@@ -58,7 +56,7 @@ public class BoatItem extends Item {
 				} else {
 					if (!world.isClient) {
 						world.spawnEntity(boatEntity);
-						world.emitGameEvent(user, GameEvent.ENTITY_PLACE, hitResult.getPos());
+						world.emitGameEvent(user, GameEvent.ENTITY_PLACE, new BlockPos(hitResult.getPos()));
 						if (!user.getAbilities().creativeMode) {
 							itemStack.decrement(1);
 						}
@@ -71,11 +69,5 @@ public class BoatItem extends Item {
 				return TypedActionResult.pass(itemStack);
 			}
 		}
-	}
-
-	private BoatEntity createEntity(World world, HitResult hitResult) {
-		return (BoatEntity)(this.chest
-			? new ChestBoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z)
-			: new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z));
 	}
 }

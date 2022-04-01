@@ -33,7 +33,7 @@ public class EndCityGenerator {
 			if (depth > 8) {
 				return false;
 			} else {
-				BlockRotation blockRotation = root.method_41626().getRotation();
+				BlockRotation blockRotation = root.placementData.getRotation();
 				EndCityGenerator.Piece piece = EndCityGenerator.addPiece(pieces, EndCityGenerator.createPiece(manager, root, pos, "base_floor", blockRotation, true));
 				int i = random.nextInt(3);
 				if (i == 0) {
@@ -66,7 +66,7 @@ public class EndCityGenerator {
 
 		@Override
 		public boolean create(StructureManager manager, int depth, EndCityGenerator.Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
-			BlockRotation blockRotation = root.method_41626().getRotation();
+			BlockRotation blockRotation = root.placementData.getRotation();
 			EndCityGenerator.Piece piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(3 + random.nextInt(2), -3, 3 + random.nextInt(2)), "tower_base", blockRotation, true)
 			);
@@ -113,12 +113,12 @@ public class EndCityGenerator {
 
 		@Override
 		public boolean create(StructureManager manager, int depth, EndCityGenerator.Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
-			BlockRotation blockRotation = root.method_41626().getRotation();
+			BlockRotation blockRotation = root.placementData.getRotation();
 			int i = random.nextInt(4) + 1;
 			EndCityGenerator.Piece piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(0, 0, -4), "bridge_piece", blockRotation, true)
 			);
-			piece.method_41620(-1);
+			piece.chainLength = -1;
 			int j = 0;
 
 			for (int k = 0; k < i; k++) {
@@ -152,7 +152,7 @@ public class EndCityGenerator {
 			piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, piece, new BlockPos(4, j, 0), "bridge_end", blockRotation.rotate(BlockRotation.CLOCKWISE_180), true)
 			);
-			piece.method_41620(-1);
+			piece.chainLength = -1;
 			return true;
 		}
 	};
@@ -169,7 +169,7 @@ public class EndCityGenerator {
 
 		@Override
 		public boolean create(StructureManager manager, int depth, EndCityGenerator.Piece root, BlockPos pos, List<StructurePiece> pieces, Random random) {
-			BlockRotation blockRotation = root.method_41626().getRotation();
+			BlockRotation blockRotation = root.placementData.getRotation();
 			EndCityGenerator.Piece piece = EndCityGenerator.addPiece(
 				pieces, EndCityGenerator.createPiece(manager, root, new BlockPos(-3, 4, -3), "fat_tower_base", blockRotation, true)
 			);
@@ -196,8 +196,8 @@ public class EndCityGenerator {
 	static EndCityGenerator.Piece createPiece(
 		StructureManager structureManager, EndCityGenerator.Piece lastPiece, BlockPos relativePosition, String template, BlockRotation rotation, boolean ignoreAir
 	) {
-		EndCityGenerator.Piece piece = new EndCityGenerator.Piece(structureManager, template, lastPiece.method_41625(), rotation, ignoreAir);
-		BlockPos blockPos = lastPiece.method_41624().transformBox(lastPiece.method_41626(), relativePosition, piece.method_41626(), BlockPos.ORIGIN);
+		EndCityGenerator.Piece piece = new EndCityGenerator.Piece(structureManager, template, lastPiece.pos, rotation, ignoreAir);
+		BlockPos blockPos = lastPiece.structure.transformBox(lastPiece.placementData, relativePosition, piece.placementData, BlockPos.ORIGIN);
 		piece.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 		return piece;
 	}
@@ -231,9 +231,9 @@ public class EndCityGenerator {
 				int i = random.nextInt();
 
 				for (StructurePiece structurePiece : list) {
-					structurePiece.method_41620(i);
+					structurePiece.chainLength = i;
 					StructurePiece structurePiece2 = StructurePiece.firstIntersecting(pieces, structurePiece.getBoundingBox());
-					if (structurePiece2 != null && structurePiece2.getChainLength() != parent.getChainLength()) {
+					if (structurePiece2 != null && structurePiece2.chainLength != parent.chainLength) {
 						bl = true;
 						break;
 					}

@@ -541,7 +541,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	private static Fluid getDripFluid(World world, Fluid fluid) {
 		if (fluid.matchesType(Fluids.EMPTY)) {
-			return world.getDimension().ultrawarm() ? Fluids.LAVA : Fluids.WATER;
+			return world.getDimension().isUltrawarm() ? Fluids.LAVA : Fluids.WATER;
 		} else {
 			return fluid;
 		}

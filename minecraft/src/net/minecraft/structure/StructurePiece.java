@@ -32,6 +32,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.slf4j.Logger;
 
@@ -101,6 +102,10 @@ public abstract class StructurePiece {
 
 	protected abstract void writeNbt(StructureContext context, NbtCompound nbt);
 
+	public StructureWeightType getWeightType() {
+		return StructureWeightType.BEARD;
+	}
+
 	public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
 	}
 
@@ -120,10 +125,6 @@ public abstract class StructurePiece {
 
 	public int getChainLength() {
 		return this.chainLength;
-	}
-
-	public void method_41620(int i) {
-		this.chainLength = i;
 	}
 
 	public boolean intersectsChunk(ChunkPos pos, int offset) {
@@ -543,7 +544,7 @@ public abstract class StructurePiece {
 		return this.type;
 	}
 
-	public abstract static class BlockRandomizer {
+	protected abstract static class BlockRandomizer {
 		protected BlockState block = Blocks.AIR.getDefaultState();
 
 		public abstract void setBlock(Random random, int x, int y, int z, boolean placeBlock);

@@ -44,7 +44,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class CreeperEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class CreeperEntityModel<T extends Entity> extends SinglePartEntityModel<T> implements ModelWithHead {
 	private final ModelPart root;
 	private final ModelPart head;
 	private final ModelPart leftHindLeg;
@@ -96,5 +96,10 @@ public class CreeperEntityModel<T extends Entity> extends SinglePartEntityModel<
 		this.rightHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+	}
+
+	@Override
+	public ModelPart getHead() {
+		return this.head;
 	}
 }

@@ -23,7 +23,6 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -60,76 +59,58 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 			profiler.push(string);
 
 			try {
-				for (ResourceRef resourceRef : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
-					profiler.push(resourceRef.getPackName());
+				for (Resource resource : resourceManager.getAllResources(new Identifier(string, "sounds.json"))) {
+					profiler.push(resource.getResourcePackName());
 
 					try {
-						Resource resource = resourceRef.open();
+						InputStream inputStream = resource.getInputStream();
 
 						try {
-							InputStream inputStream = resource.getInputStream();
+							Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 
 							try {
-								Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+								profiler.push("parse");
+								Map<String, SoundEntry> map = JsonHelper.deserialize(GSON, reader, TYPE);
+								profiler.swap("register");
 
-								try {
-									profiler.push("parse");
-									Map<String, SoundEntry> map = JsonHelper.deserialize(GSON, reader, TYPE);
-									profiler.swap("register");
-
-									for (Entry<String, SoundEntry> entry : map.entrySet()) {
-										soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
-									}
-
-									profiler.pop();
-								} catch (Throwable var18) {
-									try {
-										reader.close();
-									} catch (Throwable var17) {
-										var18.addSuppressed(var17);
-									}
-
-									throw var18;
+								for (Entry<String, SoundEntry> entry : map.entrySet()) {
+									soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
 								}
 
-								reader.close();
-							} catch (Throwable var19) {
-								if (inputStream != null) {
-									try {
-										inputStream.close();
-									} catch (Throwable var16) {
-										var19.addSuppressed(var16);
-									}
-								}
-
-								throw var19;
-							}
-
-							if (inputStream != null) {
-								inputStream.close();
-							}
-						} catch (Throwable var20) {
-							if (resource != null) {
+								profiler.pop();
+							} catch (Throwable var16) {
 								try {
-									resource.close();
+									reader.close();
 								} catch (Throwable var15) {
-									var20.addSuppressed(var15);
+									var16.addSuppressed(var15);
+								}
+
+								throw var16;
+							}
+
+							reader.close();
+						} catch (Throwable var17) {
+							if (inputStream != null) {
+								try {
+									inputStream.close();
+								} catch (Throwable var14) {
+									var17.addSuppressed(var14);
 								}
 							}
 
-							throw var20;
+							throw var17;
 						}
 
-						if (resource != null) {
-							resource.close();
+						if (inputStream != null) {
+							inputStream.close();
 						}
-					} catch (RuntimeException var21) {
-						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resourceRef.getPackName(), var21);
+					} catch (RuntimeException var18) {
+						LOGGER.warn("Invalid {} in resourcepack: '{}'", "sounds.json", resource.getResourcePackName(), var18);
 					}
 
 					profiler.pop();
 				}
-			} catch (IOException var22) {
+			} catch (IOException var19) {
 			}
 
 			profiler.pop();

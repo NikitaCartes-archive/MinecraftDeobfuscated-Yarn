@@ -49,8 +49,6 @@ public class LootTables {
 	public static final Identifier BASTION_OTHER_CHEST = register("chests/bastion_other");
 	public static final Identifier BASTION_BRIDGE_CHEST = register("chests/bastion_bridge");
 	public static final Identifier BASTION_HOGLIN_STABLE_CHEST = register("chests/bastion_hoglin_stable");
-	public static final Identifier ANCIENT_CITY_CHEST = register("chests/ancient_city");
-	public static final Identifier ANCIENT_CITY_ICE_BOX_CHEST = register("chests/ancient_city_ice_box");
 	public static final Identifier RUINED_PORTAL_CHEST = register("chests/ruined_portal");
 	public static final Identifier WHITE_SHEEP_ENTITY = register("entities/sheep/white");
 	public static final Identifier ORANGE_SHEEP_ENTITY = register("entities/sheep/orange");

@@ -15,7 +15,6 @@ import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LivingTargetCache;
-import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -68,16 +67,14 @@ public class LookTargetUtil {
 	}
 
 	public static void walkTowards(LivingEntity entity, Entity target, float speed, int completionRange) {
-		walkTowards(entity, new EntityLookTarget(target, true), speed, completionRange);
+		WalkTarget walkTarget = new WalkTarget(new EntityLookTarget(target, false), speed, completionRange);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(target, true));
+		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
 	public static void walkTowards(LivingEntity entity, BlockPos target, float speed, int completionRange) {
-		walkTowards(entity, new BlockPosLookTarget(target), speed, completionRange);
-	}
-
-	public static void walkTowards(LivingEntity entity, LookTarget target, float speed, int completionRange) {
-		WalkTarget walkTarget = new WalkTarget(target, speed, completionRange);
-		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, target);
+		WalkTarget walkTarget = new WalkTarget(new BlockPosLookTarget(target), speed, completionRange);
+		entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(target));
 		entity.getBrain().remember(MemoryModuleType.WALK_TARGET, walkTarget);
 	}
 
@@ -107,7 +104,12 @@ public class LookTargetUtil {
 			return mob.isInRange(target, (double)i);
 		}
 
-		return mob.isInAttackRange(target);
+		return isTargetWithinMeleeRange(mob, target);
+	}
+
+	public static boolean isTargetWithinMeleeRange(MobEntity source, LivingEntity target) {
+		double d = source.squaredDistanceTo(target.getX(), target.getY(), target.getZ());
+		return d <= source.squaredAttackRange(target);
 	}
 
 	/**
@@ -175,9 +177,5 @@ public class LookTargetUtil {
 		}
 
 		return vec3d;
-	}
-
-	public static boolean hasBreedTarget(LivingEntity entity) {
-		return entity.getBrain().hasMemoryModule(MemoryModuleType.BREED_TARGET);
 	}
 }

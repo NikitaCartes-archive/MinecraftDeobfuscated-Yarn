@@ -40,8 +40,8 @@ public class ResetChunksCommand {
 						.then(
 							CommandManager.argument("skipOldChunks", BoolArgumentType.bool())
 								.executes(
-									context -> executeResetChunks(
-											context.getSource(), IntegerArgumentType.getInteger(context, "range"), BoolArgumentType.getBool(context, "skipOldChunks")
+									commandContext -> executeResetChunks(
+											commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "range"), BoolArgumentType.getBool(commandContext, "skipOldChunks")
 										)
 								)
 						)

@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -39,6 +40,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 				}
 			}
 		);
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, 0.125F, 0.25F, 0.5F));
 		this.model.getHat().visible = true;
 	}
 

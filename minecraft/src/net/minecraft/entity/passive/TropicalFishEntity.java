@@ -18,7 +18,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -28,6 +27,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class TropicalFishEntity extends SchoolingFishEntity {
 	public static final String BUCKET_VARIANT_TAG_KEY = "BucketVariantTag";
@@ -249,7 +249,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
 		return world.getFluidState(pos.down()).isIn(FluidTags.WATER)
 			&& world.getBlockState(pos.up()).isOf(Blocks.WATER)
-			&& (world.getBiome(pos).isIn(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
+			&& (world.getBiome(pos).matchesKey(BiomeKeys.LUSH_CAVES) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));
 	}
 
 	static class TropicalFishData extends SchoolingFishEntity.FishData {

@@ -35,8 +35,8 @@ public class GravityStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData data
 	) {
 		Heightmap.Type type;
@@ -52,10 +52,10 @@ public class GravityStructureProcessor extends StructureProcessor {
 			type = this.heightmap;
 		}
 
-		int i = world.getTopY(type, currentBlockInfo.pos.getX(), currentBlockInfo.pos.getZ()) + this.offset;
-		int j = originalBlockInfo.pos.getY();
+		int i = world.getTopY(type, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
+		int j = structureBlockInfo.pos.getY();
 		return new Structure.StructureBlockInfo(
-			new BlockPos(currentBlockInfo.pos.getX(), i + j, currentBlockInfo.pos.getZ()), currentBlockInfo.state, currentBlockInfo.nbt
+			new BlockPos(structureBlockInfo2.pos.getX(), i + j, structureBlockInfo2.pos.getZ()), structureBlockInfo2.state, structureBlockInfo2.nbt
 		);
 	}
 

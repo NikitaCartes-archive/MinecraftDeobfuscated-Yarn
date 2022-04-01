@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public interface RenderableGlyph {
+public interface RenderableGlyph extends Glyph {
 	int getWidth();
 
 	int getHeight();
@@ -31,10 +31,7 @@ public interface RenderableGlyph {
 		return this.getYMin() + (float)this.getHeight() / this.getOversample();
 	}
 
-	default float getBearingX() {
-		return 0.0F;
-	}
-
+	@Override
 	default float getAscent() {
 		return 3.0F;
 	}

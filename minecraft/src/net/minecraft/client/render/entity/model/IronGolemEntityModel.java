@@ -82,6 +82,8 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 
 	public void animateModel(T ironGolemEntity, float f, float g, float h) {
 		int i = ironGolemEntity.getAttackTicksLeft();
+		this.rightArm.method_42992();
+		this.leftArm.method_42992();
 		if (i > 0) {
 			this.rightArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
 			this.leftArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
@@ -90,6 +92,13 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 			if (j > 0) {
 				this.rightArm.pitch = -0.8F + 0.025F * MathHelper.wrap((float)j, 70.0F);
 				this.leftArm.pitch = 0.0F;
+			} else if (ironGolemEntity.method_42814()) {
+				this.rightArm.pitch = 3.5F + 1.5F * MathHelper.wrap(f, 13.0F) * g;
+				this.rightArm.roll = -0.5F;
+				this.rightArm.pivotY = -11.0F;
+				this.leftArm.pitch = 3.5F - 1.5F * MathHelper.wrap(f, 13.0F) * g;
+				this.leftArm.roll = 0.5F;
+				this.leftArm.pivotY = -11.0F;
 			} else {
 				this.rightArm.pitch = (-0.2F + 1.5F * MathHelper.wrap(f, 13.0F)) * g;
 				this.leftArm.pitch = (-0.2F - 1.5F * MathHelper.wrap(f, 13.0F)) * g;

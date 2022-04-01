@@ -7,8 +7,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
@@ -17,6 +15,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
@@ -74,17 +73,15 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		double d = this.getVelocity().horizontalLengthSquared();
 		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
+			if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+				this.dropItem(Blocks.TNT);
+			}
 		} else {
 			if (this.fuseTicks < 0) {
 				this.prime();
 				this.fuseTicks = this.random.nextInt(20) + this.random.nextInt(20);
 			}
 		}
-	}
-
-	@Override
-	protected Item getItem() {
-		return Items.TNT_MINECART;
 	}
 
 	protected void explode(double velocity) {

@@ -34,6 +34,7 @@ public class HungerManager {
 
 	public void update(PlayerEntity player) {
 		Difficulty difficulty = player.world.getDifficulty();
+		this.foodLevel = 20;
 		this.prevFoodLevel = this.foodLevel;
 		if (this.exhaustion > 4.0F) {
 			this.exhaustion -= 4.0F;

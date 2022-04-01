@@ -79,7 +79,6 @@ public class HandledScreens {
 		register(ScreenHandlerType.HOPPER, HopperScreen::new);
 		register(ScreenHandlerType.LECTERN, LecternScreen::new);
 		register(ScreenHandlerType.LOOM, LoomScreen::new);
-		register(ScreenHandlerType.MERCHANT, MerchantScreen::new);
 		register(ScreenHandlerType.SHULKER_BOX, ShulkerBoxScreen::new);
 		register(ScreenHandlerType.SMITHING, SmithingScreen::new);
 		register(ScreenHandlerType.SMOKER, SmokerScreen::new);

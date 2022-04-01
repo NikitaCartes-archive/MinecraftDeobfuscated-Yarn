@@ -34,14 +34,12 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.entity.mob.VindicatorEntity;
-import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
-import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -51,7 +49,6 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.FoxEntity;
-import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
@@ -67,7 +64,6 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.StriderEntity;
-import net.minecraft.entity.passive.TadpoleEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -79,7 +75,6 @@ import org.slf4j.Logger;
 public class DefaultAttributeRegistry {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder()
-		.put(EntityType.ALLAY, AllayEntity.createAllayAttributes().build())
 		.put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build())
 		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
@@ -100,7 +95,6 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.ENDER_DRAGON, EnderDragonEntity.createEnderDragonAttributes().build())
 		.put(EntityType.EVOKER, EvokerEntity.createEvokerAttributes().build())
 		.put(EntityType.FOX, FoxEntity.createFoxAttributes().build())
-		.put(EntityType.FROG, FrogEntity.createFrogAttributes().build())
 		.put(EntityType.GHAST, GhastEntity.createGhastAttributes().build())
 		.put(EntityType.GIANT, GiantEntity.createGiantAttributes().build())
 		.put(EntityType.GLOW_SQUID, GlowSquidEntity.createSquidAttributes().build())
@@ -140,14 +134,12 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.SQUID, SquidEntity.createSquidAttributes().build())
 		.put(EntityType.STRAY, AbstractSkeletonEntity.createAbstractSkeletonAttributes().build())
 		.put(EntityType.STRIDER, StriderEntity.createStriderAttributes().build())
-		.put(EntityType.TADPOLE, TadpoleEntity.createTadpoleAttributes().build())
 		.put(EntityType.TRADER_LLAMA, LlamaEntity.createLlamaAttributes().build())
 		.put(EntityType.TROPICAL_FISH, FishEntity.createFishAttributes().build())
 		.put(EntityType.TURTLE, TurtleEntity.createTurtleAttributes().build())
 		.put(EntityType.VEX, VexEntity.createVexAttributes().build())
 		.put(EntityType.VILLAGER, VillagerEntity.createVillagerAttributes().build())
 		.put(EntityType.VINDICATOR, VindicatorEntity.createVindicatorAttributes().build())
-		.put(EntityType.WARDEN, WardenEntity.addAttributes().build())
 		.put(EntityType.WANDERING_TRADER, MobEntity.createMobAttributes().build())
 		.put(EntityType.WITCH, WitchEntity.createWitchAttributes().build())
 		.put(EntityType.WITHER, WitherEntity.createWitherAttributes().build())

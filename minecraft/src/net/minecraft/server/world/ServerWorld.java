@@ -41,6 +41,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InteractionObserver;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
@@ -68,6 +69,7 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -118,14 +120,14 @@ import net.minecraft.world.PortalForcer;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionOptions;
-import net.minecraft.world.dimension.DimensionTypes;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityHandler;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
@@ -134,7 +136,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -194,19 +196,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		LevelStorage.Session session,
 		ServerWorldProperties properties,
 		RegistryKey<World> worldKey,
-		DimensionOptions dimensionOptions,
+		RegistryEntry<DimensionType> registryEntry,
 		WorldGenerationProgressListener worldGenerationProgressListener,
+		ChunkGenerator chunkGenerator,
 		boolean debugWorld,
 		long seed,
 		List<Spawner> spawners,
 		boolean shouldTickTime
 	) {
-		super(properties, worldKey, dimensionOptions.getDimensionTypeEntry(), server::getProfiler, false, debugWorld, seed, server.getMaxChainedNeighborUpdates());
+		super(properties, worldKey, registryEntry, server::getProfiler, false, debugWorld, seed);
 		this.shouldTickTime = shouldTickTime;
 		this.server = server;
 		this.spawners = spawners;
 		this.worldProperties = properties;
-		ChunkGenerator chunkGenerator = dimensionOptions.getChunkGenerator();
+		chunkGenerator.method_41058();
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
 		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, session.getWorldDirectory(worldKey).resolve("entities"), dataFixer, bl, server);
@@ -225,13 +228,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.entityManager::updateTrackingStatus,
 			() -> server.getOverworld().getPersistentStateManager()
 		);
-		chunkGenerator.method_41058(this.chunkManager.getNoiseConfig());
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager()
-			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimensionEntry()));
+			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.method_40134()));
 		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
@@ -243,14 +245,13 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			server.getStructureManager(),
 			worldKey,
 			chunkGenerator,
-			this.chunkManager.getNoiseConfig(),
 			this,
 			chunkGenerator.getBiomeSource(),
 			l,
 			dataFixer
 		);
 		this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions(), this.structureLocator);
-		if (this.getRegistryKey() == World.END && this.getDimensionEntry().matchesKey(DimensionTypes.THE_END)) {
+		if (this.getDimension().hasEnderDragonFight()) {
 			this.enderDragonFight = new EnderDragonFight(this, l, server.getSaveProperties().getDragonFight());
 		} else {
 			this.enderDragonFight = null;
@@ -283,10 +284,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getChunkManager()
-			.getChunkGenerator()
-			.getBiomeSource()
-			.getBiome(biomeX, biomeY, biomeZ, this.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
+		return this.getChunkManager().getChunkGenerator().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
 	public StructureAccessor getStructureAccessor() {
@@ -894,7 +892,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private boolean addEntity(Entity entity) {
-		if (entity.isRemoved()) {
+		if (entity instanceof ItemEntity) {
+			return false;
+		} else if (entity.isRemoved()) {
 			LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getId(entity.getType()));
 			return false;
 		} else {
@@ -981,30 +981,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public int getLogicalHeight() {
-		return this.getDimension().logicalHeight();
+		return this.getDimension().getLogicalHeight();
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
-		int i = event.getRange();
-		BlockPos blockPos = new BlockPos(pos);
-		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
-		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
-		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
-		int m = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
-		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
-		int o = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
-
-		for (int p = j; p <= m; p++) {
-			for (int q = l; q <= o; q++) {
-				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
-				if (chunk != null) {
-					for (int r = k; r <= n; r++) {
-						chunk.getGameEventDispatcher(r).dispatch(event, entity, pos);
-					}
-				}
-			}
-		}
+	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+		this.emitGameEvent(entity, event, pos, event.getRange());
 	}
 
 	@Override
@@ -1037,26 +1019,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				this.duringListenerUpdate = false;
 			}
 		}
-	}
-
-	@Override
-	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
-		this.neighborUpdater.updateNeighbors(pos, sourceBlock, null);
-	}
-
-	@Override
-	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		this.neighborUpdater.updateNeighbors(pos, sourceBlock, direction);
-	}
-
-	@Override
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-		this.neighborUpdater.updateNeighbor(pos, sourceBlock, sourcePos);
-	}
-
-	@Override
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		this.neighborUpdater.updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
 	}
 
 	@Override
@@ -1107,7 +1069,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		while (!this.syncedBlockEventQueue.isEmpty()) {
 			BlockEvent blockEvent = this.syncedBlockEventQueue.removeFirst();
-			if (this.shouldTickBlockPos(blockEvent.pos())) {
+			if (this.method_42871(blockEvent.pos())) {
 				if (this.processBlockEvent(blockEvent)) {
 					this.server
 						.getPlayerManager()
@@ -1154,6 +1116,13 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public StructureManager getStructureManager() {
 		return this.server.getStructureManager();
+	}
+
+	public void sendVibrationPacket(Vibration vibration) {
+		BlockPos blockPos = vibration.getOrigin();
+		VibrationS2CPacket vibrationS2CPacket = new VibrationS2CPacket(vibration);
+		this.players
+			.forEach(player -> this.sendToPlayerIfNearby(player, false, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), vibrationS2CPacket));
 	}
 
 	/**
@@ -1256,33 +1225,39 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(TagKey<StructureFeature> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
+	public BlockPos locateStructure(TagKey<ConfiguredStructureFeature<?, ?>> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
-			Optional<RegistryEntryList.Named<StructureFeature>> optional = this.getRegistryManager()
+			Optional<RegistryEntryList.Named<ConfiguredStructureFeature<?, ?>>> optional = this.getRegistryManager()
 				.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)
 				.getEntryList(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {
-				Pair<BlockPos, RegistryEntry<StructureFeature>> pair = this.getChunkManager()
+				Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = this.getChunkManager()
 					.getChunkGenerator()
-					.locateStructure(this, (RegistryEntryList<StructureFeature>)optional.get(), pos, radius, skipExistingChunks);
+					.locateStructure(this, (RegistryEntryList<ConfiguredStructureFeature<?, ?>>)optional.get(), pos, radius, skipExistingChunks);
 				return pair != null ? pair.getFirst() : null;
 			}
 		}
 	}
 
 	@Nullable
-	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(
-		Predicate<RegistryEntry<Biome>> predicate, BlockPos pos, int radius, int horizontalBlockCheckInterval, int verticalBlockCheckInterval
-	) {
+	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(Predicate<RegistryEntry<Biome>> biomeEntryPredicate, BlockPos pos, int radius, int blockCheckInterval) {
 		return this.getChunkManager()
 			.getChunkGenerator()
 			.getBiomeSource()
-			.method_42310(
-				pos, radius, horizontalBlockCheckInterval, verticalBlockCheckInterval, predicate, this.getChunkManager().getNoiseConfig().getMultiNoiseSampler(), this
+			.locateBiome(
+				pos.getX(),
+				pos.getY(),
+				pos.getZ(),
+				radius,
+				blockCheckInterval,
+				biomeEntryPredicate,
+				this.random,
+				true,
+				this.getChunkManager().getChunkGenerator().getMultiNoiseSampler()
 			);
 	}
 
@@ -1343,8 +1318,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * {@return the world spawn point}
 	 * 
 	 * @implNote If it is outside the world border, this returns the position of the
-	 * highest {@linkplain net.minecraft.world.Heightmap.Type#MOTION_BLOCKING motion-blocking}
-	 * block at the center of the world border.
+	 * highest {@linkplain Heightmap.Type#MOTION_BLOCKING motion-blocking} block at the center of the world border.
 	 */
 	public BlockPos getSpawnPos() {
 		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
@@ -1833,8 +1807,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					ServerWorld.this.dragonParts.put(enderDragonPart.getId(), enderDragonPart);
 				}
 			}
-
-			entity.updateEventHandler(EntityGameEventHandler::onEntitySetPosCallback);
 		}
 
 		public void stopTracking(Entity entity) {
@@ -1859,7 +1831,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 			}
 
-			entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
+			EntityGameEventHandler entityGameEventHandler = entity.getGameEventHandler();
+			if (entityGameEventHandler != null) {
+				entityGameEventHandler.onEntityRemoval(entity.world);
+			}
 		}
 	}
 }

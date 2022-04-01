@@ -11,7 +11,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 
 public class PowderSnowBucketItem extends BlockItem implements FluidModificationItem {
 	private final SoundEvent placeSound;
@@ -50,7 +49,6 @@ public class PowderSnowBucketItem extends BlockItem implements FluidModification
 				world.setBlockState(pos, this.getBlock().getDefaultState(), Block.NOTIFY_ALL);
 			}
 
-			world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
 			world.playSound(player, pos, this.placeSound, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			return true;
 		} else {

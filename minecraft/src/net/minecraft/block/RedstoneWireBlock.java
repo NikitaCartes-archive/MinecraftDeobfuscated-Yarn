@@ -225,16 +225,18 @@ public class RedstoneWireBlock extends Block {
 			if (wireConnection != WireConnection.NONE && !world.getBlockState(mutable.set(pos, direction)).isOf(this)) {
 				mutable.move(Direction.DOWN);
 				BlockState blockState = world.getBlockState(mutable);
-				if (blockState.isOf(this)) {
+				if (!blockState.isOf(Blocks.OBSERVER)) {
 					BlockPos blockPos = mutable.offset(direction.getOpposite());
-					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), mutable, blockPos, flags, maxUpdateDepth);
+					BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos), world, mutable, blockPos);
+					replace(blockState, blockState2, world, mutable, flags, maxUpdateDepth);
 				}
 
 				mutable.set(pos, direction).move(Direction.UP);
-				BlockState blockState2 = world.getBlockState(mutable);
-				if (blockState2.isOf(this)) {
+				BlockState blockState3 = world.getBlockState(mutable);
+				if (!blockState3.isOf(Blocks.OBSERVER)) {
 					BlockPos blockPos2 = mutable.offset(direction.getOpposite());
-					world.replaceWithStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), mutable, blockPos2, flags, maxUpdateDepth);
+					BlockState blockState4 = blockState3.getStateForNeighborUpdate(direction.getOpposite(), world.getBlockState(blockPos2), world, mutable, blockPos2);
+					replace(blockState3, blockState4, world, mutable, flags, maxUpdateDepth);
 				}
 			}
 		}
@@ -374,7 +376,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		if (!world.isClient) {
 			if (state.canPlaceAt(world, pos)) {
 				this.update(world, pos, state);

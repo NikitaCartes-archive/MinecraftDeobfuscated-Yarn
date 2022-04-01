@@ -1,20 +1,15 @@
 package net.minecraft.util;
 
-import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Keyable;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.Nullable;
 import net.minecraft.util.dynamic.Codecs;
 
 public interface StringIdentifiable {
-	int field_38377 = 16;
-
 	String asString();
 
 	/**
@@ -22,59 +17,20 @@ public interface StringIdentifiable {
 	 * using its ordinals (when compressed) or using its {@link #asString()} method
 	 * and a given decode function.
 	 */
-	static <E extends Enum<E> & StringIdentifiable> StringIdentifiable.Codec<E> createCodec(Supplier<E[]> enumValues) {
+	static <E extends Enum<E> & StringIdentifiable> Codec<E> createCodec(Supplier<E[]> enumValues, Function<String, E> fromString) {
 		E[] enums = (E[])enumValues.get();
-		if (enums.length > 16) {
-			Map<String, E> map = (Map<String, E>)Arrays.stream(enums)
-				.collect(Collectors.toMap(identifiable -> ((StringIdentifiable)identifiable).asString(), enum_ -> enum_));
-			return new StringIdentifiable.Codec<>(enums, id -> id == null ? null : (Enum)map.get(id));
-		} else {
-			return new StringIdentifiable.Codec<>(enums, id -> {
-				for (E enum_ : enums) {
-					if (enum_.asString().equals(id)) {
-						return enum_;
-					}
-				}
-
-				return null;
-			});
-		}
+		return Codecs.orCompressed(
+			Codecs.method_39508(object -> ((StringIdentifiable)object).asString(), fromString),
+			Codecs.rawIdChecked(object -> ((Enum)object).ordinal(), ordinal -> ordinal >= 0 && ordinal < enums.length ? enums[ordinal] : null, -1)
+		);
 	}
 
 	static Keyable toKeyable(StringIdentifiable[] values) {
 		return new Keyable() {
 			@Override
-			public <T> Stream<T> keys(DynamicOps<T> ops) {
-				return Arrays.stream(values).map(StringIdentifiable::asString).map(ops::createString);
+			public <T> Stream<T> keys(DynamicOps<T> dynamicOps) {
+				return Arrays.stream(values).map(StringIdentifiable::asString).map(dynamicOps::createString);
 			}
 		};
-	}
-
-	@Deprecated
-	public static class Codec<E extends Enum<E> & StringIdentifiable> implements com.mojang.serialization.Codec<E> {
-		private com.mojang.serialization.Codec<E> base;
-		private Function<String, E> idToIdentifiable;
-
-		public Codec(E[] values, Function<String, E> idToIdentifiable) {
-			this.base = Codecs.orCompressed(
-				Codecs.idChecked(identifiable -> ((StringIdentifiable)identifiable).asString(), idToIdentifiable),
-				Codecs.rawIdChecked(enum_ -> ((Enum)enum_).ordinal(), ordinal -> ordinal >= 0 && ordinal < values.length ? values[ordinal] : null, -1)
-			);
-			this.idToIdentifiable = idToIdentifiable;
-		}
-
-		@Override
-		public <T> DataResult<com.mojang.datafixers.util.Pair<E, T>> decode(DynamicOps<T> ops, T input) {
-			return this.base.decode(ops, input);
-		}
-
-		public <T> DataResult<T> encode(E enum_, DynamicOps<T> dynamicOps, T object) {
-			return this.base.encode(enum_, dynamicOps, object);
-		}
-
-		@Nullable
-		public E byId(@Nullable String id) {
-			return (E)this.idToIdentifiable.apply(id);
-		}
 	}
 }

@@ -1,10 +1,12 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
 
@@ -41,6 +43,12 @@ public class MeleeAttackGoal extends Goal {
 				return false;
 			} else if (!livingEntity.isAlive()) {
 				return false;
+			} else if (this.mob.hasVehicle() && this.mob.getRootVehicle() == livingEntity) {
+				return false;
+			} else if (this.mob.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+				return false;
+			} else if (livingEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && livingEntity.isInSneakingPose()) {
+				return false;
 			} else {
 				this.path = this.mob.getNavigation().findPathTo(livingEntity, 0);
 				return this.path != null
@@ -56,6 +64,12 @@ public class MeleeAttackGoal extends Goal {
 		if (livingEntity == null) {
 			return false;
 		} else if (!livingEntity.isAlive()) {
+			return false;
+		} else if (this.mob.hasVehicle() && this.mob.getRootVehicle() == livingEntity) {
+			return false;
+		} else if (this.mob.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+			return false;
+		} else if (livingEntity.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && livingEntity.isInSneakingPose()) {
 			return false;
 		} else if (!this.pauseWhenMobIdle) {
 			return !this.mob.getNavigation().isIdle();

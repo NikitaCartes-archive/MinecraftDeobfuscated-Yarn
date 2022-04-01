@@ -76,7 +76,7 @@ public class GameMenuScreen extends Screen {
 					}, string, true))
 			)
 		);
-		ButtonWidget buttonWidget = this.addDrawableChild(
+		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 4,
 				this.height / 4 + 72 + -16,
@@ -92,7 +92,6 @@ public class GameMenuScreen extends Screen {
 					}, "https://aka.ms/snapshotbugs?ref=game", true))
 			)
 		);
-		buttonWidget.active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
 		this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 - 102,
@@ -103,12 +102,12 @@ public class GameMenuScreen extends Screen {
 				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
-		ButtonWidget buttonWidget2 = this.addDrawableChild(
+		ButtonWidget buttonWidget = this.addDrawableChild(
 			new ButtonWidget(
 				this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
 			)
 		);
-		buttonWidget2.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
+		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
 		Text text = this.client.isInSingleplayer() ? new TranslatableText("menu.returnToMenu") : new TranslatableText("menu.disconnect");
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, button -> {
 			boolean bl = this.client.isInSingleplayer();
@@ -116,7 +115,7 @@ public class GameMenuScreen extends Screen {
 			button.active = false;
 			this.client.world.disconnect();
 			if (bl) {
-				this.client.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+				this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 			} else {
 				this.client.disconnect();
 			}

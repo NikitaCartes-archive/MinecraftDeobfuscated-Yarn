@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 
 public class LocateCommand {
 	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.failed", id));
@@ -35,20 +35,20 @@ public class LocateCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<StructureFeature> structureFeature) throws CommandSyntaxException {
-		Registry<StructureFeature> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-		RegistryEntryList<StructureFeature> registryEntryList = (RegistryEntryList<StructureFeature>)structureFeature.getKey()
+	private static int execute(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<ConfiguredStructureFeature<?, ?>> structureFeature) throws CommandSyntaxException {
+		Registry<ConfiguredStructureFeature<?, ?>> registry = source.getWorld().getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+		RegistryEntryList<ConfiguredStructureFeature<?, ?>> registryEntryList = (RegistryEntryList<ConfiguredStructureFeature<?, ?>>)structureFeature.getKey()
 			.<Optional>map(key -> registry.getEntry(key).map(entry -> RegistryEntryList.of(entry)), registry::getEntryList)
 			.orElseThrow(() -> INVALID_EXCEPTION.create(structureFeature.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
-		Pair<BlockPos, RegistryEntry<StructureFeature>> pair = serverWorld.getChunkManager()
+		Pair<BlockPos, RegistryEntry<ConfiguredStructureFeature<?, ?>>> pair = serverWorld.getChunkManager()
 			.getChunkGenerator()
 			.locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
 		if (pair == null) {
 			throw FAILED_EXCEPTION.create(structureFeature.asString());
 		} else {
-			return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success", false);
+			return sendCoordinates(source, structureFeature, blockPos, pair, "commands.locate.success");
 		}
 	}
 
@@ -57,8 +57,7 @@ public class LocateCommand {
 		RegistryPredicateArgumentType.RegistryPredicate<?> structureFeature,
 		BlockPos currentPos,
 		Pair<BlockPos, ? extends RegistryEntry<?>> structurePosAndEntry,
-		String successMessage,
-		boolean bl
+		String successMessage
 	) {
 		BlockPos blockPos = structurePosAndEntry.getFirst();
 		String string = structureFeature.getKey()
@@ -66,14 +65,11 @@ public class LocateCommand {
 				key -> key.getValue().toString(),
 				key -> "#" + key.id() + " (" + (String)structurePosAndEntry.getSecond().getKey().map(keyx -> keyx.getValue().toString()).orElse("[unregistered]") + ")"
 			);
-		int i = bl
-			? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos)))
-			: MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
-		String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
-		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), string2, blockPos.getZ()))
+		int i = MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
+		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), "~", blockPos.getZ()))
 			.styled(
 				style -> style.withColor(Formatting.GREEN)
-						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ()))
+						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " ~ " + blockPos.getZ()))
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
 			);
 		source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);

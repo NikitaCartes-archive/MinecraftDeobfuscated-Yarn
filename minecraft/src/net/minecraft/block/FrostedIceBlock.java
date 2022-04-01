@@ -59,12 +59,12 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		if (sourceBlock.getDefaultState().isOf(this) && this.canMelt(world, pos, 2)) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+		if (block.getDefaultState().isOf(this) && this.canMelt(world, pos, 2)) {
 			this.melt(state, world, pos);
 		}
 
-		super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
+		super.neighborUpdate(state, world, pos, block, fromPos, notify);
 	}
 
 	private boolean canMelt(BlockView world, BlockPos pos, int maxNeighbors) {

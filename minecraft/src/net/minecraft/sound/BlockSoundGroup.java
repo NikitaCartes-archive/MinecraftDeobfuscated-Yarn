@@ -586,7 +586,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_SENSOR_HIT,
 		SoundEvents.BLOCK_SCULK_SENSOR_FALL
 	);
-	public static final BlockSoundGroup SCULK_CATALYST = new BlockSoundGroup(
+	public static final BlockSoundGroup field_38603 = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_SCULK_CATALYST_BREAK,
@@ -595,7 +595,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_CATALYST_HIT,
 		SoundEvents.BLOCK_SCULK_CATALYST_FALL
 	);
-	public static final BlockSoundGroup SCULK = new BlockSoundGroup(
+	public static final BlockSoundGroup field_38604 = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_SCULK_BREAK,
@@ -604,7 +604,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_HIT,
 		SoundEvents.BLOCK_SCULK_FALL
 	);
-	public static final BlockSoundGroup SCULK_VEIN = new BlockSoundGroup(
+	public static final BlockSoundGroup field_38605 = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_SCULK_VEIN_BREAK,
@@ -612,15 +612,6 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_VEIN_PLACE,
 		SoundEvents.BLOCK_SCULK_VEIN_HIT,
 		SoundEvents.BLOCK_SCULK_VEIN_FALL
-	);
-	public static final BlockSoundGroup SCULK_SHRIEKER = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_SCULK_SHRIEKER_BREAK,
-		SoundEvents.BLOCK_SCULK_SHRIEKER_STEP,
-		SoundEvents.BLOCK_SCULK_SHRIEKER_PLACE,
-		SoundEvents.BLOCK_SCULK_SHRIEKER_HIT,
-		SoundEvents.BLOCK_SCULK_SHRIEKER_FALL
 	);
 	public static final BlockSoundGroup GLOW_LICHEN = new BlockSoundGroup(
 		1.0F,
@@ -666,63 +657,6 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_POLISHED_DEEPSLATE_PLACE,
 		SoundEvents.BLOCK_POLISHED_DEEPSLATE_HIT,
 		SoundEvents.BLOCK_POLISHED_DEEPSLATE_FALL
-	);
-	public static final BlockSoundGroup FROGLIGHT = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_FROGLIGHT_BREAK,
-		SoundEvents.BLOCK_FROGLIGHT_STEP,
-		SoundEvents.BLOCK_FROGLIGHT_PLACE,
-		SoundEvents.BLOCK_FROGLIGHT_HIT,
-		SoundEvents.BLOCK_FROGLIGHT_FALL
-	);
-	public static final BlockSoundGroup FROGSPAWN = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_FROGSPAWN_BREAK,
-		SoundEvents.BLOCK_FROGSPAWN_STEP,
-		SoundEvents.BLOCK_FROGSPAWN_PLACE,
-		SoundEvents.BLOCK_FROGSPAWN_HIT,
-		SoundEvents.BLOCK_FROGSPAWN_FALL
-	);
-	public static final BlockSoundGroup MANGROVE_ROOTS = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_MANGROVE_ROOTS_BREAK,
-		SoundEvents.BLOCK_MANGROVE_ROOTS_STEP,
-		SoundEvents.BLOCK_MANGROVE_ROOTS_PLACE,
-		SoundEvents.BLOCK_MANGROVE_ROOTS_HIT,
-		SoundEvents.BLOCK_MANGROVE_ROOTS_FALL
-	);
-	public static final BlockSoundGroup MUDDY_MANGROVE_ROOTS = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_MUDDY_MANGROVE_ROOTS_BREAK,
-		SoundEvents.BLOCK_MUDDY_MANGROVE_ROOTS_STEP,
-		SoundEvents.BLOCK_MUDDY_MANGROVE_ROOTS_PLACE,
-		SoundEvents.BLOCK_MUDDY_MANGROVE_ROOTS_HIT,
-		SoundEvents.BLOCK_MUDDY_MANGROVE_ROOTS_FALL
-	);
-	public static final BlockSoundGroup MUD = new BlockSoundGroup(
-		1.0F, 1.0F, SoundEvents.BLOCK_MUD_BREAK, SoundEvents.BLOCK_MUD_STEP, SoundEvents.BLOCK_MUD_PLACE, SoundEvents.BLOCK_MUD_HIT, SoundEvents.BLOCK_MUD_FALL
-	);
-	public static final BlockSoundGroup MUD_BRICKS = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_MUD_BRICKS_BREAK,
-		SoundEvents.BLOCK_MUD_BRICKS_STEP,
-		SoundEvents.BLOCK_MUD_BRICKS_PLACE,
-		SoundEvents.BLOCK_MUD_BRICKS_HIT,
-		SoundEvents.BLOCK_MUD_BRICKS_FALL
-	);
-	public static final BlockSoundGroup PACKED_MUD = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_PACKED_MUD_BREAK,
-		SoundEvents.BLOCK_PACKED_MUD_STEP,
-		SoundEvents.BLOCK_PACKED_MUD_PLACE,
-		SoundEvents.BLOCK_PACKED_MUD_HIT,
-		SoundEvents.BLOCK_PACKED_MUD_FALL
 	);
 	public final float volume;
 	public final float pitch;

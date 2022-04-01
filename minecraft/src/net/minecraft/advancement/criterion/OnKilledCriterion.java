@@ -109,12 +109,6 @@ public class OnKilledCriterion extends AbstractCriterion<OnKilledCriterion.Condi
 			);
 		}
 
-		public static OnKilledCriterion.Conditions createKillMobNearSculkCatalyst() {
-			return new OnKilledCriterion.Conditions(
-				Criteria.KILL_MOB_NEAR_SCULK_CATALYST.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, DamageSourcePredicate.EMPTY
-			);
-		}
-
 		public static OnKilledCriterion.Conditions createEntityKilledPlayer(EntityPredicate killerEntityPredicate) {
 			return new OnKilledCriterion.Conditions(
 				Criteria.ENTITY_KILLED_PLAYER.id, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(killerEntityPredicate), DamageSourcePredicate.EMPTY

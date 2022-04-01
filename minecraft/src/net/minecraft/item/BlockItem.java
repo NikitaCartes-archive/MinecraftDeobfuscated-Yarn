@@ -1,15 +1,19 @@
 package net.minecraft.item;
 
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +26,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -39,6 +44,51 @@ public class BlockItem extends Item {
 	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
 	@Deprecated
 	private final Block block;
+	private static final Set<Property<?>> field_38537 = ImmutableSet.of(
+		Properties.LIT,
+		Properties.LIT,
+		Properties.VINE_END,
+		Properties.HAS_RECORD,
+		Properties.HAS_BOOK,
+		Properties.PICKLES,
+		Properties.CHARGES,
+		Properties.EGGS,
+		Properties.LAYERS,
+		Properties.HATCH,
+		Properties.INVERTED,
+		Properties.THICKNESS,
+		Properties.DELAY,
+		Properties.CONDITIONAL,
+		Properties.CANDLES,
+		Properties.field_38609,
+		Properties.BITES,
+		Properties.BAMBOO_LEAVES,
+		Properties.BERRIES,
+		Properties.LEVEL_15,
+		Properties.HONEY_LEVEL,
+		Properties.LEVEL_1_8,
+		Properties.LEVEL_3,
+		Properties.LEVEL_8,
+		Properties.OPEN,
+		Properties.EYE,
+		Properties.STAGE,
+		Properties.NOTE,
+		Properties.STRUCTURE_BLOCK_MODE,
+		Properties.PISTON_TYPE,
+		Properties.AGE_1,
+		Properties.AGE_2,
+		Properties.AGE_3,
+		Properties.AGE_5,
+		Properties.AGE_7,
+		Properties.AGE_15,
+		Properties.AGE_25,
+		Properties.HAS_BOTTLE_0,
+		Properties.HAS_BOTTLE_1,
+		Properties.HAS_BOTTLE_2,
+		Properties.SLAB_TYPE,
+		Properties.MOISTURE,
+		Properties.COMPARATOR_MODE
+	);
 
 	public BlockItem(Block block, Item.Settings settings) {
 		super(settings);
@@ -76,7 +126,10 @@ public class BlockItem extends Item {
 					ItemStack itemStack = itemPlacementContext.getStack();
 					BlockState blockState2 = world.getBlockState(blockPos);
 					if (blockState2.isOf(blockState.getBlock())) {
-						blockState2 = this.placeFromNbt(blockPos, world, itemStack, blockState2);
+						if (!blockState2.isOf(Blocks.END_PORTAL_FRAME)) {
+							blockState2 = this.placeFromNbt(blockPos, world, itemStack, blockState2, itemPlacementContext);
+						}
+
 						this.postPlacement(blockPos, world, playerEntity, itemStack, blockState2);
 						blockState2.getBlock().onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
@@ -104,6 +157,42 @@ public class BlockItem extends Item {
 		}
 	}
 
+	public static ActionResult method_42839(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+		if (!itemPlacementContext.canPlace()) {
+			return ActionResult.FAIL;
+		} else if (!itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD)) {
+			return ActionResult.FAIL;
+		} else {
+			BlockPos blockPos = itemPlacementContext.getBlockPos();
+			World world = itemPlacementContext.getWorld();
+			PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+			ItemStack itemStack = itemPlacementContext.getStack();
+			BlockState blockState2 = world.getBlockState(blockPos);
+			if (blockState2.isOf(blockState.getBlock())) {
+				blockState2.getBlock().onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
+				if (playerEntity instanceof ServerPlayerEntity) {
+					Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+				}
+			}
+
+			BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
+			world.playSound(
+				playerEntity,
+				blockPos,
+				blockState2.getSoundGroup().getPlaceSound(),
+				SoundCategory.BLOCKS,
+				(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
+				blockSoundGroup.getPitch() * 0.8F
+			);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_PLACE, blockPos);
+			if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
+				itemStack.decrement(1);
+			}
+
+			return ActionResult.success(world.isClient);
+		}
+	}
+
 	protected SoundEvent getPlaceSound(BlockState state) {
 		return state.getSoundGroup().getPlaceSound();
 	}
@@ -123,7 +212,7 @@ public class BlockItem extends Item {
 		return blockState != null && this.canPlace(context, blockState) ? blockState : null;
 	}
 
-	private BlockState placeFromNbt(BlockPos pos, World world, ItemStack stack, BlockState state) {
+	private BlockState placeFromNbt(BlockPos pos, World world, ItemStack stack, BlockState state, ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = state;
 		NbtCompound nbtCompound = stack.getNbt();
 		if (nbtCompound != null) {
@@ -132,9 +221,11 @@ public class BlockItem extends Item {
 
 			for (String string : nbtCompound2.getKeys()) {
 				Property<?> property = stateManager.getProperty(string);
-				if (property != null) {
+				if (property != null && field_38537.contains(property)) {
 					String string2 = nbtCompound2.get(string).asString();
-					blockState = with(blockState, property, string2);
+					if (property != Properties.SLAB_TYPE || string2.equals(SlabType.DOUBLE.asString())) {
+						blockState = with(blockState, property, string2);
+					}
 				}
 			}
 		}

@@ -18,7 +18,6 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
-import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
 import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.goal.WanderAroundPointOfInterestGoal;
 import net.minecraft.entity.ai.goal.WanderNearTargetGoal;
@@ -52,6 +51,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
 	/**
@@ -81,7 +81,6 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.goalSelector.add(5, new IronGolemLookGoal(this));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
 		this.targetSelector.add(2, new RevengeGoal(this));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
 		this.targetSelector
@@ -213,9 +212,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
 		boolean bl = target.damage(DamageSource.mob(this), g);
 		if (bl) {
-			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) : 0.0;
-			double e = Math.max(0.0, 1.0 - d);
-			target.setVelocity(target.getVelocity().add(0.0, 0.4F * e, 0.0));
+			target.setVelocity(target.getVelocity().add(0.0, 0.4F, 0.0));
 			this.applyDamageEffects(this, target);
 		}
 
@@ -289,6 +286,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
@@ -349,6 +347,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.875F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	public boolean method_42814() {
+		return this.getCustomName() != null && this.getCustomName().getString().equalsIgnoreCase("billyballong");
 	}
 
 	public static enum Crack {

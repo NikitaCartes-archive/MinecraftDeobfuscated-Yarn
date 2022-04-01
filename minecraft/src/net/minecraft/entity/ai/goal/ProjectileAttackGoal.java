@@ -2,9 +2,11 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.MathHelper;
 
 public class ProjectileAttackGoal extends Goal {
@@ -43,8 +45,14 @@ public class ProjectileAttackGoal extends Goal {
 	public boolean canStart() {
 		LivingEntity livingEntity = this.mob.getTarget();
 		if (livingEntity != null && livingEntity.isAlive()) {
-			this.target = livingEntity;
-			return true;
+			if (this.mob.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+				return false;
+			} else if (this.mob.getTarget().getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && this.mob.getTarget().isInSneakingPose()) {
+				return false;
+			} else {
+				this.target = livingEntity;
+				return true;
+			}
 		} else {
 			return false;
 		}
@@ -52,7 +60,15 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.canStart() || !this.mob.getNavigation().isIdle();
+		if (this.mob.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)) {
+			return false;
+		} else {
+			return this.mob.getTarget() != null
+					&& this.mob.getTarget().getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL)
+					&& this.mob.getTarget().isInSneakingPose()
+				? false
+				: this.canStart() || !this.mob.getNavigation().isIdle();
+		}
 	}
 
 	@Override
@@ -91,7 +107,12 @@ public class ProjectileAttackGoal extends Goal {
 
 			float f = (float)Math.sqrt(d) / this.maxShootRange;
 			float g = MathHelper.clamp(f, 0.1F, 1.0F);
-			this.owner.attack(this.target, g);
+			if (this.mob.hasVehicle() && this.mob.getRootVehicle() == this.mob.getTarget()) {
+				this.owner.method_42824(g);
+			} else {
+				this.owner.attack(this.target, g);
+			}
+
 			this.updateCountdownTicks = MathHelper.floor(f * (float)(this.maxIntervalTicks - this.minIntervalTicks) + (float)this.minIntervalTicks);
 		} else if (this.updateCountdownTicks < 0) {
 			this.updateCountdownTicks = MathHelper.floor(

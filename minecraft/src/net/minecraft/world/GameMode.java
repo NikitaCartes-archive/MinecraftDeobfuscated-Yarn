@@ -91,7 +91,8 @@ public enum GameMode {
 		return byName(name, SURVIVAL);
 	}
 
-	public static GameMode byName(String name, GameMode defaultMode) {
+	@Nullable
+	public static GameMode byName(String name, @Nullable GameMode defaultMode) {
 		for (GameMode gameMode : values()) {
 			if (gameMode.name.equals(name)) {
 				return gameMode;

@@ -19,6 +19,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 
 public class ShipwreckGenerator {
 	static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
@@ -61,9 +62,11 @@ public class ShipwreckGenerator {
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
-	public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl) {
-		Identifier identifier = Util.getRandom(bl ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
-		holder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, bl));
+	public static void addParts(
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, ShipwreckFeatureConfig config
+	) {
+		Identifier identifier = Util.getRandom(config.isBeached ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
+		holder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, config.isBeached));
 	}
 
 	public static class Piece extends SimpleStructurePiece {

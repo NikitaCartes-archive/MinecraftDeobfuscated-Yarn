@@ -309,7 +309,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-					if (!this.client.options.getChatLinks().getValue()) {
+					if (!this.client.options.chatLinks) {
 						return false;
 					}
 
@@ -324,7 +324,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
 						}
 
-						if (this.client.options.getChatLinksPrompt().getValue()) {
+						if (this.client.options.chatLinksPrompt) {
 							this.clickedLink = uRI;
 							this.client.setScreen(new ConfirmChatLinkScreen(this::confirmLink, clickEvent.getValue(), false));
 						} else {
@@ -371,15 +371,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.textRenderer = client.textRenderer;
 		this.width = width;
 		this.height = height;
-		this.clearAndInit();
-		this.narrateScreenIfNarrationEnabled(false);
-		this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
-	}
-
-	protected void clearAndInit() {
 		this.clearChildren();
 		this.setFocused(null);
 		this.init();
+		this.narrateScreenIfNarrationEnabled(false);
+		this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
 	}
 
 	@Override

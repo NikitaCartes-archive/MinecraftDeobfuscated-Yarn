@@ -59,7 +59,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
@@ -131,7 +131,7 @@ public class BellBlock extends BlockWithEntity {
 
 			((BellBlockEntity)blockEntity).activate(direction);
 			world.playSound(null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
-			world.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, pos);
+			world.emitGameEvent(entity, GameEvent.RING_BELL, pos);
 			return true;
 		} else {
 			return false;

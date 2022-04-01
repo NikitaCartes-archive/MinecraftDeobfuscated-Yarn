@@ -7,17 +7,14 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.Lifecycle;
 import java.io.File;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -27,7 +24,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.MessageScreen;
+import net.minecraft.client.gui.screen.SaveLevelScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.pack.PackScreen;
@@ -38,7 +35,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.GeneratorOptionsHolder;
+import net.minecraft.client.world.GeneratorType;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.resource.FileResourcePackProvider;
 import net.minecraft.resource.ResourcePackManager;
@@ -46,9 +43,7 @@ import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.VanillaDataPackProvider;
 import net.minecraft.server.SaveLoader;
-import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -58,13 +53,11 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.gen.GeneratorOptions;
-import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -82,7 +75,6 @@ public class CreateWorldScreen extends Screen {
 	private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
 	private static final Text RESULT_FOLDER_TEXT = new TranslatableText("selectWorld.resultFolder");
 	private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
-	private static final Text PREPARING_TEXT = new TranslatableText("createWorld.preparing");
 	@Nullable
 	private final Screen parent;
 	private TextFieldWidget levelNameField;
@@ -113,25 +105,12 @@ public class CreateWorldScreen extends Screen {
 	private GameRules gameRules = new GameRules();
 	public final MoreOptionsDialog moreOptionsDialog;
 
-	public static void create(MinecraftClient client, @Nullable Screen parent) {
-		showMessage(client, PREPARING_TEXT);
-		ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider());
-		SaveLoading.ServerConfig serverConfig = createServerConfig(resourcePackManager, DataPackSettings.SAFE_MODE);
-		CompletableFuture<GeneratorOptionsHolder> completableFuture = SaveLoading.load(serverConfig, (resourceManager, dataPackSettings) -> {
-			DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
-			GeneratorOptions generatorOptions = WorldPresets.createDefaultOptions(immutable);
-			return Pair.of(generatorOptions, immutable);
-		}, (resourceManager, dataPackContents, dynamicRegistryManager, generatorOptions) -> {
-			resourceManager.close();
-			return new GeneratorOptionsHolder(generatorOptions, Lifecycle.stable(), dynamicRegistryManager, dataPackContents);
-		}, Util.getMainWorkerExecutor(), client);
-		client.runTasks(completableFuture::isDone);
-		client.setScreen(
-			new CreateWorldScreen(
-				parent,
-				DataPackSettings.SAFE_MODE,
-				new MoreOptionsDialog((GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())
-			)
+	public static CreateWorldScreen create(@Nullable Screen parent) {
+		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
+		return new CreateWorldScreen(
+			parent,
+			DataPackSettings.SAFE_MODE,
+			new MoreOptionsDialog(immutable, GeneratorOptions.getDefaultOptions(immutable), Optional.of(GeneratorType.DEFAULT), OptionalLong.empty())
 		);
 	}
 
@@ -140,14 +119,11 @@ public class CreateWorldScreen extends Screen {
 		LevelInfo levelInfo = saveProperties.getLevelInfo();
 		GeneratorOptions generatorOptions = saveProperties.getGeneratorOptions();
 		DynamicRegistryManager.Immutable immutable = source.dynamicRegistryManager();
-		GeneratorOptionsHolder generatorOptionsHolder = new GeneratorOptionsHolder(
-			generatorOptions, saveProperties.getLifecycle(), immutable, source.dataPackContents()
-		);
 		DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
 		CreateWorldScreen createWorldScreen = new CreateWorldScreen(
 			parent,
 			dataPackSettings,
-			new MoreOptionsDialog(generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
+			new MoreOptionsDialog(immutable, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
 		);
 		createWorldScreen.levelName = levelInfo.getLevelName();
 		createWorldScreen.cheatsEnabled = levelInfo.areCommandsAllowed();
@@ -291,25 +267,13 @@ public class CreateWorldScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(false);
 	}
 
-	private static void showMessage(MinecraftClient client, Text text) {
-		client.setScreenAndRender(new MessageScreen(text));
-	}
-
 	private void createLevel() {
-		IntegratedServerLoader.tryLoad(this.client, this, this.moreOptionsDialog.method_41884().worldSettingsStability(), this::startServer);
-	}
-
-	private void startServer() {
-		showMessage(this.client, PREPARING_TEXT);
-		Optional<LevelStorage.Session> optional = this.createSession();
-		if (!optional.isEmpty()) {
-			this.clearDataPackTempDir();
-			GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder(this.hardcore);
-			LevelInfo levelInfo = this.createLevelInfo(generatorOptionsHolder.generatorOptions().isDebugWorld());
-			SaveProperties saveProperties = new LevelProperties(levelInfo, generatorOptionsHolder.generatorOptions(), generatorOptionsHolder.worldSettingsStability());
-			this.client
-				.method_41735()
-				.start((LevelStorage.Session)optional.get(), generatorOptionsHolder.dataPackContents(), generatorOptionsHolder.dynamicRegistryManager(), saveProperties);
+		this.client.setScreenAndRender(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
+		if (this.copyTempDirDataPacks()) {
+			this.clearTempResources();
+			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
+			LevelInfo levelInfo = this.createLevelInfo(generatorOptions.isDebugWorld());
+			this.client.createWorld(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
 		}
 	}
 
@@ -417,6 +381,14 @@ public class CreateWorldScreen extends Screen {
 
 	public void onCloseScreen() {
 		this.client.setScreen(this.parent);
+		this.clearTempResources();
+	}
+
+	private void clearTempResources() {
+		if (this.packManager != null) {
+			this.packManager.close();
+		}
+
 		this.clearDataPackTempDir();
 	}
 
@@ -455,7 +427,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Nullable
-	private Path getDataPackTempDir() {
+	protected Path getDataPackTempDir() {
 		if (this.dataPackTempDir == null) {
 			try {
 				this.dataPackTempDir = Files.createTempDirectory("mcworld-");
@@ -483,44 +455,31 @@ public class CreateWorldScreen extends Screen {
 		if (list.equals(this.dataPackSettings.getEnabled())) {
 			this.dataPackSettings = dataPackSettings;
 		} else {
-			this.client.send(() -> this.client.setScreen(new MessageScreen(new TranslatableText("dataPack.validation.working"))));
-			SaveLoading.ServerConfig serverConfig = createServerConfig(dataPackManager, dataPackSettings);
-			SaveLoading.<Pair, GeneratorOptionsHolder>load(
-					serverConfig,
+			this.client.send(() -> this.client.setScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
+			SaveLoader.ofLoaded(
+					new SaveLoader.FunctionLoaderConfig(dataPackManager, CommandManager.RegistrationEnvironment.INTEGRATED, 2, false),
+					() -> dataPackSettings,
 					(resourceManager, dataPackSettingsx) -> {
-						GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.method_41884();
-						DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.dynamicRegistryManager();
+						DynamicRegistryManager dynamicRegistryManager = this.moreOptionsDialog.getRegistryManager();
 						DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
 						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
 						DynamicOps<JsonElement> dynamicOps2 = RegistryOps.ofLoaded(JsonOps.INSTANCE, mutable, resourceManager);
-						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC
-							.encodeStart(dynamicOps, generatorOptionsHolder.generatorOptions())
-							.setLifecycle(Lifecycle.stable());
-						DataResult<GeneratorOptions> dataResult2 = dataResult.flatMap(json -> GeneratorOptions.CODEC.parse(dynamicOps2, json));
-						DynamicRegistryManager.Immutable immutable = mutable.toImmutable();
-						Lifecycle lifecycle = dataResult2.lifecycle().add(immutable.getRegistryLifecycle());
-						GeneratorOptions generatorOptions = dataResult2.getOrThrow(
+						DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
+							.encodeStart(dynamicOps, this.moreOptionsDialog.getGeneratorOptions(this.hardcore))
+							.flatMap(json -> GeneratorOptions.CODEC.parse(dynamicOps2, json));
+						GeneratorOptions generatorOptions = dataResult.getOrThrow(
 							false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)
 						);
-						if (immutable.get(Registry.WORLD_PRESET_WORLDGEN).size() == 0) {
-							throw new IllegalStateException("Needs at least one world preset to continue");
-						} else if (immutable.get(Registry.BIOME_KEY).size() == 0) {
-							throw new IllegalStateException("Needs at least one biome continue");
-						} else {
-							return Pair.of(Pair.of(generatorOptions, lifecycle), immutable);
-						}
-					},
-					(resourceManager, dataPackContents, dynamicRegistryManager, pair) -> {
-						resourceManager.close();
-						return new GeneratorOptionsHolder((GeneratorOptions)pair.getFirst(), (Lifecycle)pair.getSecond(), dynamicRegistryManager, dataPackContents);
+						LevelInfo levelInfo = this.createLevelInfo(generatorOptions.isDebugWorld());
+						return Pair.of(new LevelProperties(levelInfo, generatorOptions, dataResult.lifecycle()), mutable.toImmutable());
 					},
 					Util.getMainWorkerExecutor(),
 					this.client
 				)
-				.thenAcceptAsync(generatorOptionsHolder -> {
+				.thenAcceptAsync(saveLoader -> {
 					this.dataPackSettings = dataPackSettings;
-					this.moreOptionsDialog.setGeneratorOptionsHolder(generatorOptionsHolder);
-					this.clearAndInit();
+					this.moreOptionsDialog.loadDatapacks(saveLoader);
+					saveLoader.close();
 				}, this.client)
 				.handle(
 					(v, throwable) -> {
@@ -554,11 +513,6 @@ public class CreateWorldScreen extends Screen {
 					}
 				);
 		}
-	}
-
-	private static SaveLoading.ServerConfig createServerConfig(ResourcePackManager resourcePackManager, DataPackSettings dataPackSettings) {
-		SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, false);
-		return new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.INTEGRATED, 2);
 	}
 
 	private void clearDataPackTempDir() {
@@ -602,54 +556,43 @@ public class CreateWorldScreen extends Screen {
 			Util.relativeCopy(srcFolder, destFolder, dataPackFile);
 		} catch (IOException var4) {
 			LOGGER.warn("Failed to copy datapack file from {} to {}", dataPackFile, destFolder);
-			throw new UncheckedIOException(var4);
+			throw new CreateWorldScreen.WorldCreationException(var4);
 		}
 	}
 
-	private Optional<LevelStorage.Session> createSession() {
-		try {
-			LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName);
-			if (this.dataPackTempDir == null) {
-				return Optional.of(session);
-			}
-
-			try {
+	private boolean copyTempDirDataPacks() {
+		if (this.dataPackTempDir != null) {
+			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName)) {
 				Stream<Path> stream = Files.walk(this.dataPackTempDir);
 
-				Optional var4;
 				try {
 					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					Files.createDirectories(path);
 					stream.filter(pathx -> !pathx.equals(this.dataPackTempDir)).forEach(pathx -> copyDataPack(this.dataPackTempDir, path, pathx));
-					var4 = Optional.of(session);
-				} catch (Throwable var6) {
+				} catch (Throwable var7) {
 					if (stream != null) {
 						try {
 							stream.close();
-						} catch (Throwable var5) {
-							var6.addSuppressed(var5);
+						} catch (Throwable var6) {
+							var7.addSuppressed(var6);
 						}
 					}
 
-					throw var6;
+					throw var7;
 				}
 
 				if (stream != null) {
 					stream.close();
 				}
-
-				return var4;
-			} catch (UncheckedIOException | IOException var7) {
-				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var7);
-				session.close();
+			} catch (CreateWorldScreen.WorldCreationException | IOException var9) {
+				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var9);
+				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
+				this.onCloseScreen();
+				return false;
 			}
-		} catch (UncheckedIOException | IOException var8) {
-			LOGGER.warn("Failed to create access for {}", this.saveDirectoryName, var8);
 		}
 
-		SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-		this.onCloseScreen();
-		return Optional.empty();
+		return true;
 	}
 
 	@Nullable
@@ -667,7 +610,7 @@ public class CreateWorldScreen extends Screen {
 							path2 = Files.createTempDirectory("mcworld-");
 						} catch (IOException var5) {
 							LOGGER.warn("Failed to create temporary dir");
-							throw new UncheckedIOException(var5);
+							throw new CreateWorldScreen.WorldCreationException(var5);
 						}
 
 						mutableObject.setValue(path2);
@@ -690,7 +633,7 @@ public class CreateWorldScreen extends Screen {
 			if (stream != null) {
 				stream.close();
 			}
-		} catch (UncheckedIOException | IOException var8) {
+		} catch (CreateWorldScreen.WorldCreationException | IOException var8) {
 			LOGGER.warn("Failed to copy datapacks from world {}", srcFolder, var8);
 			SystemToast.addPackCopyFailure(client, srcFolder.toString());
 			return null;
@@ -737,6 +680,13 @@ public class CreateWorldScreen extends Screen {
 
 		public Text asText() {
 			return this.text;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class WorldCreationException extends RuntimeException {
+		public WorldCreationException(Throwable throwable) {
+			super(throwable);
 		}
 	}
 }

@@ -21,8 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -140,15 +138,6 @@ public class WorldUpdater {
 									nbtCompound2.remove("Heightmaps");
 									bl3 = bl3 || nbtCompound2.contains("isLightOn");
 									nbtCompound2.remove("isLightOn");
-									NbtList nbtList = nbtCompound2.getList("sections", NbtElement.COMPOUND_TYPE);
-
-									for (int j = 0; j < nbtList.size(); j++) {
-										NbtCompound nbtCompound3 = nbtList.getCompound(j);
-										bl3 = bl3 || nbtCompound3.contains("BlockLight");
-										nbtCompound3.remove("BlockLight");
-										bl3 = bl3 || nbtCompound3.contains("SkyLight");
-										nbtCompound3.remove("SkyLight");
-									}
 								}
 
 								if (bl3) {
@@ -156,15 +145,15 @@ public class WorldUpdater {
 									bl2 = true;
 								}
 							}
-						} catch (CrashException var27) {
-							Throwable throwable = var27.getCause();
+						} catch (CrashException var24) {
+							Throwable throwable = var24.getCause();
 							if (!(throwable instanceof IOException)) {
-								throw var27;
+								throw var24;
 							}
 
 							LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
-						} catch (IOException var28) {
-							LOGGER.error("Error upgrading chunk {}", chunkPos, var28);
+						} catch (IOException var25) {
+							LOGGER.error("Error upgrading chunk {}", chunkPos, var25);
 						}
 
 						if (bl2) {
@@ -192,8 +181,8 @@ public class WorldUpdater {
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {
 					versionedChunkStorage2.close();
-				} catch (IOException var26) {
-					LOGGER.error("Error upgrading chunk", (Throwable)var26);
+				} catch (IOException var23) {
+					LOGGER.error("Error upgrading chunk", (Throwable)var23);
 				}
 			}
 

@@ -96,7 +96,7 @@ public class SplashTextResourceSupplier extends SinglePreparationResourceReloade
 			return null;
 		} else {
 			return this.session != null && RANDOM.nextInt(this.splashTexts.size()) == 42
-				? this.session.getUsername().toUpperCase(Locale.ROOT) + " IS YOU"
+				? this.session.getUsername().toUpperCase(Locale.ROOT) + " IS ONE AT A TIME"
 				: (String)this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size()));
 		}
 	}

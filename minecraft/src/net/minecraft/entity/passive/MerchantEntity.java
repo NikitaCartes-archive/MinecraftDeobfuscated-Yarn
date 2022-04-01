@@ -1,14 +1,17 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_7317;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnReason;
@@ -28,6 +31,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Merchant;
@@ -40,12 +44,17 @@ import net.minecraft.world.World;
 
 public abstract class MerchantEntity extends PassiveEntity implements InventoryOwner, Npc, Merchant {
 	private static final TrackedData<Integer> HEAD_ROLLING_TIME_LEFT = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Optional<EntityType<?>>> field_38530 = DataTracker.registerData(MerchantEntity.class, TrackedDataHandlerRegistry.field_38682);
 	public static final int field_30599 = 300;
 	private static final int INVENTORY_SIZE = 8;
 	@Nullable
 	private PlayerEntity customer;
 	@Nullable
 	protected TradeOfferList offers;
+	@Nullable
+	private TradeOffer field_38531;
+	@Nullable
+	private Entity field_38532;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 
 	public MerchantEntity(EntityType<? extends MerchantEntity> entityType, World world) {
@@ -73,6 +82,33 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		this.dataTracker.set(HEAD_ROLLING_TIME_LEFT, ticks);
 	}
 
+	public Optional<EntityType<?>> method_42832() {
+		return this.dataTracker.get(field_38530);
+	}
+
+	public void method_42829(Optional<EntityType<?>> optional) {
+		this.dataTracker.set(field_38530, optional);
+	}
+
+	@Nullable
+	public Entity method_42833() {
+		Optional<EntityType<?>> optional = this.method_42832();
+		if (optional.isEmpty()) {
+			return null;
+		} else {
+			Entity entity = this.field_38532;
+			if (entity == null || entity.getType() != optional.get()) {
+				this.field_38532 = entity = ((EntityType)optional.get()).create(this.world);
+			}
+
+			if (entity != null) {
+				entity.age = this.age;
+			}
+
+			return entity;
+		}
+	}
+
 	@Override
 	public int getExperience() {
 		return 0;
@@ -87,6 +123,26 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(HEAD_ROLLING_TIME_LEFT, 0);
+		this.dataTracker.startTracking(field_38530, Optional.empty());
+	}
+
+	public boolean method_42831(PlayerEntity playerEntity) {
+		if (this.field_38531 != null) {
+			class_7317 lv = playerEntity.method_42802();
+			if (lv != null && this.field_38531.method_42853(lv)) {
+				playerEntity.method_42801();
+				class_7317 lv2 = this.field_38531.getSellItem();
+				if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+					lv2.method_42841(serverPlayerEntity);
+				}
+
+				this.trade(this.field_38531);
+				playerEntity.incrementStat(Stats.TRADED_WITH_VILLAGER);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -128,7 +184,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 		this.afterUsing(offer);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criteria.VILLAGER_TRADE.trigger((ServerPlayerEntity)this.customer, this, offer.getSellItem());
+			Criteria.VILLAGER_TRADE.trigger((ServerPlayerEntity)this.customer, this, offer.method_42856());
 		}
 	}
 
@@ -255,5 +311,23 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Override
 	public boolean isClient() {
 		return this.world.isClient;
+	}
+
+	public void method_42830(@Nullable TradeOffer tradeOffer) {
+		this.field_38531 = tradeOffer;
+		class_7317 lv = tradeOffer != null ? tradeOffer.getSellItem() : null;
+		if (lv instanceof class_7317.class_7318 lv2) {
+			this.equipStack(EquipmentSlot.MAINHAND, lv2.method_42840());
+			this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
+		} else {
+			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+			this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.085F);
+		}
+
+		if (lv instanceof class_7317.class_7319 lv3) {
+			this.method_42829(Optional.of(lv3.entity()));
+		} else {
+			this.method_42829(Optional.empty());
+		}
 	}
 }

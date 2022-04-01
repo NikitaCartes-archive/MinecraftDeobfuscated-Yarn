@@ -8,6 +8,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -15,6 +16,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	private static final Identifier WILD_TEXTURE = new Identifier("textures/entity/wolf/wolf.png");
 	private static final Identifier TAMED_TEXTURE = new Identifier("textures/entity/wolf/wolf_tame.png");
 	private static final Identifier ANGRY_TEXTURE = new Identifier("textures/entity/wolf/wolf_angry.png");
+	private static final Identifier field_38670 = new Identifier("textures/entity/wolf/mars_tame.png");
 
 	public WolfEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WolfEntityModel<>(context.getPart(EntityModelLayers.WOLF)), 0.5F);
@@ -39,7 +41,8 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 
 	public Identifier getTexture(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
-			return TAMED_TEXTURE;
+			String string = Formatting.strip(wolfEntity.getName().getString());
+			return "Mars".equalsIgnoreCase(string) ? field_38670 : TAMED_TEXTURE;
 		} else {
 			return wolfEntity.hasAngerTime() ? ANGRY_TEXTURE : WILD_TEXTURE;
 		}

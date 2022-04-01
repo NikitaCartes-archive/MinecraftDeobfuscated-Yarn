@@ -51,8 +51,6 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
-import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
-import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
@@ -66,7 +64,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
 public abstract class World implements WorldAccess, AutoCloseable {
-	public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(Registry.WORLD_KEY);
+	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
 	public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
@@ -79,7 +77,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public static final int MAX_Y = 20000000;
 	public static final int MIN_Y = -20000000;
 	protected final List<BlockEntityTickInvoker> blockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
-	protected final NeighborUpdater neighborUpdater;
 	private final List<BlockEntityTickInvoker> pendingBlockEntityTickers = Lists.<BlockEntityTickInvoker>newArrayList();
 	private boolean iteratingTickingBlockEntities;
 	private final Thread thread;
@@ -93,7 +90,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	protected float thunderGradient;
 	public final Random random = new Random();
 	final DimensionType dimension;
-	private final RegistryEntry<DimensionType> dimensionEntry;
+	private final RegistryEntry<DimensionType> field_36402;
 	protected final MutableWorldProperties properties;
 	private final Supplier<Profiler> profiler;
 	public final boolean isClient;
@@ -105,29 +102,28 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	protected World(
 		MutableWorldProperties properties,
 		RegistryKey<World> registryRef,
-		RegistryEntry<DimensionType> dimension,
+		RegistryEntry<DimensionType> registryEntry,
 		Supplier<Profiler> profiler,
 		boolean isClient,
 		boolean debugWorld,
-		long seed,
-		int maxChainedNeighborUpdates
+		long seed
 	) {
 		this.profiler = profiler;
 		this.properties = properties;
-		this.dimensionEntry = dimension;
-		this.dimension = dimension.value();
+		this.field_36402 = registryEntry;
+		this.dimension = registryEntry.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
-		if (this.dimension.coordinateScale() != 1.0) {
+		if (this.dimension.getCoordinateScale() != 1.0) {
 			this.border = new WorldBorder() {
 				@Override
 				public double getCenterX() {
-					return super.getCenterX() / World.this.dimension.coordinateScale();
+					return super.getCenterX() / World.this.dimension.getCoordinateScale();
 				}
 
 				@Override
 				public double getCenterZ() {
-					return super.getCenterZ() / World.this.dimension.coordinateScale();
+					return super.getCenterZ() / World.this.dimension.getCoordinateScale();
 				}
 			};
 		} else {
@@ -137,7 +133,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.thread = Thread.currentThread();
 		this.biomeAccess = new BiomeAccess(this, seed);
 		this.debugWorld = debugWorld;
-		this.neighborUpdater = new ChainRestrictedNeighborUpdater(this, maxChainedNeighborUpdates);
 	}
 
 	@Override
@@ -341,7 +336,13 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * 
 	 * @see #updateNeighborsExcept(BlockPos, Block, Direction)
 	 */
-	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
+	public void updateNeighborsAlways(BlockPos pos, Block block) {
+		this.updateNeighbor(pos.west(), block, pos);
+		this.updateNeighbor(pos.east(), block, pos);
+		this.updateNeighbor(pos.down(), block, pos);
+		this.updateNeighbor(pos.up(), block, pos);
+		this.updateNeighbor(pos.north(), block, pos);
+		this.updateNeighbor(pos.south(), block, pos);
 	}
 
 	/**
@@ -351,23 +352,57 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #updateNeighborsAlways(BlockPos, Block)
 	 */
 	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
+		if (direction != Direction.WEST) {
+			this.updateNeighbor(pos.west(), sourceBlock, pos);
+		}
+
+		if (direction != Direction.EAST) {
+			this.updateNeighbor(pos.east(), sourceBlock, pos);
+		}
+
+		if (direction != Direction.DOWN) {
+			this.updateNeighbor(pos.down(), sourceBlock, pos);
+		}
+
+		if (direction != Direction.UP) {
+			this.updateNeighbor(pos.up(), sourceBlock, pos);
+		}
+
+		if (direction != Direction.NORTH) {
+			this.updateNeighbor(pos.north(), sourceBlock, pos);
+		}
+
+		if (direction != Direction.SOUTH) {
+			this.updateNeighbor(pos.south(), sourceBlock, pos);
+		}
 	}
 
 	/**
-	 * Triggers a neighbor update originating from {@code sourcePos} at
-	 * {@code pos}.
+	 * Triggers a neighbor update originating from {@code pos} at
+	 * {@code neighborPos}.
 	 * 
 	 * @see #updateNeighborsAlways(BlockPos, Block)
 	 */
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-	}
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
+		if (!this.isClient) {
+			BlockState blockState = this.getBlockState(pos);
 
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-	}
-
-	@Override
-	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
-		this.neighborUpdater.replaceWithStateForNeighborUpdate(direction, neighborState, pos, neighborPos, flags, maxUpdateDepth);
+			try {
+				blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
+			} catch (Throwable var8) {
+				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
+				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
+				crashReportSection.add("Source block type", (CrashCallable<String>)(() -> {
+					try {
+						return String.format("ID #%s (%s // %s)", Registry.BLOCK.getId(sourceBlock), sourceBlock.getTranslationKey(), sourceBlock.getClass().getCanonicalName());
+					} catch (Throwable var2) {
+						return "ID #" + Registry.BLOCK.getId(sourceBlock);
+					}
+				}));
+				CrashReportSection.addBlockInfo(crashReportSection, this, pos, blockState);
+				throw new CrashException(crashReport);
+			}
+		}
 	}
 
 	@Override
@@ -478,7 +513,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			BlockEntityTickInvoker blockEntityTickInvoker = (BlockEntityTickInvoker)iterator.next();
 			if (blockEntityTickInvoker.isRemoved()) {
 				iterator.remove();
-			} else if (this.shouldTickBlockPos(blockEntityTickInvoker.getPos())) {
+			} else if (this.method_42871(blockEntityTickInvoker.getPos())) {
 				blockEntityTickInvoker.tick();
 			}
 		}
@@ -509,8 +544,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return true;
 	}
 
-	public boolean shouldTickBlockPos(BlockPos pos) {
-		return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
+	public boolean method_42871(BlockPos blockPos) {
+		return this.shouldTickBlocksInChunk(ChunkPos.toLong(blockPos));
 	}
 
 	/**
@@ -937,12 +972,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(blockPos)) {
 				BlockState blockState = this.getBlockState(blockPos);
 				if (blockState.isOf(Blocks.COMPARATOR)) {
-					this.updateNeighbor(blockState, blockPos, block, pos, false);
+					blockState.neighborUpdate(this, blockPos, block, pos, false);
 				} else if (blockState.isSolidBlock(this, blockPos)) {
 					blockPos = blockPos.offset(direction);
 					blockState = this.getBlockState(blockPos);
 					if (blockState.isOf(Blocks.COMPARATOR)) {
-						this.updateNeighbor(blockState, blockPos, block, pos, false);
+						blockState.neighborUpdate(this, blockPos, block, pos, false);
 					}
 				}
 			}
@@ -983,8 +1018,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.dimension;
 	}
 
-	public RegistryEntry<DimensionType> getDimensionEntry() {
-		return this.dimensionEntry;
+	public RegistryEntry<DimensionType> method_40134() {
+		return this.field_36402;
 	}
 
 	public RegistryKey<World> getRegistryKey() {
@@ -1045,6 +1080,26 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	protected abstract EntityLookup<Entity> getEntityLookup();
+
+	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
+		int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ() - range);
+		int k = ChunkSectionPos.getSectionCoord(pos.getX() + range);
+		int l = ChunkSectionPos.getSectionCoord(pos.getZ() + range);
+		int m = ChunkSectionPos.getSectionCoord(pos.getY() - range);
+		int n = ChunkSectionPos.getSectionCoord(pos.getY() + range);
+
+		for (int o = i; o <= k; o++) {
+			for (int p = j; p <= l; p++) {
+				Chunk chunk = this.getChunkManager().getWorldChunk(o, p);
+				if (chunk != null) {
+					for (int q = m; q <= n; q++) {
+						chunk.getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	public long getTickOrder() {

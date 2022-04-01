@@ -10,10 +10,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkSensorBlockEntity;
 import net.minecraft.block.enums.SculkSensorPhase;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -45,43 +42,49 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		map.put(GameEvent.STEP, 1);
 		map.put(GameEvent.FLAP, 2);
 		map.put(GameEvent.SWIM, 3);
-		map.put(GameEvent.ELYTRA_GLIDE, 4);
+		map.put(GameEvent.ELYTRA_FREE_FALL, 4);
 		map.put(GameEvent.HIT_GROUND, 5);
 		map.put(GameEvent.SPLASH, 6);
-		map.put(GameEvent.ENTITY_SHAKE, 6);
+		map.put(GameEvent.WOLF_SHAKING, 6);
+		map.put(GameEvent.MINECART_MOVING, 6);
+		map.put(GameEvent.RING_BELL, 6);
 		map.put(GameEvent.BLOCK_CHANGE, 6);
-		map.put(GameEvent.NOTE_BLOCK_PLAY, 6);
 		map.put(GameEvent.PROJECTILE_SHOOT, 7);
-		map.put(GameEvent.DRINK, 7);
+		map.put(GameEvent.DRINKING_FINISH, 7);
 		map.put(GameEvent.PRIME_FUSE, 7);
 		map.put(GameEvent.PROJECTILE_LAND, 8);
 		map.put(GameEvent.EAT, 8);
-		map.put(GameEvent.ENTITY_INTERACT, 8);
-		map.put(GameEvent.ENTITY_DAMAGE, 8);
+		map.put(GameEvent.MOB_INTERACT, 8);
+		map.put(GameEvent.ENTITY_DAMAGED, 8);
 		map.put(GameEvent.EQUIP, 9);
 		map.put(GameEvent.SHEAR, 9);
-		map.put(GameEvent.ENTITY_ROAR, 9);
+		map.put(GameEvent.RAVAGER_ROAR, 9);
 		map.put(GameEvent.BLOCK_CLOSE, 10);
-		map.put(GameEvent.BLOCK_DEACTIVATE, 10);
+		map.put(GameEvent.BLOCK_UNSWITCH, 10);
+		map.put(GameEvent.BLOCK_UNPRESS, 10);
 		map.put(GameEvent.BLOCK_DETACH, 10);
 		map.put(GameEvent.DISPENSE_FAIL, 10);
 		map.put(GameEvent.BLOCK_OPEN, 11);
-		map.put(GameEvent.BLOCK_ACTIVATE, 11);
+		map.put(GameEvent.BLOCK_SWITCH, 11);
+		map.put(GameEvent.BLOCK_PRESS, 11);
 		map.put(GameEvent.BLOCK_ATTACH, 11);
 		map.put(GameEvent.ENTITY_PLACE, 12);
 		map.put(GameEvent.BLOCK_PLACE, 12);
 		map.put(GameEvent.FLUID_PLACE, 12);
-		map.put(GameEvent.ENTITY_DIE, 13);
+		map.put(GameEvent.ENTITY_DYING, 13);
+		map.put(GameEvent.ENTITY_KILLED, 13);
 		map.put(GameEvent.BLOCK_DESTROY, 13);
 		map.put(GameEvent.FLUID_PICKUP, 13);
-		map.put(GameEvent.ITEM_INTERACT_FINISH, 14);
+		map.put(GameEvent.FISHING_ROD_REEL_IN, 14);
 		map.put(GameEvent.CONTAINER_CLOSE, 14);
 		map.put(GameEvent.PISTON_CONTRACT, 14);
+		map.put(GameEvent.SHULKER_CLOSE, 14);
 		map.put(GameEvent.PISTON_EXTEND, 15);
 		map.put(GameEvent.CONTAINER_OPEN, 15);
-		map.put(GameEvent.ITEM_INTERACT_START, 15);
+		map.put(GameEvent.FISHING_ROD_CAST, 15);
 		map.put(GameEvent.EXPLODE, 15);
 		map.put(GameEvent.LIGHTNING_STRIKE, 15);
+		map.put(GameEvent.SHULKER_OPEN, 15);
 	}));
 	public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = Properties.SCULK_SENSOR_PHASE;
 	public static final IntProperty POWER = Properties.POWER;
@@ -130,15 +133,6 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		if (!world.isClient() && isInactive(state) && entity.getType() != EntityType.WARDEN) {
-			setActive(entity, world, pos, state, 1);
-		}
-
-		super.onSteppedOn(world, pos, state, entity);
-	}
-
-	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!world.isClient() && !state.isOf(oldState.getBlock())) {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
@@ -184,7 +178,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
+	public <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
 		return blockEntity instanceof SculkSensorBlockEntity ? ((SculkSensorBlockEntity)blockEntity).getEventListener() : null;
 	}
 
@@ -234,14 +228,10 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		updateNeighbors(world, pos);
 	}
 
-	public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
+	public static void setActive(World world, BlockPos pos, BlockState state, int power) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
 		world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
 		updateNeighbors(world, pos);
-		if (entity instanceof PlayerEntity) {
-			world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
-		}
-
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(
 				null,
@@ -302,6 +292,6 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
 		super.onStacksDropped(state, world, pos, stack);
-		this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+		this.method_42872(world, pos, stack, ConstantIntProvider.create(5));
 	}
 }

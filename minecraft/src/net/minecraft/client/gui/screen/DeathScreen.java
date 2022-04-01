@@ -104,7 +104,7 @@ public class DeathScreen extends Screen {
 			this.client.world.disconnect();
 		}
 
-		this.client.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+		this.client.disconnect(new SaveLevelScreen(new TranslatableText("menu.savingLevel")));
 		this.client.setScreen(new TitleScreen());
 	}
 

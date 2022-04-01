@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
@@ -15,6 +16,7 @@ public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity
 	public PillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.PILLAGER)), 0.5F);
 		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, 0.125F, -0.050000012F, 0.5F));
 	}
 
 	public Identifier getTexture(PillagerEntity pillagerEntity) {

@@ -7,13 +7,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 /**
  * The lightmap texture manager maintains a texture containing the RGBA overlay for each of the 16&times;16 sky and block light combinations.
@@ -84,22 +81,6 @@ public class LightmapTextureManager implements AutoCloseable {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private float getDarknessFactor(float f) {
-		if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS)) {
-			StatusEffectInstance statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS);
-			if (statusEffectInstance != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
-				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(f);
-			}
-		}
-
-		return 0.0F;
-	}
-
-	private float getDarkness(LivingEntity livingEntity, float f, float g) {
-		float h = 0.45F * f;
-		return Math.max(0.0F, MathHelper.cos(((float)livingEntity.age - g) * (float) Math.PI * 0.025F) * h);
-	}
-
 	public void update(float delta) {
 		if (this.dirty) {
 			this.dirty = false;
@@ -114,78 +95,66 @@ public class LightmapTextureManager implements AutoCloseable {
 					g = f * 0.95F + 0.05F;
 				}
 
-				float h = this.client.options.getDarknessEffectScale().getValue().floatValue();
-				float i = this.getDarknessFactor(delta) * h;
-				float j = this.getDarkness(this.client.player, i, delta) * h;
-				float k = this.client.player.getUnderwaterVisibility();
-				float l;
+				float h = this.client.player.getUnderwaterVisibility();
+				float i;
 				if (this.client.player.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-					l = GameRenderer.getNightVisionStrength(this.client.player, delta);
-				} else if (k > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
-					l = k;
+					i = GameRenderer.getNightVisionStrength(this.client.player, delta);
+				} else if (h > 0.0F && this.client.player.hasStatusEffect(StatusEffects.CONDUIT_POWER)) {
+					i = h;
 				} else {
-					l = 0.0F;
+					i = 0.0F;
 				}
 
 				Vec3f vec3f = new Vec3f(f, f, 1.0F);
 				vec3f.lerp(new Vec3f(1.0F, 1.0F, 1.0F), 0.35F);
-				float m = this.flickerIntensity + 1.5F;
+				float j = this.flickerIntensity + 1.5F;
 				Vec3f vec3f2 = new Vec3f();
 
-				for (int n = 0; n < 16; n++) {
-					for (int o = 0; o < 16; o++) {
-						float p = getBrightness(clientWorld.getDimension(), n) * g;
-						float q = getBrightness(clientWorld.getDimension(), o) * m;
-						float s = q * ((q * 0.6F + 0.4F) * 0.6F + 0.4F);
-						float t = q * (q * q * 0.6F + 0.4F);
-						vec3f2.set(q, s, t);
-						boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
-						if (bl) {
+				for (int k = 0; k < 16; k++) {
+					for (int l = 0; l < 16; l++) {
+						float m = this.getBrightness(clientWorld, k) * g;
+						float n = this.getBrightness(clientWorld, l) * j;
+						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
+						float q = n * (n * n * 0.6F + 0.4F);
+						vec3f2.set(n, p, q);
+						if (clientWorld.getDimensionEffects().shouldBrightenLighting()) {
 							vec3f2.lerp(new Vec3f(0.99F, 1.12F, 1.0F), 0.25F);
-							vec3f2.clamp(0.0F, 1.0F);
 						} else {
 							Vec3f vec3f3 = vec3f.copy();
-							vec3f3.scale(p);
+							vec3f3.scale(m);
 							vec3f2.add(vec3f3);
 							vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
-								float u = this.renderer.getSkyDarkness(delta);
+								float r = this.renderer.getSkyDarkness(delta);
 								Vec3f vec3f4 = vec3f2.copy();
 								vec3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
-								vec3f2.lerp(vec3f4, u);
+								vec3f2.lerp(vec3f4, r);
 							}
 						}
 
-						if (l > 0.0F) {
-							float v = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()));
-							if (v < 1.0F) {
-								float u = 1.0F / v;
+						vec3f2.clamp(0.0F, 1.0F);
+						if (i > 0.0F) {
+							float s = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()));
+							if (s < 1.0F) {
+								float r = 1.0F / s;
 								Vec3f vec3f4 = vec3f2.copy();
-								vec3f4.scale(u);
-								vec3f2.lerp(vec3f4, l);
+								vec3f4.scale(r);
+								vec3f2.lerp(vec3f4, i);
 							}
 						}
 
-						if (!bl) {
-							if (j > 0.0F) {
-								vec3f2.add(-j, -j, -j);
-							}
-
-							vec3f2.clamp(0.0F, 1.0F);
-						}
-
-						float v = this.client.options.getGamma().getValue().floatValue();
+						float s = (float)this.client.options.gamma;
 						Vec3f vec3f5 = vec3f2.copy();
 						vec3f5.modify(this::easeOutQuart);
-						vec3f2.lerp(vec3f5, Math.max(0.0F, v - i));
+						vec3f2.lerp(vec3f5, s);
 						vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
 						vec3f2.clamp(0.0F, 1.0F);
 						vec3f2.scale(255.0F);
-						int w = 255;
-						int x = (int)vec3f2.getX();
-						int y = (int)vec3f2.getY();
-						int z = (int)vec3f2.getZ();
-						this.image.setColor(o, n, 0xFF000000 | z << 16 | y << 8 | x);
+						int t = 255;
+						int u = (int)vec3f2.getX();
+						int v = (int)vec3f2.getY();
+						int w = (int)vec3f2.getZ();
+						this.image.setColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
 					}
 				}
 
@@ -211,10 +180,8 @@ public class LightmapTextureManager implements AutoCloseable {
 		return 1.0F - f * f * f * f;
 	}
 
-	public static float getBrightness(DimensionType dimensionType, int i) {
-		float f = (float)i / 15.0F;
-		float g = f / (4.0F - 3.0F * f);
-		return MathHelper.lerp(dimensionType.ambientLight(), g, 1.0F);
+	private float getBrightness(World world, int lightLevel) {
+		return world.getDimension().getBrightness(lightLevel);
 	}
 
 	public static int pack(int block, int sky) {

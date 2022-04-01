@@ -37,7 +37,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -51,6 +50,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	public static final float field_30460 = 0.03F;
@@ -104,9 +104,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 			boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 				&& isSpawnDark(world, pos, random)
 				&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
-			return registryEntry.isIn(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS)
-				? random.nextInt(15) == 0 && bl
-				: random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl;
+			return !registryEntry.matchesKey(BiomeKeys.RIVER) && !registryEntry.matchesKey(BiomeKeys.FROZEN_RIVER)
+				? random.nextInt(40) == 0 && isValidSpawnDepth(world, pos) && bl
+				: random.nextInt(15) == 0 && bl;
 		}
 	}
 
@@ -249,6 +249,21 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		tridentEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
 		this.world.spawnEntity(tridentEntity);
+	}
+
+	@Override
+	public void method_42824(float f) {
+		if (this.hasVehicle()) {
+			Vec3d vec3d = this.getRootVehicle().getRotationVecClient();
+			double d = vec3d.x;
+			double e = vec3d.y;
+			double g = vec3d.z;
+			TridentEntity tridentEntity = new TridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
+			double h = Math.sqrt(d * d + g * g);
+			tridentEntity.setVelocity(d, e + h * 0.2F, g, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+			this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+			this.world.spawnEntity(tridentEntity);
+		}
 	}
 
 	public void setTargetingUnderwater(boolean targetingUnderwater) {

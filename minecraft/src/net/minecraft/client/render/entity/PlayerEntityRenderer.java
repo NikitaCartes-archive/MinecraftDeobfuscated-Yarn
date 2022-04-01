@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7362;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -11,8 +12,8 @@ import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
+import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.PlayerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
@@ -21,6 +22,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -48,15 +50,16 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))
 			)
 		);
-		this.addFeature(new PlayerHeldItemFeatureRenderer<>(this));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(ctx, this));
 		this.addFeature(new Deadmau5FeatureRenderer(this));
 		this.addFeature(new CapeFeatureRenderer(this));
-		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), true));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new StuckStingersFeatureRenderer<>(this));
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, 0.125F, 0.25F, 0.5F));
+		this.addFeature(new class_7362<>(this));
 	}
 
 	public void render(
@@ -178,7 +181,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	private void renderArm(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve
+		MatrixStack matrixStack, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart modelPart, ModelPart modelPart2
 	) {
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
 		this.setModelPose(player);
@@ -186,10 +189,19 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.sneaking = false;
 		playerEntityModel.leaningPitch = 0.0F;
 		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-		arm.pitch = 0.0F;
-		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
-		sleeve.pitch = 0.0F;
-		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
+		modelPart.pitch = 0.0F;
+		modelPart2.pitch = 0.0F;
+		if (player.method_42803() == LivingEntity.class_7316.MOB) {
+			modelPart.pivotY = 6.0F;
+			modelPart2.pivotY = 6.0F;
+			modelPart.pitch -= (float) (Math.PI / 6);
+			modelPart.roll = modelPart.roll + (modelPart == playerEntityModel.rightArm ? 30.0F : -30.0F) * (float) (Math.PI / 180.0);
+			modelPart2.pitch -= (float) (Math.PI / 6);
+			modelPart2.roll = modelPart2.roll + (modelPart2 == playerEntityModel.rightSleeve ? 30.0F : -30.0F) * (float) (Math.PI / 180.0);
+		}
+
+		modelPart.render(matrixStack, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
+		modelPart2.render(matrixStack, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
 	}
 
 	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
