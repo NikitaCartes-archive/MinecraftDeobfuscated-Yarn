@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import java.util.List;
-import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -117,12 +116,10 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<UnderwaterMagmaFeatureConfig, ?>> UNDERWATER_MAGMA = ConfiguredFeatures.register(
 		"underwater_magma", Feature.UNDERWATER_MAGMA, new UnderwaterMagmaFeatureConfig(5, 1, 0.5F)
 	);
-	private static final AbstractLichenBlock GLOW_LICHEN_BLOCK = (AbstractLichenBlock)Blocks.GLOW_LICHEN;
 	public static final RegistryEntry<ConfiguredFeature<GlowLichenFeatureConfig, ?>> GLOW_LICHEN = ConfiguredFeatures.register(
 		"glow_lichen",
 		Feature.GLOW_LICHEN,
 		new GlowLichenFeatureConfig(
-			GLOW_LICHEN_BLOCK,
 			20,
 			false,
 			true,
@@ -365,36 +362,6 @@ public class UndergroundConfiguredFeatures {
 			16,
 			0.05,
 			1
-		)
-	);
-	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH = ConfiguredFeatures.register(
-		"sculk_patch_deep_dark", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, ConstantIntProvider.create(0), 0.5F)
-	);
-	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> field_38477 = ConfiguredFeatures.register(
-		"sculk_patch_ancient_city", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5F)
-	);
-	private static final AbstractLichenBlock SCULK_VEIN_BLOCK = (AbstractLichenBlock)Blocks.SCULK_VEIN;
-	public static final RegistryEntry<ConfiguredFeature<GlowLichenFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register(
-		"sculk_vein",
-		Feature.GLOW_LICHEN,
-		new GlowLichenFeatureConfig(
-			SCULK_VEIN_BLOCK,
-			20,
-			true,
-			true,
-			true,
-			1.0F,
-			RegistryEntryList.of(
-				Block::getRegistryEntry,
-				Blocks.STONE,
-				Blocks.ANDESITE,
-				Blocks.DIORITE,
-				Blocks.GRANITE,
-				Blocks.DRIPSTONE_BLOCK,
-				Blocks.CALCITE,
-				Blocks.TUFF,
-				Blocks.DEEPSLATE
-			)
 		)
 	);
 

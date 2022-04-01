@@ -1,6 +1,5 @@
 package net.minecraft.resource;
 
-import com.google.common.annotations.VisibleForTesting;
 import java.io.Closeable;
 import java.io.InputStream;
 import javax.annotation.Nullable;
@@ -35,7 +34,6 @@ public interface Resource extends Closeable {
 	/**
 	 * Returns if this resource has any metadata.
 	 */
-	@VisibleForTesting
 	boolean hasMetadata();
 
 	/**

@@ -1,27 +1,25 @@
 package net.minecraft.village;
 
+import net.minecraft.class_7317;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.nbt.NbtOps;
 
 public class TradeOffer {
-	private final ItemStack firstBuyItem;
-	private final ItemStack secondBuyItem;
-	private final ItemStack sellItem;
+	private final class_7317 field_38546;
+	private final class_7317 field_38547;
 	private int uses;
 	private final int maxUses;
 	private boolean rewardingPlayerExperience = true;
-	private int specialPrice;
 	private int demandBonus;
 	private float priceMultiplier;
 	private int merchantExperience = 1;
 
 	public TradeOffer(NbtCompound nbt) {
-		this.firstBuyItem = ItemStack.fromNbt(nbt.getCompound("buy"));
-		this.secondBuyItem = ItemStack.fromNbt(nbt.getCompound("buyB"));
-		this.sellItem = ItemStack.fromNbt(nbt.getCompound("sell"));
+		this.field_38546 = (class_7317)class_7317.field_38543.parse(NbtOps.INSTANCE, nbt.getCompound("buy")).result().orElse(class_7317.method_42845(Blocks.AIR));
+		this.field_38547 = (class_7317)class_7317.field_38543.parse(NbtOps.INSTANCE, nbt.getCompound("sell")).result().orElse(class_7317.method_42845(Blocks.AIR));
 		this.uses = nbt.getInt("uses");
 		if (nbt.contains("maxUses", NbtElement.NUMBER_TYPE)) {
 			this.maxUses = nbt.getInt("maxUses");
@@ -41,70 +39,36 @@ public class TradeOffer {
 			this.priceMultiplier = nbt.getFloat("priceMultiplier");
 		}
 
-		this.specialPrice = nbt.getInt("specialPrice");
 		this.demandBonus = nbt.getInt("demand");
 	}
 
-	public TradeOffer(ItemStack buyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {
-		this(buyItem, ItemStack.EMPTY, sellItem, maxUses, merchantExperience, priceMultiplier);
+	public TradeOffer(class_7317 arg, class_7317 arg2, int i, int j, float f) {
+		this(arg, arg2, 0, i, j, f);
 	}
 
-	public TradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int maxUses, int merchantExperience, float priceMultiplier) {
-		this(firstBuyItem, secondBuyItem, sellItem, 0, maxUses, merchantExperience, priceMultiplier);
+	public TradeOffer(class_7317 arg, class_7317 arg2, int i, int j, int k, float f) {
+		this(arg, arg2, i, j, k, f, 0);
 	}
 
-	public TradeOffer(ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int uses, int maxUses, int merchantExperience, float priceMultiplier) {
-		this(firstBuyItem, secondBuyItem, sellItem, uses, maxUses, merchantExperience, priceMultiplier, 0);
+	public TradeOffer(class_7317 arg, class_7317 arg2, int i, int j, int k, float f, int l) {
+		this.field_38546 = arg;
+		this.field_38547 = arg2;
+		this.uses = i;
+		this.maxUses = j;
+		this.merchantExperience = k;
+		this.priceMultiplier = f;
+		this.demandBonus = l;
 	}
 
-	public TradeOffer(
-		ItemStack firstBuyItem, ItemStack secondBuyItem, ItemStack sellItem, int uses, int maxUses, int merchantExperience, float priceMultiplier, int demandBonus
-	) {
-		this.firstBuyItem = firstBuyItem;
-		this.secondBuyItem = secondBuyItem;
-		this.sellItem = sellItem;
-		this.uses = uses;
-		this.maxUses = maxUses;
-		this.merchantExperience = merchantExperience;
-		this.priceMultiplier = priceMultiplier;
-		this.demandBonus = demandBonus;
-	}
-
-	/**
-	 * Returns the first buy item of this trade offer.
-	 */
-	public ItemStack getOriginalFirstBuyItem() {
-		return this.firstBuyItem;
-	}
-
-	/**
-	 * Returns a copy of the first buy item of this trade offer,
-	 * with its price adjusted depending on the demand bonus, the
-	 * special price and the price multiplier.
-	 */
-	public ItemStack getAdjustedFirstBuyItem() {
-		int i = this.firstBuyItem.getCount();
-		ItemStack itemStack = this.firstBuyItem.copy();
-		int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
-		itemStack.setCount(MathHelper.clamp(i + j + this.specialPrice, 1, this.firstBuyItem.getItem().getMaxCount()));
-		return itemStack;
-	}
-
-	/**
-	 * Returns the second buy item of this trade offer.
-	 * 
-	 * <p>If there is no second buy item, this returns the {@linkplain ItemStack#EMPTY empty
-	 * item stack}.
-	 */
-	public ItemStack getSecondBuyItem() {
-		return this.secondBuyItem;
+	public class_7317 method_42852() {
+		return this.field_38546;
 	}
 
 	/**
 	 * Returns the sell item of this trade offer.
 	 */
-	public ItemStack getSellItem() {
-		return this.sellItem;
+	public class_7317 getSellItem() {
+		return this.field_38547;
 	}
 
 	/**
@@ -116,11 +80,8 @@ public class TradeOffer {
 		this.demandBonus = this.demandBonus + this.uses - (this.maxUses - this.uses);
 	}
 
-	/**
-	 * Returns a copy of the sell item of this trade offer.
-	 */
-	public ItemStack copySellItem() {
-		return this.sellItem.copy();
+	public ItemStack method_42856() {
+		return this.field_38547.method_42840();
 	}
 
 	/**
@@ -163,39 +124,6 @@ public class TradeOffer {
 	 */
 	public int getDemandBonus() {
 		return this.demandBonus;
-	}
-
-	/**
-	 * Increases the special price of this trade offer by {@code increment}.
-	 * 
-	 * <p>A negative {@code increment} value will decrease the special price.
-	 */
-	public void increaseSpecialPrice(int increment) {
-		this.specialPrice += increment;
-	}
-
-	/**
-	 * Resets the special price of this trade offer.
-	 */
-	public void clearSpecialPrice() {
-		this.specialPrice = 0;
-	}
-
-	/**
-	 * Returns the special price of this trade offer. It is used to
-	 * adjust the price of its first buy item.
-	 * 
-	 * <p>The less the special price is, the more the price will be low.
-	 */
-	public int getSpecialPrice() {
-		return this.specialPrice;
-	}
-
-	/**
-	 * Sets the special price of this trade offer to {@code specialPrice}.
-	 */
-	public void setSpecialPrice(int specialPrice) {
-		this.specialPrice = specialPrice;
 	}
 
 	/**
@@ -252,50 +180,18 @@ public class TradeOffer {
 
 	public NbtCompound toNbt() {
 		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.put("buy", this.firstBuyItem.writeNbt(new NbtCompound()));
-		nbtCompound.put("sell", this.sellItem.writeNbt(new NbtCompound()));
-		nbtCompound.put("buyB", this.secondBuyItem.writeNbt(new NbtCompound()));
+		class_7317.field_38543.encodeStart(NbtOps.INSTANCE, this.field_38546).result().ifPresent(nbtElement -> nbtCompound.put("buy", nbtElement));
+		class_7317.field_38543.encodeStart(NbtOps.INSTANCE, this.field_38547).result().ifPresent(nbtElement -> nbtCompound.put("sell", nbtElement));
 		nbtCompound.putInt("uses", this.uses);
 		nbtCompound.putInt("maxUses", this.maxUses);
 		nbtCompound.putBoolean("rewardExp", this.rewardingPlayerExperience);
 		nbtCompound.putInt("xp", this.merchantExperience);
 		nbtCompound.putFloat("priceMultiplier", this.priceMultiplier);
-		nbtCompound.putInt("specialPrice", this.specialPrice);
 		nbtCompound.putInt("demand", this.demandBonus);
 		return nbtCompound;
 	}
 
-	public boolean matchesBuyItems(ItemStack first, ItemStack second) {
-		return this.acceptsBuy(first, this.getAdjustedFirstBuyItem())
-			&& first.getCount() >= this.getAdjustedFirstBuyItem().getCount()
-			&& this.acceptsBuy(second, this.secondBuyItem)
-			&& second.getCount() >= this.secondBuyItem.getCount();
-	}
-
-	private boolean acceptsBuy(ItemStack given, ItemStack sample) {
-		if (sample.isEmpty() && given.isEmpty()) {
-			return true;
-		} else {
-			ItemStack itemStack = given.copy();
-			if (itemStack.getItem().isDamageable()) {
-				itemStack.setDamage(itemStack.getDamage());
-			}
-
-			return ItemStack.areItemsEqualIgnoreDamage(itemStack, sample)
-				&& (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
-		}
-	}
-
-	public boolean depleteBuyItems(ItemStack firstBuyStack, ItemStack secondBuyStack) {
-		if (!this.matchesBuyItems(firstBuyStack, secondBuyStack)) {
-			return false;
-		} else {
-			firstBuyStack.decrement(this.getAdjustedFirstBuyItem().getCount());
-			if (!this.getSecondBuyItem().isEmpty()) {
-				secondBuyStack.decrement(this.getSecondBuyItem().getCount());
-			}
-
-			return true;
-		}
+	public boolean method_42853(class_7317 arg) {
+		return this.field_38546.method_42843(arg);
 	}
 }

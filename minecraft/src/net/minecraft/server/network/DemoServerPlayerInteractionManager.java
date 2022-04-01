@@ -75,11 +75,11 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 	}
 
 	@Override
-	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
+	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight) {
 		if (this.demoEnded) {
 			this.sendDemoReminder();
 		} else {
-			super.processBlockBreakingAction(pos, action, direction, worldHeight, sequence);
+			super.processBlockBreakingAction(pos, action, direction, worldHeight);
 		}
 	}
 

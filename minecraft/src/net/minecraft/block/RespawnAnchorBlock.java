@@ -154,7 +154,7 @@ public class RespawnAnchorBlock extends Block {
 	}
 
 	public static boolean isNether(World world) {
-		return world.getDimension().respawnAnchorWorks();
+		return world.getDimension().isRespawnAnchorWorking();
 	}
 
 	public static void charge(World world, BlockPos pos, BlockState state) {

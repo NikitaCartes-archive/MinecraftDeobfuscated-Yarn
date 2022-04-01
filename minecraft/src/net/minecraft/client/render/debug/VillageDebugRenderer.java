@@ -39,7 +39,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static final boolean field_32880 = false;
 	private static final boolean field_32881 = false;
 	private static final boolean field_32882 = true;
-	private static final boolean field_38346 = false;
 	private static final boolean field_32883 = true;
 	private static final boolean field_32884 = true;
 	private static final boolean field_32885 = true;
@@ -50,7 +49,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static final boolean field_32890 = true;
 	private static final boolean field_32891 = true;
 	private static final boolean field_32892 = true;
-	private static final boolean field_38347 = true;
 	private static final boolean field_32893 = true;
 	private static final int POI_RANGE = 30;
 	private static final int BRAIN_RANGE = 30;
@@ -236,11 +234,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			++i;
 		}
 
-		if (bl && brain.field_38348 != -1) {
-			drawString(brain.pos, i, "Anger Level: " + brain.field_38348, -98404, 0.02F);
-			++i;
-		}
-
 		if (bl) {
 			for(String string : brain.gossips) {
 				if (string.startsWith(brain.name)) {
@@ -358,7 +351,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		public final String inventory;
 		public final Path path;
 		public final boolean wantsGolem;
-		public final int field_38348;
 		public final List<String> possibleActivities = Lists.newArrayList();
 		public final List<String> runningTasks = Lists.newArrayList();
 		public final List<String> memories = Lists.newArrayList();
@@ -377,8 +369,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			Position pos,
 			String inventory,
 			@Nullable Path path,
-			boolean wantsGolem,
-			int i
+			boolean wantsGolem
 		) {
 			this.uuid = uuid;
 			this.entityId = entityId;
@@ -391,7 +382,6 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			this.inventory = inventory;
 			this.path = path;
 			this.wantsGolem = wantsGolem;
-			this.field_38348 = i;
 		}
 
 		boolean isPointOfInterest(BlockPos pos) {

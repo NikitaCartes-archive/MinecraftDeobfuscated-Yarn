@@ -56,7 +56,6 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> MUSHROOM_FIELDS = register("mushroom_fields");
 	public static final RegistryKey<Biome> DRIPSTONE_CAVES = register("dripstone_caves");
 	public static final RegistryKey<Biome> LUSH_CAVES = register("lush_caves");
-	public static final RegistryKey<Biome> DEEP_DARK = register("deep_dark");
 	public static final RegistryKey<Biome> NETHER_WASTES = register("nether_wastes");
 	public static final RegistryKey<Biome> WARPED_FOREST = register("warped_forest");
 	public static final RegistryKey<Biome> CRIMSON_FOREST = register("crimson_forest");

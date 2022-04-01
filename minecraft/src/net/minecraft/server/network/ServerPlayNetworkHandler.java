@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7366;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -39,9 +40,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -107,10 +109,10 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
@@ -119,8 +121,6 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.BeaconScreenHandler;
-import net.minecraft.screen.MerchantScreenHandler;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
@@ -143,6 +143,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -160,13 +161,10 @@ import org.slf4j.Logger;
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int KEEP_ALIVE_INTERVAL = 15000;
-	public static final double MAX_BREAK_SQUARED_DISTANCE = MathHelper.square(6.0);
-	private static final int field_37281 = -1;
 	public final ClientConnection connection;
 	private final MinecraftServer server;
 	public ServerPlayerEntity player;
 	private int ticks;
-	private int sequence = -1;
 	private long lastKeepAliveTime;
 	private boolean waitingForKeepAlive;
 	private long keepAliveId;
@@ -208,11 +206,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	public void tick() {
-		if (this.sequence > -1) {
-			this.sendPacket(new PlayerActionResponseS2CPacket(this.sequence));
-			this.sequence = -1;
-		}
-
 		this.syncWithPlayerPosition();
 		this.player.prevX = this.player.getX();
 		this.player.prevY = this.player.getY();
@@ -684,13 +677,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onSelectMerchantTrade(SelectMerchantTradeC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		int i = packet.getTradeId();
-		ScreenHandler screenHandler = this.player.currentScreenHandler;
-		if (screenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
-			merchantScreenHandler.setRecipeIndex(i);
-			merchantScreenHandler.switchTo(i);
-		}
 	}
 
 	@Override
@@ -986,8 +972,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY(), packet.getSequence());
-				this.player.networkHandler.updateSequence(packet.getSequence());
+				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY());
 				return;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
@@ -1011,18 +996,17 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		this.player.networkHandler.updateSequence(packet.getSequence());
 		ServerWorld serverWorld = this.player.getWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		BlockHitResult blockHitResult = packet.getBlockHitResult();
 		Vec3d vec3d = blockHitResult.getPos();
 		BlockPos blockPos = blockHitResult.getBlockPos();
-		Vec3d vec3d2 = Vec3d.ofCenter(blockPos);
-		if (!(this.player.getEyePos().squaredDistanceTo(vec3d2) > MAX_BREAK_SQUARED_DISTANCE)) {
-			Vec3d vec3d3 = vec3d.subtract(vec3d2);
+		Vec3d vec3d2 = vec3d.subtract(Vec3d.ofCenter(blockPos));
+		if (this.player.world.getServer() != null
+			&& this.player.getChunkPos().getChebyshevDistance(new ChunkPos(blockPos)) < this.player.world.getServer().getPlayerManager().getViewDistance()) {
 			double d = 1.0000001;
-			if (Math.abs(vec3d3.getX()) < 1.0000001 && Math.abs(vec3d3.getY()) < 1.0000001 && Math.abs(vec3d3.getZ()) < 1.0000001) {
+			if (Math.abs(vec3d2.getX()) < 1.0000001 && Math.abs(vec3d2.getY()) < 1.0000001 && Math.abs(vec3d2.getZ()) < 1.0000001) {
 				Direction direction = blockHitResult.getSide();
 				this.player.updateLastActionTime();
 				int i = this.player.world.getTopY();
@@ -1046,15 +1030,21 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
 				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
 			} else {
-				LOGGER.warn("Rejecting UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
+				LOGGER.warn("Ignoring UseItemOnPacket from {}: Location {} too far away from hit block {}.", this.player.getGameProfile().getName(), vec3d, blockPos);
 			}
+		} else {
+			LOGGER.warn(
+				"Ignoring UseItemOnPacket from {}: hit position {} too far away from player {}.",
+				this.player.getGameProfile().getName(),
+				blockPos,
+				this.player.getBlockPos()
+			);
 		}
 	}
 
 	@Override
 	public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		this.updateSequence(packet.getSequence());
 		ServerWorld serverWorld = this.player.getWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
@@ -1116,14 +1106,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.isHost()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
-		}
-	}
-
-	public void updateSequence(int sequence) {
-		if (sequence < 0) {
-			throw new IllegalArgumentException("Expected packet sequence nr >= 0");
-		} else {
-			this.sequence = Math.max(sequence, this.sequence);
 		}
 	}
 
@@ -1207,9 +1189,28 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onHandSwing(HandSwingC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		this.player.updateLastActionTime();
 		this.player.swingHand(packet.getHand());
+	}
+
+	@Override
+	public void method_42771(class_7366 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.player.getWorld());
+		LivingEntity.class_7316 lv = this.player.method_42803();
+		Vec3d vec3d = this.player.getVelocity().add(this.player.getRotationVec(0.0F));
+		switch(lv) {
+			case BLOCK:
+				this.player.method_42768(vec3d);
+				break;
+			case MOB:
+				this.player.method_42770(vec3d);
+				break;
+			case NONE:
+				this.player.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(this.player));
+		}
+
+		this.player.updateLastActionTime();
+		this.player.swingHand(Hand.MAIN_HAND);
 	}
 
 	@Override
@@ -1249,9 +1250,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 				break;
 			case OPEN_INVENTORY:
-				Entity i = this.player.getVehicle();
-				if (i instanceof RideableInventory rideableInventory) {
-					rideableInventory.openInventory(this.player);
+				if (this.player.getVehicle() instanceof HorseBaseEntity) {
+					((HorseBaseEntity)this.player.getVehicle()).openInventory(this.player);
 				}
 				break;
 			case START_FALL_FLYING:
@@ -1276,7 +1276,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				return;
 			}
 
-			if (entity.squaredDistanceTo(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
+			double d = 36.0;
+			if (this.player.squaredDistanceTo(entity) < 36.0) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {

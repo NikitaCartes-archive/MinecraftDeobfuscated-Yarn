@@ -9,8 +9,6 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class EmptyGlyphRenderer extends GlyphRenderer {
-	public static final EmptyGlyphRenderer field_38311 = new EmptyGlyphRenderer();
-
 	public EmptyGlyphRenderer() {
 		super(
 			RenderLayer.getText(new Identifier("")),

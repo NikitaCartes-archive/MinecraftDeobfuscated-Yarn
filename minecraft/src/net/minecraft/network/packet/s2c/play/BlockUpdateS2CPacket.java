@@ -23,13 +23,13 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public BlockUpdateS2CPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
-		this.state = buf.readRegistryValue(Block.STATE_IDS);
+		this.state = Block.STATE_IDS.get(buf.readVarInt());
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
-		buf.writeRegistryValue(Block.STATE_IDS, this.state);
+		buf.writeVarInt(Block.getRawIdFromState(this.state));
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

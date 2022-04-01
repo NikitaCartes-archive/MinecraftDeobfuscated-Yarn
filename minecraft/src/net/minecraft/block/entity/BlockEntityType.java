@@ -5,6 +5,7 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_7338;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -50,9 +51,7 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.CRIMSON_SIGN,
 			Blocks.CRIMSON_WALL_SIGN,
 			Blocks.WARPED_SIGN,
-			Blocks.WARPED_WALL_SIGN,
-			Blocks.MANGROVE_SIGN,
-			Blocks.MANGROVE_WALL_SIGN
+			Blocks.WARPED_WALL_SIGN
 		)
 	);
 	public static final BlockEntityType<MobSpawnerBlockEntity> MOB_SPAWNER = create(
@@ -205,11 +204,8 @@ public class BlockEntityType<T extends BlockEntity> {
 	public static final BlockEntityType<SculkSensorBlockEntity> SCULK_SENSOR = create(
 		"sculk_sensor", BlockEntityType.Builder.create(SculkSensorBlockEntity::new, Blocks.SCULK_SENSOR)
 	);
-	public static final BlockEntityType<SculkCatalystBlockEntity> SCULK_CATALYST = create(
-		"sculk_catalyst", BlockEntityType.Builder.create(SculkCatalystBlockEntity::new, Blocks.SCULK_CATALYST)
-	);
-	public static final BlockEntityType<SculkShriekerBlockEntity> SCULK_SHRIEKER = create(
-		"sculk_shrieker", BlockEntityType.Builder.create(SculkShriekerBlockEntity::new, Blocks.SCULK_SHRIEKER)
+	public static final BlockEntityType<class_7338> SCULK_CATALYST = create(
+		"sculk_catalyst", BlockEntityType.Builder.create(class_7338::new, Blocks.SCULK_CATALYST)
 	);
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;

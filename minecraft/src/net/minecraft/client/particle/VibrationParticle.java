@@ -8,23 +8,32 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.VibrationParticleEffect;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.Vibration;
 
 @Environment(EnvType.CLIENT)
 public class VibrationParticle extends SpriteBillboardParticle {
-	private final PositionSource vibration;
+	private final Vibration vibration;
 	private float field_28250;
 	private float field_28248;
 
-	VibrationParticle(ClientWorld world, double d, double e, double f, PositionSource positionSource, int i) {
-		super(world, d, e, f, 0.0, 0.0, 0.0);
+	VibrationParticle(ClientWorld world, Vibration vibration, int maxAge) {
+		super(
+			world,
+			(double)((float)vibration.getOrigin().getX() + 0.5F),
+			(double)((float)vibration.getOrigin().getY() + 0.5F),
+			(double)((float)vibration.getOrigin().getZ() + 0.5F),
+			0.0,
+			0.0,
+			0.0
+		);
 		this.scale = 0.3F;
-		this.vibration = positionSource;
-		this.maxAge = i;
+		this.vibration = vibration;
+		this.maxAge = maxAge;
 	}
 
 	@Override
@@ -104,25 +113,19 @@ public class VibrationParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
+		super.tick();
+		Optional<BlockPos> optional = this.vibration.getDestination().getPos(this.world);
+		if (!optional.isPresent()) {
 			this.markDead();
 		} else {
-			Optional<Vec3d> optional = this.vibration.getPos(this.world);
-			if (optional.isEmpty()) {
-				this.markDead();
-			} else {
-				int i = this.maxAge - this.age;
-				double d = 1.0 / (double)i;
-				Vec3d vec3d = (Vec3d)optional.get();
-				this.x = MathHelper.lerp(d, this.x, vec3d.getX());
-				this.y = MathHelper.lerp(d, this.y, vec3d.getY());
-				this.z = MathHelper.lerp(d, this.z, vec3d.getZ());
-				this.field_28248 = this.field_28250;
-				this.field_28250 = (float)MathHelper.atan2(this.x - vec3d.getX(), this.z - vec3d.getZ());
-			}
+			double d = (double)this.age / (double)this.maxAge;
+			BlockPos blockPos = this.vibration.getOrigin();
+			BlockPos blockPos2 = (BlockPos)optional.get();
+			this.x = MathHelper.lerp(d, (double)blockPos.getX() + 0.5, (double)blockPos2.getX() + 0.5);
+			this.y = MathHelper.lerp(d, (double)blockPos.getY() + 0.5, (double)blockPos2.getY() + 0.5);
+			this.z = MathHelper.lerp(d, (double)blockPos.getZ() + 0.5, (double)blockPos2.getZ() + 0.5);
+			this.field_28248 = this.field_28250;
+			this.field_28250 = (float)MathHelper.atan2(this.x - (double)blockPos2.getX(), this.z - (double)blockPos2.getZ());
 		}
 	}
 
@@ -138,7 +141,7 @@ public class VibrationParticle extends SpriteBillboardParticle {
 			VibrationParticleEffect vibrationParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
 			VibrationParticle vibrationParticle = new VibrationParticle(
-				clientWorld, d, e, f, vibrationParticleEffect.getVibration(), vibrationParticleEffect.getArrivalInTicks()
+				clientWorld, vibrationParticleEffect.getVibration(), vibrationParticleEffect.getVibration().getArrivalInTicks()
 			);
 			vibrationParticle.setSprite(this.spriteProvider);
 			vibrationParticle.setAlpha(1.0F);

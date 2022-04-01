@@ -3,7 +3,6 @@ package net.minecraft.util.math;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
-import java.util.stream.IntStream;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -808,7 +807,7 @@ public class MathHelper {
 		return lerp(deltaZ, lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
 	}
 
-	public static float method_41303(float f, float g, float h, float i, float j) {
+	public static float method_42772(float f, float g, float h, float i, float j) {
 		return 0.5F * (2.0F * h + (i - g) * f + (2.0F * g - 5.0F * h + 4.0F * i - j) * f * f + (3.0F * h - g - 3.0F * i + j) * f * f * f);
 	}
 
@@ -882,10 +881,6 @@ public class MathHelper {
 
 	public static long square(long n) {
 		return n * n;
-	}
-
-	public static float magnitude(float n) {
-		return n * n * n;
 	}
 
 	public static double clampedLerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
@@ -963,35 +958,6 @@ public class MathHelper {
 	 */
 	public static int roundDownToMultiple(double a, int b) {
 		return floor(a / (double)b) * b;
-	}
-
-	public static IntStream stream(int seed, int lowerBound, int upperBound) {
-		return stream(seed, lowerBound, upperBound, 1);
-	}
-
-	public static IntStream stream(int seed, int lowerBound, int upperBound, int steps) {
-		if (lowerBound > upperBound) {
-			throw new IllegalArgumentException("upperbound %d expected to be > lowerBound %d".formatted(upperBound, lowerBound));
-		} else if (steps < 1) {
-			throw new IllegalArgumentException("steps expected to be >= 1, was %d".formatted(steps));
-		} else {
-			return seed >= lowerBound && seed <= upperBound ? IntStream.iterate(seed, i -> {
-				int m = Math.abs(seed - i);
-				return seed - m >= lowerBound || seed + m <= upperBound;
-			}, i -> {
-				boolean bl = i <= seed;
-				int n = Math.abs(seed - i);
-				boolean bl2 = seed + n + steps <= upperBound;
-				if (!bl || !bl2) {
-					int o = seed - n - (bl ? steps : 0);
-					if (o >= lowerBound) {
-						return o;
-					}
-				}
-
-				return seed + n + steps;
-			}) : IntStream.empty();
-		}
 	}
 
 	static {

@@ -19,7 +19,7 @@ public abstract class FlyingEntity extends MobEntity {
 	}
 
 	@Override
-	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+	protected void fall(double heightDifference, boolean onGround, BlockState blockState, BlockPos landedPosition) {
 	}
 
 	@Override

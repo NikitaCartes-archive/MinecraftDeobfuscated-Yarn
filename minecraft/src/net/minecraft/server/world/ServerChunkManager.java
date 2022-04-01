@@ -42,7 +42,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.NbtScannable;
@@ -420,10 +419,6 @@ public class ServerChunkManager extends ChunkManager {
 
 	public ChunkGenerator getChunkGenerator() {
 		return this.threadedAnvilChunkStorage.getChunkGenerator();
-	}
-
-	public NoiseConfig getNoiseConfig() {
-		return this.threadedAnvilChunkStorage.getNoiseConfig();
 	}
 
 	@Override

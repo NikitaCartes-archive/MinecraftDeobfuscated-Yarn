@@ -43,7 +43,7 @@ public class PoolStructurePiece extends StructurePiece {
 
 	public PoolStructurePiece(StructureContext context, NbtCompound nbt) {
 		super(StructurePieceType.JIGSAW, nbt);
-		this.structureManager = context.structureTemplateManager();
+		this.structureManager = context.structureManager();
 		this.pos = new BlockPos(nbt.getInt("PosX"), nbt.getInt("PosY"), nbt.getInt("PosZ"));
 		this.groundLevelDelta = nbt.getInt("ground_level_delta");
 		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, context.registryManager());

@@ -29,7 +29,7 @@ public class SplashOverlay extends Overlay {
 	static final Identifier LOGO = new Identifier("textures/gui/title/mojangstudios.png");
 	private static final int MOJANG_RED = ColorHelper.Argb.getArgb(255, 239, 50, 61);
 	private static final int MONOCHROME_BLACK = ColorHelper.Argb.getArgb(255, 0, 0, 0);
-	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.getMonochromeLogo().getValue() ? MONOCHROME_BLACK : MOJANG_RED;
+	private static final IntSupplier BRAND_ARGB = () -> MinecraftClient.getInstance().options.monochromeLogo ? MONOCHROME_BLACK : MOJANG_RED;
 	private static final int field_32251 = 240;
 	private static final float LOGO_RIGHT_HALF_V = 60.0F;
 	private static final int field_32253 = 60;

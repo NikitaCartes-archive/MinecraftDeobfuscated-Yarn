@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.PandaHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
@@ -29,6 +30,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 	public PandaEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PandaEntityModel<>(context.getPart(EntityModelLayers.PANDA)), 0.9F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new PandaHeldItemFeatureRenderer(this));
 	}
 

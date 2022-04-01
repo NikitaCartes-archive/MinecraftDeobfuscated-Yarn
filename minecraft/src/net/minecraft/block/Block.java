@@ -603,11 +603,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return this.registryEntry;
 	}
 
-	protected void dropExperienceWhenMined(ServerWorld world, BlockPos pos, ItemStack tool, IntProvider experience) {
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) == 0) {
-			int i = experience.get(world.random);
+	protected void method_42872(ServerWorld serverWorld, BlockPos blockPos, ItemStack itemStack, IntProvider intProvider) {
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, itemStack) == 0) {
+			int i = intProvider.get(serverWorld.random);
 			if (i > 0) {
-				this.dropExperience(world, pos, i);
+				this.dropExperience(serverWorld, blockPos, i);
 			}
 		}
 	}

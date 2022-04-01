@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public class Generic3x3ContainerScreenHandler extends ScreenHandler {
-	private static final int field_30788 = 9;
+	private static final int field_30788 = 1;
 	private static final int field_30789 = 9;
 	private static final int field_30790 = 36;
 	private static final int field_30791 = 36;
@@ -16,12 +16,12 @@ public class Generic3x3ContainerScreenHandler extends ScreenHandler {
 	private final Inventory inventory;
 
 	public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory) {
-		this(syncId, playerInventory, new SimpleInventory(9));
+		this(syncId, playerInventory, new SimpleInventory(1));
 	}
 
 	public Generic3x3ContainerScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
 		super(ScreenHandlerType.GENERIC_3X3, syncId);
-		checkSize(inventory, 9);
+		checkSize(inventory, 1);
 		this.inventory = inventory;
 		inventory.onOpen(playerInventory.player);
 

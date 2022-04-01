@@ -47,6 +47,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 import org.slf4j.Logger;
 
 public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
@@ -154,6 +155,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}
 
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;
@@ -225,10 +227,6 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 
 		villagerEntity.setVillagerData(this.getVillagerData());
-		if (this.gossipData != null) {
-			villagerEntity.readGossipDataNbt(this.gossipData);
-		}
-
 		if (this.offerData != null) {
 			villagerEntity.setOffers(new TradeOfferList(this.offerData));
 		}

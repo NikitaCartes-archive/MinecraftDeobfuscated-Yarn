@@ -1,11 +1,7 @@
 package net.minecraft.client.util;
 
-import ca.weblite.objc.Client;
 import ca.weblite.objc.NSObject;
 import com.sun.jna.Pointer;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,13 +26,5 @@ public class MacWindowUtil {
 
 	private static void toggleFullscreen(NSObject handle) {
 		handle.send("toggleFullScreen:", new Object[0]);
-	}
-
-	public static void setApplicationIconImage(InputStream stream) throws IOException {
-		String string = Base64.getEncoder().encodeToString(stream.readAllBytes());
-		Client client = Client.getInstance();
-		Object object = client.sendProxy("NSData", "alloc").send("initWithBase64Encoding:", string);
-		Object object2 = client.sendProxy("NSImage", "alloc").send("initWithData:", object);
-		client.sendProxy("NSApplication", "sharedApplication").send("setApplicationIconImage:", object2);
 	}
 }

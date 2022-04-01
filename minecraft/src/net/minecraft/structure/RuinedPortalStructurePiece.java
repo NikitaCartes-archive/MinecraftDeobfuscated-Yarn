@@ -6,8 +6,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,7 +34,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -49,6 +51,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	private static final float field_31620 = 0.3F;
 	private static final float field_31621 = 0.07F;
 	private static final float field_31622 = 0.2F;
+	private static final float field_31623 = 0.2F;
 	private final RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
 	private final RuinedPortalStructurePiece.Properties properties;
 
@@ -303,7 +306,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 					.apply(instance, RuinedPortalStructurePiece.Properties::new)
 		);
 		public boolean cold;
-		public float mossiness;
+		public float mossiness = 0.2F;
 		public boolean airPocket;
 		public boolean overgrown;
 		public boolean vines;
@@ -322,7 +325,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 	}
 
-	public static enum VerticalPlacement implements StringIdentifiable {
+	public static enum VerticalPlacement {
 		ON_LAND_SURFACE("on_land_surface"),
 		PARTLY_BURIED("partly_buried"),
 		ON_OCEAN_FLOOR("on_ocean_floor"),
@@ -330,9 +333,10 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		UNDERGROUND("underground"),
 		IN_NETHER("in_nether");
 
-		public static final StringIdentifiable.Codec<RuinedPortalStructurePiece.VerticalPlacement> field_37811 = StringIdentifiable.createCodec(
-			RuinedPortalStructurePiece.VerticalPlacement::values
-		);
+		private static final Map<String, RuinedPortalStructurePiece.VerticalPlacement> VERTICAL_PLACEMENTS = (Map<String, RuinedPortalStructurePiece.VerticalPlacement>)Arrays.stream(
+				values()
+			)
+			.collect(Collectors.toMap(RuinedPortalStructurePiece.VerticalPlacement::getId, verticalPlacement -> verticalPlacement));
 		private final String id;
 
 		private VerticalPlacement(String id) {
@@ -344,12 +348,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 
 		public static RuinedPortalStructurePiece.VerticalPlacement getFromId(String id) {
-			return (RuinedPortalStructurePiece.VerticalPlacement)field_37811.byId(id);
-		}
-
-		@Override
-		public String asString() {
-			return this.id;
+			return (RuinedPortalStructurePiece.VerticalPlacement)VERTICAL_PLACEMENTS.get(id);
 		}
 	}
 }

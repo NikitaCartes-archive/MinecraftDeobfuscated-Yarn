@@ -36,7 +36,7 @@ public class FireChargeItem extends Item {
 		} else {
 			this.playUseSound(world, blockPos);
 			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
-			world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
+			world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
 			bl = true;
 		}
 

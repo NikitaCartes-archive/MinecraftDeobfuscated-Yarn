@@ -48,7 +48,7 @@ public class ModelPartData {
 			.map(modelCuboidData -> modelCuboidData.createCuboid(textureWidth, textureHeight))
 			.collect(ImmutableList.toImmutableList());
 		ModelPart modelPart = new ModelPart(list, object2ObjectArrayMap);
-		modelPart.setDefaultTransform(this.rotationData);
+		modelPart.method_42987(this.rotationData);
 		modelPart.setTransform(this.rotationData);
 		return modelPart;
 	}

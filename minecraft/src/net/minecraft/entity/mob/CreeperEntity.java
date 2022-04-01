@@ -52,6 +52,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private int fuseTime = 30;
 	private int explosionRadius = 3;
 	private int headsDropped;
+	public boolean field_38527;
 
 	public CreeperEntity(EntityType<? extends CreeperEntity> entityType, World world) {
 		super(entityType, world);
@@ -203,6 +204,21 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	public void setFuseSpeed(int fuseSpeed) {
 		this.dataTracker.set(FUSE_SPEED, fuseSpeed);
+	}
+
+	public void method_42825() {
+		this.currentFuseTime = 0;
+	}
+
+	@Override
+	public boolean startRiding(Entity entity, boolean force) {
+		boolean bl = super.startRiding(entity, force);
+		if (bl && entity instanceof PlayerEntity) {
+			this.method_42825();
+			this.field_38527 = true;
+		}
+
+		return bl;
 	}
 
 	@Override

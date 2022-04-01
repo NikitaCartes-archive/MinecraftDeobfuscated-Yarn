@@ -84,10 +84,10 @@ public abstract class AbstractPressurePlateBlock extends Block {
 
 		if (!bl2 && bl) {
 			this.playDepressSound(world, pos);
-			world.emitGameEvent(entity, GameEvent.BLOCK_DEACTIVATE, pos);
+			world.emitGameEvent(entity, GameEvent.BLOCK_UNPRESS, pos);
 		} else if (bl2 && !bl) {
 			this.playPressSound(world, pos);
-			world.emitGameEvent(entity, GameEvent.BLOCK_ACTIVATE, pos);
+			world.emitGameEvent(entity, GameEvent.BLOCK_PRESS, pos);
 		}
 
 		if (bl2) {

@@ -33,7 +33,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.border.WorldBorder;
-import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.SaveVersionInfo;
 import net.minecraft.world.timer.Timer;
@@ -110,39 +109,35 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		GeneratorOptions generatorOptions,
 		Lifecycle lifecycle
 	) {
-		if (!generatorOptions.getDimensions().contains(DimensionOptions.OVERWORLD)) {
-			throw new IllegalStateException("Missing Overworld dimension data");
-		} else {
-			this.dataFixer = dataFixer;
-			this.modded = modded;
-			this.spawnX = spawnX;
-			this.spawnY = spawnY;
-			this.spawnZ = spawnZ;
-			this.spawnAngle = spawnAngle;
-			this.time = time;
-			this.timeOfDay = timeOfDay;
-			this.version = version;
-			this.clearWeatherTime = clearWeatherTime;
-			this.rainTime = rainTime;
-			this.raining = raining;
-			this.thunderTime = thunderTime;
-			this.thundering = thundering;
-			this.initialized = initialized;
-			this.difficultyLocked = difficultyLocked;
-			this.worldBorder = worldBorder;
-			this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
-			this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
-			this.wanderingTraderId = wanderingTraderId;
-			this.serverBrands = serverBrands;
-			this.playerData = playerData;
-			this.dataVersion = dataVersion;
-			this.scheduledEvents = scheduledEvents;
-			this.customBossEvents = customBossEvents;
-			this.dragonFight = dragonFight;
-			this.levelInfo = levelInfo;
-			this.generatorOptions = generatorOptions;
-			this.lifecycle = lifecycle;
-		}
+		this.dataFixer = dataFixer;
+		this.modded = modded;
+		this.spawnX = spawnX;
+		this.spawnY = spawnY;
+		this.spawnZ = spawnZ;
+		this.spawnAngle = spawnAngle;
+		this.time = time;
+		this.timeOfDay = timeOfDay;
+		this.version = version;
+		this.clearWeatherTime = clearWeatherTime;
+		this.rainTime = rainTime;
+		this.raining = raining;
+		this.thunderTime = thunderTime;
+		this.thundering = thundering;
+		this.initialized = initialized;
+		this.difficultyLocked = difficultyLocked;
+		this.worldBorder = worldBorder;
+		this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
+		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
+		this.wanderingTraderId = wanderingTraderId;
+		this.serverBrands = serverBrands;
+		this.playerData = playerData;
+		this.dataVersion = dataVersion;
+		this.scheduledEvents = scheduledEvents;
+		this.customBossEvents = customBossEvents;
+		this.dragonFight = dragonFight;
+		this.levelInfo = levelInfo;
+		this.generatorOptions = generatorOptions;
+		this.lifecycle = lifecycle;
 	}
 
 	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {

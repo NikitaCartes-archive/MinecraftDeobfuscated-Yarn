@@ -339,7 +339,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.screen.setTooltip(list2);
 			}
 
-			if (this.client.options.getTouchscreen().getValue() || hovered) {
+			if (this.client.options.touchscreen || hovered) {
 				RenderSystem.setShaderTexture(0, MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.setShader(GameRenderer::getPositionTexShader);

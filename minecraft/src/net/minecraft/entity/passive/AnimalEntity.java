@@ -28,9 +28,10 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class AnimalEntity extends PassiveEntity {
-	protected static final int BREEDING_COOLDOWN = 6000;
+	static final int BREEDING_COOLDOWN = 6000;
 	private int loveTicks;
 	@Nullable
 	private UUID lovingPlayer;
@@ -80,7 +81,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Override
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
-		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) ? 10.0F : world.getPhototaxisFavor(pos);
+		return world.getBlockState(pos.down()).isOf(Blocks.GRASS_BLOCK) ? 10.0F : world.getBrightness(pos) - 0.5F;
 	}
 
 	@Override
@@ -139,12 +140,14 @@ public abstract class AnimalEntity extends PassiveEntity {
 			if (!this.world.isClient && i == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
 			}
 
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
-				this.growUp(toGrowUpAge(-i), true);
+				this.growUp((int)((float)(-i / 20) * 0.1F), true);
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.success(this.world.isClient);
 			}
 

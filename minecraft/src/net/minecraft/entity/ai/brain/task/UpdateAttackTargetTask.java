@@ -15,20 +15,15 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	private final Function<E, Optional<? extends LivingEntity>> targetGetter;
 
 	public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter) {
-		this(startCondition, targetGetter, 60);
-	}
-
-	public UpdateAttackTargetTask(Predicate<E> startCondition, Function<E, Optional<? extends LivingEntity>> targetGetter, int duration) {
 		super(
-			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED),
-			duration
+			ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED)
 		);
 		this.startCondition = startCondition;
 		this.targetGetter = targetGetter;
 	}
 
 	public UpdateAttackTargetTask(Function<E, Optional<? extends LivingEntity>> targetGetter) {
-		this(entity -> true, targetGetter);
+		this(mobEntity -> true, targetGetter);
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E mobEntity) {
@@ -41,7 +36,7 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(target -> this.updateAttackTarget(mobEntity, target));
+		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(livingEntity -> this.updateAttackTarget(mobEntity, livingEntity));
 	}
 
 	private void updateAttackTarget(E entity, LivingEntity target) {

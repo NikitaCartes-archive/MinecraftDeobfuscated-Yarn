@@ -288,7 +288,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && world.getFluidState(pos).isIn(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return TurtleEggBlock.isSandBelow(world, pos) ? 10.0F : world.getPhototaxisFavor(pos);
+			return TurtleEggBlock.isSandBelow(world, pos) ? 10.0F : world.getBrightness(pos) - 0.5F;
 		}
 	}
 

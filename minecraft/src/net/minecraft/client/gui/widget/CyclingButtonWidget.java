@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
@@ -12,7 +11,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -31,7 +29,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 	private final Function<T, Text> valueToText;
 	private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
 	private final CyclingButtonWidget.UpdateCallback<T> callback;
-	private final SimpleOption.TooltipFactory<T> tooltipFactory;
+	private final CyclingButtonWidget.TooltipFactory<T> tooltipFactory;
 	private final boolean optionTextOmitted;
 
 	CyclingButtonWidget(
@@ -47,7 +45,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		Function<T, Text> valueToText,
 		Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory,
 		CyclingButtonWidget.UpdateCallback<T> callback,
-		SimpleOption.TooltipFactory<T> tooltipFactory,
+		CyclingButtonWidget.TooltipFactory<T> tooltipFactory,
 		boolean optionTextOmitted
 	) {
 		super(x, y, width, height, message);
@@ -212,9 +210,9 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		@Nullable
 		private T value;
 		private final Function<T, Text> valueToText;
-		private SimpleOption.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
+		private CyclingButtonWidget.TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
 		private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
-		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.<T>of());
+		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.of());
 		private boolean optionTextOmitted;
 
 		/**
@@ -229,8 +227,9 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		/**
 		 * Sets the option values for this button.
 		 */
-		public CyclingButtonWidget.Builder<T> values(Collection<T> values) {
-			return this.values(CyclingButtonWidget.Values.of(values));
+		public CyclingButtonWidget.Builder<T> values(List<T> values) {
+			this.values = CyclingButtonWidget.Values.of(values);
+			return this;
 		}
 
 		/**
@@ -238,7 +237,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 */
 		@SafeVarargs
 		public final CyclingButtonWidget.Builder<T> values(T... values) {
-			return this.values(ImmutableList.<T>copyOf(values));
+			return this.values(ImmutableList.copyOf(values));
 		}
 
 		/**
@@ -249,7 +248,8 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * when clicking the built button.
 		 */
 		public CyclingButtonWidget.Builder<T> values(List<T> defaults, List<T> alternatives) {
-			return this.values(CyclingButtonWidget.Values.of(CyclingButtonWidget.HAS_ALT_DOWN, defaults, alternatives));
+			this.values = CyclingButtonWidget.Values.of(CyclingButtonWidget.HAS_ALT_DOWN, defaults, alternatives);
+			return this;
 		}
 
 		/**
@@ -261,11 +261,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * when clicking the built button.
 		 */
 		public CyclingButtonWidget.Builder<T> values(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
-			return this.values(CyclingButtonWidget.Values.of(alternativeToggle, defaults, alternatives));
-		}
-
-		public CyclingButtonWidget.Builder<T> values(CyclingButtonWidget.Values<T> values) {
-			this.values = values;
+			this.values = CyclingButtonWidget.Values.of(alternativeToggle, defaults, alternatives);
 			return this;
 		}
 
@@ -274,7 +270,7 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		 * 
 		 * <p>If this is not called, the values simply won't have tooltips.
 		 */
-		public CyclingButtonWidget.Builder<T> tooltip(SimpleOption.TooltipFactory<T> tooltipFactory) {
+		public CyclingButtonWidget.Builder<T> tooltip(CyclingButtonWidget.TooltipFactory<T> tooltipFactory) {
 			this.tooltipFactory = tooltipFactory;
 			return this;
 		}
@@ -358,18 +354,23 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 		}
 	}
 
+	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
-	public interface UpdateCallback<T> {
-		void onValueChange(CyclingButtonWidget<T> button, T value);
+	public interface TooltipFactory<T> extends Function<T, List<OrderedText>> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface Values<T> {
+	public interface UpdateCallback<T> {
+		void onValueChange(CyclingButtonWidget button, T value);
+	}
+
+	@Environment(EnvType.CLIENT)
+	interface Values<T> {
 		List<T> getCurrent();
 
 		List<T> getDefaults();
 
-		static <T> CyclingButtonWidget.Values<T> of(Collection<T> values) {
+		static <T> CyclingButtonWidget.Values<T> of(List<T> values) {
 			final List<T> list = ImmutableList.copyOf(values);
 			return new CyclingButtonWidget.Values<T>() {
 				@Override

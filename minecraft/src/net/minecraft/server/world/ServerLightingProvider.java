@@ -142,14 +142,6 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		);
 	}
 
-	public CompletableFuture<Chunk> retainData(Chunk chunk) {
-		ChunkPos chunkPos = chunk.getPos();
-		return CompletableFuture.supplyAsync(Util.debugSupplier((Supplier)(() -> {
-			super.setRetainData(chunkPos, true);
-			return chunk;
-		}), () -> "retainData: " + chunkPos), task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, task));
-	}
-
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);

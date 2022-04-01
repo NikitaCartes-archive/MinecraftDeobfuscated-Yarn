@@ -15,20 +15,20 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private final UUID uuid;
 	private final BlockPos pos;
 	private final Direction facing;
-	private final PaintingMotive motiveId;
+	private final int motiveId;
 
 	public PaintingSpawnS2CPacket(PaintingEntity entity) {
 		this.id = entity.getId();
 		this.uuid = entity.getUuid();
 		this.pos = entity.getDecorationBlockPos();
 		this.facing = entity.getHorizontalFacing();
-		this.motiveId = entity.motive;
+		this.motiveId = Registry.PAINTING_MOTIVE.getRawId(entity.motive);
 	}
 
 	public PaintingSpawnS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.uuid = buf.readUuid();
-		this.motiveId = buf.readRegistryValue(Registry.PAINTING_MOTIVE);
+		this.motiveId = buf.readVarInt();
 		this.pos = buf.readBlockPos();
 		this.facing = Direction.fromHorizontal(buf.readUnsignedByte());
 	}
@@ -37,7 +37,7 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeUuid(this.uuid);
-		buf.writeRegistryValue(Registry.PAINTING_MOTIVE, this.motiveId);
+		buf.writeVarInt(this.motiveId);
 		buf.writeBlockPos(this.pos);
 		buf.writeByte(this.facing.getHorizontal());
 	}
@@ -63,6 +63,6 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public PaintingMotive getMotive() {
-		return this.motiveId;
+		return Registry.PAINTING_MOTIVE.get(this.motiveId);
 	}
 }

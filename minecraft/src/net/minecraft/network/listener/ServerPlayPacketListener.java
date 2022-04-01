@@ -1,5 +1,6 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_7366;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -51,6 +52,8 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
  */
 public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onHandSwing(HandSwingC2SPacket packet);
+
+	void method_42771(class_7366 arg);
 
 	void onChatMessage(ChatMessageC2SPacket packet);
 

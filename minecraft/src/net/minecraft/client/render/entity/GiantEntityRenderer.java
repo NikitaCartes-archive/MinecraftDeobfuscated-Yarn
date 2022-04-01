@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -25,6 +26,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 				this, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR))
 			)
 		);
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, 0.125F, 0.25F, 0.5F));
 	}
 
 	protected void scale(GiantEntity giantEntity, MatrixStack matrixStack, float f) {

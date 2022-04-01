@@ -56,7 +56,6 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -370,55 +369,37 @@ public class ModelLoader {
 							.getAllResources(identifier2)
 							.stream()
 							.map(
-								resourceRef -> {
+								resource -> {
 									try {
-										Resource resource = resourceRef.open();
+										InputStream inputStream = resource.getInputStream();
 		
-										Pair var5x;
+										Pair var3x;
 										try {
-											InputStream inputStream = resource.getInputStream();
-		
-											try {
-												var5x = Pair.of(
-													resourceRef.getPackName(),
-													ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-												);
-											} catch (Throwable var9xx) {
-												if (inputStream != null) {
-													try {
-														inputStream.close();
-													} catch (Throwable var8xx) {
-														var9xx.addSuppressed(var8xx);
-													}
-												}
-		
-												throw var9xx;
-											}
-		
+											var3x = Pair.of(
+												resource.getResourcePackName(),
+												ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+											);
+										} catch (Throwable var6xx) {
 											if (inputStream != null) {
-												inputStream.close();
-											}
-										} catch (Throwable var10xx) {
-											if (resource != null) {
 												try {
-													resource.close();
-												} catch (Throwable var7xx) {
-													var10xx.addSuppressed(var7xx);
+													inputStream.close();
+												} catch (Throwable var5xx) {
+													var6xx.addSuppressed(var5xx);
 												}
 											}
 		
-											throw var10xx;
+											throw var6xx;
 										}
 		
-										if (resource != null) {
-											resource.close();
+										if (inputStream != null) {
+											inputStream.close();
 										}
 		
-										return var5x;
-									} catch (Exception var11xx) {
+										return var3x;
+									} catch (Exception var7xx) {
 										throw new ModelLoader.ModelLoaderException(
 											String.format(
-												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resourceRef.getPackName(), var11xx.getMessage()
+												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", resource.getId(), resource.getResourcePackName(), var7xx.getMessage()
 											)
 										);
 									}

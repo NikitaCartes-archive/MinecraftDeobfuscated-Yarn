@@ -100,7 +100,9 @@ public class VindicatorEntity extends IllagerEntity {
 
 	@Override
 	public IllagerEntity.State getState() {
-		if (this.isAttacking()) {
+		if (this.method_42803() != LivingEntity.class_7316.NONE) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
+		} else if (this.isAttacking()) {
 			return IllagerEntity.State.ATTACKING;
 		} else {
 			return this.isCelebrating() ? IllagerEntity.State.CELEBRATING : IllagerEntity.State.CROSSED;

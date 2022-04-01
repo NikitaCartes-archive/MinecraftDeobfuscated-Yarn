@@ -171,7 +171,7 @@ public class PiglinBrain {
 			Activity.FIGHT,
 			10,
 			ImmutableList.of(
-				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(target -> !isPreferredAttackTarget(piglin, target))),
+				new ForgetAttackTargetTask<>((Predicate<LivingEntity>)(livingEntity -> !isPreferredAttackTarget(piglin, livingEntity))),
 				new ConditionalTask(PiglinBrain::isHoldingCrossbow, new AttackTask<>(5, 0.75F)),
 				new RangedApproachTask(1.0F),
 				new MeleeAttackTask(20),
@@ -191,8 +191,8 @@ public class PiglinBrain {
 				makeGoToSoulFireTask(),
 				new FollowMobTask(PiglinBrain::isGoldHoldingPlayer, 14.0F),
 				new UpdateAttackTargetTask(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget),
-				new ConditionalTask((Predicate)(piglinEntity -> !piglinEntity.isDancing()), new GoToCelebrateTask(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0F)),
-				new ConditionalTask(PiglinEntity::isDancing, new GoToCelebrateTask(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6F)),
+				new ConditionalTask((Predicate)(piglinEntity -> !piglinEntity.isDancing()), new GoToCelebrateTask(2, 1.0F)),
+				new ConditionalTask(PiglinEntity::isDancing, new GoToCelebrateTask(4, 0.6F)),
 				new RandomTask(
 					ImmutableList.of(Pair.of(new FollowMobTask(EntityType.PIGLIN, 8.0F), 1), Pair.of(new StrollTask(0.6F, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1))
 				)

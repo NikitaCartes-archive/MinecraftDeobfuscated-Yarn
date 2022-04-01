@@ -12,7 +12,6 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.FeatureConfig;
-import net.minecraft.world.gen.noise.NoiseConfig;
 
 @FunctionalInterface
 public interface StructureGeneratorFactory<C extends FeatureConfig> {
@@ -32,7 +31,6 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 	public static record Context<C extends FeatureConfig>(
 		ChunkGenerator chunkGenerator,
 		BiomeSource biomeSource,
-		NoiseConfig noiseConfig,
 		long seed,
 		ChunkPos chunkPos,
 		C config,
@@ -44,11 +42,25 @@ public interface StructureGeneratorFactory<C extends FeatureConfig> {
 		public boolean isBiomeValid(Heightmap.Type heightmapType) {
 			int i = this.chunkPos.getCenterX();
 			int j = this.chunkPos.getCenterZ();
-			int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world, this.noiseConfig);
-			RegistryEntry<Biome> registryEntry = this.chunkGenerator
-				.getBiomeSource()
-				.getBiome(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j), this.noiseConfig.getMultiNoiseSampler());
+			int k = this.chunkGenerator.getHeightInGround(i, j, heightmapType, this.world);
+			RegistryEntry<Biome> registryEntry = this.chunkGenerator.getBiomeForNoiseGen(BiomeCoords.fromBlock(i), BiomeCoords.fromBlock(k), BiomeCoords.fromBlock(j));
 			return this.validBiome.test(registryEntry);
+		}
+
+		public int[] getCornerHeights(int x, int width, int z, int height) {
+			return new int[]{
+				this.chunkGenerator.getHeightInGround(x, z, Heightmap.Type.WORLD_SURFACE_WG, this.world),
+				this.chunkGenerator.getHeightInGround(x, z + height, Heightmap.Type.WORLD_SURFACE_WG, this.world),
+				this.chunkGenerator.getHeightInGround(x + width, z, Heightmap.Type.WORLD_SURFACE_WG, this.world),
+				this.chunkGenerator.getHeightInGround(x + width, z + height, Heightmap.Type.WORLD_SURFACE_WG, this.world)
+			};
+		}
+
+		public int getMinCornerHeight(int width, int height) {
+			int i = this.chunkPos.getStartX();
+			int j = this.chunkPos.getStartZ();
+			int[] is = this.getCornerHeights(i, width, j, height);
+			return Math.min(Math.min(is[0], is[1]), Math.min(is[2], is[3]));
 		}
 	}
 }

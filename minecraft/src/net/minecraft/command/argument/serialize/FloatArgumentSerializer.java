@@ -2,61 +2,37 @@ package net.minecraft.command.argument.serialize;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.command.argument.ArgumentHelper;
+import net.minecraft.command.argument.BrigadierArgumentTypes;
 import net.minecraft.network.PacketByteBuf;
 
-public class FloatArgumentSerializer implements ArgumentSerializer<FloatArgumentType, FloatArgumentSerializer.Properties> {
-	public void writePacket(FloatArgumentSerializer.Properties properties, PacketByteBuf packetByteBuf) {
-		boolean bl = properties.min != -Float.MAX_VALUE;
-		boolean bl2 = properties.max != Float.MAX_VALUE;
-		packetByteBuf.writeByte(ArgumentHelper.getMinMaxFlag(bl, bl2));
+public class FloatArgumentSerializer implements ArgumentSerializer<FloatArgumentType> {
+	public void toPacket(FloatArgumentType floatArgumentType, PacketByteBuf packetByteBuf) {
+		boolean bl = floatArgumentType.getMinimum() != -Float.MAX_VALUE;
+		boolean bl2 = floatArgumentType.getMaximum() != Float.MAX_VALUE;
+		packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
 		if (bl) {
-			packetByteBuf.writeFloat(properties.min);
+			packetByteBuf.writeFloat(floatArgumentType.getMinimum());
 		}
 
 		if (bl2) {
-			packetByteBuf.writeFloat(properties.max);
+			packetByteBuf.writeFloat(floatArgumentType.getMaximum());
 		}
 	}
 
-	public FloatArgumentSerializer.Properties fromPacket(PacketByteBuf packetByteBuf) {
+	public FloatArgumentType fromPacket(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
-		float f = ArgumentHelper.hasMinFlag(b) ? packetByteBuf.readFloat() : -Float.MAX_VALUE;
-		float g = ArgumentHelper.hasMaxFlag(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
-		return new FloatArgumentSerializer.Properties(f, g);
+		float f = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readFloat() : -Float.MAX_VALUE;
+		float g = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
+		return FloatArgumentType.floatArg(f, g);
 	}
 
-	public void writeJson(FloatArgumentSerializer.Properties properties, JsonObject jsonObject) {
-		if (properties.min != -Float.MAX_VALUE) {
-			jsonObject.addProperty("min", properties.min);
+	public void toJson(FloatArgumentType floatArgumentType, JsonObject jsonObject) {
+		if (floatArgumentType.getMinimum() != -Float.MAX_VALUE) {
+			jsonObject.addProperty("min", floatArgumentType.getMinimum());
 		}
 
-		if (properties.max != Float.MAX_VALUE) {
-			jsonObject.addProperty("max", properties.max);
-		}
-	}
-
-	public FloatArgumentSerializer.Properties getArgumentTypeProperties(FloatArgumentType floatArgumentType) {
-		return new FloatArgumentSerializer.Properties(floatArgumentType.getMinimum(), floatArgumentType.getMaximum());
-	}
-
-	public final class Properties implements ArgumentSerializer.ArgumentTypeProperties<FloatArgumentType> {
-		final float min;
-		final float max;
-
-		Properties(float min, float max) {
-			this.min = min;
-			this.max = max;
-		}
-
-		public FloatArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
-			return FloatArgumentType.floatArg(this.min, this.max);
-		}
-
-		@Override
-		public ArgumentSerializer<FloatArgumentType, ?> getSerializer() {
-			return FloatArgumentSerializer.this;
+		if (floatArgumentType.getMaximum() != Float.MAX_VALUE) {
+			jsonObject.addProperty("max", floatArgumentType.getMaximum());
 		}
 	}
 }

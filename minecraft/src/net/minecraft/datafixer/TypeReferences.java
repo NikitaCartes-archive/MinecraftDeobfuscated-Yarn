@@ -71,7 +71,6 @@ public class TypeReferences {
 	 * A type reference which refers to an item's identifier.
 	 */
 	public static final TypeReference ITEM_NAME = () -> "item_name";
-	public static final TypeReference GAME_EVENT_NAME = () -> "game_event_name";
 	public static final TypeReference UNTAGGED_SPAWNER = () -> "untagged_spawner";
 	public static final TypeReference STRUCTURE_FEATURE = () -> "structure_feature";
 	public static final TypeReference OBJECTIVE = () -> "objective";

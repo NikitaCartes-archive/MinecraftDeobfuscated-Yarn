@@ -10,16 +10,15 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.dimension.DimensionTypes;
 
 @Environment(EnvType.CLIENT)
 public abstract class DimensionEffects {
 	private static final Object2ObjectMap<Identifier, DimensionEffects> BY_IDENTIFIER = Util.make(new Object2ObjectArrayMap<>(), map -> {
 		DimensionEffects.Overworld overworld = new DimensionEffects.Overworld();
 		map.defaultReturnValue(overworld);
-		map.put(DimensionTypes.OVERWORLD_ID, overworld);
-		map.put(DimensionTypes.THE_NETHER_ID, new DimensionEffects.Nether());
-		map.put(DimensionTypes.THE_END_ID, new DimensionEffects.End());
+		map.put(DimensionType.OVERWORLD_ID, overworld);
+		map.put(DimensionType.THE_NETHER_ID, new DimensionEffects.Nether());
+		map.put(DimensionType.THE_END_ID, new DimensionEffects.End());
 	});
 	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
@@ -37,7 +36,7 @@ public abstract class DimensionEffects {
 	}
 
 	public static DimensionEffects byDimensionType(DimensionType dimensionType) {
-		return BY_IDENTIFIER.get(dimensionType.effects());
+		return BY_IDENTIFIER.get(dimensionType.getEffects());
 	}
 
 	/**

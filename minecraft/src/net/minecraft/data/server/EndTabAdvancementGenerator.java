@@ -10,6 +10,7 @@ import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
 import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
+import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
@@ -52,6 +53,23 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			)
 			.criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/kill_dragon");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Blocks.DRAGON_HEAD,
+				new TranslatableText("advancements.end.ride_dragon.title"),
+				new TranslatableText("advancements.end.ride_dragon.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"ride_dragon",
+				StartedRidingCriterion.Conditions.create(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON).build()))
+			)
+			.build(consumer, "end/ride_dragon");
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement2)
 			.display(

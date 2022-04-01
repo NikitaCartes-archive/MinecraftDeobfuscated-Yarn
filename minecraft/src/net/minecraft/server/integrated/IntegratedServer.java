@@ -105,13 +105,13 @@ public class IntegratedServer extends MinecraftServer {
 			this.incrementTotalWorldTimeStat();
 		} else {
 			super.tick(shouldKeepTicking);
-			int i = Math.max(2, this.client.options.getViewDistance().getValue());
+			int i = Math.max(2, this.client.options.viewDistance);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
 				this.getPlayerManager().setViewDistance(i);
 			}
 
-			int j = Math.max(2, this.client.options.getSimulationDistance().getValue());
+			int j = Math.max(2, this.client.options.simulationDistance);
 			if (j != this.simulationDistance) {
 				LOGGER.info("Changing simulation distance to {}, from {}", j, this.simulationDistance);
 				this.getPlayerManager().setSimulationDistance(j);
@@ -264,7 +264,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public int adjustTrackingDistance(int initialDistance) {
-		return (int)(this.client.options.getEntityDistanceScaling().getValue() * (double)initialDistance);
+		return (int)(this.client.options.entityDistanceScaling * (float)initialDistance);
 	}
 
 	@Override

@@ -4,12 +4,12 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_7322;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PaneBlock;
@@ -29,6 +29,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class StrongholdGenerator {
@@ -703,6 +704,11 @@ public class StrongholdGenerator {
 		}
 
 		@Override
+		public StructureWeightType getWeightType() {
+			return StructureWeightType.BURY;
+		}
+
+		@Override
 		protected void writeNbt(StructureContext context, NbtCompound nbt) {
 			nbt.putString("EntryDoor", this.entryDoor.name());
 		}
@@ -1068,10 +1074,7 @@ public class StrongholdGenerator {
 				this.addBlock(world, blockState3, k, 3, 6, chunkBox);
 			}
 
-			BlockState blockState4 = Blocks.END_PORTAL_FRAME.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.NORTH);
-			BlockState blockState5 = Blocks.END_PORTAL_FRAME.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.SOUTH);
-			BlockState blockState6 = Blocks.END_PORTAL_FRAME.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.EAST);
-			BlockState blockState7 = Blocks.END_PORTAL_FRAME.getDefaultState().with(EndPortalFrameBlock.FACING, Direction.WEST);
+			BlockState blockState4 = Blocks.END_PORTAL_FRAME.getDefaultState().with(class_7322.field_38553, Direction.UP);
 			boolean bl = true;
 			boolean[] bls = new boolean[12];
 
@@ -1080,29 +1083,65 @@ public class StrongholdGenerator {
 				bl &= bls[l];
 			}
 
-			this.addBlock(world, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[0])), 4, 3, 8, chunkBox);
-			this.addBlock(world, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[1])), 5, 3, 8, chunkBox);
-			this.addBlock(world, blockState4.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[2])), 6, 3, 8, chunkBox);
-			this.addBlock(world, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[3])), 4, 3, 12, chunkBox);
-			this.addBlock(world, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[4])), 5, 3, 12, chunkBox);
-			this.addBlock(world, blockState5.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[5])), 6, 3, 12, chunkBox);
-			this.addBlock(world, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[6])), 3, 3, 9, chunkBox);
-			this.addBlock(world, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[7])), 3, 3, 10, chunkBox);
-			this.addBlock(world, blockState6.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[8])), 3, 3, 11, chunkBox);
-			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[9])), 7, 3, 9, chunkBox);
-			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[10])), 7, 3, 10, chunkBox);
-			this.addBlock(world, blockState7.with(EndPortalFrameBlock.EYE, Boolean.valueOf(bls[11])), 7, 3, 11, chunkBox);
+			if (bls[0]) {
+				this.addBlock(world, blockState4, 4, 3, 8, chunkBox);
+			}
+
+			if (bls[1]) {
+				this.addBlock(world, blockState4, 5, 3, 8, chunkBox);
+			}
+
+			if (bls[2]) {
+				this.addBlock(world, blockState4, 6, 3, 8, chunkBox);
+			}
+
+			if (bls[3]) {
+				this.addBlock(world, blockState4, 4, 3, 12, chunkBox);
+			}
+
+			if (bls[4]) {
+				this.addBlock(world, blockState4, 5, 3, 12, chunkBox);
+			}
+
+			if (bls[5]) {
+				this.addBlock(world, blockState4, 6, 3, 12, chunkBox);
+			}
+
+			if (bls[6]) {
+				this.addBlock(world, blockState4, 3, 3, 9, chunkBox);
+			}
+
+			if (bls[7]) {
+				this.addBlock(world, blockState4, 3, 3, 10, chunkBox);
+			}
+
+			if (bls[8]) {
+				this.addBlock(world, blockState4, 3, 3, 11, chunkBox);
+			}
+
+			if (bls[9]) {
+				this.addBlock(world, blockState4, 7, 3, 9, chunkBox);
+			}
+
+			if (bls[10]) {
+				this.addBlock(world, blockState4, 7, 3, 10, chunkBox);
+			}
+
+			if (bls[11]) {
+				this.addBlock(world, blockState4, 7, 3, 11, chunkBox);
+			}
+
 			if (bl) {
-				BlockState blockState8 = Blocks.END_PORTAL.getDefaultState();
-				this.addBlock(world, blockState8, 4, 3, 9, chunkBox);
-				this.addBlock(world, blockState8, 5, 3, 9, chunkBox);
-				this.addBlock(world, blockState8, 6, 3, 9, chunkBox);
-				this.addBlock(world, blockState8, 4, 3, 10, chunkBox);
-				this.addBlock(world, blockState8, 5, 3, 10, chunkBox);
-				this.addBlock(world, blockState8, 6, 3, 10, chunkBox);
-				this.addBlock(world, blockState8, 4, 3, 11, chunkBox);
-				this.addBlock(world, blockState8, 5, 3, 11, chunkBox);
-				this.addBlock(world, blockState8, 6, 3, 11, chunkBox);
+				BlockState blockState5 = Blocks.END_PORTAL.getDefaultState();
+				this.addBlock(world, blockState5, 4, 3, 9, chunkBox);
+				this.addBlock(world, blockState5, 5, 3, 9, chunkBox);
+				this.addBlock(world, blockState5, 6, 3, 9, chunkBox);
+				this.addBlock(world, blockState5, 4, 3, 10, chunkBox);
+				this.addBlock(world, blockState5, 5, 3, 10, chunkBox);
+				this.addBlock(world, blockState5, 6, 3, 10, chunkBox);
+				this.addBlock(world, blockState5, 4, 3, 11, chunkBox);
+				this.addBlock(world, blockState5, 5, 3, 11, chunkBox);
+				this.addBlock(world, blockState5, 6, 3, 11, chunkBox);
 			}
 
 			if (!this.spawnerPlaced) {

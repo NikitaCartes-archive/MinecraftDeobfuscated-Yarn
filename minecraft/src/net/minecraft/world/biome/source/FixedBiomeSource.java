@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
@@ -22,14 +21,19 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		.codec();
 	private final RegistryEntry<Biome> biome;
 
-	public FixedBiomeSource(RegistryEntry<Biome> biome) {
-		super(ImmutableList.of(biome));
-		this.biome = biome;
+	public FixedBiomeSource(RegistryEntry<Biome> registryEntry) {
+		super(ImmutableList.of(registryEntry));
+		this.biome = registryEntry;
 	}
 
 	@Override
 	protected Codec<? extends BiomeSource> getCodec() {
 		return CODEC;
+	}
+
+	@Override
+	public BiomeSource withSeed(long seed) {
+		return this;
 	}
 
 	@Override
@@ -62,14 +66,6 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		} else {
 			return null;
 		}
-	}
-
-	@Nullable
-	@Override
-	public Pair<BlockPos, RegistryEntry<Biome>> method_42310(
-		BlockPos blockPos, int i, int j, int k, Predicate<RegistryEntry<Biome>> predicate, MultiNoiseUtil.MultiNoiseSampler multiNoiseSampler, WorldView worldView
-	) {
-		return predicate.test(this.biome) ? Pair.of(blockPos, this.biome) : null;
 	}
 
 	@Override

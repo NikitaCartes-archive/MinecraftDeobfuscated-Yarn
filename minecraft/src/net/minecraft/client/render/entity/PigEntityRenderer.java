@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.SaddleFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PigEntityModel;
@@ -14,6 +15,7 @@ public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityMod
 
 	public PigEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG)), 0.7F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(
 			new SaddleFeatureRenderer<>(this, new PigEntityModel<>(context.getPart(EntityModelLayers.PIG_SADDLE)), new Identifier("textures/entity/pig/pig_saddle.png"))
 		);

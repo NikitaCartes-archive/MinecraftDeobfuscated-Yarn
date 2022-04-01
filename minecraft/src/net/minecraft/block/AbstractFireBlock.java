@@ -34,9 +34,7 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	public static BlockState getState(BlockView world, BlockPos pos) {
-		BlockPos blockPos = pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
-		return SoulFireBlock.isSoulBase(blockState) ? Blocks.SOUL_FIRE.getDefaultState() : ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
+		return ((FireBlock)Blocks.FIRE).getStateForPosition(world, pos);
 	}
 
 	@Override

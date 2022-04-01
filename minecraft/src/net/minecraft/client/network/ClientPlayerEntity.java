@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7366;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -36,10 +37,10 @@ import net.minecraft.client.sound.MinecartInsideSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
@@ -95,7 +96,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private static final float field_32674 = 0.6F;
 	private static final double field_32675 = 0.35;
 	private static final double MAX_SOFT_COLLISION_RADIANS = 0.13962634F;
-	private static final float field_38337 = 0.3F;
 	public final ClientPlayNetworkHandler networkHandler;
 	private final StatHandler statHandler;
 	private final ClientRecipeBook recipeBook;
@@ -282,7 +282,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			this.lastOnGround = this.onGround;
-			this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
+			this.autoJumpEnabled = this.client.options.autoJump;
 		}
 	}
 
@@ -317,6 +317,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void swingHand(Hand hand) {
 		super.swingHand(hand);
 		this.networkHandler.sendPacket(new HandSwingC2SPacket(hand));
+	}
+
+	public void method_43003() {
+		this.networkHandler.sendPacket(new class_7366(this.getRotationVec(0.5F)));
 	}
 
 	@Override
@@ -683,8 +687,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			&& !this.isSwimming()
 			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
 			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
-		float f = MathHelper.clamp(0.3F + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0F, 1.0F);
-		this.input.tick(this.shouldSlowDown(), f);
+		this.input.tick(this.shouldSlowDown());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.movementSideways *= 0.2F;
@@ -766,6 +769,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					this.abilityResyncCountdown = 0;
 				}
 			}
+		} else if (!bl && this.input.jumping && !bl4 && this.hasPassengerType(entity -> entity.getType() == EntityType.CHICKEN)) {
+			if (this.abilityResyncCountdown == 0) {
+				this.abilityResyncCountdown = 7;
+			} else {
+				this.setVelocity(this.getVelocity().add(new Vec3d(0.0, 0.5, 0.0)));
+				this.abilityResyncCountdown = 0;
+			}
 		}
 
 		if (this.input.jumping && !bl6 && !bl && !this.getAbilities().flying && !this.hasVehicle() && !this.isClimbing()) {
@@ -835,6 +845,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.onGround && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
 			this.getAbilities().flying = false;
 			this.sendAbilitiesUpdate();
+		}
+
+		if (this.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.BARREL) && this.isInSneakingPose()) {
+			this.setPosition((double)MathHelper.floor(this.getX()) + 0.5, this.getY(), (double)MathHelper.floor(this.getZ()) + 0.5);
 		}
 	}
 

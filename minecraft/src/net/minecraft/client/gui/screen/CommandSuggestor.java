@@ -260,7 +260,7 @@ public class CommandSuggestor {
 		}
 
 		this.window = null;
-		if (this.windowActive && this.client.options.getAutoSuggestions().getValue()) {
+		if (this.windowActive && this.client.options.autoSuggestions) {
 			this.showSuggestions(false);
 		}
 	}

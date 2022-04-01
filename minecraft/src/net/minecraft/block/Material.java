@@ -179,12 +179,6 @@ public final class Material {
 	public static final Material CAKE = new Material.Builder(MapColor.CLEAR).destroyedByPiston().build();
 	public static final Material AMETHYST = new Material.Builder(MapColor.PURPLE).build();
 	public static final Material POWDER_SNOW = new Material.Builder(MapColor.WHITE).notSolid().allowsMovement().build();
-	public static final Material FROGSPAWN = new Material.Builder(MapColor.WATER_BLUE)
-		.allowsMovement()
-		.lightPassesThrough()
-		.notSolid()
-		.destroyedByPiston()
-		.build();
 	private final MapColor color;
 	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;

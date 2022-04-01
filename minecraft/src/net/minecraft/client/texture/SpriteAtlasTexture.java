@@ -165,7 +165,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 						Resource resource = resourceManager.getResource(identifier2);
 
 						try {
-							PngFile pngFile = new PngFile(identifier2::toString, resource.getInputStream());
+							PngFile pngFile = new PngFile(resource.toString(), resource.getInputStream());
 							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
 							if (animationResourceMetadata == null) {
 								animationResourceMetadata = AnimationResourceMetadata.EMPTY;

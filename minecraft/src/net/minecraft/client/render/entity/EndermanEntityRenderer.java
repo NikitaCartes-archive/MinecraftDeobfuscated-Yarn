@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.EndermanBlockFeatureRenderer;
 import net.minecraft.client.render.entity.feature.EndermanEyesFeatureRenderer;
+import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
@@ -21,12 +22,13 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 
 	public EndermanEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new EndermanEntityModel<>(context.getPart(EntityModelLayers.ENDERMAN)), 0.5F);
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
 		this.addFeature(new EndermanEyesFeatureRenderer<>(this));
-		this.addFeature(new EndermanBlockFeatureRenderer(this));
+		this.addFeature(new EndermanBlockFeatureRenderer<>(this, 0.25F, 0.1875F, 0.25F));
 	}
 
 	public void render(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		BlockState blockState = endermanEntity.getCarriedBlock();
+		BlockState blockState = endermanEntity.method_42800();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
 		endermanEntityModel.angry = endermanEntity.isAngry();

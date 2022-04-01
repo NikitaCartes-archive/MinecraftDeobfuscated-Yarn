@@ -81,7 +81,7 @@ public interface StructurePieceType {
 
 		@Override
 		default StructurePiece load(StructureContext structureContext, NbtCompound nbtCompound) {
-			return this.load(structureContext.structureTemplateManager(), nbtCompound);
+			return this.load(structureContext.structureManager(), nbtCompound);
 		}
 	}
 

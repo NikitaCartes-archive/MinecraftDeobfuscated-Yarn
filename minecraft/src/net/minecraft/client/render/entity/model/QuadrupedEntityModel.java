@@ -43,7 +43,7 @@ import net.minecraft.util.math.MathHelper;
  * </div>
  */
 @Environment(EnvType.CLIENT)
-public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
+public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> implements ModelWithHead {
 	protected final ModelPart head;
 	protected final ModelPart body;
 	protected final ModelPart rightHindLeg;
@@ -108,5 +108,10 @@ public class QuadrupedEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+	}
+
+	@Override
+	public ModelPart getHead() {
+		return this.head;
 	}
 }

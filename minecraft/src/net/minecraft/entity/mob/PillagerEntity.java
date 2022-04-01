@@ -129,7 +129,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 
 	@Override
 	public IllagerEntity.State getState() {
-		if (this.isCharging()) {
+		if (this.method_42803() != LivingEntity.class_7316.NONE) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
+		} else if (this.isCharging()) {
 			return IllagerEntity.State.CROSSBOW_CHARGE;
 		} else if (this.isHolding(Items.CROSSBOW)) {
 			return IllagerEntity.State.CROSSBOW_HOLD;

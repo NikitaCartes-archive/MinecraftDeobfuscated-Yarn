@@ -21,11 +21,11 @@ public class NopStructureProcessor extends StructureProcessor {
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
-		Structure.StructureBlockInfo originalBlockInfo,
-		Structure.StructureBlockInfo currentBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo,
+		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData data
 	) {
-		return currentBlockInfo;
+		return structureBlockInfo2;
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package net.minecraft.world;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -12,9 +11,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.tick.OrderedTick;
@@ -79,12 +75,6 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	default void updateNeighbors(BlockPos pos, Block block) {
 	}
 
-	default void replaceWithStateForNeighborUpdate(
-		Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth
-	) {
-		NeighborUpdater.replaceWithStateForNeighborUpdate(this, direction, neighborState, pos, neighborPos, flags, maxUpdateDepth - 1);
-	}
-
 	void playSound(@Nullable PlayerEntity player, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
 	void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
@@ -101,10 +91,19 @@ public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	 * @param entity the entity that triggered the game event, or {@code null} for events
 	 * not triggered by entities (such as dispensers)
 	 * @param event the game event
+	 * @param pos the position where the event occurred
 	 */
-	void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos);
+	void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos);
 
-	default void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
-		this.emitGameEvent(entity, event, Vec3d.ofCenter(pos));
+	default void emitGameEvent(GameEvent event, BlockPos pos) {
+		this.emitGameEvent(null, event, pos);
+	}
+
+	default void emitGameEvent(GameEvent event, Entity emitter) {
+		this.emitGameEvent(null, event, emitter.getBlockPos());
+	}
+
+	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {
+		this.emitGameEvent(entity, event, emitter.getBlockPos());
 	}
 }

@@ -33,14 +33,14 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 
 	public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
 		this.pos = buf.readBlockPos();
-		this.blockEntityType = buf.readRegistryValue(Registry.BLOCK_ENTITY_TYPE);
+		this.blockEntityType = Registry.BLOCK_ENTITY_TYPE.get(buf.readVarInt());
 		this.nbt = buf.readNbt();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
-		buf.writeRegistryValue(Registry.BLOCK_ENTITY_TYPE, this.blockEntityType);
+		buf.writeVarInt(Registry.BLOCK_ENTITY_TYPE.getRawId(this.blockEntityType));
 		buf.writeNbt(this.nbt);
 	}
 

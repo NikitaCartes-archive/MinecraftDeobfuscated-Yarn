@@ -165,11 +165,11 @@ public class PeriodicNotificationManager
 		final String title;
 		final String message;
 
-		public Entry(long delay, long period, String title, String message) {
-			this.delay = delay != 0L ? delay : period;
-			this.period = period;
-			this.title = title;
-			this.message = message;
+		public Entry(long l, long m, String string, String string2) {
+			this.delay = l != 0L ? l : m;
+			this.period = m;
+			this.title = string;
+			this.message = string2;
 		}
 	}
 

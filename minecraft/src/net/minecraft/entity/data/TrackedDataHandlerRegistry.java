@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -151,12 +152,12 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler<ParticleEffect>() {
 		public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
-			packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, particleEffect.getType());
+			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId(particleEffect.getType()));
 			particleEffect.write(packetByteBuf);
 		}
 
 		public ParticleEffect read(PacketByteBuf packetByteBuf) {
-			return this.read(packetByteBuf, packetByteBuf.readRegistryValue(Registry.PARTICLE_TYPE));
+			return this.read(packetByteBuf, (ParticleType<ParticleEffect>)Registry.PARTICLE_TYPE.get(packetByteBuf.readVarInt()));
 		}
 
 		private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
@@ -255,14 +256,14 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {
 		public void write(PacketByteBuf packetByteBuf, VillagerData villagerData) {
-			packetByteBuf.writeRegistryValue(Registry.VILLAGER_TYPE, villagerData.getType());
-			packetByteBuf.writeRegistryValue(Registry.VILLAGER_PROFESSION, villagerData.getProfession());
+			packetByteBuf.writeVarInt(Registry.VILLAGER_TYPE.getRawId(villagerData.getType()));
+			packetByteBuf.writeVarInt(Registry.VILLAGER_PROFESSION.getRawId(villagerData.getProfession()));
 			packetByteBuf.writeVarInt(villagerData.getLevel());
 		}
 
 		public VillagerData read(PacketByteBuf packetByteBuf) {
 			return new VillagerData(
-				packetByteBuf.readRegistryValue(Registry.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registry.VILLAGER_PROFESSION), packetByteBuf.readVarInt()
+				Registry.VILLAGER_TYPE.get(packetByteBuf.readVarInt()), Registry.VILLAGER_PROFESSION.get(packetByteBuf.readVarInt()), packetByteBuf.readVarInt()
 			);
 		}
 
@@ -270,7 +271,7 @@ public class TrackedDataHandlerRegistry {
 			return villagerData;
 		}
 	};
-	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = new TrackedDataHandler<OptionalInt>() {
+	public static final TrackedDataHandler<OptionalInt> FIREWORK_DATA = new TrackedDataHandler<OptionalInt>() {
 		public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
 			packetByteBuf.writeVarInt(optionalInt.orElse(-1) + 1);
 		}
@@ -295,6 +296,19 @@ public class TrackedDataHandlerRegistry {
 
 		public EntityPose copy(EntityPose entityPose) {
 			return entityPose;
+		}
+	};
+	public static final TrackedDataHandler<Optional<EntityType<?>>> field_38682 = new TrackedDataHandler<Optional<EntityType<?>>>() {
+		public void write(PacketByteBuf packetByteBuf, Optional<EntityType<?>> optional) {
+			packetByteBuf.writeOptional(optional, (packetByteBufx, entityType) -> packetByteBufx.writeVarInt(Registry.ENTITY_TYPE.getRawId(entityType)));
+		}
+
+		public Optional<EntityType<?>> read(PacketByteBuf packetByteBuf) {
+			return packetByteBuf.readOptional(packetByteBufx -> Registry.ENTITY_TYPE.get(packetByteBufx.readVarInt()));
+		}
+
+		public Optional<EntityType<?>> copy(Optional<EntityType<?>> optional) {
+			return optional;
 		}
 	};
 
@@ -332,7 +346,8 @@ public class TrackedDataHandlerRegistry {
 		register(NBT_COMPOUND);
 		register(PARTICLE);
 		register(VILLAGER_DATA);
-		register(OPTIONAL_INT);
+		register(FIREWORK_DATA);
 		register(ENTITY_POSE);
+		register(field_38682);
 	}
 }

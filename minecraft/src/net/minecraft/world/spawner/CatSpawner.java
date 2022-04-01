@@ -8,11 +8,14 @@ import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
+import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -20,7 +23,7 @@ import net.minecraft.world.poi.PointOfInterestType;
  * A spawner for cats in villages and swamp huts.
  * 
  * @implNote Cats in swamp huts are also spawned in
- * {@link net.minecraft.world.gen.chunk.ChunkGenerator#getEntitySpawnList}.
+ * {@link net.minecraft.world.gen.chunk.ChunkGeneratorSettings#getEntitySpawnList}.
  */
 public class CatSpawner implements Spawner {
 	private static final int SPAWN_INTERVAL = 1200;
@@ -51,7 +54,9 @@ public class CatSpawner implements Spawner {
 								return this.spawnInHouse(world, blockPos);
 							}
 
-							if (world.getStructureAccessor().getStructureContaining(blockPos, ConfiguredStructureFeatureTags.CATS_SPAWN_IN).hasChildren()) {
+							Registry<ConfiguredStructureFeature<?, ?>> registry = world.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+							if (ChunkGenerator.method_41049(registry, StructureFeature.SWAMP_HUT)
+								.anyMatch(configuredStructureFeature -> world.getStructureAccessor().getStructureContaining(blockPos, configuredStructureFeature).hasChildren())) {
 								return this.spawnInSwampHut(world, blockPos);
 							}
 						}

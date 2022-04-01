@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
@@ -12,6 +13,7 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
+	@Nullable
 	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
@@ -20,7 +22,7 @@ public class BackupPromptScreen extends Screen {
 	protected int field_32236;
 	private CheckboxWidget eraseCacheCheckbox;
 
-	public BackupPromptScreen(Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
+	public BackupPromptScreen(@Nullable Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
 		super(title);
 		this.parent = parent;
 		this.callback = callback;

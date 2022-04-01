@@ -14,16 +14,19 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
+import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -35,13 +38,23 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	private final float scaleY;
 	private final float scaleZ;
 	private final Map<SkullBlock.SkullType, SkullBlockEntityModel> headModels;
+	private final boolean field_38674;
 
 	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
-		this(context, loader, 1.0F, 1.0F, 1.0F);
+		this(context, loader, false);
 	}
 
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader, float scaleX, float scaleY, float scaleZ) {
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader, float f, float g, float h) {
+		this(featureRendererContext, entityModelLoader, f, g, h, false);
+	}
+
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, EntityModelLoader entityModelLoader, boolean bl) {
+		this(featureRendererContext, entityModelLoader, 1.0F, 1.0F, 1.0F, bl);
+	}
+
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader, float scaleX, float scaleY, float scaleZ, boolean bl) {
 		super(context);
+		this.field_38674 = bl;
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
@@ -52,7 +65,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
-		if (!itemStack.isEmpty()) {
+		if (!itemStack.isEmpty() && (!this.field_38674 || !itemStack.isOf(Items.BARREL))) {
 			Item item = itemStack.getItem();
 			matrixStack.push();
 			matrixStack.scale(this.scaleX, this.scaleY, this.scaleZ);
@@ -66,6 +79,13 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			}
 
 			this.getContextModel().getHead().rotate(matrixStack);
+			if (this.getContextModel() instanceof QuadrupedEntityModel) {
+				matrixStack.translate(0.0, 0.25, -0.25125);
+				if (livingEntity instanceof PandaEntity) {
+					matrixStack.scale(1.333F, 1.333F, 1.333F);
+				}
+			}
+
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
 				float m = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);

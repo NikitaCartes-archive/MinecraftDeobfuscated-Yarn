@@ -43,7 +43,9 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 	@Override
 	public IllagerEntity.State getState() {
-		if (this.isSpellcasting()) {
+		if (this.method_42803() != LivingEntity.class_7316.NONE) {
+			return IllagerEntity.State.CROSSBOW_HOLD;
+		} else if (this.isSpellcasting()) {
 			return IllagerEntity.State.SPELLCASTING;
 		} else {
 			return this.isCelebrating() ? IllagerEntity.State.CELEBRATING : IllagerEntity.State.CROSSED;

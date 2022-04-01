@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
@@ -67,7 +66,6 @@ public class SpawnEggItem extends Item {
 					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
-					world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
 					itemStack.decrement(1);
 					return ActionResult.CONSUME;
 				}
@@ -114,8 +112,7 @@ public class SpawnEggItem extends Item {
 				return TypedActionResult.pass(itemStack);
 			} else if (world.canPlayerModifyAt(user, blockPos) && user.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				EntityType<?> entityType = this.getEntityType(itemStack.getNbt());
-				Entity entity = entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false);
-				if (entity == null) {
+				if (entityType.spawnFromItemStack((ServerWorld)world, itemStack, user, blockPos, SpawnReason.SPAWN_EGG, false, false) == null) {
 					return TypedActionResult.pass(itemStack);
 				} else {
 					if (!user.getAbilities().creativeMode) {
@@ -123,7 +120,7 @@ public class SpawnEggItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					world.emitGameEvent(user, GameEvent.ENTITY_PLACE, entity.getPos());
+					world.emitGameEvent(GameEvent.ENTITY_PLACE, user);
 					return TypedActionResult.consume(itemStack);
 				}
 			} else {

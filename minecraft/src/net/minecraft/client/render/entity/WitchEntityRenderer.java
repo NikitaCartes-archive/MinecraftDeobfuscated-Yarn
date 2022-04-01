@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_7362;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.WitchHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -17,6 +18,7 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 	public WitchEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WitchEntityModel<>(context.getPart(EntityModelLayers.WITCH)), 0.5F);
 		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
+		this.addFeature(new class_7362<>(this));
 	}
 
 	public void render(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

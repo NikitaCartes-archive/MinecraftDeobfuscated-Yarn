@@ -138,7 +138,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			}
 
 			matrices.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
-			if (this.gameOptions.getEntityShadows().getValue() && this.renderShadows && entityRenderer.shadowRadius > 0.0F && !entity.isInvisible()) {
+			if (this.gameOptions.entityShadows && this.renderShadows && entityRenderer.shadowRadius > 0.0F && !entity.isInvisible()) {
 				double g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
 				float h = (float)((1.0 - g / 256.0) * (double)entityRenderer.shadowOpacity);
 				if (h > 0.0F) {
@@ -307,32 +307,31 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			if (blockState.isFullCube(world, blockPos)) {
 				VoxelShape voxelShape = blockState.getOutlineShape(world, pos.down());
 				if (!voxelShape.isEmpty()) {
-					float f = LightmapTextureManager.getBrightness(world.getDimension(), world.getLightLevel(pos));
-					float g = (float)(((double)opacity - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)f);
-					if (g >= 0.0F) {
-						if (g > 1.0F) {
-							g = 1.0F;
+					float f = (float)(((double)opacity - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)world.getBrightness(pos));
+					if (f >= 0.0F) {
+						if (f > 1.0F) {
+							f = 1.0F;
 						}
 
 						Box box = voxelShape.getBoundingBox();
 						double d = (double)pos.getX() + box.minX;
 						double e = (double)pos.getX() + box.maxX;
-						double h = (double)pos.getY() + box.minY;
-						double i = (double)pos.getZ() + box.minZ;
-						double j = (double)pos.getZ() + box.maxZ;
-						float k = (float)(d - x);
-						float l = (float)(e - x);
-						float m = (float)(h - y);
+						double g = (double)pos.getY() + box.minY;
+						double h = (double)pos.getZ() + box.minZ;
+						double i = (double)pos.getZ() + box.maxZ;
+						float j = (float)(d - x);
+						float k = (float)(e - x);
+						float l = (float)(g - y);
+						float m = (float)(h - z);
 						float n = (float)(i - z);
-						float o = (float)(j - z);
+						float o = -j / 2.0F / radius + 0.5F;
 						float p = -k / 2.0F / radius + 0.5F;
-						float q = -l / 2.0F / radius + 0.5F;
+						float q = -m / 2.0F / radius + 0.5F;
 						float r = -n / 2.0F / radius + 0.5F;
-						float s = -o / 2.0F / radius + 0.5F;
-						drawShadowVertex(entry, vertices, g, k, m, n, p, r);
-						drawShadowVertex(entry, vertices, g, k, m, o, p, s);
-						drawShadowVertex(entry, vertices, g, l, m, o, q, s);
-						drawShadowVertex(entry, vertices, g, l, m, n, q, r);
+						drawShadowVertex(entry, vertices, f, j, l, m, o, q);
+						drawShadowVertex(entry, vertices, f, j, l, n, o, r);
+						drawShadowVertex(entry, vertices, f, k, l, n, p, r);
+						drawShadowVertex(entry, vertices, f, k, l, m, p, q);
 					}
 				}
 			}

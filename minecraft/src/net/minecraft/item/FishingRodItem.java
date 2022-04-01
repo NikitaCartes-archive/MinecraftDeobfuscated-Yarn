@@ -35,7 +35,7 @@ public class FishingRodItem extends Item implements Vanishable {
 				1.0F,
 				0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 			);
-			user.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
+			world.emitGameEvent(user, GameEvent.FISHING_ROD_REEL_IN, user);
 		} else {
 			world.playSound(
 				null,
@@ -54,7 +54,7 @@ public class FishingRodItem extends Item implements Vanishable {
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
-			user.emitGameEvent(GameEvent.ITEM_INTERACT_START);
+			world.emitGameEvent(user, GameEvent.FISHING_ROD_CAST, user);
 		}
 
 		return TypedActionResult.success(itemStack, world.isClient());

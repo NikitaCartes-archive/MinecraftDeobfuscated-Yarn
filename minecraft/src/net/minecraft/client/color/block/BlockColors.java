@@ -56,8 +56,7 @@ public class BlockColors {
 			Blocks.JUNGLE_LEAVES,
 			Blocks.ACACIA_LEAVES,
 			Blocks.DARK_OAK_LEAVES,
-			Blocks.VINE,
-			Blocks.MANGROVE_LEAVES
+			Blocks.VINE
 		);
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getWaterColor(world, pos) : -1,

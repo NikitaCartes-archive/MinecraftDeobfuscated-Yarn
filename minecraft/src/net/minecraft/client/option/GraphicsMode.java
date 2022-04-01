@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum GraphicsMode implements TranslatableOption {
+public enum GraphicsMode {
 	FAST(0, "options.graphics.fast"),
 	FANCY(1, "options.graphics.fancy"),
 	FABULOUS(2, "options.graphics.fabulous");
@@ -24,12 +23,10 @@ public enum GraphicsMode implements TranslatableOption {
 		this.translationKey = translationKey;
 	}
 
-	@Override
 	public int getId() {
 		return this.id;
 	}
 
-	@Override
 	public String getTranslationKey() {
 		return this.translationKey;
 	}

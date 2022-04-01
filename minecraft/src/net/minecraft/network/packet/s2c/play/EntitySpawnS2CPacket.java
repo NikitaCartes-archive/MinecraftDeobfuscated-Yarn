@@ -85,7 +85,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public EntitySpawnS2CPacket(PacketByteBuf buf) {
 		this.id = buf.readVarInt();
 		this.uuid = buf.readUuid();
-		this.entityTypeId = buf.readRegistryValue(Registry.ENTITY_TYPE);
+		this.entityTypeId = Registry.ENTITY_TYPE.get(buf.readVarInt());
 		this.x = buf.readDouble();
 		this.y = buf.readDouble();
 		this.z = buf.readDouble();
@@ -101,7 +101,7 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeUuid(this.uuid);
-		buf.writeRegistryValue(Registry.ENTITY_TYPE, this.entityTypeId);
+		buf.writeVarInt(Registry.ENTITY_TYPE.getRawId(this.entityTypeId));
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);
 		buf.writeDouble(this.z);
