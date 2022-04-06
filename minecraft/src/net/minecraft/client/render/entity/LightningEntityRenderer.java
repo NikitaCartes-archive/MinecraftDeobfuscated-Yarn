@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.RenderLayer;
@@ -11,6 +10,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
@@ -23,20 +23,20 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 		float[] gs = new float[8];
 		float h = 0.0F;
 		float j = 0.0F;
-		Random random = new Random(lightningEntity.seed);
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic(lightningEntity.seed);
 
 		for (int k = 7; k >= 0; k--) {
 			fs[k] = h;
 			gs[k] = j;
-			h += (float)(random.nextInt(11) - 5);
-			j += (float)(random.nextInt(11) - 5);
+			h += (float)(abstractRandom.nextInt(11) - 5);
+			j += (float)(abstractRandom.nextInt(11) - 5);
 		}
 
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
 		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 
 		for (int l = 0; l < 4; l++) {
-			Random random2 = new Random(lightningEntity.seed);
+			AbstractRandom abstractRandom2 = AbstractRandom.createAtomic(lightningEntity.seed);
 
 			for (int m = 0; m < 3; m++) {
 				int n = 7;
@@ -56,11 +56,11 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 					float s = p;
 					float t = q;
 					if (m == 0) {
-						p += (float)(random2.nextInt(11) - 5);
-						q += (float)(random2.nextInt(11) - 5);
+						p += (float)(abstractRandom2.nextInt(11) - 5);
+						q += (float)(abstractRandom2.nextInt(11) - 5);
 					} else {
-						p += (float)(random2.nextInt(31) - 15);
-						q += (float)(random2.nextInt(31) - 15);
+						p += (float)(abstractRandom2.nextInt(31) - 15);
+						q += (float)(abstractRandom2.nextInt(31) - 15);
 					}
 
 					float u = 0.5F;

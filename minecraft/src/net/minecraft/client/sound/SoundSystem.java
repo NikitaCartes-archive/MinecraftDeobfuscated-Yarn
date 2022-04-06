@@ -325,7 +325,7 @@ public class SoundSystem {
 						float f = sound.getVolume();
 						float g = Math.max(f, 1.0F) * (float)sound2.getAttenuation();
 						SoundCategory soundCategory = sound.getCategory();
-						float h = this.getAdjustedVolume(sound);
+						float h = this.getAdjustedVolume(f, soundCategory);
 						float i = this.getAdjustedPitch(sound);
 						SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
 						boolean bl = sound.isRelative();
@@ -411,7 +411,11 @@ public class SoundSystem {
 	}
 
 	private float getAdjustedVolume(SoundInstance sound) {
-		return MathHelper.clamp(sound.getVolume() * this.getSoundVolume(sound.getCategory()), 0.0F, 1.0F);
+		return this.getAdjustedVolume(sound.getVolume(), sound.getCategory());
+	}
+
+	private float getAdjustedVolume(float volume, SoundCategory category) {
+		return MathHelper.clamp(volume * this.getSoundVolume(category), 0.0F, 1.0F);
 	}
 
 	public void pauseAll() {

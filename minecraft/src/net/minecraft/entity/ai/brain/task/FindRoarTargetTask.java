@@ -27,7 +27,7 @@ public class FindRoarTargetTask<E extends WardenEntity> extends Task<E> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E wardenEntity) {
-		return ((Optional)this.targetFinder.apply(wardenEntity)).filter(WardenEntity::isValidTarget).isPresent();
+		return ((Optional)this.targetFinder.apply(wardenEntity)).filter(wardenEntity::isValidTarget).isPresent();
 	}
 
 	protected void run(ServerWorld serverWorld, E wardenEntity, long l) {

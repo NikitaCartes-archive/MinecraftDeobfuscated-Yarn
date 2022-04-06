@@ -10,13 +10,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -144,11 +144,11 @@ public class BitmapFont implements Font {
 		@Override
 		public Font load(ResourceManager manager) {
 			try {
-				Resource resource = manager.getResource(this.filename);
+				InputStream inputStream = manager.open(this.filename);
 
 				BitmapFont var22;
 				try {
-					NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+					NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream);
 					int i = nativeImage.getWidth();
 					int j = nativeImage.getHeight();
 					int k = i / ((int[])this.chars.get(0)).length;
@@ -175,9 +175,9 @@ public class BitmapFont implements Font {
 
 					var22 = new BitmapFont(nativeImage, int2ObjectMap);
 				} catch (Throwable var20) {
-					if (resource != null) {
+					if (inputStream != null) {
 						try {
-							resource.close();
+							inputStream.close();
 						} catch (Throwable var19) {
 							var20.addSuppressed(var19);
 						}
@@ -186,8 +186,8 @@ public class BitmapFont implements Font {
 					throw var20;
 				}
 
-				if (resource != null) {
-					resource.close();
+				if (inputStream != null) {
+					inputStream.close();
 				}
 
 				return var22;

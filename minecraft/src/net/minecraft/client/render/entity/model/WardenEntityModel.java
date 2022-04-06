@@ -33,58 +33,64 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 	protected final ModelPart leftTendril;
 	protected final ModelPart leftLeg;
 	protected final ModelPart leftArm;
-	protected final ModelPart field_38449;
+	protected final ModelPart leftRibcage;
 	protected final ModelPart rightArm;
 	protected final ModelPart rightLeg;
-	protected final ModelPart field_38450;
-	private final List<ModelPart> field_38451;
-	private final List<ModelPart> field_38452;
-	private final List<ModelPart> field_38453;
-	private final List<ModelPart> field_38454;
+	protected final ModelPart rightRibcage;
+	private final List<ModelPart> tendrils;
+	private final List<ModelPart> justBody;
+	private final List<ModelPart> headAndLimbs;
+	private final List<ModelPart> bodyHeadAndLimbs;
 
 	public WardenEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityCutoutNoCull);
 		this.root = root;
-		this.bone = root.getChild("bone");
+		this.bone = root.getChild(EntityModelPartNames.BONE);
 		this.body = this.bone.getChild(EntityModelPartNames.BODY);
 		this.head = this.body.getChild(EntityModelPartNames.HEAD);
 		this.rightLeg = this.bone.getChild(EntityModelPartNames.RIGHT_LEG);
 		this.leftLeg = this.bone.getChild(EntityModelPartNames.LEFT_LEG);
 		this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
 		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
-		this.rightTendril = this.head.getChild("right_tendril");
-		this.leftTendril = this.head.getChild("left_tendril");
-		this.field_38450 = this.body.getChild("right_ribcage");
-		this.field_38449 = this.body.getChild("left_ribcage");
-		this.field_38451 = ImmutableList.of(this.leftTendril, this.rightTendril);
-		this.field_38452 = ImmutableList.of(this.body);
-		this.field_38453 = ImmutableList.of(this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
-		this.field_38454 = ImmutableList.of(this.body, this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+		this.rightTendril = this.head.getChild(EntityModelPartNames.RIGHT_TENDRIL);
+		this.leftTendril = this.head.getChild(EntityModelPartNames.LEFT_TENDRIL);
+		this.rightRibcage = this.body.getChild(EntityModelPartNames.RIGHT_RIBCAGE);
+		this.leftRibcage = this.body.getChild(EntityModelPartNames.LEFT_RIBCAGE);
+		this.tendrils = ImmutableList.of(this.leftTendril, this.rightTendril);
+		this.justBody = ImmutableList.of(this.body);
+		this.headAndLimbs = ImmutableList.of(this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
+		this.bodyHeadAndLimbs = ImmutableList.of(this.body, this.head, this.leftArm, this.rightArm, this.leftLeg, this.rightLeg);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-9.0F, -13.0F, -4.0F, 18.0F, 21.0F, 11.0F), ModelTransform.pivot(0.0F, -21.0F, 0.0F)
 		);
 		modelPartData3.addChild(
-			"right_ribcage", ModelPartBuilder.create().uv(79, 11).cuboid(-2.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F), ModelTransform.pivot(-7.0F, -2.0F, -4.0F)
+			EntityModelPartNames.RIGHT_RIBCAGE,
+			ModelPartBuilder.create().uv(90, 11).cuboid(-2.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F),
+			ModelTransform.pivot(-7.0F, -2.0F, -4.0F)
 		);
 		modelPartData3.addChild(
-			"left_ribcage",
-			ModelPartBuilder.create().uv(79, 11).mirrored().cuboid(-7.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F).mirrored(false),
+			EntityModelPartNames.LEFT_RIBCAGE,
+			ModelPartBuilder.create().uv(90, 11).mirrored().cuboid(-7.0F, -11.0F, -0.1F, 9.0F, 21.0F, 0.0F).mirrored(false),
 			ModelTransform.pivot(7.0F, -2.0F, -4.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData3.addChild(
 			EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 32).cuboid(-8.0F, -16.0F, -5.0F, 16.0F, 16.0F, 10.0F), ModelTransform.pivot(0.0F, -13.0F, 0.0F)
 		);
 		modelPartData4.addChild(
-			"right_tendril", ModelPartBuilder.create().uv(52, 32).cuboid(-16.0F, -13.0F, 0.0F, 16.0F, 16.0F, 0.0F), ModelTransform.pivot(-8.0F, -12.0F, 0.0F)
+			EntityModelPartNames.RIGHT_TENDRIL,
+			ModelPartBuilder.create().uv(52, 32).cuboid(-16.0F, -13.0F, 0.0F, 16.0F, 16.0F, 0.0F),
+			ModelTransform.pivot(-8.0F, -12.0F, 0.0F)
 		);
 		modelPartData4.addChild(
-			"left_tendril", ModelPartBuilder.create().uv(58, 0).cuboid(0.0F, -13.0F, 0.0F, 16.0F, 16.0F, 0.0F), ModelTransform.pivot(8.0F, -12.0F, 0.0F)
+			EntityModelPartNames.LEFT_TENDRIL,
+			ModelPartBuilder.create().uv(58, 0).cuboid(0.0F, -13.0F, 0.0F, 16.0F, 16.0F, 0.0F),
+			ModelTransform.pivot(8.0F, -12.0F, 0.0F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.RIGHT_ARM,
@@ -109,10 +115,10 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		float k = h - (float)wardenEntity.age;
 		long l = Util.getMeasuringTimeMs();
-		this.method_42735(i, j);
-		this.method_42737(f, g);
-		this.method_42734(h);
-		this.method_42736(wardenEntity, h, k);
+		this.setHeadAngle(i, j);
+		this.setLimbAngles(f, g);
+		this.setHeadAndBodyAngles(h);
+		this.setTendrilPitches(wardenEntity, h, k);
 		this.runAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, l);
 		this.runAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, l);
 		this.runAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, l);
@@ -120,41 +126,41 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.runAnimation(wardenEntity.sniffingAnimationState, WardenAnimations.SNIFFING, l);
 	}
 
-	private void method_42735(float f, float g) {
-		this.head.pitch = g * (float) (Math.PI / 180.0);
-		this.head.yaw = f * (float) (Math.PI / 180.0);
+	private void setHeadAngle(float yaw, float pitch) {
+		this.head.pitch = pitch * (float) (Math.PI / 180.0);
+		this.head.yaw = yaw * (float) (Math.PI / 180.0);
 	}
 
-	private void method_42734(float f) {
-		float g = f * 0.1F;
+	private void setHeadAndBodyAngles(float animationProgress) {
+		float f = animationProgress * 0.1F;
+		float g = MathHelper.cos(f);
+		float h = MathHelper.sin(f);
+		this.head.roll += 0.06F * g;
+		this.head.pitch += 0.06F * h;
+		this.body.roll += 0.025F * h;
+		this.body.pitch += 0.025F * g;
+	}
+
+	private void setLimbAngles(float angle, float distance) {
+		float f = Math.min(0.5F, 3.0F * distance);
+		float g = angle * 0.8662F;
 		float h = MathHelper.cos(g);
 		float i = MathHelper.sin(g);
-		this.head.roll += 0.06F * h;
-		this.head.pitch += 0.06F * i;
-		this.body.roll += 0.025F * i;
-		this.body.pitch += 0.025F * h;
-	}
-
-	private void method_42737(float f, float g) {
-		float h = Math.min(0.5F, 3.0F * g);
-		float i = f * 0.8662F;
-		float j = MathHelper.cos(i);
-		float k = MathHelper.sin(i);
-		float l = Math.min(0.35F, h);
-		this.head.roll += 0.3F * k * h;
-		this.head.pitch = this.head.pitch + 1.2F * MathHelper.cos(i + (float) (Math.PI / 2)) * l;
-		this.body.roll = 0.1F * k * h;
-		this.body.pitch = 1.0F * j * l;
-		this.leftLeg.pitch = 1.0F * j * h;
-		this.rightLeg.pitch = 1.0F * MathHelper.cos(i + (float) Math.PI) * h;
-		this.leftArm.pitch = -(0.8F * j * h);
+		float j = Math.min(0.35F, f);
+		this.head.roll += 0.3F * i * f;
+		this.head.pitch = this.head.pitch + 1.2F * MathHelper.cos(g + (float) (Math.PI / 2)) * j;
+		this.body.roll = 0.1F * i * f;
+		this.body.pitch = 1.0F * h * j;
+		this.leftLeg.pitch = 1.0F * h * f;
+		this.rightLeg.pitch = 1.0F * MathHelper.cos(g + (float) Math.PI) * f;
+		this.leftArm.pitch = -(0.8F * h * f);
 		this.leftArm.roll = 0.0F;
-		this.rightArm.pitch = -(0.8F * k * h);
+		this.rightArm.pitch = -(0.8F * i * f);
 		this.rightArm.roll = 0.0F;
-		this.method_42742();
+		this.setArmPivots();
 	}
 
-	private void method_42742() {
+	private void setArmPivots() {
 		this.leftArm.yaw = 0.0F;
 		this.leftArm.pivotZ = 1.0F;
 		this.leftArm.pivotX = 13.0F;
@@ -165,10 +171,10 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.rightArm.pivotY = -13.0F;
 	}
 
-	private void method_42736(T wardenEntity, float f, float g) {
-		float h = wardenEntity.getEarPitch(g) * (float)(Math.cos((double)f * 2.25) * Math.PI * 0.1F);
-		this.leftTendril.pitch = h;
-		this.rightTendril.pitch = -h;
+	private void setTendrilPitches(T warden, float animationProgress, float tickDelta) {
+		float f = warden.getTendrilPitch(tickDelta) * (float)(Math.cos((double)animationProgress * 2.25) * Math.PI * 0.1F);
+		this.leftTendril.pitch = f;
+		this.rightTendril.pitch = -f;
 	}
 
 	public void runAnimation(AnimationState animationState, Animation animation, long time) {
@@ -180,19 +186,19 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		return this.root;
 	}
 
-	public List<ModelPart> method_42738() {
-		return this.field_38451;
+	public List<ModelPart> getTendrils() {
+		return this.tendrils;
 	}
 
-	public List<ModelPart> method_42739() {
-		return this.field_38452;
+	public List<ModelPart> getBody() {
+		return this.justBody;
 	}
 
-	public List<ModelPart> method_42740() {
-		return this.field_38453;
+	public List<ModelPart> getHeadAndLimbs() {
+		return this.headAndLimbs;
 	}
 
-	public List<ModelPart> method_42741() {
-		return this.field_38454;
+	public List<ModelPart> getBodyHeadAndLimbs() {
+		return this.bodyHeadAndLimbs;
 	}
 }

@@ -5,11 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -30,7 +30,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		setToDirt(world, replacer, random, startPos.down(), config);
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
@@ -50,7 +50,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 				j--;
 			}
 
-			if (getAndSetState(world, replacer, random, mutable.set(k, n, l), config)) {
+			if (this.getAndSetState(world, replacer, random, mutable.set(k, n, l), config)) {
 				optionalInt = OptionalInt.of(n + 1);
 			}
 		}
@@ -72,7 +72,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 					int q = startPos.getY() + p;
 					k += direction2.getOffsetX();
 					l += direction2.getOffsetZ();
-					if (getAndSetState(world, replacer, random, mutable.set(k, q, l), config)) {
+					if (this.getAndSetState(world, replacer, random, mutable.set(k, q, l), config)) {
 						optionalInt = OptionalInt.of(q + 1);
 					}
 				}

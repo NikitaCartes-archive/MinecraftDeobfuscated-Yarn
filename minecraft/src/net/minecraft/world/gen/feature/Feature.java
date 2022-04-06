@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
@@ -12,6 +11,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
@@ -58,7 +58,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"waterlogged_vegetation_patch", new WaterloggedVegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RootSystemFeatureConfig> ROOT_SYSTEM = register("root_system", new RootSystemFeature(RootSystemFeatureConfig.CODEC));
-	public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
+	public static final Feature<MultifaceGrowthFeatureConfig> MULTIFACE_GROWTH = register(
+		"multiface_growth", new MultifaceGrowthFeature(MultifaceGrowthFeatureConfig.CODEC)
+	);
 	public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = register(
 		"underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC)
 	);
@@ -66,7 +68,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
-	public static final Feature<DiskFeatureConfig> DISK = register("disk", new UnderwaterDiskFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> DISK = register("disk", new SimpleDiskFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> SURFACE_DISK = register("surface_disk", new SurfaceDiskFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<DiskFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<LakeFeature.Config> LAKE = register("lake", new LakeFeature(LakeFeature.Config.CODEC));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig.CODEC));
@@ -146,7 +149,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public abstract boolean generate(FeatureContext<FC> context);
 
-	public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+	public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, AbstractRandom random, BlockPos pos) {
 		return world.isValidForSetBlock(pos) ? this.generate(new FeatureContext<>(Optional.empty(), world, chunkGenerator, random, pos, config)) : false;
 	}
 

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.List;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
@@ -18,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -144,7 +144,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if ((Boolean)state.get(POWERED)) {
 			if (this.wooden) {
 				this.tryPowerWithProjectiles(state, world, pos);

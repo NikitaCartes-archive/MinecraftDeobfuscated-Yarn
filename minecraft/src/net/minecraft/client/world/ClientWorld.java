@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Deque;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -60,6 +59,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -71,7 +71,6 @@ import net.minecraft.world.EntityList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.MutableWorldProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -344,13 +343,13 @@ public class ClientWorld extends World {
 
 	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
 		int i = 32;
-		Random random = new Random();
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
 		Block block = this.getBlockParticle();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, block, mutable);
-			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, block, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, abstractRandom, block, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, abstractRandom, block, mutable);
 		}
 	}
 
@@ -367,7 +366,7 @@ public class ClientWorld extends World {
 		return null;
 	}
 
-	public void randomBlockDisplayTick(int centerX, int centerY, int centerZ, int radius, Random random, @Nullable Block block, BlockPos.Mutable pos) {
+	public void randomBlockDisplayTick(int centerX, int centerY, int centerZ, int radius, AbstractRandom random, @Nullable Block block, BlockPos.Mutable pos) {
 		int i = centerX + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int j = centerY + this.random.nextInt(radius) - this.random.nextInt(radius);
 		int k = centerZ + this.random.nextInt(radius) - this.random.nextInt(radius);
@@ -462,16 +461,18 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSound(
+		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+	) {
 		if (except == this.client.player) {
-			this.playSound(x, y, z, sound, category, volume, pitch, false);
+			this.playSound(x, y, z, sound, category, volume, pitch, false, seed);
 		}
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
 		if (except == this.client.player) {
-			this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity));
+			this.client.getSoundManager().play(new EntityTrackingSoundInstance(sound, category, volume, pitch, entity, seed));
 		}
 	}
 
@@ -481,8 +482,12 @@ public class ClientWorld extends World {
 
 	@Override
 	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
+		this.playSound(x, y, z, sound, category, volume, pitch, useDistance, this.random.nextLong());
+	}
+
+	private void playSound(double x, double y, double z, SoundEvent event, SoundCategory category, float volume, float pitch, boolean useDistance, long seed) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
-		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, x, y, z);
+		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(event, category, volume, pitch, AbstractRandom.createAtomic(seed), x, y, z);
 		if (useDistance && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
@@ -783,19 +788,6 @@ public class ClientWorld extends World {
 		}
 	}
 
-	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
-		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
-		}
-
-		return blockPos;
-	}
-
-	public float getSpawnAngle() {
-		return this.properties.getSpawnAngle();
-	}
-
 	public void setSpawnPos(BlockPos pos, float angle) {
 		this.properties.setSpawnPos(pos, angle);
 	}
@@ -868,6 +860,9 @@ public class ClientWorld extends World {
 		public void stopTracking(Entity entity) {
 			entity.detach();
 			ClientWorld.this.players.remove(entity);
+		}
+
+		public void updateLoadStatus(Entity entity) {
 		}
 	}
 

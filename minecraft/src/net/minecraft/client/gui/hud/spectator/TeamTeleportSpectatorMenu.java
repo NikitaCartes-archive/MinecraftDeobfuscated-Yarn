@@ -3,7 +3,6 @@ package net.minecraft.client.gui.hud.spectator;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -18,6 +17,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
@@ -90,7 +90,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			if (this.scoreboardEntries.isEmpty()) {
 				this.skinId = DefaultSkinHelper.getTexture();
 			} else {
-				String string2 = ((PlayerListEntry)this.scoreboardEntries.get(new Random().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
+				String string2 = ((PlayerListEntry)this.scoreboardEntries.get(AbstractRandom.createAtomic().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
 				this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
 				AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
 			}

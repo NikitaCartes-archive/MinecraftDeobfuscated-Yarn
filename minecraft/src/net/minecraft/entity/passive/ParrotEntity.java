@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -60,6 +59,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -301,7 +301,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return false;
 	}
 
-	public static boolean canSpawn(EntityType<ParrotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<ParrotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.PARROTS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 
@@ -336,7 +336,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return getRandomSound(this.world, this.world.random);
 	}
 
-	public static SoundEvent getRandomSound(World world, Random random) {
+	public static SoundEvent getRandomSound(World world, AbstractRandom random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
 			List<EntityType<?>> list = Lists.<EntityType<?>>newArrayList(MOB_SOUNDS.keySet());
 			return getSound((EntityType<?>)list.get(random.nextInt(list.size())));
@@ -380,8 +380,8 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		return getSoundPitch(this.random);
 	}
 
-	public static float getSoundPitch(Random random) {
-		return (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F;
+	public static float getSoundPitch(AbstractRandom abstractRandom) {
+		return (abstractRandom.nextFloat() - abstractRandom.nextFloat()) * 0.2F + 1.0F;
 	}
 
 	@Override

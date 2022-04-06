@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import java.util.Locale;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -24,6 +23,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -246,7 +246,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		}
 	}
 
-	public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+	public static boolean canTropicalFishSpawn(EntityType<TropicalFishEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
 		return world.getFluidState(pos.down()).isIn(FluidTags.WATER)
 			&& world.getBlockState(pos.up()).isOf(Blocks.WATER)
 			&& (world.getBiome(pos).isIn(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT) || WaterCreatureEntity.canSpawn(type, world, reason, pos, random));

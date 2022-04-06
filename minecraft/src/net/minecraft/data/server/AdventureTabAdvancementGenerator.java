@@ -7,16 +7,16 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
-import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
+import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
-import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.TargetHitCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
@@ -28,13 +28,13 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.PlayerPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
@@ -93,7 +93,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		return LightningStrikeCriterion.Conditions.create(
 			EntityPredicate.Builder.create()
 				.distance(DistancePredicate.absolute(NumberRange.FloatRange.atMost(30.0)))
-				.lightningBolt(LightningBoltPredicate.of(range))
+				.typeSpecific(LightningBoltPredicate.of(range))
 				.build(),
 			entity
 		);
@@ -101,7 +101,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	private static UsingItemCriterion.Conditions createLookingAtEntityUsing(EntityType<?> entity, Item item) {
 		return UsingItemCriterion.Conditions.create(
-			EntityPredicate.Builder.create().player(PlayerPredicate.Builder.create().lookingAt(EntityPredicate.Builder.create().type(entity).build()).build()),
+			EntityPredicate.Builder.create().typeSpecific(PlayerPredicate.Builder.create().lookingAt(EntityPredicate.Builder.create().type(entity).build()).build()),
 			ItemPredicate.Builder.create().items(item)
 		);
 	}
@@ -134,7 +134,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.createSleptInBed())
+			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(consumer, "adventure/sleep_in_bed");
 		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream().toList())
 			.parent(advancement2)
@@ -407,7 +407,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("hero_of_the_village", LocationArrivalCriterion.Conditions.createHeroOfTheVillage())
+			.criterion("hero_of_the_village", TickCriterion.Conditions.createHeroOfTheVillage())
 			.build(consumer, "adventure/hero_of_the_village");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -456,7 +456,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 				true,
 				false
 			)
-			.criterion("walk_on_powder_snow_with_leather_boots", LocationArrivalCriterion.Conditions.createSteppingOnWithBoots(Blocks.POWDER_SNOW, Items.LEATHER_BOOTS))
+			.criterion("walk_on_powder_snow_with_leather_boots", TickCriterion.Conditions.createLocation(Blocks.POWDER_SNOW, Items.LEATHER_BOOTS))
 			.build(consumer, "adventure/walk_on_powder_snow_with_leather_boots");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -517,7 +517,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion(
 				"play_jukebox_in_meadows",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()),
 					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
 				)
@@ -586,7 +586,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
 		for (RegistryKey<Biome> registryKey : biomes) {
-			builder.criterion(registryKey.getValue().toString(), LocationArrivalCriterion.Conditions.create(LocationPredicate.biome(registryKey)));
+			builder.criterion(registryKey.getValue().toString(), TickCriterion.Conditions.createLocation(LocationPredicate.biome(registryKey)));
 		}
 
 		return builder;

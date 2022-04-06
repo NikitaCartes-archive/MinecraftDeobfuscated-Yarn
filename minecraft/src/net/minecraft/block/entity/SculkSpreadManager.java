@@ -12,12 +12,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractLichenBlock;
@@ -37,6 +35,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
@@ -144,7 +143,7 @@ public class SculkSpreadManager {
 		}
 	}
 
-	public void tick(WorldAccess world, BlockPos pos, Random random, boolean shouldConvertToBlock) {
+	public void tick(WorldAccess world, BlockPos pos, AbstractRandom random, boolean shouldConvertToBlock) {
 		if (!this.cursors.isEmpty()) {
 			List<SculkSpreadManager.Cursor> list = new ArrayList();
 			Map<BlockPos, SculkSpreadManager.Cursor> map = new HashMap();
@@ -256,7 +255,7 @@ public class SculkSpreadManager {
 			}
 		}
 
-		public void spread(WorldAccess world, BlockPos pos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+		public void spread(WorldAccess world, BlockPos pos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
 			if (this.canSpread(world, pos, spreadManager.worldGen)) {
 				if (this.update > 0) {
 					this.update--;
@@ -309,14 +308,12 @@ public class SculkSpreadManager {
 			return state.getBlock() instanceof SculkSpreadable sculkSpreadable ? sculkSpreadable : SculkSpreadable.VEIN_ONLY_SPREADER;
 		}
 
-		private static List<Vec3i> shuffleOffsets(Random random) {
-			List<Vec3i> list = new ArrayList(OFFSETS);
-			Collections.shuffle(list, random);
-			return list;
+		private static List<Vec3i> shuffleOffsets(AbstractRandom random) {
+			return Util.copyShuffled(OFFSETS, random);
 		}
 
 		@Nullable
-		private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, Random random) {
+		private static BlockPos getSpreadPos(WorldAccess world, BlockPos pos, AbstractRandom random) {
 			BlockPos.Mutable mutable = pos.mutableCopy();
 			BlockPos.Mutable mutable2 = pos.mutableCopy();
 

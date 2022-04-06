@@ -25,7 +25,7 @@ import net.minecraft.world.StructureLocator;
 import net.minecraft.world.StructurePresence;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 
 public class StructureAccessor {
 	private final WorldAccess world;
@@ -46,14 +46,14 @@ public class StructureAccessor {
 		}
 	}
 
-	public List<StructureStart> method_41035(ChunkPos chunkPos, Predicate<StructureFeature> predicate) {
-		Map<StructureFeature, LongSet> map = this.world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
+	public List<StructureStart> method_41035(ChunkPos chunkPos, Predicate<StructureType> predicate) {
+		Map<StructureType, LongSet> map = this.world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
 		Builder<StructureStart> builder = ImmutableList.builder();
 
-		for (Entry<StructureFeature, LongSet> entry : map.entrySet()) {
-			StructureFeature structureFeature = (StructureFeature)entry.getKey();
-			if (predicate.test(structureFeature)) {
-				this.method_41032(structureFeature, (LongSet)entry.getValue(), builder::add);
+		for (Entry<StructureType, LongSet> entry : map.entrySet()) {
+			StructureType structureType = (StructureType)entry.getKey();
+			if (predicate.test(structureType)) {
+				this.method_41032(structureType, (LongSet)entry.getValue(), builder::add);
 			}
 		}
 
@@ -64,23 +64,23 @@ public class StructureAccessor {
 	 * {@return a list of structure starts for this chunk} The structure starts
 	 * are computed from the structure references of the given section's chunk.
 	 */
-	public List<StructureStart> getStructureStarts(ChunkSectionPos sectionPos, StructureFeature structureFeature) {
+	public List<StructureStart> getStructureStarts(ChunkSectionPos sectionPos, StructureType structureType) {
 		LongSet longSet = this.world
 			.getChunk(sectionPos.getSectionX(), sectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
-			.getStructureReferences(structureFeature);
+			.getStructureReferences(structureType);
 		Builder<StructureStart> builder = ImmutableList.builder();
-		this.method_41032(structureFeature, longSet, builder::add);
+		this.method_41032(structureType, longSet, builder::add);
 		return builder.build();
 	}
 
-	public void method_41032(StructureFeature structureFeature, LongSet longSet, Consumer<StructureStart> consumer) {
+	public void method_41032(StructureType structureType, LongSet longSet, Consumer<StructureStart> consumer) {
 		LongIterator var4 = longSet.iterator();
 
 		while (var4.hasNext()) {
 			long l = (Long)var4.next();
 			ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(new ChunkPos(l), this.world.getBottomSectionCoord());
 			StructureStart structureStart = this.getStructureStart(
-				chunkSectionPos, structureFeature, this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)
+				chunkSectionPos, structureType, this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)
 			);
 			if (structureStart != null && structureStart.hasChildren()) {
 				consumer.accept(structureStart);
@@ -89,15 +89,15 @@ public class StructureAccessor {
 	}
 
 	@Nullable
-	public StructureStart getStructureStart(ChunkSectionPos pos, StructureFeature structureFeature, StructureHolder holder) {
+	public StructureStart getStructureStart(ChunkSectionPos pos, StructureType structureFeature, StructureHolder holder) {
 		return holder.getStructureStart(structureFeature);
 	}
 
-	public void setStructureStart(ChunkSectionPos pos, StructureFeature structureFeature, StructureStart structureStart, StructureHolder holder) {
+	public void setStructureStart(ChunkSectionPos pos, StructureType structureFeature, StructureStart structureStart, StructureHolder holder) {
 		holder.setStructureStart(structureFeature, structureStart);
 	}
 
-	public void addStructureReference(ChunkSectionPos pos, StructureFeature structureFeature, long reference, StructureHolder holder) {
+	public void addStructureReference(ChunkSectionPos pos, StructureType structureFeature, long reference, StructureHolder holder) {
 		holder.addStructureReference(structureFeature, reference);
 	}
 
@@ -105,7 +105,7 @@ public class StructureAccessor {
 		return this.options.shouldGenerateStructures();
 	}
 
-	public StructureStart getStructureAt(BlockPos pos, StructureFeature structureFeature) {
+	public StructureStart getStructureAt(BlockPos pos, StructureType structureFeature) {
 		for (StructureStart structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structureFeature)) {
 			if (structureStart.getBoundingBox().contains(pos)) {
 				return structureStart;
@@ -115,19 +115,17 @@ public class StructureAccessor {
 		return StructureStart.DEFAULT;
 	}
 
-	public StructureStart getStructureContaining(BlockPos pos, RegistryKey<StructureFeature> structureFeature) {
-		StructureFeature structureFeature2 = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(structureFeature);
-		return structureFeature2 == null ? StructureStart.DEFAULT : this.getStructureContaining(pos, structureFeature2);
+	public StructureStart getStructureContaining(BlockPos pos, RegistryKey<StructureType> structureFeature) {
+		StructureType structureType = this.getRegistryManager().get(Registry.STRUCTURE_KEY).get(structureFeature);
+		return structureType == null ? StructureStart.DEFAULT : this.getStructureContaining(pos, structureType);
 	}
 
-	public StructureStart getStructureContaining(BlockPos pos, TagKey<StructureFeature> structureFeatureTag) {
-		Registry<StructureFeature> registry = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
+	public StructureStart getStructureContaining(BlockPos pos, TagKey<StructureType> structureFeatureTag) {
+		Registry<StructureType> registry = this.getRegistryManager().get(Registry.STRUCTURE_KEY);
 
 		for (StructureStart structureStart : this.method_41035(
 			new ChunkPos(pos),
-			structureFeature -> (Boolean)registry.getEntry(registry.getRawId(structureFeature))
-					.map(registryEntry -> registryEntry.isIn(structureFeatureTag))
-					.orElse(false)
+			structureType -> (Boolean)registry.getEntry(registry.getRawId(structureType)).map(registryEntry -> registryEntry.isIn(structureFeatureTag)).orElse(false)
 		)) {
 			if (this.structureContains(pos, structureStart)) {
 				return structureStart;
@@ -143,7 +141,7 @@ public class StructureAccessor {
 	 * position is in the expanded bounding box of the structure but not in any
 	 * child piece of it.
 	 */
-	public StructureStart getStructureContaining(BlockPos pos, StructureFeature structureFeature) {
+	public StructureStart getStructureContaining(BlockPos pos, StructureType structureFeature) {
 		for (StructureStart structureStart : this.getStructureStarts(ChunkSectionPos.from(pos), structureFeature)) {
 			if (this.structureContains(pos, structureStart)) {
 				return structureStart;
@@ -168,13 +166,13 @@ public class StructureAccessor {
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).hasStructureReferences();
 	}
 
-	public Map<StructureFeature, LongSet> method_41037(BlockPos blockPos) {
+	public Map<StructureType, LongSet> method_41037(BlockPos blockPos) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
 		return this.world.getChunk(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES).getStructureReferences();
 	}
 
-	public StructurePresence getStructurePresence(ChunkPos chunkPos, StructureFeature structureFeature, boolean skipExistingChunk) {
-		return this.locator.getStructurePresence(chunkPos, structureFeature, skipExistingChunk);
+	public StructurePresence getStructurePresence(ChunkPos chunkPos, StructureType structureType, boolean skipExistingChunk) {
+		return this.locator.getStructurePresence(chunkPos, structureType, skipExistingChunk);
 	}
 
 	public void incrementReferences(StructureStart structureStart) {

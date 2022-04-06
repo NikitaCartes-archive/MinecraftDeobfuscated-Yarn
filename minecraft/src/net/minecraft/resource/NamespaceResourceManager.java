@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,11 +17,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
@@ -67,70 +68,32 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public Resource getResource(Identifier identifier) throws IOException {
-		this.validate(identifier);
-		ResourcePack resourcePack = null;
-		Identifier identifier2 = getMetadataPath(identifier);
-		boolean bl = false;
-
-		for (NamespaceResourceManager.FilterablePack filterablePack : Lists.reverse(this.packList)) {
-			ResourcePack resourcePack2 = filterablePack.underlying;
-			if (resourcePack2 != null) {
-				if (!bl) {
-					if (resourcePack2.contains(this.type, identifier2)) {
-						resourcePack = resourcePack2;
-						bl = true;
-					} else {
-						bl = filterablePack.isFiltered(identifier2);
-					}
-				}
-
-				if (resourcePack2.contains(this.type, identifier)) {
-					InputStream inputStream = null;
-					if (resourcePack != null) {
-						inputStream = this.open(identifier2, resourcePack);
-					}
-
-					return new ResourceImpl(resourcePack2.getName(), identifier, this.open(identifier, resourcePack2), inputStream);
-				}
-			}
-
-			if (filterablePack.isFiltered(identifier)) {
-				throw new FileNotFoundException(identifier + " (filtered by: " + filterablePack.name + ")");
-			}
-		}
-
-		throw new FileNotFoundException(identifier.toString());
-	}
-
-	@Override
-	public boolean containsResource(Identifier id) {
-		if (!this.isPathAbsolute(id)) {
-			return false;
+	public Optional<Resource> getResource(Identifier identifier) {
+		if (!this.isPathAbsolute(identifier)) {
+			return Optional.empty();
 		} else {
-			for (NamespaceResourceManager.FilterablePack filterablePack : Lists.reverse(this.packList)) {
-				if (filterablePack.contains(this.type, id)) {
-					return true;
+			for (int i = this.packList.size() - 1; i >= 0; i--) {
+				NamespaceResourceManager.FilterablePack filterablePack = (NamespaceResourceManager.FilterablePack)this.packList.get(i);
+				ResourcePack resourcePack = filterablePack.underlying;
+				if (resourcePack != null && resourcePack.contains(this.type, identifier)) {
+					return Optional.of(new Resource(resourcePack.getName(), this.createOpener(identifier, resourcePack), this.createMetadataSupplier(identifier, i)));
 				}
 
-				if (filterablePack.isFiltered(id)) {
-					return false;
+				if (filterablePack.isFiltered(identifier)) {
+					LOGGER.warn("Resource {} not found, but was filtered by pack {}", identifier, filterablePack.name);
+					return Optional.empty();
 				}
 			}
 
-			return false;
+			return Optional.empty();
 		}
 	}
 
-	protected InputStream open(Identifier id, ResourcePack pack) throws IOException {
-		InputStream inputStream = pack.open(this.type, id);
-		return (InputStream)(LOGGER.isDebugEnabled() ? new NamespaceResourceManager.DebugInputStream(inputStream, id, pack.getName()) : inputStream);
-	}
-
-	private void validate(Identifier id) throws IOException {
-		if (!this.isPathAbsolute(id)) {
-			throw new IOException("Invalid relative path to resource: " + id);
-		}
+	Resource.InputSupplier<InputStream> createOpener(Identifier id, ResourcePack pack) {
+		return LOGGER.isDebugEnabled() ? () -> {
+			InputStream inputStream = pack.open(this.type, id);
+			return new NamespaceResourceManager.DebugInputStream(inputStream, id, pack.getName());
+		} : () -> pack.open(this.type, id);
 	}
 
 	private boolean isPathAbsolute(Identifier id) {
@@ -138,37 +101,41 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public List<ResourceRef> getAllResources(Identifier id) throws IOException {
-		this.validate(id);
-		List<NamespaceResourceManager.Entry> list = Lists.<NamespaceResourceManager.Entry>newArrayList();
-		Identifier identifier = getMetadataPath(id);
-		String string = null;
-
-		for (NamespaceResourceManager.FilterablePack filterablePack : this.packList) {
-			if (filterablePack.isFiltered(id)) {
-				list.clear();
-				string = filterablePack.name;
-			} else if (filterablePack.isFiltered(identifier)) {
-				list.forEach(NamespaceResourceManager.Entry::ignoreMetadata);
-			}
-
-			ResourcePack resourcePack = filterablePack.underlying;
-			if (resourcePack != null && resourcePack.contains(this.type, id)) {
-				list.add(new NamespaceResourceManager.Entry(id, identifier, resourcePack));
-			}
-		}
-
-		if (!list.isEmpty()) {
-			return list.stream().map(NamespaceResourceManager.Entry::toReference).toList();
-		} else if (string != null) {
-			throw new FileNotFoundException(id + " (filtered by: " + string + ")");
+	public List<Resource> getAllResources(Identifier id) {
+		if (!this.isPathAbsolute(id)) {
+			return List.of();
 		} else {
-			throw new FileNotFoundException(id.toString());
+			List<NamespaceResourceManager.Entry> list = Lists.<NamespaceResourceManager.Entry>newArrayList();
+			Identifier identifier = getMetadataPath(id);
+			String string = null;
+
+			for (NamespaceResourceManager.FilterablePack filterablePack : this.packList) {
+				if (filterablePack.isFiltered(id)) {
+					if (!list.isEmpty()) {
+						string = filterablePack.name;
+					}
+
+					list.clear();
+				} else if (filterablePack.isFiltered(identifier)) {
+					list.forEach(NamespaceResourceManager.Entry::ignoreMetadata);
+				}
+
+				ResourcePack resourcePack = filterablePack.underlying;
+				if (resourcePack != null && resourcePack.contains(this.type, id)) {
+					list.add(new NamespaceResourceManager.Entry(id, identifier, resourcePack));
+				}
+			}
+
+			if (list.isEmpty() && string != null) {
+				LOGGER.info("Resource {} was filtered by pack {}", id, string);
+			}
+
+			return list.stream().map(NamespaceResourceManager.Entry::toReference).toList();
 		}
 	}
 
 	@Override
-	public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+	public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 		Object2IntMap<Identifier> object2IntMap = new Object2IntOpenHashMap<>();
 		int i = this.packList.size();
 
@@ -182,35 +149,57 @@ public class NamespaceResourceManager implements ResourceManager {
 			}
 		}
 
-		Map<Identifier, ResourceRef> map = Maps.<Identifier, ResourceRef>newTreeMap();
+		Map<Identifier, Resource> map = Maps.<Identifier, Resource>newTreeMap();
 
 		for (Object2IntMap.Entry<Identifier> entry : Object2IntMaps.fastIterable(object2IntMap)) {
 			int k = entry.getIntValue();
 			Identifier identifier2 = (Identifier)entry.getKey();
 			ResourcePack resourcePack = ((NamespaceResourceManager.FilterablePack)this.packList.get(k)).underlying;
-			String string = resourcePack.getName();
-			map.put(identifier2, new ResourceRef(string, () -> {
-				Identifier identifier2x = getMetadataPath(identifier2);
-				InputStream inputStream = null;
-
-				for (int jx = this.packList.size() - 1; jx >= k; jx--) {
-					NamespaceResourceManager.FilterablePack filterablePackx = (NamespaceResourceManager.FilterablePack)this.packList.get(jx);
-					ResourcePack resourcePack2 = filterablePackx.underlying;
-					if (resourcePack2 != null && resourcePack2.contains(this.type, identifier2x)) {
-						inputStream = this.open(identifier2x, resourcePack2);
-						break;
-					}
-
-					if (filterablePackx.isFiltered(identifier2x)) {
-						break;
-					}
-				}
-
-				return new ResourceImpl(string, identifier2, this.open(identifier2, resourcePack), inputStream);
-			}));
+			map.put(identifier2, new Resource(resourcePack.getName(), this.createOpener(identifier2, resourcePack), this.createMetadataSupplier(identifier2, k)));
 		}
 
 		return map;
+	}
+
+	private Resource.InputSupplier<ResourceMetadata> createMetadataSupplier(Identifier id, int index) {
+		return () -> {
+			Identifier identifier2 = getMetadataPath(id);
+
+			for (int j = this.packList.size() - 1; j >= index; j--) {
+				NamespaceResourceManager.FilterablePack filterablePack = (NamespaceResourceManager.FilterablePack)this.packList.get(j);
+				ResourcePack resourcePack = filterablePack.underlying;
+				if (resourcePack != null && resourcePack.contains(this.type, identifier2)) {
+					InputStream inputStream = resourcePack.open(this.type, identifier2);
+
+					ResourceMetadata var8;
+					try {
+						var8 = ResourceMetadata.create(inputStream);
+					} catch (Throwable var11) {
+						if (inputStream != null) {
+							try {
+								inputStream.close();
+							} catch (Throwable var10) {
+								var11.addSuppressed(var10);
+							}
+						}
+
+						throw var11;
+					}
+
+					if (inputStream != null) {
+						inputStream.close();
+					}
+
+					return var8;
+				}
+
+				if (filterablePack.isFiltered(identifier2)) {
+					break;
+				}
+			}
+
+			return ResourceMetadata.NONE;
+		};
 	}
 
 	private static void applyFilter(NamespaceResourceManager.FilterablePack pack, Map<Identifier, NamespaceResourceManager.EntryList> idToEntryList) {
@@ -248,7 +237,7 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	@Override
-	public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+	public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 		Map<Identifier, NamespaceResourceManager.EntryList> map = Maps.<Identifier, NamespaceResourceManager.EntryList>newHashMap();
 
 		for (NamespaceResourceManager.FilterablePack filterablePack : this.packList) {
@@ -256,7 +245,7 @@ public class NamespaceResourceManager implements ResourceManager {
 			this.findAndAdd(filterablePack, startingPath, allowedPathPredicate, map);
 		}
 
-		TreeMap<Identifier, List<ResourceRef>> treeMap = Maps.newTreeMap();
+		TreeMap<Identifier, List<Resource>> treeMap = Maps.newTreeMap();
 		map.forEach((id, entryList) -> treeMap.put(id, entryList.toReferenceList()));
 		return treeMap;
 	}
@@ -311,25 +300,42 @@ public class NamespaceResourceManager implements ResourceManager {
 			this.checksMetadata = false;
 		}
 
-		public ResourceRef toReference() {
+		public Resource toReference() {
 			String string = this.pack.getName();
-			return this.checksMetadata
-				? new ResourceRef(
-					string,
-					() -> {
-						InputStream inputStream = this.pack.contains(NamespaceResourceManager.this.type, this.metadataId)
-							? NamespaceResourceManager.this.open(this.metadataId, this.pack)
-							: null;
-						return new ResourceImpl(string, this.id, NamespaceResourceManager.this.open(this.id, this.pack), inputStream);
+			return this.checksMetadata ? new Resource(string, NamespaceResourceManager.this.createOpener(this.id, this.pack), () -> {
+				if (this.pack.contains(NamespaceResourceManager.this.type, this.metadataId)) {
+					InputStream inputStream = this.pack.open(NamespaceResourceManager.this.type, this.metadataId);
+
+					ResourceMetadata var2;
+					try {
+						var2 = ResourceMetadata.create(inputStream);
+					} catch (Throwable var5) {
+						if (inputStream != null) {
+							try {
+								inputStream.close();
+							} catch (Throwable var4) {
+								var5.addSuppressed(var4);
+							}
+						}
+
+						throw var5;
 					}
-				)
-				: new ResourceRef(string, () -> new ResourceImpl(string, this.id, NamespaceResourceManager.this.open(this.id, this.pack), null));
+
+					if (inputStream != null) {
+						inputStream.close();
+					}
+
+					return var2;
+				} else {
+					return ResourceMetadata.NONE;
+				}
+			}) : new Resource(string, NamespaceResourceManager.this.createOpener(this.id, this.pack));
 		}
 	}
 
 	static record EntryList(Identifier metadataId, List<NamespaceResourceManager.Entry> entries) {
 
-		List<ResourceRef> toReferenceList() {
+		List<Resource> toReferenceList() {
 			return this.entries().stream().map(NamespaceResourceManager.Entry::toReference).toList();
 		}
 	}
@@ -344,10 +350,6 @@ public class NamespaceResourceManager implements ResourceManager {
 
 		public boolean isFiltered(Identifier id) {
 			return this.filter != null && this.filter.test(id);
-		}
-
-		boolean contains(ResourceType type, Identifier id) {
-			return this.underlying != null && this.underlying.contains(type, id);
 		}
 	}
 }

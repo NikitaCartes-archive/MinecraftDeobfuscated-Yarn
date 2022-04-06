@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import org.slf4j.Logger;
 
 public class LocationPredicate {
@@ -42,7 +42,7 @@ public class LocationPredicate {
 	@Nullable
 	private final RegistryKey<Biome> biome;
 	@Nullable
-	private final RegistryKey<StructureFeature> feature;
+	private final RegistryKey<StructureType> feature;
 	@Nullable
 	private final RegistryKey<World> dimension;
 	@Nullable
@@ -56,7 +56,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange y,
 		NumberRange.FloatRange z,
 		@Nullable RegistryKey<Biome> biome,
-		@Nullable RegistryKey<StructureFeature> feature,
+		@Nullable RegistryKey<StructureType> feature,
 		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
 		LightPredicate light,
@@ -105,7 +105,7 @@ public class LocationPredicate {
 		);
 	}
 
-	public static LocationPredicate feature(RegistryKey<StructureFeature> feature) {
+	public static LocationPredicate feature(RegistryKey<StructureType> feature) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
@@ -208,11 +208,11 @@ public class LocationPredicate {
 					.map(identifier -> RegistryKey.of(Registry.WORLD_KEY, identifier))
 					.orElse(null)
 				: null;
-			RegistryKey<StructureFeature> registryKey2 = jsonObject.has("structure")
+			RegistryKey<StructureType> registryKey2 = jsonObject.has("structure")
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("structure"))
 					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, identifier))
+					.map(identifier -> RegistryKey.of(Registry.STRUCTURE_KEY, identifier))
 					.orElse(null)
 				: null;
 			RegistryKey<Biome> registryKey3 = null;
@@ -240,7 +240,7 @@ public class LocationPredicate {
 		@Nullable
 		private RegistryKey<Biome> biome;
 		@Nullable
-		private RegistryKey<StructureFeature> feature;
+		private RegistryKey<StructureType> feature;
 		@Nullable
 		private RegistryKey<World> dimension;
 		@Nullable
@@ -273,7 +273,7 @@ public class LocationPredicate {
 			return this;
 		}
 
-		public LocationPredicate.Builder feature(@Nullable RegistryKey<StructureFeature> feature) {
+		public LocationPredicate.Builder feature(@Nullable RegistryKey<StructureType> feature) {
 			this.feature = feature;
 			return this;
 		}

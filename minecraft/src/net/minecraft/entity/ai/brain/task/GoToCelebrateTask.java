@@ -1,12 +1,12 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Random;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	private final MemoryModuleType<BlockPos> memoryModuleType;
@@ -40,11 +40,11 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	}
 
 	private static BlockPos fuzz(MobEntity mob, BlockPos pos) {
-		Random random = mob.world.random;
-		return pos.add(fuzz(random), 0, fuzz(random));
+		AbstractRandom abstractRandom = mob.world.random;
+		return pos.add(fuzz(abstractRandom), 0, fuzz(abstractRandom));
 	}
 
-	private static int fuzz(Random random) {
+	private static int fuzz(AbstractRandom random) {
 		return random.nextInt(3) - 1;
 	}
 

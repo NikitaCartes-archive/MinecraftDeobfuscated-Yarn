@@ -1,19 +1,15 @@
 package net.minecraft.block;
 
-import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkShriekerBlockEntity;
-import net.minecraft.block.entity.SculkShriekerWarningManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -21,11 +17,11 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.listener.GameEventListener;
 
 public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable {
@@ -33,7 +29,6 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty CAN_SUMMON = Properties.CAN_SUMMON;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	private static final int SHRIEK_DURATION = 90;
 	public static final double TOP = SHAPE.getMax(Direction.Axis.Y);
 
 	public SculkShriekerBlock(AbstractBlock.Settings settings) {
@@ -56,54 +51,27 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		if (entity instanceof PlayerEntity && world instanceof ServerWorld serverWorld) {
-			shriek(serverWorld, state, pos);
+		if (world instanceof ServerWorld serverWorld && (entity instanceof PlayerEntity || entity.getPrimaryPassenger() instanceof PlayerEntity)) {
+			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld));
 		}
 
 		super.onSteppedOn(world, pos, state, entity);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if ((Boolean)state.get(SHRIEKING)) {
-			world.setBlockState(pos, state.with(SHRIEKING, Boolean.valueOf(false)), Block.NOTIFY_ALL);
-			if ((Boolean)state.get(CAN_SUMMON)) {
-				getClosestPlayerWarningManager(world, pos).ifPresent(warningManager -> warningManager.warn(world, pos));
-			}
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		super.onStateReplaced(state, world, pos, newState, moved);
+		if (world instanceof ServerWorld serverWorld && (Boolean)state.get(SHRIEKING) && !state.isOf(newState.getBlock())) {
+			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.warn(serverWorld));
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		if (world instanceof ServerWorld serverWorld && world.isReceivingRedstonePower(pos)) {
-			shriek(serverWorld, state, pos);
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
+		if ((Boolean)state.get(SHRIEKING)) {
+			world.setBlockState(pos, state.with(SHRIEKING, Boolean.valueOf(false)), Block.NOTIFY_ALL);
+			world.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.warn(world));
 		}
-	}
-
-	public static boolean canShriek(ServerWorld world, BlockPos pos, BlockState state) {
-		return !(Boolean)state.get(SHRIEKING)
-			&& (
-				!(Boolean)state.get(CAN_SUMMON)
-					|| (Boolean)getClosestPlayerWarningManager(world, pos).map(warningManager -> warningManager.canIncreaseWarningLevel(world, pos)).orElse(false)
-			);
-	}
-
-	public static void shriek(ServerWorld world, BlockState state, BlockPos pos) {
-		if (canShriek(world, pos, state)) {
-			if (!(Boolean)state.get(CAN_SUMMON)
-				|| getClosestPlayerWarningManager(world, pos).filter(warningManager -> warningManager.warnNearbyPlayers(world, pos)).isPresent()) {
-				world.setBlockState(pos, state.with(SHRIEKING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-				world.createAndScheduleBlockTick(pos, state.getBlock(), 90);
-				world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, pos, 0);
-			}
-		}
-	}
-
-	private static Optional<SculkShriekerWarningManager> getClosestPlayerWarningManager(ServerWorld world, BlockPos pos) {
-		PlayerEntity playerEntity = world.getClosestPlayer(
-			(double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 16.0, EntityPredicates.EXCEPT_SPECTATOR.and(Entity::isAlive)
-		);
-		return playerEntity == null ? Optional.empty() : Optional.of(playerEntity.getSculkShriekerWarningManager());
 	}
 
 	@Override

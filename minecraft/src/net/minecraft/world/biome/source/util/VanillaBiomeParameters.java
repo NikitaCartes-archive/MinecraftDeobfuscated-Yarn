@@ -494,13 +494,23 @@ public final class VanillaBiomeParameters {
 		);
 		this.writeBiomeParameters(
 			parameters,
-			this.nonFrozenTemperatureParameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[1], this.temperatureParameters[2]),
 			this.defaultParameter,
 			MultiNoiseUtil.ParameterRange.combine(this.nearInlandContinentalness, this.farInlandContinentalness),
 			this.erosionParameters[6],
 			weirdness,
 			0.0F,
 			BiomeKeys.SWAMP
+		);
+		this.writeBiomeParameters(
+			parameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[3], this.temperatureParameters[4]),
+			this.defaultParameter,
+			MultiNoiseUtil.ParameterRange.combine(this.nearInlandContinentalness, this.farInlandContinentalness),
+			this.erosionParameters[6],
+			weirdness,
+			0.0F,
+			BiomeKeys.MANGROVE_SWAMP
 		);
 
 		for (int i = 0; i < this.temperatureParameters.length; i++) {
@@ -650,13 +660,23 @@ public final class VanillaBiomeParameters {
 		);
 		this.writeBiomeParameters(
 			parameters,
-			this.nonFrozenTemperatureParameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[1], this.temperatureParameters[2]),
 			this.defaultParameter,
 			MultiNoiseUtil.ParameterRange.combine(this.nearInlandContinentalness, this.farInlandContinentalness),
 			this.erosionParameters[6],
 			weirdness,
 			0.0F,
 			BiomeKeys.SWAMP
+		);
+		this.writeBiomeParameters(
+			parameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[3], this.temperatureParameters[4]),
+			this.defaultParameter,
+			MultiNoiseUtil.ParameterRange.combine(this.nearInlandContinentalness, this.farInlandContinentalness),
+			this.erosionParameters[6],
+			weirdness,
+			0.0F,
+			BiomeKeys.MANGROVE_SWAMP
 		);
 
 		for (int i = 0; i < this.temperatureParameters.length; i++) {
@@ -837,13 +857,23 @@ public final class VanillaBiomeParameters {
 		);
 		this.writeBiomeParameters(
 			parameters,
-			this.nonFrozenTemperatureParameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[1], this.temperatureParameters[2]),
 			this.defaultParameter,
 			MultiNoiseUtil.ParameterRange.combine(this.riverContinentalness, this.farInlandContinentalness),
 			this.erosionParameters[6],
 			weirdness,
 			0.0F,
 			BiomeKeys.SWAMP
+		);
+		this.writeBiomeParameters(
+			parameters,
+			MultiNoiseUtil.ParameterRange.combine(this.temperatureParameters[3], this.temperatureParameters[4]),
+			this.defaultParameter,
+			MultiNoiseUtil.ParameterRange.combine(this.riverContinentalness, this.farInlandContinentalness),
+			this.erosionParameters[6],
+			weirdness,
+			0.0F,
+			BiomeKeys.MANGROVE_SWAMP
 		);
 		this.writeBiomeParameters(
 			parameters,

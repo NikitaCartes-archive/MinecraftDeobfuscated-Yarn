@@ -2,7 +2,7 @@ package net.minecraft.world.gen.heightprovider;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import java.util.Random;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
@@ -16,7 +16,7 @@ public abstract class HeightProvider {
 		provider -> provider.getType() == HeightProviderType.CONSTANT ? Either.left(((ConstantHeightProvider)provider).getOffset()) : Either.right(provider)
 	);
 
-	public abstract int get(Random random, HeightContext context);
+	public abstract int get(AbstractRandom abstractRandom, HeightContext context);
 
 	public abstract HeightProviderType<?> getType();
 }

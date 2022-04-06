@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -35,6 +34,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -186,7 +186,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 
 	@Nullable
 	public Pair<BlockPos, RegistryEntry<Biome>> locateBiome(
-		int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, Random random, MultiNoiseUtil.MultiNoiseSampler noiseSampler
+		int x, int y, int z, int radius, Predicate<RegistryEntry<Biome>> predicate, AbstractRandom random, MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {
 		return this.locateBiome(x, y, z, radius, 1, predicate, random, false, noiseSampler);
 	}
@@ -229,7 +229,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 		int radius,
 		int blockCheckInterval,
 		Predicate<RegistryEntry<Biome>> predicate,
-		Random random,
+		AbstractRandom random,
 		boolean bl,
 		MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {

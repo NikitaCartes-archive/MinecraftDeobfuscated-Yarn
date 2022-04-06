@@ -1,6 +1,5 @@
 package net.minecraft.entity.mob;
 
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -25,6 +24,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -142,8 +142,8 @@ public class EndermiteEntity extends HostileEntity {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<EndermiteEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
+	public static boolean canSpawn(EntityType<EndermiteEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom abstractRandom) {
+		if (canSpawnIgnoreLightLevel(type, world, spawnReason, pos, abstractRandom)) {
 			PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
 			return playerEntity == null;
 		} else {

@@ -42,6 +42,7 @@ public final class VillagerType {
 		map.put(BiomeKeys.FROZEN_PEAKS, SNOW);
 		map.put(BiomeKeys.JAGGED_PEAKS, SNOW);
 		map.put(BiomeKeys.SWAMP, SWAMP);
+		map.put(BiomeKeys.MANGROVE_SWAMP, SWAMP);
 		map.put(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, TAIGA);
 		map.put(BiomeKeys.OLD_GROWTH_PINE_TAIGA, TAIGA);
 		map.put(BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, TAIGA);

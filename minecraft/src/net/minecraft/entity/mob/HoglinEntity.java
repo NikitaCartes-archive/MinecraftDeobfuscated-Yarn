@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,6 +37,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -187,7 +187,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<HoglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<HoglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 

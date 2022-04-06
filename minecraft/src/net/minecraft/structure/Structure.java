@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -44,6 +43,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.EmptyBlockView;
@@ -224,7 +224,7 @@ public class Structure {
 		return transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
 	}
 
-	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, Random random, int flags) {
+	public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, AbstractRandom random, int flags) {
 		if (this.blockInfoLists.isEmpty()) {
 			return false;
 		} else {

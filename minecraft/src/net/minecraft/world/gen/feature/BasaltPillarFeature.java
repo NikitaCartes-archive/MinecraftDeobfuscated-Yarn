@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -20,7 +20,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		if (structureWorldAccess.isAir(blockPos) && !structureWorldAccess.isAir(blockPos.up())) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
 			BlockPos.Mutable mutable2 = blockPos.mutableCopy();
@@ -35,25 +35,25 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 				}
 
 				structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
-				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
-				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
-				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
-				bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+				bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.NORTH));
+				bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.SOUTH));
+				bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.WEST));
+				bl4 = bl4 && this.stopOrPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.EAST));
 				mutable.move(Direction.DOWN);
 			}
 
 			mutable.move(Direction.UP);
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
-			this.tryPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.EAST));
+			this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.NORTH));
+			this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.SOUTH));
+			this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.WEST));
+			this.tryPlaceBasalt(structureWorldAccess, abstractRandom, mutable2.set(mutable, Direction.EAST));
 			mutable.move(Direction.DOWN);
 			BlockPos.Mutable mutable3 = new BlockPos.Mutable();
 
 			for (int i = -3; i < 4; i++) {
 				for (int j = -3; j < 4; j++) {
 					int k = MathHelper.abs(i) * MathHelper.abs(j);
-					if (random.nextInt(10) < 10 - k) {
+					if (abstractRandom.nextInt(10) < 10 - k) {
 						mutable3.set(mutable.add(i, 0, j));
 						int l = 3;
 
@@ -77,13 +77,13 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 		}
 	}
 
-	private void tryPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
+	private void tryPlaceBasalt(WorldAccess world, AbstractRandom random, BlockPos pos) {
 		if (random.nextBoolean()) {
 			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 		}
 	}
 
-	private boolean stopOrPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
+	private boolean stopOrPlaceBasalt(WorldAccess world, AbstractRandom random, BlockPos pos) {
 		if (random.nextInt(10) != 0) {
 			world.setBlockState(pos, Blocks.BASALT.getDefaultState(), Block.NOTIFY_LISTENERS);
 			return true;

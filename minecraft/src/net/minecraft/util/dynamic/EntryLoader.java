@@ -14,14 +14,11 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.DataResult.PartialResult;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -52,15 +49,15 @@ public interface EntryLoader {
 					RegistryKey<E> registryKey2 = RegistryKey.of(key, new Identifier(id.getNamespace(), string3));
 					map.put(registryKey2, (EntryLoader.Parseable<>)(jsonOps, decoder) -> {
 						try {
-							Resource resource = resourceRef.open();
+							Reader reader = resourceRef.getReader();
 
 							DataResult var6x;
 							try {
-								var6x = this.parse(jsonOps, decoder, resource);
+								var6x = this.parse(jsonOps, decoder, reader);
 							} catch (Throwable var9) {
-								if (resource != null) {
+								if (reader != null) {
 									try {
-										resource.close();
+										reader.close();
 									} catch (Throwable var8x) {
 										var9.addSuppressed(var8x);
 									}
@@ -69,8 +66,8 @@ public interface EntryLoader {
 								throw var9;
 							}
 
-							if (resource != null) {
-								resource.close();
+							if (reader != null) {
+								reader.close();
 							}
 
 							return var6x;
@@ -85,55 +82,39 @@ public interface EntryLoader {
 			@Override
 			public <E> Optional<EntryLoader.Parseable<E>> createParseable(RegistryKey<E> key) {
 				Identifier identifier = createId(key);
-				return !resourceManager.containsResource(identifier) ? Optional.empty() : Optional.of((EntryLoader.Parseable<>)(jsonOps, decoder) -> {
-					try {
-						Resource resource = resourceManager.getResource(identifier);
-
-						DataResult var6;
+				return resourceManager.getResource(identifier).map(resource -> (jsonOps, decoder) -> {
 						try {
-							var6 = this.parse(jsonOps, decoder, resource);
-						} catch (Throwable var9) {
-							if (resource != null) {
-								try {
-									resource.close();
-								} catch (Throwable var8) {
-									var9.addSuppressed(var8);
+							Reader reader = resource.getReader();
+
+							DataResult var6;
+							try {
+								var6 = this.parse(jsonOps, decoder, reader);
+							} catch (Throwable var9) {
+								if (reader != null) {
+									try {
+										reader.close();
+									} catch (Throwable var8) {
+										var9.addSuppressed(var8);
+									}
 								}
+
+								throw var9;
 							}
 
-							throw var9;
-						}
+							if (reader != null) {
+								reader.close();
+							}
 
-						if (resource != null) {
-							resource.close();
+							return var6;
+						} catch (JsonIOException | JsonSyntaxException | IOException var10) {
+							return DataResult.error("Failed to parse " + identifier + " file: " + var10.getMessage());
 						}
-
-						return var6;
-					} catch (JsonIOException | JsonSyntaxException | IOException var10) {
-						return DataResult.error("Failed to parse " + identifier + " file: " + var10.getMessage());
-					}
-				});
+					});
 			}
 
-			private <E> DataResult<EntryLoader.Entry<E>> parse(DynamicOps<JsonElement> jsonOps, Decoder<E> decoder, Resource resource) throws IOException {
-				Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-
-				DataResult var6;
-				try {
-					JsonElement jsonElement = JsonParser.parseReader(reader);
-					var6 = decoder.parse(jsonOps, jsonElement).map(EntryLoader.Entry::of);
-				} catch (Throwable var8) {
-					try {
-						reader.close();
-					} catch (Throwable var7) {
-						var8.addSuppressed(var7);
-					}
-
-					throw var8;
-				}
-
-				reader.close();
-				return var6;
+			private <E> DataResult<EntryLoader.Entry<E>> parse(DynamicOps<JsonElement> jsonOps, Decoder<E> decoder, Reader reader) throws IOException {
+				JsonElement jsonElement = JsonParser.parseReader(reader);
+				return decoder.parse(jsonOps, jsonElement).map(EntryLoader.Entry::of);
 			}
 
 			private static String getPath(Identifier id) {

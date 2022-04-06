@@ -20,7 +20,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
@@ -72,15 +71,15 @@ public class StructureManager {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
 
 		try {
-			Resource resource = this.resourceManager.getResource(identifier);
+			InputStream inputStream = this.resourceManager.open(identifier);
 
 			Optional var4;
 			try {
-				var4 = Optional.of(this.readStructure(resource.getInputStream()));
+				var4 = Optional.of(this.readStructure(inputStream));
 			} catch (Throwable var7) {
-				if (resource != null) {
+				if (inputStream != null) {
 					try {
-						resource.close();
+						inputStream.close();
 					} catch (Throwable var6) {
 						var7.addSuppressed(var6);
 					}
@@ -89,8 +88,8 @@ public class StructureManager {
 				throw var7;
 			}
 
-			if (resource != null) {
-				resource.close();
+			if (inputStream != null) {
+				inputStream.close();
 			}
 
 			return var4;

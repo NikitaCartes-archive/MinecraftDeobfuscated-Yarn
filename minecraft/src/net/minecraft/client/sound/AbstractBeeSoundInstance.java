@@ -17,7 +17,7 @@ public abstract class AbstractBeeSoundInstance extends MovingSoundInstance {
 	private boolean replaced;
 
 	public AbstractBeeSoundInstance(BeeEntity entity, SoundEvent sound, SoundCategory soundCategory) {
-		super(sound, soundCategory);
+		super(sound, soundCategory, SoundInstance.createRandom());
 		this.bee = entity;
 		this.x = (double)((float)entity.getX());
 		this.y = (double)((float)entity.getY());

@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -43,7 +43,7 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = height - 1;
@@ -58,7 +58,7 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 			}
 
 			if (TreeFeature.canReplace(world, mutable)) {
-				getAndSetState(world, replacer, random, mutable, config);
+				this.getAndSetState(world, replacer, random, mutable, config);
 			}
 
 			if (j >= this.minHeightForLeaves) {
@@ -72,7 +72,7 @@ public class BendingTrunkPlacer extends TrunkPlacer {
 
 		for (int k = 0; k <= j; k++) {
 			if (TreeFeature.canReplace(world, mutable)) {
-				getAndSetState(world, replacer, random, mutable, config);
+				this.getAndSetState(world, replacer, random, mutable, config);
 			}
 
 			list.add(new FoliagePlacer.TreeNode(mutable.toImmutable(), 0, false));

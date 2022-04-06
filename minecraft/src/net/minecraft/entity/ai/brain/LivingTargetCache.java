@@ -40,11 +40,6 @@ public class LivingTargetCache {
 		return Optional.empty();
 	}
 
-	@SafeVarargs
-	public final Optional<LivingEntity> findAny(Predicate<LivingEntity>... predicates) {
-		return (Optional<LivingEntity>)Stream.of(predicates).map(this::findFirst).filter(Optional::isPresent).findAny().orElse(Optional.empty());
-	}
-
 	public Iterable<LivingEntity> iterate(Predicate<LivingEntity> predicate) {
 		return Iterables.filter(this.entities, entity -> predicate.test(entity) && this.targetPredicate.test(entity));
 	}

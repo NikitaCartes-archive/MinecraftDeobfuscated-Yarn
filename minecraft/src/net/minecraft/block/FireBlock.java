@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,6 +15,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -143,7 +143,7 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		world.createAndScheduleBlockTick(pos, this, getFireTickDelay(world.random));
 		if (world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			if (!state.canPlaceAt(world, pos)) {
@@ -230,12 +230,12 @@ public class FireBlock extends AbstractFireBlock {
 		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? 0 : this.burnChances.getInt(state.getBlock());
 	}
 
-	private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random rand, int currentAge) {
+	private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, AbstractRandom random, int currentAge) {
 		int i = this.getSpreadChance(world.getBlockState(pos));
-		if (rand.nextInt(spreadFactor) < i) {
+		if (random.nextInt(spreadFactor) < i) {
 			BlockState blockState = world.getBlockState(pos);
-			if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
-				int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
+			if (random.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
+				int j = Math.min(currentAge + random.nextInt(5) / 4, 15);
 				world.setBlockState(pos, this.getStateWithAge(world, pos, j), Block.NOTIFY_ALL);
 			} else {
 				world.removeBlock(pos, false);
@@ -289,7 +289,7 @@ public class FireBlock extends AbstractFireBlock {
 		world.createAndScheduleBlockTick(pos, this, getFireTickDelay(world.random));
 	}
 
-	private static int getFireTickDelay(Random random) {
+	private static int getFireTickDelay(AbstractRandom random) {
 		return 30 + random.nextInt(10);
 	}
 

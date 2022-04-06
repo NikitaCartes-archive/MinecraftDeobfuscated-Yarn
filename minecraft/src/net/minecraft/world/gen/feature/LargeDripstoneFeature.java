@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -12,6 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.floatprovider.FloatProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.CaveSurface;
@@ -28,7 +28,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos blockPos = context.getOrigin();
 		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = context.getConfig();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
@@ -42,16 +42,21 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 				} else {
 					int i = (int)((float)bounded.getHeight() * largeDripstoneFeatureConfig.maxColumnRadiusToCaveHeightRatio);
 					int j = MathHelper.clamp(i, largeDripstoneFeatureConfig.columnRadius.getMin(), largeDripstoneFeatureConfig.columnRadius.getMax());
-					int k = MathHelper.nextBetween(random, largeDripstoneFeatureConfig.columnRadius.getMin(), j);
+					int k = MathHelper.nextBetween(abstractRandom, largeDripstoneFeatureConfig.columnRadius.getMin(), j);
 					LargeDripstoneFeature.DripstoneGenerator dripstoneGenerator = createGenerator(
-						blockPos.withY(bounded.getCeiling() - 1), false, random, k, largeDripstoneFeatureConfig.stalactiteBluntness, largeDripstoneFeatureConfig.heightScale
+						blockPos.withY(bounded.getCeiling() - 1),
+						false,
+						abstractRandom,
+						k,
+						largeDripstoneFeatureConfig.stalactiteBluntness,
+						largeDripstoneFeatureConfig.heightScale
 					);
 					LargeDripstoneFeature.DripstoneGenerator dripstoneGenerator2 = createGenerator(
-						blockPos.withY(bounded.getFloor() + 1), true, random, k, largeDripstoneFeatureConfig.stalagmiteBluntness, largeDripstoneFeatureConfig.heightScale
+						blockPos.withY(bounded.getFloor() + 1), true, abstractRandom, k, largeDripstoneFeatureConfig.stalagmiteBluntness, largeDripstoneFeatureConfig.heightScale
 					);
 					LargeDripstoneFeature.WindModifier windModifier;
 					if (dripstoneGenerator.generateWind(largeDripstoneFeatureConfig) && dripstoneGenerator2.generateWind(largeDripstoneFeatureConfig)) {
-						windModifier = new LargeDripstoneFeature.WindModifier(blockPos.getY(), random, largeDripstoneFeatureConfig.windSpeed);
+						windModifier = new LargeDripstoneFeature.WindModifier(blockPos.getY(), abstractRandom, largeDripstoneFeatureConfig.windSpeed);
 					} else {
 						windModifier = LargeDripstoneFeature.WindModifier.create();
 					}
@@ -59,11 +64,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 					boolean bl = dripstoneGenerator.canGenerate(structureWorldAccess, windModifier);
 					boolean bl2 = dripstoneGenerator2.canGenerate(structureWorldAccess, windModifier);
 					if (bl) {
-						dripstoneGenerator.generate(structureWorldAccess, random, windModifier);
+						dripstoneGenerator.generate(structureWorldAccess, abstractRandom, windModifier);
 					}
 
 					if (bl2) {
-						dripstoneGenerator2.generate(structureWorldAccess, random, windModifier);
+						dripstoneGenerator2.generate(structureWorldAccess, abstractRandom, windModifier);
 					}
 
 					return true;
@@ -75,9 +80,9 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 	}
 
 	private static LargeDripstoneFeature.DripstoneGenerator createGenerator(
-		BlockPos pos, boolean isStalagmite, Random random, int scale, FloatProvider bluntness, FloatProvider heightScale
+		BlockPos pos, boolean isStalagmite, AbstractRandom abstractRandom, int scale, FloatProvider bluntness, FloatProvider heightScale
 	) {
-		return new LargeDripstoneFeature.DripstoneGenerator(pos, isStalagmite, scale, (double)bluntness.get(random), (double)heightScale.get(random));
+		return new LargeDripstoneFeature.DripstoneGenerator(pos, isStalagmite, scale, (double)bluntness.get(abstractRandom), (double)heightScale.get(abstractRandom));
 	}
 
 	private void testGeneration(StructureWorldAccess world, BlockPos pos, CaveSurface.Bounded surface, LargeDripstoneFeature.WindModifier wind) {
@@ -147,15 +152,15 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			return (int)DripstoneHelper.scaleHeightFromRadius((double)height, (double)this.scale, this.heightScale, this.bluntness);
 		}
 
-		void generate(StructureWorldAccess world, Random random, LargeDripstoneFeature.WindModifier wind) {
+		void generate(StructureWorldAccess world, AbstractRandom abstractRandom, LargeDripstoneFeature.WindModifier wind) {
 			for (int i = -this.scale; i <= this.scale; i++) {
 				for (int j = -this.scale; j <= this.scale; j++) {
 					float f = MathHelper.sqrt((float)(i * i + j * j));
 					if (!(f > (float)this.scale)) {
 						int k = this.scale(f);
 						if (k > 0) {
-							if ((double)random.nextFloat() < 0.2) {
-								k = (int)((float)k * MathHelper.nextBetween(random, 0.8F, 1.0F));
+							if ((double)abstractRandom.nextFloat() < 0.2) {
+								k = (int)((float)k * MathHelper.nextBetween(abstractRandom, 0.8F, 1.0F));
 							}
 
 							BlockPos.Mutable mutable = this.pos.add(i, 0, j).mutableCopy();
@@ -190,10 +195,10 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		@Nullable
 		private final Vec3d wind;
 
-		WindModifier(int y, Random random, FloatProvider wind) {
+		WindModifier(int y, AbstractRandom abstractRandom, FloatProvider wind) {
 			this.y = y;
-			float f = wind.get(random);
-			float g = MathHelper.nextBetween(random, 0.0F, (float) Math.PI);
+			float f = wind.get(abstractRandom);
+			float g = MathHelper.nextBetween(abstractRandom, 0.0F, (float) Math.PI);
 			this.wind = new Vec3d((double)(MathHelper.cos(g) * f), 0.0, (double)(MathHelper.sin(g) * f));
 		}
 

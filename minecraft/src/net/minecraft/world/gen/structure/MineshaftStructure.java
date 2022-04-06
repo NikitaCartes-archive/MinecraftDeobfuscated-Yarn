@@ -1,0 +1,109 @@
+package net.minecraft.world.gen.structure;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Optional;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.structure.MineshaftGenerator;
+import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.ChunkRandom;
+import net.minecraft.world.Heightmap;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+
+public class MineshaftStructure extends StructureType {
+	public static final Codec<MineshaftStructure> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(
+					configCodecBuilder(instance), MineshaftStructure.Type.CODEC.fieldOf("mineshaft_type").forGetter(mineshaftStructure -> mineshaftStructure.type)
+				)
+				.apply(instance, MineshaftStructure::new)
+	);
+	private final MineshaftStructure.Type type;
+
+	public MineshaftStructure(StructureType.Config config, MineshaftStructure.Type type) {
+		super(config);
+		this.type = type;
+	}
+
+	@Override
+	public Optional<StructureType.StructurePosition> getStructurePosition(StructureType.Context context) {
+		context.random().nextDouble();
+		ChunkPos chunkPos = context.chunkPos();
+		BlockPos blockPos = new BlockPos(chunkPos.getCenterX(), 50, chunkPos.getStartZ());
+		return Optional.of(new StructureType.StructurePosition(blockPos, collector -> this.addPieces(collector, blockPos, context)));
+	}
+
+	private void addPieces(StructurePiecesCollector collector, BlockPos pos, StructureType.Context context) {
+		ChunkPos chunkPos = context.chunkPos();
+		ChunkRandom chunkRandom = context.random();
+		ChunkGenerator chunkGenerator = context.chunkGenerator();
+		MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
+			0, chunkRandom, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), this.type
+		);
+		collector.addPiece(mineshaftRoom);
+		mineshaftRoom.fillOpenings(mineshaftRoom, collector, chunkRandom);
+		int i = chunkGenerator.getSeaLevel();
+		if (this.type == MineshaftStructure.Type.MESA) {
+			BlockPos blockPos = collector.getBoundingBox().getCenter();
+			int j = chunkGenerator.getHeight(blockPos.getX(), blockPos.getZ(), Heightmap.Type.WORLD_SURFACE_WG, context.world(), context.noiseConfig());
+			int k = j <= i ? i : MathHelper.nextBetween(chunkRandom, i, j);
+			int l = k - blockPos.getY();
+			collector.shift(l);
+		} else {
+			collector.shiftInto(i, chunkGenerator.getMinimumY(), chunkRandom, 10);
+		}
+	}
+
+	@Override
+	public net.minecraft.structure.StructureType<?> getType() {
+		return net.minecraft.structure.StructureType.MINESHAFT;
+	}
+
+	public static enum Type implements StringIdentifiable {
+		NORMAL("normal", Blocks.OAK_LOG, Blocks.OAK_PLANKS, Blocks.OAK_FENCE),
+		MESA("mesa", Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
+
+		public static final com.mojang.serialization.Codec<MineshaftStructure.Type> CODEC = StringIdentifiable.createCodec(MineshaftStructure.Type::values);
+		private final String name;
+		private final BlockState log;
+		private final BlockState planks;
+		private final BlockState fence;
+
+		private Type(String name, Block log, Block planks, Block fence) {
+			this.name = name;
+			this.log = log.getDefaultState();
+			this.planks = planks.getDefaultState();
+			this.fence = fence.getDefaultState();
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public static MineshaftStructure.Type byIndex(int index) {
+			return index >= 0 && index < values().length ? values()[index] : NORMAL;
+		}
+
+		public BlockState getLog() {
+			return this.log;
+		}
+
+		public BlockState getPlanks() {
+			return this.planks;
+		}
+
+		public BlockState getFence() {
+			return this.fence;
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
+		}
+	}
+}

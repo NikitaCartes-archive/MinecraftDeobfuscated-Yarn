@@ -3,7 +3,6 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -48,6 +47,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -383,7 +383,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof ChestBlockEntity) {
 			((ChestBlockEntity)blockEntity).onScheduledTick();

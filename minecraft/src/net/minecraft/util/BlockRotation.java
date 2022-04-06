@@ -1,11 +1,10 @@
 package net.minecraft.util;
 
-import com.google.common.collect.Lists;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public enum BlockRotation {
 	NONE(DirectionTransformation.IDENTITY),
@@ -93,13 +92,11 @@ public enum BlockRotation {
 		}
 	}
 
-	public static BlockRotation random(Random random) {
+	public static BlockRotation random(AbstractRandom random) {
 		return Util.getRandom(values(), random);
 	}
 
-	public static List<BlockRotation> randomRotationOrder(Random random) {
-		List<BlockRotation> list = Lists.<BlockRotation>newArrayList(values());
-		Collections.shuffle(list, random);
-		return list;
+	public static List<BlockRotation> randomRotationOrder(AbstractRandom random) {
+		return Util.copyShuffled(Arrays.asList(values()), random);
 	}
 }

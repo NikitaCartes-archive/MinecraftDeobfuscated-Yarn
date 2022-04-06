@@ -2149,6 +2149,14 @@ public class RecipeProvider implements DataProvider {
 			.pattern("SS")
 			.criterion("has_amethyst_shard", conditionsFromItem(Items.AMETHYST_SHARD))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(Items.RECOVERY_COMPASS)
+			.input('C', Items.COMPASS)
+			.input('S', Items.ECHO_SHARD)
+			.pattern("SSS")
+			.pattern("SCS")
+			.pattern("SSS")
+			.criterion("has_echo_shard", conditionsFromItem(Items.ECHO_SHARD))
+			.offerTo(exporter);
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");

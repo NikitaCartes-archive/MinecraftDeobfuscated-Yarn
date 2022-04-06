@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -25,7 +25,7 @@ public class TwistingVinesFeature extends Feature<TwistingVinesFeatureConfig> {
 		if (isNotSuitable(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
-			Random random = context.getRandom();
+			AbstractRandom abstractRandom = context.getRandom();
 			TwistingVinesFeatureConfig twistingVinesFeatureConfig = context.getConfig();
 			int i = twistingVinesFeatureConfig.spreadWidth();
 			int j = twistingVinesFeatureConfig.spreadHeight();
@@ -33,20 +33,20 @@ public class TwistingVinesFeature extends Feature<TwistingVinesFeatureConfig> {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int l = 0; l < i * i; l++) {
-				mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
+				mutable.set(blockPos).move(MathHelper.nextInt(abstractRandom, -i, i), MathHelper.nextInt(abstractRandom, -j, j), MathHelper.nextInt(abstractRandom, -i, i));
 				if (canGenerate(structureWorldAccess, mutable) && !isNotSuitable(structureWorldAccess, mutable)) {
-					int m = MathHelper.nextInt(random, 1, k);
-					if (random.nextInt(6) == 0) {
+					int m = MathHelper.nextInt(abstractRandom, 1, k);
+					if (abstractRandom.nextInt(6) == 0) {
 						m *= 2;
 					}
 
-					if (random.nextInt(5) == 0) {
+					if (abstractRandom.nextInt(5) == 0) {
 						m = 1;
 					}
 
 					int n = 17;
 					int o = 25;
-					generateVineColumn(structureWorldAccess, random, mutable, m, 17, 25);
+					generateVineColumn(structureWorldAccess, abstractRandom, mutable, m, 17, 25);
 				}
 			}
 
@@ -66,7 +66,7 @@ public class TwistingVinesFeature extends Feature<TwistingVinesFeatureConfig> {
 		return true;
 	}
 
-	public static void generateVineColumn(WorldAccess world, Random random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
+	public static void generateVineColumn(WorldAccess world, AbstractRandom random, BlockPos.Mutable pos, int maxLength, int minAge, int maxAge) {
 		for (int i = 1; i <= maxLength; i++) {
 			if (world.isAir(pos)) {
 				if (i == maxLength || !world.isAir(pos.up())) {

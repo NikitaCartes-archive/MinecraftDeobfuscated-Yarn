@@ -1,9 +1,7 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.block.sapling.OakSaplingGenerator;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.block.sapling.MangroveSaplingGenerator;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -12,13 +10,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -35,11 +30,12 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 		Block.createCuboidShape(7.0, 3.0, 7.0, 9.0, 16.0, 9.0),
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
 	};
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty HANGING = Properties.HANGING;
+	private static final float field_38749 = 0.75F;
 
 	public PropaguleBlock(AbstractBlock.Settings settings) {
-		super(new OakSaplingGenerator(), settings);
+		super(new MangroveSaplingGenerator(0.75F), settings);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -57,7 +53,7 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 
 	@Override
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isIn(BlockTags.DIRT) || floor.isOf(Blocks.FARMLAND) || floor.isOf(Blocks.CLAY) || floor.isOf(Blocks.MUD);
+		return super.canPlantOnTop(floor, world, pos) || floor.isOf(Blocks.CLAY);
 	}
 
 	@Nullable
@@ -66,11 +62,6 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		boolean bl = fluidState.getFluid() == Fluids.WATER;
 		return super.getPlacementState(ctx).with(WATERLOGGED, Boolean.valueOf(bl)).with(AGE, Integer.valueOf(4));
-	}
-
-	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return super.onUse(state, world, pos, player, hand, hit);
 	}
 
 	@Override
@@ -115,7 +106,7 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (!isHanging(state)) {
 			if (random.nextInt(7) == 0) {
 				this.generate(world, pos, state, random);
@@ -133,12 +124,12 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
 		return isHanging(state) ? !isFullyGrown(state) : super.canGrow(world, random, pos, state);
 	}
 
 	@Override
-	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
 		if (isHanging(state) && !isFullyGrown(state)) {
 			world.setBlockState(pos, state.cycle(AGE), Block.NOTIFY_LISTENERS);
 		} else {
@@ -155,6 +146,10 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	}
 
 	public static BlockState getDefaultHangingState() {
-		return Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, Boolean.valueOf(true)).with(AGE, Integer.valueOf(0));
+		return method_43130(0);
+	}
+
+	public static BlockState method_43130(int i) {
+		return Blocks.MANGROVE_PROPAGULE.getDefaultState().with(HANGING, Boolean.valueOf(true)).with(AGE, Integer.valueOf(i));
 	}
 }

@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,6 +9,7 @@ import net.minecraft.block.Material;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
@@ -26,22 +26,22 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 	public boolean generate(FeatureContext<LakeFeature.Config> context) {
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		LakeFeature.Config config = context.getConfig();
 		if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);
 			boolean[] bls = new boolean[2048];
-			int i = random.nextInt(4) + 4;
+			int i = abstractRandom.nextInt(4) + 4;
 
 			for (int j = 0; j < i; j++) {
-				double d = random.nextDouble() * 6.0 + 3.0;
-				double e = random.nextDouble() * 4.0 + 2.0;
-				double f = random.nextDouble() * 6.0 + 3.0;
-				double g = random.nextDouble() * (16.0 - d - 2.0) + 1.0 + d / 2.0;
-				double h = random.nextDouble() * (8.0 - e - 4.0) + 2.0 + e / 2.0;
-				double k = random.nextDouble() * (16.0 - f - 2.0) + 1.0 + f / 2.0;
+				double d = abstractRandom.nextDouble() * 6.0 + 3.0;
+				double e = abstractRandom.nextDouble() * 4.0 + 2.0;
+				double f = abstractRandom.nextDouble() * 6.0 + 3.0;
+				double g = abstractRandom.nextDouble() * (16.0 - d - 2.0) + 1.0 + d / 2.0;
+				double h = abstractRandom.nextDouble() * (8.0 - e - 4.0) + 2.0 + e / 2.0;
+				double k = abstractRandom.nextDouble() * (16.0 - f - 2.0) + 1.0 + f / 2.0;
 
 				for (int l = 1; l < 15; l++) {
 					for (int m = 1; m < 15; m++) {
@@ -58,7 +58,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 				}
 			}
 
-			BlockState blockState = config.fluid().getBlockState(random, blockPos);
+			BlockState blockState = config.fluid().getBlockState(abstractRandom, blockPos);
 
 			for (int s = 0; s < 16; s++) {
 				for (int t = 0; t < 16; t++) {
@@ -104,7 +104,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 				}
 			}
 
-			BlockState blockState2 = config.barrier().getBlockState(random, blockPos);
+			BlockState blockState2 = config.barrier().getBlockState(abstractRandom, blockPos);
 			if (!blockState2.isAir()) {
 				for (int t = 0; t < 16; t++) {
 					for (int uxx = 0; uxx < 16; uxx++) {
@@ -118,7 +118,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 										|| v < 7 && bls[(t * 16 + uxx) * 8 + v + 1]
 										|| v > 0 && bls[(t * 16 + uxx) * 8 + (v - 1)]
 								);
-							if (bl2 && (v < 4 || random.nextInt(2) != 0)) {
+							if (bl2 && (v < 4 || abstractRandom.nextInt(2) != 0)) {
 								BlockState blockState3 = structureWorldAccess.getBlockState(blockPos.add(t, v, uxx));
 								if (blockState3.getMaterial().isSolid() && !blockState3.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) {
 									BlockPos blockPos3 = blockPos.add(t, v, uxx);

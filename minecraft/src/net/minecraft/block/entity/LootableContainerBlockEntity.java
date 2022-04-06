@@ -1,6 +1,5 @@
 package net.minecraft.block.entity;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity {
@@ -34,7 +34,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		super(blockEntityType, blockPos, blockState);
 	}
 
-	public static void setLootTable(BlockView world, Random random, BlockPos pos, Identifier id) {
+	public static void setLootTable(BlockView world, AbstractRandom random, BlockPos pos, Identifier id) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LootableContainerBlockEntity) {
 			((LootableContainerBlockEntity)blockEntity).setLootTable(id, random.nextLong());

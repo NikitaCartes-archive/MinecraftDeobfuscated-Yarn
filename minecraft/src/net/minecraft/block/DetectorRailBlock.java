@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.Entity;
@@ -21,6 +20,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -51,7 +51,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if ((Boolean)state.get(POWERED)) {
 			this.updatePoweredStatus(world, pos, state);
 		}

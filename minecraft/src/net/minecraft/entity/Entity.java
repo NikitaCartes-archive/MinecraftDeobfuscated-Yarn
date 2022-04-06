@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -99,6 +98,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -232,7 +232,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public double lastRenderZ;
 	public float stepHeight;
 	public boolean noClip;
-	protected final Random random = new Random();
+	protected final AbstractRandom random = AbstractRandom.createAtomic();
 	public int age;
 	private int fireTicks = -this.getBurningDuration();
 	protected boolean touchingWater;
@@ -1035,6 +1035,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void playSound(SoundEvent sound, float volume, float pitch) {
 		if (!this.isSilent()) {
 			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch);
+		}
+	}
+
+	public void playSoundIfNotSilent(SoundEvent event) {
+		if (!this.isSilent()) {
+			this.playSound(event, 1.0F, 1.0F);
 		}
 	}
 
@@ -2141,7 +2147,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
 	}
 
 	@Nullable
@@ -3174,7 +3180,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			}
 
 			this.changeListener.updateEntityPosition();
-			this.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
 		}
 	}
 
@@ -3192,8 +3197,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double f = packet.getZ();
 		this.updateTrackedPosition(d, e, f);
 		this.refreshPositionAfterTeleport(d, e, f);
-		this.setPitch((float)(packet.getPitch() * 360) / 256.0F);
-		this.setYaw((float)(packet.getYaw() * 360) / 256.0F);
+		this.setPitch(packet.getPitch());
+		this.setYaw(packet.getYaw());
 		this.setId(i);
 		this.setUuid(packet.getUuid());
 	}
@@ -3217,6 +3222,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public float getYaw() {
 		return this.yaw;
+	}
+
+	public float getBodyYaw() {
+		return this.getYaw();
 	}
 
 	public void setYaw(float yaw) {

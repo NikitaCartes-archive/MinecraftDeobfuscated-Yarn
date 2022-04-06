@@ -1,7 +1,7 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 
 public class TwistingVinesBlock extends AbstractPlantStemBlock {
@@ -12,7 +12,7 @@ public class TwistingVinesBlock extends AbstractPlantStemBlock {
 	}
 
 	@Override
-	protected int getGrowthLength(Random random) {
+	protected int getGrowthLength(AbstractRandom random) {
 		return VineLogic.getGrowthLength(random);
 	}
 

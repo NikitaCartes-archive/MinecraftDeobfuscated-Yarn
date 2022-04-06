@@ -6,8 +6,8 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,7 +17,6 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -28,7 +27,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 /**
@@ -99,12 +97,12 @@ public class FunctionLoader implements ResourceReloader {
 						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null
 					);
 
-					for (Entry<Identifier, ResourceRef> entry : map.entrySet()) {
+					for (Entry<Identifier, Resource> entry : map.entrySet()) {
 						Identifier identifier = (Identifier)entry.getKey();
 						String string = identifier.getPath();
 						Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 						map2.put(identifier2, CompletableFuture.supplyAsync(() -> {
-							List<String> list = readLines((ResourceRef)entry.getValue());
+							List<String> list = readLines((Resource)entry.getValue());
 							return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
 						}, prepareExecutor));
 					}
@@ -130,17 +128,17 @@ public class FunctionLoader implements ResourceReloader {
 		}, applyExecutor);
 	}
 
-	private static List<String> readLines(ResourceRef resourceRef) {
+	private static List<String> readLines(Resource resource) {
 		try {
-			Resource resource = resourceRef.open();
+			BufferedReader bufferedReader = resource.getReader();
 
 			List var2;
 			try {
-				var2 = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
+				var2 = bufferedReader.lines().toList();
 			} catch (Throwable var5) {
-				if (resource != null) {
+				if (bufferedReader != null) {
 					try {
-						resource.close();
+						bufferedReader.close();
 					} catch (Throwable var4) {
 						var5.addSuppressed(var4);
 					}
@@ -149,8 +147,8 @@ public class FunctionLoader implements ResourceReloader {
 				throw var5;
 			}
 
-			if (resource != null) {
-				resource.close();
+			if (bufferedReader != null) {
+				bufferedReader.close();
 			}
 
 			return var2;

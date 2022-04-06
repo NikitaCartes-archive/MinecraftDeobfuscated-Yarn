@@ -44,7 +44,7 @@ public record NoiseRouter(
 	);
 
 	private static RecordCodecBuilder<NoiseRouter, DensityFunction> method_41545(String string, Function<NoiseRouter, DensityFunction> function) {
-		return DensityFunction.field_37059.fieldOf(string).forGetter(function);
+		return DensityFunction.FUNCTION_CODEC.fieldOf(string).forGetter(function);
 	}
 
 	public NoiseRouter method_41544(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {

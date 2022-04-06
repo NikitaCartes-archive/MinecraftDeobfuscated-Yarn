@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -17,6 +16,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -107,7 +107,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		}
@@ -119,7 +119,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if ((Integer)state.get(STAGE) == 0) {
 			if (random.nextInt(3) == 0 && world.isAir(pos.up()) && world.getBaseLightLevel(pos.up(), 0) >= 9) {
 				int i = this.countBambooBelow(world, pos) + 1;
@@ -158,12 +158,12 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
 		int i = this.countBambooAbove(world, pos);
 		int j = this.countBambooBelow(world, pos);
 		int k = i + j + 1;
@@ -187,7 +187,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		return player.getMainHandStack().getItem() instanceof SwordItem ? 1.0F : super.calcBlockBreakingDelta(state, player, world, pos);
 	}
 
-	protected void updateLeaves(BlockState state, World world, BlockPos pos, Random random, int height) {
+	protected void updateLeaves(BlockState state, World world, BlockPos pos, AbstractRandom random, int height) {
 		BlockState blockState = world.getBlockState(pos.down());
 		BlockPos blockPos = pos.down(2);
 		BlockState blockState2 = world.getBlockState(blockPos);

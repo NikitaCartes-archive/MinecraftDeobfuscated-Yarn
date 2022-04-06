@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Collection;
-import java.util.Random;
 import net.minecraft.block.entity.SculkSpreadManager;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.FluidState;
@@ -18,6 +17,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
@@ -65,7 +65,7 @@ public class SculkVeinBlock extends AbstractLichenBlock implements SculkSpreadab
 	}
 
 	@Override
-	public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, Random random) {
+	public void spreadAtSamePosition(WorldAccess world, BlockState state, BlockPos pos, AbstractRandom random) {
 		if (state.isOf(this)) {
 			for (Direction direction : DIRECTIONS) {
 				BooleanProperty booleanProperty = getProperty(direction);
@@ -86,7 +86,12 @@ public class SculkVeinBlock extends AbstractLichenBlock implements SculkSpreadab
 
 	@Override
 	public int spread(
-		SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock
+		SculkSpreadManager.Cursor cursor,
+		WorldAccess world,
+		BlockPos catalystPos,
+		AbstractRandom random,
+		SculkSpreadManager spreadManager,
+		boolean shouldConvertToBlock
 	) {
 		if (shouldConvertToBlock && this.convertToBlock(spreadManager, world, cursor.getPos(), random)) {
 			return cursor.getCharge() - 1;
@@ -95,7 +100,7 @@ public class SculkVeinBlock extends AbstractLichenBlock implements SculkSpreadab
 		}
 	}
 
-	private boolean convertToBlock(SculkSpreadManager spreadManager, WorldAccess world, BlockPos pos, Random random) {
+	private boolean convertToBlock(SculkSpreadManager spreadManager, WorldAccess world, BlockPos pos, AbstractRandom random) {
 		BlockState blockState = world.getBlockState(pos);
 		TagKey<Block> tagKey = spreadManager.getReplaceableTag();
 

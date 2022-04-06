@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.List;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -45,6 +44,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -168,7 +168,7 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if ((Integer)state.get(HONEY_LEVEL) >= 5) {
 			for (int i = 0; i < random.nextInt(1) + 1; i++) {
 				this.spawnHoneyParticles(world, pos, state);

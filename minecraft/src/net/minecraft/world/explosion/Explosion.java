@@ -5,11 +5,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractFireBlock;
@@ -33,11 +31,13 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -47,7 +47,7 @@ public class Explosion {
 	private static final int field_30960 = 16;
 	private final boolean createFire;
 	private final Explosion.DestructionType destructionType;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final World world;
 	private final double x;
 	private final double y;
@@ -272,7 +272,7 @@ public class Explosion {
 
 		if (bl) {
 			ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList = new ObjectArrayList<>();
-			Collections.shuffle(this.affectedBlocks, this.world.random);
+			Util.shuffle(this.affectedBlocks, this.world.random);
 
 			for (BlockPos blockPos : this.affectedBlocks) {
 				BlockState blockState = this.world.getBlockState(blockPos);

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -33,6 +32,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -137,17 +137,19 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if (canDrip(state)) {
 			float f = random.nextFloat();
 			if (!(f > 0.12F)) {
-				getFluid(world, pos, state).filter(fluid -> f < 0.02F || isFluidLiquid(fluid)).ifPresent(fluid -> createParticle(world, pos, state, fluid));
+				getFluid(world, pos, state)
+					.filter(drippingFluid -> f < 0.02F || isFluidLiquid(drippingFluid.fluid))
+					.ifPresent(drippingFluid -> createParticle(world, pos, state, drippingFluid.fluid));
 			}
 		}
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (isPointingUp(state) && !this.canPlaceAt(state, world, pos)) {
 			world.breakBlock(pos, true);
 		} else {
@@ -156,7 +158,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		dripTick(state, world, pos, random.nextFloat());
 		if (random.nextFloat() < 0.011377778F && isHeldByPointedDripstone(state, world, pos)) {
 			tryGrow(state, world, pos, random);
@@ -167,28 +169,36 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	public static void dripTick(BlockState state, ServerWorld world, BlockPos pos, float dripChance) {
 		if (!(dripChance > 0.17578125F) || !(dripChance > 0.05859375F)) {
 			if (isHeldByPointedDripstone(state, world, pos)) {
-				Fluid fluid = getDripFluid(world, pos);
-				float f;
-				if (fluid == Fluids.WATER) {
-					f = 0.17578125F;
-				} else {
-					if (fluid != Fluids.LAVA) {
-						return;
+				Optional<PointedDripstoneBlock.DrippingFluid> optional = getFluid(world, pos, state);
+				if (!optional.isEmpty()) {
+					Fluid fluid = ((PointedDripstoneBlock.DrippingFluid)optional.get()).fluid;
+					float f;
+					if (fluid == Fluids.WATER) {
+						f = 0.17578125F;
+					} else {
+						if (fluid != Fluids.LAVA) {
+							return;
+						}
+
+						f = 0.05859375F;
 					}
 
-					f = 0.05859375F;
-				}
-
-				if (!(dripChance >= f)) {
-					BlockPos blockPos = getTipPos(state, world, pos, 11, false);
-					if (blockPos != null) {
-						BlockPos blockPos2 = getCauldronPos(world, blockPos, fluid);
-						if (blockPos2 != null) {
-							world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
-							int i = blockPos.getY() - blockPos2.getY();
-							int j = 50 + i;
-							BlockState blockState = world.getBlockState(blockPos2);
-							world.createAndScheduleBlockTick(blockPos2, blockState.getBlock(), j);
+					if (!(dripChance >= f)) {
+						BlockPos blockPos = getTipPos(state, world, pos, 11, false);
+						if (blockPos != null) {
+							if (((PointedDripstoneBlock.DrippingFluid)optional.get()).sourceState.isOf(Blocks.MUD) && fluid == Fluids.WATER) {
+								world.setBlockState(((PointedDripstoneBlock.DrippingFluid)optional.get()).pos, Blocks.CLAY.getDefaultState());
+								world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
+							} else {
+								BlockPos blockPos2 = getCauldronPos(world, blockPos, fluid);
+								if (blockPos2 != null) {
+									world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
+									int i = blockPos.getY() - blockPos2.getY();
+									int j = 50 + i;
+									BlockState blockState = world.getBlockState(blockPos2);
+									world.createAndScheduleBlockTick(blockPos2, blockState.getBlock(), j);
+								}
+							}
 						}
 					}
 				}
@@ -307,7 +317,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@VisibleForTesting
-	public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public static void tryGrow(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		BlockState blockState = world.getBlockState(pos.up(1));
 		BlockState blockState2 = world.getBlockState(pos.up(2));
 		if (canGrow(blockState, blockState2)) {
@@ -386,7 +396,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	public static void createParticle(World world, BlockPos pos, BlockState state) {
-		getFluid(world, pos, state).ifPresent(fluid -> createParticle(world, pos, state, fluid));
+		getFluid(world, pos, state).ifPresent(drippingFluid -> createParticle(world, pos, state, drippingFluid.fluid));
 	}
 
 	private static void createParticle(World world, BlockPos pos, BlockState state, Fluid fluid) {
@@ -520,12 +530,26 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		return (BlockPos)searchInDirection(world, pos, Direction.UP.getDirection(), biPredicate, PointedDripstoneBlock::canDrip, 11).orElse(null);
 	}
 
-	public static Fluid getDripFluid(World world, BlockPos pos) {
-		return (Fluid)getFluid(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::isFluidLiquid).orElse(Fluids.EMPTY);
+	public static Fluid getDripFluid(ServerWorld world, BlockPos pos) {
+		return (Fluid)getFluid(world, pos, world.getBlockState(pos))
+			.map(drippingFluid -> drippingFluid.fluid)
+			.filter(PointedDripstoneBlock::isFluidLiquid)
+			.orElse(Fluids.EMPTY);
 	}
 
-	private static Optional<Fluid> getFluid(World world, BlockPos pos, BlockState state) {
-		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 11).map(posx -> world.getFluidState(posx.up()).getFluid());
+	private static Optional<PointedDripstoneBlock.DrippingFluid> getFluid(World world, BlockPos pos, BlockState state) {
+		return !isPointingDown(state) ? Optional.empty() : getSupportingPos(world, pos, state, 11).map(posx -> {
+			BlockPos blockPos = posx.up();
+			BlockState blockState = world.getBlockState(blockPos);
+			Fluid fluid;
+			if (blockState.isOf(Blocks.MUD) && !world.getDimension().ultrawarm()) {
+				fluid = Fluids.WATER;
+			} else {
+				fluid = world.getFluidState(blockPos).getFluid();
+			}
+
+			return new PointedDripstoneBlock.DrippingFluid(blockPos, fluid, blockState);
+		});
 	}
 
 	/**
@@ -590,5 +614,8 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 			VoxelShape voxelShape = state.getCollisionShape(world, pos);
 			return !VoxelShapes.matchesAnywhere(DRIP_COLLISION_SHAPE, voxelShape, BooleanBiFunction.AND);
 		}
+	}
+
+	static record DrippingFluid(BlockPos pos, Fluid fluid, BlockState sourceState) {
 	}
 }

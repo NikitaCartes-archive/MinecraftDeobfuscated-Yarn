@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
@@ -18,6 +19,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.RandomChanceWithLootingLootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -32,9 +34,12 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.SlimePredicate;
+import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -464,6 +469,27 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.MAGMA_CREAM)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-2.0F, 1.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+								.conditionally(this.killedByFrog().invert())
+								.conditionally(
+									EntityPropertiesLootCondition.builder(
+										LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.atLeast(2)))
+									)
+								)
+						)
+						.with(
+							ItemEntry.builder(Items.PEARLESCENT_FROGLIGHT)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.conditionally(this.killedByFrog(FrogVariant.WARM))
+						)
+						.with(
+							ItemEntry.builder(Items.VERDANT_FROGLIGHT)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.conditionally(this.killedByFrog(FrogVariant.COLD))
+						)
+						.with(
+							ItemEntry.builder(Items.OCHRE_FROGLIGHT)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.conditionally(this.killedByFrog(FrogVariant.TEMPERATE))
 						)
 				)
 		);
@@ -726,6 +752,13 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 							ItemEntry.builder(Items.SLIME_BALL)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0F, 2.0F)))
 								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+								.conditionally(this.killedByFrog().invert())
+						)
+						.with(ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))).conditionally(this.killedByFrog()))
+						.conditionally(
+							EntityPropertiesLootCondition.builder(
+								LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.exactly(1)))
+							)
 						)
 				)
 		);
@@ -1113,6 +1146,19 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		}
 
 		this.lootTables.forEach(biConsumer);
+	}
+
+	private LootCondition.Builder killedByFrog() {
+		return DamageSourcePropertiesLootCondition.builder(
+			DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG))
+		);
+	}
+
+	private LootCondition.Builder killedByFrog(FrogVariant variant) {
+		return DamageSourcePropertiesLootCondition.builder(
+			DamageSourcePredicate.Builder.create()
+				.sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog(variant)))
+		);
 	}
 
 	private void register(EntityType<?> entityType, LootTable.Builder lootTable) {

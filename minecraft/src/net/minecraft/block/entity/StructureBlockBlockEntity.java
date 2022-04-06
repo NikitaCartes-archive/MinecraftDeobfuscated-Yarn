@@ -3,7 +3,6 @@ package net.minecraft.block.entity;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class StructureBlockBlockEntity extends BlockEntity {
 	private static final int field_31367 = 5;
@@ -351,8 +351,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(world, true);
 	}
 
-	private static Random createRandom(long seed) {
-		return seed == 0L ? new Random(Util.getMeasuringTimeMs()) : new Random(seed);
+	private static AbstractRandom createRandom(long seed) {
+		return seed == 0L ? AbstractRandom.createAtomic(Util.getMeasuringTimeMs()) : AbstractRandom.createAtomic(seed);
 	}
 
 	public boolean loadStructure(ServerWorld world, boolean bl) {
@@ -401,7 +401,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos2 = blockPos.add(this.offset);
-			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), Block.NOTIFY_LISTENERS);
+			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), 2);
 			return true;
 		}
 	}

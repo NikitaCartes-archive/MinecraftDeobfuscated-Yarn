@@ -2,8 +2,8 @@ package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class RandomBlockStateMatchRuleTest extends RuleTest {
 	public static final Codec<RandomBlockStateMatchRuleTest> CODEC = RecordCodecBuilder.create(
@@ -22,7 +22,7 @@ public class RandomBlockStateMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
+	public boolean test(BlockState state, AbstractRandom random) {
 		return state == this.blockState && random.nextFloat() < this.probability;
 	}
 

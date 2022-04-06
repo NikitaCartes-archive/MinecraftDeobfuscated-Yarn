@@ -68,23 +68,23 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static SetContentsLootFunction.Builer builder(BlockEntityType<?> type) {
-		return new SetContentsLootFunction.Builer(type);
+	public static SetContentsLootFunction.Builder builder(BlockEntityType<?> type) {
+		return new SetContentsLootFunction.Builder(type);
 	}
 
-	public static class Builer extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builer> {
+	public static class Builder extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builder> {
 		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
 		private final BlockEntityType<?> type;
 
-		public Builer(BlockEntityType<?> type) {
+		public Builder(BlockEntityType<?> type) {
 			this.type = type;
 		}
 
-		protected SetContentsLootFunction.Builer getThisBuilder() {
+		protected SetContentsLootFunction.Builder getThisBuilder() {
 			return this;
 		}
 
-		public SetContentsLootFunction.Builer withEntry(LootPoolEntry.Builder<?> entryBuilder) {
+		public SetContentsLootFunction.Builder withEntry(LootPoolEntry.Builder<?> entryBuilder) {
 			this.entries.add(entryBuilder.build());
 			return this;
 		}

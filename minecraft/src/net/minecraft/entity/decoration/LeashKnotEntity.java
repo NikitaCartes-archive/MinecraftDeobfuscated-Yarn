@@ -144,7 +144,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.getType(), 0, this.getDecorationBlockPos());
+		return new EntitySpawnS2CPacket(this, 0, this.getDecorationBlockPos());
 	}
 
 	@Override

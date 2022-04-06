@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,6 +13,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
@@ -81,7 +81,7 @@ public class BoneMealItem extends Item {
 			if (!(world instanceof ServerWorld)) {
 				return true;
 			} else {
-				Random random = world.getRandom();
+				AbstractRandom abstractRandom = world.getRandom();
 
 				label78:
 				for (int i = 0; i < 128; i++) {
@@ -89,7 +89,7 @@ public class BoneMealItem extends Item {
 					BlockState blockState = Blocks.SEAGRASS.getDefaultState();
 
 					for (int j = 0; j < i / 16; j++) {
-						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
+						blockPos2 = blockPos2.add(abstractRandom.nextInt(3) - 1, (abstractRandom.nextInt(3) - 1) * abstractRandom.nextInt(3) / 2, abstractRandom.nextInt(3) - 1);
 						if (world.getBlockState(blockPos2).isFullCube(world, blockPos2)) {
 							continue label78;
 						}
@@ -106,7 +106,7 @@ public class BoneMealItem extends Item {
 							if (blockState.contains(DeadCoralWallFanBlock.FACING)) {
 								blockState = blockState.with(DeadCoralWallFanBlock.FACING, facing);
 							}
-						} else if (random.nextInt(4) == 0) {
+						} else if (abstractRandom.nextInt(4) == 0) {
 							blockState = (BlockState)Registry.BLOCK
 								.getEntryList(BlockTags.UNDERWATER_BONEMEALS)
 								.flatMap(blocks -> blocks.getRandom(world.random))
@@ -117,7 +117,7 @@ public class BoneMealItem extends Item {
 
 					if (blockState.isIn(BlockTags.WALL_CORALS, state -> state.contains(DeadCoralWallFanBlock.FACING))) {
 						for (int k = 0; !blockState.canPlaceAt(world, blockPos2) && k < 4; k++) {
-							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(random));
+							blockState = blockState.with(DeadCoralWallFanBlock.FACING, Direction.Type.HORIZONTAL.random(abstractRandom));
 						}
 					}
 
@@ -125,8 +125,8 @@ public class BoneMealItem extends Item {
 						BlockState blockState2 = world.getBlockState(blockPos2);
 						if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
 							world.setBlockState(blockPos2, blockState, Block.NOTIFY_ALL);
-						} else if (blockState2.isOf(Blocks.SEAGRASS) && random.nextInt(10) == 0) {
-							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, random, blockPos2, blockState2);
+						} else if (blockState2.isOf(Blocks.SEAGRASS) && abstractRandom.nextInt(10) == 0) {
+							((Fertilizable)Blocks.SEAGRASS).grow((ServerWorld)world, abstractRandom, blockPos2, blockState2);
 						}
 					}
 				}
@@ -162,16 +162,16 @@ public class BoneMealItem extends Item {
 			}
 
 			world.addParticle(ParticleTypes.HAPPY_VILLAGER, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
-			Random random = world.getRandom();
+			AbstractRandom abstractRandom = world.getRandom();
 
 			for (int i = 0; i < count; i++) {
-				double f = random.nextGaussian() * 0.02;
-				double g = random.nextGaussian() * 0.02;
-				double h = random.nextGaussian() * 0.02;
+				double f = abstractRandom.nextGaussian() * 0.02;
+				double g = abstractRandom.nextGaussian() * 0.02;
+				double h = abstractRandom.nextGaussian() * 0.02;
 				double j = 0.5 - d;
-				double k = (double)pos.getX() + j + random.nextDouble() * d * 2.0;
-				double l = (double)pos.getY() + random.nextDouble() * e;
-				double m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0;
+				double k = (double)pos.getX() + j + abstractRandom.nextDouble() * d * 2.0;
+				double l = (double)pos.getY() + abstractRandom.nextDouble() * e;
+				double m = (double)pos.getZ() + j + abstractRandom.nextDouble() * d * 2.0;
 				if (!world.getBlockState(new BlockPos(k, l, m).down()).isAir()) {
 					world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
 				}

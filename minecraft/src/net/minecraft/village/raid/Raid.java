@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -52,6 +51,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
@@ -100,7 +100,7 @@ public class Raid {
 	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.RED, BossBar.Style.NOTCHED_10);
 	private int postRaidTicks;
 	private int preRaidTicks;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final int waveCount;
 	private Raid.Status status;
 	private int finishCooldown;
@@ -468,6 +468,7 @@ public class Raid {
 		float f = 13.0F;
 		int i = 64;
 		Collection<ServerPlayerEntity> collection = this.bar.getPlayers();
+		long l = this.random.nextLong();
 
 		for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
 			Vec3d vec3d = serverPlayerEntity.getPos();
@@ -477,7 +478,7 @@ public class Raid {
 			double g = vec3d.z + 13.0 / d * (vec3d2.z - vec3d.z);
 			if (d <= 64.0 || collection.contains(serverPlayerEntity)) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, e, serverPlayerEntity.getY(), g, 64.0F, 1.0F));
+					.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, e, serverPlayerEntity.getY(), g, 64.0F, 1.0F, l));
 			}
 		}
 	}
@@ -700,7 +701,7 @@ public class Raid {
 		return extra ? member.countInWave[this.waveCount] : member.countInWave[wave];
 	}
 
-	private int getBonusCount(Raid.Member member, Random random, int wave, LocalDifficulty localDifficulty, boolean extra) {
+	private int getBonusCount(Raid.Member member, AbstractRandom random, int wave, LocalDifficulty localDifficulty, boolean extra) {
 		Difficulty difficulty = localDifficulty.getGlobalDifficulty();
 		boolean bl = difficulty == Difficulty.EASY;
 		boolean bl2 = difficulty == Difficulty.NORMAL;

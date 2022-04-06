@@ -1,8 +1,8 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -26,12 +26,12 @@ public class FernBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
 		TallPlantBlock tallPlantBlock = (TallPlantBlock)(state.isOf(Blocks.FERN) ? Blocks.LARGE_FERN : Blocks.TALL_GRASS);
 		if (tallPlantBlock.getDefaultState().canPlaceAt(world, pos) && world.isAir(pos.up())) {
 			TallPlantBlock.placeAt(world, tallPlantBlock.getDefaultState(), pos, 2);

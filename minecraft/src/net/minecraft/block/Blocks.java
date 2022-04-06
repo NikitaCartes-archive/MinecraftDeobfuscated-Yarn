@@ -3147,13 +3147,11 @@ public class Blocks {
 	);
 	public static final Block SCULK = register("sculk", new SculkBlock(AbstractBlock.Settings.of(Material.SCULK).strength(0.6F).sounds(BlockSoundGroup.SCULK)));
 	public static final Block SCULK_VEIN = register(
-		"sculk_vein", new SculkVeinBlock(AbstractBlock.Settings.of(Material.SCULK).requiresTool().noCollision().strength(0.2F).sounds(BlockSoundGroup.SCULK_VEIN))
+		"sculk_vein", new SculkVeinBlock(AbstractBlock.Settings.of(Material.SCULK).noCollision().strength(0.2F).sounds(BlockSoundGroup.SCULK_VEIN))
 	);
 	public static final Block SCULK_CATALYST = register(
 		"sculk_catalyst",
-		new SculkCatalystBlock(
-			AbstractBlock.Settings.of(Material.SCULK).requiresTool().strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_CATALYST).luminance(state -> 6)
-		)
+		new SculkCatalystBlock(AbstractBlock.Settings.of(Material.SCULK).strength(3.0F, 3.0F).sounds(BlockSoundGroup.SCULK_CATALYST).luminance(state -> 6))
 	);
 	public static final Block SCULK_SHRIEKER = register(
 		"sculk_shrieker",

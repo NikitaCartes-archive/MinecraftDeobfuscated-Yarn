@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
@@ -10,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -23,18 +23,24 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 	public boolean generate(FeatureContext<VegetationPatchFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		VegetationPatchFeatureConfig vegetationPatchFeatureConfig = context.getConfig();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		Predicate<BlockState> predicate = state -> state.isIn(vegetationPatchFeatureConfig.replaceable);
-		int i = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
-		int j = vegetationPatchFeatureConfig.horizontalRadius.get(random) + 1;
-		Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, random, blockPos, predicate, i, j);
-		this.generateVegetation(context, structureWorldAccess, vegetationPatchFeatureConfig, random, set, i, j);
+		int i = vegetationPatchFeatureConfig.horizontalRadius.get(abstractRandom) + 1;
+		int j = vegetationPatchFeatureConfig.horizontalRadius.get(abstractRandom) + 1;
+		Set<BlockPos> set = this.placeGroundAndGetPositions(structureWorldAccess, vegetationPatchFeatureConfig, abstractRandom, blockPos, predicate, i, j);
+		this.generateVegetation(context, structureWorldAccess, vegetationPatchFeatureConfig, abstractRandom, set, i, j);
 		return !set.isEmpty();
 	}
 
 	protected Set<BlockPos> placeGroundAndGetPositions(
-		StructureWorldAccess world, VegetationPatchFeatureConfig config, Random random, BlockPos pos, Predicate<BlockState> replaceable, int radiusX, int radiusZ
+		StructureWorldAccess world,
+		VegetationPatchFeatureConfig config,
+		AbstractRandom random,
+		BlockPos pos,
+		Predicate<BlockState> replaceable,
+		int radiusX,
+		int radiusZ
 	) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		BlockPos.Mutable mutable2 = mutable.mutableCopy();
@@ -82,29 +88,34 @@ public class VegetationPatchFeature extends Feature<VegetationPatchFeatureConfig
 		FeatureContext<VegetationPatchFeatureConfig> context,
 		StructureWorldAccess world,
 		VegetationPatchFeatureConfig config,
-		Random random,
+		AbstractRandom abstractRandom,
 		Set<BlockPos> positions,
 		int radiusX,
 		int radiusZ
 	) {
 		for (BlockPos blockPos : positions) {
-			if (config.vegetationChance > 0.0F && random.nextFloat() < config.vegetationChance) {
-				this.generateVegetationFeature(world, config, context.getGenerator(), random, blockPos);
+			if (config.vegetationChance > 0.0F && abstractRandom.nextFloat() < config.vegetationChance) {
+				this.generateVegetationFeature(world, config, context.getGenerator(), abstractRandom, blockPos);
 			}
 		}
 	}
 
 	protected boolean generateVegetationFeature(
-		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos
+		StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, AbstractRandom random, BlockPos pos
 	) {
 		return config.vegetationFeature.value().generateUnregistered(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
 	}
 
 	protected boolean placeGround(
-		StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth
+		StructureWorldAccess world,
+		VegetationPatchFeatureConfig config,
+		Predicate<BlockState> replaceable,
+		AbstractRandom abstractRandom,
+		BlockPos.Mutable pos,
+		int depth
 	) {
 		for (int i = 0; i < depth; i++) {
-			BlockState blockState = config.groundState.getBlockState(random, pos);
+			BlockState blockState = config.groundState.getBlockState(abstractRandom, pos);
 			BlockState blockState2 = world.getBlockState(pos);
 			if (!blockState.isOf(blockState2.getBlock())) {
 				if (!replaceable.test(blockState2)) {

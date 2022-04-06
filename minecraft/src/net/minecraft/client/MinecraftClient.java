@@ -625,7 +625,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.setRawMouseMotion(this.options.getRawMouseInput().getValue());
 		this.window.logOnGlError();
 		this.onResolutionChanged();
-		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack());
+		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
 		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);

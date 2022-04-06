@@ -2,8 +2,6 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -51,10 +49,13 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.EntityTypeTags;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
@@ -88,9 +89,10 @@ public class FrogEntity extends AnimalEntity {
 		MemoryModuleType.IS_IN_WATER,
 		MemoryModuleType.IS_PREGNANT
 	);
-	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<FrogVariant> VARIANT = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.FROG_VARIANT);
 	private static final TrackedData<OptionalInt> TARGET = DataTracker.registerData(FrogEntity.class, TrackedDataHandlerRegistry.OPTIONAL_INT);
 	private static final int field_37459 = 5;
+	public static final String VARIANT_KEY = "variant";
 	public final AnimationState longJumpingAnimationState = new AnimationState();
 	public final AnimationState croakingAnimationState = new AnimationState();
 	public final AnimationState usingTongueAnimationState = new AnimationState();
@@ -124,7 +126,7 @@ public class FrogEntity extends AnimalEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
+		this.dataTracker.startTracking(VARIANT, FrogVariant.TEMPERATE);
 		this.dataTracker.startTracking(TARGET, OptionalInt.empty());
 	}
 
@@ -150,24 +152,27 @@ public class FrogEntity extends AnimalEntity {
 		return 5;
 	}
 
-	public FrogEntity.Variant getVariant() {
-		return FrogEntity.Variant.fromId(this.dataTracker.get(VARIANT));
+	public FrogVariant getVariant() {
+		return this.dataTracker.get(VARIANT);
 	}
 
-	public void setVariant(FrogEntity.Variant variant) {
-		this.dataTracker.set(VARIANT, variant.getId());
+	public void setVariant(FrogVariant variant) {
+		this.dataTracker.set(VARIANT, variant);
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant().getId());
+		nbt.putString("variant", Registry.FROG_VARIANT.getId(this.getVariant()).toString());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(FrogEntity.Variant.fromId(nbt.getInt("Variant")));
+		FrogVariant frogVariant = Registry.FROG_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
+		if (frogVariant != null) {
+			this.setVariant(frogVariant);
+		}
 	}
 
 	@Override
@@ -293,11 +298,11 @@ public class FrogEntity extends AnimalEntity {
 	) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		if (registryEntry.isIn(BiomeTags.SPAWNS_COLD_VARIANT_FROGS)) {
-			this.setVariant(FrogEntity.Variant.COLD);
+			this.setVariant(FrogVariant.COLD);
 		} else if (registryEntry.isIn(BiomeTags.SPAWNS_WARM_VARIANT_FROGS)) {
-			this.setVariant(FrogEntity.Variant.WARM);
+			this.setVariant(FrogVariant.WARM);
 		} else {
-			this.setVariant(FrogEntity.Variant.TEMPERATE);
+			this.setVariant(FrogVariant.TEMPERATE);
 		}
 
 		FrogBrain.coolDownLongJump(this);
@@ -305,7 +310,10 @@ public class FrogEntity extends AnimalEntity {
 	}
 
 	public static DefaultAttributeContainer.Builder createFrogAttributes() {
-		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0).add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0);
+		return MobEntity.createMobAttributes()
+			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
+			.add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0)
+			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 10.0);
 	}
 
 	@Nullable
@@ -358,12 +366,12 @@ public class FrogEntity extends AnimalEntity {
 		}
 	}
 
-	public static boolean isValidFrogTarget(LivingEntity entity) {
-		if (entity instanceof SlimeEntity slimeEntity && slimeEntity.getSize() == 1) {
-			return true;
+	public static boolean isValidFrogFood(LivingEntity entity) {
+		if (entity instanceof SlimeEntity slimeEntity && slimeEntity.getSize() != 1) {
+			return false;
 		}
 
-		return false;
+		return entity.getType().isIn(EntityTypeTags.FROG_FOOD);
 	}
 
 	@Override
@@ -421,39 +429,6 @@ public class FrogEntity extends AnimalEntity {
 			this.pos.set(x, y - 1, z);
 			BlockState blockState = world.getBlockState(this.pos);
 			return blockState.isIn(BlockTags.FROG_PREFER_JUMP_TO) ? PathNodeType.OPEN : getLandNodeType(world, this.pos.move(Direction.UP));
-		}
-	}
-
-	public static enum Variant {
-		TEMPERATE(0, "temperate"),
-		WARM(1, "warm"),
-		COLD(2, "cold");
-
-		private static final FrogEntity.Variant[] VALUES = (FrogEntity.Variant[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(FrogEntity.Variant::getId))
-			.toArray(FrogEntity.Variant[]::new);
-		private final int id;
-		private final String name;
-
-		private Variant(int id, String name) {
-			this.id = id;
-			this.name = name;
-		}
-
-		public int getId() {
-			return this.id;
-		}
-
-		public String getName() {
-			return this.name;
-		}
-
-		public static FrogEntity.Variant fromId(int id) {
-			if (id < 0 || id >= VALUES.length) {
-				id = 0;
-			}
-
-			return VALUES[id];
 		}
 	}
 }

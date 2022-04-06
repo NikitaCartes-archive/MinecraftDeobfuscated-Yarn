@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
@@ -58,6 +57,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -252,7 +252,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		this.dataTracker.set(VARIANT, variant.getId());
 	}
 
-	private static boolean shouldBabyBeDifferent(Random random) {
+	private static boolean shouldBabyBeDifferent(AbstractRandom random) {
 		return random.nextInt(1200) == 0;
 	}
 
@@ -554,7 +554,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		return !this.isFromBucket() && !this.hasCustomName();
 	}
 
-	public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
 	}
 
@@ -566,7 +566,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 			this.variants = variants;
 		}
 
-		public AxolotlEntity.Variant getRandomVariant(Random random) {
+		public AxolotlEntity.Variant getRandomVariant(AbstractRandom random) {
 			return this.variants[random.nextInt(this.variants.length)];
 		}
 	}
@@ -650,15 +650,15 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 			return this.name;
 		}
 
-		public static AxolotlEntity.Variant getRandomNatural(Random random) {
+		public static AxolotlEntity.Variant getRandomNatural(AbstractRandom random) {
 			return getRandom(random, true);
 		}
 
-		public static AxolotlEntity.Variant getRandomUnnatural(Random random) {
+		public static AxolotlEntity.Variant getRandomUnnatural(AbstractRandom random) {
 			return getRandom(random, false);
 		}
 
-		private static AxolotlEntity.Variant getRandom(Random random, boolean natural) {
+		private static AxolotlEntity.Variant getRandom(AbstractRandom random, boolean natural) {
 			AxolotlEntity.Variant[] variants = (AxolotlEntity.Variant[])Arrays.stream(VARIANTS)
 				.filter(variant -> variant.natural == natural)
 				.toArray(AxolotlEntity.Variant[]::new);

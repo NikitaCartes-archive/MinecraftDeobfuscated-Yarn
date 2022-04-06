@@ -11,10 +11,8 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
@@ -25,14 +23,13 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.Resource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -139,22 +136,34 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void load(String id, CreditsScreen.CreditsReader reader) {
-		Resource resource = null;
-
 		try {
-			resource = this.client.getResourceManager().getResource(new Identifier(id));
-			InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-			reader.read(inputStreamReader);
+			Reader reader2 = this.client.getResourceManager().openAsReader(new Identifier(id));
+
+			try {
+				reader.read(reader2);
+			} catch (Throwable var7) {
+				if (reader2 != null) {
+					try {
+						reader2.close();
+					} catch (Throwable var6) {
+						var7.addSuppressed(var6);
+					}
+				}
+
+				throw var7;
+			}
+
+			if (reader2 != null) {
+				reader2.close();
+			}
 		} catch (Exception var8) {
 			LOGGER.error("Couldn't load credits", (Throwable)var8);
-		} finally {
-			IOUtils.closeQuietly(resource);
 		}
 	}
 
-	private void readPoem(InputStreamReader inputStreamReader) throws IOException {
-		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-		Random random = new Random(8124371L);
+	private void readPoem(Reader reader) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic(8124371L);
 
 		String string;
 		while ((string = bufferedReader.readLine()) != null) {
@@ -164,7 +173,7 @@ public class CreditsScreen extends Screen {
 			while ((i = string.indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
 				String string2 = string.substring(0, i);
 				String string3 = string.substring(i + OBFUSCATION_PLACEHOLDER.length());
-				string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
+				string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, abstractRandom.nextInt(4) + 3) + string3;
 			}
 
 			this.addText(string);
@@ -176,8 +185,8 @@ public class CreditsScreen extends Screen {
 		}
 	}
 
-	private void readCredits(InputStreamReader inputStreamReader) {
-		for (JsonElement jsonElement : JsonHelper.deserializeArray(inputStreamReader)) {
+	private void readCredits(Reader reader) {
+		for (JsonElement jsonElement : JsonHelper.deserializeArray(reader)) {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			String string = jsonObject.get("section").getAsString();
 			this.addText(SEPARATOR_LINE, true);
@@ -313,6 +322,6 @@ public class CreditsScreen extends Screen {
 	@FunctionalInterface
 	@Environment(EnvType.CLIENT)
 	interface CreditsReader {
-		void read(InputStreamReader inputStreamReader) throws IOException;
+		void read(Reader reader) throws IOException;
 	}
 }

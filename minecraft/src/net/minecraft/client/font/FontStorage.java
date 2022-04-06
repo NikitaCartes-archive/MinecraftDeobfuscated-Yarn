@@ -10,17 +10,17 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class FontStorage implements AutoCloseable {
-	private static final Random RANDOM = new Random();
+	private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
 	private final TextureManager textureManager;
 	private final Identifier id;
 	private GlyphRenderer blankGlyphRenderer;

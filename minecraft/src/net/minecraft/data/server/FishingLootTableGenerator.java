@@ -48,7 +48,7 @@ public class FishingLootTableGenerator implements Consumer<BiConsumer<Identifier
 								.weight(5)
 								.quality(2)
 								.conditionally(
-									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().fishHook(FishingHookPredicate.of(true)))
+									EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(FishingHookPredicate.of(true)))
 								)
 						)
 						.with(LootTableEntry.builder(LootTables.FISHING_FISH_GAMEPLAY).weight(85).quality(-1))

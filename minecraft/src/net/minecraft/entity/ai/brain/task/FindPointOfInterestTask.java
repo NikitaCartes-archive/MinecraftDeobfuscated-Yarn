@@ -6,7 +6,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -16,8 +15,9 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
@@ -116,12 +116,12 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 		private static final int MIN_DELAY = 40;
 		private static final int field_30102 = 80;
 		private static final int ATTEMPT_DURATION = 400;
-		private final Random random;
+		private final AbstractRandom random;
 		private long previousAttemptAt;
 		private long nextScheduledAttemptAt;
 		private int currentDelay;
 
-		RetryMarker(Random random, long time) {
+		RetryMarker(AbstractRandom random, long time) {
 			this.random = random;
 			this.setAttemptTime(time);
 		}

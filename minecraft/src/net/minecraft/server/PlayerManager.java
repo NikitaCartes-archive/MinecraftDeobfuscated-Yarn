@@ -507,7 +507,14 @@ public abstract class PlayerManager {
 			serverPlayerEntity.networkHandler
 				.sendPacket(
 					new PlaySoundS2CPacket(
-						SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0F, 1.0F
+						SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE,
+						SoundCategory.BLOCKS,
+						(double)blockPos.getX(),
+						(double)blockPos.getY(),
+						(double)blockPos.getZ(),
+						1.0F,
+						1.0F,
+						serverWorld2.getRandom().nextLong()
 					)
 				);
 		}

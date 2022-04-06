@@ -32,7 +32,7 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.SimpleTickScheduler;
@@ -214,7 +214,7 @@ public class ProtoChunk extends Chunk {
 	}
 
 	@Override
-	public void setStructureStart(StructureFeature structureFeature, StructureStart start) {
+	public void setStructureStart(StructureType structureType, StructureStart start) {
 		BelowZeroRetrogen belowZeroRetrogen = this.getBelowZeroRetrogen();
 		if (belowZeroRetrogen != null && start.hasChildren()) {
 			BlockBox blockBox = start.getBoundingBox();
@@ -224,7 +224,7 @@ public class ProtoChunk extends Chunk {
 			}
 		}
 
-		super.setStructureStart(structureFeature, start);
+		super.setStructureStart(structureType, start);
 	}
 
 	public List<NbtCompound> getEntities() {

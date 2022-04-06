@@ -11,16 +11,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 public class LargeEntitySpawnHelper {
-	public static <T extends MobEntity> Optional<T> trySpawnAt(EntityType<T> entityType, ServerWorld serverWorld, BlockPos blockPos, int i, int j, int k) {
+	public static <T extends MobEntity> Optional<T> trySpawnAt(
+		EntityType<T> entityType, SpawnReason spawnReason, ServerWorld serverWorld, BlockPos blockPos, int i, int j, int k
+	) {
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
 		for (int l = 0; l < i; l++) {
 			int m = MathHelper.nextBetween(serverWorld.random, -j, j);
 			int n = MathHelper.nextBetween(serverWorld.random, -j, j);
 			if (findSpawnPos(serverWorld, k, mutable.set(blockPos, m, k, n))) {
-				T mobEntity = (T)entityType.create(serverWorld, null, null, null, mutable, SpawnReason.MOB_SUMMONED, false, false);
+				T mobEntity = (T)entityType.create(serverWorld, null, null, null, mutable, spawnReason, false, false);
 				if (mobEntity != null) {
-					if (mobEntity.canSpawn(serverWorld, SpawnReason.MOB_SUMMONED) && mobEntity.canSpawn(serverWorld)) {
+					if (mobEntity.canSpawn(serverWorld, spawnReason) && mobEntity.canSpawn(serverWorld)) {
 						serverWorld.spawnEntityAndPassengers(mobEntity);
 						return Optional.of(mobEntity);
 					}

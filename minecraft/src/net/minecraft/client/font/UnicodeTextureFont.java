@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Map;
@@ -16,7 +17,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -44,11 +44,11 @@ public class UnicodeTextureFont implements Font {
 			Identifier identifier = this.getImageId(j);
 
 			try {
-				Resource resource = this.resourceManager.getResource(identifier);
+				InputStream inputStream = this.resourceManager.open(identifier);
 
 				label90: {
 					label89:
-					try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream())) {
+					try (NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream)) {
 						if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
 							int k = 0;
 
@@ -67,9 +67,9 @@ public class UnicodeTextureFont implements Font {
 						}
 						break label90;
 					} catch (Throwable var14) {
-						if (resource != null) {
+						if (inputStream != null) {
 							try {
-								resource.close();
+								inputStream.close();
 							} catch (Throwable var11) {
 								var14.addSuppressed(var11);
 							}
@@ -78,14 +78,14 @@ public class UnicodeTextureFont implements Font {
 						throw var14;
 					}
 
-					if (resource != null) {
-						resource.close();
+					if (inputStream != null) {
+						inputStream.close();
 					}
 					continue;
 				}
 
-				if (resource != null) {
-					resource.close();
+				if (inputStream != null) {
+					inputStream.close();
 				}
 			} catch (IOException var15) {
 			}
@@ -139,15 +139,15 @@ public class UnicodeTextureFont implements Font {
 	@Nullable
 	private NativeImage getGlyphImage(Identifier glyphId) {
 		try {
-			Resource resource = this.resourceManager.getResource(glyphId);
+			InputStream inputStream = this.resourceManager.open(glyphId);
 
 			NativeImage var3;
 			try {
-				var3 = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+				var3 = NativeImage.read(NativeImage.Format.RGBA, inputStream);
 			} catch (Throwable var6) {
-				if (resource != null) {
+				if (inputStream != null) {
 					try {
-						resource.close();
+						inputStream.close();
 					} catch (Throwable var5) {
 						var6.addSuppressed(var5);
 					}
@@ -156,8 +156,8 @@ public class UnicodeTextureFont implements Font {
 				throw var6;
 			}
 
-			if (resource != null) {
-				resource.close();
+			if (inputStream != null) {
+				inputStream.close();
 			}
 
 			return var3;
@@ -204,16 +204,16 @@ public class UnicodeTextureFont implements Font {
 		@Override
 		public Font load(ResourceManager manager) {
 			try {
-				Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
+				InputStream inputStream = MinecraftClient.getInstance().getResourceManager().open(this.sizes);
 
 				UnicodeTextureFont var4;
 				try {
-					byte[] bs = resource.getInputStream().readNBytes(65536);
+					byte[] bs = inputStream.readNBytes(65536);
 					var4 = new UnicodeTextureFont(manager, bs, this.template);
 				} catch (Throwable var6) {
-					if (resource != null) {
+					if (inputStream != null) {
 						try {
-							resource.close();
+							inputStream.close();
 						} catch (Throwable var5) {
 							var6.addSuppressed(var5);
 						}
@@ -222,8 +222,8 @@ public class UnicodeTextureFont implements Font {
 					throw var6;
 				}
 
-				if (resource != null) {
-					resource.close();
+				if (inputStream != null) {
+					inputStream.close();
 				}
 
 				return var4;

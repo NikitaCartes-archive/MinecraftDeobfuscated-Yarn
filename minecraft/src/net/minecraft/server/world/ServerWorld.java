@@ -134,7 +134,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -943,16 +943,18 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSound(
+		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+	) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
-				except, x, y, z, volume > 1.0F ? (double)(16.0F * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch)
+				except, x, y, z, (double)sound.method_43044(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed)
 			);
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
@@ -960,9 +962,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				entity.getX(),
 				entity.getY(),
 				entity.getZ(),
-				volume > 1.0F ? (double)(16.0F * volume) : 16.0,
+				(double)sound.method_43044(volume),
 				this.getRegistryKey(),
-				new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch)
+				new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed)
 			);
 	}
 
@@ -1256,19 +1258,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the {@code STRUCTURE_STARTS} stage) are returned, excluding strongholds
 	 */
 	@Nullable
-	public BlockPos locateStructure(TagKey<StructureFeature> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
+	public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
 		if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
 			return null;
 		} else {
-			Optional<RegistryEntryList.Named<StructureFeature>> optional = this.getRegistryManager()
-				.get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY)
-				.getEntryList(structureTag);
+			Optional<RegistryEntryList.Named<StructureType>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
 			if (optional.isEmpty()) {
 				return null;
 			} else {
-				Pair<BlockPos, RegistryEntry<StructureFeature>> pair = this.getChunkManager()
+				Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager()
 					.getChunkGenerator()
-					.locateStructure(this, (RegistryEntryList<StructureFeature>)optional.get(), pos, radius, skipExistingChunks);
+					.locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipExistingChunks);
 				return pair != null ? pair.getFirst() : null;
 			}
 		}
@@ -1337,26 +1337,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
 		this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
 		this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
-	}
-
-	/**
-	 * {@return the world spawn point}
-	 * 
-	 * @implNote If it is outside the world border, this returns the position of the
-	 * highest {@linkplain net.minecraft.world.Heightmap.Type#MOTION_BLOCKING motion-blocking}
-	 * block at the center of the world border.
-	 */
-	public BlockPos getSpawnPos() {
-		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
-		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
-		}
-
-		return blockPos;
-	}
-
-	public float getSpawnAngle() {
-		return this.properties.getSpawnAngle();
 	}
 
 	/**
@@ -1860,6 +1840,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			}
 
 			entity.updateEventHandler(EntityGameEventHandler::onEntityRemoval);
+		}
+
+		public void updateLoadStatus(Entity entity) {
+			entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
 		}
 	}
 }

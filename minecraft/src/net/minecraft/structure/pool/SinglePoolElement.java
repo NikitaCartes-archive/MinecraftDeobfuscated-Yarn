@@ -6,12 +6,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.structure.Structure;
@@ -24,41 +21,43 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class SinglePoolElement extends StructurePoolElement {
-	private static final Codec<Either<Identifier, Structure>> field_24951 = Codec.of(SinglePoolElement::method_28877, Identifier.CODEC.map(Either::left));
-	public static final Codec<SinglePoolElement> field_24952 = RecordCodecBuilder.create(
-		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, SinglePoolElement::new)
+	private static final Codec<Either<Identifier, Structure>> LOCATION_CODEC = Codec.of(SinglePoolElement::encodeLocation, Identifier.CODEC.map(Either::left));
+	public static final Codec<SinglePoolElement> CODEC = RecordCodecBuilder.create(
+		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter()).apply(instance, SinglePoolElement::new)
 	);
 	protected final Either<Identifier, Structure> location;
 	protected final RegistryEntry<StructureProcessorList> processors;
 
-	private static <T> DataResult<T> method_28877(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
+	private static <T> DataResult<T> encodeLocation(Either<Identifier, Structure> either, DynamicOps<T> dynamicOps, T object) {
 		Optional<Identifier> optional = either.left();
 		return !optional.isPresent()
 			? DataResult.error("Can not serialize a runtime pool element")
 			: Identifier.CODEC.encode((Identifier)optional.get(), dynamicOps, object);
 	}
 
-	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, RegistryEntry<StructureProcessorList>> method_28880() {
+	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, RegistryEntry<StructureProcessorList>> processorsGetter() {
 		return StructureProcessorType.REGISTRY_CODEC.fieldOf("processors").forGetter(singlePoolElement -> singlePoolElement.processors);
 	}
 
-	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> method_28882() {
-		return field_24951.fieldOf("location").forGetter(singlePoolElement -> singlePoolElement.location);
+	protected static <E extends SinglePoolElement> RecordCodecBuilder<E, Either<Identifier, Structure>> locationGetter() {
+		return LOCATION_CODEC.fieldOf("location").forGetter(singlePoolElement -> singlePoolElement.location);
 	}
 
-	protected SinglePoolElement(Either<Identifier, Structure> location, RegistryEntry<StructureProcessorList> registryEntry, StructurePool.Projection projection) {
+	protected SinglePoolElement(Either<Identifier, Structure> location, RegistryEntry<StructureProcessorList> processors, StructurePool.Projection projection) {
 		super(projection);
 		this.location = location;
-		this.processors = registryEntry;
+		this.processors = processors;
 	}
 
 	public SinglePoolElement(Structure structure) {
@@ -97,11 +96,11 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
+	) {
 		Structure structure = this.getStructure(structureManager);
-		List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
-		Collections.shuffle(list, random);
-		return list;
+		return Util.copyShuffled(structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true), random);
 	}
 
 	@Override
@@ -120,12 +119,12 @@ public class SinglePoolElement extends StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		Random random,
+		AbstractRandom random,
 		boolean keepJigsaws
 	) {
 		Structure structure = this.getStructure(structureManager);
 		StructurePlacementData structurePlacementData = this.createPlacementData(rotation, box, keepJigsaws);
-		if (!structure.place(world, pos, blockPos, structurePlacementData, random, Block.NOTIFY_LISTENERS | Block.FORCE_STATE)) {
+		if (!structure.place(world, pos, blockPos, structurePlacementData, random, 18)) {
 			return false;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(

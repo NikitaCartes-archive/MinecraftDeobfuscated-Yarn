@@ -1,11 +1,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -17,7 +17,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		BlockPos blockPos = context.getOrigin();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
@@ -27,11 +27,11 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 		if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {
 			return false;
 		} else {
-			blockPos = blockPos.up(random.nextInt(4));
-			int i = random.nextInt(4) + 7;
-			int j = i / 4 + random.nextInt(2);
-			if (j > 1 && random.nextInt(60) == 0) {
-				blockPos = blockPos.up(10 + random.nextInt(30));
+			blockPos = blockPos.up(abstractRandom.nextInt(4));
+			int i = abstractRandom.nextInt(4) + 7;
+			int j = i / 4 + abstractRandom.nextInt(2);
+			if (j > 1 && abstractRandom.nextInt(60) == 0) {
+				blockPos = blockPos.up(10 + abstractRandom.nextInt(30));
 			}
 
 			for (int k = 0; k < i; k++) {
@@ -43,7 +43,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 
 					for (int n = -l; n <= l; n++) {
 						float h = (float)MathHelper.abs(n) - 0.25F;
-						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(random.nextFloat() > 0.75F))) {
+						if ((m == 0 && n == 0 || !(g * g + h * h > f * f)) && (m != -l && m != l && n != -l && n != l || !(abstractRandom.nextFloat() > 0.75F))) {
 							BlockState blockState = structureWorldAccess.getBlockState(blockPos.add(m, k, n));
 							if (blockState.isAir() || isSoil(blockState) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE)) {
 								this.setBlockState(structureWorldAccess, blockPos.add(m, k, n), Blocks.PACKED_ICE.getDefaultState());
@@ -72,7 +72,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 					BlockPos blockPos2 = blockPos.add(o, -1, l);
 					int p = 50;
 					if (Math.abs(o) == 1 && Math.abs(l) == 1) {
-						p = random.nextInt(5);
+						p = abstractRandom.nextInt(5);
 					}
 
 					while (blockPos2.getY() > 50) {
@@ -88,8 +88,8 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 						this.setBlockState(structureWorldAccess, blockPos2, Blocks.PACKED_ICE.getDefaultState());
 						blockPos2 = blockPos2.down();
 						if (--p <= 0) {
-							blockPos2 = blockPos2.down(random.nextInt(5) + 1);
-							p = random.nextInt(5);
+							blockPos2 = blockPos2.down(abstractRandom.nextInt(5) + 1);
+							p = abstractRandom.nextInt(5);
 						}
 					}
 				}

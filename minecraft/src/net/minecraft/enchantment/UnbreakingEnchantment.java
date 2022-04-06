@@ -1,9 +1,9 @@
 package net.minecraft.enchantment;
 
-import java.util.Random;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class UnbreakingEnchantment extends Enchantment {
 	protected UnbreakingEnchantment(Enchantment.Rarity weight, EquipmentSlot... slotTypes) {
@@ -30,7 +30,7 @@ public class UnbreakingEnchantment extends Enchantment {
 		return stack.isDamageable() ? true : super.isAcceptableItem(stack);
 	}
 
-	public static boolean shouldPreventDamage(ItemStack item, int level, Random random) {
+	public static boolean shouldPreventDamage(ItemStack item, int level, AbstractRandom random) {
 		return item.getItem() instanceof ArmorItem && random.nextFloat() < 0.6F ? false : random.nextInt(level + 1) > 0;
 	}
 }

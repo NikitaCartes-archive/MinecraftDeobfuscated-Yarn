@@ -6,10 +6,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class RandomSpreadStructurePlacement extends StructurePlacement {
 	public static final Codec<RandomSpreadStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(

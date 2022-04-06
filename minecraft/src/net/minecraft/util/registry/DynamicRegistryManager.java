@@ -38,7 +38,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import org.slf4j.Logger;
 
 /**
@@ -58,17 +58,17 @@ public interface DynamicRegistryManager {
 	Map<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> INFOS = Util.make(() -> {
 		Builder<RegistryKey<? extends Registry<?>>, DynamicRegistryManager.Info<?>> builder = ImmutableMap.builder();
 		register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
-		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
+		register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.NETWORK_CODEC);
 		register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
 		register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
 		register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-		register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, StructureFeature.FEATURE_CODEC);
+		register(builder, Registry.STRUCTURE_KEY, StructureType.STRUCTURE_TYPE_CODEC);
 		register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.CODEC);
-		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
+		register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.PROCESSORS_CODEC);
 		register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
 		register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
-		register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
-		register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.field_37057);
+		register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.CODEC);
+		register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.CODEC);
 		register(builder, Registry.WORLD_PRESET_WORLDGEN, WorldPreset.CODEC);
 		register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPreset.CODEC);
 		return builder.build();

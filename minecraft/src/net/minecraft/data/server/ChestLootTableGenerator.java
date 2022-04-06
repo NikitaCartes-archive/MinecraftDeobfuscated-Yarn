@@ -355,7 +355,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
-						.rolls(UniformLootNumberProvider.create(4.0F, 9.0F))
+						.rolls(UniformLootNumberProvider.create(5.0F, 10.0F))
 						.with(ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE).weight(1).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F))))
 						.with(ItemEntry.builder(Items.MUSIC_DISC_OTHERSIDE).weight(1))
 						.with(ItemEntry.builder(Items.COMPASS).weight(2).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
@@ -390,17 +390,18 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.weight(3)
 								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(20.0F, 39.0F)).allowTreasureEnchantments())
 						)
+						.with(ItemEntry.builder(Items.ECHO_SHARD).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(
 							ItemEntry.builder(Items.POTION)
-								.weight(4)
+								.weight(5)
 								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F)))
 								.apply(SetPotionLootFunction.builder(Potions.STRONG_REGENERATION))
 						)
-						.with(ItemEntry.builder(Items.BOOK).weight(4).apply(EnchantRandomlyLootFunction.builder()))
-						.with(ItemEntry.builder(Items.BOOK).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 10.0F))))
-						.with(ItemEntry.builder(Items.BONE).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
-						.with(ItemEntry.builder(Items.SOUL_TORCH).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
-						.with(ItemEntry.builder(Items.COAL).weight(6).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(6.0F, 15.0F))))
+						.with(ItemEntry.builder(Items.BOOK).weight(5).apply(EnchantRandomlyLootFunction.builder()))
+						.with(ItemEntry.builder(Items.BOOK).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 10.0F))))
+						.with(ItemEntry.builder(Items.BONE).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
+						.with(ItemEntry.builder(Items.SOUL_TORCH).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
+						.with(ItemEntry.builder(Items.COAL).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(6.0F, 15.0F))))
 				)
 		);
 		biConsumer.accept(

@@ -47,7 +47,7 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 		modelPartData2.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-2.5F, -5.0F, -2.5F, 5.0F, 5.0F, 5.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(0.0F, -4.0F, 0.0F)
+			ModelTransform.pivot(0.0F, -3.99F, 0.0F)
 		);
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY,
@@ -60,23 +60,23 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.RIGHT_ARM,
-			ModelPartBuilder.create().uv(23, 0).cuboid(-0.75F, -0.5F, -1.0F, 1.0F, 4.0F, 2.0F, new Dilation(0.0F)),
+			ModelPartBuilder.create().uv(23, 0).cuboid(-0.75F, -0.5F, -1.0F, 1.0F, 4.0F, 2.0F, new Dilation(-0.01F)),
 			ModelTransform.pivot(-1.75F, 0.5F, 0.0F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.LEFT_ARM,
-			ModelPartBuilder.create().uv(23, 6).cuboid(-0.25F, -0.5F, -1.0F, 1.0F, 4.0F, 2.0F, new Dilation(0.0F)),
+			ModelPartBuilder.create().uv(23, 6).cuboid(-0.25F, -0.5F, -1.0F, 1.0F, 4.0F, 2.0F, new Dilation(-0.01F)),
 			ModelTransform.pivot(1.75F, 0.5F, 0.0F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.RIGHT_WING,
 			ModelPartBuilder.create().uv(16, 14).cuboid(0.0F, 1.0F, 0.0F, 0.0F, 5.0F, 8.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(-0.5F, 0.0F, 1.0F)
+			ModelTransform.pivot(-0.5F, 0.0F, 0.65F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.LEFT_WING,
 			ModelPartBuilder.create().uv(16, 14).cuboid(0.0F, 1.0F, 0.0F, 0.0F, 5.0F, 8.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(0.5F, 0.0F, 1.0F)
+			ModelTransform.pivot(0.5F, 0.0F, 0.65F)
 		);
 		return TexturedModelData.of(modelData, 32, 32);
 	}

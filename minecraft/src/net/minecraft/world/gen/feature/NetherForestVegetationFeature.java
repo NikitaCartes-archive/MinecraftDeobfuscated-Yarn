@@ -1,11 +1,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -20,7 +20,7 @@ public class NetherForestVegetationFeature extends Feature<NetherForestVegetatio
 		BlockPos blockPos = context.getOrigin();
 		BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
 		NetherForestVegetationFeatureConfig netherForestVegetationFeatureConfig = context.getConfig();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		if (!blockState.isIn(BlockTags.NYLIUM)) {
 			return false;
 		} else {
@@ -30,11 +30,11 @@ public class NetherForestVegetationFeature extends Feature<NetherForestVegetatio
 
 				for (int k = 0; k < netherForestVegetationFeatureConfig.spreadWidth * netherForestVegetationFeatureConfig.spreadWidth; k++) {
 					BlockPos blockPos2 = blockPos.add(
-						random.nextInt(netherForestVegetationFeatureConfig.spreadWidth) - random.nextInt(netherForestVegetationFeatureConfig.spreadWidth),
-						random.nextInt(netherForestVegetationFeatureConfig.spreadHeight) - random.nextInt(netherForestVegetationFeatureConfig.spreadHeight),
-						random.nextInt(netherForestVegetationFeatureConfig.spreadWidth) - random.nextInt(netherForestVegetationFeatureConfig.spreadWidth)
+						abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadWidth) - abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadWidth),
+						abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadHeight) - abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadHeight),
+						abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadWidth) - abstractRandom.nextInt(netherForestVegetationFeatureConfig.spreadWidth)
 					);
-					BlockState blockState2 = netherForestVegetationFeatureConfig.stateProvider.getBlockState(random, blockPos2);
+					BlockState blockState2 = netherForestVegetationFeatureConfig.stateProvider.getBlockState(abstractRandom, blockPos2);
 					if (structureWorldAccess.isAir(blockPos2)
 						&& blockPos2.getY() > structureWorldAccess.getBottomY()
 						&& blockState2.canPlaceAt(structureWorldAccess, blockPos2)) {

@@ -119,7 +119,6 @@ import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -190,7 +189,6 @@ public enum NetworkState {
 				new NetworkState.PacketHandler()
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
-					.register(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
 					.register(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
 					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
 					.register(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)

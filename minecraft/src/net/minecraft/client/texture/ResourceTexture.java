@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -78,39 +79,39 @@ public class ResourceTexture extends AbstractTexture {
 
 		public static ResourceTexture.TextureData load(ResourceManager resourceManager, Identifier id) {
 			try {
-				Resource resource = resourceManager.getResource(id);
+				Resource resource = resourceManager.getResourceOrThrow(id);
+				InputStream inputStream = resource.getInputStream();
 
-				ResourceTexture.TextureData runtimeException;
+				NativeImage nativeImage;
 				try {
-					NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-					TextureResourceMetadata textureResourceMetadata = null;
-
-					try {
-						textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);
-					} catch (RuntimeException var7) {
-						ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", id, var7);
-					}
-
-					runtimeException = new ResourceTexture.TextureData(textureResourceMetadata, nativeImage);
-				} catch (Throwable var8) {
-					if (resource != null) {
+					nativeImage = NativeImage.read(inputStream);
+				} catch (Throwable var9) {
+					if (inputStream != null) {
 						try {
-							resource.close();
-						} catch (Throwable var6) {
-							var8.addSuppressed(var6);
+							inputStream.close();
+						} catch (Throwable var7) {
+							var9.addSuppressed(var7);
 						}
 					}
 
-					throw var8;
+					throw var9;
 				}
 
-				if (resource != null) {
-					resource.close();
+				if (inputStream != null) {
+					inputStream.close();
 				}
 
-				return runtimeException;
-			} catch (IOException var9) {
-				return new ResourceTexture.TextureData(var9);
+				TextureResourceMetadata textureResourceMetadata = null;
+
+				try {
+					textureResourceMetadata = (TextureResourceMetadata)resource.getMetadata().decode(TextureResourceMetadata.READER).orElse(null);
+				} catch (RuntimeException var8) {
+					ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", id, var8);
+				}
+
+				return new ResourceTexture.TextureData(textureResourceMetadata, nativeImage);
+			} catch (IOException var10) {
+				return new ResourceTexture.TextureData(var10);
 			}
 		}
 

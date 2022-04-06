@@ -14,7 +14,7 @@ import net.minecraft.util.registry.RegistryEntry;
 
 public class LegacySinglePoolElement extends SinglePoolElement {
 	public static final Codec<LegacySinglePoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(method_28882(), method_28880(), method_28883()).apply(instance, LegacySinglePoolElement::new)
+		instance -> instance.group(locationGetter(), processorsGetter(), projectionGetter()).apply(instance, LegacySinglePoolElement::new)
 	);
 
 	protected LegacySinglePoolElement(

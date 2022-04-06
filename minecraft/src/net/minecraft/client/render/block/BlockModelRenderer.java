@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
@@ -48,7 +48,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		Random random,
+		AbstractRandom random,
 		long seed,
 		int overlay
 	) {
@@ -77,7 +77,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		Random random,
+		AbstractRandom random,
 		long seed,
 		int overlay
 	) {
@@ -117,7 +117,7 @@ public class BlockModelRenderer {
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
 		boolean cull,
-		Random random,
+		AbstractRandom random,
 		long seed,
 		int overlay
 	) {
@@ -319,16 +319,16 @@ public class BlockModelRenderer {
 		int light,
 		int overlay
 	) {
-		Random random = new Random();
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic();
 		long l = 42L;
 
 		for (Direction direction : DIRECTIONS) {
-			random.setSeed(42L);
-			renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, random), light, overlay);
+			abstractRandom.setSeed(42L);
+			renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, abstractRandom), light, overlay);
 		}
 
-		random.setSeed(42L);
-		renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, random), light, overlay);
+		abstractRandom.setSeed(42L);
+		renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, abstractRandom), light, overlay);
 	}
 
 	private static void renderQuads(

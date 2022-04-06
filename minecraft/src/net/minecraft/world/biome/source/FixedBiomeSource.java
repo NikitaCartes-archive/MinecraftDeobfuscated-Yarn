@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
@@ -51,7 +51,7 @@ public class FixedBiomeSource extends BiomeSource implements BiomeAccess.Storage
 		int radius,
 		int blockCheckInterval,
 		Predicate<RegistryEntry<Biome>> predicate,
-		Random random,
+		AbstractRandom random,
 		boolean bl,
 		MultiNoiseUtil.MultiNoiseSampler noiseSampler
 	) {

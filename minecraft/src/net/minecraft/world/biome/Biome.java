@@ -24,6 +24,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntry;
@@ -31,7 +32,6 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.LightType;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public final class Biome {
 	public static final Codec<Biome> CODEC = RecordCodecBuilder.create(
@@ -43,7 +43,7 @@ public final class Biome {
 				)
 				.apply(instance, Biome::new)
 	);
-	public static final Codec<Biome> field_26633 = RecordCodecBuilder.create(
+	public static final Codec<Biome> NETWORK_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(Biome.Weather.CODEC.forGetter(biome -> biome.weather), BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects))
 				.apply(instance, (weather, effects) -> new Biome(weather, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
@@ -61,7 +61,7 @@ public final class Biome {
 	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new AtomicSimpleRandom(2345L)), ImmutableList.of(0)
 	);
-	private static final int field_30978 = 1024;
+	private static final int MAX_TEMPERATURE_CACHE_SIZE = 1024;
 	private final Biome.Weather weather;
 	private final GenerationSettings generationSettings;
 	private final SpawnSettings spawnSettings;

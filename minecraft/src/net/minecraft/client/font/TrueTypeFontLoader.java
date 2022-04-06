@@ -7,11 +7,11 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -83,13 +83,13 @@ public class TrueTypeFontLoader implements FontLoader {
 		ByteBuffer byteBuffer = null;
 
 		try {
-			Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
+			InputStream inputStream = manager.open(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
 
 			TrueTypeFont var5;
 			try {
 				LOGGER.debug("Loading font {}", this.filename);
 				sTBTTFontinfo = STBTTFontinfo.malloc();
-				byteBuffer = TextureUtil.readResource(resource.getInputStream());
+				byteBuffer = TextureUtil.readResource(inputStream);
 				byteBuffer.flip();
 				LOGGER.debug("Reading font {}", this.filename);
 				if (!STBTruetype.stbtt_InitFont(sTBTTFontinfo, byteBuffer)) {
@@ -98,9 +98,9 @@ public class TrueTypeFontLoader implements FontLoader {
 
 				var5 = new TrueTypeFont(byteBuffer, sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
 			} catch (Throwable var8) {
-				if (resource != null) {
+				if (inputStream != null) {
 					try {
-						resource.close();
+						inputStream.close();
 					} catch (Throwable var7) {
 						var8.addSuppressed(var7);
 					}
@@ -109,8 +109,8 @@ public class TrueTypeFontLoader implements FontLoader {
 				throw var8;
 			}
 
-			if (resource != null) {
-				resource.close();
+			if (inputStream != null) {
+				inputStream.close();
 			}
 
 			return var5;

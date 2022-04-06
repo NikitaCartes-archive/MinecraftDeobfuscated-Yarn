@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity> {
@@ -71,20 +71,20 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		if (enderDragonEntity.ticksSinceDeath > 0) {
 			float l = ((float)enderDragonEntity.ticksSinceDeath + g) / 200.0F;
 			float m = Math.min(l > 0.8F ? (l - 0.8F) / 0.2F : 0.0F, 1.0F);
-			Random random = new Random(432L);
+			AbstractRandom abstractRandom = AbstractRandom.createAtomic(432L);
 			VertexConsumer vertexConsumer4 = vertexConsumerProvider.getBuffer(RenderLayer.getLightning());
 			matrixStack.push();
 			matrixStack.translate(0.0, -1.0, -2.0);
 
 			for (int n = 0; (float)n < (l + l * l) / 2.0F * 60.0F; n++) {
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
-				float o = random.nextFloat() * 20.0F + 5.0F + m * 10.0F;
-				float p = random.nextFloat() * 2.0F + 1.0F + m * 2.0F;
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(abstractRandom.nextFloat() * 360.0F + l * 90.0F));
+				float o = abstractRandom.nextFloat() * 20.0F + 5.0F + m * 10.0F;
+				float p = abstractRandom.nextFloat() * 2.0F + 1.0F + m * 2.0F;
 				Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 				int q = (int)(255.0F * (1.0F - m));
 				method_23157(vertexConsumer4, matrix4f, q);
@@ -234,12 +234,18 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		);
 		ModelPartData modelPartData3 = modelPartData.addChild(
 			EntityModelPartNames.LEFT_WING,
-			ModelPartBuilder.create().mirrored().cuboid("bone", 0.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88).cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
+			ModelPartBuilder.create()
+				.mirrored()
+				.cuboid(EntityModelPartNames.BONE, 0.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88)
+				.cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
 			ModelTransform.pivot(12.0F, 5.0F, 2.0F)
 		);
 		modelPartData3.addChild(
 			EntityModelPartNames.LEFT_WING_TIP,
-			ModelPartBuilder.create().mirrored().cuboid("bone", 0.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136).cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
+			ModelPartBuilder.create()
+				.mirrored()
+				.cuboid(EntityModelPartNames.BONE, 0.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136)
+				.cuboid("skin", 0.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
 			ModelTransform.pivot(56.0F, 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData4 = modelPartData.addChild(
@@ -274,12 +280,14 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		);
 		ModelPartData modelPartData8 = modelPartData.addChild(
 			EntityModelPartNames.RIGHT_WING,
-			ModelPartBuilder.create().cuboid("bone", -56.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88).cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
+			ModelPartBuilder.create().cuboid(EntityModelPartNames.BONE, -56.0F, -4.0F, -4.0F, 56, 8, 8, 112, 88).cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 88),
 			ModelTransform.pivot(-12.0F, 5.0F, 2.0F)
 		);
 		modelPartData8.addChild(
 			EntityModelPartNames.RIGHT_WING_TIP,
-			ModelPartBuilder.create().cuboid("bone", -56.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136).cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
+			ModelPartBuilder.create()
+				.cuboid(EntityModelPartNames.BONE, -56.0F, -2.0F, -2.0F, 56, 4, 4, 112, 136)
+				.cuboid("skin", -56.0F, 0.0F, 2.0F, 56, 0, 56, -56, 144),
 			ModelTransform.pivot(-56.0F, 0.0F, 0.0F)
 		);
 		ModelPartData modelPartData9 = modelPartData.addChild(

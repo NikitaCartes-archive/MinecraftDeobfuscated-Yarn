@@ -3,11 +3,11 @@ package net.minecraft.world.gen.stateprovider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	public static final Codec<NoiseThresholdBlockStateProvider> CODEC = RecordCodecBuilder.create(
@@ -53,12 +53,12 @@ public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStatePro
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
+	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
 		double d = this.getNoiseValue(pos, (double)this.scale);
 		if (d < (double)this.threshold) {
-			return Util.getRandom(this.lowStates, random);
+			return Util.getRandom(this.lowStates, abstractRandom);
 		} else {
-			return random.nextFloat() < this.highChance ? Util.getRandom(this.highStates, random) : this.defaultState;
+			return abstractRandom.nextFloat() < this.highChance ? Util.getRandom(this.highStates, abstractRandom) : this.defaultState;
 		}
 	}
 }

@@ -2,12 +2,12 @@ package net.minecraft.world.gen.feature;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -26,16 +26,16 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DeltaFeatureConfig> context) {
 		boolean bl = false;
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		DeltaFeatureConfig deltaFeatureConfig = context.getConfig();
 		BlockPos blockPos = context.getOrigin();
-		boolean bl2 = random.nextDouble() < 0.9;
-		int i = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
-		int j = bl2 ? deltaFeatureConfig.getRimSize().get(random) : 0;
+		boolean bl2 = abstractRandom.nextDouble() < 0.9;
+		int i = bl2 ? deltaFeatureConfig.getRimSize().get(abstractRandom) : 0;
+		int j = bl2 ? deltaFeatureConfig.getRimSize().get(abstractRandom) : 0;
 		boolean bl3 = bl2 && i != 0 && j != 0;
-		int k = deltaFeatureConfig.getSize().get(random);
-		int l = deltaFeatureConfig.getSize().get(random);
+		int k = deltaFeatureConfig.getSize().get(abstractRandom);
+		int l = deltaFeatureConfig.getSize().get(abstractRandom);
 		int m = Math.max(k, l);
 
 		for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, k, 0, l)) {

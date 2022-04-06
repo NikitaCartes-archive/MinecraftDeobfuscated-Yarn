@@ -10,6 +10,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
 public class SniffTask<E extends WardenEntity> extends Task<E> {
+	private static final double field_38708 = 6.0;
+
 	public SniffTask(int i) {
 		super(
 			ImmutableMap.of(
@@ -42,7 +44,7 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 		}
 
 		wardenEntity.getBrain().forget(MemoryModuleType.IS_SNIFFING);
-		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(WardenEntity::isValidTarget).ifPresent(livingEntity -> {
+		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(livingEntity -> {
 			if (wardenEntity.isInRange(livingEntity, 6.0)) {
 				wardenEntity.increaseAngerAt(livingEntity);
 			}

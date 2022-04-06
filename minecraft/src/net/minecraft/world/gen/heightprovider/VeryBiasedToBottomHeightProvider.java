@@ -3,8 +3,8 @@ package net.minecraft.world.gen.heightprovider;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import org.slf4j.Logger;
@@ -34,16 +34,16 @@ public class VeryBiasedToBottomHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(Random random, HeightContext context) {
+	public int get(AbstractRandom abstractRandom, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (j - i - this.inner + 1 <= 0) {
 			LOGGER.warn("Empty height range: {}", this);
 			return i;
 		} else {
-			int k = MathHelper.nextInt(random, i + this.inner, j);
-			int l = MathHelper.nextInt(random, i, k - 1);
-			return MathHelper.nextInt(random, i, l - 1 + this.inner);
+			int k = MathHelper.nextInt(abstractRandom, i + this.inner, j);
+			int l = MathHelper.nextInt(abstractRandom, i, k - 1);
+			return MathHelper.nextInt(abstractRandom, i, l - 1 + this.inner);
 		}
 	}
 

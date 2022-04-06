@@ -3,7 +3,6 @@ package net.minecraft.structure.pool;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.structure.Structure;
@@ -12,13 +11,14 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ListPoolElement extends StructurePoolElement {
 	public static final Codec<ListPoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), method_28883())
+		instance -> instance.group(StructurePoolElement.CODEC.listOf().fieldOf("elements").forGetter(listPoolElement -> listPoolElement.elements), projectionGetter())
 				.apply(instance, ListPoolElement::new)
 	);
 	private final List<StructurePoolElement> elements;
@@ -50,7 +50,9 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
+	) {
 		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, pos, rotation, random);
 	}
 
@@ -73,7 +75,7 @@ public class ListPoolElement extends StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		Random random,
+		AbstractRandom random,
 		boolean keepJigsaws
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {

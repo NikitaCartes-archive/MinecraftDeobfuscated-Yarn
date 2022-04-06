@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -16,6 +15,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -71,14 +71,14 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		Random random,
+		AbstractRandom random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
 		this.placementData.setBoundingBox(chunkBox);
 		this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-		if (this.structure.place(world, this.pos, pos, this.placementData, random, Block.NOTIFY_LISTENERS)) {
+		if (this.structure.place(world, this.pos, pos, this.placementData, random, 2)) {
 			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
 				if (structureBlockInfo.nbt != null) {
 					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
@@ -105,7 +105,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		}
 	}
 
-	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox);
+	protected abstract void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox);
 
 	@Deprecated
 	@Override

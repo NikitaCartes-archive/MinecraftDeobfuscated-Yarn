@@ -105,6 +105,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -143,6 +144,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
+	protected static final TrackedData<Optional<GlobalPos>> LAST_DEATH_POS = DataTracker.registerData(
+		PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_GLOBAL_POS
+	);
 	protected static final TrackedData<NbtCompound> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	protected static final TrackedData<NbtCompound> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 	private long shoulderEntityAddedTime;
@@ -218,6 +222,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.dataTracker.startTracking(MAIN_ARM, (byte)1);
 		this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
 		this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
+		this.dataTracker.startTracking(LAST_DEATH_POS, Optional.empty());
 	}
 
 	@Override
@@ -628,6 +633,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		this.extinguish();
 		this.setOnFire(false);
+		this.setLastDeathPos(Optional.of(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos())));
 	}
 
 	@Override
@@ -797,6 +803,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (nbt.contains("ShoulderEntityRight", NbtElement.COMPOUND_TYPE)) {
 			this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
 		}
+
+		if (nbt.contains("LastDeathLocation", NbtElement.COMPOUND_TYPE)) {
+			this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(field_38197::error));
+		}
 	}
 
 	@Override
@@ -825,6 +835,10 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (!this.getShoulderEntityRight().isEmpty()) {
 			nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
 		}
+
+		this.getLastDeathPos()
+			.flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).resultOrPartial(field_38197::error))
+			.ifPresent(nbtElement -> nbt.put("LastDeathLocation", nbtElement));
 	}
 
 	@Override
@@ -2169,6 +2183,14 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public boolean shouldSave() {
 		return false;
+	}
+
+	public Optional<GlobalPos> getLastDeathPos() {
+		return this.dataTracker.get(LAST_DEATH_POS);
+	}
+
+	public void setLastDeathPos(Optional<GlobalPos> lastDeathPos) {
+		this.dataTracker.set(LAST_DEATH_POS, lastDeathPos);
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -13,6 +12,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class SmokerBlock extends AbstractFurnaceBlock {
@@ -41,7 +41,7 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if ((Boolean)state.get(LIT)) {
 			double d = (double)pos.getX() + 0.5;
 			double e = (double)pos.getY();

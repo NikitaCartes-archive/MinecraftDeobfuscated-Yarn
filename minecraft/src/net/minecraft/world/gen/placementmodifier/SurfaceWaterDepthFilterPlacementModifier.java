@@ -2,8 +2,8 @@ package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
@@ -25,7 +25,7 @@ public class SurfaceWaterDepthFilterPlacementModifier extends AbstractConditiona
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
+	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
 		int i = context.getTopY(Heightmap.Type.OCEAN_FLOOR, pos.getX(), pos.getZ());
 		int j = context.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ());
 		return j - i <= this.maxWaterDepth;

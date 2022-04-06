@@ -1,9 +1,8 @@
 package net.minecraft.resource;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -19,16 +18,6 @@ public interface ResourceManager extends ResourceFactory {
 	Set<String> getAllNamespaces();
 
 	/**
-	 * Checks whether any of the currently-loaded resource packs contain an entry for the given id.
-	 * 
-	 * <p>Starts by querying the resource pack with the highest priority to lowest until it finds one that
-	 * responds to the requested identifier.
-	 * 
-	 * @param id the resource identifier to search for
-	 */
-	boolean containsResource(Identifier id);
-
-	/**
 	 * Gets all of the available resources to the corresponding resource identifier.
 	 * 
 	 * <p>Resources are returned in load order, or ascending order of priority, so the last element in the returned
@@ -41,7 +30,7 @@ public interface ResourceManager extends ResourceFactory {
 	 * 
 	 * @param id the resource identifier to search for
 	 */
-	List<ResourceRef> getAllResources(Identifier id) throws IOException;
+	List<Resource> getAllResources(Identifier id);
 
 	/**
 	 * Returns a sorted list of identifiers matching a path predicate.
@@ -57,9 +46,9 @@ public interface ResourceManager extends ResourceFactory {
 	 * @param startingPath the starting path to begin scanning from
 	 * @param allowedPathPredicate a predicate to determine whether a path should be included or not
 	 */
-	Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
+	Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
 
-	Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
+	Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate);
 
 	/**
 	 * Gets a stream of loaded resource packs in increasing order of priority.
@@ -75,27 +64,22 @@ public interface ResourceManager extends ResourceFactory {
 		}
 
 		@Override
-		public Resource getResource(Identifier identifier) throws IOException {
-			throw new FileNotFoundException(identifier.toString());
+		public Optional<Resource> getResource(Identifier identifier) {
+			return Optional.empty();
 		}
 
 		@Override
-		public boolean containsResource(Identifier id) {
-			return false;
+		public List<Resource> getAllResources(Identifier id) {
+			return List.of();
 		}
 
 		@Override
-		public List<ResourceRef> getAllResources(Identifier id) throws IOException {
-			throw new FileNotFoundException(id.toString());
-		}
-
-		@Override
-		public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+		public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 			return Map.of();
 		}
 
 		@Override
-		public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+		public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 			return Map.of();
 		}
 

@@ -9,9 +9,9 @@ import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
 import java.util.List;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryElementCodec;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
-import net.minecraft.world.gen.random.AbstractRandom;
 
 public class DoublePerlinNoiseSampler {
 	private static final double DOMAIN_SCALE = 1.0181268882175227;
@@ -94,14 +94,16 @@ public class DoublePerlinNoiseSampler {
 	}
 
 	public static record NoiseParameters(int firstOctave, DoubleList amplitudes) {
-		public static final Codec<DoublePerlinNoiseSampler.NoiseParameters> field_35424 = RecordCodecBuilder.create(
+		public static final Codec<DoublePerlinNoiseSampler.NoiseParameters> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("firstOctave").forGetter(DoublePerlinNoiseSampler.NoiseParameters::firstOctave),
 						Codec.DOUBLE.listOf().fieldOf("amplitudes").forGetter(DoublePerlinNoiseSampler.NoiseParameters::amplitudes)
 					)
 					.apply(instance, DoublePerlinNoiseSampler.NoiseParameters::new)
 		);
-		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> CODEC = RegistryElementCodec.of(Registry.NOISE_WORLDGEN, field_35424);
+		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(
+			Registry.NOISE_WORLDGEN, CODEC
+		);
 
 		public NoiseParameters(int firstOctave, List<Double> amplitudes) {
 			this(firstOctave, new DoubleArrayList(amplitudes));

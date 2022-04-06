@@ -188,7 +188,8 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			this.getYaw(),
 			this.getType(),
 			i,
-			new Vec3d(this.powerX, this.powerY, this.powerZ)
+			new Vec3d(this.powerX, this.powerY, this.powerZ),
+			0.0
 		);
 	}
 

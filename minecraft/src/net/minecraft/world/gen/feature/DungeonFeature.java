@@ -2,7 +2,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +17,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.slf4j.Logger;
@@ -35,15 +35,15 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE);
 		BlockPos blockPos = context.getOrigin();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		int i = 3;
-		int j = random.nextInt(2) + 2;
+		int j = abstractRandom.nextInt(2) + 2;
 		int k = -j - 1;
 		int l = j + 1;
 		int m = -1;
 		int n = 4;
-		int o = random.nextInt(2) + 2;
+		int o = abstractRandom.nextInt(2) + 2;
 		int p = -o - 1;
 		int q = o + 1;
 		int r = 0;
@@ -79,7 +79,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							if (blockPos2x.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
 								structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
 							} else if (blockState.getMaterial().isSolid() && !blockState.isOf(Blocks.CHEST)) {
-								if (t == -1 && random.nextInt(4) != 0) {
+								if (t == -1 && abstractRandom.nextInt(4) != 0) {
 									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
 								} else {
 									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.COBBLESTONE.getDefaultState(), predicate);
@@ -94,9 +94,9 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 
 			for (int s = 0; s < 2; s++) {
 				for (int t = 0; t < 3; t++) {
-					int ux = blockPos.getX() + random.nextInt(j * 2 + 1) - j;
+					int ux = blockPos.getX() + abstractRandom.nextInt(j * 2 + 1) - j;
 					int v = blockPos.getY();
-					int w = blockPos.getZ() + random.nextInt(o * 2 + 1) - o;
+					int w = blockPos.getZ() + abstractRandom.nextInt(o * 2 + 1) - o;
 					BlockPos blockPos3 = new BlockPos(ux, v, w);
 					if (structureWorldAccess.isAir(blockPos3)) {
 						int x = 0;
@@ -111,7 +111,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							this.setBlockStateIf(
 								structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate
 							);
-							LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+							LootableContainerBlockEntity.setLootTable(structureWorldAccess, abstractRandom, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
 							break;
 						}
 					}
@@ -121,7 +121,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			this.setBlockStateIf(structureWorldAccess, blockPos, Blocks.SPAWNER.getDefaultState(), predicate);
 			BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
-				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
+				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(abstractRandom));
 			} else {
 				LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			}
@@ -132,7 +132,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 		}
 	}
 
-	private EntityType<?> getMobSpawnerEntity(Random random) {
+	private EntityType<?> getMobSpawnerEntity(AbstractRandom random) {
 		return Util.getRandom(MOB_SPAWNER_ENTITIES, random);
 	}
 }

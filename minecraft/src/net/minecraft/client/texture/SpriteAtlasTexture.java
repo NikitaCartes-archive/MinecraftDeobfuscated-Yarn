@@ -8,9 +8,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -157,47 +159,60 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 		for (Identifier identifier : ids) {
 			if (!MissingSprite.getMissingSpriteId().equals(identifier)) {
-				list.add(CompletableFuture.runAsync(() -> {
-					Identifier identifier2 = this.getTexturePath(identifier);
+				list.add(
+					CompletableFuture.runAsync(
+						() -> {
+							Identifier identifier2 = this.getTexturePath(identifier);
+							Optional<Resource> optional = resourceManager.getResource(identifier2);
+							if (optional.isEmpty()) {
+								LOGGER.error("Using missing texture, file {} not found", identifier2);
+							} else {
+								Resource resource = (Resource)optional.get();
 
-					Sprite.Info info;
-					try {
-						Resource resource = resourceManager.getResource(identifier2);
-
-						try {
-							PngFile pngFile = new PngFile(identifier2::toString, resource.getInputStream());
-							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
-							if (animationResourceMetadata == null) {
-								animationResourceMetadata = AnimationResourceMetadata.EMPTY;
-							}
-
-							Pair<Integer, Integer> pair = animationResourceMetadata.ensureImageSize(pngFile.width, pngFile.height);
-							info = new Sprite.Info(identifier, pair.getFirst(), pair.getSecond(), animationResourceMetadata);
-						} catch (Throwable var11) {
-							if (resource != null) {
+								PngFile pngFile;
 								try {
-									resource.close();
-								} catch (Throwable var10) {
-									var11.addSuppressed(var10);
+									InputStream inputStream = resource.getInputStream();
+
+									try {
+										pngFile = new PngFile(identifier2::toString, inputStream);
+									} catch (Throwable var14) {
+										if (inputStream != null) {
+											try {
+												inputStream.close();
+											} catch (Throwable var12) {
+												var14.addSuppressed(var12);
+											}
+										}
+
+										throw var14;
+									}
+
+									if (inputStream != null) {
+										inputStream.close();
+									}
+								} catch (IOException var15) {
+									LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var15);
+									return;
 								}
+
+								AnimationResourceMetadata animationResourceMetadata;
+								try {
+									animationResourceMetadata = (AnimationResourceMetadata)resource.getMetadata()
+										.decode(AnimationResourceMetadata.READER)
+										.orElse(AnimationResourceMetadata.EMPTY);
+								} catch (Exception var13) {
+									LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var13);
+									return;
+								}
+
+								Pair<Integer, Integer> pair = animationResourceMetadata.ensureImageSize(pngFile.width, pngFile.height);
+								Sprite.Info info = new Sprite.Info(identifier, pair.getFirst(), pair.getSecond(), animationResourceMetadata);
+								queue.add(info);
 							}
-
-							throw var11;
-						}
-
-						if (resource != null) {
-							resource.close();
-						}
-					} catch (RuntimeException var12) {
-						LOGGER.error("Unable to parse metadata from {} : {}", identifier2, var12);
-						return;
-					} catch (IOException var13) {
-						LOGGER.error("Using missing texture, unable to load {} : {}", identifier2, var13);
-						return;
-					}
-
-					queue.add(info);
-				}, Util.getMainWorkerExecutor()));
+						},
+						Util.getMainWorkerExecutor()
+					)
+				);
 			}
 		}
 
@@ -230,16 +245,16 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		Identifier identifier = this.getTexturePath(info.getId());
 
 		try {
-			Resource resource = container.getResource(identifier);
+			InputStream inputStream = container.open(identifier);
 
 			Sprite var11;
 			try {
-				NativeImage nativeImage = NativeImage.read(resource.getInputStream());
+				NativeImage nativeImage = NativeImage.read(inputStream);
 				var11 = new Sprite(this, info, maxLevel, atlasWidth, atlasHeight, x, y, nativeImage);
 			} catch (Throwable var13) {
-				if (resource != null) {
+				if (inputStream != null) {
 					try {
-						resource.close();
+						inputStream.close();
 					} catch (Throwable var12) {
 						var13.addSuppressed(var12);
 					}
@@ -248,8 +263,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 				throw var13;
 			}
 
-			if (resource != null) {
-				resource.close();
+			if (inputStream != null) {
+				inputStream.close();
 			}
 
 			return var11;

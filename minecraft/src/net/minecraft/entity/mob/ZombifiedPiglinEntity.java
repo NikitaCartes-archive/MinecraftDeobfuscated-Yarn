@@ -1,6 +1,5 @@
 package net.minecraft.entity.mob;
 
-import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
@@ -31,6 +30,7 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -169,7 +169,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 		this.setAngerTime(ANGER_TIME_RANGE.get(this.random));
 	}
 
-	public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<ZombifiedPiglinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getDifficulty() != Difficulty.PEACEFUL && !world.getBlockState(pos.down()).isOf(Blocks.NETHER_WART_BLOCK);
 	}
 

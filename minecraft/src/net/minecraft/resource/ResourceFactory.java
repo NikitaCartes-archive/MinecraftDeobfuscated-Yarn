@@ -1,6 +1,10 @@
 package net.minecraft.resource;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 import net.minecraft.util.Identifier;
 
 /**
@@ -21,5 +25,17 @@ public interface ResourceFactory {
 	 * 
 	 * @param id the resource identifier to search for
 	 */
-	Resource getResource(Identifier id) throws IOException;
+	Optional<Resource> getResource(Identifier id);
+
+	default Resource getResourceOrThrow(Identifier identifier) throws FileNotFoundException {
+		return (Resource)this.getResource(identifier).orElseThrow(() -> new FileNotFoundException(identifier.toString()));
+	}
+
+	default InputStream open(Identifier identifier) throws IOException {
+		return this.getResourceOrThrow(identifier).getInputStream();
+	}
+
+	default BufferedReader openAsReader(Identifier identifier) throws IOException {
+		return this.getResourceOrThrow(identifier).getReader();
+	}
 }

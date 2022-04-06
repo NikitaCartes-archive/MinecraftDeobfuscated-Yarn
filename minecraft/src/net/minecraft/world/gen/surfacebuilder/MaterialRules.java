@@ -21,6 +21,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
@@ -31,8 +33,6 @@ import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.RandomDeriver;
 
 public class MaterialRules {
 	public static final MaterialRules.MaterialCondition STONE_DEPTH_FLOOR = stoneDepth(0, false, VerticalSurfaceType.FLOOR);

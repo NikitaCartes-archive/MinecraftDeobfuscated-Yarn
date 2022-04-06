@@ -6,7 +6,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -27,10 +26,10 @@ import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 
@@ -71,10 +70,10 @@ public class AllayBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, new WalkToNearestVisibleWantedItemTask<>(allayEntity -> true, 2.0F, true, 9)),
-				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::method_42657, 1.25F)),
-				Pair.of(2, new WalkTowardsLookTargetTask<>(AllayBrain::method_42657, 16, 1.25F)),
-				Pair.of(3, new TimeLimitedTask<>(new FollowMobTask(livingEntity -> true, 6.0F), UniformIntProvider.create(30, 60))),
+				Pair.of(0, new WalkToNearestVisibleWantedItemTask<>(allay -> true, 2.0F, true, 9)),
+				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 1.25F)),
+				Pair.of(2, new WalkTowardsLookTargetTask<>(AllayBrain::getLookTarget, 16, 1.25F)),
+				Pair.of(3, new TimeLimitedTask<>(new FollowMobTask(allay -> true, 6.0F), UniformIntProvider.create(30, 60))),
 				Pair.of(
 					4,
 					new RandomTask<>(
@@ -86,13 +85,13 @@ public class AllayBrain {
 		);
 	}
 
-	public static void method_42661(AllayEntity allayEntity) {
-		allayEntity.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
+	public static void resetIdleActivities(AllayEntity allay) {
+		allay.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
 	}
 
-	public static void method_42659(LivingEntity livingEntity, BlockPos blockPos) {
-		Brain<?> brain = livingEntity.getBrain();
-		GlobalPos globalPos = GlobalPos.create(livingEntity.getWorld().getRegistryKey(), blockPos);
+	public static void rememberNoteBlock(LivingEntity allay, BlockPos pos) {
+		Brain<?> brain = allay.getBrain();
+		GlobalPos globalPos = GlobalPos.create(allay.getWorld().getRegistryKey(), pos);
 		Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
 		if (optional.isEmpty()) {
 			brain.remember(MemoryModuleType.LIKED_NOTEBLOCK, globalPos);
@@ -102,33 +101,36 @@ public class AllayBrain {
 		}
 	}
 
-	private static Optional<LookTarget> method_42657(LivingEntity livingEntity) {
-		Brain<?> brain = livingEntity.getBrain();
+	private static Optional<LookTarget> getLookTarget(LivingEntity allay) {
+		Brain<?> brain = allay.getBrain();
 		Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
 		if (optional.isPresent()) {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
-			if (method_42658(livingEntity, brain, blockPos)) {
+			if (shouldGoTowardsNoteBlock(allay, brain, blockPos)) {
 				return Optional.of(new BlockPosLookTarget(blockPos.up()));
 			}
 
 			brain.forget(MemoryModuleType.LIKED_NOTEBLOCK);
 		}
 
-		return method_42662(livingEntity);
+		return getLikedLookTarget(allay);
 	}
 
-	private static boolean method_42658(LivingEntity livingEntity, Brain<?> brain, BlockPos blockPos) {
+	private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, BlockPos pos) {
 		Optional<Integer> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS);
-		return livingEntity.getWorld().getBlockState(blockPos).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
+		return allay.getWorld().getBlockState(pos).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
 	}
 
-	private static Optional<LookTarget> method_42662(LivingEntity livingEntity) {
-		World world = livingEntity.getWorld();
+	private static Optional<LookTarget> getLikedLookTarget(LivingEntity allay) {
+		return getLikedPlayer(allay).map(player -> new EntityLookTarget(player, true));
+	}
+
+	public static Optional<ServerPlayerEntity> getLikedPlayer(LivingEntity allay) {
+		World world = allay.getWorld();
 		if (!world.isClient() && world instanceof ServerWorld serverWorld) {
-			Optional<UUID> optional = livingEntity.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
+			Optional<UUID> optional = allay.getBrain().getOptionalMemory(MemoryModuleType.LIKED_PLAYER);
 			if (optional.isPresent()) {
-				Entity entity = serverWorld.getEntity((UUID)optional.get());
-				return entity instanceof PlayerEntity ? Optional.of(new EntityLookTarget(entity, true)) : Optional.empty();
+				return serverWorld.getEntity((UUID)optional.get()) instanceof ServerPlayerEntity serverPlayerEntity ? Optional.of(serverPlayerEntity) : Optional.empty();
 			}
 		}
 

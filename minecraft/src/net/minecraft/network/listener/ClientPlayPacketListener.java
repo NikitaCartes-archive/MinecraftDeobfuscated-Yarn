@@ -49,7 +49,6 @@ import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -112,8 +111,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onEntitySpawn(EntitySpawnS2CPacket packet);
 
 	void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket packet);
-
-	void onMobSpawn(MobSpawnS2CPacket packet);
 
 	void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateS2CPacket packet);
 

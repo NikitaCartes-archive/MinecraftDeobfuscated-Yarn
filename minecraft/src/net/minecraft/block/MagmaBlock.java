@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,6 +11,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -32,7 +32,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		BubbleColumnBlock.update(world, pos.up(), state);
 	}
 
@@ -48,7 +48,7 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		BlockPos blockPos = pos.up();
 		if (world.getFluidState(pos).isIn(FluidTags.WATER)) {
 			world.playSound(

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -26,6 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -344,7 +344,7 @@ public class EnchantmentHelper {
 	 * @param bookshelfCount the number of bookshelves
 	 * @param stack the item stack to enchant
 	 */
-	public static int calculateRequiredExperienceLevel(Random random, int slotIndex, int bookshelfCount, ItemStack stack) {
+	public static int calculateRequiredExperienceLevel(AbstractRandom random, int slotIndex, int bookshelfCount, ItemStack stack) {
 		Item item = stack.getItem();
 		int i = item.getEnchantability();
 		if (i <= 0) {
@@ -366,12 +366,11 @@ public class EnchantmentHelper {
 	/**
 	 * Enchants the {@code target} item stack and returns it.
 	 * 
-	 * @param random the seed
 	 * @param target the item stack to enchant
 	 * @param level the experience level
 	 * @param treasureAllowed whether treasure enchantments may appear
 	 */
-	public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
+	public static ItemStack enchant(AbstractRandom random, ItemStack target, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = generateEnchantments(random, target, level, treasureAllowed);
 		boolean bl = target.isOf(Items.BOOK);
 		if (bl) {
@@ -392,7 +391,7 @@ public class EnchantmentHelper {
 	/**
 	 * Generate the enchantments for enchanting the {@code stack}.
 	 */
-	public static List<EnchantmentLevelEntry> generateEnchantments(Random random, ItemStack stack, int level, boolean treasureAllowed) {
+	public static List<EnchantmentLevelEntry> generateEnchantments(AbstractRandom random, ItemStack stack, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = Lists.<EnchantmentLevelEntry>newArrayList();
 		Item item = stack.getItem();
 		int i = item.getEnchantability();

@@ -8,9 +8,9 @@ import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
-import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Items;
@@ -21,7 +21,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
+import net.minecraft.world.gen.structure.StructureTypeKeys;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.END_CITY)))
+			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.END_CITY)))
 			.build(consumer, "end/find_end_city");
 		Advancement.Builder.create()
 			.parent(advancement2)

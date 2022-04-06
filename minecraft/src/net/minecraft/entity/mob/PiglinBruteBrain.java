@@ -28,7 +28,7 @@ import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
-import net.minecraft.util.dynamic.GlobalPos;
+import net.minecraft.util.math.GlobalPos;
 
 public class PiglinBruteBrain {
 	private static final int field_30589 = 600;

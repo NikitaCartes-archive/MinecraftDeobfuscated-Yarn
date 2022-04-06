@@ -1,6 +1,5 @@
 package net.minecraft.entity.ai.goal;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.mob.MobEntity;
@@ -13,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -77,7 +77,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		World world = this.stepAndDestroyMob.world;
 		BlockPos blockPos = this.stepAndDestroyMob.getBlockPos();
 		BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
-		Random random = this.stepAndDestroyMob.getRandom();
+		AbstractRandom abstractRandom = this.stepAndDestroyMob.getRandom();
 		if (this.hasReached() && blockPos2 != null) {
 			if (this.counter > 0) {
 				Vec3d vec3d = this.stepAndDestroyMob.getVelocity();
@@ -91,9 +91,9 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 							(double)blockPos2.getY() + 0.7,
 							(double)blockPos2.getZ() + 0.5,
 							3,
-							((double)random.nextFloat() - 0.5) * 0.08,
-							((double)random.nextFloat() - 0.5) * 0.08,
-							((double)random.nextFloat() - 0.5) * 0.08,
+							((double)abstractRandom.nextFloat() - 0.5) * 0.08,
+							((double)abstractRandom.nextFloat() - 0.5) * 0.08,
+							((double)abstractRandom.nextFloat() - 0.5) * 0.08,
 							0.15F
 						);
 				}
@@ -111,9 +111,9 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 				world.removeBlock(blockPos2, false);
 				if (!world.isClient) {
 					for (int i = 0; i < 20; i++) {
-						double d = random.nextGaussian() * 0.02;
-						double e = random.nextGaussian() * 0.02;
-						double f = random.nextGaussian() * 0.02;
+						double d = abstractRandom.nextGaussian() * 0.02;
+						double e = abstractRandom.nextGaussian() * 0.02;
+						double f = abstractRandom.nextGaussian() * 0.02;
 						((ServerWorld)world)
 							.spawnParticles(ParticleTypes.POOF, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
 					}

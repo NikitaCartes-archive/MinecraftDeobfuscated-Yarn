@@ -1,12 +1,12 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -22,29 +22,29 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		blockPos = new BlockPos(blockPos.getX(), context.getGenerator().getSeaLevel(), blockPos.getZ());
-		Random random = context.getRandom();
-		boolean bl = random.nextDouble() > 0.7;
+		AbstractRandom abstractRandom = context.getRandom();
+		boolean bl = abstractRandom.nextDouble() > 0.7;
 		BlockState blockState = context.getConfig().state;
-		double d = random.nextDouble() * 2.0 * Math.PI;
-		int i = 11 - random.nextInt(5);
-		int j = 3 + random.nextInt(3);
-		boolean bl2 = random.nextDouble() > 0.7;
+		double d = abstractRandom.nextDouble() * 2.0 * Math.PI;
+		int i = 11 - abstractRandom.nextInt(5);
+		int j = 3 + abstractRandom.nextInt(3);
+		boolean bl2 = abstractRandom.nextDouble() > 0.7;
 		int k = 11;
-		int l = bl2 ? random.nextInt(6) + 6 : random.nextInt(15) + 3;
-		if (!bl2 && random.nextDouble() > 0.9) {
-			l += random.nextInt(19) + 7;
+		int l = bl2 ? abstractRandom.nextInt(6) + 6 : abstractRandom.nextInt(15) + 3;
+		if (!bl2 && abstractRandom.nextDouble() > 0.9) {
+			l += abstractRandom.nextInt(19) + 7;
 		}
 
-		int m = Math.min(l + random.nextInt(11), 18);
-		int n = Math.min(l + random.nextInt(7) - random.nextInt(5), 11);
+		int m = Math.min(l + abstractRandom.nextInt(11), 18);
+		int n = Math.min(l + abstractRandom.nextInt(7) - abstractRandom.nextInt(5), 11);
 		int o = bl2 ? i : 11;
 
 		for (int p = -o; p < o; p++) {
 			for (int q = -o; q < o; q++) {
 				for (int r = 0; r < l; r++) {
-					int s = bl2 ? this.method_13417(r, l, n) : this.method_13419(random, r, l, n);
+					int s = bl2 ? this.method_13417(r, l, n) : this.method_13419(abstractRandom, r, l, n);
 					if (bl2 || p < s) {
-						this.placeAt(structureWorldAccess, random, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
+						this.placeAt(structureWorldAccess, abstractRandom, blockPos, l, p, r, q, s, o, bl2, j, d, bl, blockState);
 					}
 				}
 			}
@@ -56,49 +56,49 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 			for (int q = -o; q < o; q++) {
 				for (int rx = -1; rx > -m; rx--) {
 					int s = bl2 ? MathHelper.ceil((float)o * (1.0F - (float)Math.pow((double)rx, 2.0) / ((float)m * 8.0F))) : o;
-					int t = this.method_13427(random, -rx, m, n);
+					int t = this.method_13427(abstractRandom, -rx, m, n);
 					if (p < t) {
-						this.placeAt(structureWorldAccess, random, blockPos, m, p, rx, q, t, s, bl2, j, d, bl, blockState);
+						this.placeAt(structureWorldAccess, abstractRandom, blockPos, m, p, rx, q, t, s, bl2, j, d, bl, blockState);
 					}
 				}
 			}
 		}
 
-		boolean bl3 = bl2 ? random.nextDouble() > 0.1 : random.nextDouble() > 0.7;
+		boolean bl3 = bl2 ? abstractRandom.nextDouble() > 0.1 : abstractRandom.nextDouble() > 0.7;
 		if (bl3) {
-			this.method_13428(random, structureWorldAccess, n, l, blockPos, bl2, i, d, j);
+			this.method_13428(abstractRandom, structureWorldAccess, n, l, blockPos, bl2, i, d, j);
 		}
 
 		return true;
 	}
 
-	private void method_13428(Random random, WorldAccess world, int i, int j, BlockPos pos, boolean bl, int k, double d, int l) {
-		int m = random.nextBoolean() ? -1 : 1;
-		int n = random.nextBoolean() ? -1 : 1;
-		int o = random.nextInt(Math.max(i / 2 - 2, 1));
-		if (random.nextBoolean()) {
-			o = i / 2 + 1 - random.nextInt(Math.max(i - i / 2 - 1, 1));
+	private void method_13428(AbstractRandom abstractRandom, WorldAccess world, int i, int j, BlockPos pos, boolean bl, int k, double d, int l) {
+		int m = abstractRandom.nextBoolean() ? -1 : 1;
+		int n = abstractRandom.nextBoolean() ? -1 : 1;
+		int o = abstractRandom.nextInt(Math.max(i / 2 - 2, 1));
+		if (abstractRandom.nextBoolean()) {
+			o = i / 2 + 1 - abstractRandom.nextInt(Math.max(i - i / 2 - 1, 1));
 		}
 
-		int p = random.nextInt(Math.max(i / 2 - 2, 1));
-		if (random.nextBoolean()) {
-			p = i / 2 + 1 - random.nextInt(Math.max(i - i / 2 - 1, 1));
+		int p = abstractRandom.nextInt(Math.max(i / 2 - 2, 1));
+		if (abstractRandom.nextBoolean()) {
+			p = i / 2 + 1 - abstractRandom.nextInt(Math.max(i - i / 2 - 1, 1));
 		}
 
 		if (bl) {
-			o = p = random.nextInt(Math.max(k - 5, 1));
+			o = p = abstractRandom.nextInt(Math.max(k - 5, 1));
 		}
 
 		BlockPos blockPos = new BlockPos(m * o, 0, n * p);
-		double e = bl ? d + (Math.PI / 2) : random.nextDouble() * 2.0 * Math.PI;
+		double e = bl ? d + (Math.PI / 2) : abstractRandom.nextDouble() * 2.0 * Math.PI;
 
 		for (int q = 0; q < j - 3; q++) {
-			int r = this.method_13419(random, q, j, i);
+			int r = this.method_13419(abstractRandom, q, j, i);
 			this.method_13415(r, q, pos, world, false, e, blockPos, k, l);
 		}
 
-		for (int q = -1; q > -j + random.nextInt(5); q--) {
-			int r = this.method_13427(random, -q, j, i);
+		for (int q = -1; q > -j + abstractRandom.nextInt(5); q--) {
+			int r = this.method_13427(abstractRandom, -q, j, i);
 			this.method_13415(r, q, pos, world, true, e, blockPos, k, l);
 		}
 	}
@@ -134,7 +134,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 
 	private void placeAt(
 		WorldAccess world,
-		Random random,
+		AbstractRandom abstractRandom,
 		BlockPos pos,
 		int height,
 		int offsetX,
@@ -150,26 +150,29 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	) {
 		double d = bl
 			? this.getDistance(offsetX, offsetZ, BlockPos.ORIGIN, j, this.decreaseValueNearTop(offsetY, height, k), randomSine)
-			: this.method_13421(offsetX, offsetZ, BlockPos.ORIGIN, i, random);
+			: this.method_13421(offsetX, offsetZ, BlockPos.ORIGIN, i, abstractRandom);
 		if (d < 0.0) {
 			BlockPos blockPos = pos.add(offsetX, offsetY, offsetZ);
-			double e = bl ? -0.5 : (double)(-6 - random.nextInt(3));
-			if (d > e && random.nextDouble() > 0.9) {
+			double e = bl ? -0.5 : (double)(-6 - abstractRandom.nextInt(3));
+			if (d > e && abstractRandom.nextDouble() > 0.9) {
 				return;
 			}
 
-			this.placeBlockOrSnow(blockPos, world, random, height - offsetY, height, bl, placeSnow, state);
+			this.placeBlockOrSnow(blockPos, world, abstractRandom, height - offsetY, height, bl, placeSnow, state);
 		}
 	}
 
 	private void placeBlockOrSnow(
-		BlockPos pos, WorldAccess world, Random random, int heightRemaining, int height, boolean lessSnow, boolean placeSnow, BlockState state
+		BlockPos pos, WorldAccess world, AbstractRandom abstractRandom, int heightRemaining, int height, boolean lessSnow, boolean placeSnow, BlockState state
 	) {
 		BlockState blockState = world.getBlockState(pos);
 		if (blockState.getMaterial() == Material.AIR || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.WATER)) {
-			boolean bl = !lessSnow || random.nextDouble() > 0.05;
+			boolean bl = !lessSnow || abstractRandom.nextDouble() > 0.05;
 			int i = lessSnow ? 3 : 2;
-			if (placeSnow && !blockState.isOf(Blocks.WATER) && (double)heightRemaining <= (double)random.nextInt(Math.max(1, height / i)) + (double)height * 0.6 && bl) {
+			if (placeSnow
+				&& !blockState.isOf(Blocks.WATER)
+				&& (double)heightRemaining <= (double)abstractRandom.nextInt(Math.max(1, height / i)) + (double)height * 0.6
+				&& bl) {
 				this.setBlockState(world, pos, Blocks.SNOW_BLOCK.getDefaultState());
 			} else {
 				this.setBlockState(world, pos, state);
@@ -186,8 +189,8 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		return i;
 	}
 
-	private double method_13421(int x, int z, BlockPos pos, int i, Random random) {
-		float f = 10.0F * MathHelper.clamp(random.nextFloat(), 0.2F, 0.8F) / (float)i;
+	private double method_13421(int x, int z, BlockPos pos, int i, AbstractRandom abstractRandom) {
+		float f = 10.0F * MathHelper.clamp(abstractRandom.nextFloat(), 0.2F, 0.8F) / (float)i;
 		return (double)f + Math.pow((double)(x - pos.getX()), 2.0) + Math.pow((double)(z - pos.getZ()), 2.0) - Math.pow((double)i, 2.0);
 	}
 
@@ -197,11 +200,11 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 			- 1.0;
 	}
 
-	private int method_13419(Random random, int y, int height, int factor) {
-		float f = 3.5F - random.nextFloat();
+	private int method_13419(AbstractRandom abstractRandom, int y, int height, int factor) {
+		float f = 3.5F - abstractRandom.nextFloat();
 		float g = (1.0F - (float)Math.pow((double)y, 2.0) / ((float)height * f)) * (float)factor;
-		if (height > 15 + random.nextInt(5)) {
-			int i = y < 3 + random.nextInt(6) ? y / 2 : y;
+		if (height > 15 + abstractRandom.nextInt(5)) {
+			int i = y < 3 + abstractRandom.nextInt(6) ? y / 2 : y;
 			g = (1.0F - (float)i / ((float)height * f * 0.4F)) * (float)factor;
 		}
 
@@ -214,8 +217,8 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		return MathHelper.ceil(g / 2.0F);
 	}
 
-	private int method_13427(Random random, int y, int height, int factor) {
-		float f = 1.0F + random.nextFloat() / 2.0F;
+	private int method_13427(AbstractRandom abstractRandom, int y, int height, int factor) {
+		float f = 1.0F + abstractRandom.nextFloat() / 2.0F;
 		float g = (1.0F - (float)y / ((float)height * f)) * (float)factor;
 		return MathHelper.ceil(g / 2.0F);
 	}

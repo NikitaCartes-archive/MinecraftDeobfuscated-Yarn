@@ -3,7 +3,6 @@ package net.minecraft.fluid;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -14,6 +13,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -76,7 +76,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		this.getFluid().onScheduledTick(world, pos, this);
 	}
 
-	public void randomDisplayTick(World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(World world, BlockPos pos, AbstractRandom random) {
 		this.getFluid().randomDisplayTick(world, pos, this, random);
 	}
 
@@ -84,7 +84,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().hasRandomTicks();
 	}
 
-	public void onRandomTick(World world, BlockPos pos, Random random) {
+	public void onRandomTick(World world, BlockPos pos, AbstractRandom random) {
 		this.getFluid().onRandomTick(world, pos, this, random);
 	}
 

@@ -3,9 +3,9 @@ package net.minecraft.util.math.floatprovider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class UniformFloatProvider extends FloatProvider {
 	public static final Codec<UniformFloatProvider> CODEC = RecordCodecBuilder.create(
@@ -37,7 +37,7 @@ public class UniformFloatProvider extends FloatProvider {
 	}
 
 	@Override
-	public float get(Random random) {
+	public float get(AbstractRandom random) {
 		return MathHelper.nextBetween(random, this.min, this.max);
 	}
 

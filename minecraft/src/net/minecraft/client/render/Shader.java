@@ -12,8 +12,8 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -98,91 +98,105 @@ public class Shader implements GlShader, AutoCloseable {
 		this.name = name;
 		this.format = format;
 		Identifier identifier = new Identifier("shaders/core/" + name + ".json");
-		Resource resource = null;
 
 		try {
-			resource = factory.getResource(identifier);
-			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-			String string = JsonHelper.getString(jsonObject, "vertex");
-			String string2 = JsonHelper.getString(jsonObject, "fragment");
-			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
-			if (jsonArray != null) {
-				int i = 0;
+			Reader reader = factory.openAsReader(identifier);
 
-				for (JsonElement jsonElement : jsonArray) {
-					try {
-						this.readSampler(jsonElement);
-					} catch (Exception var25) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var25);
-						shaderParseException.addFaultyElement("samplers[" + i + "]");
-						throw shaderParseException;
+			try {
+				JsonObject jsonObject = JsonHelper.deserialize(reader);
+				String string = JsonHelper.getString(jsonObject, "vertex");
+				String string2 = JsonHelper.getString(jsonObject, "fragment");
+				JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
+				if (jsonArray != null) {
+					int i = 0;
+
+					for (JsonElement jsonElement : jsonArray) {
+						try {
+							this.readSampler(jsonElement);
+						} catch (Exception var20) {
+							ShaderParseException shaderParseException = ShaderParseException.wrap(var20);
+							shaderParseException.addFaultyElement("samplers[" + i + "]");
+							throw shaderParseException;
+						}
+
+						i++;
 					}
-
-					i++;
 				}
-			}
 
-			JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
-			if (jsonArray2 != null) {
-				int j = 0;
-				this.loadedAttributeIds = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
-				this.attributeNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
+				JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
+				if (jsonArray2 != null) {
+					int j = 0;
+					this.loadedAttributeIds = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
+					this.attributeNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
 
-				for (JsonElement jsonElement2 : jsonArray2) {
-					try {
-						this.attributeNames.add(JsonHelper.asString(jsonElement2, "attribute"));
-					} catch (Exception var24) {
-						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var24);
-						shaderParseException2.addFaultyElement("attributes[" + j + "]");
-						throw shaderParseException2;
+					for (JsonElement jsonElement2 : jsonArray2) {
+						try {
+							this.attributeNames.add(JsonHelper.asString(jsonElement2, "attribute"));
+						} catch (Exception var19) {
+							ShaderParseException shaderParseException2 = ShaderParseException.wrap(var19);
+							shaderParseException2.addFaultyElement("attributes[" + j + "]");
+							throw shaderParseException2;
+						}
+
+						j++;
 					}
-
-					j++;
+				} else {
+					this.loadedAttributeIds = null;
+					this.attributeNames = null;
 				}
-			} else {
-				this.loadedAttributeIds = null;
-				this.attributeNames = null;
-			}
 
-			JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
-			if (jsonArray3 != null) {
-				int k = 0;
+				JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
+				if (jsonArray3 != null) {
+					int k = 0;
 
-				for (JsonElement jsonElement3 : jsonArray3) {
-					try {
-						this.addUniform(jsonElement3);
-					} catch (Exception var23) {
-						ShaderParseException shaderParseException3 = ShaderParseException.wrap(var23);
-						shaderParseException3.addFaultyElement("uniforms[" + k + "]");
-						throw shaderParseException3;
+					for (JsonElement jsonElement3 : jsonArray3) {
+						try {
+							this.addUniform(jsonElement3);
+						} catch (Exception var18) {
+							ShaderParseException shaderParseException3 = ShaderParseException.wrap(var18);
+							shaderParseException3.addFaultyElement("uniforms[" + k + "]");
+							throw shaderParseException3;
+						}
+
+						k++;
 					}
-
-					k++;
 				}
+
+				this.blendState = readBlendState(JsonHelper.getObject(jsonObject, "blend", null));
+				this.vertexShader = loadProgram(factory, Program.Type.VERTEX, string);
+				this.fragmentShader = loadProgram(factory, Program.Type.FRAGMENT, string2);
+				this.programId = GlProgramManager.createProgram();
+				if (this.attributeNames != null) {
+					int k = 0;
+
+					for (String string3 : format.getShaderAttributes()) {
+						GlUniform.bindAttribLocation(this.programId, k, string3);
+						this.loadedAttributeIds.add(k);
+						k++;
+					}
+				}
+
+				GlProgramManager.linkProgram(this);
+				this.loadReferences();
+			} catch (Throwable var21) {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (Throwable var17) {
+						var21.addSuppressed(var17);
+					}
+				}
+
+				throw var21;
 			}
 
-			this.blendState = readBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-			this.vertexShader = loadProgram(factory, Program.Type.VERTEX, string);
-			this.fragmentShader = loadProgram(factory, Program.Type.FRAGMENT, string2);
-			this.programId = GlProgramManager.createProgram();
-			if (this.attributeNames != null) {
-				int k = 0;
-
-				for (String string3 : format.getShaderAttributes()) {
-					GlUniform.bindAttribLocation(this.programId, k, string3);
-					this.loadedAttributeIds.add(k);
-					k++;
-				}
+			if (reader != null) {
+				reader.close();
 			}
-
-			GlProgramManager.linkProgram(this);
-			this.loadReferences();
-		} catch (Exception var26) {
-			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var26);
+		} catch (Exception var22) {
+			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var22);
 			shaderParseException4.addFaultyFile(identifier.getPath());
 			throw shaderParseException4;
-		} finally {
-			IOUtils.closeQuietly(resource);
 		}
 
 		this.markUniformsDirty();
@@ -208,12 +222,12 @@ public class Shader implements GlShader, AutoCloseable {
 		Program program2;
 		if (program == null) {
 			String string = "shaders/core/" + name + type.getFileExtension();
-			Identifier identifier = new Identifier(string);
-			Resource resource = factory.getResource(identifier);
-			final String string2 = FileNameUtil.getPosixFullPath(string);
+			Resource resource = factory.getResourceOrThrow(new Identifier(string));
+			InputStream inputStream = resource.getInputStream();
 
 			try {
-				program2 = Program.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName(), new GLImportProcessor() {
+				final String string2 = FileNameUtil.getPosixFullPath(string);
+				program2 = Program.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GLImportProcessor() {
 					private final Set<String> visitedImports = Sets.<String>newHashSet();
 
 					@Override
@@ -225,15 +239,15 @@ public class Shader implements GlShader, AutoCloseable {
 							Identifier identifier = new Identifier(name);
 
 							try {
-								Resource resource = factory.getResource(identifier);
+								Reader reader = factory.openAsReader(identifier);
 
 								String var5;
 								try {
-									var5 = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
+									var5 = IOUtils.toString(reader);
 								} catch (Throwable var8) {
-									if (resource != null) {
+									if (reader != null) {
 										try {
-											resource.close();
+											reader.close();
 										} catch (Throwable var7) {
 											var8.addSuppressed(var7);
 										}
@@ -242,8 +256,8 @@ public class Shader implements GlShader, AutoCloseable {
 									throw var8;
 								}
 
-								if (resource != null) {
-									resource.close();
+								if (reader != null) {
+									reader.close();
 								}
 
 								return var5;
@@ -254,8 +268,20 @@ public class Shader implements GlShader, AutoCloseable {
 						}
 					}
 				});
-			} finally {
-				IOUtils.closeQuietly(resource);
+			} catch (Throwable var11) {
+				if (inputStream != null) {
+					try {
+						inputStream.close();
+					} catch (Throwable var10) {
+						var11.addSuppressed(var10);
+					}
+				}
+
+				throw var11;
+			}
+
+			if (inputStream != null) {
+				inputStream.close();
 			}
 		} else {
 			program2 = program;

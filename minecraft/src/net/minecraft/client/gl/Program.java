@@ -2,20 +2,18 @@ package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Program {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32037 = 32768;
 	private final Program.Type shaderType;
 	private final String name;
@@ -54,7 +52,7 @@ public class Program {
 	}
 
 	protected static int loadProgram(Program.Type type, String name, InputStream stream, String domain, GLImportProcessor loader) throws IOException {
-		String string = TextureUtil.readResourceAsString(stream);
+		String string = IOUtils.toString(stream, StandardCharsets.UTF_8);
 		if (string == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
@@ -68,10 +66,6 @@ public class Program {
 				return i;
 			}
 		}
-	}
-
-	private static Program create(Program.Type shaderType, String name, int shaderRef) {
-		return new Program(shaderType, shaderRef, name);
 	}
 
 	protected int getShaderRef() {

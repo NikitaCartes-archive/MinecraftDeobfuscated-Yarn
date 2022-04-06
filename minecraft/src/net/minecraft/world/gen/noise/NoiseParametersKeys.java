@@ -2,10 +2,10 @@ package net.minecraft.world.gen.noise;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.gen.random.RandomDeriver;
 
 public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> TEMPERATURE = register("temperature");

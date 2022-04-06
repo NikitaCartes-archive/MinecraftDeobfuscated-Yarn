@@ -10,9 +10,9 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.Blender;
 
 public interface DensityFunction {
-	Codec<DensityFunction> field_37057 = DensityFunctionTypes.field_37061;
-	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, field_37057);
-	Codec<DensityFunction> field_37059 = REGISTRY_ENTRY_CODEC.xmap(
+	Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
+	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, CODEC);
+	Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(
 		DensityFunctionTypes.RegistryEntryHolder::new,
 		densityFunction -> (RegistryEntry)(densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder
 				? registryEntryHolder.function()
@@ -101,7 +101,7 @@ public interface DensityFunction {
 	}
 
 	public static record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
-		public static final Codec<DensityFunction.class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.CODEC
+		public static final Codec<DensityFunction.class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC
 			.xmap(registryEntry -> new DensityFunction.class_7270(registryEntry, null), DensityFunction.class_7270::noiseData);
 
 		public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {

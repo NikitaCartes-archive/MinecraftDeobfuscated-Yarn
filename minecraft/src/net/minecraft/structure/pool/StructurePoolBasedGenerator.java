@@ -7,7 +7,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
@@ -20,6 +19,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -28,17 +29,16 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.structure.StructureType;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 
 public class StructurePoolBasedGenerator {
 	static final Logger LOGGER = LogUtils.getLogger();
 
-	public static Optional<StructureFeature.StructurePosition> generate(
-		StructureFeature.Context context,
+	public static Optional<StructureType.StructurePosition> generate(
+		StructureType.Context context,
 		RegistryEntry<StructurePool> registryEntry,
 		int i,
 		StructurePoolBasedGenerator.PieceFactory pieceFactory,
@@ -80,7 +80,7 @@ public class StructurePoolBasedGenerator {
 			int n = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
 			poolStructurePiece.translate(0, m - n, 0);
 			return Optional.of(
-				new StructureFeature.StructurePosition(
+				new StructureType.StructurePosition(
 					new BlockPos(k, m, l),
 					structurePiecesCollector -> {
 						List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
@@ -123,7 +123,7 @@ public class StructurePoolBasedGenerator {
 		ChunkGenerator chunkGenerator,
 		StructureManager structureManager,
 		List<? super PoolStructurePiece> results,
-		Random random,
+		AbstractRandom random,
 		HeightLimitView world,
 		NoiseConfig noiseConfig
 	) {
@@ -169,7 +169,7 @@ public class StructurePoolBasedGenerator {
 		private final ChunkGenerator chunkGenerator;
 		private final StructureManager structureManager;
 		private final List<? super PoolStructurePiece> children;
-		private final Random random;
+		private final AbstractRandom random;
 		final Deque<StructurePoolBasedGenerator.ShapedPoolStructurePiece> structurePieces = Queues.<StructurePoolBasedGenerator.ShapedPoolStructurePiece>newArrayDeque();
 
 		StructurePoolGenerator(
@@ -179,7 +179,7 @@ public class StructurePoolBasedGenerator {
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
 			List<? super PoolStructurePiece> children,
-			Random random
+			AbstractRandom random
 		) {
 			this.registry = registry;
 			this.maxSize = maxSize;

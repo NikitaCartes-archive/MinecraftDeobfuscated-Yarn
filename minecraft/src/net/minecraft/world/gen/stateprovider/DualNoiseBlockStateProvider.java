@@ -4,21 +4,21 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 	public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety").forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety),
-					DoublePerlinNoiseSampler.NoiseParameters.field_35424
+					DoublePerlinNoiseSampler.NoiseParameters.CODEC
 						.fieldOf("slow_noise")
 						.forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters),
 					Codecs.POSITIVE_FLOAT.fieldOf("slow_scale").forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowScale)
@@ -53,7 +53,7 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
+	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
 		double d = this.getSlowNoiseValue(pos);
 		int i = (int)MathHelper.clampedLerpFromProgress(
 			d, -1.0, 1.0, (double)((Integer)this.variety.minInclusive()).intValue(), (double)((Integer)this.variety.maxInclusive() + 1)

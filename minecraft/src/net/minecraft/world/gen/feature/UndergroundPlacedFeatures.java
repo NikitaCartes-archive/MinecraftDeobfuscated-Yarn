@@ -170,15 +170,17 @@ public class UndergroundPlacedFeatures {
 		HeightRangePlacementModifier.uniform(YOffset.aboveBottom(6), YOffset.fixed(30)),
 		BiomePlacementModifier.of()
 	);
-	public static final RegistryEntry<PlacedFeature> SCULK_PATCH = PlacedFeatures.register(
+	public static final RegistryEntry<PlacedFeature> SCULK_PATCH_DEEP_DARK = PlacedFeatures.register(
 		"sculk_patch_deep_dark",
-		UndergroundConfiguredFeatures.SCULK_PATCH,
+		UndergroundConfiguredFeatures.SCULK_PATCH_DEEP_DARK,
 		CountPlacementModifier.of(ConstantIntProvider.create(256)),
 		SquarePlacementModifier.of(),
 		PlacedFeatures.BOTTOM_TO_120_RANGE,
 		BiomePlacementModifier.of()
 	);
-	public static final RegistryEntry<PlacedFeature> field_38478 = PlacedFeatures.register("sculk_patch_ancient_city", UndergroundConfiguredFeatures.field_38477);
+	public static final RegistryEntry<PlacedFeature> SCULK_PATCH_ANCIENT_CITY = PlacedFeatures.register(
+		"sculk_patch_ancient_city", UndergroundConfiguredFeatures.SCULK_PATCH_ANCIENT_CITY
+	);
 	public static final RegistryEntry<PlacedFeature> SCULK_VEIN = PlacedFeatures.register(
 		"sculk_vein",
 		UndergroundConfiguredFeatures.SCULK_VEIN,

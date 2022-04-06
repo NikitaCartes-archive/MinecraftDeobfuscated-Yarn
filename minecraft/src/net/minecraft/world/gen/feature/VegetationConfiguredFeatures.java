@@ -421,6 +421,11 @@ public class VegetationConfiguredFeatures {
 			PlacedFeatures.createEntry(TreeConfiguredFeatures.HUGE_RED_MUSHROOM), PlacedFeatures.createEntry(TreeConfiguredFeatures.HUGE_BROWN_MUSHROOM)
 		)
 	);
+	public static final RegistryEntry<ConfiguredFeature<RandomFeatureConfig, ?>> MANGROVE_VEGETATION = ConfiguredFeatures.register(
+		"mangrove_vegetation",
+		Feature.RANDOM_SELECTOR,
+		new RandomFeatureConfig(List.of(new RandomFeatureEntry(TreePlacedFeatures.TALL_MANGROVE_CHECKED, 0.75F)), TreePlacedFeatures.MANGROVE_CHECKED)
+	);
 
 	private static RandomPatchFeatureConfig createRandomPatchFeatureConfig(BlockStateProvider block, int tries) {
 		return ConfiguredFeatures.createRandomPatchFeatureConfig(tries, PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(block)));

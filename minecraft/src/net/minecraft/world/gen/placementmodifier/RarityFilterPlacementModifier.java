@@ -1,9 +1,9 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 
 public class RarityFilterPlacementModifier extends AbstractConditionalPlacementModifier {
@@ -22,8 +22,8 @@ public class RarityFilterPlacementModifier extends AbstractConditionalPlacementM
 	}
 
 	@Override
-	protected boolean shouldPlace(FeaturePlacementContext context, Random random, BlockPos pos) {
-		return random.nextFloat() < 1.0F / (float)this.chance;
+	protected boolean shouldPlace(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
+		return abstractRandom.nextFloat() < 1.0F / (float)this.chance;
 	}
 
 	@Override

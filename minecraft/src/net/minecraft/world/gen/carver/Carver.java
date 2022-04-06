@@ -2,7 +2,6 @@ package net.minecraft.world.gen.carver;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
@@ -237,13 +237,13 @@ public abstract class Carver<C extends CarverConfig> {
 		C config,
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
-		Random random,
+		AbstractRandom random,
 		AquiferSampler aquiferSampler,
 		ChunkPos pos,
 		CarvingMask mask
 	);
 
-	public abstract boolean shouldCarve(C config, Random random);
+	public abstract boolean shouldCarve(C config, AbstractRandom random);
 
 	protected boolean canAlwaysCarveBlock(BlockState state) {
 		return this.alwaysCarvableBlocks.contains(state.getBlock());

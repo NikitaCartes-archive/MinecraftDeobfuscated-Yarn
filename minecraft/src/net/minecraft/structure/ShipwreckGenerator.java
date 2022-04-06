@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import java.util.Map;
-import java.util.Random;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -61,7 +61,9 @@ public class ShipwreckGenerator {
 		"map_chest", LootTables.SHIPWRECK_MAP_CHEST, "treasure_chest", LootTables.SHIPWRECK_TREASURE_CHEST, "supply_chest", LootTables.SHIPWRECK_SUPPLY_CHEST
 	);
 
-	public static void addParts(StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, Random random, boolean bl) {
+	public static void addParts(
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, StructurePiecesHolder holder, AbstractRandom random, boolean bl
+	) {
 		Identifier identifier = Util.getRandom(bl ? BEACHED_TEMPLATES : REGULAR_TEMPLATES, random);
 		holder.addPiece(new ShipwreckGenerator.Piece(structureManager, identifier, pos, rotation, bl));
 	}
@@ -95,7 +97,7 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
 			Identifier identifier = (Identifier)ShipwreckGenerator.LOOT_TABLES.get(metadata);
 			if (identifier != null) {
 				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), identifier);
@@ -107,7 +109,7 @@ public class ShipwreckGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos

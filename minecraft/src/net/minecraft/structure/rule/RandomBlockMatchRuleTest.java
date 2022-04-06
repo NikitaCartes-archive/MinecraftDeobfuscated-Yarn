@@ -2,9 +2,9 @@ package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public class RandomBlockMatchRuleTest extends RuleTest {
@@ -24,7 +24,7 @@ public class RandomBlockMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
+	public boolean test(BlockState state, AbstractRandom random) {
 		return state.isOf(this.block) && random.nextFloat() < this.probability;
 	}
 

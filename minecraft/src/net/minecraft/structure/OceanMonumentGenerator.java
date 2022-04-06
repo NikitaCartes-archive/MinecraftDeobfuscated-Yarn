@@ -2,9 +2,7 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -13,10 +11,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.ElderGuardianEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -35,7 +35,7 @@ public class OceanMonumentGenerator {
 		private OceanMonumentGenerator.PieceSetting field_14466;
 		private final List<OceanMonumentGenerator.Piece> field_14465 = Lists.<OceanMonumentGenerator.Piece>newArrayList();
 
-		public Base(Random random, int x, int z, Direction orientation) {
+		public Base(AbstractRandom random, int x, int z, Direction orientation) {
 			super(StructurePieceType.OCEAN_MONUMENT_BASE, orientation, 0, createBox(x, 39, z, orientation, 58, 23, 58));
 			this.setOrientation(orientation);
 			List<OceanMonumentGenerator.PieceSetting> list = this.method_14760(random);
@@ -81,7 +81,7 @@ public class OceanMonumentGenerator {
 			super(StructurePieceType.OCEAN_MONUMENT_BASE, nbt);
 		}
 
-		private List<OceanMonumentGenerator.PieceSetting> method_14760(Random random) {
+		private List<OceanMonumentGenerator.PieceSetting> method_14760(AbstractRandom random) {
 			OceanMonumentGenerator.PieceSetting[] pieceSettings = new OceanMonumentGenerator.PieceSetting[75];
 
 			for (int i = 0; i < 5; i++) {
@@ -164,7 +164,7 @@ public class OceanMonumentGenerator {
 			}
 
 			pieceSetting.checkNeighborStates();
-			Collections.shuffle(list, random);
+			Util.shuffle(list, random);
 			int q = 1;
 
 			for (OceanMonumentGenerator.PieceSetting pieceSetting5 : list) {
@@ -199,7 +199,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -255,7 +255,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14761(boolean bl, int i, StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14761(boolean bl, int i, StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			int j = 24;
 			if (this.method_14775(box, i, 0, i + 23, 20)) {
 				this.fillWithOutline(world, box, i + 0, 0, 0, i + 24, 0, 20, PRISMARINE, PRISMARINE, false);
@@ -299,7 +299,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14763(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14763(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 22, 5, 35, 17)) {
 				this.setAirAndWater(world, box, 25, 0, 0, 32, 8, 20);
 
@@ -319,7 +319,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14762(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14762(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 15, 20, 42, 21)) {
 				this.fillWithOutline(world, box, 15, 0, 21, 42, 0, 21, PRISMARINE, PRISMARINE, false);
 				this.setAirAndWater(world, box, 26, 1, 21, 31, 3, 21);
@@ -378,7 +378,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14765(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14765(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 21, 21, 36, 36)) {
 				this.fillWithOutline(world, box, 21, 0, 22, 36, 0, 36, PRISMARINE, PRISMARINE, false);
 				this.setAirAndWater(world, box, 21, 1, 22, 36, 23, 36);
@@ -414,7 +414,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14764(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14764(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 0, 21, 6, 58)) {
 				this.fillWithOutline(world, box, 0, 0, 21, 6, 0, 57, PRISMARINE, PRISMARINE, false);
 				this.setAirAndWater(world, box, 0, 1, 21, 6, 7, 57);
@@ -466,7 +466,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14766(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14766(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 7, 21, 13, 50)) {
 				this.fillWithOutline(world, box, 7, 0, 21, 13, 0, 50, PRISMARINE, PRISMARINE, false);
 				this.setAirAndWater(world, box, 7, 1, 21, 13, 10, 50);
@@ -525,7 +525,7 @@ public class OceanMonumentGenerator {
 			}
 		}
 
-		private void method_14767(StructureWorldAccess world, Random random, BlockBox box) {
+		private void method_14767(StructureWorldAccess world, AbstractRandom random, BlockBox box) {
 			if (this.method_14775(box, 14, 21, 20, 43)) {
 				this.fillWithOutline(world, box, 14, 0, 21, 20, 0, 43, PRISMARINE, PRISMARINE, false);
 				this.setAirAndWater(world, box, 14, 1, 22, 20, 14, 43);
@@ -586,7 +586,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -672,7 +672,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -742,7 +742,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			setting.neighbors[Direction.EAST.getId()].used = true;
 			return new OceanMonumentGenerator.DoubleXRoom(direction, setting);
@@ -763,7 +763,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -885,7 +885,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			setting.neighbors[Direction.EAST.getId()].used = true;
 			setting.neighbors[Direction.UP.getId()].used = true;
@@ -908,7 +908,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -989,7 +989,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			setting.neighbors[Direction.UP.getId()].used = true;
 			return new OceanMonumentGenerator.DoubleYRoom(direction, setting);
@@ -1010,7 +1010,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1130,7 +1130,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			setting.neighbors[Direction.NORTH.getId()].used = true;
 			setting.neighbors[Direction.UP.getId()].used = true;
@@ -1153,7 +1153,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1242,7 +1242,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = setting;
 			if (!setting.neighborPresences[Direction.NORTH.getId()] || setting.neighbors[Direction.NORTH.getId()].used) {
 				pieceSetting = setting.neighbors[Direction.SOUTH.getId()];
@@ -1268,7 +1268,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1310,7 +1310,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1507,7 +1507,7 @@ public class OceanMonumentGenerator {
 	interface PieceFactory {
 		boolean canGenerate(OceanMonumentGenerator.PieceSetting setting);
 
-		OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random);
+		OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random);
 	}
 
 	static class PieceSetting {
@@ -1569,7 +1569,7 @@ public class OceanMonumentGenerator {
 	public static class SimpleRoom extends OceanMonumentGenerator.Piece {
 		private int field_14480;
 
-		public SimpleRoom(Direction orientation, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public SimpleRoom(Direction orientation, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, orientation, setting, 1, 1, 1);
 			this.field_14480 = random.nextInt(3);
 		}
@@ -1583,7 +1583,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1750,7 +1750,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			return new OceanMonumentGenerator.SimpleRoom(direction, setting, random);
 		}
@@ -1770,7 +1770,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos
@@ -1826,7 +1826,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, Random random) {
+		public OceanMonumentGenerator.Piece generate(Direction direction, OceanMonumentGenerator.PieceSetting setting, AbstractRandom random) {
 			setting.used = true;
 			return new OceanMonumentGenerator.SimpleRoomTop(direction, setting);
 		}
@@ -1849,7 +1849,7 @@ public class OceanMonumentGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos

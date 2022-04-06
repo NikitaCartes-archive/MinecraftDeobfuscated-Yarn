@@ -56,7 +56,7 @@ public class AncientCityOutskirtsGenerator {
 			new StructurePool(
 				new Identifier("ancient_city/sculk"),
 				new Identifier("empty"),
-				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(UndergroundPlacedFeatures.field_38478), 6), Pair.of(StructurePoolElement.ofEmpty(), 1)),
+				ImmutableList.of(Pair.of(StructurePoolElement.ofFeature(UndergroundPlacedFeatures.SCULK_PATCH_ANCIENT_CITY), 6), Pair.of(StructurePoolElement.ofEmpty(), 1)),
 				StructurePool.Projection.RIGID
 			)
 		);

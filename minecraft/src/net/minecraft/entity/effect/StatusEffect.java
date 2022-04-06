@@ -2,6 +2,7 @@ package net.minecraft.entity.effect;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
@@ -41,8 +42,8 @@ public class StatusEffect {
 		this.color = color;
 	}
 
-	public Supplier<StatusEffectInstance.FactorCalculationData> getFactorCalculationDataSupplier() {
-		return this.factorCalculationDataSupplier;
+	public Optional<StatusEffectInstance.FactorCalculationData> getFactorCalculationDataSupplier() {
+		return Optional.ofNullable((StatusEffectInstance.FactorCalculationData)this.factorCalculationDataSupplier.get());
 	}
 
 	public void applyUpdateEffect(LivingEntity entity, int amplifier) {

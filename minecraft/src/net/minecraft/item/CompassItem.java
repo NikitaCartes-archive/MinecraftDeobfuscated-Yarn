@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import com.mojang.logging.LogUtils;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,6 +14,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -33,13 +35,33 @@ public class CompassItem extends Item implements Vanishable {
 		return nbtCompound != null && (nbtCompound.contains("LodestoneDimension") || nbtCompound.contains("LodestonePos"));
 	}
 
+	private static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound nbt) {
+		return World.CODEC.parse(NbtOps.INSTANCE, nbt.get("LodestoneDimension")).result();
+	}
+
+	@Nullable
+	public static GlobalPos createLodestonePos(NbtCompound nbt) {
+		boolean bl = nbt.contains("LodestonePos");
+		boolean bl2 = nbt.contains("LodestoneDimension");
+		if (bl && bl2) {
+			Optional<RegistryKey<World>> optional = getLodestoneDimension(nbt);
+			if (optional.isPresent()) {
+				BlockPos blockPos = NbtHelper.toBlockPos(nbt.getCompound("LodestonePos"));
+				return GlobalPos.create((RegistryKey<World>)optional.get(), blockPos);
+			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static GlobalPos createSpawnPos(World world) {
+		return world.getDimension().natural() ? GlobalPos.create(world.getRegistryKey(), world.getSpawnPos()) : null;
+	}
+
 	@Override
 	public boolean hasGlint(ItemStack stack) {
 		return hasLodestone(stack) || super.hasGlint(stack);
-	}
-
-	public static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound nbt) {
-		return World.CODEC.parse(NbtOps.INSTANCE, nbt.get("LodestoneDimension")).result();
 	}
 
 	@Override

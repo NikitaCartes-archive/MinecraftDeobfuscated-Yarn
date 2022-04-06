@@ -15,14 +15,16 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 	private final int entityId;
 	private final float volume;
 	private final float pitch;
+	private final long seed;
 
-	public PlaySoundFromEntityS2CPacket(SoundEvent sound, SoundCategory category, Entity entity, float volume, float pitch) {
+	public PlaySoundFromEntityS2CPacket(SoundEvent sound, SoundCategory category, Entity entity, float volume, float pitch, long seed) {
 		Validate.notNull(sound, "sound");
 		this.sound = sound;
 		this.category = category;
 		this.entityId = entity.getId();
 		this.volume = volume;
 		this.pitch = pitch;
+		this.seed = seed;
 	}
 
 	public PlaySoundFromEntityS2CPacket(PacketByteBuf buf) {
@@ -31,6 +33,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		this.entityId = buf.readVarInt();
 		this.volume = buf.readFloat();
 		this.pitch = buf.readFloat();
+		this.seed = buf.readLong();
 	}
 
 	@Override
@@ -40,6 +43,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		buf.writeVarInt(this.entityId);
 		buf.writeFloat(this.volume);
 		buf.writeFloat(this.pitch);
+		buf.writeLong(this.seed);
 	}
 
 	public SoundEvent getSound() {
@@ -60,6 +64,10 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	public float getPitch() {
 		return this.pitch;
+	}
+
+	public long getSeed() {
+		return this.seed;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

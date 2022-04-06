@@ -1,6 +1,5 @@
 package net.minecraft.structure;
 
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -23,7 +23,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 	private boolean hasWitch;
 	private boolean hasCat;
 
-	public SwampHutGenerator(Random random, int x, int z) {
+	public SwampHutGenerator(AbstractRandom random, int x, int z) {
 		super(StructurePieceType.SWAMP_HUT, x, 64, z, 7, 7, 9, getRandomHorizontalDirection(random));
 	}
 
@@ -45,7 +45,7 @@ public class SwampHutGenerator extends ShiftableStructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		Random random,
+		AbstractRandom random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos

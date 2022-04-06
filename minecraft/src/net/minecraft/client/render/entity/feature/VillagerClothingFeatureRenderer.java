@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -12,7 +13,6 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -80,45 +80,14 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	public <K> VillagerResourceMetadata.HatType getHatType(
 		Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key
 	) {
-		return hatLookUp.computeIfAbsent(key, k -> {
-			try {
-				Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));
-
-				VillagerResourceMetadata.HatType var7;
-				label49: {
+		return hatLookUp.computeIfAbsent(
+			key, k -> (VillagerResourceMetadata.HatType)this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key))).flatMap(resource -> {
 					try {
-						VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
-						if (villagerResourceMetadata != null) {
-							var7 = villagerResourceMetadata.getHatType();
-							break label49;
-						}
-					} catch (Throwable var9) {
-						if (resource != null) {
-							try {
-								resource.close();
-							} catch (Throwable var8) {
-								var9.addSuppressed(var8);
-							}
-						}
-
-						throw var9;
+						return resource.getMetadata().decode(VillagerResourceMetadata.READER).map(VillagerResourceMetadata::getHatType);
+					} catch (IOException var2) {
+						return Optional.empty();
 					}
-
-					if (resource != null) {
-						resource.close();
-					}
-
-					return VillagerResourceMetadata.HatType.NONE;
-				}
-
-				if (resource != null) {
-					resource.close();
-				}
-
-				return var7;
-			} catch (IOException var10) {
-				return VillagerResourceMetadata.HatType.NONE;
-			}
-		});
+				}).orElse(VillagerResourceMetadata.HatType.NONE)
+		);
 	}
 }

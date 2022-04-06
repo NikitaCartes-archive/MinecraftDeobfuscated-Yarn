@@ -2,9 +2,9 @@ package net.minecraft.resource;
 
 import com.google.common.collect.Lists;
 import com.mojang.logging.LogUtils;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -61,7 +61,7 @@ public class ReloadableResourceManagerImpl implements ResourceManager, AutoClose
 	}
 
 	@Override
-	public Resource getResource(Identifier identifier) throws IOException {
+	public Optional<Resource> getResource(Identifier identifier) {
 		return this.activeManager.getResource(identifier);
 	}
 
@@ -71,22 +71,17 @@ public class ReloadableResourceManagerImpl implements ResourceManager, AutoClose
 	}
 
 	@Override
-	public boolean containsResource(Identifier id) {
-		return this.activeManager.containsResource(id);
-	}
-
-	@Override
-	public List<ResourceRef> getAllResources(Identifier id) throws IOException {
+	public List<Resource> getAllResources(Identifier id) {
 		return this.activeManager.getAllResources(id);
 	}
 
 	@Override
-	public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+	public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 		return this.activeManager.findResources(startingPath, allowedPathPredicate);
 	}
 
 	@Override
-	public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+	public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
 		return this.activeManager.findAllResources(startingPath, allowedPathPredicate);
 	}
 

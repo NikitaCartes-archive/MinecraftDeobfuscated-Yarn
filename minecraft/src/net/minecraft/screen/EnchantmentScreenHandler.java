@@ -1,7 +1,6 @@
 package net.minecraft.screen;
 
 import java.util.List;
-import java.util.Random;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.EnchantingTableBlock;
@@ -22,6 +21,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public class EnchantmentScreenHandler extends ScreenHandler {
@@ -33,7 +33,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		}
 	};
 	private final ScreenHandlerContext context;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final Property seed = Property.create();
 	public final int[] enchantmentPower = new int[3];
 	public final int[] enchantmentId = new int[]{-1, -1, -1};

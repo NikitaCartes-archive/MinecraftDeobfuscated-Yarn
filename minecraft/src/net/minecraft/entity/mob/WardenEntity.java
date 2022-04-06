@@ -5,13 +5,14 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -32,17 +33,16 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.GameEventTags;
@@ -52,6 +52,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -78,39 +79,56 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	private static final int field_38151 = 20;
 	private static final int field_38152 = 120;
 	private static final int field_38153 = 20;
-	private static final int field_38154 = 70;
 	private static final int field_38155 = 35;
-	private static final int field_38156 = 20;
+	private static final int field_38156 = 10;
 	private static final int field_38157 = 100;
 	private static final int field_38158 = 20;
 	private static final int field_38159 = 30;
 	private static final float field_38160 = 4.5F;
 	private static final float field_38161 = 0.7F;
-	private float field_38162;
-	private float field_38163;
-	private float field_38164;
-	private float field_38165;
+	private int field_38162;
+	private int field_38163;
+	private int field_38164;
+	private int field_38165;
 	public AnimationState roaringAnimationState = new AnimationState();
 	public AnimationState sniffingAnimationState = new AnimationState();
 	public AnimationState emergingAnimationState = new AnimationState();
 	public AnimationState diggingAnimationState = new AnimationState();
 	public AnimationState attackingAnimationState = new AnimationState();
-	private final EntityGameEventHandler gameEventHandler;
-	private SculkSensorListener vibrationListener;
-	private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyMap());
+	private final EntityGameEventHandler<SculkSensorListener> gameEventHandler;
+	private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyList());
 
 	public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
-		this.vibrationListener = new SculkSensorListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0);
-		this.gameEventHandler = new EntityGameEventHandler(this.vibrationListener);
+		this.gameEventHandler = new EntityGameEventHandler<>(
+			new SculkSensorListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0)
+		);
 		this.experiencePoints = 5;
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_OTHER, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.POWDER_SNOW, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+	}
+
+	@Override
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnS2CPacket((LivingEntity)this, this.isInPose(EntityPose.EMERGING) ? 1 : 0);
+	}
+
+	@Override
+	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+		super.onSpawnPacket(packet);
+		if (packet.getEntityData() == 1) {
+			this.setPose(EntityPose.EMERGING);
+		}
 	}
 
 	@Override
 	public boolean canSpawn(WorldView world) {
-		return world.isSpaceEmpty(this);
+		return super.canSpawn(world) && world.isSpaceEmpty(this);
 	}
 
 	@Override
@@ -120,7 +138,11 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return this.isInPose(EntityPose.DIGGING) || this.isInPose(EntityPose.EMERGING) || super.isInvulnerableTo(damageSource);
+		return this.isDiggingOrEmerging() || super.isInvulnerableTo(damageSource);
+	}
+
+	private boolean isDiggingOrEmerging() {
+		return this.isInPose(EntityPose.DIGGING) || this.isInPose(EntityPose.EMERGING);
 	}
 
 	@Override
@@ -138,26 +160,6 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		return this.distanceTraveled + 0.55F;
 	}
 
-	@Override
-	public double getSwimHeight() {
-		return (double)this.getStandingEyeHeight() * 0.9;
-	}
-
-	@Override
-	protected void swimUpward(TagKey<Fluid> fluid) {
-		this.setVelocity(this.getVelocity().add(0.0, 0.4, 0.0));
-	}
-
-	@Override
-	protected float getBaseMovementSpeedMultiplier() {
-		return 0.98F;
-	}
-
-	@Override
-	public boolean isPushedByFluids() {
-		return false;
-	}
-
 	public static DefaultAttributeContainer.Builder addAttributes() {
 		return HostileEntity.createHostileAttributes()
 			.add(EntityAttributes.GENERIC_MAX_HEALTH, 500.0)
@@ -173,11 +175,6 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public SoundCategory getSoundCategory() {
-		return SoundCategory.HOSTILE;
-	}
-
-	@Override
 	protected float getSoundVolume() {
 		return 4.0F;
 	}
@@ -185,7 +182,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.isInPose(EntityPose.ROARING) ? null : this.getAngriness().getSound();
+		return !this.isInPose(EntityPose.ROARING) && !this.isDiggingOrEmerging() ? this.getAngriness().getSound() : null;
 	}
 
 	@Override
@@ -227,7 +224,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	@Override
 	public void tick() {
 		if (this.world instanceof ServerWorld serverWorld) {
-			this.vibrationListener.tick(serverWorld);
+			this.gameEventHandler.getListener().tick(serverWorld);
 			if (this.hasCustomName()) {
 				WardenBrain.resetDigCooldown(this);
 			}
@@ -236,19 +233,21 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		super.tick();
 		if (this.world.isClient()) {
 			if (this.age % this.getHeartRate() == 0) {
-				this.field_38164 = 0.0F;
-				this.world
-					.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WARDEN_HEARTBEAT, this.getSoundCategory(), 5.0F, this.getSoundPitch(), false);
+				this.field_38164 = 10;
+				if (!this.isSilent()) {
+					this.world
+						.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WARDEN_HEARTBEAT, this.getSoundCategory(), 5.0F, this.getSoundPitch(), false);
+				}
 			}
 
 			this.field_38163 = this.field_38162;
-			if (this.field_38162 < 1.0F) {
-				this.field_38162 += 0.1F;
+			if (this.field_38162 > 0) {
+				this.field_38162--;
 			}
 
 			this.field_38165 = this.field_38164;
-			if (this.field_38164 < 1.0F) {
-				this.field_38164 += 0.1F;
+			if (this.field_38164 > 0) {
+				this.field_38164--;
 			}
 
 			switch (this.getPose()) {
@@ -263,18 +262,17 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("wardenBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
+		ServerWorld serverWorld = (ServerWorld)this.world;
+		serverWorld.getProfiler().push("wardenBrain");
+		this.getBrain().tick(serverWorld, this);
 		this.world.getProfiler().pop();
 		super.mobTick();
 		if ((this.age + this.getId()) % 120 == 0) {
-			addDarknessToClosePlayers((ServerWorld)this.world, this.getPos(), this, 20);
+			addDarknessToClosePlayers(serverWorld, this.getPos(), this, 20);
 		}
 
 		if (this.age % 20 == 0) {
-			int i = this.angerManager.getPrimeSuspectAnger();
-			this.angerManager.tick();
-			this.playListeningSound(i, this.angerManager.getPrimeSuspectAnger());
+			this.angerManager.tick(serverWorld, this::isValidTarget);
 		}
 
 		this.updateAnger();
@@ -286,7 +284,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.attackingAnimationState.start();
 		} else if (status == EntityStatuses.EARS_TWITCH) {
-			this.field_38162 = 0.0F;
+			this.field_38162 = 10;
 		} else {
 			super.handleStatus(status);
 		}
@@ -297,24 +295,25 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		return 40 - MathHelper.floor(MathHelper.clamp(f, 0.0F, 1.0F) * 30.0F);
 	}
 
-	public float getEarPitch(float tickDelta) {
-		return Math.max(1.0F - MathHelper.lerp(tickDelta, this.field_38163, this.field_38162), 0.0F);
+	public float getTendrilPitch(float tickDelta) {
+		return MathHelper.lerp(tickDelta, (float)this.field_38163, (float)this.field_38162) / 10.0F;
 	}
 
 	public float getHeartPitch(float tickDelta) {
-		return Math.max(1.0F - MathHelper.lerp(tickDelta, this.field_38165, this.field_38164), 0.0F);
+		return MathHelper.lerp(tickDelta, (float)this.field_38165, (float)this.field_38164) / 10.0F;
 	}
 
 	private void addDigParticles(AnimationState animationState) {
 		if ((float)(Util.getMeasuringTimeMs() - animationState.getStartTime()) < 4500.0F) {
-			Random random = this.getRandom();
+			AbstractRandom abstractRandom = this.getRandom();
 			BlockState blockState = this.world.getBlockState(this.getBlockPos().down());
-
-			for (int i = 0; i < 30; i++) {
-				double d = this.getX() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
-				double e = this.getY();
-				double f = this.getZ() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
-				this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, e, f, 0.0, 0.0, 0.0);
+			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+				for (int i = 0; i < 30; i++) {
+					double d = this.getX() + (double)MathHelper.nextBetween(abstractRandom, -0.7F, 0.7F);
+					double e = this.getY();
+					double f = this.getZ() + (double)MathHelper.nextBetween(abstractRandom, -0.7F, 0.7F);
+					this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, e, f, 0.0, 0.0, 0.0);
+				}
 			}
 		}
 	}
@@ -357,7 +356,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
 		if (this.world instanceof ServerWorld serverWorld) {
 			biConsumer.accept(this.gameEventHandler, serverWorld);
 		}
@@ -365,14 +364,16 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 
 	@Override
 	public TagKey<GameEvent> getTag() {
-		return GameEventTags.WARDEN_EVENTS_CAN_LISTEN;
+		return GameEventTags.WARDEN_CAN_LISTEN;
 	}
 
-	public static boolean isValidTarget(@Nullable Entity entity) {
+	public boolean isValidTarget(@Nullable Entity entity) {
 		if (entity instanceof LivingEntity livingEntity
 			&& EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)
+			&& !this.isTeammate(entity)
 			&& livingEntity.getType() != EntityType.ARMOR_STAND
 			&& livingEntity.getType() != EntityType.WARDEN
+			&& !livingEntity.isInvulnerable()
 			&& !livingEntity.isDead()) {
 			return true;
 		}
@@ -393,7 +394,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 			.resultOrPartial(field_38138::error)
 			.ifPresent(angerNbt -> nbt.put("anger", angerNbt));
 		SculkSensorListener.createCodec(this)
-			.encodeStart(NbtOps.INSTANCE, this.vibrationListener)
+			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
 			.resultOrPartial(field_38138::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 	}
@@ -413,20 +414,13 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 			SculkSensorListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(field_38138::error)
-				.ifPresent(sculkSensorListener -> this.vibrationListener = sculkSensorListener);
-		}
-	}
-
-	private void playListeningSound(int prevAnger, int anger) {
-		if (prevAnger >= 70 && anger < 70) {
-			this.playListeningSound();
+				.ifPresent(sculkSensorListener -> this.gameEventHandler.setListener(sculkSensorListener, this.world));
 		}
 	}
 
 	private void playListeningSound() {
 		if (!this.isInPose(EntityPose.ROARING)) {
-			SoundEvent soundEvent = this.getAngriness() == Angriness.CALM ? SoundEvents.ENTITY_WARDEN_LISTENING : SoundEvents.ENTITY_WARDEN_LISTENING_ANGRY;
-			this.playSound(soundEvent, 10.0F, this.getSoundPitch());
+			this.playSound(this.getAngriness().getListeningSound(), 10.0F, this.getSoundPitch());
 		}
 	}
 
@@ -439,25 +433,27 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	public void increaseAngerAt(@Nullable Entity entity) {
-		this.increaseAngerAt(entity, entity instanceof ProjectileEntity ? 20 : 35);
+		this.increaseAngerAt(entity, 35, true);
 	}
 
 	@VisibleForTesting
-	public void increaseAngerAt(@Nullable Entity entity, int amount) {
-		if (isValidTarget(entity)) {
+	public void increaseAngerAt(@Nullable Entity entity, int amount, boolean listening) {
+		if (this.isValidTarget(entity)) {
 			WardenBrain.resetDigCooldown(this);
 			boolean bl = this.getPrimeSuspect().filter(entityx -> !(entityx instanceof PlayerEntity)).isPresent();
 			int i = this.angerManager.increaseAngerAt(entity, amount);
-			if (entity instanceof PlayerEntity playerEntity && bl && Angriness.getForAnger(i) == Angriness.ANGRY) {
-				this.getBrain().remember(MemoryModuleType.ATTACK_TARGET, playerEntity);
+			if (entity instanceof PlayerEntity && bl && Angriness.getForAnger(i) == Angriness.ANGRY) {
+				this.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
 			}
 
-			this.playListeningSound();
+			if (listening) {
+				this.playListeningSound();
+			}
 		}
 	}
 
 	public Optional<LivingEntity> getPrimeSuspect() {
-		return this.getAngriness() == Angriness.ANGRY ? this.angerManager.getPrimeSuspect(this.world) : Optional.empty();
+		return this.getAngriness() == Angriness.ANGRY ? this.angerManager.getPrimeSuspect() : Optional.empty();
 	}
 
 	@Nullable
@@ -472,6 +468,12 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.getBrain().remember(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200L);
+		if (spawnReason == SpawnReason.TRIGGERED) {
+			this.setPose(EntityPose.EMERGING);
+			this.getBrain().remember(MemoryModuleType.IS_EMERGING, Unit.INSTANCE, (long)WardenBrain.EMERGE_DURATION);
+			this.setPersistent();
+		}
+
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
@@ -494,7 +496,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		} else {
 			if (bl) {
 				Entity entity = source.getAttacker();
-				this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20);
+				this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 				if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
 					&& entity instanceof LivingEntity livingEntity
 					&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
@@ -507,21 +509,33 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity player) {
+	public EntityDimensions getDimensions(EntityPose pose) {
+		EntityDimensions entityDimensions = super.getDimensions(pose);
+		return this.isDiggingOrEmerging() ? EntityDimensions.fixed(entityDimensions.width, 1.0F) : entityDimensions;
+	}
+
+	@Override
+	public boolean isPushable() {
+		return !this.isDiggingOrEmerging() && super.isPushable();
+	}
+
+	@Override
+	protected void pushAway(Entity entity) {
 		if (!this.getBrain().hasMemoryModule(MemoryModuleType.TOUCH_COOLDOWN)) {
 			this.getBrain().remember(MemoryModuleType.TOUCH_COOLDOWN, Unit.INSTANCE, 20L);
-			this.increaseAngerAt(player);
-			WardenBrain.lookAtDisturbance(this, player.getBlockPos());
+			this.increaseAngerAt(entity);
+			WardenBrain.lookAtDisturbance(this, entity.getBlockPos());
 		}
+
+		super.pushAway(entity);
 	}
 
 	@Override
 	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
-		if (this.getBrain().getOptionalMemory(MemoryModuleType.VIBRATION_COOLDOWN).isPresent()) {
+		if (this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)) {
 			return false;
 		} else {
-			EntityPose entityPose = this.getPose();
-			return entityPose != EntityPose.DIGGING && entityPose != EntityPose.EMERGING ? !(entity instanceof LivingEntity) || isValidTarget(entity) : false;
+			return this.isDiggingOrEmerging() ? false : !(entity instanceof LivingEntity) || this.isValidTarget(entity);
 		}
 	}
 
@@ -534,9 +548,16 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0F, this.getSoundPitch());
 		BlockPos blockPos = pos;
 		if (sourceEntity != null) {
-			if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE) && isValidTarget(sourceEntity) && this.isInRange(sourceEntity, 30.0)) {
-				blockPos = sourceEntity.getBlockPos();
-				this.increaseAngerAt(sourceEntity);
+			if (this.isInRange(sourceEntity, 30.0)) {
+				if (this.getBrain().hasMemoryModule(MemoryModuleType.RECENT_PROJECTILE)) {
+					if (this.isValidTarget(sourceEntity)) {
+						blockPos = sourceEntity.getBlockPos();
+					}
+
+					this.increaseAngerAt(sourceEntity);
+				} else {
+					this.increaseAngerAt(sourceEntity, 10, true);
+				}
 			}
 
 			this.getBrain().remember(MemoryModuleType.RECENT_PROJECTILE, Unit.INSTANCE, 100L);
@@ -545,7 +566,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		}
 
 		if (this.getAngriness() != Angriness.ANGRY
-			&& (sourceEntity != null || (Boolean)this.angerManager.getPrimeSuspect(world).map(suspect -> suspect == entity).orElse(true))) {
+			&& (sourceEntity != null || (Boolean)this.angerManager.getPrimeSuspect().map(suspect -> suspect == entity).orElse(true))) {
 			WardenBrain.lookAtDisturbance(this, blockPos);
 		}
 	}

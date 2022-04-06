@@ -489,4 +489,9 @@ public class ItemEntity extends Entity {
 	public SoundCategory getSoundCategory() {
 		return SoundCategory.AMBIENT;
 	}
+
+	@Override
+	public float getBodyYaw() {
+		return 180.0F - this.getRotation(0.5F) / (float) (Math.PI * 2) * 360.0F;
+	}
 }

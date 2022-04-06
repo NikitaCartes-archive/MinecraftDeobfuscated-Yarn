@@ -11,9 +11,9 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.InvalidClassException;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
@@ -24,7 +24,6 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -53,94 +52,102 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 	public JsonEffectGlShader(ResourceManager resource, String name) throws IOException {
 		Identifier identifier = new Identifier("shaders/program/" + name + ".json");
 		this.name = name;
-		Resource resource2 = null;
+		Resource resource2 = resource.getResourceOrThrow(identifier);
 
 		try {
-			resource2 = resource.getResource(identifier);
-			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource2.getInputStream(), StandardCharsets.UTF_8));
-			String string = JsonHelper.getString(jsonObject, "vertex");
-			String string2 = JsonHelper.getString(jsonObject, "fragment");
-			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
-			if (jsonArray != null) {
-				int i = 0;
+			Reader reader = resource2.getReader();
 
-				for (JsonElement jsonElement : jsonArray) {
-					try {
-						this.addSampler(jsonElement);
-					} catch (Exception var24) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var24);
-						shaderParseException.addFaultyElement("samplers[" + i + "]");
-						throw shaderParseException;
+			try {
+				JsonObject jsonObject = JsonHelper.deserialize(reader);
+				String string = JsonHelper.getString(jsonObject, "vertex");
+				String string2 = JsonHelper.getString(jsonObject, "fragment");
+				JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
+				if (jsonArray != null) {
+					int i = 0;
+
+					for (JsonElement jsonElement : jsonArray) {
+						try {
+							this.addSampler(jsonElement);
+						} catch (Exception var20) {
+							ShaderParseException shaderParseException = ShaderParseException.wrap(var20);
+							shaderParseException.addFaultyElement("samplers[" + i + "]");
+							throw shaderParseException;
+						}
+
+						i++;
 					}
-
-					i++;
 				}
-			}
 
-			JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
-			if (jsonArray2 != null) {
-				int j = 0;
-				this.attribLocs = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
-				this.attribNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
+				JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "attributes", null);
+				if (jsonArray2 != null) {
+					int j = 0;
+					this.attribLocs = Lists.<Integer>newArrayListWithCapacity(jsonArray2.size());
+					this.attribNames = Lists.<String>newArrayListWithCapacity(jsonArray2.size());
 
-				for (JsonElement jsonElement2 : jsonArray2) {
-					try {
-						this.attribNames.add(JsonHelper.asString(jsonElement2, "attribute"));
-					} catch (Exception var23) {
-						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var23);
-						shaderParseException2.addFaultyElement("attributes[" + j + "]");
-						throw shaderParseException2;
+					for (JsonElement jsonElement2 : jsonArray2) {
+						try {
+							this.attribNames.add(JsonHelper.asString(jsonElement2, "attribute"));
+						} catch (Exception var19) {
+							ShaderParseException shaderParseException2 = ShaderParseException.wrap(var19);
+							shaderParseException2.addFaultyElement("attributes[" + j + "]");
+							throw shaderParseException2;
+						}
+
+						j++;
 					}
-
-					j++;
+				} else {
+					this.attribLocs = null;
+					this.attribNames = null;
 				}
-			} else {
-				this.attribLocs = null;
-				this.attribNames = null;
-			}
 
-			JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
-			if (jsonArray3 != null) {
-				int k = 0;
+				JsonArray jsonArray3 = JsonHelper.getArray(jsonObject, "uniforms", null);
+				if (jsonArray3 != null) {
+					int k = 0;
 
-				for (JsonElement jsonElement3 : jsonArray3) {
-					try {
-						this.addUniform(jsonElement3);
-					} catch (Exception var22) {
-						ShaderParseException shaderParseException3 = ShaderParseException.wrap(var22);
-						shaderParseException3.addFaultyElement("uniforms[" + k + "]");
-						throw shaderParseException3;
+					for (JsonElement jsonElement3 : jsonArray3) {
+						try {
+							this.addUniform(jsonElement3);
+						} catch (Exception var18) {
+							ShaderParseException shaderParseException3 = ShaderParseException.wrap(var18);
+							shaderParseException3.addFaultyElement("uniforms[" + k + "]");
+							throw shaderParseException3;
+						}
+
+						k++;
 					}
-
-					k++;
 				}
-			}
 
-			this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
-			this.vertexShader = loadEffect(resource, Program.Type.VERTEX, string);
-			this.fragmentShader = loadEffect(resource, Program.Type.FRAGMENT, string2);
-			this.programRef = GlProgramManager.createProgram();
-			GlProgramManager.linkProgram(this);
-			this.finalizeUniformsAndSamplers();
-			if (this.attribNames != null) {
-				for (String string3 : this.attribNames) {
-					int l = GlUniform.getAttribLocation(this.programRef, string3);
-					this.attribLocs.add(l);
+				this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
+				this.vertexShader = loadEffect(resource, Program.Type.VERTEX, string);
+				this.fragmentShader = loadEffect(resource, Program.Type.FRAGMENT, string2);
+				this.programRef = GlProgramManager.createProgram();
+				GlProgramManager.linkProgram(this);
+				this.finalizeUniformsAndSamplers();
+				if (this.attribNames != null) {
+					for (String string3 : this.attribNames) {
+						int l = GlUniform.getAttribLocation(this.programRef, string3);
+						this.attribLocs.add(l);
+					}
 				}
-			}
-		} catch (Exception var25) {
-			String string2x;
-			if (resource2 != null) {
-				string2x = " (" + resource2.getResourcePackName() + ")";
-			} else {
-				string2x = "";
+			} catch (Throwable var21) {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (Throwable var17) {
+						var21.addSuppressed(var17);
+					}
+				}
+
+				throw var21;
 			}
 
-			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var25);
-			shaderParseException4.addFaultyFile(identifier.getPath() + string2x);
+			if (reader != null) {
+				reader.close();
+			}
+		} catch (Exception var22) {
+			ShaderParseException shaderParseException4 = ShaderParseException.wrap(var22);
+			shaderParseException4.addFaultyFile(identifier.getPath() + " (" + resource2.getResourcePackName() + ")");
 			throw shaderParseException4;
-		} finally {
-			IOUtils.closeQuietly(resource2);
 		}
 
 		this.markUniformsDirty();
@@ -154,12 +161,25 @@ public class JsonEffectGlShader implements EffectGlShader, AutoCloseable {
 			EffectProgram effectProgram;
 			if (program == null) {
 				Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
-				Resource resource = resourceManager.getResource(identifier);
+				Resource resource = resourceManager.getResourceOrThrow(identifier);
+				InputStream inputStream = resource.getInputStream();
 
 				try {
-					effectProgram = EffectProgram.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
-				} finally {
-					IOUtils.closeQuietly(resource);
+					effectProgram = EffectProgram.createFromResource(type, name, inputStream, resource.getResourcePackName());
+				} catch (Throwable var11) {
+					if (inputStream != null) {
+						try {
+							inputStream.close();
+						} catch (Throwable var10) {
+							var11.addSuppressed(var10);
+						}
+					}
+
+					throw var11;
+				}
+
+				if (inputStream != null) {
+					inputStream.close();
 				}
 			} else {
 				effectProgram = (EffectProgram)program;

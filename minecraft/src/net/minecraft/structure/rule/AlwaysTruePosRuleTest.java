@@ -1,9 +1,9 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class AlwaysTruePosRuleTest extends PosRuleTest {
 	public static final Codec<AlwaysTruePosRuleTest> CODEC = Codec.unit((Supplier<AlwaysTruePosRuleTest>)(() -> AlwaysTruePosRuleTest.INSTANCE));
@@ -13,7 +13,7 @@ public class AlwaysTruePosRuleTest extends PosRuleTest {
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
 		return true;
 	}
 

@@ -6,9 +6,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,10 +15,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.dimension.DimensionType;
@@ -38,8 +38,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	}
 
 	public static List<EndSpikeFeature.Spike> getSpikes(StructureWorldAccess world) {
-		Random random = new Random(world.getSeed());
-		long l = random.nextLong() & 65535L;
+		AbstractRandom abstractRandom = AbstractRandom.createAtomic(world.getSeed());
+		long l = abstractRandom.nextLong() & 65535L;
 		return CACHE.getUnchecked(l);
 	}
 
@@ -47,7 +47,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	public boolean generate(FeatureContext<EndSpikeFeatureConfig> context) {
 		EndSpikeFeatureConfig endSpikeFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
@@ -56,14 +56,14 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 
 		for (EndSpikeFeature.Spike spike : list) {
 			if (spike.isInChunk(blockPos)) {
-				this.generateSpike(structureWorldAccess, random, endSpikeFeatureConfig, spike);
+				this.generateSpike(structureWorldAccess, abstractRandom, endSpikeFeatureConfig, spike);
 			}
 		}
 
 		return true;
 	}
 
-	private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
+	private void generateSpike(ServerWorldAccess world, AbstractRandom random, EndSpikeFeatureConfig config, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(
@@ -182,8 +182,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 
 	static class SpikeCache extends CacheLoader<Long, List<EndSpikeFeature.Spike>> {
 		public List<EndSpikeFeature.Spike> load(Long long_) {
-			List<Integer> list = (List<Integer>)IntStream.range(0, 10).boxed().collect(Collectors.toList());
-			Collections.shuffle(list, new Random(long_));
+			List<Integer> list = Util.copyShuffled((List<Integer>)IntStream.range(0, 10).boxed().collect(Collectors.toList()), AbstractRandom.createAtomic(long_));
 			List<EndSpikeFeature.Spike> list2 = Lists.<EndSpikeFeature.Spike>newArrayList();
 
 			for (int i = 0; i < 10; i++) {

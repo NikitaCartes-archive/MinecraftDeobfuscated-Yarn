@@ -7,10 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -24,7 +22,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
-import org.apache.commons.io.IOUtils;
 
 @Environment(EnvType.CLIENT)
 public class ShaderEffect implements AutoCloseable {
@@ -54,57 +51,65 @@ public class ShaderEffect implements AutoCloseable {
 	}
 
 	private void parseEffect(TextureManager textureManager, Identifier location) throws IOException, JsonSyntaxException {
-		Resource resource = null;
+		Resource resource = this.resourceManager.getResourceOrThrow(location);
 
 		try {
-			resource = this.resourceManager.getResource(location);
-			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
-			if (JsonHelper.hasArray(jsonObject, "targets")) {
-				JsonArray jsonArray = jsonObject.getAsJsonArray("targets");
-				int i = 0;
+			Reader reader = resource.getReader();
 
-				for (JsonElement jsonElement : jsonArray) {
-					try {
-						this.parseTarget(jsonElement);
-					} catch (Exception var17) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var17);
-						shaderParseException.addFaultyElement("targets[" + i + "]");
-						throw shaderParseException;
+			try {
+				JsonObject jsonObject = JsonHelper.deserialize(reader);
+				if (JsonHelper.hasArray(jsonObject, "targets")) {
+					JsonArray jsonArray = jsonObject.getAsJsonArray("targets");
+					int i = 0;
+
+					for (JsonElement jsonElement : jsonArray) {
+						try {
+							this.parseTarget(jsonElement);
+						} catch (Exception var14) {
+							ShaderParseException shaderParseException = ShaderParseException.wrap(var14);
+							shaderParseException.addFaultyElement("targets[" + i + "]");
+							throw shaderParseException;
+						}
+
+						i++;
 					}
-
-					i++;
 				}
-			}
 
-			if (JsonHelper.hasArray(jsonObject, "passes")) {
-				JsonArray jsonArray = jsonObject.getAsJsonArray("passes");
-				int i = 0;
+				if (JsonHelper.hasArray(jsonObject, "passes")) {
+					JsonArray jsonArray = jsonObject.getAsJsonArray("passes");
+					int i = 0;
 
-				for (JsonElement jsonElement : jsonArray) {
-					try {
-						this.parsePass(textureManager, jsonElement);
-					} catch (Exception var16) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var16);
-						shaderParseException.addFaultyElement("passes[" + i + "]");
-						throw shaderParseException;
+					for (JsonElement jsonElement : jsonArray) {
+						try {
+							this.parsePass(textureManager, jsonElement);
+						} catch (Exception var13) {
+							ShaderParseException shaderParseException = ShaderParseException.wrap(var13);
+							shaderParseException.addFaultyElement("passes[" + i + "]");
+							throw shaderParseException;
+						}
+
+						i++;
 					}
-
-					i++;
 				}
-			}
-		} catch (Exception var18) {
-			String string;
-			if (resource != null) {
-				string = " (" + resource.getResourcePackName() + ")";
-			} else {
-				string = "";
+			} catch (Throwable var15) {
+				if (reader != null) {
+					try {
+						reader.close();
+					} catch (Throwable var12) {
+						var15.addSuppressed(var12);
+					}
+				}
+
+				throw var15;
 			}
 
-			ShaderParseException shaderParseException2 = ShaderParseException.wrap(var18);
-			shaderParseException2.addFaultyFile(location.getPath() + string);
+			if (reader != null) {
+				reader.close();
+			}
+		} catch (Exception var16) {
+			ShaderParseException shaderParseException2 = ShaderParseException.wrap(var16);
+			shaderParseException2.addFaultyFile(location.getPath() + " (" + resource.getResourcePackName() + ")");
 			throw shaderParseException2;
-		} finally {
-			IOUtils.closeQuietly(resource);
 		}
 	}
 
@@ -163,16 +168,7 @@ public class ShaderEffect implements AutoCloseable {
 							}
 
 							Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
-							Resource resource = null;
-
-							try {
-								resource = this.resourceManager.getResource(identifier);
-							} catch (FileNotFoundException var31) {
-								throw new ShaderParseException("Render target or texture '" + string6 + "' does not exist");
-							} finally {
-								IOUtils.closeQuietly(resource);
-							}
-
+							this.resourceManager.getResource(identifier).orElseThrow(() -> new ShaderParseException("Render target or texture '" + string6 + "' does not exist"));
 							RenderSystem.setShaderTexture(0, identifier);
 							textureManager.bindTexture(identifier);
 							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
@@ -193,8 +189,8 @@ public class ShaderEffect implements AutoCloseable {
 						} else {
 							postProcessShader.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
 						}
-					} catch (Exception var33) {
-						ShaderParseException shaderParseException = ShaderParseException.wrap(var33);
+					} catch (Exception var26) {
+						ShaderParseException shaderParseException = ShaderParseException.wrap(var26);
 						shaderParseException.addFaultyElement("auxtargets[" + i + "]");
 						throw shaderParseException;
 					}
@@ -210,8 +206,8 @@ public class ShaderEffect implements AutoCloseable {
 				for (JsonElement jsonElement2 : jsonArray2) {
 					try {
 						this.parseUniform(jsonElement2);
-					} catch (Exception var30) {
-						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var30);
+					} catch (Exception var25) {
+						ShaderParseException shaderParseException2 = ShaderParseException.wrap(var25);
 						shaderParseException2.addFaultyElement("uniforms[" + l + "]");
 						throw shaderParseException2;
 					}

@@ -11,7 +11,7 @@ public class FrogAttackablesSensor extends NearestVisibleLivingEntitySensor {
 	protected boolean matches(LivingEntity entity, LivingEntity target) {
 		return !entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN)
 				&& Sensor.testAttackableTargetPredicate(entity, target)
-				&& FrogEntity.isValidFrogTarget(target)
+				&& FrogEntity.isValidFrogFood(target)
 			? target.isInRange(entity, 10.0)
 			: false;
 	}

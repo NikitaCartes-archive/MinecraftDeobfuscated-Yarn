@@ -2,7 +2,6 @@ package net.minecraft.world;
 
 import com.mojang.logging.LogUtils;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -19,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
@@ -38,7 +38,7 @@ public abstract class MobSpawnerLogic {
 	private int maxNearbyEntities = 6;
 	private int requiredPlayerRange = 16;
 	private int spawnRange = 4;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 
 	public void setEntityId(EntityType<?> type) {
 		this.spawnEntry.getNbt().putString("id", Registry.ENTITY_TYPE.getId(type).toString());

@@ -3,7 +3,6 @@ package net.minecraft.loot.function;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import java.util.Random;
 import java.util.Set;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -12,6 +11,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 	final LootNumberProvider range;
@@ -35,8 +35,8 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Random random = context.getRandom();
-		return EnchantmentHelper.enchant(random, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
+		AbstractRandom abstractRandom = context.getRandom();
+		return EnchantmentHelper.enchant(abstractRandom, stack, this.range.nextInt(context), this.treasureEnchantmentsAllowed);
 	}
 
 	public static EnchantWithLevelsLootFunction.Builder builder(LootNumberProvider range) {

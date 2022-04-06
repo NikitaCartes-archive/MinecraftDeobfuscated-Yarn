@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,6 +13,7 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class BasicBakedModel implements BakedModel {
@@ -47,7 +47,7 @@ public class BasicBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, AbstractRandom random) {
 		return face == null ? this.quads : (List)this.faceQuads.get(face);
 	}
 

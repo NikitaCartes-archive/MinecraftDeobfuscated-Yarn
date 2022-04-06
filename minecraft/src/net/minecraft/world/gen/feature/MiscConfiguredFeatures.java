@@ -26,7 +26,8 @@ public class MiscConfiguredFeatures {
 				Blocks.MYCELIUM.getDefaultState(),
 				Blocks.SNOW_BLOCK.getDefaultState(),
 				Blocks.ICE.getDefaultState()
-			)
+			),
+			RegistryEntryList.of(Block::getRegistryEntry, Blocks.SNOW_BLOCK)
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<SingleStateFeatureConfig, ?>> FOREST_ROCK = ConfiguredFeatures.register(
@@ -48,25 +49,48 @@ public class MiscConfiguredFeatures {
 		"disk_clay",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.CLAY.getDefaultState(), UniformIntProvider.create(2, 3), 1, List.of(Blocks.DIRT.getDefaultState(), Blocks.CLAY.getDefaultState())
+			Blocks.CLAY.getDefaultState(),
+			UniformIntProvider.create(2, 3),
+			1,
+			List.of(Blocks.DIRT.getDefaultState(), Blocks.CLAY.getDefaultState()),
+			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_GRAVEL = ConfiguredFeatures.register(
 		"disk_gravel",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.GRAVEL.getDefaultState(), UniformIntProvider.create(2, 5), 2, List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState())
+			Blocks.GRAVEL.getDefaultState(),
+			UniformIntProvider.create(2, 5),
+			2,
+			List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState()),
+			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_SAND = ConfiguredFeatures.register(
 		"disk_sand",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.SAND.getDefaultState(), UniformIntProvider.create(2, 6), 2, List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState())
+			Blocks.SAND.getDefaultState(),
+			UniformIntProvider.create(2, 6),
+			2,
+			List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState()),
+			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> FREEZE_TOP_LAYER = ConfiguredFeatures.register(
 		"freeze_top_layer", Feature.FREEZE_TOP_LAYER
+	);
+	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_GRASS = ConfiguredFeatures.register(
+		"disk_grass",
+		Feature.SURFACE_DISK,
+		new DiskFeatureConfig(
+			Blocks.GRASS_BLOCK.getDefaultState(),
+			UniformIntProvider.create(2, 6),
+			2,
+			List.of(Blocks.DIRT.getDefaultState(), Blocks.MUD.getDefaultState()),
+			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER, Blocks.MUD)
+		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BONUS_CHEST = ConfiguredFeatures.register("bonus_chest", Feature.BONUS_CHEST);
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> VOID_START_PLATFORM = ConfiguredFeatures.register(

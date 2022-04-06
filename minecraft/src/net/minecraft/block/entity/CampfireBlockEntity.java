@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
@@ -22,6 +21,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class CampfireBlockEntity extends BlockEntity implements Clearable {
@@ -75,9 +75,9 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {
-		Random random = world.random;
-		if (random.nextFloat() < 0.11F) {
-			for (int i = 0; i < random.nextInt(2) + 2; i++) {
+		AbstractRandom abstractRandom = world.random;
+		if (abstractRandom.nextFloat() < 0.11F) {
+			for (int i = 0; i < abstractRandom.nextInt(2) + 2; i++) {
 				CampfireBlock.spawnSmokeParticle(world, pos, (Boolean)state.get(CampfireBlock.SIGNAL_FIRE), false);
 			}
 		}
@@ -85,7 +85,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 		int i = ((Direction)state.get(CampfireBlock.FACING)).getHorizontal();
 
 		for (int j = 0; j < campfire.itemsBeingCooked.size(); j++) {
-			if (!campfire.itemsBeingCooked.get(j).isEmpty() && random.nextFloat() < 0.2F) {
+			if (!campfire.itemsBeingCooked.get(j).isEmpty() && abstractRandom.nextFloat() < 0.2F) {
 				Direction direction = Direction.fromHorizontal(Math.floorMod(j + i, 4));
 				float f = 0.3125F;
 				double d = (double)pos.getX()

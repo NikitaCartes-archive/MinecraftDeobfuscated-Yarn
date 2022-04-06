@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.entity.passive.FrogBrain;
 import net.minecraft.entity.passive.GoatBrain;
@@ -10,7 +11,9 @@ import net.minecraft.util.registry.Registry;
 public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<DummySensor> DUMMY = register("dummy", DummySensor::new);
 	public static final SensorType<NearestItemsSensor> NEAREST_ITEMS = register("nearest_items", NearestItemsSensor::new);
-	public static final SensorType<NearestLivingEntitiesSensor> NEAREST_LIVING_ENTITIES = register("nearest_living_entities", NearestLivingEntitiesSensor::new);
+	public static final SensorType<NearestLivingEntitiesSensor<LivingEntity>> NEAREST_LIVING_ENTITIES = register(
+		"nearest_living_entities", NearestLivingEntitiesSensor::new
+	);
 	public static final SensorType<NearestPlayersSensor> NEAREST_PLAYERS = register("nearest_players", NearestPlayersSensor::new);
 	public static final SensorType<NearestBedSensor> NEAREST_BED = register("nearest_bed", NearestBedSensor::new);
 	public static final SensorType<HurtBySensor> HURT_BY = register("hurt_by", HurtBySensor::new);

@@ -118,10 +118,10 @@ public class UndergroundConfiguredFeatures {
 		"underwater_magma", Feature.UNDERWATER_MAGMA, new UnderwaterMagmaFeatureConfig(5, 1, 0.5F)
 	);
 	private static final AbstractLichenBlock GLOW_LICHEN_BLOCK = (AbstractLichenBlock)Blocks.GLOW_LICHEN;
-	public static final RegistryEntry<ConfiguredFeature<GlowLichenFeatureConfig, ?>> GLOW_LICHEN = ConfiguredFeatures.register(
+	public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> GLOW_LICHEN = ConfiguredFeatures.register(
 		"glow_lichen",
-		Feature.GLOW_LICHEN,
-		new GlowLichenFeatureConfig(
+		Feature.MULTIFACE_GROWTH,
+		new MultifaceGrowthFeatureConfig(
 			GLOW_LICHEN_BLOCK,
 			20,
 			false,
@@ -367,17 +367,17 @@ public class UndergroundConfiguredFeatures {
 			1
 		)
 	);
-	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH = ConfiguredFeatures.register(
+	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH_DEEP_DARK = ConfiguredFeatures.register(
 		"sculk_patch_deep_dark", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, ConstantIntProvider.create(0), 0.5F)
 	);
-	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> field_38477 = ConfiguredFeatures.register(
+	public static final RegistryEntry<ConfiguredFeature<SculkPatchFeatureConfig, ?>> SCULK_PATCH_ANCIENT_CITY = ConfiguredFeatures.register(
 		"sculk_patch_ancient_city", Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5F)
 	);
 	private static final AbstractLichenBlock SCULK_VEIN_BLOCK = (AbstractLichenBlock)Blocks.SCULK_VEIN;
-	public static final RegistryEntry<ConfiguredFeature<GlowLichenFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register(
+	public static final RegistryEntry<ConfiguredFeature<MultifaceGrowthFeatureConfig, ?>> SCULK_VEIN = ConfiguredFeatures.register(
 		"sculk_vein",
-		Feature.GLOW_LICHEN,
-		new GlowLichenFeatureConfig(
+		Feature.MULTIFACE_GROWTH,
+		new MultifaceGrowthFeatureConfig(
 			SCULK_VEIN_BLOCK,
 			20,
 			true,

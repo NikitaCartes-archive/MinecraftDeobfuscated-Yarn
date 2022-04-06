@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -18,17 +19,33 @@ import net.minecraft.world.chunk.ChunkStatus;
  * 
  * @see net.minecraft.entity.Entity#getGameEventHandler()
  */
-public class EntityGameEventHandler {
-	private final GameEventListener listener;
+public class EntityGameEventHandler<T extends GameEventListener> {
+	private T listener;
 	@Nullable
 	private ChunkSectionPos sectionPos;
 
-	public EntityGameEventHandler(GameEventListener listener) {
+	public EntityGameEventHandler(T listener) {
 		this.listener = listener;
 	}
 
 	public void onEntitySetPosCallback(ServerWorld world) {
 		this.onEntitySetPos(world);
+	}
+
+	public void setListener(T listener, @Nullable World world) {
+		T gameEventListener = this.listener;
+		if (gameEventListener != listener) {
+			if (world instanceof ServerWorld serverWorld) {
+				updateDispatcher(serverWorld, this.sectionPos, dispatcher -> dispatcher.removeListener(gameEventListener));
+				updateDispatcher(serverWorld, this.sectionPos, dispatcher -> dispatcher.addListener(listener));
+			}
+
+			this.listener = listener;
+		}
+	}
+
+	public T getListener() {
+		return this.listener;
 	}
 
 	public void onEntityRemoval(ServerWorld world) {

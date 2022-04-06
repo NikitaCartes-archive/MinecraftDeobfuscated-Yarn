@@ -1,13 +1,13 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class PillarBlockStateProvider extends BlockStateProvider {
 	public static final Codec<PillarBlockStateProvider> CODEC = BlockState.CODEC
@@ -27,8 +27,8 @@ public class PillarBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
-		Direction.Axis axis = Direction.Axis.pickRandomAxis(random);
+	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+		Direction.Axis axis = Direction.Axis.pickRandomAxis(abstractRandom);
 		return this.block.getDefaultState().with(PillarBlock.AXIS, axis);
 	}
 }

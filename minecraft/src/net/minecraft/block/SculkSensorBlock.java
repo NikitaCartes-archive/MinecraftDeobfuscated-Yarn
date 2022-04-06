@@ -3,7 +3,6 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -31,6 +30,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -119,7 +119,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (getPhase(state) != SculkSensorPhase.ACTIVE) {
 			if (getPhase(state) == SculkSensorPhase.COOLDOWN) {
 				world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), Block.NOTIFY_ALL);
@@ -240,6 +240,8 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		updateNeighbors(world, pos);
 		if (entity instanceof PlayerEntity) {
 			world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
+		} else if (entity != null && entity.getPrimaryPassenger() instanceof PlayerEntity playerEntity) {
+			world.emitGameEvent(playerEntity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
 		}
 
 		if (!(Boolean)state.get(WATERLOGGED)) {
@@ -257,7 +259,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if (getPhase(state) == SculkSensorPhase.ACTIVE) {
 			Direction direction = Direction.random(random);
 			if (direction != Direction.UP && direction != Direction.DOWN) {

@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
 import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -13,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
@@ -26,7 +26,7 @@ public class WanderingTraderManager implements Spawner {
 	private static final int DEFAULT_SPAWN_CHANCE = 25;
 	private static final int field_30635 = 10;
 	private static final int field_30636 = 10;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final ServerWorldProperties properties;
 	private int spawnTimer;
 	private int spawnDelay;

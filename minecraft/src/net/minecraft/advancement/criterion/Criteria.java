@@ -22,14 +22,14 @@ public class Criteria {
 	public static final UsedEnderEyeCriterion USED_ENDER_EYE = register(new UsedEnderEyeCriterion());
 	public static final SummonedEntityCriterion SUMMONED_ENTITY = register(new SummonedEntityCriterion());
 	public static final BredAnimalsCriterion BRED_ANIMALS = register(new BredAnimalsCriterion());
-	public static final LocationArrivalCriterion LOCATION = register(new LocationArrivalCriterion(new Identifier("location")));
-	public static final LocationArrivalCriterion SLEPT_IN_BED = register(new LocationArrivalCriterion(new Identifier("slept_in_bed")));
+	public static final TickCriterion LOCATION = register(new TickCriterion(new Identifier("location")));
+	public static final TickCriterion SLEPT_IN_BED = register(new TickCriterion(new Identifier("slept_in_bed")));
 	public static final CuredZombieVillagerCriterion CURED_ZOMBIE_VILLAGER = register(new CuredZombieVillagerCriterion());
 	public static final VillagerTradeCriterion VILLAGER_TRADE = register(new VillagerTradeCriterion());
 	public static final ItemDurabilityChangedCriterion ITEM_DURABILITY_CHANGED = register(new ItemDurabilityChangedCriterion());
 	public static final LevitationCriterion LEVITATION = register(new LevitationCriterion());
 	public static final ChangedDimensionCriterion CHANGED_DIMENSION = register(new ChangedDimensionCriterion());
-	public static final TickCriterion TICK = register(new TickCriterion());
+	public static final TickCriterion TICK = register(new TickCriterion(new Identifier("tick")));
 	public static final TameAnimalCriterion TAME_ANIMAL = register(new TameAnimalCriterion());
 	public static final PlacedBlockCriterion PLACED_BLOCK = register(new PlacedBlockCriterion());
 	public static final ConsumeItemCriterion CONSUME_ITEM = register(new ConsumeItemCriterion());
@@ -40,12 +40,12 @@ public class Criteria {
 	public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = register(new ChanneledLightningCriterion());
 	public static final ShotCrossbowCriterion SHOT_CROSSBOW = register(new ShotCrossbowCriterion());
 	public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = register(new KilledByCrossbowCriterion());
-	public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
-	public static final LocationArrivalCriterion VOLUNTARY_EXILE = register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
+	public static final TickCriterion HERO_OF_THE_VILLAGE = register(new TickCriterion(new Identifier("hero_of_the_village")));
+	public static final TickCriterion VOLUNTARY_EXILE = register(new TickCriterion(new Identifier("voluntary_exile")));
 	public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = register(new SlideDownBlockCriterion());
 	public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = register(new BeeNestDestroyedCriterion());
 	public static final TargetHitCriterion TARGET_HIT = register(new TargetHitCriterion());
-	public static final ItemUsedOnBlockCriterion ITEM_USED_ON_BLOCK = register(new ItemUsedOnBlockCriterion());
+	public static final ItemCriterion ITEM_USED_ON_BLOCK = register(new ItemCriterion(new Identifier("item_used_on_block")));
 	public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = register(new PlayerGeneratesContainerLootCriterion());
 	public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = register(new ThrownItemPickedUpByEntityCriterion());
 	public static final PlayerInteractedWithEntityCriterion PLAYER_INTERACTED_WITH_ENTITY = register(new PlayerInteractedWithEntityCriterion());
@@ -55,6 +55,8 @@ public class Criteria {
 	public static final TravelCriterion FALL_FROM_HEIGHT = register(new TravelCriterion(new Identifier("fall_from_height")));
 	public static final TravelCriterion RIDE_ENTITY_IN_LAVA = register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
 	public static final OnKilledCriterion KILL_MOB_NEAR_SCULK_CATALYST = register(new OnKilledCriterion(new Identifier("kill_mob_near_sculk_catalyst")));
+	public static final TickCriterion ITEM_DELIVERED_TO_PLAYER = register(new TickCriterion(new Identifier("item_delivered_to_player")));
+	public static final ItemCriterion ALLAY_DROP_ITEM_ON_BLOCK = register(new ItemCriterion(new Identifier("allay_drop_item_on_block")));
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

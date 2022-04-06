@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -30,7 +30,7 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 
 	@Override
 	public List<FoliagePlacer.TreeNode> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		BlockPos blockPos = startPos.down();
@@ -58,10 +58,10 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 			int r = l + q;
 			BlockPos blockPos2 = new BlockPos(n, r, o);
 			if (TreeFeature.isAirOrLeaves(world, blockPos2)) {
-				getAndSetState(world, replacer, random, blockPos2, config);
-				getAndSetState(world, replacer, random, blockPos2.east(), config);
-				getAndSetState(world, replacer, random, blockPos2.south(), config);
-				getAndSetState(world, replacer, random, blockPos2.east().south(), config);
+				this.getAndSetState(world, replacer, random, blockPos2, config);
+				this.getAndSetState(world, replacer, random, blockPos2.east(), config);
+				this.getAndSetState(world, replacer, random, blockPos2.south(), config);
+				this.getAndSetState(world, replacer, random, blockPos2.east().south(), config);
 			}
 		}
 
@@ -73,7 +73,7 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 					int s = random.nextInt(3) + 2;
 
 					for (int t = 0; t < s; t++) {
-						getAndSetState(world, replacer, random, new BlockPos(k + q, p - t - 1, m + r), config);
+						this.getAndSetState(world, replacer, random, new BlockPos(k + q, p - t - 1, m + r), config);
 					}
 
 					list.add(new FoliagePlacer.TreeNode(new BlockPos(n + q, p, o + r), 0, false));

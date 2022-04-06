@@ -1,17 +1,17 @@
 package net.minecraft.client.sound;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class MusicTracker {
 	private static final int field_33019 = 100;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final MinecraftClient client;
 	@Nullable
 	private SoundInstance current;

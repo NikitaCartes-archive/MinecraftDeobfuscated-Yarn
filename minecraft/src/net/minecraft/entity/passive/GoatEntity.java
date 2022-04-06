@@ -2,7 +2,6 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
@@ -38,6 +37,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -276,7 +276,7 @@ public class GoatEntity extends AnimalEntity {
 		return (float)this.field_33488 / 20.0F * 30.0F * (float) (Math.PI / 180.0);
 	}
 
-	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends AnimalEntity> entityType, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.GOATS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 }

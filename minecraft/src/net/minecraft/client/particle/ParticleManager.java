@@ -1,6 +1,5 @@
 package net.minecraft.client.particle;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -11,7 +10,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.Iterator;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
@@ -44,7 +41,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
@@ -56,6 +52,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -74,7 +71,7 @@ public class ParticleManager implements ResourceReloader {
 	private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.<ParticleTextureSheet, Queue<Particle>>newIdentityHashMap();
 	private final Queue<EmitterParticle> newEmitterParticles = Queues.<EmitterParticle>newArrayDeque();
 	private final TextureManager textureManager;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> spriteAwareFactories = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
@@ -251,56 +248,42 @@ public class ParticleManager implements ResourceReloader {
 		Identifier identifier = new Identifier(id.getNamespace(), "particles/" + id.getPath() + ".json");
 
 		try {
-			Resource resource = resourceManager.getResource(identifier);
+			Reader reader = resourceManager.openAsReader(identifier);
 
 			try {
-				Reader reader = new InputStreamReader(resource.getInputStream(), Charsets.UTF_8);
-
-				try {
-					ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
-					List<Identifier> list = particleTextureData.getTextureList();
-					boolean bl = this.spriteAwareFactories.containsKey(id);
-					if (list == null) {
-						if (bl) {
-							throw new IllegalStateException("Missing texture list for particle " + id);
-						}
-					} else {
-						if (!bl) {
-							throw new IllegalStateException("Redundant texture list for particle " + id);
-						}
-
-						result.put(
-							id, (List)list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
-						);
+				ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
+				List<Identifier> list = particleTextureData.getTextureList();
+				boolean bl = this.spriteAwareFactories.containsKey(id);
+				if (list == null) {
+					if (bl) {
+						throw new IllegalStateException("Missing texture list for particle " + id);
 					}
-				} catch (Throwable var12) {
+				} else {
+					if (!bl) {
+						throw new IllegalStateException("Redundant texture list for particle " + id);
+					}
+
+					result.put(
+						id, (List)list.stream().map(identifierx -> new Identifier(identifierx.getNamespace(), "particle/" + identifierx.getPath())).collect(Collectors.toList())
+					);
+				}
+			} catch (Throwable var10) {
+				if (reader != null) {
 					try {
 						reader.close();
-					} catch (Throwable var11) {
-						var12.addSuppressed(var11);
+					} catch (Throwable var9) {
+						var10.addSuppressed(var9);
 					}
-
-					throw var12;
 				}
 
+				throw var10;
+			}
+
+			if (reader != null) {
 				reader.close();
-			} catch (Throwable var13) {
-				if (resource != null) {
-					try {
-						resource.close();
-					} catch (Throwable var10) {
-						var13.addSuppressed(var10);
-					}
-				}
-
-				throw var13;
 			}
-
-			if (resource != null) {
-				resource.close();
-			}
-		} catch (IOException var14) {
-			throw new IllegalStateException("Failed to load description for particle " + id, var14);
+		} catch (IOException var11) {
+			throw new IllegalStateException("Failed to load description for particle " + id, var11);
 		}
 	}
 
@@ -547,7 +530,7 @@ public class ParticleManager implements ResourceReloader {
 		}
 
 		@Override
-		public Sprite getSprite(Random random) {
+		public Sprite getSprite(AbstractRandom random) {
 			return (Sprite)this.sprites.get(random.nextInt(this.sprites.size()));
 		}
 

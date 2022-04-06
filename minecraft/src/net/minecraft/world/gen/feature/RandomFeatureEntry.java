@@ -2,8 +2,8 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -24,7 +24,7 @@ public class RandomFeatureEntry {
 		this.chance = chance;
 	}
 
-	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
-		return this.feature.value().generateUnregistered(world, chunkGenerator, random, pos);
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, AbstractRandom abstractRandom, BlockPos pos) {
+		return this.feature.value().generateUnregistered(world, chunkGenerator, abstractRandom, pos);
 	}
 }

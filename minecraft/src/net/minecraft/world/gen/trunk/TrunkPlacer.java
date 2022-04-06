@@ -5,12 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.Feature;
@@ -47,10 +48,10 @@ public abstract class TrunkPlacer {
 	 * Generates the trunk blocks and return a list of tree nodes to place foliage around
 	 */
 	public abstract List<FoliagePlacer.TreeNode> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config
 	);
 
-	public int getHeight(Random random) {
+	public int getHeight(AbstractRandom random) {
 		return this.baseHeight + random.nextInt(this.firstRandomHeight + 1) + random.nextInt(this.secondRandomHeight + 1);
 	}
 
@@ -58,37 +59,45 @@ public abstract class TrunkPlacer {
 		return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
 	}
 
-	protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
+	protected static void setToDirt(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
 		if (config.forceDirt || !canGenerate(world, pos)) {
 			replacer.accept(pos, config.dirtProvider.getBlockState(random, pos));
 		}
 	}
 
-	protected static boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos pos, TreeFeatureConfig config) {
-		return getAndSetState(world, replacer, random, pos, config, Function.identity());
+	protected boolean getAndSetState(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+		return this.getAndSetState(world, replacer, random, pos, config, Function.identity());
 	}
 
-	protected static boolean getAndSetState(
+	protected boolean getAndSetState(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		Random random,
+		AbstractRandom random,
 		BlockPos pos,
 		TreeFeatureConfig config,
-		Function<BlockState, BlockState> stateProvider
+		Function<BlockState, BlockState> function
 	) {
-		if (TreeFeature.canReplace(world, pos)) {
-			replacer.accept(pos, (BlockState)stateProvider.apply(config.trunkProvider.getBlockState(random, pos)));
+		if (this.canReplace(world, pos)) {
+			replacer.accept(pos, (BlockState)function.apply(config.trunkProvider.getBlockState(random, pos)));
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected static void trySetState(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos.Mutable pos, TreeFeatureConfig config
+	protected void trySetState(
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos.Mutable pos, TreeFeatureConfig config
 	) {
-		if (TreeFeature.canTreeReplace(world, pos)) {
-			getAndSetState(world, replacer, random, pos, config);
+		if (this.canReplaceOrIsLog(world, pos)) {
+			this.getAndSetState(world, replacer, random, pos, config);
 		}
+	}
+
+	protected boolean canReplace(TestableWorld world, BlockPos pos) {
+		return TreeFeature.canReplace(world, pos);
+	}
+
+	public boolean canReplaceOrIsLog(TestableWorld world, BlockPos pos) {
+		return this.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(BlockTags.LOGS));
 	}
 }

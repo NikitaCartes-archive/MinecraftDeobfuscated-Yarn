@@ -10,7 +10,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -73,6 +72,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -102,7 +102,7 @@ public class InGameHud extends DrawableHelper {
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
 	private static final float field_35431 = 0.2F;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
 	private final ChatHud chatHud;
@@ -1195,13 +1195,13 @@ public class InGameHud extends DrawableHelper {
 		this.overlayTinted = tinted;
 	}
 
-	public void setTitleTicks(int fadeInTicks, int remainTicks, int fadeOutTicks) {
+	public void setTitleTicks(int fadeInTicks, int stayTicks, int fadeOutTicks) {
 		if (fadeInTicks >= 0) {
 			this.titleFadeInTicks = fadeInTicks;
 		}
 
-		if (remainTicks >= 0) {
-			this.titleStayTicks = remainTicks;
+		if (stayTicks >= 0) {
+			this.titleStayTicks = stayTicks;
 		}
 
 		if (fadeOutTicks >= 0) {

@@ -4,15 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
-import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.passive.FrogEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -49,7 +45,7 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 
 	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
 		return super.shouldRun(serverWorld, frogEntity)
-			&& FrogEntity.isValidFrogTarget((LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get())
+			&& FrogEntity.isValidFrogFood((LivingEntity)frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get())
 			&& frogEntity.getPose() != EntityPose.CROAKING;
 	}
 
@@ -76,25 +72,14 @@ public class FrogEatEntityTask extends Task<FrogEntity> {
 		if (optional.isPresent()) {
 			Entity entity = (Entity)optional.get();
 			if (entity.isAlive()) {
-				entity.remove(Entity.RemovalReason.KILLED);
-				ItemStack itemStack = createDroppedStack(frog, entity);
-				world.spawnEntity(new ItemEntity(world, this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), itemStack));
+				frog.tryAttack(entity);
+				if (!entity.isAlive()) {
+					entity.remove(Entity.RemovalReason.KILLED);
+				}
 			}
 		}
 
 		frog.clearFrogTarget();
-	}
-
-	private static ItemStack createDroppedStack(FrogEntity frog, Entity eatenEntity) {
-		if (eatenEntity instanceof MagmaCubeEntity) {
-			return new ItemStack(switch (frog.getVariant()) {
-				case TEMPERATE -> Items.OCHRE_FROGLIGHT;
-				case WARM -> Items.PEARLESCENT_FROGLIGHT;
-				case COLD -> Items.VERDANT_FROGLIGHT;
-			});
-		} else {
-			return new ItemStack(Items.SLIME_BALL);
-		}
 	}
 
 	protected void keepRunning(ServerWorld serverWorld, FrogEntity frogEntity, long l) {

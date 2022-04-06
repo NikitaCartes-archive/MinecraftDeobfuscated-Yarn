@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -178,7 +177,6 @@ import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
@@ -262,6 +260,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -299,7 +298,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private int simulationDistance = 3;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
@@ -399,9 +398,25 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.onSpawnPacket(packet);
 			int i = packet.getId();
 			this.world.addEntity(i, entity);
-			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundManager().play(new MovingMinecartSoundInstance((AbstractMinecartEntity)entity));
+			this.playSpawnSound(entity);
+		} else {
+			LOGGER.warn("Skipping Entity with id {}", entityType);
+		}
+	}
+
+	private void playSpawnSound(Entity entity) {
+		if (entity instanceof AbstractMinecartEntity) {
+			this.client.getSoundManager().play(new MovingMinecartSoundInstance((AbstractMinecartEntity)entity));
+		} else if (entity instanceof BeeEntity) {
+			boolean bl = ((BeeEntity)entity).hasAngerTime();
+			AbstractBeeSoundInstance abstractBeeSoundInstance;
+			if (bl) {
+				abstractBeeSoundInstance = new AggressiveBeeSoundInstance((BeeEntity)entity);
+			} else {
+				abstractBeeSoundInstance = new PassiveBeeSoundInstance((BeeEntity)entity);
 			}
+
+			this.client.getSoundManager().playNextTick(abstractBeeSoundInstance);
 		}
 	}
 
@@ -777,29 +792,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.ENCHANTED_HIT) {
 				this.client.particleManager.addEmitter(entity, ParticleTypes.ENCHANTED_HIT);
 			}
-		}
-	}
-
-	@Override
-	public void onMobSpawn(MobSpawnS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		LivingEntity livingEntity = (LivingEntity)EntityType.newInstance(this.world, packet.getEntityTypeId());
-		if (livingEntity != null) {
-			livingEntity.readFromPacket(packet);
-			this.world.addEntity(packet.getId(), livingEntity);
-			if (livingEntity instanceof BeeEntity) {
-				boolean bl = ((BeeEntity)livingEntity).hasAngerTime();
-				AbstractBeeSoundInstance abstractBeeSoundInstance;
-				if (bl) {
-					abstractBeeSoundInstance = new AggressiveBeeSoundInstance((BeeEntity)livingEntity);
-				} else {
-					abstractBeeSoundInstance = new PassiveBeeSoundInstance((BeeEntity)livingEntity);
-				}
-
-				this.client.getSoundManager().playNextTick(abstractBeeSoundInstance);
-			}
-		} else {
-			LOGGER.warn("Skipping Entity with id {}", packet.getEntityTypeId());
 		}
 	}
 
@@ -1490,7 +1482,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onTitleFade(TitleFadeS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.setTitleTicks(packet.getFadeInTicks(), packet.getRemainTicks(), packet.getFadeOutTicks());
+		this.client.inGameHud.setTitleTicks(packet.getFadeInTicks(), packet.getStayTicks(), packet.getFadeOutTicks());
 	}
 
 	@Override
@@ -1568,7 +1560,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client
 			.world
-			.playSound(this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch());
+			.playSound(
+				this.client.player,
+				packet.getX(),
+				packet.getY(),
+				packet.getZ(),
+				packet.getSound(),
+				packet.getCategory(),
+				packet.getVolume(),
+				packet.getPitch(),
+				packet.getSeed()
+			);
 	}
 
 	@Override
@@ -1576,7 +1578,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity != null) {
-			this.client.world.playSoundFromEntity(this.client.player, entity, packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch());
+			this.client
+				.world
+				.playSoundFromEntity(this.client.player, entity, packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
 		}
 	}
 
@@ -1591,6 +1595,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					packet.getCategory(),
 					packet.getVolume(),
 					packet.getPitch(),
+					AbstractRandom.createAtomic(packet.getSeed()),
 					false,
 					0,
 					SoundInstance.AttenuationType.LINEAR,

@@ -13,14 +13,15 @@ import net.minecraft.advancement.criterion.EffectsChangedCriterion;
 import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
+import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -28,12 +29,14 @@ import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final EntityType<?>[] BREEDABLE_ANIMALS = new EntityType[]{
@@ -290,7 +293,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.criterion(
 				"safely_harvest_honey",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES).build()).smokey(true),
 					ItemPredicate.Builder.create().items(Items.GLASS_BOTTLE)
 				)
@@ -320,7 +323,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion(
 				"wax_on",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet()).build()),
 					ItemPredicate.Builder.create().items(Items.HONEYCOMB)
 				)
@@ -340,7 +343,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion(
 				"wax_off",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
 					ItemPredicate.Builder.create().items(AXE_ITEMS)
 				)
@@ -432,12 +435,46 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion(
 				"make_a_sign_glow",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.SIGNS).build()),
 					ItemPredicate.Builder.create().items(Items.GLOW_INK_SAC)
 				)
 			)
 			.build(consumer, "husbandry/make_a_sign_glow");
+		Advancement advancement11 = Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Items.COOKIE,
+				new TranslatableText("advancements.husbandry.allay_deliver_item_to_player.title"),
+				new TranslatableText("advancements.husbandry.allay_deliver_item_to_player.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				true
+			)
+			.criterion("allay_deliver_item_to_player", TickCriterion.Conditions.createItemDeliveredToPlayer())
+			.build(consumer, "husbandry/allay_deliver_item_to_player");
+		Advancement.Builder.create()
+			.parent(advancement11)
+			.display(
+				Items.NOTE_BLOCK,
+				new TranslatableText("advancements.husbandry.allay_deliver_cake_to_noteblock.title"),
+				new TranslatableText("advancements.husbandry.allay_deliver_cake_to_noteblock.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				true
+			)
+			.criterion(
+				"allay_deliver_cake_to_noteblock",
+				ItemCriterion.Conditions.createAllayDropItemOnBlock(
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.NOTE_BLOCK).build()),
+					ItemPredicate.Builder.create().items(Items.CAKE)
+				)
+			)
+			.build(consumer, "husbandry/allay_deliver_cake_to_noteblock");
 	}
 
 	private Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
@@ -485,8 +522,14 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 	}
 
 	private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
-		CatEntity.TEXTURES
-			.forEach((type, id) -> builder.criterion(id.getPath(), TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().type(id).build())));
+		Registry.CAT_VARIANT
+			.getEntrySet()
+			.forEach(
+				entry -> builder.criterion(
+						((RegistryKey)entry.getKey()).getValue().toString(),
+						TameAnimalCriterion.Conditions.create(EntityPredicate.Builder.create().typeSpecific(TypeSpecificPredicate.cat((CatVariant)entry.getValue())).build())
+					)
+			);
 		return builder;
 	}
 }

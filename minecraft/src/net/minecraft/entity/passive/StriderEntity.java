@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
-import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -60,6 +59,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -90,7 +90,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
 	}
 
-	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
 		do {

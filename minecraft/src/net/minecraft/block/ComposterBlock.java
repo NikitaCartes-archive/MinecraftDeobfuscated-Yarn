@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -27,6 +26,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -181,17 +181,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		double d = blockState.getOutlineShape(world, pos).getEndingCoord(Direction.Axis.Y, 0.5, 0.5) + 0.03125;
 		double e = 0.13125F;
 		double f = 0.7375F;
-		Random random = world.getRandom();
+		AbstractRandom abstractRandom = world.getRandom();
 
 		for (int i = 0; i < 10; i++) {
-			double g = random.nextGaussian() * 0.02;
-			double h = random.nextGaussian() * 0.02;
-			double j = random.nextGaussian() * 0.02;
+			double g = abstractRandom.nextGaussian() * 0.02;
+			double h = abstractRandom.nextGaussian() * 0.02;
+			double j = abstractRandom.nextGaussian() * 0.02;
 			world.addParticle(
 				ParticleTypes.COMPOSTER,
-				(double)pos.getX() + 0.13125F + 0.7375F * (double)random.nextFloat(),
-				(double)pos.getY() + d + (double)random.nextFloat() * (1.0 - d),
-				(double)pos.getZ() + 0.13125F + 0.7375F * (double)random.nextFloat(),
+				(double)pos.getX() + 0.13125F + 0.7375F * (double)abstractRandom.nextFloat(),
+				(double)pos.getY() + d + (double)abstractRandom.nextFloat() * (1.0 - d),
+				(double)pos.getZ() + 0.13125F + 0.7375F * (double)abstractRandom.nextFloat(),
 				g,
 				h,
 				j
@@ -295,7 +295,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if ((Integer)state.get(LEVEL) == 7) {
 			world.setBlockState(pos, state.cycle(LEVEL), Block.NOTIFY_ALL);
 			world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_READY, SoundCategory.BLOCKS, 1.0F, 1.0F);

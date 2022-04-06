@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -54,17 +54,17 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 		if (!(entity instanceof LivingEntity) || entity.getBlockStateAtPos().isOf(this)) {
 			entity.slowMovement(state, new Vec3d(0.9F, 1.5, 0.9F));
 			if (world.isClient) {
-				Random random = world.getRandom();
+				AbstractRandom abstractRandom = world.getRandom();
 				boolean bl = entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ();
-				if (bl && random.nextBoolean()) {
+				if (bl && abstractRandom.nextBoolean()) {
 					world.addParticle(
 						ParticleTypes.SNOWFLAKE,
 						entity.getX(),
 						(double)(pos.getY() + 1),
 						entity.getZ(),
-						(double)(MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F),
+						(double)(MathHelper.nextBetween(abstractRandom, -1.0F, 1.0F) * 0.083333336F),
 						0.05F,
-						(double)(MathHelper.nextBetween(random, -1.0F, 1.0F) * 0.083333336F)
+						(double)(MathHelper.nextBetween(abstractRandom, -1.0F, 1.0F) * 0.083333336F)
 					);
 				}
 			}

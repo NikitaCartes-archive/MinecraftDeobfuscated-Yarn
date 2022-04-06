@@ -52,9 +52,7 @@ public class WardenBrain {
 	private static final int SNIFF_DURATION = MathHelper.ceil(83.2F);
 	public static final int DIG_COOLDOWN = 1200;
 	private static final int field_38181 = 100;
-	private static final List<SensorType<? extends Sensor<? super WardenEntity>>> SENSORS = List.of(
-		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.WARDEN_ENTITY_SENSOR
-	);
+	private static final List<SensorType<? extends Sensor<? super WardenEntity>>> SENSORS = List.of(SensorType.NEAREST_PLAYERS, SensorType.WARDEN_ENTITY_SENSOR);
 	private static final List<MemoryModuleType<?>> MEMORY_MODULES = List.of(
 		MemoryModuleType.MOBS,
 		MemoryModuleType.VISIBLE_MOBS,
@@ -168,7 +166,7 @@ public class WardenBrain {
 			10,
 			ImmutableList.of(
 				RESET_DIG_COOLDOWN_TASK,
-				new ForgetAttackTargetTask<>(entity -> warden.getAngriness() != Angriness.ANGRY || !isAngryAt(warden, entity), WardenBrain::removeDeadSuspect, false),
+				new ForgetAttackTargetTask<>(entity -> warden.getAngriness() != Angriness.ANGRY || !warden.isValidTarget(entity), WardenBrain::removeDeadSuspect, false),
 				new RangedApproachTask(1.2F),
 				new FollowMobTask(entity -> isTargeting(warden, entity), 8.0F),
 				new MeleeAttackTask(18)
@@ -182,10 +180,7 @@ public class WardenBrain {
 	}
 
 	private static void removeDeadSuspect(WardenEntity warden, LivingEntity suspect) {
-		if (suspect.isDead()) {
-			warden.removeSuspect(suspect);
-		}
-
+		warden.removeSuspect(suspect);
 		resetDigCooldown(warden);
 	}
 
@@ -207,10 +202,6 @@ public class WardenBrain {
 			warden.getBrain().remember(MemoryModuleType.DISTURBANCE_LOCATION, pos, 100L);
 			warden.getBrain().forget(MemoryModuleType.WALK_TARGET);
 		}
-	}
-
-	private static boolean isAngryAt(WardenEntity warden, LivingEntity entity) {
-		return warden.getPrimeSuspect().filter(entityx -> entityx == entity).isPresent();
 	}
 
 	private static boolean hasNoSuspectOrTarget(WardenEntity warden) {

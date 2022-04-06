@@ -7,7 +7,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -18,6 +17,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public class ApplyBonusLootFunction extends ConditionalLootFunction {
@@ -86,7 +86,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		@Override
-		public int getValue(Random random, int initialCount, int enchantmentLevel) {
+		public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
 			for (int i = 0; i < enchantmentLevel + this.extra; i++) {
 				if (random.nextFloat() < this.probability) {
 					initialCount++;
@@ -115,7 +115,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	interface Formula {
-		int getValue(Random random, int initialCount, int enchantmentLevel);
+		int getValue(AbstractRandom random, int initialCount, int enchantmentLevel);
 
 		void toJson(JsonObject json, JsonSerializationContext context);
 
@@ -130,7 +130,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		public static final Identifier ID = new Identifier("ore_drops");
 
 		@Override
-		public int getValue(Random random, int initialCount, int enchantmentLevel) {
+		public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
 			if (enchantmentLevel > 0) {
 				int i = random.nextInt(enchantmentLevel + 2) - 1;
 				if (i < 0) {
@@ -200,7 +200,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		@Override
-		public int getValue(Random random, int initialCount, int enchantmentLevel) {
+		public int getValue(AbstractRandom random, int initialCount, int enchantmentLevel) {
 			return initialCount + random.nextInt(this.bonusMultiplier * enchantmentLevel + 1);
 		}
 

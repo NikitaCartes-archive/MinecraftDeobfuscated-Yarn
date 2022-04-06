@@ -29,6 +29,7 @@ public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule SANDSTONE = block(Blocks.SANDSTONE);
 	private static final MaterialRules.MaterialRule PACKED_ICE = block(Blocks.PACKED_ICE);
 	private static final MaterialRules.MaterialRule SNOW_BLOCK = block(Blocks.SNOW_BLOCK);
+	private static final MaterialRules.MaterialRule field_38808 = block(Blocks.MUD);
 	private static final MaterialRules.MaterialRule POWDER_SNOW = block(Blocks.POWDER_SNOW);
 	private static final MaterialRules.MaterialRule ICE = block(Blocks.ICE);
 	private static final MaterialRules.MaterialRule WATER = block(Blocks.WATER);
@@ -57,19 +58,20 @@ public class VanillaSurfaceRules {
 		MaterialRules.MaterialCondition materialCondition2 = MaterialRules.aboveY(YOffset.fixed(256), 0);
 		MaterialRules.MaterialCondition materialCondition3 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(63), -1);
 		MaterialRules.MaterialCondition materialCondition4 = MaterialRules.aboveYWithStoneDepth(YOffset.fixed(74), 1);
-		MaterialRules.MaterialCondition materialCondition5 = MaterialRules.aboveY(YOffset.fixed(62), 0);
-		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.aboveY(YOffset.fixed(63), 0);
-		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.water(-1, 0);
-		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.water(0, 0);
-		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.waterWithStoneDepth(-6, -1);
-		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.hole();
-		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.biome(BiomeKeys.FROZEN_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN);
-		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.steepSlope();
-		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition8, GRASS_BLOCK), DIRT);
+		MaterialRules.MaterialCondition materialCondition5 = MaterialRules.aboveY(YOffset.fixed(60), 0);
+		MaterialRules.MaterialCondition materialCondition6 = MaterialRules.aboveY(YOffset.fixed(62), 0);
+		MaterialRules.MaterialCondition materialCondition7 = MaterialRules.aboveY(YOffset.fixed(63), 0);
+		MaterialRules.MaterialCondition materialCondition8 = MaterialRules.water(-1, 0);
+		MaterialRules.MaterialCondition materialCondition9 = MaterialRules.water(0, 0);
+		MaterialRules.MaterialCondition materialCondition10 = MaterialRules.waterWithStoneDepth(-6, -1);
+		MaterialRules.MaterialCondition materialCondition11 = MaterialRules.hole();
+		MaterialRules.MaterialCondition materialCondition12 = MaterialRules.biome(BiomeKeys.FROZEN_OCEAN, BiomeKeys.DEEP_FROZEN_OCEAN);
+		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.steepSlope();
+		MaterialRules.MaterialRule materialRule = MaterialRules.sequence(MaterialRules.condition(materialCondition9, GRASS_BLOCK), DIRT);
 		MaterialRules.MaterialRule materialRule2 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, SANDSTONE), SAND);
 		MaterialRules.MaterialRule materialRule3 = MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, STONE), GRAVEL);
-		MaterialRules.MaterialCondition materialCondition13 = MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH);
-		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.biome(BiomeKeys.DESERT);
+		MaterialRules.MaterialCondition materialCondition14 = MaterialRules.biome(BiomeKeys.WARM_OCEAN, BiomeKeys.BEACH, BiomeKeys.SNOWY_BEACH);
+		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.biome(BiomeKeys.DESERT);
 		MaterialRules.MaterialRule materialRule4 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.STONY_PEAKS),
@@ -80,29 +82,29 @@ public class VanillaSurfaceRules {
 				MaterialRules.sequence(MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.GRAVEL, -0.05, 0.05), materialRule3), STONE)
 			),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.WINDSWEPT_HILLS), MaterialRules.condition(surfaceNoiseThreshold(1.0), STONE)),
-			MaterialRules.condition(materialCondition13, materialRule2),
 			MaterialRules.condition(materialCondition14, materialRule2),
+			MaterialRules.condition(materialCondition15, materialRule2),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.DRIPSTONE_CAVES), STONE)
 		);
 		MaterialRules.MaterialRule materialRule5 = MaterialRules.condition(
-			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.45, 0.58), MaterialRules.condition(materialCondition8, POWDER_SNOW)
+			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.45, 0.58), MaterialRules.condition(materialCondition9, POWDER_SNOW)
 		);
 		MaterialRules.MaterialRule materialRule6 = MaterialRules.condition(
-			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.35, 0.6), MaterialRules.condition(materialCondition8, POWDER_SNOW)
+			MaterialRules.noiseThreshold(NoiseParametersKeys.POWDER_SNOW, 0.35, 0.6), MaterialRules.condition(materialCondition9, POWDER_SNOW)
 		);
 		MaterialRules.MaterialRule materialRule7 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.FROZEN_PEAKS),
 				MaterialRules.sequence(
-					MaterialRules.condition(materialCondition12, PACKED_ICE),
+					MaterialRules.condition(materialCondition13, PACKED_ICE),
 					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.PACKED_ICE, -0.5, 0.2), PACKED_ICE),
 					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.ICE, -0.0625, 0.025), ICE),
-					MaterialRules.condition(materialCondition8, SNOW_BLOCK)
+					MaterialRules.condition(materialCondition9, SNOW_BLOCK)
 				)
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.SNOWY_SLOPES),
-				MaterialRules.sequence(MaterialRules.condition(materialCondition12, STONE), materialRule5, MaterialRules.condition(materialCondition8, SNOW_BLOCK))
+				MaterialRules.sequence(MaterialRules.condition(materialCondition13, STONE), materialRule5, MaterialRules.condition(materialCondition9, SNOW_BLOCK))
 			),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.JAGGED_PEAKS), STONE),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.GROVE), MaterialRules.sequence(materialRule5, DIRT)),
@@ -123,21 +125,21 @@ public class VanillaSurfaceRules {
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.FROZEN_PEAKS),
 				MaterialRules.sequence(
-					MaterialRules.condition(materialCondition12, PACKED_ICE),
+					MaterialRules.condition(materialCondition13, PACKED_ICE),
 					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.PACKED_ICE, 0.0, 0.2), PACKED_ICE),
 					MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.ICE, 0.0, 0.025), ICE),
-					MaterialRules.condition(materialCondition8, SNOW_BLOCK)
+					MaterialRules.condition(materialCondition9, SNOW_BLOCK)
 				)
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.SNOWY_SLOPES),
-				MaterialRules.sequence(MaterialRules.condition(materialCondition12, STONE), materialRule6, MaterialRules.condition(materialCondition8, SNOW_BLOCK))
+				MaterialRules.sequence(MaterialRules.condition(materialCondition13, STONE), materialRule6, MaterialRules.condition(materialCondition9, SNOW_BLOCK))
 			),
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.JAGGED_PEAKS),
-				MaterialRules.sequence(MaterialRules.condition(materialCondition12, STONE), MaterialRules.condition(materialCondition8, SNOW_BLOCK))
+				MaterialRules.sequence(MaterialRules.condition(materialCondition13, STONE), MaterialRules.condition(materialCondition9, SNOW_BLOCK))
 			),
-			MaterialRules.condition(MaterialRules.biome(BiomeKeys.GROVE), MaterialRules.sequence(materialRule6, MaterialRules.condition(materialCondition8, SNOW_BLOCK))),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.GROVE), MaterialRules.sequence(materialRule6, MaterialRules.condition(materialCondition9, SNOW_BLOCK))),
 			materialRule4,
 			MaterialRules.condition(
 				MaterialRules.biome(BiomeKeys.WINDSWEPT_SAVANNA),
@@ -156,13 +158,14 @@ public class VanillaSurfaceRules {
 				MaterialRules.biome(BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
 				MaterialRules.sequence(MaterialRules.condition(surfaceNoiseThreshold(1.75), COARSE_DIRT), MaterialRules.condition(surfaceNoiseThreshold(-0.95), PODZOL))
 			),
-			MaterialRules.condition(MaterialRules.biome(BiomeKeys.ICE_SPIKES), MaterialRules.condition(materialCondition8, SNOW_BLOCK)),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.ICE_SPIKES), MaterialRules.condition(materialCondition9, SNOW_BLOCK)),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MANGROVE_SWAMP), field_38808),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MUSHROOM_FIELDS), MYCELIUM),
 			materialRule
 		);
-		MaterialRules.MaterialCondition materialCondition15 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
-		MaterialRules.MaterialCondition materialCondition16 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
-		MaterialRules.MaterialCondition materialCondition17 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
+		MaterialRules.MaterialCondition materialCondition16 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.909, -0.5454);
+		MaterialRules.MaterialCondition materialCondition17 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, -0.1818, 0.1818);
+		MaterialRules.MaterialCondition materialCondition18 = MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE, 0.5454, 0.909);
 		MaterialRules.MaterialRule materialRule9 = MaterialRules.sequence(
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
@@ -172,9 +175,9 @@ public class VanillaSurfaceRules {
 						MaterialRules.condition(
 							materialCondition,
 							MaterialRules.sequence(
-								MaterialRules.condition(materialCondition15, COARSE_DIRT),
 								MaterialRules.condition(materialCondition16, COARSE_DIRT),
 								MaterialRules.condition(materialCondition17, COARSE_DIRT),
+								MaterialRules.condition(materialCondition18, COARSE_DIRT),
 								materialRule
 							)
 						)
@@ -182,9 +185,18 @@ public class VanillaSurfaceRules {
 					MaterialRules.condition(
 						MaterialRules.biome(BiomeKeys.SWAMP),
 						MaterialRules.condition(
+							materialCondition6,
+							MaterialRules.condition(
+								MaterialRules.not(materialCondition7), MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE_SWAMP, 0.0), WATER)
+							)
+						)
+					),
+					MaterialRules.condition(
+						MaterialRules.biome(BiomeKeys.MANGROVE_SWAMP),
+						MaterialRules.condition(
 							materialCondition5,
 							MaterialRules.condition(
-								MaterialRules.not(materialCondition6), MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE_SWAMP, 0.0), WATER)
+								MaterialRules.not(materialCondition7), MaterialRules.condition(MaterialRules.noiseThreshold(NoiseParametersKeys.SURFACE_SWAMP, 0.0), WATER)
 							)
 						)
 					)
@@ -200,38 +212,38 @@ public class VanillaSurfaceRules {
 							MaterialRules.condition(
 								materialCondition4,
 								MaterialRules.sequence(
-									MaterialRules.condition(materialCondition15, TERRACOTTA),
 									MaterialRules.condition(materialCondition16, TERRACOTTA),
 									MaterialRules.condition(materialCondition17, TERRACOTTA),
+									MaterialRules.condition(materialCondition18, TERRACOTTA),
 									MaterialRules.terracottaBands()
 								)
 							),
-							MaterialRules.condition(materialCondition7, MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, RED_SANDSTONE), RED_SAND)),
-							MaterialRules.condition(MaterialRules.not(materialCondition10), ORANGE_TERRACOTTA),
-							MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA),
+							MaterialRules.condition(materialCondition8, MaterialRules.sequence(MaterialRules.condition(MaterialRules.STONE_DEPTH_CEILING, RED_SANDSTONE), RED_SAND)),
+							MaterialRules.condition(MaterialRules.not(materialCondition11), ORANGE_TERRACOTTA),
+							MaterialRules.condition(materialCondition10, WHITE_TERRACOTTA),
 							materialRule3
 						)
 					),
 					MaterialRules.condition(
 						materialCondition3,
 						MaterialRules.sequence(
-							MaterialRules.condition(materialCondition6, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
+							MaterialRules.condition(materialCondition7, MaterialRules.condition(MaterialRules.not(materialCondition4), ORANGE_TERRACOTTA)),
 							MaterialRules.terracottaBands()
 						)
 					),
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, MaterialRules.condition(materialCondition9, WHITE_TERRACOTTA))
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, MaterialRules.condition(materialCondition10, WHITE_TERRACOTTA))
 				)
 			),
 			MaterialRules.condition(
 				MaterialRules.STONE_DEPTH_FLOOR,
 				MaterialRules.condition(
-					materialCondition7,
+					materialCondition8,
 					MaterialRules.sequence(
 						MaterialRules.condition(
-							materialCondition11,
+							materialCondition12,
 							MaterialRules.condition(
-								materialCondition10,
-								MaterialRules.sequence(MaterialRules.condition(materialCondition8, AIR), MaterialRules.condition(MaterialRules.temperature(), ICE), WATER)
+								materialCondition11,
+								MaterialRules.sequence(MaterialRules.condition(materialCondition9, AIR), MaterialRules.condition(MaterialRules.temperature(), ICE), WATER)
 							)
 						),
 						materialRule8
@@ -239,12 +251,12 @@ public class VanillaSurfaceRules {
 				)
 			),
 			MaterialRules.condition(
-				materialCondition9,
+				materialCondition10,
 				MaterialRules.sequence(
-					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition11, MaterialRules.condition(materialCondition10, WATER))),
+					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR, MaterialRules.condition(materialCondition12, MaterialRules.condition(materialCondition11, WATER))),
 					MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH, materialRule7),
-					MaterialRules.condition(materialCondition13, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6, SANDSTONE)),
-					MaterialRules.condition(materialCondition14, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30, SANDSTONE))
+					MaterialRules.condition(materialCondition14, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_6, SANDSTONE)),
+					MaterialRules.condition(materialCondition15, MaterialRules.condition(MaterialRules.STONE_DEPTH_FLOOR_WITH_SURFACE_DEPTH_RANGE_30, SANDSTONE))
 				)
 			),
 			MaterialRules.condition(

@@ -1,8 +1,5 @@
 package net.minecraft.entity.passive;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -53,15 +50,18 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.CatVariantTags;
 import net.minecraft.tag.ConfiguredStructureFeatureTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -74,72 +74,10 @@ public class CatEntity extends TameableEntity {
 	public static final double NORMAL_SPEED = 0.8;
 	public static final double SPRINTING_SPEED = 1.33;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.COD, Items.SALMON);
-	private static final TrackedData<Integer> CAT_TYPE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<CatVariant> CAT_VARIANT = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.CAT_VARIANT);
 	private static final TrackedData<Boolean> IN_SLEEPING_POSE = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> HEAD_DOWN = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> COLLAR_COLOR = DataTracker.registerData(CatEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	/**
-	 * The tabby cat type, whose value is {@value}.
-	 */
-	public static final int TABBY_TYPE = 0;
-	/**
-	 * The black cat type, whose value is {@value}.
-	 */
-	public static final int BLACK_TYPE = 1;
-	/**
-	 * The red cat type, whose value is {@value}.
-	 */
-	public static final int RED_TYPE = 2;
-	/**
-	 * The Siamese cat type, whose value is {@value}.
-	 */
-	public static final int SIAMESE_TYPE = 3;
-	/**
-	 * The British shorthair cat type, whose value is {@value}.
-	 */
-	public static final int BRITISH_SHORTHAIR_TYPE = 4;
-	/**
-	 * The calico cat type, whose value is {@value}.
-	 */
-	public static final int CALICO_TYPE = 5;
-	/**
-	 * The Persian cat type, whose value is {@value}.
-	 */
-	public static final int PERSIAN_TYPE = 6;
-	/**
-	 * The ragdoll cat type, whose value is {@value}.
-	 */
-	public static final int RAGDOLL_TYPE = 7;
-	/**
-	 * The white cat type, whose value is {@value}.
-	 */
-	public static final int WHITE_TYPE = 8;
-	/**
-	 * The Jellie cat type, whose value is {@value}.
-	 * <p>
-	 * This cat type was added in the 1.14 update after the community cat contest.
-	 * The winner was GoodTimesWithScar's cat named Jellie.
-	 */
-	public static final int JELLIE_TYPE = 9;
-	/**
-	 * The all black cat type, whose value is {@value}.
-	 */
-	public static final int ALL_BLACK_TYPE = 10;
-	private static final int field_30324 = 11;
-	private static final int field_30325 = 10;
-	public static final Map<Integer, Identifier> TEXTURES = Util.make(Maps.<Integer, Identifier>newHashMap(), map -> {
-		map.put(0, new Identifier("textures/entity/cat/tabby.png"));
-		map.put(1, new Identifier("textures/entity/cat/black.png"));
-		map.put(2, new Identifier("textures/entity/cat/red.png"));
-		map.put(3, new Identifier("textures/entity/cat/siamese.png"));
-		map.put(4, new Identifier("textures/entity/cat/british_shorthair.png"));
-		map.put(5, new Identifier("textures/entity/cat/calico.png"));
-		map.put(6, new Identifier("textures/entity/cat/persian.png"));
-		map.put(7, new Identifier("textures/entity/cat/ragdoll.png"));
-		map.put(8, new Identifier("textures/entity/cat/white.png"));
-		map.put(9, new Identifier("textures/entity/cat/jellie.png"));
-		map.put(10, new Identifier("textures/entity/cat/all_black.png"));
-	});
 	private CatEntity.CatFleeGoal<PlayerEntity> fleeGoal;
 	@Nullable
 	private net.minecraft.entity.ai.goal.TemptGoal temptGoal;
@@ -155,7 +93,7 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public Identifier getTexture() {
-		return (Identifier)TEXTURES.getOrDefault(this.getCatType(), (Identifier)TEXTURES.get(0));
+		return this.getVariant().texture();
 	}
 
 	@Override
@@ -177,16 +115,12 @@ public class CatEntity extends TameableEntity {
 		this.targetSelector.add(1, new UntamedActiveTargetGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 
-	public int getCatType() {
-		return this.dataTracker.get(CAT_TYPE);
+	public CatVariant getVariant() {
+		return this.dataTracker.get(CAT_VARIANT);
 	}
 
-	public void setCatType(int type) {
-		if (type < 0 || type >= 11) {
-			type = this.random.nextInt(10);
-		}
-
-		this.dataTracker.set(CAT_TYPE, type);
+	public void setVariant(CatVariant variant) {
+		this.dataTracker.set(CAT_VARIANT, variant);
 	}
 
 	/**
@@ -224,7 +158,7 @@ public class CatEntity extends TameableEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CAT_TYPE, 1);
+		this.dataTracker.startTracking(CAT_VARIANT, CatVariant.BLACK);
 		this.dataTracker.startTracking(IN_SLEEPING_POSE, false);
 		this.dataTracker.startTracking(HEAD_DOWN, false);
 		this.dataTracker.startTracking(COLLAR_COLOR, DyeColor.RED.getId());
@@ -233,14 +167,18 @@ public class CatEntity extends TameableEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("CatType", this.getCatType());
+		nbt.putString("variant", Registry.CAT_VARIANT.getId(this.getVariant()).toString());
 		nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setCatType(nbt.getInt("CatType"));
+		CatVariant catVariant = Registry.CAT_VARIANT.get(Identifier.tryParse(nbt.getString("variant")));
+		if (catVariant != null) {
+			this.setVariant(catVariant);
+		}
+
 		if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
 			this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
 		}
@@ -385,9 +323,9 @@ public class CatEntity extends TameableEntity {
 		CatEntity catEntity = EntityType.CAT.create(serverWorld);
 		if (passiveEntity instanceof CatEntity) {
 			if (this.random.nextBoolean()) {
-				catEntity.setCatType(this.getCatType());
+				catEntity.setVariant(this.getVariant());
 			} else {
-				catEntity.setCatType(((CatEntity)passiveEntity).getCatType());
+				catEntity.setVariant(((CatEntity)passiveEntity).getVariant());
 			}
 
 			if (this.isTamed()) {
@@ -419,16 +357,12 @@ public class CatEntity extends TameableEntity {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		if (world.getMoonSize() > 0.9F) {
-			this.setCatType(this.random.nextInt(11));
-		} else {
-			this.setCatType(this.random.nextInt(10));
-		}
-
-		World world2 = world.toServerWorld();
-		if (world2 instanceof ServerWorld serverWorld
-			&& serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
-			this.setCatType(ALL_BLACK_TYPE);
+		boolean bl = world.getMoonSize() > 0.9F;
+		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
+		Registry.CAT_VARIANT.getEntryList(tagKey).flatMap(list -> list.getRandom(this.random)).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
+		ServerWorld serverWorld = world.toServerWorld();
+		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
+			this.setVariant(CatVariant.ALL_BLACK);
 			this.setPersistent();
 		}
 
@@ -629,14 +563,14 @@ public class CatEntity extends TameableEntity {
 		}
 
 		private void dropMorningGifts() {
-			Random random = this.cat.getRandom();
+			AbstractRandom abstractRandom = this.cat.getRandom();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			mutable.set(this.cat.getBlockPos());
 			this.cat
 				.teleport(
-					(double)(mutable.getX() + random.nextInt(11) - 5),
-					(double)(mutable.getY() + random.nextInt(5) - 2),
-					(double)(mutable.getZ() + random.nextInt(11) - 5),
+					(double)(mutable.getX() + abstractRandom.nextInt(11) - 5),
+					(double)(mutable.getY() + abstractRandom.nextInt(5) - 2),
+					(double)(mutable.getZ() + abstractRandom.nextInt(11) - 5),
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
@@ -644,7 +578,7 @@ public class CatEntity extends TameableEntity {
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
 				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
-				.random(random);
+				.random(abstractRandom);
 
 			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.GIFT))) {
 				this.cat

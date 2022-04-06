@@ -62,11 +62,11 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeVarInt(this.rootSize);
 	}
 
-	private static void validate(List<CommandTreeS2CPacket.CommandNodeData> nodeDatas, BiPredicate<CommandTreeS2CPacket.CommandNodeData, IntSet> validater) {
+	private static void validate(List<CommandTreeS2CPacket.CommandNodeData> nodeDatas, BiPredicate<CommandTreeS2CPacket.CommandNodeData, IntSet> validator) {
 		IntSet intSet = new IntOpenHashSet(IntSets.fromTo(0, nodeDatas.size()));
 
 		while (!intSet.isEmpty()) {
-			boolean bl = intSet.removeIf(i -> validater.test((CommandTreeS2CPacket.CommandNodeData)nodeDatas.get(i), intSet));
+			boolean bl = intSet.removeIf(i -> validator.test((CommandTreeS2CPacket.CommandNodeData)nodeDatas.get(i), intSet));
 			if (!bl) {
 				throw new IllegalStateException("Server sent an impossible command tree");
 			}

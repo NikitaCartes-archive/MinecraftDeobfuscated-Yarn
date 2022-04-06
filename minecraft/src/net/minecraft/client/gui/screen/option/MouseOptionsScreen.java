@@ -18,7 +18,7 @@ import net.minecraft.text.TranslatableText;
 public class MouseOptionsScreen extends GameOptionsScreen {
 	private ButtonListWidget buttonList;
 
-	private static SimpleOption<?>[] getOptons(GameOptions gameOptions) {
+	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{
 			gameOptions.getMouseSensitivity(),
 			gameOptions.getInvertYMouse(),
@@ -38,10 +38,10 @@ public class MouseOptionsScreen extends GameOptionsScreen {
 		if (InputUtil.isRawMouseMotionSupported()) {
 			this.buttonList
 				.addAll(
-					(SimpleOption<?>[])Stream.concat(Arrays.stream(getOptons(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(SimpleOption[]::new)
+					(SimpleOption<?>[])Stream.concat(Arrays.stream(getOptions(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(SimpleOption[]::new)
 				);
 		} else {
-			this.buttonList.addAll(getOptons(this.gameOptions));
+			this.buttonList.addAll(getOptions(this.gameOptions));
 		}
 
 		this.addSelectableChild(this.buttonList);

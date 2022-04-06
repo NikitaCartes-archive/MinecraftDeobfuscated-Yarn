@@ -8,11 +8,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.noise.NoiseRouter;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.RandomDeriver;
 import org.apache.commons.lang3.mutable.MutableDouble;
 
 public interface AquiferSampler {

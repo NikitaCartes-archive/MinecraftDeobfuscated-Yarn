@@ -1,9 +1,9 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class AlwaysTrueRuleTest extends RuleTest {
 	public static final Codec<AlwaysTrueRuleTest> CODEC = Codec.unit((Supplier<AlwaysTrueRuleTest>)(() -> AlwaysTrueRuleTest.INSTANCE));
@@ -13,7 +13,7 @@ public class AlwaysTrueRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
+	public boolean test(BlockState state, AbstractRandom random) {
 		return true;
 	}
 

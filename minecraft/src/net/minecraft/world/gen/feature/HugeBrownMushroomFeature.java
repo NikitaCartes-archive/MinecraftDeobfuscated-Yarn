@@ -1,10 +1,10 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.WorldAccess;
 
 public class HugeBrownMushroomFeature extends HugeMushroomFeature {
@@ -13,7 +13,7 @@ public class HugeBrownMushroomFeature extends HugeMushroomFeature {
 	}
 
 	@Override
-	protected void generateCap(WorldAccess world, Random random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
+	protected void generateCap(WorldAccess world, AbstractRandom random, BlockPos start, int y, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
 		int i = config.foliageRadius;
 
 		for (int j = -i; j <= i; j++) {

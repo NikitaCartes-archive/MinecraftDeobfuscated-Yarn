@@ -228,7 +228,7 @@ public class RavagerEntity extends RaiderEntity {
 			if (this.random.nextDouble() < 0.5) {
 				this.stunTick = 40;
 				this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0F, 1.0F);
-				this.world.sendEntityStatus(this, EntityStatuses.STUN_RAVENGER);
+				this.world.sendEntityStatus(this, EntityStatuses.STUN_RAVAGER);
 				target.pushAwayFrom(this);
 			} else {
 				this.knockBack(target);
@@ -273,7 +273,7 @@ public class RavagerEntity extends RaiderEntity {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.attackTick = 10;
 			this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
-		} else if (status == EntityStatuses.STUN_RAVENGER) {
+		} else if (status == EntityStatuses.STUN_RAVAGER) {
 			this.stunTick = 40;
 		}
 

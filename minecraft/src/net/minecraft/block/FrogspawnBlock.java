@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.TadpoleEntity;
@@ -12,6 +11,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -46,8 +46,8 @@ public class FrogspawnBlock extends Block {
 		world.createAndScheduleBlockTick(pos, this, getHatchTime(world.getRandom()));
 	}
 
-	private static int getHatchTime(Random random) {
-		return random.nextInt(minHatchTime, maxHatchTime);
+	private static int getHatchTime(AbstractRandom random) {
+		return random.nextBetweenExclusive(minHatchTime, maxHatchTime);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class FrogspawnBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (!this.canPlaceAt(state, world, pos)) {
 			this.breakWithoutDrop(world, pos);
 		} else {
@@ -81,7 +81,7 @@ public class FrogspawnBlock extends Block {
 		return fluidState.getFluid() == Fluids.WATER && fluidState2.getFluid() == Fluids.EMPTY;
 	}
 
-	private void hatch(ServerWorld world, BlockPos pos, Random random) {
+	private void hatch(ServerWorld world, BlockPos pos, AbstractRandom random) {
 		this.breakWithoutDrop(world, pos);
 		world.playSound(null, pos, SoundEvents.BLOCK_FROGSPAWN_HATCH, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		this.spawnTadpoles(world, pos, random);
@@ -91,8 +91,8 @@ public class FrogspawnBlock extends Block {
 		world.breakBlock(pos, false);
 	}
 
-	private void spawnTadpoles(ServerWorld world, BlockPos pos, Random random) {
-		int i = random.nextInt(2, 6);
+	private void spawnTadpoles(ServerWorld world, BlockPos pos, AbstractRandom random) {
+		int i = random.nextBetweenExclusive(2, 6);
 
 		for (int j = 1; j <= i; j++) {
 			TadpoleEntity tadpoleEntity = EntityType.TADPOLE.create(world);
@@ -100,7 +100,7 @@ public class FrogspawnBlock extends Block {
 			double e = random.nextDouble();
 			double f = (double)pos.getX() + d;
 			double g = (double)pos.getZ() + e;
-			int k = random.nextInt(1, 361);
+			int k = random.nextBetweenExclusive(1, 361);
 			tadpoleEntity.refreshPositionAndAngles(f, (double)pos.getY() - 0.5, g, (float)k, 0.0F);
 			tadpoleEntity.setPersistent();
 			world.spawnEntity(tadpoleEntity);

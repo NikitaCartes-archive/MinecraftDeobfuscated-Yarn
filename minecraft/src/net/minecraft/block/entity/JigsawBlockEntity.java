@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.NbtCompound;
@@ -24,6 +23,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -117,7 +117,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 		StructureManager structureManager = world.getStructureManager();
 		StructureAccessor structureAccessor = world.getStructureAccessor();
-		Random random = world.getRandom();
+		AbstractRandom abstractRandom = world.getRandom();
 		BlockPos blockPos = this.getPos();
 		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 		Structure structure = new Structure();
@@ -134,13 +134,13 @@ public class JigsawBlockEntity extends BlockEntity {
 			chunkGenerator,
 			structureManager,
 			list,
-			random,
+			abstractRandom,
 			world,
 			world.getChunkManager().getNoiseConfig()
 		);
 
 		for (PoolStructurePiece poolStructurePiece2 : list) {
-			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+			poolStructurePiece2.generate(world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), blockPos, keepJigsaws);
 		}
 	}
 

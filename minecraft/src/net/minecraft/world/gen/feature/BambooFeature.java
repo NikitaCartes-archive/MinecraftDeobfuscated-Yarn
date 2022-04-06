@@ -1,7 +1,6 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BambooBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
@@ -33,15 +33,15 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		int i = 0;
 		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		ProbabilityConfig probabilityConfig = context.getConfig();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (structureWorldAccess.isAir(mutable)) {
 			if (Blocks.BAMBOO.getDefaultState().canPlaceAt(structureWorldAccess, mutable)) {
-				int j = random.nextInt(12) + 5;
-				if (random.nextFloat() < probabilityConfig.probability) {
-					int k = random.nextInt(4) + 1;
+				int j = abstractRandom.nextInt(12) + 5;
+				if (abstractRandom.nextFloat() < probabilityConfig.probability) {
+					int k = abstractRandom.nextInt(4) + 1;
 
 					for (int l = blockPos.getX() - k; l <= blockPos.getX() + k; l++) {
 						for (int m = blockPos.getZ() - k; m <= blockPos.getZ() + k; m++) {

@@ -1,12 +1,12 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class RedstoneLampBlock extends Block {
@@ -38,7 +38,7 @@ public class RedstoneLampBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if ((Boolean)state.get(LIT) && !world.isReceivingRedstonePower(pos)) {
 			world.setBlockState(pos, state.cycle(LIT), Block.NOTIFY_LISTENERS);
 		}

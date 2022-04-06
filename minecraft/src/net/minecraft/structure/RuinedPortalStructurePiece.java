@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -34,6 +33,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -146,7 +146,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		Random random,
+		AbstractRandom random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
@@ -172,10 +172,10 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
 	}
 
-	private void generateVines(Random random, WorldAccess world, BlockPos pos) {
+	private void generateVines(AbstractRandom random, WorldAccess world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		if (!blockState.isAir() && !blockState.isOf(Blocks.VINE)) {
 			Direction direction = getRandomHorizontalDirection(random);
@@ -190,13 +190,13 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 	}
 
-	private void generateOvergrownLeaves(Random random, WorldAccess world, BlockPos pos) {
+	private void generateOvergrownLeaves(AbstractRandom random, WorldAccess world, BlockPos pos) {
 		if (random.nextFloat() < 0.5F && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
 			world.setBlockState(pos.up(), Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, Boolean.valueOf(true)), Block.NOTIFY_ALL);
 		}
 	}
 
-	private void updateNetherracksInBound(Random random, WorldAccess world) {
+	private void updateNetherracksInBound(AbstractRandom random, WorldAccess world) {
 		for (int i = this.boundingBox.getMinX() + 1; i < this.boundingBox.getMaxX(); i++) {
 			for (int j = this.boundingBox.getMinZ() + 1; j < this.boundingBox.getMaxZ(); j++) {
 				BlockPos blockPos = new BlockPos(i, this.boundingBox.getMinY(), j);
@@ -207,7 +207,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 	}
 
-	private void updateNetherracks(Random random, WorldAccess world, BlockPos pos) {
+	private void updateNetherracks(AbstractRandom random, WorldAccess world, BlockPos pos) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		this.placeNetherrackBottom(random, world, mutable);
 		int i = 8;
@@ -219,7 +219,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		}
 	}
 
-	private void placeNetherrackBase(Random random, WorldAccess world) {
+	private void placeNetherrackBase(AbstractRandom random, WorldAccess world) {
 		boolean bl = this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE
 			|| this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR;
 		BlockPos blockPos = this.boundingBox.getCenter();
@@ -264,7 +264,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			&& (this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER || !blockState.isOf(Blocks.LAVA));
 	}
 
-	private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
+	private void placeNetherrackBottom(AbstractRandom random, WorldAccess world, BlockPos pos) {
 		if (!this.properties.cold && random.nextFloat() < 0.07F) {
 			world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), Block.NOTIFY_ALL);
 		} else {

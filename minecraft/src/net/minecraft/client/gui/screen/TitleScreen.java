@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -46,6 +45,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -82,7 +82,7 @@ public class TitleScreen extends Screen {
 	public TitleScreen(boolean doBackgroundFade) {
 		super(new TranslatableText("narrator.screen.title"));
 		this.doBackgroundFade = doBackgroundFade;
-		this.isMinceraft = (double)new Random().nextFloat() < 1.0E-4;
+		this.isMinceraft = (double)AbstractRandom.createAtomic().nextFloat() < 1.0E-4;
 		this.realms = RealmsClient.createRealmsClient();
 	}
 

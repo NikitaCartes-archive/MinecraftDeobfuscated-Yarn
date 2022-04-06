@@ -547,7 +547,6 @@ public class StructureProcessorLists {
 	public static final RegistryEntry<StructureProcessorList> ANCIENT_CITY_START_DEGRADATION = register(
 		"ancient_city_start_degradation",
 		ImmutableList.of(
-			new BlockRotStructureProcessor(BlockTags.ANCIENT_CITY_CENTER_REPLACEABLE, 0.98F),
 			new RuleStructureProcessor(
 				ImmutableList.of(
 					new StructureProcessorRule(

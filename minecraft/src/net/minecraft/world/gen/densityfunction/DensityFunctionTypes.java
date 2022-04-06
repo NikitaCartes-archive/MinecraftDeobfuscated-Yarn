@@ -18,21 +18,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import org.slf4j.Logger;
 
 public final class DensityFunctionTypes {
-	private static final Codec<DensityFunction> CODEC = Registry.DENSITY_FUNCTION_TYPE
+	private static final Codec<DensityFunction> DYNAMIC_RANGE = Registry.DENSITY_FUNCTION_TYPE
 		.getCodec()
 		.dispatch(densityFunction -> densityFunction.getCodec().codec(), Function.identity());
 	protected static final double field_37060 = 1000000.0;
 	static final Codec<Double> CONSTANT_RANGE = Codec.doubleRange(-1000000.0, 1000000.0);
-	public static final Codec<DensityFunction> field_37061 = Codec.either(CONSTANT_RANGE, CODEC)
+	public static final Codec<DensityFunction> CODEC = Codec.either(CONSTANT_RANGE, DYNAMIC_RANGE)
 		.xmap(
 			either -> either.map(DensityFunctionTypes::constant, Function.identity()),
 			densityFunction -> densityFunction instanceof DensityFunctionTypes.Constant constant ? Either.left(constant.value()) : Either.right(densityFunction)
@@ -83,7 +83,7 @@ public final class DensityFunctionTypes {
 	}
 
 	static <O> CodecHolder<O> method_41069(Function<DensityFunction, O> function, Function<O, DensityFunction> function2) {
-		return method_41064(DensityFunction.field_37059, function, function2);
+		return method_41064(DensityFunction.FUNCTION_CODEC, function, function2);
 	}
 
 	static <O> CodecHolder<O> method_41068(
@@ -92,7 +92,7 @@ public final class DensityFunctionTypes {
 		return CodecHolder.of(
 			RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-							DensityFunction.field_37059.fieldOf("argument1").forGetter(function), DensityFunction.field_37059.fieldOf("argument2").forGetter(function2)
+							DensityFunction.FUNCTION_CODEC.fieldOf("argument1").forGetter(function), DensityFunction.FUNCTION_CODEC.fieldOf("argument2").forGetter(function2)
 						)
 						.apply(instance, biFunction)
 			)
@@ -376,7 +376,7 @@ public final class DensityFunctionTypes {
 	protected static record Clamp(DensityFunction input, double minValue, double maxValue) implements DensityFunctionTypes.class_6932 {
 		private static final MapCodec<DensityFunctionTypes.Clamp> field_37083 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.field_37057.fieldOf("input").forGetter(DensityFunctionTypes.Clamp::input),
+						DensityFunction.CODEC.fieldOf("input").forGetter(DensityFunctionTypes.Clamp::input),
 						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("min").forGetter(DensityFunctionTypes.Clamp::minValue),
 						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("max").forGetter(DensityFunctionTypes.Clamp::maxValue)
 					)
@@ -385,8 +385,8 @@ public final class DensityFunctionTypes {
 		public static final CodecHolder<DensityFunctionTypes.Clamp> CODEC = DensityFunctionTypes.method_41065(field_37083);
 
 		@Override
-		public double apply(double d) {
-			return MathHelper.clamp(d, this.minValue, this.maxValue);
+		public double apply(double density) {
+			return MathHelper.clamp(density, this.minValue, this.maxValue);
 		}
 
 		@Override
@@ -624,11 +624,11 @@ public final class DensityFunctionTypes {
 		implements DensityFunction {
 		public static final MapCodec<DensityFunctionTypes.RangeChoice> field_37092 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.field_37059.fieldOf("input").forGetter(DensityFunctionTypes.RangeChoice::input),
+						DensityFunction.FUNCTION_CODEC.fieldOf("input").forGetter(DensityFunctionTypes.RangeChoice::input),
 						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("min_inclusive").forGetter(DensityFunctionTypes.RangeChoice::minInclusive),
 						DensityFunctionTypes.CONSTANT_RANGE.fieldOf("max_exclusive").forGetter(DensityFunctionTypes.RangeChoice::maxExclusive),
-						DensityFunction.field_37059.fieldOf("when_in_range").forGetter(DensityFunctionTypes.RangeChoice::whenInRange),
-						DensityFunction.field_37059.fieldOf("when_out_of_range").forGetter(DensityFunctionTypes.RangeChoice::whenOutOfRange)
+						DensityFunction.FUNCTION_CODEC.fieldOf("when_in_range").forGetter(DensityFunctionTypes.RangeChoice::whenInRange),
+						DensityFunction.FUNCTION_CODEC.fieldOf("when_out_of_range").forGetter(DensityFunctionTypes.RangeChoice::whenOutOfRange)
 					)
 					.apply(instance, DensityFunctionTypes.RangeChoice::new)
 		);
@@ -780,9 +780,9 @@ public final class DensityFunctionTypes {
 	) implements DensityFunction {
 		private static final MapCodec<DensityFunctionTypes.ShiftedNoise> field_37098 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.field_37059.fieldOf("shift_x").forGetter(DensityFunctionTypes.ShiftedNoise::shiftX),
-						DensityFunction.field_37059.fieldOf("shift_y").forGetter(DensityFunctionTypes.ShiftedNoise::shiftY),
-						DensityFunction.field_37059.fieldOf("shift_z").forGetter(DensityFunctionTypes.ShiftedNoise::shiftZ),
+						DensityFunction.FUNCTION_CODEC.fieldOf("shift_x").forGetter(DensityFunctionTypes.ShiftedNoise::shiftX),
+						DensityFunction.FUNCTION_CODEC.fieldOf("shift_y").forGetter(DensityFunctionTypes.ShiftedNoise::shiftY),
+						DensityFunction.FUNCTION_CODEC.fieldOf("shift_z").forGetter(DensityFunctionTypes.ShiftedNoise::shiftZ),
 						Codec.DOUBLE.fieldOf("xz_scale").forGetter(DensityFunctionTypes.ShiftedNoise::xzScale),
 						Codec.DOUBLE.fieldOf("y_scale").forGetter(DensityFunctionTypes.ShiftedNoise::yScale),
 						DensityFunction.class_7270.field_38248.fieldOf("noise").forGetter(DensityFunctionTypes.ShiftedNoise::noise)
@@ -924,7 +924,7 @@ public final class DensityFunctionTypes {
 	) implements DensityFunctionTypes.class_6943 {
 		private static final MapCodec<DensityFunctionTypes.WeirdScaledSampler> field_37065 = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						DensityFunction.field_37059.fieldOf("input").forGetter(DensityFunctionTypes.WeirdScaledSampler::input),
+						DensityFunction.FUNCTION_CODEC.fieldOf("input").forGetter(DensityFunctionTypes.WeirdScaledSampler::input),
 						DensityFunction.class_7270.field_38248.fieldOf("noise").forGetter(DensityFunctionTypes.WeirdScaledSampler::noise),
 						DensityFunctionTypes.WeirdScaledSampler.RarityValueMapper.CODEC
 							.fieldOf("rarity_value_mapper")
@@ -1117,8 +1117,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public double apply(double d) {
-			return method_40521(this.type, d);
+		public double apply(double density) {
+			return method_40521(this.type, density);
 		}
 
 		public DensityFunctionTypes.class_6925 apply(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {
@@ -1219,10 +1219,10 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public double apply(double d) {
+		public double apply(double density) {
 			return switch (this.specificType) {
-				case MUL -> d * this.argument;
-				case ADD -> d + this.argument;
+				case MUL -> density * this.argument;
+				case ADD -> density + this.argument;
 			};
 		}
 
@@ -1270,7 +1270,7 @@ public final class DensityFunctionTypes {
 			}
 		}
 
-		double apply(double d);
+		double apply(double density);
 	}
 
 	interface class_6939 extends DensityFunction {

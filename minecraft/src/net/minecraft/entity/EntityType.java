@@ -847,11 +847,6 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		);
 	}
 
-	@Nullable
-	public static Entity newInstance(World world, @Nullable EntityType<?> type) {
-		return type == null ? null : type.create(world);
-	}
-
 	public Box createSimpleBoundingBox(double feetX, double feetY, double feetZ) {
 		float f = this.getWidth() / 2.0F;
 		return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);

@@ -123,6 +123,7 @@ public class PlaySoundCommand {
 	) throws CommandSyntaxException {
 		double d = Math.pow(volume > 1.0F ? (double)(volume * 16.0F) : 16.0, 2.0);
 		int i = 0;
+		long l = source.getWorld().getRandom().nextLong();
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			double e = pos.x - serverPlayerEntity.getX();
@@ -141,7 +142,7 @@ public class PlaySoundCommand {
 				j = minVolume;
 			}
 
-			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdS2CPacket(sound, category, vec3d, j, pitch));
+			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdS2CPacket(sound, category, vec3d, j, pitch, l));
 			i++;
 		}
 

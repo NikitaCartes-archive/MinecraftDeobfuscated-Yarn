@@ -10,10 +10,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.mojang.logging.LogUtils;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import net.minecraft.inventory.Inventory;
@@ -26,7 +24,9 @@ import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
@@ -103,9 +103,9 @@ public class LootTable {
 
 	public void supplyInventory(Inventory inventory, LootContext context) {
 		List<ItemStack> list = this.generateLoot(context);
-		Random random = context.getRandom();
-		List<Integer> list2 = this.getFreeSlots(inventory, random);
-		this.shuffle(list, list2.size(), random);
+		AbstractRandom abstractRandom = context.getRandom();
+		List<Integer> list2 = this.getFreeSlots(inventory, abstractRandom);
+		this.shuffle(list, list2.size(), abstractRandom);
 
 		for (ItemStack itemStack : list) {
 			if (list2.isEmpty()) {
@@ -121,7 +121,7 @@ public class LootTable {
 		}
 	}
 
-	private void shuffle(List<ItemStack> drops, int freeSlots, Random random) {
+	private void shuffle(List<ItemStack> drops, int freeSlots, AbstractRandom random) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 		Iterator<ItemStack> iterator = drops.iterator();
 
@@ -153,10 +153,10 @@ public class LootTable {
 		}
 
 		drops.addAll(list);
-		Collections.shuffle(drops, random);
+		Util.shuffle(drops, random);
 	}
 
-	private List<Integer> getFreeSlots(Inventory inventory, Random random) {
+	private List<Integer> getFreeSlots(Inventory inventory, AbstractRandom random) {
 		List<Integer> list = Lists.<Integer>newArrayList();
 
 		for (int i = 0; i < inventory.size(); i++) {
@@ -165,7 +165,7 @@ public class LootTable {
 			}
 		}
 
-		Collections.shuffle(list, random);
+		Util.shuffle(list, random);
 		return list;
 	}
 

@@ -21,7 +21,7 @@ public class MovingMinecartSoundInstance extends MovingSoundInstance {
 	private float distance = 0.0F;
 
 	public MovingMinecartSoundInstance(AbstractMinecartEntity minecart) {
-		super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL);
+		super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL, SoundInstance.createRandom());
 		this.minecart = minecart;
 		this.repeat = true;
 		this.repeatDelay = 0;

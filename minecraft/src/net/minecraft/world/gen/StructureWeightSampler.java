@@ -38,7 +38,7 @@ public class StructureWeightSampler implements DensityFunctionTypes.class_7050 {
 		int j = chunkPos.getStartZ();
 		ObjectList<StructureWeightSampler.class_7301> objectList = new ObjectArrayList<>(10);
 		ObjectList<JigsawJunction> objectList2 = new ObjectArrayList<>(32);
-		structureAccessor.method_41035(chunkPos, structureFeature -> structureFeature.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
+		structureAccessor.method_41035(chunkPos, structureType -> structureType.getTerrainAdaptation() != StructureTerrainAdaptation.NONE)
 			.forEach(
 				structureStart -> {
 					StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getFeature().getTerrainAdaptation();
