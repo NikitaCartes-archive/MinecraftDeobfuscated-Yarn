@@ -4,12 +4,12 @@
 package net.minecraft.entity.attribute;
 
 import com.mojang.logging.LogUtils;
-import io.netty.util.internal.ThreadLocalRandom;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -21,7 +21,7 @@ public class EntityAttributeModifier {
     private final UUID uuid;
 
     public EntityAttributeModifier(String name, double value, Operation operation) {
-        this(MathHelper.randomUuid(ThreadLocalRandom.current()), () -> name, value, operation);
+        this(MathHelper.randomUuid(AbstractRandom.create()), () -> name, value, operation);
     }
 
     public EntityAttributeModifier(UUID uuid, String name, double value, Operation operation) {

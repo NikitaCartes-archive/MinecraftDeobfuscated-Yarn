@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -24,6 +23,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
@@ -45,13 +45,13 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (state.get(BLOOM).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(BLOOM, false), Block.NOTIFY_ALL);
         }
     }
 
-    public static void bloom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
+    public static void bloom(ServerWorld world, BlockPos pos, BlockState state, AbstractRandom random) {
         world.setBlockState(pos, (BlockState)state.with(BLOOM, true), Block.NOTIFY_ALL);
         world.createAndScheduleBlockTick(pos, state.getBlock(), 8);
         world.spawnParticles(ParticleTypes.SCULK_SOUL, (double)pos.getX() + 0.5, (double)pos.getY() + 1.15, (double)pos.getZ() + 0.5, 2, 0.2, 0.0, 0.2, 0.0);

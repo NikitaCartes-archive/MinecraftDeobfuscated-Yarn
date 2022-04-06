@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import java.util.Random;
 import java.util.function.Supplier;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -14,6 +13,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -39,7 +39,7 @@ implements Fertilizable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (random.nextInt(25) == 0) {
             int i = 5;
             int j = 4;
@@ -75,7 +75,7 @@ implements Fertilizable {
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
     }
 
-    public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
+    public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, AbstractRandom random) {
         world.removeBlock(pos, false);
         if (this.feature.get().value().generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
@@ -90,12 +90,12 @@ implements Fertilizable {
     }
 
     @Override
-    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+    public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
         return (double)random.nextFloat() < 0.4;
     }
 
     @Override
-    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+    public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
         this.trySpawningBigMushroom(world, pos, state, random);
     }
 }

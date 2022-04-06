@@ -5,45 +5,44 @@ package net.minecraft.structure;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.feature.BuriedTreasureFeature;
-import net.minecraft.world.gen.feature.DesertPyramidFeature;
-import net.minecraft.world.gen.feature.EndCityFeature;
-import net.minecraft.world.gen.feature.IglooFeature;
-import net.minecraft.world.gen.feature.JigsawFeature;
-import net.minecraft.world.gen.feature.JungleTempleFeature;
-import net.minecraft.world.gen.feature.MineshaftFeature;
-import net.minecraft.world.gen.feature.NetherFortressFeature;
-import net.minecraft.world.gen.feature.NetherFossilFeature;
-import net.minecraft.world.gen.feature.OceanMonumentFeature;
-import net.minecraft.world.gen.feature.OceanRuinFeature;
-import net.minecraft.world.gen.feature.RuinedPortalFeature;
-import net.minecraft.world.gen.feature.ShipwreckFeature;
-import net.minecraft.world.gen.feature.StrongholdFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
-import net.minecraft.world.gen.feature.SwampHutFeature;
-import net.minecraft.world.gen.feature.WoodlandMansionFeature;
+import net.minecraft.world.gen.structure.BuriedTreasureStructure;
+import net.minecraft.world.gen.structure.DesertPyramidStructure;
+import net.minecraft.world.gen.structure.EndCityStructure;
+import net.minecraft.world.gen.structure.IglooStructure;
+import net.minecraft.world.gen.structure.JigsawStructure;
+import net.minecraft.world.gen.structure.JungleTempleStructure;
+import net.minecraft.world.gen.structure.MineshaftStructure;
+import net.minecraft.world.gen.structure.NetherFortressStructure;
+import net.minecraft.world.gen.structure.NetherFossilStructure;
+import net.minecraft.world.gen.structure.OceanMonumentStructure;
+import net.minecraft.world.gen.structure.OceanRuinStructure;
+import net.minecraft.world.gen.structure.RuinedPortalStructure;
+import net.minecraft.world.gen.structure.ShipwreckStructure;
+import net.minecraft.world.gen.structure.StrongholdStructure;
+import net.minecraft.world.gen.structure.SwampHutStructure;
+import net.minecraft.world.gen.structure.WoodlandMansionStructure;
 
-public interface StructureType<S extends StructureFeature> {
-    public static final StructureType<BuriedTreasureFeature> BURIED_TREASURE = StructureType.register("buried_treasure", BuriedTreasureFeature.CODEC);
-    public static final StructureType<DesertPyramidFeature> DESERT_PYRAMID = StructureType.register("desert_pyramid", DesertPyramidFeature.CODEC);
-    public static final StructureType<EndCityFeature> END_CITY = StructureType.register("end_city", EndCityFeature.CODEC);
-    public static final StructureType<NetherFortressFeature> FORTRESS = StructureType.register("fortress", NetherFortressFeature.CODEC);
-    public static final StructureType<IglooFeature> IGLOO = StructureType.register("igloo", IglooFeature.CODEC);
-    public static final StructureType<JigsawFeature> JIGSAW = StructureType.register("jigsaw", JigsawFeature.CODEC);
-    public static final StructureType<JungleTempleFeature> JUNGLE_TEMPLE = StructureType.register("jungle_temple", JungleTempleFeature.CODEC);
-    public static final StructureType<MineshaftFeature> MINESHAFT = StructureType.register("mineshaft", MineshaftFeature.CODEC);
-    public static final StructureType<NetherFossilFeature> NETHER_FOSSIL = StructureType.register("nether_fossil", NetherFossilFeature.CODEC);
-    public static final StructureType<OceanMonumentFeature> OCEAN_MONUMENT = StructureType.register("ocean_monument", OceanMonumentFeature.CODEC);
-    public static final StructureType<OceanRuinFeature> OCEAN_RUIN = StructureType.register("ocean_ruin", OceanRuinFeature.CODEC);
-    public static final StructureType<RuinedPortalFeature> RUINED_PORTAL = StructureType.register("ruined_portal", RuinedPortalFeature.CODEC);
-    public static final StructureType<ShipwreckFeature> SHIPWRECK = StructureType.register("shipwreck", ShipwreckFeature.CODEC);
-    public static final StructureType<StrongholdFeature> STRONGHOLD = StructureType.register("stronghold", StrongholdFeature.CODEC);
-    public static final StructureType<SwampHutFeature> SWAMP_HUT = StructureType.register("swamp_hut", SwampHutFeature.CODEC);
-    public static final StructureType<WoodlandMansionFeature> WOODLAND_MANSION = StructureType.register("woodland_mansion", WoodlandMansionFeature.CODEC);
+public interface StructureType<S extends net.minecraft.world.gen.structure.StructureType> {
+    public static final StructureType<BuriedTreasureStructure> BURIED_TREASURE = StructureType.register("buried_treasure", BuriedTreasureStructure.CODEC);
+    public static final StructureType<DesertPyramidStructure> DESERT_PYRAMID = StructureType.register("desert_pyramid", DesertPyramidStructure.CODEC);
+    public static final StructureType<EndCityStructure> END_CITY = StructureType.register("end_city", EndCityStructure.CODEC);
+    public static final StructureType<NetherFortressStructure> FORTRESS = StructureType.register("fortress", NetherFortressStructure.CODEC);
+    public static final StructureType<IglooStructure> IGLOO = StructureType.register("igloo", IglooStructure.CODEC);
+    public static final StructureType<JigsawStructure> JIGSAW = StructureType.register("jigsaw", JigsawStructure.CODEC);
+    public static final StructureType<JungleTempleStructure> JUNGLE_TEMPLE = StructureType.register("jungle_temple", JungleTempleStructure.CODEC);
+    public static final StructureType<MineshaftStructure> MINESHAFT = StructureType.register("mineshaft", MineshaftStructure.CODEC);
+    public static final StructureType<NetherFossilStructure> NETHER_FOSSIL = StructureType.register("nether_fossil", NetherFossilStructure.CODEC);
+    public static final StructureType<OceanMonumentStructure> OCEAN_MONUMENT = StructureType.register("ocean_monument", OceanMonumentStructure.CODEC);
+    public static final StructureType<OceanRuinStructure> OCEAN_RUIN = StructureType.register("ocean_ruin", OceanRuinStructure.CODEC);
+    public static final StructureType<RuinedPortalStructure> RUINED_PORTAL = StructureType.register("ruined_portal", RuinedPortalStructure.CODEC);
+    public static final StructureType<ShipwreckStructure> SHIPWRECK = StructureType.register("shipwreck", ShipwreckStructure.CODEC);
+    public static final StructureType<StrongholdStructure> STRONGHOLD = StructureType.register("stronghold", StrongholdStructure.CODEC);
+    public static final StructureType<SwampHutStructure> SWAMP_HUT = StructureType.register("swamp_hut", SwampHutStructure.CODEC);
+    public static final StructureType<WoodlandMansionStructure> WOODLAND_MANSION = StructureType.register("woodland_mansion", WoodlandMansionStructure.CODEC);
 
     public Codec<S> codec();
 
-    private static <S extends StructureFeature> StructureType<S> register(String id, Codec<S> codec) {
+    private static <S extends net.minecraft.world.gen.structure.StructureType> StructureType<S> register(String id, Codec<S> codec) {
         return Registry.register(Registry.STRUCTURE_TYPE, id, () -> codec);
     }
 }

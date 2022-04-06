@@ -6,7 +6,6 @@ package net.minecraft.block;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.PlantBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.tag.BlockTags;
@@ -30,7 +29,7 @@ extends PlantBlock {
 
     @Override
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-        return floor.isOf(Blocks.SAND) || floor.isOf(Blocks.RED_SAND) || floor.isOf(Blocks.TERRACOTTA) || floor.isOf(Blocks.WHITE_TERRACOTTA) || floor.isOf(Blocks.ORANGE_TERRACOTTA) || floor.isOf(Blocks.MAGENTA_TERRACOTTA) || floor.isOf(Blocks.LIGHT_BLUE_TERRACOTTA) || floor.isOf(Blocks.YELLOW_TERRACOTTA) || floor.isOf(Blocks.LIME_TERRACOTTA) || floor.isOf(Blocks.PINK_TERRACOTTA) || floor.isOf(Blocks.GRAY_TERRACOTTA) || floor.isOf(Blocks.LIGHT_GRAY_TERRACOTTA) || floor.isOf(Blocks.CYAN_TERRACOTTA) || floor.isOf(Blocks.PURPLE_TERRACOTTA) || floor.isOf(Blocks.BLUE_TERRACOTTA) || floor.isOf(Blocks.BROWN_TERRACOTTA) || floor.isOf(Blocks.GREEN_TERRACOTTA) || floor.isOf(Blocks.RED_TERRACOTTA) || floor.isOf(Blocks.BLACK_TERRACOTTA) || floor.isIn(BlockTags.DIRT);
+        return floor.isIn(BlockTags.DEAD_BUSH_MAY_PLACE_ON);
     }
 }
 

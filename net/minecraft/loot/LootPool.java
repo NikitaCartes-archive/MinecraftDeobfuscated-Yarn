@@ -14,7 +14,6 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -33,6 +32,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
@@ -56,7 +56,7 @@ public class LootPool {
     }
 
     private void supplyOnce(Consumer<ItemStack> lootConsumer, LootContext context) {
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         ArrayList<LootChoice> list = Lists.newArrayList();
         MutableInt mutableInt = new MutableInt();
         for (LootPoolEntry lootPoolEntry : this.entries) {
@@ -76,7 +76,7 @@ public class LootPool {
             ((LootChoice)list.get(0)).generateLoot(lootConsumer, context);
             return;
         }
-        int j = random.nextInt(mutableInt.intValue());
+        int j = abstractRandom.nextInt(mutableInt.intValue());
         for (LootChoice lootChoice : list) {
             if ((j -= lootChoice.getWeight(context.getLuck())) >= 0) continue;
             lootChoice.generateLoot(lootConsumer, context);

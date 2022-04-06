@@ -14,7 +14,7 @@ public record NoiseRouter(DensityFunction barrierNoise, DensityFunction fluidLev
     public static final Codec<NoiseRouter> field_37683 = RecordCodecBuilder.create(instance -> instance.group(NoiseRouter.method_41545("barrier", NoiseRouter::barrierNoise), NoiseRouter.method_41545("fluid_level_floodedness", NoiseRouter::fluidLevelFloodednessNoise), NoiseRouter.method_41545("fluid_level_spread", NoiseRouter::fluidLevelSpreadNoise), NoiseRouter.method_41545("lava", NoiseRouter::lavaNoise), NoiseRouter.method_41545("temperature", NoiseRouter::temperature), NoiseRouter.method_41545("vegetation", NoiseRouter::vegetation), NoiseRouter.method_41545("continents", NoiseRouter::continents), NoiseRouter.method_41545("erosion", NoiseRouter::erosion), NoiseRouter.method_41545("depth", NoiseRouter::depth), NoiseRouter.method_41545("ridges", NoiseRouter::ridges), NoiseRouter.method_41545("initial_density_without_jaggedness", NoiseRouter::initialDensityWithoutJaggedness), NoiseRouter.method_41545("final_density", NoiseRouter::finalDensity), NoiseRouter.method_41545("vein_toggle", NoiseRouter::veinToggle), NoiseRouter.method_41545("vein_ridged", NoiseRouter::veinRidged), NoiseRouter.method_41545("vein_gap", NoiseRouter::veinGap)).apply((Applicative<NoiseRouter, ?>)instance, NoiseRouter::new));
 
     private static RecordCodecBuilder<NoiseRouter, DensityFunction> method_41545(String string, Function<NoiseRouter, DensityFunction> function) {
-        return ((MapCodec)DensityFunction.field_37059.fieldOf(string)).forGetter(function);
+        return ((MapCodec)DensityFunction.FUNCTION_CODEC.fieldOf(string)).forGetter(function);
     }
 
     public NoiseRouter method_41544(DensityFunction.DensityFunctionVisitor densityFunctionVisitor) {

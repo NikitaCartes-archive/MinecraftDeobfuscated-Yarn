@@ -26,6 +26,7 @@ public class TreePlacedFeatures {
     public static final RegistryEntry<PlacedFeature> BIRCH_CHECKED = PlacedFeatures.register("birch_checked", TreeConfiguredFeatures.BIRCH, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
     public static final RegistryEntry<PlacedFeature> ACACIA_CHECKED = PlacedFeatures.register("acacia_checked", TreeConfiguredFeatures.ACACIA, PlacedFeatures.wouldSurvive(Blocks.ACACIA_SAPLING));
     public static final RegistryEntry<PlacedFeature> SPRUCE_CHECKED = PlacedFeatures.register("spruce_checked", TreeConfiguredFeatures.SPRUCE, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+    public static final RegistryEntry<PlacedFeature> MANGROVE_CHECKED = PlacedFeatures.register("mangrove_checked", TreeConfiguredFeatures.MANGROVE, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
     public static final BlockPredicate ON_SNOW_PREDICATE = BlockPredicate.matchingBlocks(List.of(Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW), new BlockPos(0, -1, 0));
     public static final List<PlacementModifier> ON_SNOW_MODIFIERS = List.of(EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.not(BlockPredicate.matchingBlock(Blocks.POWDER_SNOW, BlockPos.ORIGIN)), 8), BlockFilterPlacementModifier.of(ON_SNOW_PREDICATE));
     public static final RegistryEntry<PlacedFeature> PINE_ON_SNOW = PlacedFeatures.register("pine_on_snow", TreeConfiguredFeatures.PINE, ON_SNOW_MODIFIERS);
@@ -36,6 +37,7 @@ public class TreePlacedFeatures {
     public static final RegistryEntry<PlacedFeature> MEGA_JUNGLE_TREE_CHECKED = PlacedFeatures.register("mega_jungle_tree_checked", TreeConfiguredFeatures.MEGA_JUNGLE_TREE, PlacedFeatures.wouldSurvive(Blocks.JUNGLE_SAPLING));
     public static final RegistryEntry<PlacedFeature> MEGA_SPRUCE_CHECKED = PlacedFeatures.register("mega_spruce_checked", TreeConfiguredFeatures.MEGA_SPRUCE, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
     public static final RegistryEntry<PlacedFeature> MEGA_PINE_CHECKED = PlacedFeatures.register("mega_pine_checked", TreeConfiguredFeatures.MEGA_PINE, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
+    public static final RegistryEntry<PlacedFeature> TALL_MANGROVE_CHECKED = PlacedFeatures.register("tall_mangrove_checked", TreeConfiguredFeatures.TALL_MANGROVE, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
     public static final RegistryEntry<PlacedFeature> JUNGLE_BUSH = PlacedFeatures.register("jungle_bush", TreeConfiguredFeatures.JUNGLE_BUSH, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
     public static final RegistryEntry<PlacedFeature> SUPER_BIRCH_BEES_0002 = PlacedFeatures.register("super_birch_bees_0002", TreeConfiguredFeatures.SUPER_BIRCH_BEES_0002, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));
     public static final RegistryEntry<PlacedFeature> SUPER_BIRCH_BEES = PlacedFeatures.register("super_birch_bees", TreeConfiguredFeatures.SUPER_BIRCH_BEES, PlacedFeatures.wouldSurvive(Blocks.BIRCH_SAPLING));

@@ -103,6 +103,7 @@ public class VegetationPlacedFeatures {
     public static final RegistryEntry<PlacedFeature> TREES_JUNGLE = PlacedFeatures.register("trees_jungle", VegetationConfiguredFeatures.TREES_JUNGLE, VegetationPlacedFeatures.modifiers(PlacedFeatures.createCountExtraModifier(50, 0.1f, 1)));
     public static final RegistryEntry<PlacedFeature> BAMBOO_VEGETATION = PlacedFeatures.register("bamboo_vegetation", VegetationConfiguredFeatures.BAMBOO_VEGETATION, VegetationPlacedFeatures.modifiers(PlacedFeatures.createCountExtraModifier(30, 0.1f, 1)));
     public static final RegistryEntry<PlacedFeature> MUSHROOM_ISLAND_VEGETATION = PlacedFeatures.register("mushroom_island_vegetation", VegetationConfiguredFeatures.MUSHROOM_ISLAND_VEGETATION, SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of());
+    public static final RegistryEntry<PlacedFeature> TREES_MANGROVE = PlacedFeatures.register("trees_mangrove", VegetationConfiguredFeatures.MANGROVE_VEGETATION, PlacedFeatures.createCountExtraModifier(30, 0.1f, 1), SquarePlacementModifier.of(), SurfaceWaterDepthFilterPlacementModifier.of(5), PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP, BiomePlacementModifier.of(), BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(Blocks.MANGROVE_PROPAGULE.getDefaultState(), BlockPos.ORIGIN)));
 
     public static List<PlacementModifier> modifiers(int count) {
         return List.of(CountPlacementModifier.of(count), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of());

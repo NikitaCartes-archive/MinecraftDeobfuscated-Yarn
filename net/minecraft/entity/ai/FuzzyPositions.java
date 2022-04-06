@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
@@ -12,6 +11,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 public class FuzzyPositions {
@@ -21,7 +21,7 @@ public class FuzzyPositions {
      * Creates a fuzzy offset position within the given horizontal and vertical
      * ranges.
      */
-    public static BlockPos localFuzz(Random random, int horizontalRange, int verticalRange) {
+    public static BlockPos localFuzz(AbstractRandom random, int horizontalRange, int verticalRange) {
         int i = random.nextInt(2 * horizontalRange + 1) - horizontalRange;
         int j = random.nextInt(2 * verticalRange + 1) - verticalRange;
         int k = random.nextInt(2 * horizontalRange + 1) - horizontalRange;
@@ -34,7 +34,7 @@ public class FuzzyPositions {
      * and {@code verticalRange} and returns {@code null} if it cannot do so.
      */
     @Nullable
-    public static BlockPos localFuzz(Random random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange) {
+    public static BlockPos localFuzz(AbstractRandom random, int horizontalRange, int verticalRange, int startHeight, double directionX, double directionZ, double angleRange) {
         double d = MathHelper.atan2(directionZ, directionX) - 1.5707963705062866;
         double e = d + (double)(2.0f * random.nextFloat() - 1.0f) * angleRange;
         double f = Math.sqrt(random.nextDouble()) * (double)MathHelper.SQUARE_ROOT_OF_TWO * (double)horizontalRange;
@@ -121,7 +121,7 @@ public class FuzzyPositions {
      * {@link net.minecraft.entity.mob.MobEntity#getPositionTarget() position target}
      * if it exists.
      */
-    public static BlockPos towardTarget(PathAwareEntity entity, int horizontalRange, Random random, BlockPos fuzz) {
+    public static BlockPos towardTarget(PathAwareEntity entity, int horizontalRange, AbstractRandom random, BlockPos fuzz) {
         int i = fuzz.getX();
         int j = fuzz.getZ();
         if (entity.hasPositionTarget() && horizontalRange > 1) {

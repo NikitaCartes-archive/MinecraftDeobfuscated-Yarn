@@ -7,11 +7,11 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class LinearPosRuleTest
 extends PosRuleTest {
@@ -32,7 +32,7 @@ extends PosRuleTest {
     }
 
     @Override
-    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
         int i = blockPos2.getManhattanDistance(pivot);
         float f = random.nextFloat();
         return f <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress(i, this.minDistance, this.maxDistance));

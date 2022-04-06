@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,6 +28,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -123,16 +123,16 @@ extends BlockEntity {
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
         StructureManager structureManager = world.getStructureManager();
         StructureAccessor structureAccessor = world.getStructureAccessor();
-        Random random = world.getRandom();
+        AbstractRandom abstractRandom = world.getRandom();
         BlockPos blockPos = this.getPos();
         ArrayList<PoolStructurePiece> list = Lists.newArrayList();
         Structure structure = new Structure();
         structure.saveFromWorld(world, blockPos, new Vec3i(1, 1, 1), false, null);
         SinglePoolElement structurePoolElement = new SinglePoolElement(structure);
         PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos));
-        StructurePoolBasedGenerator.generate(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world, world.getChunkManager().getNoiseConfig());
+        StructurePoolBasedGenerator.generate(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, abstractRandom, world, world.getChunkManager().getNoiseConfig());
         for (PoolStructurePiece poolStructurePiece2 : list) {
-            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), blockPos, keepJigsaws);
         }
     }
 

@@ -7,8 +7,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 import net.minecraft.world.gen.heightprovider.HeightProviderType;
@@ -23,8 +23,8 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(Random random, HeightContext context) {
-        return this.weightedList.getDataOrEmpty(random).orElseThrow(IllegalStateException::new).get(random, context);
+    public int get(AbstractRandom abstractRandom, HeightContext context) {
+        return this.weightedList.getDataOrEmpty(abstractRandom).orElseThrow(IllegalStateException::new).get(abstractRandom, context);
     }
 
     @Override

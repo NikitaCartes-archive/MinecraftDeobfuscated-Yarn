@@ -9,21 +9,21 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.stateprovider.NoiseBlockStateProvider;
 
 public class DualNoiseBlockStateProvider
 extends NoiseBlockStateProvider {
-    public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.field_35424.fieldOf("slow_noise")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("slow_scale")).forGetter(dualNoiseBlockStateProvider -> Float.valueOf(dualNoiseBlockStateProvider.slowScale))).and(DualNoiseBlockStateProvider.fillNoiseCodecFields(instance)).apply(instance, DualNoiseBlockStateProvider::new));
+    public static final Codec<DualNoiseBlockStateProvider> DUAL_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Range.createRangedCodec(Codec.INT, 1, 64).fieldOf("variety")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.variety), ((MapCodec)DoublePerlinNoiseSampler.NoiseParameters.CODEC.fieldOf("slow_noise")).forGetter(dualNoiseBlockStateProvider -> dualNoiseBlockStateProvider.slowNoiseParameters), ((MapCodec)Codecs.POSITIVE_FLOAT.fieldOf("slow_scale")).forGetter(dualNoiseBlockStateProvider -> Float.valueOf(dualNoiseBlockStateProvider.slowScale))).and(DualNoiseBlockStateProvider.fillNoiseCodecFields(instance)).apply(instance, DualNoiseBlockStateProvider::new));
     private final Range<Integer> variety;
     private final DoublePerlinNoiseSampler.NoiseParameters slowNoiseParameters;
     private final float slowScale;
@@ -43,7 +43,7 @@ extends NoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
+    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
         double d = this.getSlowNoiseValue(pos);
         int i = (int)MathHelper.clampedLerpFromProgress(d, -1.0, 1.0, (double)this.variety.minInclusive().intValue(), (double)(this.variety.maxInclusive() + 1));
         ArrayList<BlockState> list = Lists.newArrayListWithCapacity(i);

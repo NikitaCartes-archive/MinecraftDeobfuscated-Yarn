@@ -17,7 +17,6 @@ import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
@@ -34,6 +33,7 @@ import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
@@ -55,7 +55,7 @@ extends ConditionalLootFunction {
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
         Enchantment enchantment2;
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         if (this.enchantments.isEmpty()) {
             boolean bl = stack.isOf(Items.BOOK);
             List list = Registry.ENCHANTMENT.stream().filter(Enchantment::isAvailableForRandomSelection).filter(enchantment -> bl || enchantment.isAcceptableItem(stack)).collect(Collectors.toList());
@@ -63,14 +63,14 @@ extends ConditionalLootFunction {
                 LOGGER.warn("Couldn't find a compatible enchantment for {}", (Object)stack);
                 return stack;
             }
-            enchantment2 = (Enchantment)list.get(random.nextInt(list.size()));
+            enchantment2 = (Enchantment)list.get(abstractRandom.nextInt(list.size()));
         } else {
-            enchantment2 = this.enchantments.get(random.nextInt(this.enchantments.size()));
+            enchantment2 = this.enchantments.get(abstractRandom.nextInt(this.enchantments.size()));
         }
-        return EnchantRandomlyLootFunction.addEnchantmentToStack(stack, enchantment2, random);
+        return EnchantRandomlyLootFunction.addEnchantmentToStack(stack, enchantment2, abstractRandom);
     }
 
-    private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, Random random) {
+    private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, AbstractRandom random) {
         int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
         if (stack.isOf(Items.BOOK)) {
             stack = new ItemStack(Items.ENCHANTED_BOOK);

@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.stateprovider.AbstractNoiseBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
@@ -40,13 +40,13 @@ extends AbstractNoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
+    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
         double d = this.getNoiseValue(pos, this.scale);
         if (d < (double)this.threshold) {
-            return Util.getRandom(this.lowStates, random);
+            return Util.getRandom(this.lowStates, abstractRandom);
         }
-        if (random.nextFloat() < this.highChance) {
-            return Util.getRandom(this.highStates, random);
+        if (abstractRandom.nextFloat() < this.highChance) {
+            return Util.getRandom(this.highStates, abstractRandom);
         }
         return this.defaultState;
     }

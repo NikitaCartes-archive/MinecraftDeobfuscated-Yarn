@@ -8,7 +8,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -33,7 +33,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(Random random, HeightContext context) {
+    public int get(AbstractRandom abstractRandom, HeightContext context) {
         return this.offset.getY(context);
     }
 

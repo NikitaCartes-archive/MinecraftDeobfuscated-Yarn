@@ -5,7 +5,7 @@ package net.minecraft.world.gen.chunk.placement;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public enum SpreadType implements StringIdentifiable
 {

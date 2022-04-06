@@ -5,7 +5,6 @@ package net.minecraft.client.sound;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import java.util.Optional;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -20,6 +19,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -34,7 +34,7 @@ implements ClientPlayerTickable {
     private final ClientPlayerEntity player;
     private final SoundManager soundManager;
     private final BiomeAccess biomeAccess;
-    private final Random random;
+    private final AbstractRandom random;
     private final Object2ObjectArrayMap<Biome, MusicLoop> soundLoops = new Object2ObjectArrayMap();
     private Optional<BiomeMoodSound> moodSound = Optional.empty();
     private Optional<BiomeAdditionsSound> additionsSound = Optional.empty();
@@ -91,7 +91,7 @@ implements ClientPlayerTickable {
                 double k = f - this.player.getZ();
                 double l = Math.sqrt(g * g + h * h + k * k);
                 double m = l + sound.getExtraDistance();
-                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(sound.getSound(), this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
+                PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(sound.getSound(), this.random, this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m);
                 this.soundManager.play(positionedSoundInstance);
                 this.moodPercentage = 0.0f;
             } else {
@@ -107,7 +107,7 @@ implements ClientPlayerTickable {
         private int strength;
 
         public MusicLoop(SoundEvent sound) {
-            super(sound, SoundCategory.AMBIENT);
+            super(sound, SoundCategory.AMBIENT, SoundInstance.createRandom());
             this.repeat = true;
             this.repeatDelay = 0;
             this.volume = 1.0f;

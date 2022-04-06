@@ -9,12 +9,12 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import org.jetbrains.annotations.Nullable;
@@ -55,12 +55,12 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
-        BlockState blockState = this.source.getBlockState(random, pos);
+    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+        BlockState blockState = this.source.getBlockState(abstractRandom, pos);
         if (this.property == null || !blockState.contains(this.property)) {
             this.property = RandomizedIntBlockStateProvider.getIntPropertyByName(blockState, this.propertyName);
         }
-        return (BlockState)blockState.with(this.property, this.values.get(random));
+        return (BlockState)blockState.with(this.property, this.values.get(abstractRandom));
     }
 
     private static IntProperty getIntPropertyByName(BlockState state, String propertyName) {

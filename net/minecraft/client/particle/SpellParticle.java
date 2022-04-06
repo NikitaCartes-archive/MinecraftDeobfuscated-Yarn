@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.particle;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,11 +15,12 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(value=EnvType.CLIENT)
 public class SpellParticle
 extends SpriteBillboardParticle {
-    private static final Random RANDOM = new Random();
+    private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
     private final SpriteProvider spriteProvider;
 
     SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {

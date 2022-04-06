@@ -4,7 +4,6 @@
 package net.minecraft.client.render.model;
 
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -13,11 +12,12 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public interface BakedModel {
-    public List<BakedQuad> getQuads(@Nullable BlockState var1, @Nullable Direction var2, Random var3);
+    public List<BakedQuad> getQuads(@Nullable BlockState var1, @Nullable Direction var2, AbstractRandom var3);
 
     public boolean useAmbientOcclusion();
 

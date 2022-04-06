@@ -4,11 +4,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -21,7 +21,7 @@ extends Feature<HugeMushroomFeatureConfig> {
         super(codec);
     }
 
-    protected void generateStem(WorldAccess world, Random random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutablePos) {
+    protected void generateStem(WorldAccess world, AbstractRandom random, BlockPos pos, HugeMushroomFeatureConfig config, int height, BlockPos.Mutable mutablePos) {
         for (int i = 0; i < height; ++i) {
             mutablePos.set(pos).move(Direction.UP, i);
             if (world.getBlockState(mutablePos).isOpaqueFullCube(world, mutablePos)) continue;
@@ -29,7 +29,7 @@ extends Feature<HugeMushroomFeatureConfig> {
         }
     }
 
-    protected int getHeight(Random random) {
+    protected int getHeight(AbstractRandom random) {
         int i = random.nextInt(3) + 4;
         if (random.nextInt(12) == 0) {
             i *= 2;
@@ -64,19 +64,19 @@ extends Feature<HugeMushroomFeatureConfig> {
         BlockPos.Mutable mutable;
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         HugeMushroomFeatureConfig hugeMushroomFeatureConfig = context.getConfig();
-        int i = this.getHeight(random);
+        int i = this.getHeight(abstractRandom);
         if (!this.canGenerate(structureWorldAccess, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
             return false;
         }
-        this.generateCap(structureWorldAccess, random, blockPos, i, mutable, hugeMushroomFeatureConfig);
-        this.generateStem(structureWorldAccess, random, blockPos, hugeMushroomFeatureConfig, i, mutable);
+        this.generateCap(structureWorldAccess, abstractRandom, blockPos, i, mutable, hugeMushroomFeatureConfig);
+        this.generateStem(structureWorldAccess, abstractRandom, blockPos, hugeMushroomFeatureConfig, i, mutable);
         return true;
     }
 
     protected abstract int getCapSize(int var1, int var2, int var3, int var4);
 
-    protected abstract void generateCap(WorldAccess var1, Random var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
+    protected abstract void generateCap(WorldAccess var1, AbstractRandom var2, BlockPos var3, int var4, BlockPos.Mutable var5, HugeMushroomFeatureConfig var6);
 }
 

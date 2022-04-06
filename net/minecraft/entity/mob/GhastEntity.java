@@ -4,7 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.Random;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -32,6 +31,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -121,7 +121,7 @@ implements Monster {
         return 5.0f;
     }
 
-    public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<GhastEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(20) == 0 && GhastEntity.canMobSpawn(type, world, spawnReason, pos, random);
     }
 
@@ -215,10 +215,10 @@ implements Monster {
 
         @Override
         public void start() {
-            Random random = this.ghast.getRandom();
-            double d = this.ghast.getX() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double e = this.ghast.getY() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
-            double f = this.ghast.getZ() + (double)((random.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            AbstractRandom abstractRandom = this.ghast.getRandom();
+            double d = this.ghast.getX() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double e = this.ghast.getY() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
+            double f = this.ghast.getZ() + (double)((abstractRandom.nextFloat() * 2.0f - 1.0f) * 16.0f);
             this.ghast.getMoveControl().moveTo(d, e, f, 1.0);
         }
     }

@@ -7,8 +7,8 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
@@ -31,7 +31,7 @@ extends AbstractCountPlacementModifier {
     }
 
     @Override
-    protected int getCount(Random random, BlockPos pos) {
+    protected int getCount(AbstractRandom abstractRandom, BlockPos pos) {
         double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / this.noiseFactor, (double)pos.getZ() / this.noiseFactor, false);
         return (int)Math.ceil((d + this.noiseOffset) * (double)this.noiseToCountRatio);
     }

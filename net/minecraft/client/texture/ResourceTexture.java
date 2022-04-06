@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
@@ -83,36 +84,22 @@ extends AbstractTexture {
         }
 
         public static TextureData load(ResourceManager resourceManager, Identifier id) {
-            TextureData textureData;
-            block10: {
-                Resource resource = resourceManager.getResource(id);
-                try {
-                    NativeImage nativeImage = NativeImage.read(resource.getInputStream());
-                    TextureResourceMetadata textureResourceMetadata = null;
-                    try {
-                        textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);
-                    } catch (RuntimeException runtimeException) {
-                        LOGGER.warn("Failed reading metadata of: {}", (Object)id, (Object)runtimeException);
-                    }
-                    textureData = new TextureData(textureResourceMetadata, nativeImage);
-                    if (resource == null) break block10;
-                } catch (Throwable throwable) {
-                    try {
-                        if (resource != null) {
-                            try {
-                                resource.close();
-                            } catch (Throwable throwable2) {
-                                throwable.addSuppressed(throwable2);
-                            }
-                        }
-                        throw throwable;
-                    } catch (IOException iOException) {
-                        return new TextureData(iOException);
-                    }
+            try {
+                NativeImage nativeImage;
+                Resource resource = resourceManager.getResourceOrThrow(id);
+                try (InputStream inputStream = resource.getInputStream();){
+                    nativeImage = NativeImage.read(inputStream);
                 }
-                resource.close();
+                TextureResourceMetadata textureResourceMetadata = null;
+                try {
+                    textureResourceMetadata = resource.getMetadata().decode(TextureResourceMetadata.READER).orElse(null);
+                } catch (RuntimeException runtimeException) {
+                    LOGGER.warn("Failed reading metadata of: {}", (Object)id, (Object)runtimeException);
+                }
+                return new TextureData(textureResourceMetadata, nativeImage);
+            } catch (IOException iOException) {
+                return new TextureData(iOException);
             }
-            return textureData;
         }
 
         @Nullable

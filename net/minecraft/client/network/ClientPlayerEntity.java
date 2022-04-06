@@ -1051,5 +1051,10 @@ extends AbstractClientPlayerEntity {
     public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
         this.client.getTutorialManager().onPickupSlotClick(cursorStack, slotStack, clickType);
     }
+
+    @Override
+    public float getBodyYaw() {
+        return this.getYaw();
+    }
 }
 

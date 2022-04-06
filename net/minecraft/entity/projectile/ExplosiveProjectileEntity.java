@@ -168,7 +168,7 @@ extends ProjectileEntity {
     public Packet<?> createSpawnPacket() {
         Entity entity = this.getOwner();
         int i = entity == null ? 0 : entity.getId();
-        return new EntitySpawnS2CPacket(this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw(), this.getType(), i, new Vec3d(this.powerX, this.powerY, this.powerZ));
+        return new EntitySpawnS2CPacket(this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.getPitch(), this.getYaw(), this.getType(), i, new Vec3d(this.powerX, this.powerY, this.powerZ), 0.0);
     }
 
     @Override

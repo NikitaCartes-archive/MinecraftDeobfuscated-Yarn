@@ -35,7 +35,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -794,8 +794,8 @@ implements Monster {
     }
 
     @Override
-    public void readFromPacket(MobSpawnS2CPacket packet) {
-        super.readFromPacket(packet);
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
         EnderDragonPart[] enderDragonParts = this.getBodyParts();
         for (int i = 0; i < enderDragonParts.length; ++i) {
             enderDragonParts[i].setId(i + packet.getId());

@@ -27,13 +27,13 @@ import org.jetbrains.annotations.Nullable;
 public class SimpleGameEventDispatcher
 implements GameEventDispatcher {
     private final List<GameEventListener> listeners = Lists.newArrayList();
-    private final Set<GameEventListener> field_37673 = Sets.newHashSet();
-    private final List<GameEventListener> field_37674 = Lists.newArrayList();
-    private boolean field_37675;
+    private final Set<GameEventListener> toRemove = Sets.newHashSet();
+    private final List<GameEventListener> toAdd = Lists.newArrayList();
+    private boolean dispatching;
     private final ServerWorld world;
 
-    public SimpleGameEventDispatcher(ServerWorld serverWorld) {
-        this.world = serverWorld;
+    public SimpleGameEventDispatcher(ServerWorld world) {
+        this.world = world;
     }
 
     @Override
@@ -43,8 +43,8 @@ implements GameEventDispatcher {
 
     @Override
     public void addListener(GameEventListener listener) {
-        if (this.field_37675) {
-            this.field_37674.add(listener);
+        if (this.dispatching) {
+            this.toAdd.add(listener);
         } else {
             this.listeners.add(listener);
         }
@@ -53,8 +53,8 @@ implements GameEventDispatcher {
 
     @Override
     public void removeListener(GameEventListener listener) {
-        if (this.field_37675) {
-            this.field_37673.add(listener);
+        if (this.dispatching) {
+            this.toRemove.add(listener);
         } else {
             this.listeners.remove(listener);
         }
@@ -64,44 +64,44 @@ implements GameEventDispatcher {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Override
-    public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d vec3d) {
+    public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos) {
         boolean bl = false;
-        this.field_37675 = true;
+        this.dispatching = true;
         try {
             Iterator<GameEventListener> iterator = this.listeners.iterator();
             while (iterator.hasNext()) {
                 GameEventListener gameEventListener = iterator.next();
-                if (this.field_37673.remove(gameEventListener)) {
+                if (this.toRemove.remove(gameEventListener)) {
                     iterator.remove();
                     continue;
                 }
-                if (!SimpleGameEventDispatcher.dispatchTo(this.world, event, entity, vec3d, gameEventListener)) continue;
+                if (!SimpleGameEventDispatcher.dispatchTo(this.world, event, entity, pos, gameEventListener)) continue;
                 bl = true;
             }
         } finally {
-            this.field_37675 = false;
+            this.dispatching = false;
         }
-        if (!this.field_37674.isEmpty()) {
-            this.listeners.addAll(this.field_37674);
-            this.field_37674.clear();
+        if (!this.toAdd.isEmpty()) {
+            this.listeners.addAll(this.toAdd);
+            this.toAdd.clear();
         }
-        if (!this.field_37673.isEmpty()) {
-            this.listeners.removeAll(this.field_37673);
-            this.field_37673.clear();
+        if (!this.toRemove.isEmpty()) {
+            this.listeners.removeAll(this.toRemove);
+            this.toRemove.clear();
         }
         if (bl) {
-            DebugInfoSender.sendGameEvent(this.world, event, vec3d);
+            DebugInfoSender.sendGameEvent(this.world, event, pos);
         }
     }
 
-    private static boolean dispatchTo(ServerWorld serverWorld, GameEvent gameEvent, @Nullable Entity entity, Vec3d vec3d, GameEventListener gameEventListener) {
+    private static boolean dispatchTo(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos, GameEventListener listener) {
         int i;
-        Optional<Vec3d> optional = gameEventListener.getPositionSource().getPos(serverWorld);
+        Optional<Vec3d> optional = listener.getPositionSource().getPos(world);
         if (optional.isEmpty()) {
             return false;
         }
-        double d = optional.get().squaredDistanceTo(vec3d);
-        return d <= (double)(i = gameEventListener.getRange() * gameEventListener.getRange()) && gameEventListener.listen(serverWorld, gameEvent, entity, vec3d);
+        double d = optional.get().squaredDistanceTo(pos);
+        return d <= (double)(i = listener.getRange() * listener.getRange()) && listener.listen(world, event, entity, pos);
     }
 }
 

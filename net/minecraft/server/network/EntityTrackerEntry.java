@@ -37,7 +37,6 @@ import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
@@ -207,7 +206,7 @@ public class EntityTrackerEntry {
             }
         }
         this.velocity = this.entity.getVelocity();
-        if (bl && !(packet instanceof MobSpawnS2CPacket)) {
+        if (bl && !(this.entity instanceof LivingEntity)) {
             sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
         }
         if (this.entity instanceof LivingEntity) {

@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.ModifiableWorld;
@@ -45,15 +46,11 @@ extends Feature<TreeFeatureConfig> {
         super(codec);
     }
 
-    public static boolean canTreeReplace(TestableWorld world, BlockPos pos) {
-        return TreeFeature.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(BlockTags.LOGS));
-    }
-
     private static boolean isVine(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> state.isOf(Blocks.VINE));
     }
 
-    private static boolean isWater(TestableWorld world, BlockPos pos) {
+    public static boolean isWater(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> state.isOf(Blocks.WATER));
     }
 
@@ -64,7 +61,7 @@ extends Feature<TreeFeatureConfig> {
     private static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Material material = state.getMaterial();
-            return material == Material.REPLACEABLE_PLANT;
+            return material == Material.REPLACEABLE_PLANT || material == Material.REPLACEABLE_UNDERWATER_PLANT;
         });
     }
 
@@ -76,7 +73,7 @@ extends Feature<TreeFeatureConfig> {
         return TreeFeature.isAirOrLeaves(world, pos) || TreeFeature.isReplaceablePlant(world, pos) || TreeFeature.isWater(world, pos);
     }
 
-    private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, BiConsumer<BlockPos, BlockState> trunkReplacer, BiConsumer<BlockPos, BlockState> foliageReplacer, TreeFeatureConfig config) {
+    private boolean generate(StructureWorldAccess world, AbstractRandom random, BlockPos pos, BiConsumer<BlockPos, BlockState> rootPlacerReplacer, BiConsumer<BlockPos, BlockState> trunkPlacerReplacer, BiConsumer<BlockPos, BlockState> foliagePlacerReplacer, TreeFeatureConfig config) {
         int i = config.trunkPlacer.getHeight(random);
         int j = config.foliagePlacer.getRandomHeight(random, i, config);
         int k = i - j;
@@ -89,8 +86,16 @@ extends Feature<TreeFeatureConfig> {
         if (!(m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt())) {
             return false;
         }
-        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkReplacer, random, m, pos, config);
-        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, foliageReplacer, random, config, m, (FoliagePlacer.TreeNode)node, j, l));
+        BlockPos blockPos = pos;
+        if (config.rootPlacer.isPresent()) {
+            Optional<BlockPos> optional = config.rootPlacer.get().generate(world, rootPlacerReplacer, random, pos, config);
+            if (optional.isEmpty()) {
+                return false;
+            }
+            blockPos = optional.get();
+        }
+        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkPlacerReplacer, random, m, blockPos, config);
+        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, foliagePlacerReplacer, random, config, m, (FoliagePlacer.TreeNode)node, j, l));
         return true;
     }
 
@@ -101,7 +106,7 @@ extends Feature<TreeFeatureConfig> {
             for (int k = -j; k <= j; ++k) {
                 for (int l = -j; l <= j; ++l) {
                     mutable.set(pos, k, i, l);
-                    if (TreeFeature.canTreeReplace(world, mutable) && (config.ignoreVines || !TreeFeature.isVine(world, mutable))) continue;
+                    if (config.trunkPlacer.canReplaceOrIsLog(world, mutable) && (config.ignoreVines || !TreeFeature.isVine(world, mutable))) continue;
                     return i - 2;
                 }
             }
@@ -117,12 +122,13 @@ extends Feature<TreeFeatureConfig> {
     @Override
     public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         TreeFeatureConfig treeFeatureConfig = context.getConfig();
         HashSet set = Sets.newHashSet();
         HashSet set2 = Sets.newHashSet();
         HashSet set3 = Sets.newHashSet();
+        HashSet set4 = Sets.newHashSet();
         BiConsumer<BlockPos, BlockState> biConsumer = (pos, state) -> {
             set.add(pos.toImmutable());
             structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
@@ -135,19 +141,25 @@ extends Feature<TreeFeatureConfig> {
             set3.add(pos.toImmutable());
             structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
         };
-        boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, treeFeatureConfig);
-        if (!bl || set.isEmpty() && set2.isEmpty()) {
+        BiConsumer<BlockPos, BlockState> biConsumer4 = (pos, state) -> {
+            set4.add(pos.toImmutable());
+            structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+        };
+        boolean bl = this.generate(structureWorldAccess, abstractRandom, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
+        if (!bl || set2.isEmpty() && set3.isEmpty()) {
             return false;
         }
         if (!treeFeatureConfig.decorators.isEmpty()) {
             ArrayList<BlockPos> list = Lists.newArrayList(set);
             ArrayList<BlockPos> list2 = Lists.newArrayList(set2);
-            list.sort(Comparator.comparingInt(Vec3i::getY));
+            ArrayList<BlockPos> list3 = Lists.newArrayList(set3);
             list2.sort(Comparator.comparingInt(Vec3i::getY));
-            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, biConsumer3, random, list, list2));
+            list3.sort(Comparator.comparingInt(Vec3i::getY));
+            list.sort(Comparator.comparingInt(Vec3i::getY));
+            treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, biConsumer4, abstractRandom, list2, list3, list));
         }
-        return BlockBox.encompassPositions(Iterables.concat(set, set2, set3)).map(box -> {
-            VoxelSet voxelSet = TreeFeature.placeLogsAndLeaves(structureWorldAccess, box, set, set3);
+        return BlockBox.encompassPositions(Iterables.concat(set2, set3, set4)).map(box -> {
+            VoxelSet voxelSet = TreeFeature.placeLogsAndLeaves(structureWorldAccess, box, set2, set4);
             Structure.updateCorner(structureWorldAccess, Block.NOTIFY_ALL, voxelSet, box.getMinX(), box.getMinY(), box.getMinZ());
             return true;
         }).orElse(false);

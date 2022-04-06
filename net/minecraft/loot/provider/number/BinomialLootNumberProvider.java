@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import java.util.Random;
 import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
@@ -17,6 +16,7 @@ import net.minecraft.loot.provider.number.LootNumberProviderType;
 import net.minecraft.loot.provider.number.LootNumberProviderTypes;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public final class BinomialLootNumberProvider
 implements LootNumberProvider {
@@ -37,10 +37,10 @@ implements LootNumberProvider {
     public int nextInt(LootContext context) {
         int i = this.n.nextInt(context);
         float f = this.p.nextFloat(context);
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         int j = 0;
         for (int k = 0; k < i; ++k) {
-            if (!(random.nextFloat() < f)) continue;
+            if (!(abstractRandom.nextFloat() < f)) continue;
             ++j;
         }
         return j;

@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -22,7 +23,7 @@ public class AmbientSoundLoops {
         private int transitionTimer;
 
         public Underwater(ClientPlayerEntity player) {
-            super(SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundCategory.AMBIENT);
+            super(SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundCategory.AMBIENT, SoundInstance.createRandom());
             this.player = player;
             this.repeat = true;
             this.repeatDelay = 0;
@@ -48,7 +49,7 @@ public class AmbientSoundLoops {
         private final ClientPlayerEntity player;
 
         protected MusicLoop(ClientPlayerEntity player, SoundEvent soundEvent) {
-            super(soundEvent, SoundCategory.AMBIENT);
+            super(soundEvent, SoundCategory.AMBIENT, SoundInstance.createRandom());
             this.player = player;
             this.repeat = false;
             this.repeatDelay = 0;

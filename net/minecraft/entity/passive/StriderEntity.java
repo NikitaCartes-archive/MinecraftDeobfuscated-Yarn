@@ -5,7 +5,6 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
 import java.util.LinkedHashSet;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -64,6 +63,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -99,7 +99,7 @@ Saddleable {
         this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0f);
     }
 
-    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<StriderEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         do {
             mutable.move(Direction.UP);

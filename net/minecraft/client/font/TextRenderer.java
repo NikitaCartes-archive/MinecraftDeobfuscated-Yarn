@@ -8,7 +8,6 @@ import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -35,6 +34,7 @@ import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -54,7 +54,7 @@ public class TextRenderer {
      * The font height of the text that is rendered by the text renderer.
      */
     public final int fontHeight = 9;
-    public final Random random = new Random();
+    public final AbstractRandom random = AbstractRandom.createAtomic();
     private final Function<Identifier, FontStorage> fontStorageAccessor;
     private final TextHandler handler;
 

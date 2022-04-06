@@ -428,7 +428,7 @@ public abstract class PlayerManager {
         serverPlayerEntity.onSpawn();
         serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
         if (bl2) {
-            serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0f, 1.0f));
+            serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0f, 1.0f, serverWorld2.getRandom().nextLong()));
         }
         return serverPlayerEntity;
     }

@@ -9,11 +9,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -34,7 +34,7 @@ extends TrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config) {
         int n;
         ForkingTrunkPlacer.setToDirt(world, replacer, random, startPos.down(), config);
         ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
@@ -52,7 +52,7 @@ extends TrunkPlacer {
                 l += direction.getOffsetZ();
                 --j;
             }
-            if (!ForkingTrunkPlacer.getAndSetState(world, replacer, random, mutable.set(k, n, l), config)) continue;
+            if (!this.getAndSetState(world, replacer, random, mutable.set(k, n, l), config)) continue;
             optionalInt = OptionalInt.of(n + 1);
         }
         if (optionalInt.isPresent()) {
@@ -68,7 +68,7 @@ extends TrunkPlacer {
             for (int p = n; p < height && o > 0; ++p, --o) {
                 if (p < 1) continue;
                 int q = startPos.getY() + p;
-                if (!ForkingTrunkPlacer.getAndSetState(world, replacer, random, mutable.set(k += direction2.getOffsetX(), q, l += direction2.getOffsetZ()), config)) continue;
+                if (!this.getAndSetState(world, replacer, random, mutable.set(k += direction2.getOffsetX(), q, l += direction2.getOffsetZ()), config)) continue;
                 optionalInt = OptionalInt.of(q + 1);
             }
             if (optionalInt.isPresent()) {

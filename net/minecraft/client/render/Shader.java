@@ -13,10 +13,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import java.io.Closeable;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -104,12 +104,10 @@ AutoCloseable {
         this.name = name;
         this.format = format;
         Identifier identifier = new Identifier(CORE_DIRECTORY + name + ".json");
-        Resource resource = null;
-        try {
+        try (BufferedReader reader = factory.openAsReader(identifier);){
             JsonArray jsonArray3;
             JsonArray jsonArray2;
-            resource = factory.getResource(identifier);
-            JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+            JsonObject jsonObject = JsonHelper.deserialize(reader);
             String string = JsonHelper.getString(jsonObject, "vertex");
             String string2 = JsonHelper.getString(jsonObject, "fragment");
             JsonArray jsonArray = JsonHelper.getArray(jsonObject, "samplers", null);
@@ -175,8 +173,6 @@ AutoCloseable {
             ShaderParseException shaderParseException4 = ShaderParseException.wrap(exception4);
             shaderParseException4.addFaultyFile(identifier.getPath());
             throw shaderParseException4;
-        } finally {
-            IOUtils.closeQuietly((Closeable)resource);
         }
         this.markUniformsDirty();
         this.modelViewMat = this.getUniform("ModelViewMat");
@@ -196,19 +192,15 @@ AutoCloseable {
         this.chunkOffset = this.getUniform("ChunkOffset");
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     private static Program loadProgram(final ResourceFactory factory, Program.Type type, String name) throws IOException {
         Program program2;
         Program program = type.getProgramCache().get(name);
         if (program == null) {
             String string = CORE_DIRECTORY + name + type.getFileExtension();
-            Identifier identifier = new Identifier(string);
-            Resource resource = factory.getResource(identifier);
-            final String string2 = FileNameUtil.getPosixFullPath(string);
-            try {
-                program2 = Program.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName(), new GLImportProcessor(){
+            Resource resource = factory.getResourceOrThrow(new Identifier(string));
+            try (InputStream inputStream = resource.getInputStream();){
+                final String string2 = FileNameUtil.getPosixFullPath(string);
+                program2 = Program.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GLImportProcessor(){
                     private final Set<String> visitedImports = Sets.newHashSet();
 
                     @Override
@@ -220,15 +212,15 @@ AutoCloseable {
                                 return null;
                             }
                             Identifier identifier = new Identifier(name);
-                            Resource resource = factory.getResource(identifier);
+                            BufferedReader reader = factory.openAsReader(identifier);
                             try {
-                                string = IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8);
-                                if (resource == null) break block9;
+                                string = IOUtils.toString(reader);
+                                if (reader == null) break block9;
                             } catch (Throwable throwable) {
                                 try {
-                                    if (resource != null) {
+                                    if (reader != null) {
                                         try {
-                                            resource.close();
+                                            ((Reader)reader).close();
                                         } catch (Throwable throwable2) {
                                             throwable.addSuppressed(throwable2);
                                         }
@@ -239,13 +231,11 @@ AutoCloseable {
                                     return "#error " + iOException.getMessage();
                                 }
                             }
-                            resource.close();
+                            ((Reader)reader).close();
                         }
                         return string;
                     }
                 });
-            } finally {
-                IOUtils.closeQuietly((Closeable)resource);
             }
         } else {
             program2 = program;

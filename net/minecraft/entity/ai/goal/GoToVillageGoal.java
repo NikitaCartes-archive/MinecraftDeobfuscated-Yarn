@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import java.util.Random;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -13,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,8 +76,8 @@ extends Goal {
     }
 
     private void findOtherWaypoint() {
-        Random random = this.mob.getRandom();
-        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+        AbstractRandom abstractRandom = this.mob.getRandom();
+        BlockPos blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.mob.getBlockPos().add(-8 + abstractRandom.nextInt(16), 0, -8 + abstractRandom.nextInt(16)));
         this.mob.getNavigation().startMovingTo(blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0);
     }
 }

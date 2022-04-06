@@ -13,7 +13,7 @@ import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePoolElementType<P extends StructurePoolElement> {
-    public static final StructurePoolElementType<SinglePoolElement> SINGLE_POOL_ELEMENT = StructurePoolElementType.register("single_pool_element", SinglePoolElement.field_24952);
+    public static final StructurePoolElementType<SinglePoolElement> SINGLE_POOL_ELEMENT = StructurePoolElementType.register("single_pool_element", SinglePoolElement.CODEC);
     public static final StructurePoolElementType<ListPoolElement> LIST_POOL_ELEMENT = StructurePoolElementType.register("list_pool_element", ListPoolElement.CODEC);
     public static final StructurePoolElementType<FeaturePoolElement> FEATURE_POOL_ELEMENT = StructurePoolElementType.register("feature_pool_element", FeaturePoolElement.CODEC);
     public static final StructurePoolElementType<EmptyPoolElement> EMPTY_POOL_ELEMENT = StructurePoolElementType.register("empty_pool_element", EmptyPoolElement.CODEC);

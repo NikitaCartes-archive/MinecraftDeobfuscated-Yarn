@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -44,6 +43,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
@@ -84,7 +84,7 @@ extends BlockWithEntity {
     protected void dispense(ServerWorld world, BlockPos pos) {
         BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
-        int i = dispenserBlockEntity.chooseNonEmptySlot();
+        int i = dispenserBlockEntity.chooseNonEmptySlot(world.random);
         if (i < 0) {
             world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
             world.emitGameEvent(null, GameEvent.DISPENSE_FAIL, pos);
@@ -114,7 +114,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         this.dispense(world, pos);
     }
 

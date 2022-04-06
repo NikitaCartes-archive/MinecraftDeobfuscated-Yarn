@@ -13,26 +13,26 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 
 public record StructureSet(List<WeightedEntry> structures, StructurePlacement placement) {
     public static final Codec<StructureSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)WeightedEntry.CODEC.listOf().fieldOf("structures")).forGetter(StructureSet::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(StructureSet::placement)).apply((Applicative<StructureSet, ?>)instance, StructureSet::new));
     public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_SET_KEY, CODEC);
 
-    public StructureSet(RegistryEntry<StructureFeature> structure, StructurePlacement placement) {
+    public StructureSet(RegistryEntry<StructureType> structure, StructurePlacement placement) {
         this(List.of(new WeightedEntry(structure, 1)), placement);
     }
 
-    public static WeightedEntry createEntry(RegistryEntry<StructureFeature> structure, int weight) {
+    public static WeightedEntry createEntry(RegistryEntry<StructureType> structure, int weight) {
         return new WeightedEntry(structure, weight);
     }
 
-    public static WeightedEntry createEntry(RegistryEntry<StructureFeature> structure) {
+    public static WeightedEntry createEntry(RegistryEntry<StructureType> structure) {
         return new WeightedEntry(structure, 1);
     }
 
-    public record WeightedEntry(RegistryEntry<StructureFeature> structure, int weight) {
-        public static final Codec<WeightedEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructureFeature.FEATURE_ENTRY_CODEC.fieldOf("structure")).forGetter(WeightedEntry::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(WeightedEntry::weight)).apply((Applicative<WeightedEntry, ?>)instance, WeightedEntry::new));
+    public record WeightedEntry(RegistryEntry<StructureType> structure, int weight) {
+        public static final Codec<WeightedEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructureType.ENTRY_CODEC.fieldOf("structure")).forGetter(WeightedEntry::structure), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("weight")).forGetter(WeightedEntry::weight)).apply((Applicative<WeightedEntry, ?>)instance, WeightedEntry::new));
     }
 }
 

@@ -23,12 +23,11 @@ import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
-import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LevitationCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
-import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
@@ -68,14 +67,14 @@ public class Criteria {
     public static final UsedEnderEyeCriterion USED_ENDER_EYE = Criteria.register(new UsedEnderEyeCriterion());
     public static final SummonedEntityCriterion SUMMONED_ENTITY = Criteria.register(new SummonedEntityCriterion());
     public static final BredAnimalsCriterion BRED_ANIMALS = Criteria.register(new BredAnimalsCriterion());
-    public static final LocationArrivalCriterion LOCATION = Criteria.register(new LocationArrivalCriterion(new Identifier("location")));
-    public static final LocationArrivalCriterion SLEPT_IN_BED = Criteria.register(new LocationArrivalCriterion(new Identifier("slept_in_bed")));
+    public static final TickCriterion LOCATION = Criteria.register(new TickCriterion(new Identifier("location")));
+    public static final TickCriterion SLEPT_IN_BED = Criteria.register(new TickCriterion(new Identifier("slept_in_bed")));
     public static final CuredZombieVillagerCriterion CURED_ZOMBIE_VILLAGER = Criteria.register(new CuredZombieVillagerCriterion());
     public static final VillagerTradeCriterion VILLAGER_TRADE = Criteria.register(new VillagerTradeCriterion());
     public static final ItemDurabilityChangedCriterion ITEM_DURABILITY_CHANGED = Criteria.register(new ItemDurabilityChangedCriterion());
     public static final LevitationCriterion LEVITATION = Criteria.register(new LevitationCriterion());
     public static final ChangedDimensionCriterion CHANGED_DIMENSION = Criteria.register(new ChangedDimensionCriterion());
-    public static final TickCriterion TICK = Criteria.register(new TickCriterion());
+    public static final TickCriterion TICK = Criteria.register(new TickCriterion(new Identifier("tick")));
     public static final TameAnimalCriterion TAME_ANIMAL = Criteria.register(new TameAnimalCriterion());
     public static final PlacedBlockCriterion PLACED_BLOCK = Criteria.register(new PlacedBlockCriterion());
     public static final ConsumeItemCriterion CONSUME_ITEM = Criteria.register(new ConsumeItemCriterion());
@@ -86,12 +85,12 @@ public class Criteria {
     public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = Criteria.register(new ChanneledLightningCriterion());
     public static final ShotCrossbowCriterion SHOT_CROSSBOW = Criteria.register(new ShotCrossbowCriterion());
     public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = Criteria.register(new KilledByCrossbowCriterion());
-    public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = Criteria.register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
-    public static final LocationArrivalCriterion VOLUNTARY_EXILE = Criteria.register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
+    public static final TickCriterion HERO_OF_THE_VILLAGE = Criteria.register(new TickCriterion(new Identifier("hero_of_the_village")));
+    public static final TickCriterion VOLUNTARY_EXILE = Criteria.register(new TickCriterion(new Identifier("voluntary_exile")));
     public static final SlideDownBlockCriterion SLIDE_DOWN_BLOCK = Criteria.register(new SlideDownBlockCriterion());
     public static final BeeNestDestroyedCriterion BEE_NEST_DESTROYED = Criteria.register(new BeeNestDestroyedCriterion());
     public static final TargetHitCriterion TARGET_HIT = Criteria.register(new TargetHitCriterion());
-    public static final ItemUsedOnBlockCriterion ITEM_USED_ON_BLOCK = Criteria.register(new ItemUsedOnBlockCriterion());
+    public static final ItemCriterion ITEM_USED_ON_BLOCK = Criteria.register(new ItemCriterion(new Identifier("item_used_on_block")));
     public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = Criteria.register(new PlayerGeneratesContainerLootCriterion());
     public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion());
     public static final PlayerInteractedWithEntityCriterion PLAYER_INTERACTED_WITH_ENTITY = Criteria.register(new PlayerInteractedWithEntityCriterion());
@@ -101,6 +100,8 @@ public class Criteria {
     public static final TravelCriterion FALL_FROM_HEIGHT = Criteria.register(new TravelCriterion(new Identifier("fall_from_height")));
     public static final TravelCriterion RIDE_ENTITY_IN_LAVA = Criteria.register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
     public static final OnKilledCriterion KILL_MOB_NEAR_SCULK_CATALYST = Criteria.register(new OnKilledCriterion(new Identifier("kill_mob_near_sculk_catalyst")));
+    public static final TickCriterion ITEM_DELIVERED_TO_PLAYER = Criteria.register(new TickCriterion(new Identifier("item_delivered_to_player")));
+    public static final ItemCriterion ALLAY_DROP_ITEM_ON_BLOCK = Criteria.register(new ItemCriterion(new Identifier("allay_drop_item_on_block")));
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

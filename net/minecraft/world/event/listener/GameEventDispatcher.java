@@ -32,7 +32,7 @@ public interface GameEventDispatcher {
         }
 
         @Override
-        public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d vec3d) {
+        public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos) {
         }
     };
 

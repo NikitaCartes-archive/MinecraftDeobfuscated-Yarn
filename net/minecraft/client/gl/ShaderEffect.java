@@ -10,11 +10,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.systems.RenderSystem;
-import java.io.Closeable;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -32,7 +29,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Matrix4f;
-import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -64,14 +60,12 @@ implements AutoCloseable {
     }
 
     private void parseEffect(TextureManager textureManager, Identifier location) throws IOException, JsonSyntaxException {
-        Resource resource;
-        block11: {
-            resource = null;
-            try {
+        block15: {
+            Resource resource = this.resourceManager.getResourceOrThrow(location);
+            try (BufferedReader reader = resource.getReader();){
                 int i;
                 JsonArray jsonArray;
-                resource = this.resourceManager.getResource(location);
-                JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
+                JsonObject jsonObject = JsonHelper.deserialize(reader);
                 if (JsonHelper.hasArray(jsonObject, "targets")) {
                     jsonArray = jsonObject.getAsJsonArray("targets");
                     i = 0;
@@ -86,7 +80,7 @@ implements AutoCloseable {
                         ++i;
                     }
                 }
-                if (!JsonHelper.hasArray(jsonObject, "passes")) break block11;
+                if (!JsonHelper.hasArray(jsonObject, "passes")) break block15;
                 jsonArray = jsonObject.getAsJsonArray("passes");
                 i = 0;
                 for (JsonElement jsonElement : jsonArray) {
@@ -100,18 +94,11 @@ implements AutoCloseable {
                     ++i;
                 }
             } catch (Exception exception2) {
-                try {
-                    Object string = resource != null ? " (" + resource.getResourcePackName() + ")" : "";
-                    ShaderParseException shaderParseException2 = ShaderParseException.wrap(exception2);
-                    shaderParseException2.addFaultyFile(location.getPath() + (String)string);
-                    throw shaderParseException2;
-                } catch (Throwable throwable) {
-                    IOUtils.closeQuietly(resource);
-                    throw throwable;
-                }
+                ShaderParseException shaderParseException2 = ShaderParseException.wrap(exception2);
+                shaderParseException2.addFaultyFile(location.getPath() + " (" + resource.getResourcePackName() + ")");
+                throw shaderParseException2;
             }
         }
-        IOUtils.closeQuietly((Closeable)resource);
     }
 
     private void parseTarget(JsonElement jsonTarget) throws ShaderParseException {
@@ -131,86 +118,66 @@ implements AutoCloseable {
 
     private void parsePass(TextureManager textureManager, JsonElement jsonPass) throws IOException {
         JsonArray jsonArray2;
-        JsonObject jsonObject;
-        block21: {
-            jsonObject = JsonHelper.asObject(jsonPass, "pass");
-            String string = JsonHelper.getString(jsonObject, "name");
-            String string2 = JsonHelper.getString(jsonObject, "intarget");
-            String string3 = JsonHelper.getString(jsonObject, "outtarget");
-            Framebuffer framebuffer = this.getTarget(string2);
-            Framebuffer framebuffer2 = this.getTarget(string3);
-            if (framebuffer == null) {
-                throw new ShaderParseException("Input target '" + string2 + "' does not exist");
-            }
-            if (framebuffer2 == null) {
-                throw new ShaderParseException("Output target '" + string3 + "' does not exist");
-            }
-            PostProcessShader postProcessShader = this.addPass(string, framebuffer, framebuffer2);
-            JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
-            if (jsonArray == null) break block21;
+        JsonObject jsonObject = JsonHelper.asObject(jsonPass, "pass");
+        String string = JsonHelper.getString(jsonObject, "name");
+        String string2 = JsonHelper.getString(jsonObject, "intarget");
+        String string3 = JsonHelper.getString(jsonObject, "outtarget");
+        Framebuffer framebuffer = this.getTarget(string2);
+        Framebuffer framebuffer2 = this.getTarget(string3);
+        if (framebuffer == null) {
+            throw new ShaderParseException("Input target '" + string2 + "' does not exist");
+        }
+        if (framebuffer2 == null) {
+            throw new ShaderParseException("Output target '" + string3 + "' does not exist");
+        }
+        PostProcessShader postProcessShader = this.addPass(string, framebuffer, framebuffer2);
+        JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
+        if (jsonArray != null) {
             int i = 0;
             for (JsonElement jsonElement : jsonArray) {
-                block20: {
-                    try {
-                        Framebuffer framebuffer3;
-                        boolean bl;
-                        String string4;
-                        block22: {
-                            String string6;
-                            JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
-                            string4 = JsonHelper.getString(jsonObject2, "name");
-                            String string5 = JsonHelper.getString(jsonObject2, "id");
-                            if (string5.endsWith(":depth")) {
-                                bl = true;
-                                string6 = string5.substring(0, string5.lastIndexOf(58));
-                            } else {
-                                bl = false;
-                                string6 = string5;
-                            }
-                            framebuffer3 = this.getTarget(string6);
-                            if (framebuffer3 != null) break block22;
-                            if (bl) {
-                                throw new ShaderParseException("Render target '" + string6 + "' can't be used as depth buffer");
-                            }
-                            Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
-                            Resource resource = null;
-                            try {
-                                resource = this.resourceManager.getResource(identifier);
-                            } catch (FileNotFoundException fileNotFoundException) {
-                                try {
-                                    throw new ShaderParseException("Render target or texture '" + string6 + "' does not exist");
-                                } catch (Throwable throwable) {
-                                    IOUtils.closeQuietly(resource);
-                                    throw throwable;
-                                }
-                            }
-                            IOUtils.closeQuietly((Closeable)resource);
-                            RenderSystem.setShaderTexture(0, identifier);
-                            textureManager.bindTexture(identifier);
-                            AbstractTexture abstractTexture = textureManager.getTexture(identifier);
-                            int j = JsonHelper.getInt(jsonObject2, "width");
-                            int k = JsonHelper.getInt(jsonObject2, "height");
-                            boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
-                            if (bl2) {
-                                RenderSystem.texParameter(3553, 10241, 9729);
-                                RenderSystem.texParameter(3553, 10240, 9729);
-                            } else {
-                                RenderSystem.texParameter(3553, 10241, 9728);
-                                RenderSystem.texParameter(3553, 10240, 9728);
-                            }
-                            postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
-                            break block20;
-                        }
-                        if (bl) {
-                            postProcessShader.addAuxTarget(string4, framebuffer3::getDepthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
-                        } else {
-                            postProcessShader.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
-                        }
-                    } catch (Exception exception) {
-                        ShaderParseException shaderParseException = ShaderParseException.wrap(exception);
-                        shaderParseException.addFaultyElement("auxtargets[" + i + "]");
-                        throw shaderParseException;
+                try {
+                    String string6;
+                    boolean bl;
+                    JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "auxtarget");
+                    String string4 = JsonHelper.getString(jsonObject2, "name");
+                    String string5 = JsonHelper.getString(jsonObject2, "id");
+                    if (string5.endsWith(":depth")) {
+                        bl = true;
+                        string6 = string5.substring(0, string5.lastIndexOf(58));
+                    } else {
+                        bl = false;
+                        string6 = string5;
                     }
+                    Framebuffer framebuffer3 = this.getTarget(string6);
+                    if (framebuffer3 == null) {
+                        if (bl) {
+                            throw new ShaderParseException("Render target '" + string6 + "' can't be used as depth buffer");
+                        }
+                        Identifier identifier = new Identifier("textures/effect/" + string6 + ".png");
+                        this.resourceManager.getResource(identifier).orElseThrow(() -> new ShaderParseException("Render target or texture '" + string6 + "' does not exist"));
+                        RenderSystem.setShaderTexture(0, identifier);
+                        textureManager.bindTexture(identifier);
+                        AbstractTexture abstractTexture = textureManager.getTexture(identifier);
+                        int j = JsonHelper.getInt(jsonObject2, "width");
+                        int k = JsonHelper.getInt(jsonObject2, "height");
+                        boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
+                        if (bl2) {
+                            RenderSystem.texParameter(3553, 10241, 9729);
+                            RenderSystem.texParameter(3553, 10240, 9729);
+                        } else {
+                            RenderSystem.texParameter(3553, 10241, 9728);
+                            RenderSystem.texParameter(3553, 10240, 9728);
+                        }
+                        postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
+                    } else if (bl) {
+                        postProcessShader.addAuxTarget(string4, framebuffer3::getDepthAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                    } else {
+                        postProcessShader.addAuxTarget(string4, framebuffer3::getColorAttachment, framebuffer3.textureWidth, framebuffer3.textureHeight);
+                    }
+                } catch (Exception exception) {
+                    ShaderParseException shaderParseException = ShaderParseException.wrap(exception);
+                    shaderParseException.addFaultyElement("auxtargets[" + i + "]");
+                    throw shaderParseException;
                 }
                 ++i;
             }

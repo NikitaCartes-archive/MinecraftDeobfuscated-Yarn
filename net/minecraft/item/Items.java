@@ -437,6 +437,7 @@ public class Items {
     public static final Item SCULK = Items.register(Blocks.SCULK, ItemGroup.DECORATIONS);
     public static final Item SCULK_VEIN = Items.register(Blocks.SCULK_VEIN, ItemGroup.DECORATIONS);
     public static final Item SCULK_CATALYST = Items.register(Blocks.SCULK_CATALYST, ItemGroup.DECORATIONS);
+    public static final Item SCULK_SHRIEKER = Items.register(Blocks.SCULK_SHRIEKER, ItemGroup.DECORATIONS);
     public static final Item ENCHANTING_TABLE = Items.register(Blocks.ENCHANTING_TABLE, ItemGroup.DECORATIONS);
     public static final Item END_PORTAL_FRAME = Items.register(Blocks.END_PORTAL_FRAME, ItemGroup.DECORATIONS);
     public static final Item END_STONE = Items.register(Blocks.END_STONE, ItemGroup.BUILDING_BLOCKS);
@@ -1078,8 +1079,8 @@ public class Items {
     public static final Item VEX_SPAWN_EGG = Items.register("vex_spawn_egg", (Item)new SpawnEggItem(EntityType.VEX, 8032420, 15265265, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item VILLAGER_SPAWN_EGG = Items.register("villager_spawn_egg", (Item)new SpawnEggItem(EntityType.VILLAGER, 5651507, 12422002, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item VINDICATOR_SPAWN_EGG = Items.register("vindicator_spawn_egg", (Item)new SpawnEggItem(EntityType.VINDICATOR, 0x959B9B, 2580065, new Item.Settings().group(ItemGroup.MISC)));
-    public static final Item WARDEN_SPAWN_EGG = Items.register("warden_spawn_egg", (Item)new SpawnEggItem(EntityType.WARDEN, 1001033, 3790560, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WANDERING_TRADER_SPAWN_EGG = Items.register("wandering_trader_spawn_egg", (Item)new SpawnEggItem(EntityType.WANDERING_TRADER, 4547222, 15377456, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item WARDEN_SPAWN_EGG = Items.register("warden_spawn_egg", (Item)new SpawnEggItem(EntityType.WARDEN, 1001033, 3790560, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WITCH_SPAWN_EGG = Items.register("witch_spawn_egg", (Item)new SpawnEggItem(EntityType.WITCH, 0x340000, 5349438, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WITHER_SKELETON_SPAWN_EGG = Items.register("wither_skeleton_spawn_egg", (Item)new SpawnEggItem(EntityType.WITHER_SKELETON, 0x141414, 0x474D4D, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item WOLF_SPAWN_EGG = Items.register("wolf_spawn_egg", (Item)new SpawnEggItem(EntityType.WOLF, 0xD7D3D3, 13545366, new Item.Settings().group(ItemGroup.MISC)));
@@ -1249,11 +1250,12 @@ public class Items {
     public static final Item LARGE_AMETHYST_BUD = Items.register(Blocks.LARGE_AMETHYST_BUD, ItemGroup.DECORATIONS);
     public static final Item AMETHYST_CLUSTER = Items.register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
     public static final Item POINTED_DRIPSTONE = Items.register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
-    public static final Item SCULK_SHRIEKER = Items.register(Blocks.SCULK_SHRIEKER, ItemGroup.DECORATIONS);
     public static final Item OCHRE_FROGLIGHT = Items.register(Blocks.OCHRE_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item VERDANT_FROGLIGHT = Items.register(Blocks.VERDANT_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item PEARLESCENT_FROGLIGHT = Items.register(Blocks.PEARLESCENT_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item FROGSPAWN = Items.register(new LilyPadItem(Blocks.FROGSPAWN, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item ECHO_SHARD = Items.register("echo_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item RECOVERY_COMPASS = Items.register("recovery_compass", (Item)new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
 
     private static <T> Optional<T> createEmptyOptional(T of) {
         return Optional.empty();

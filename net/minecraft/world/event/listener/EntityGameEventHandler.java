@@ -6,6 +6,7 @@ package net.minecraft.world.event.listener;
 import java.util.function.Consumer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -23,12 +24,12 @@ import org.jetbrains.annotations.Nullable;
  * 
  * @see net.minecraft.entity.Entity#getGameEventHandler()
  */
-public class EntityGameEventHandler {
-    private final GameEventListener listener;
+public class EntityGameEventHandler<T extends GameEventListener> {
+    private T listener;
     @Nullable
     private ChunkSectionPos sectionPos;
 
-    public EntityGameEventHandler(GameEventListener listener) {
+    public EntityGameEventHandler(T listener) {
         this.listener = listener;
     }
 
@@ -36,16 +37,33 @@ public class EntityGameEventHandler {
         this.onEntitySetPos(world);
     }
 
+    public void setListener(T listener, @Nullable World world) {
+        Object gameEventListener = this.listener;
+        if (gameEventListener == listener) {
+            return;
+        }
+        if (world instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld)world;
+            EntityGameEventHandler.updateDispatcher(serverWorld, this.sectionPos, dispatcher -> dispatcher.removeListener((GameEventListener)gameEventListener));
+            EntityGameEventHandler.updateDispatcher(serverWorld, this.sectionPos, dispatcher -> dispatcher.addListener((GameEventListener)listener));
+        }
+        this.listener = listener;
+    }
+
+    public T getListener() {
+        return this.listener;
+    }
+
     public void onEntityRemoval(ServerWorld world) {
-        EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.removeListener(this.listener));
+        EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.removeListener((GameEventListener)this.listener));
     }
 
     public void onEntitySetPos(ServerWorld world) {
         this.listener.getPositionSource().getPos(world).map(ChunkSectionPos::from).ifPresent(sectionPos -> {
             if (this.sectionPos == null || !this.sectionPos.equals(sectionPos)) {
-                EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.removeListener(this.listener));
+                EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.removeListener((GameEventListener)this.listener));
                 this.sectionPos = sectionPos;
-                EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.addListener(this.listener));
+                EntityGameEventHandler.updateDispatcher(world, this.sectionPos, dispatcher -> dispatcher.addListener((GameEventListener)this.listener));
             }
         });
     }

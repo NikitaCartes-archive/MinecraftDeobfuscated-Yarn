@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
@@ -29,6 +28,8 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -37,16 +38,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.random.ChunkRandom;
+import net.minecraft.world.gen.structure.StructureType;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 
 public class StructurePoolBasedGenerator {
     static final Logger LOGGER = LogUtils.getLogger();
 
-    public static Optional<StructureFeature.StructurePosition> generate(StructureFeature.Context context, RegistryEntry<StructurePool> registryEntry, int i, PieceFactory pieceFactory, BlockPos blockPos, boolean bl, Optional<Heightmap.Type> optional, int j) {
+    public static Optional<StructureType.StructurePosition> generate(StructureType.Context context, RegistryEntry<StructurePool> registryEntry, int i, PieceFactory pieceFactory, BlockPos blockPos, boolean bl, Optional<Heightmap.Type> optional, int j) {
         DynamicRegistryManager dynamicRegistryManager = context.dynamicRegistryManager();
         ChunkGenerator chunkGenerator = context.chunkGenerator();
         StructureManager structureManager = context.structureManager();
@@ -66,7 +66,7 @@ public class StructurePoolBasedGenerator {
         int m = optional.isPresent() ? blockPos.getY() + chunkGenerator.getHeightOnGround(k, l, optional.get(), heightLimitView, context.noiseConfig()) : blockPos.getY();
         int n = blockBox.getMinY() + poolStructurePiece.getGroundLevelDelta();
         poolStructurePiece.translate(0, m - n, 0);
-        return Optional.of(new StructureFeature.StructurePosition(new BlockPos(k, m, l), structurePiecesCollector -> {
+        return Optional.of(new StructureType.StructurePosition(new BlockPos(k, m, l), structurePiecesCollector -> {
             ArrayList<PoolStructurePiece> list = Lists.newArrayList();
             list.add(poolStructurePiece);
             if (i <= 0) {
@@ -83,7 +83,7 @@ public class StructurePoolBasedGenerator {
         }));
     }
 
-    public static void generate(DynamicRegistryManager registryManager, PoolStructurePiece piece, int maxDepth, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> results, Random random, HeightLimitView world, NoiseConfig noiseConfig) {
+    public static void generate(DynamicRegistryManager registryManager, PoolStructurePiece piece, int maxDepth, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> results, AbstractRandom random, HeightLimitView world, NoiseConfig noiseConfig) {
         Registry<StructurePool> registry = registryManager.get(Registry.STRUCTURE_POOL_KEY);
         StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(registry, maxDepth, pieceFactory, chunkGenerator, structureManager, results, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(piece, new MutableObject<VoxelShape>(VoxelShapes.UNBOUNDED), 0));
@@ -105,10 +105,10 @@ public class StructurePoolBasedGenerator {
         private final ChunkGenerator chunkGenerator;
         private final StructureManager structureManager;
         private final List<? super PoolStructurePiece> children;
-        private final Random random;
+        private final AbstractRandom random;
         final Deque<ShapedPoolStructurePiece> structurePieces = Queues.newArrayDeque();
 
-        StructurePoolGenerator(Registry<StructurePool> registry, int maxSize, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> children, Random random) {
+        StructurePoolGenerator(Registry<StructurePool> registry, int maxSize, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> children, AbstractRandom random) {
             this.registry = registry;
             this.maxSize = maxSize;
             this.pieceFactory = pieceFactory;

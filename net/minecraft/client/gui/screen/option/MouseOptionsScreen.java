@@ -23,7 +23,7 @@ public class MouseOptionsScreen
 extends GameOptionsScreen {
     private ButtonListWidget buttonList;
 
-    private static SimpleOption<?>[] getOptons(GameOptions gameOptions) {
+    private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
         return new SimpleOption[]{gameOptions.getMouseSensitivity(), gameOptions.getInvertYMouse(), gameOptions.getMouseWheelSensitivity(), gameOptions.getDiscreteMouseScroll(), gameOptions.getTouchscreen()};
     }
 
@@ -35,9 +35,9 @@ extends GameOptionsScreen {
     protected void init() {
         this.buttonList = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
         if (InputUtil.isRawMouseMotionSupported()) {
-            this.buttonList.addAll((SimpleOption[])Stream.concat(Arrays.stream(MouseOptionsScreen.getOptons(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(SimpleOption[]::new));
+            this.buttonList.addAll((SimpleOption[])Stream.concat(Arrays.stream(MouseOptionsScreen.getOptions(this.gameOptions)), Stream.of(this.gameOptions.getRawMouseInput())).toArray(SimpleOption[]::new));
         } else {
-            this.buttonList.addAll(MouseOptionsScreen.getOptons(this.gameOptions));
+            this.buttonList.addAll(MouseOptionsScreen.getOptions(this.gameOptions));
         }
         this.addSelectableChild(this.buttonList);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, ScreenTexts.DONE, button -> {

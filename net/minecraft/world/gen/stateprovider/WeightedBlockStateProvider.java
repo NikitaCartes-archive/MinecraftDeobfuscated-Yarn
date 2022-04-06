@@ -6,10 +6,10 @@ package net.minecraft.world.gen.stateprovider;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 
@@ -39,8 +39,8 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(Random random, BlockPos pos) {
-        return this.states.getDataOrEmpty(random).orElseThrow(IllegalStateException::new);
+    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+        return this.states.getDataOrEmpty(abstractRandom).orElseThrow(IllegalStateException::new);
     }
 }
 

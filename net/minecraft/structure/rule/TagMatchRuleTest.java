@@ -5,12 +5,12 @@ package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.tag.TagKey;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public class TagMatchRuleTest
@@ -23,7 +23,7 @@ extends RuleTest {
     }
 
     @Override
-    public boolean test(BlockState state, Random random) {
+    public boolean test(BlockState state, AbstractRandom random) {
         return state.isIn(this.tag);
     }
 

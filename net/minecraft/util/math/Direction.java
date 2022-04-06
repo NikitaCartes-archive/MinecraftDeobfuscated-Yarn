@@ -4,18 +4,14 @@
 package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -29,6 +25,7 @@ import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.Vector4f;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 public enum Direction implements StringIdentifiable
@@ -115,10 +112,8 @@ public enum Direction implements StringIdentifiable
         return Direction.getFacing(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
-    public static Collection<Direction> shuffle(Random random) {
-        ArrayList<Direction> list = Lists.newArrayList(Direction.values());
-        Collections.shuffle(list, random);
-        return list;
+    public static Collection<Direction> shuffle(AbstractRandom random) {
+        return Util.copyShuffled(Arrays.asList(Direction.values()), random);
     }
 
     public static Stream<Direction> stream() {
@@ -354,7 +349,7 @@ public enum Direction implements StringIdentifiable
         return (this.idHorizontal & 3) * 90;
     }
 
-    public static Direction random(Random random) {
+    public static Direction random(AbstractRandom random) {
         return Util.getRandom(ALL, random);
     }
 
@@ -513,7 +508,7 @@ public enum Direction implements StringIdentifiable
             return this.name;
         }
 
-        public static Axis pickRandomAxis(Random random) {
+        public static Axis pickRandomAxis(AbstractRandom random) {
             return Util.getRandom(VALUES, random);
         }
 
@@ -593,11 +588,11 @@ public enum Direction implements StringIdentifiable
             this.axisArray = axisArray;
         }
 
-        public Direction random(Random random) {
+        public Direction random(AbstractRandom random) {
             return Util.getRandom(this.facingArray, random);
         }
 
-        public Axis randomAxis(Random random) {
+        public Axis randomAxis(AbstractRandom random) {
             return Util.getRandom(this.axisArray, random);
         }
 

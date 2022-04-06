@@ -1,0 +1,87 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.util.math.random;
+
+import io.netty.util.internal.ThreadLocalRandom;
+import net.minecraft.util.math.random.BlockingSimpleRandom;
+import net.minecraft.util.math.random.RandomDeriver;
+import net.minecraft.util.math.random.SimpleRandom;
+import net.minecraft.world.gen.random.AtomicSimpleRandom;
+
+/**
+ * A reimplementation of {@link java.util.Random}.
+ * 
+ * <p>There are four built-in implementations, three based on the classic Java algorithm
+ * and one using Xoroshiro128++ algorithm.
+ * 
+ * <ul>
+ * <li>{@link SimpleRandom}: Silently breaks when used concurrently. Based on
+ * {@link java.util.Random}.</li>
+ * <li>{@link AtomicSimpleRandom}: Throws when used concurrently. Based on
+ * {@link java.util.Random}.</li>
+ * <li>{@link BlockingSimpleRandom}: Blocks the thread when used concurrently.. Based on
+ * {@link java.util.Random}.</li>
+ * <li>{@link Xoroshiro128PlusPlusRandom}: Silently breaks when used concurrently.
+ * Implements the Xoroshiro128++ algorithm.</li>
+ * </ul>
+ * 
+ * @implNote Note that due to MC-239059, this is not an exact reimplementation of
+ * the Java random number generator algorithm.
+ */
+public interface AbstractRandom {
+    public static AbstractRandom createAtomic() {
+        return AbstractRandom.createAtomic(System.nanoTime());
+    }
+
+    @Deprecated
+    public static AbstractRandom createBlocking() {
+        return new BlockingSimpleRandom(System.nanoTime());
+    }
+
+    public static AbstractRandom createAtomic(long seed) {
+        return new AtomicSimpleRandom(seed);
+    }
+
+    public static AbstractRandom create() {
+        return new SimpleRandom(ThreadLocalRandom.current().nextLong());
+    }
+
+    public AbstractRandom derive();
+
+    public RandomDeriver createRandomDeriver();
+
+    public void setSeed(long var1);
+
+    public int nextInt();
+
+    public int nextInt(int var1);
+
+    default public int nextBetween(int min, int max) {
+        return this.nextInt(max - min + 1) + min;
+    }
+
+    public long nextLong();
+
+    public boolean nextBoolean();
+
+    public float nextFloat();
+
+    public double nextDouble();
+
+    public double nextGaussian();
+
+    default public void skip(int count) {
+        for (int i = 0; i < count; ++i) {
+            this.nextInt();
+        }
+    }
+
+    default public int nextBetweenExclusive(int min, int max) {
+        if (min >= max) {
+            throw new IllegalArgumentException("bound - origin is non positive");
+        }
+        return min + this.nextInt(max - min);
+    }
+}
+

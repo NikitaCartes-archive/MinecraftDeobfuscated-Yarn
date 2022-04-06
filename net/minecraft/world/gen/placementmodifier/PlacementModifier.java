@@ -4,9 +4,9 @@
 package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
@@ -24,7 +24,7 @@ public abstract class PlacementModifier {
     /**
      * Applies this placement modifier to the given position.
      */
-    public abstract Stream<BlockPos> getPositions(FeaturePlacementContext var1, Random var2, BlockPos var3);
+    public abstract Stream<BlockPos> getPositions(FeaturePlacementContext var1, AbstractRandom var2, BlockPos var3);
 
     public abstract PlacementModifierType<?> getType();
 }

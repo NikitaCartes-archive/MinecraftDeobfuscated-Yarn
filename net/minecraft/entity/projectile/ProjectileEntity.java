@@ -169,7 +169,7 @@ extends Entity {
             this.onBlockHit((BlockHitResult)hitResult);
         }
         if (type != HitResult.Type.MISS) {
-            this.emitGameEvent(GameEvent.PROJECTILE_LAND, this);
+            this.world.emitGameEvent((Entity)this, GameEvent.PROJECTILE_LAND, hitResult.getPos());
         }
     }
 

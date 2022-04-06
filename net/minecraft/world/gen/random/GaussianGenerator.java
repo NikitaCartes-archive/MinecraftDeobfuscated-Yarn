@@ -4,7 +4,7 @@
 package net.minecraft.world.gen.random;
 
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class GaussianGenerator {
     public final AbstractRandom baseRandom;

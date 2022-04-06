@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class RedstoneOreBlock
@@ -76,7 +76,7 @@ extends Block {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (state.get(LIT).booleanValue()) {
             world.setBlockState(pos, (BlockState)state.with(LIT, false), Block.NOTIFY_ALL);
         }
@@ -92,7 +92,7 @@ extends Block {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
         if (state.get(LIT).booleanValue()) {
             RedstoneOreBlock.spawnParticles(world, pos);
         }
@@ -100,14 +100,14 @@ extends Block {
 
     private static void spawnParticles(World world, BlockPos pos) {
         double d = 0.5625;
-        Random random = world.random;
+        AbstractRandom abstractRandom = world.random;
         for (Direction direction : Direction.values()) {
             BlockPos blockPos = pos.offset(direction);
             if (world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)) continue;
             Direction.Axis axis = direction.getAxis();
-            double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)random.nextFloat();
-            double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)random.nextFloat();
-            double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)random.nextFloat();
+            double e = axis == Direction.Axis.X ? 0.5 + 0.5625 * (double)direction.getOffsetX() : (double)abstractRandom.nextFloat();
+            double f = axis == Direction.Axis.Y ? 0.5 + 0.5625 * (double)direction.getOffsetY() : (double)abstractRandom.nextFloat();
+            double g = axis == Direction.Axis.Z ? 0.5 + 0.5625 * (double)direction.getOffsetZ() : (double)abstractRandom.nextFloat();
             world.addParticle(DustParticleEffect.DEFAULT, (double)pos.getX() + e, (double)pos.getY() + f, (double)pos.getZ() + g, 0.0, 0.0, 0.0);
         }
     }

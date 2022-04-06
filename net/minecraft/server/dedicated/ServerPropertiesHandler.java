@@ -13,7 +13,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.server.dedicated.AbstractPropertiesHandler;
 import net.minecraft.structure.StructureSet;
@@ -21,6 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -126,7 +126,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         private static final Map<String, RegistryKey<WorldPreset>> LEVEL_TYPE_TO_PRESET_KEY = Map.of("default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES);
 
         public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
-            long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(new Random().nextLong());
+            long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(AbstractRandom.createAtomic().nextLong());
             Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_WORLDGEN);
             RegistryEntry<WorldPreset> registryEntry = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
             RegistryEntry registryEntry2 = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_WORLDGEN, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {

@@ -7,17 +7,13 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.mob.MagmaCubeEntity;
 import net.minecraft.entity.passive.FrogEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -45,7 +41,7 @@ extends Task<FrogEntity> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
-        return super.shouldRun(serverWorld, frogEntity) && FrogEntity.isValidFrogTarget(frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get()) && frogEntity.getPose() != EntityPose.CROAKING;
+        return super.shouldRun(serverWorld, frogEntity) && FrogEntity.isValidFrogFood(frogEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get()) && frogEntity.getPose() != EntityPose.CROAKING;
     }
 
     @Override
@@ -73,23 +69,12 @@ extends Task<FrogEntity> {
         world.playSoundFromEntity(null, frog, this.eatSound, SoundCategory.NEUTRAL, 2.0f, 1.0f);
         Optional<Entity> optional = frog.getFrogTarget();
         if (optional.isPresent() && (entity = optional.get()).isAlive()) {
-            entity.remove(Entity.RemovalReason.KILLED);
-            ItemStack itemStack = FrogEatEntityTask.createDroppedStack(frog, entity);
-            world.spawnEntity(new ItemEntity(world, this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), itemStack));
+            frog.tryAttack(entity);
+            if (!entity.isAlive()) {
+                entity.remove(Entity.RemovalReason.KILLED);
+            }
         }
         frog.clearFrogTarget();
-    }
-
-    private static ItemStack createDroppedStack(FrogEntity frog, Entity eatenEntity) {
-        if (eatenEntity instanceof MagmaCubeEntity) {
-            return new ItemStack(switch (frog.getVariant()) {
-                default -> throw new IncompatibleClassChangeError();
-                case FrogEntity.Variant.TEMPERATE -> Items.OCHRE_FROGLIGHT;
-                case FrogEntity.Variant.WARM -> Items.PEARLESCENT_FROGLIGHT;
-                case FrogEntity.Variant.COLD -> Items.VERDANT_FROGLIGHT;
-            });
-        }
-        return new ItemStack(Items.SLIME_BALL);
     }
 
     @Override

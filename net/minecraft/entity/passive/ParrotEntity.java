@@ -9,7 +9,6 @@ import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
@@ -66,6 +65,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -288,7 +288,7 @@ implements Flutterer {
         return false;
     }
 
-    public static boolean canSpawn(EntityType<ParrotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<ParrotEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
         return world.getBlockState(pos.down()).isIn(BlockTags.PARROTS_SPAWNABLE_ON) && ParrotEntity.isLightLevelValidForNaturalSpawn(world, pos);
     }
 
@@ -323,7 +323,7 @@ implements Flutterer {
         return ParrotEntity.getRandomSound(this.world, this.world.random);
     }
 
-    public static SoundEvent getRandomSound(World world, Random random) {
+    public static SoundEvent getRandomSound(World world, AbstractRandom random) {
         if (world.getDifficulty() != Difficulty.PEACEFUL && random.nextInt(1000) == 0) {
             ArrayList<EntityType<?>> list = Lists.newArrayList(MOB_SOUNDS.keySet());
             return ParrotEntity.getSound((EntityType)list.get(random.nextInt(list.size())));
@@ -366,8 +366,8 @@ implements Flutterer {
         return ParrotEntity.getSoundPitch(this.random);
     }
 
-    public static float getSoundPitch(Random random) {
-        return (random.nextFloat() - random.nextFloat()) * 0.2f + 1.0f;
+    public static float getSoundPitch(AbstractRandom abstractRandom) {
+        return (abstractRandom.nextFloat() - abstractRandom.nextFloat()) * 0.2f + 1.0f;
     }
 
     @Override

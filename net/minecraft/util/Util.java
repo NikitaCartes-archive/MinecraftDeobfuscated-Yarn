@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -69,6 +68,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -469,19 +469,19 @@ public class Util {
         return t.toString();
     }
 
-    public static <T> T getRandom(T[] array, Random random) {
+    public static <T> T getRandom(T[] array, AbstractRandom random) {
         return array[random.nextInt(array.length)];
     }
 
-    public static int getRandom(int[] array, Random random) {
+    public static int getRandom(int[] array, AbstractRandom random) {
         return array[random.nextInt(array.length)];
     }
 
-    public static <T> T getRandom(List<T> list, Random random) {
+    public static <T> T getRandom(List<T> list, AbstractRandom random) {
         return list.get(random.nextInt(list.size()));
     }
 
-    public static <T> Optional<T> getRandomOrEmpty(List<T> list, Random random) {
+    public static <T> Optional<T> getRandomOrEmpty(List<T> list, AbstractRandom random) {
         if (list.isEmpty()) {
             return Optional.empty();
         }
@@ -713,6 +713,20 @@ public class Util {
                 return "memoize/2[function=" + biFunction + ", size=" + this.cache.size() + "]";
             }
         };
+    }
+
+    public static <T> List<T> copyShuffled(List<T> list, AbstractRandom random) {
+        ArrayList<T> list2 = new ArrayList<T>(list);
+        Util.shuffle(list2, random);
+        return list2;
+    }
+
+    public static <T> void shuffle(List<T> list, AbstractRandom random) {
+        int i;
+        for (int j = i = list.size(); j > 1; --j) {
+            int k = random.nextInt(j);
+            list.set(j - 1, list.set(k, list.get(j - 1)));
+        }
     }
 
     /*

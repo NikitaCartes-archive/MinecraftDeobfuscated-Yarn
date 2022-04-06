@@ -29,7 +29,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 
 public class RegistryPredicateArgumentType<T>
 implements ArgumentType<RegistryPredicate<T>> {
@@ -56,8 +56,8 @@ implements ArgumentType<RegistryPredicate<T>> {
         return RegistryPredicateArgumentType.getPredicate(context, name, Registry.BIOME_KEY, INVALID_BIOME_EXCEPTION);
     }
 
-    public static RegistryPredicate<StructureFeature> getConfiguredStructureFeaturePredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryPredicateArgumentType.getPredicate(context, name, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
+    public static RegistryPredicate<StructureType> getConfiguredStructureFeaturePredicate(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        return RegistryPredicateArgumentType.getPredicate(context, name, Registry.STRUCTURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
     }
 
     @Override

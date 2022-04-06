@@ -5,9 +5,9 @@ package net.minecraft.util.collection;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class Weighting {
     private Weighting() {
@@ -24,7 +24,7 @@ public class Weighting {
         return (int)l;
     }
 
-    public static <T extends Weighted> Optional<T> getRandom(Random random, List<T> pool, int totalWeight) {
+    public static <T extends Weighted> Optional<T> getRandom(AbstractRandom random, List<T> pool, int totalWeight) {
         if (totalWeight < 0) {
             throw Util.throwOrPause(new IllegalArgumentException("Negative total weight in getRandomItem"));
         }
@@ -43,7 +43,7 @@ public class Weighting {
         return Optional.empty();
     }
 
-    public static <T extends Weighted> Optional<T> getRandom(Random random, List<T> pool) {
+    public static <T extends Weighted> Optional<T> getRandom(AbstractRandom random, List<T> pool) {
         return Weighting.getRandom(random, pool, Weighting.getWeightSum(pool));
     }
 }

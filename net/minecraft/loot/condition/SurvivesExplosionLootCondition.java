@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
-import java.util.Random;
 import java.util.Set;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionType;
@@ -16,6 +15,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.util.JsonSerializer;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class SurvivesExplosionLootCondition
 implements LootCondition {
@@ -38,9 +38,9 @@ implements LootCondition {
     public boolean test(LootContext lootContext) {
         Float float_ = lootContext.get(LootContextParameters.EXPLOSION_RADIUS);
         if (float_ != null) {
-            Random random = lootContext.getRandom();
+            AbstractRandom abstractRandom = lootContext.getRandom();
             float f = 1.0f / float_.floatValue();
-            return random.nextFloat() <= f;
+            return abstractRandom.nextFloat() <= f;
         }
         return true;
     }

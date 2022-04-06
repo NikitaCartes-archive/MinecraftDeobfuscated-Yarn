@@ -16,7 +16,6 @@ import com.google.gson.JsonSyntaxException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.entity.EquipmentSlot;
@@ -34,6 +33,7 @@ import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,13 +58,13 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         for (Attribute attribute : this.attributes) {
             UUID uUID = attribute.id;
             if (uUID == null) {
                 uUID = UUID.randomUUID();
             }
-            EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, random);
+            EquipmentSlot equipmentSlot = Util.getRandom(attribute.slots, abstractRandom);
             stack.addAttributeModifier(attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amount.nextFloat(context), attribute.operation), equipmentSlot);
         }
         return stack;

@@ -15,15 +15,14 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.Lifecycle;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
@@ -56,15 +55,15 @@ public interface EntryLoader {
                     map.put(registryKey2, (jsonOps, decoder) -> {
                         DataResult dataResult;
                         block8: {
-                            Resource resource = resourceRef.open();
+                            BufferedReader reader = resourceRef.getReader();
                             try {
-                                dataResult = this.parse(jsonOps, decoder, resource);
-                                if (resource == null) break block8;
+                                dataResult = this.parse(jsonOps, decoder, reader);
+                                if (reader == null) break block8;
                             } catch (Throwable throwable) {
                                 try {
-                                    if (resource != null) {
+                                    if (reader != null) {
                                         try {
-                                            resource.close();
+                                            ((Reader)reader).close();
                                         } catch (Throwable throwable2) {
                                             throwable.addSuppressed(throwable2);
                                         }
@@ -74,7 +73,7 @@ public interface EntryLoader {
                                     return DataResult.error("Failed to parse " + id + " file: " + exception.getMessage());
                                 }
                             }
-                            resource.close();
+                            ((Reader)reader).close();
                         }
                         return dataResult;
                     });
@@ -85,21 +84,18 @@ public interface EntryLoader {
             @Override
             public <E> Optional<Parseable<E>> createParseable(RegistryKey<E> key) {
                 Identifier identifier = _1.createId(key);
-                if (!resourceManager.containsResource(identifier)) {
-                    return Optional.empty();
-                }
-                return Optional.of((jsonOps, decoder) -> {
+                return resourceManager.getResource(identifier).map(resource -> (jsonOps, decoder) -> {
                     DataResult dataResult;
                     block8: {
-                        Resource resource = resourceManager.getResource(identifier);
+                        BufferedReader reader = resource.getReader();
                         try {
-                            dataResult = this.parse(jsonOps, decoder, resource);
-                            if (resource == null) break block8;
+                            dataResult = this.parse(jsonOps, decoder, reader);
+                            if (reader == null) break block8;
                         } catch (Throwable throwable) {
                             try {
-                                if (resource != null) {
+                                if (reader != null) {
                                     try {
-                                        resource.close();
+                                        ((Reader)reader).close();
                                     } catch (Throwable throwable2) {
                                         throwable.addSuppressed(throwable2);
                                     }
@@ -109,18 +105,15 @@ public interface EntryLoader {
                                 return DataResult.error("Failed to parse " + identifier + " file: " + exception.getMessage());
                             }
                         }
-                        resource.close();
+                        ((Reader)reader).close();
                     }
                     return dataResult;
                 });
             }
 
-            private <E> DataResult<Entry<E>> parse(DynamicOps<JsonElement> jsonOps, Decoder<E> decoder, Resource resource) throws IOException {
-                try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);){
-                    JsonElement jsonElement = JsonParser.parseReader(reader);
-                    DataResult<Entry<E>> dataResult = decoder.parse(jsonOps, jsonElement).map(Entry::of);
-                    return dataResult;
-                }
+            private <E> DataResult<Entry<E>> parse(DynamicOps<JsonElement> jsonOps, Decoder<E> decoder, Reader reader) throws IOException {
+                JsonElement jsonElement = JsonParser.parseReader(reader);
+                return decoder.parse(jsonOps, jsonElement).map(Entry::of);
             }
 
             private static String getPath(Identifier id) {

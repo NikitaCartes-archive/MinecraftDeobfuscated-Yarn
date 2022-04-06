@@ -3,12 +3,12 @@
  */
 package net.minecraft.enchantment;
 
-import java.util.Random;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class UnbreakingEnchantment
 extends Enchantment {
@@ -39,7 +39,7 @@ extends Enchantment {
         return super.isAcceptableItem(stack);
     }
 
-    public static boolean shouldPreventDamage(ItemStack item, int level, Random random) {
+    public static boolean shouldPreventDamage(ItemStack item, int level, AbstractRandom random) {
         if (item.getItem() instanceof ArmorItem && random.nextFloat() < 0.6f) {
             return false;
         }

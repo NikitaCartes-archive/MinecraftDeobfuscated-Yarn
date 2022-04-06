@@ -470,11 +470,6 @@ implements TypeFilter<Entity, T> {
         return Util.ifPresentOrElse(EntityType.fromNbt(nbt).map(entityType -> entityType.create(world)), entity -> entity.readNbt(nbt), () -> LOGGER.warn("Skipping Entity with id {}", (Object)nbt.getString("id")));
     }
 
-    @Nullable
-    public static Entity newInstance(World world, @Nullable EntityType<?> type) {
-        return type == null ? null : (Entity)type.create(world);
-    }
-
     public Box createSimpleBoundingBox(double feetX, double feetY, double feetZ) {
         float f = this.getWidth() / 2.0f;
         return new Box(feetX - (double)f, feetY, feetZ - (double)f, feetX + (double)f, feetY + (double)this.getHeight(), feetZ + (double)f);

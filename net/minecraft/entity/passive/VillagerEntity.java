@@ -72,9 +72,9 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.LargeEntitySpawnHelper;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.TradeOffer;
@@ -798,7 +798,7 @@ VillagerDataContainer {
         if (list2.size() < requiredCount) {
             return;
         }
-        if (!LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
+        if (!LargeEntitySpawnHelper.trySpawnAt(EntityType.IRON_GOLEM, SpawnReason.MOB_SUMMONED, world, this.getBlockPos(), 10, 8, 6).isPresent()) {
             return;
         }
         list.forEach(GolemLastSeenSensor::rememberIronGolem);

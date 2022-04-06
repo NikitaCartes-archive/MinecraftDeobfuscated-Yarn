@@ -20,6 +20,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -109,9 +110,14 @@ implements GameEventListener {
     }
 
     private static boolean isOccluded(World world, Vec3d start, Vec3d end) {
-        Vec3d vec3d2;
         Vec3d vec3d = new Vec3d((double)MathHelper.floor(start.x) + 0.5, (double)MathHelper.floor(start.y) + 0.5, (double)MathHelper.floor(start.z) + 0.5);
-        return world.raycast(new BlockStateRaycastContext(vec3d, vec3d2 = new Vec3d((double)MathHelper.floor(end.x) + 0.5, (double)MathHelper.floor(end.y) + 0.5, (double)MathHelper.floor(end.z) + 0.5), state -> state.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK;
+        Vec3d vec3d2 = new Vec3d((double)MathHelper.floor(end.x) + 0.5, (double)MathHelper.floor(end.y) + 0.5, (double)MathHelper.floor(end.z) + 0.5);
+        for (Direction direction : Direction.values()) {
+            Vec3d vec3d3 = vec3d.withBias(direction, 1.0E-5f);
+            if (world.raycast(new BlockStateRaycastContext(vec3d3, vec3d2, state -> state.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK) continue;
+            return false;
+        }
+        return true;
     }
 
     public static interface Callback {
@@ -124,7 +130,6 @@ implements GameEventListener {
                 return false;
             }
             if (entity != null) {
-                BlockState blockState;
                 if (entity.isSpectator()) {
                     return false;
                 }
@@ -134,8 +139,9 @@ implements GameEventListener {
                 if (entity.occludeVibrationSignals()) {
                     return false;
                 }
-                if (gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_ON_OCCLUDING_BLOCK) && (blockState = entity.getWorld().getBlockState(entity.getLandingPos())).isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
-                    return false;
+                if (gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_ON_OCCLUDING_BLOCK)) {
+                    BlockState blockState = entity.getWorld().getBlockState(entity.getLandingPos());
+                    return !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS);
                 }
             }
             return true;

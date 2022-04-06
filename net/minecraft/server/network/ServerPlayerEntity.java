@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.UUID;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
@@ -130,8 +129,10 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.BlockLocating;
@@ -279,7 +280,7 @@ extends PlayerEntity {
             }
             int k = (m = (l = (long)(i * 2 + 1)) * l) > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int)m;
             int n = this.calculateSpawnOffsetMultiplier(k);
-            int o = new Random().nextInt(k);
+            int o = AbstractRandom.createAtomic().nextInt(k);
             for (int p = 0; p < k; ++p) {
                 int q = (o + n * p) % k;
                 int r = q % (i * 2 + 1);
@@ -586,6 +587,7 @@ extends PlayerEntity {
         this.setFrozenTicks(0);
         this.setOnFire(false);
         this.getDamageTracker().update();
+        this.setLastDeathPos(Optional.of(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos())));
     }
 
     private void forgiveMobAnger() {
@@ -1103,6 +1105,7 @@ extends PlayerEntity {
         this.enteredNetherPos = oldPlayer.enteredNetherPos;
         this.setShoulderEntityLeft(oldPlayer.getShoulderEntityLeft());
         this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
+        this.setLastDeathPos(oldPlayer.getLastDeathPos());
     }
 
     @Override
@@ -1453,7 +1456,7 @@ extends PlayerEntity {
 
     @Override
     public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
-        this.networkHandler.sendPacket(new PlaySoundS2CPacket(event, category, this.getX(), this.getY(), this.getZ(), volume, pitch));
+        this.networkHandler.sendPacket(new PlaySoundS2CPacket(event, category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong()));
     }
 
     @Override

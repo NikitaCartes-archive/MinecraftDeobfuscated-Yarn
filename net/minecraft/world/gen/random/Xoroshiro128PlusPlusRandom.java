@@ -9,10 +9,10 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Longs;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.Xoroshiro128PlusPlusRandomImpl;
 import net.minecraft.world.gen.random.GaussianGenerator;
 import net.minecraft.world.gen.random.RandomSeed;
-import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandomImpl;
 
 /**
  * Xoroshiro128++ based pseudo random number generator.
@@ -40,13 +40,13 @@ implements AbstractRandom {
     }
 
     @Override
-    public net.minecraft.world.gen.random.RandomDeriver createRandomDeriver() {
+    public net.minecraft.util.math.random.RandomDeriver createRandomDeriver() {
         return new RandomDeriver(this.implementation.next(), this.implementation.next());
     }
 
     @Override
-    public void setSeed(long l) {
-        this.implementation = new Xoroshiro128PlusPlusRandomImpl(RandomSeed.createXoroshiroSeed(l));
+    public void setSeed(long seed) {
+        this.implementation = new Xoroshiro128PlusPlusRandomImpl(RandomSeed.createXoroshiroSeed(seed));
         this.gaussianGenerator.reset();
     }
 
@@ -56,18 +56,18 @@ implements AbstractRandom {
     }
 
     @Override
-    public int nextInt(int i) {
-        if (i <= 0) {
+    public int nextInt(int bound) {
+        if (bound <= 0) {
             throw new IllegalArgumentException("Bound must be positive");
         }
         long l = Integer.toUnsignedLong(this.nextInt());
-        long m = l * (long)i;
+        long m = l * (long)bound;
         long n = m & 0xFFFFFFFFL;
-        if (n < (long)i) {
-            int j = Integer.remainderUnsigned(~i + 1, i);
-            while (n < (long)j) {
+        if (n < (long)bound) {
+            int i = Integer.remainderUnsigned(~bound + 1, bound);
+            while (n < (long)i) {
                 l = Integer.toUnsignedLong(this.nextInt());
-                m = l * (long)i;
+                m = l * (long)bound;
                 n = m & 0xFFFFFFFFL;
             }
         }
@@ -119,7 +119,7 @@ implements AbstractRandom {
     }
 
     public static class RandomDeriver
-    implements net.minecraft.world.gen.random.RandomDeriver {
+    implements net.minecraft.util.math.random.RandomDeriver {
         private static final HashFunction MD5_HASHER = Hashing.md5();
         private final long seedLo;
         private final long seedHi;

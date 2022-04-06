@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafStemBlock;
 import net.minecraft.block.Block;
@@ -38,6 +37,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -80,7 +80,7 @@ Waterloggable {
         return VoxelShapes.union(SHAPES_FOR_TILT.get(state.get(TILT)), SHAPES_FOR_DIRECTION.get(state.get(FACING)));
     }
 
-    public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
+    public static void grow(WorldAccess world, AbstractRandom random, BlockPos pos, Direction direction) {
         int j;
         int i = MathHelper.nextInt(random, 2, 5);
         BlockPos.Mutable mutable = pos.mutableCopy();
@@ -150,12 +150,12 @@ Waterloggable {
     }
 
     @Override
-    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+    public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
         return true;
     }
 
     @Override
-    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+    public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
         BlockState blockState;
         BlockPos blockPos = pos.up();
         if (BigDripleafBlock.canGrowInto(world, blockPos, blockState = world.getBlockState(blockPos))) {
@@ -176,7 +176,7 @@ Waterloggable {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (world.isReceivingRedstonePower(pos)) {
             BigDripleafBlock.resetTilt(state, world, pos);
             return;

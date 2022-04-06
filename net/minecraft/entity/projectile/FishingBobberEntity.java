@@ -6,7 +6,6 @@ package net.minecraft.entity.projectile;
 import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,6 +44,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 public class FishingBobberEntity
 extends ProjectileEntity {
     private static final Logger field_36336 = LogUtils.getLogger();
-    private final Random velocityRandom = new Random();
+    private final AbstractRandom velocityRandom = AbstractRandom.createAtomic();
     private boolean caughtFish;
     private int outOfOpenWaterTicks;
     private static final int field_30665 = 10;

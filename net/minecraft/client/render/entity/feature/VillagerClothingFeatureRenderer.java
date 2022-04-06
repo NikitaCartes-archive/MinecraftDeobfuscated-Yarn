@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -19,7 +20,6 @@ import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -82,17 +82,13 @@ extends FeatureRenderer<T, M> {
     }
 
     public <K> VillagerResourceMetadata.HatType getHatType(Object2ObjectMap<K, VillagerResourceMetadata.HatType> hatLookUp, String keyType, DefaultedRegistry<K> registry, K key) {
-        return hatLookUp.computeIfAbsent(key, k -> {
-            try (Resource resource = this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key)));){
-                VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
-                if (villagerResourceMetadata == null) return VillagerResourceMetadata.HatType.NONE;
-                VillagerResourceMetadata.HatType hatType = villagerResourceMetadata.getHatType();
-                return hatType;
+        return hatLookUp.computeIfAbsent(key, k -> this.resourceManager.getResource(this.findTexture(keyType, registry.getId(key))).flatMap(resource -> {
+            try {
+                return resource.getMetadata().decode(VillagerResourceMetadata.READER).map(VillagerResourceMetadata::getHatType);
             } catch (IOException iOException) {
-                // empty catch block
+                return Optional.empty();
             }
-            return VillagerResourceMetadata.HatType.NONE;
-        });
+        }).orElse(VillagerResourceMetadata.HatType.NONE));
     }
 }
 

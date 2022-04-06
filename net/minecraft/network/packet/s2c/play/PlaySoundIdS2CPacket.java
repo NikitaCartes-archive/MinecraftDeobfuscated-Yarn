@@ -20,8 +20,9 @@ implements Packet<ClientPlayPacketListener> {
     private final int fixedZ;
     private final float volume;
     private final float pitch;
+    private final long seed;
 
-    public PlaySoundIdS2CPacket(Identifier sound, SoundCategory category, Vec3d pos, float volume, float pitch) {
+    public PlaySoundIdS2CPacket(Identifier sound, SoundCategory category, Vec3d pos, float volume, float pitch, long seed) {
         this.id = sound;
         this.category = category;
         this.fixedX = (int)(pos.x * 8.0);
@@ -29,6 +30,7 @@ implements Packet<ClientPlayPacketListener> {
         this.fixedZ = (int)(pos.z * 8.0);
         this.volume = volume;
         this.pitch = pitch;
+        this.seed = seed;
     }
 
     public PlaySoundIdS2CPacket(PacketByteBuf buf) {
@@ -39,6 +41,7 @@ implements Packet<ClientPlayPacketListener> {
         this.fixedZ = buf.readInt();
         this.volume = buf.readFloat();
         this.pitch = buf.readFloat();
+        this.seed = buf.readLong();
     }
 
     @Override
@@ -50,6 +53,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeInt(this.fixedZ);
         buf.writeFloat(this.volume);
         buf.writeFloat(this.pitch);
+        buf.writeLong(this.seed);
     }
 
     public Identifier getSoundId() {
@@ -78,6 +82,10 @@ implements Packet<ClientPlayPacketListener> {
 
     public float getPitch() {
         return this.pitch;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     @Override

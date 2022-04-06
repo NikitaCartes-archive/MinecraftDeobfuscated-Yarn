@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +17,7 @@ import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -37,7 +37,7 @@ extends Block {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
         }
@@ -49,7 +49,7 @@ extends Block {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         int j;
         BlockPos blockPos = pos.up();
         if (!world.isAir(blockPos) || blockPos.getY() >= world.getTopY()) {
@@ -164,12 +164,12 @@ extends Block {
         builder.add(AGE);
     }
 
-    public static void generate(WorldAccess world, BlockPos pos, Random random, int size) {
+    public static void generate(WorldAccess world, BlockPos pos, AbstractRandom random, int size) {
         world.setBlockState(pos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(world, pos), Block.NOTIFY_LISTENERS);
         ChorusFlowerBlock.generate(world, pos, random, pos, size, 0);
     }
 
-    private static void generate(WorldAccess world, BlockPos pos, Random random, BlockPos rootPos, int size, int layer) {
+    private static void generate(WorldAccess world, BlockPos pos, AbstractRandom random, BlockPos rootPos, int size, int layer) {
         ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.CHORUS_PLANT;
         int i = random.nextInt(4) + 1;
         if (layer == 0) {

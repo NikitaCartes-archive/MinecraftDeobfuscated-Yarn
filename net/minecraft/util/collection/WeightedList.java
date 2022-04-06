@@ -11,12 +11,12 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Stream;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class WeightedList<U> {
     protected final List<Entry<U>> entries;
-    private final Random random = new Random();
+    private final AbstractRandom random = AbstractRandom.createAtomic();
 
     public WeightedList() {
         this.entries = Lists.newArrayList();

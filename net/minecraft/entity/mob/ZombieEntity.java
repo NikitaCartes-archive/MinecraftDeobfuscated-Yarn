@@ -6,7 +6,6 @@ package net.minecraft.entity.mob;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
@@ -64,6 +63,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -475,7 +475,7 @@ extends HostileEntity {
         return entityData;
     }
 
-    public static boolean shouldBeBaby(Random random) {
+    public static boolean shouldBeBaby(AbstractRandom random) {
         return random.nextFloat() < 0.05f;
     }
 

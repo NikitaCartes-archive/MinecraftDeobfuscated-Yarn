@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,6 +29,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -47,8 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class DefaultResourcePack
-implements ResourcePack,
-ResourceFactory {
+implements ResourcePack {
     @Nullable
     public static Path resourcePath;
     private static final Logger LOGGER;
@@ -229,50 +228,8 @@ ResourceFactory {
     public void close() {
     }
 
-    @Override
-    public Resource getResource(final Identifier identifier) throws IOException {
-        return new Resource(){
-            @Nullable
-            InputStream stream;
-
-            @Override
-            public void close() throws IOException {
-                if (this.stream != null) {
-                    this.stream.close();
-                }
-            }
-
-            @Override
-            public Identifier getId() {
-                return identifier;
-            }
-
-            @Override
-            public InputStream getInputStream() {
-                try {
-                    this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, identifier);
-                } catch (IOException iOException) {
-                    throw new UncheckedIOException("Could not get client resource from vanilla pack", iOException);
-                }
-                return this.stream;
-            }
-
-            @Override
-            public boolean hasMetadata() {
-                return false;
-            }
-
-            @Override
-            @Nullable
-            public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
-                return null;
-            }
-
-            @Override
-            public String getResourcePackName() {
-                return DefaultResourcePack.this.getName();
-            }
-        };
+    public ResourceFactory getFactory() {
+        return id -> Optional.of(new Resource(this.getName(), () -> this.open(ResourceType.CLIENT_RESOURCES, id)));
     }
 
     static {

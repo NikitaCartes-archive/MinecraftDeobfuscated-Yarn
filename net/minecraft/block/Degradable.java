@@ -5,11 +5,11 @@ package net.minecraft.block;
 
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public interface Degradable<T extends Enum<T>> {
     public static final int field_31056 = 4;
@@ -18,7 +18,7 @@ public interface Degradable<T extends Enum<T>> {
 
     public float getDegradationChanceMultiplier();
 
-    default public void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    default public void tickDegradation(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         float f = 0.05688889f;
         if (random.nextFloat() < 0.05688889f) {
             this.tryDegrade(state, world, pos, random);
@@ -27,7 +27,7 @@ public interface Degradable<T extends Enum<T>> {
 
     public T getDegradationLevel();
 
-    default public void tryDegrade(BlockState state2, ServerWorld world, BlockPos pos, Random random) {
+    default public void tryDegrade(BlockState state2, ServerWorld world, BlockPos pos, AbstractRandom random) {
         BlockPos blockPos;
         int l;
         int i = ((Enum)this.getDegradationLevel()).ordinal();

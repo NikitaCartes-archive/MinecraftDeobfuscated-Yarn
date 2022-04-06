@@ -6,7 +6,6 @@ package net.minecraft.client.model;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vector4f;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(value=EnvType.CLIENT)
 public final class ModelPart {
@@ -32,7 +32,7 @@ public final class ModelPart {
     public float yScale = 1.0f;
     public float zScale = 1.0f;
     public boolean visible = true;
-    public boolean field_38456;
+    public boolean hidden;
     private final List<Cuboid> cuboids;
     private final Map<String, ModelPart> children;
     private ModelTransform defaultTransform = ModelTransform.NONE;
@@ -119,7 +119,7 @@ public final class ModelPart {
         }
         matrices.push();
         this.rotate(matrices);
-        if (!this.field_38456) {
+        if (!this.hidden) {
             this.renderCuboids(matrices.peek(), vertices, light, overlay, red, green, blue, alpha);
         }
         for (ModelPart modelPart : this.children.values()) {
@@ -169,7 +169,7 @@ public final class ModelPart {
         }
     }
 
-    public Cuboid getRandomCuboid(Random random) {
+    public Cuboid getRandomCuboid(AbstractRandom random) {
         return this.cuboids.get(random.nextInt(this.cuboids.size()));
     }
 

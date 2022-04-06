@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.entity;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
@@ -21,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemEntityRenderer
@@ -34,7 +34,7 @@ extends EntityRenderer<ItemEntity> {
     private static final float field_32930 = 0.0f;
     private static final float field_32931 = 0.09375f;
     private final ItemRenderer itemRenderer;
-    private final Random random = new Random();
+    private final AbstractRandom random = AbstractRandom.createAtomic();
 
     public ItemEntityRenderer(EntityRendererFactory.Context context) {
         super(context);

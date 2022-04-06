@@ -5,7 +5,6 @@ package net.minecraft.loot.function;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
-import java.util.Random;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -13,6 +12,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class ExplosionDecayLootFunction
 extends ConditionalLootFunction {
@@ -29,12 +29,12 @@ extends ConditionalLootFunction {
     public ItemStack process(ItemStack stack, LootContext context) {
         Float float_ = context.get(LootContextParameters.EXPLOSION_RADIUS);
         if (float_ != null) {
-            Random random = context.getRandom();
+            AbstractRandom abstractRandom = context.getRandom();
             float f = 1.0f / float_.floatValue();
             int i = stack.getCount();
             int j = 0;
             for (int k = 0; k < i; ++k) {
-                if (!(random.nextFloat() <= f)) continue;
+                if (!(abstractRandom.nextFloat() <= f)) continue;
                 ++j;
             }
             stack.setCount(j);

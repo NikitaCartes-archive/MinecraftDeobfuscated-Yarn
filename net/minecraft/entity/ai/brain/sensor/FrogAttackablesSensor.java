@@ -15,7 +15,7 @@ extends NearestVisibleLivingEntitySensor {
 
     @Override
     protected boolean matches(LivingEntity entity, LivingEntity target) {
-        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN) && Sensor.testAttackableTargetPredicate(entity, target) && FrogEntity.isValidFrogTarget(target)) {
+        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.HAS_HUNTING_COOLDOWN) && Sensor.testAttackableTargetPredicate(entity, target) && FrogEntity.isValidFrogFood(target)) {
             return target.isInRange(entity, 10.0);
         }
         return false;

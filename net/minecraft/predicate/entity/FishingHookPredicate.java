@@ -4,16 +4,19 @@
 package net.minecraft.predicate.entity;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
+import net.minecraft.predicate.entity.TypeSpecificPredicate;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
-public class FishingHookPredicate {
-    public static final FishingHookPredicate ANY = new FishingHookPredicate(false);
+public class FishingHookPredicate
+implements TypeSpecificPredicate {
+    public static final FishingHookPredicate ALL = new FishingHookPredicate(false);
     private static final String IN_OPEN_WATER = "in_open_water";
     private final boolean inOpenWater;
 
@@ -25,29 +28,32 @@ public class FishingHookPredicate {
         return new FishingHookPredicate(inOpenWater);
     }
 
-    public static FishingHookPredicate fromJson(@Nullable JsonElement json) {
-        if (json == null || json.isJsonNull()) {
-            return ANY;
-        }
-        JsonObject jsonObject = JsonHelper.asObject(json, "fishing_hook");
-        JsonElement jsonElement = jsonObject.get(IN_OPEN_WATER);
+    public static FishingHookPredicate fromJson(JsonObject json) {
+        JsonElement jsonElement = json.get(IN_OPEN_WATER);
         if (jsonElement != null) {
             return new FishingHookPredicate(JsonHelper.asBoolean(jsonElement, IN_OPEN_WATER));
         }
-        return ANY;
+        return ALL;
     }
 
-    public JsonElement toJson() {
-        if (this == ANY) {
-            return JsonNull.INSTANCE;
+    @Override
+    public JsonObject typeSpecificToJson() {
+        if (this == ALL) {
+            return new JsonObject();
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.add(IN_OPEN_WATER, new JsonPrimitive(this.inOpenWater));
         return jsonObject;
     }
 
-    public boolean test(Entity entity) {
-        if (this == ANY) {
+    @Override
+    public TypeSpecificPredicate.Deserializer getDeserializer() {
+        return TypeSpecificPredicate.Deserializers.FISHING_HOOK;
+    }
+
+    @Override
+    public boolean test(Entity entity, ServerWorld world, @Nullable Vec3d pos) {
+        if (this == ALL) {
             return true;
         }
         if (!(entity instanceof FishingBobberEntity)) {

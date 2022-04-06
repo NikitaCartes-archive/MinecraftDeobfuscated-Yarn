@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,16 +22,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -79,60 +78,31 @@ implements ResourceManager {
     }
 
     @Override
-    public Resource getResource(Identifier identifier) throws IOException {
-        this.validate(identifier);
-        ResourcePack resourcePack = null;
-        Identifier identifier2 = NamespaceResourceManager.getMetadataPath(identifier);
-        boolean bl = false;
-        for (FilterablePack filterablePack : Lists.reverse(this.packList)) {
-            ResourcePack resourcePack2 = filterablePack.underlying;
-            if (resourcePack2 != null) {
-                if (!bl) {
-                    if (resourcePack2.contains(this.type, identifier2)) {
-                        resourcePack = resourcePack2;
-                        bl = true;
-                    } else {
-                        bl = filterablePack.isFiltered(identifier2);
-                    }
-                }
-                if (resourcePack2.contains(this.type, identifier)) {
-                    InputStream inputStream = null;
-                    if (resourcePack != null) {
-                        inputStream = this.open(identifier2, resourcePack);
-                    }
-                    return new ResourceImpl(resourcePack2.getName(), identifier, this.open(identifier, resourcePack2), inputStream);
-                }
+    public Optional<Resource> getResource(Identifier identifier) {
+        if (!this.isPathAbsolute(identifier)) {
+            return Optional.empty();
+        }
+        for (int i = this.packList.size() - 1; i >= 0; --i) {
+            FilterablePack filterablePack = this.packList.get(i);
+            ResourcePack resourcePack = filterablePack.underlying;
+            if (resourcePack != null && resourcePack.contains(this.type, identifier)) {
+                return Optional.of(new Resource(resourcePack.getName(), this.createOpener(identifier, resourcePack), this.createMetadataSupplier(identifier, i)));
             }
             if (!filterablePack.isFiltered(identifier)) continue;
-            throw new FileNotFoundException(identifier + " (filtered by: " + filterablePack.name + ")");
+            LOGGER.warn("Resource {} not found, but was filtered by pack {}", (Object)identifier, (Object)filterablePack.name);
+            return Optional.empty();
         }
-        throw new FileNotFoundException(identifier.toString());
+        return Optional.empty();
     }
 
-    @Override
-    public boolean containsResource(Identifier id) {
-        if (!this.isPathAbsolute(id)) {
-            return false;
+    Resource.InputSupplier<InputStream> createOpener(Identifier id, ResourcePack pack) {
+        if (LOGGER.isDebugEnabled()) {
+            return () -> {
+                InputStream inputStream = pack.open(this.type, id);
+                return new DebugInputStream(inputStream, id, pack.getName());
+            };
         }
-        for (FilterablePack filterablePack : Lists.reverse(this.packList)) {
-            if (filterablePack.contains(this.type, id)) {
-                return true;
-            }
-            if (!filterablePack.isFiltered(id)) continue;
-            return false;
-        }
-        return false;
-    }
-
-    protected InputStream open(Identifier id, ResourcePack pack) throws IOException {
-        InputStream inputStream = pack.open(this.type, id);
-        return LOGGER.isDebugEnabled() ? new DebugInputStream(inputStream, id, pack.getName()) : inputStream;
-    }
-
-    private void validate(Identifier id) throws IOException {
-        if (!this.isPathAbsolute(id)) {
-            throw new IOException("Invalid relative path to resource: " + id);
-        }
+        return () -> pack.open(this.type, id);
     }
 
     private boolean isPathAbsolute(Identifier id) {
@@ -140,33 +110,34 @@ implements ResourceManager {
     }
 
     @Override
-    public List<ResourceRef> getAllResources(Identifier id) throws IOException {
-        this.validate(id);
+    public List<Resource> getAllResources(Identifier id) {
+        if (!this.isPathAbsolute(id)) {
+            return List.of();
+        }
         ArrayList<Entry> list = Lists.newArrayList();
         Identifier identifier = NamespaceResourceManager.getMetadataPath(id);
         String string = null;
         for (FilterablePack filterablePack : this.packList) {
             ResourcePack resourcePack;
             if (filterablePack.isFiltered(id)) {
+                if (!list.isEmpty()) {
+                    string = filterablePack.name;
+                }
                 list.clear();
-                string = filterablePack.name;
             } else if (filterablePack.isFiltered(identifier)) {
                 list.forEach(Entry::ignoreMetadata);
             }
             if ((resourcePack = filterablePack.underlying) == null || !resourcePack.contains(this.type, id)) continue;
             list.add(new Entry(id, identifier, resourcePack));
         }
-        if (list.isEmpty()) {
-            if (string != null) {
-                throw new FileNotFoundException(id + " (filtered by: " + string + ")");
-            }
-            throw new FileNotFoundException(id.toString());
+        if (list.isEmpty() && string != null) {
+            LOGGER.info("Resource {} was filtered by pack {}", (Object)id, (Object)string);
         }
         return list.stream().map(Entry::toReference).toList();
     }
 
     @Override
-    public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
         Object2IntOpenHashMap<Identifier> object2IntMap = new Object2IntOpenHashMap<Identifier>();
         int i = this.packList.size();
         for (int j = 0; j < i; ++j) {
@@ -177,28 +148,32 @@ implements ResourceManager {
                 object2IntMap.put(identifier, j);
             }
         }
-        TreeMap<Identifier, ResourceRef> map = Maps.newTreeMap();
+        TreeMap<Identifier, Resource> map = Maps.newTreeMap();
         for (Object2IntMap.Entry entry : Object2IntMaps.fastIterable(object2IntMap)) {
             int k = entry.getIntValue();
             Identifier identifier2 = (Identifier)entry.getKey();
             ResourcePack resourcePack = this.packList.get((int)k).underlying;
-            String string = resourcePack.getName();
-            map.put(identifier2, new ResourceRef(string, () -> {
-                Identifier identifier2 = NamespaceResourceManager.getMetadataPath(identifier2);
-                InputStream inputStream = null;
-                for (int j = this.packList.size() - 1; j >= k; --j) {
-                    FilterablePack filterablePack = this.packList.get(j);
-                    ResourcePack resourcePack2 = filterablePack.underlying;
-                    if (resourcePack2 != null && resourcePack2.contains(this.type, identifier2)) {
-                        inputStream = this.open(identifier2, resourcePack2);
-                        break;
-                    }
-                    if (filterablePack.isFiltered(identifier2)) break;
-                }
-                return new ResourceImpl(string, identifier2, this.open(identifier2, resourcePack), inputStream);
-            }));
+            map.put(identifier2, new Resource(resourcePack.getName(), this.createOpener(identifier2, resourcePack), this.createMetadataSupplier(identifier2, k)));
         }
         return map;
+    }
+
+    private Resource.InputSupplier<ResourceMetadata> createMetadataSupplier(Identifier id, int index) {
+        return () -> {
+            Identifier identifier2 = NamespaceResourceManager.getMetadataPath(id);
+            for (int j = this.packList.size() - 1; j >= index; --j) {
+                FilterablePack filterablePack = this.packList.get(j);
+                ResourcePack resourcePack = filterablePack.underlying;
+                if (resourcePack != null && resourcePack.contains(this.type, identifier2)) {
+                    try (InputStream inputStream = resourcePack.open(this.type, identifier2);){
+                        ResourceMetadata resourceMetadata = ResourceMetadata.create(inputStream);
+                        return resourceMetadata;
+                    }
+                }
+                if (filterablePack.isFiltered(identifier2)) break;
+            }
+            return ResourceMetadata.NONE;
+        };
     }
 
     private static void applyFilter(FilterablePack pack, Map<Identifier, EntryList> idToEntryList) {
@@ -228,13 +203,13 @@ implements ResourceManager {
     }
 
     @Override
-    public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+    public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
         HashMap<Identifier, EntryList> map = Maps.newHashMap();
         for (FilterablePack filterablePack : this.packList) {
             NamespaceResourceManager.applyFilter(filterablePack, map);
             this.findAndAdd(filterablePack, startingPath, allowedPathPredicate, map);
         }
-        TreeMap<Identifier, List<ResourceRef>> treeMap = Maps.newTreeMap();
+        TreeMap<Identifier, List<Resource>> treeMap = Maps.newTreeMap();
         map.forEach((id, entryList) -> treeMap.put((Identifier)id, entryList.toReferenceList()));
         return treeMap;
     }
@@ -259,10 +234,6 @@ implements ResourceManager {
             return this.filter != null && this.filter.test(id);
         }
 
-        boolean contains(ResourceType type, Identifier id) {
-            return this.underlying != null && this.underlying.contains(type, id);
-        }
-
         @Nullable
         public ResourcePack underlying() {
             return this.underlying;
@@ -271,6 +242,45 @@ implements ResourceManager {
         @Nullable
         public Predicate<Identifier> filter() {
             return this.filter;
+        }
+    }
+
+    class Entry {
+        private final Identifier id;
+        private final Identifier metadataId;
+        private final ResourcePack pack;
+        private boolean checksMetadata = true;
+
+        Entry(Identifier id, Identifier metadataId, ResourcePack pack) {
+            this.pack = pack;
+            this.id = id;
+            this.metadataId = metadataId;
+        }
+
+        public void ignoreMetadata() {
+            this.checksMetadata = false;
+        }
+
+        public Resource toReference() {
+            String string = this.pack.getName();
+            if (this.checksMetadata) {
+                return new Resource(string, NamespaceResourceManager.this.createOpener(this.id, this.pack), () -> {
+                    if (this.pack.contains(NamespaceResourceManager.this.type, this.metadataId)) {
+                        try (InputStream inputStream = this.pack.open(NamespaceResourceManager.this.type, this.metadataId);){
+                            ResourceMetadata resourceMetadata = ResourceMetadata.create(inputStream);
+                            return resourceMetadata;
+                        }
+                    }
+                    return ResourceMetadata.NONE;
+                });
+            }
+            return new Resource(string, NamespaceResourceManager.this.createOpener(this.id, this.pack));
+        }
+    }
+
+    record EntryList(Identifier metadataId, List<Entry> entries) {
+        List<Resource> toReferenceList() {
+            return this.entries().stream().map(Entry::toReference).toList();
         }
     }
 
@@ -297,40 +307,6 @@ implements ResourceManager {
                 LOGGER.warn(this.leakMessage);
             }
             super.finalize();
-        }
-    }
-
-    class Entry {
-        private final Identifier id;
-        private final Identifier metadataId;
-        private final ResourcePack pack;
-        private boolean checksMetadata = true;
-
-        Entry(Identifier id, Identifier metadataId, ResourcePack pack) {
-            this.pack = pack;
-            this.id = id;
-            this.metadataId = metadataId;
-        }
-
-        public void ignoreMetadata() {
-            this.checksMetadata = false;
-        }
-
-        public ResourceRef toReference() {
-            String string = this.pack.getName();
-            if (this.checksMetadata) {
-                return new ResourceRef(string, () -> {
-                    InputStream inputStream = this.pack.contains(NamespaceResourceManager.this.type, this.metadataId) ? NamespaceResourceManager.this.open(this.metadataId, this.pack) : null;
-                    return new ResourceImpl(string, this.id, NamespaceResourceManager.this.open(this.id, this.pack), inputStream);
-                });
-            }
-            return new ResourceRef(string, () -> new ResourceImpl(string, this.id, NamespaceResourceManager.this.open(this.id, this.pack), null));
-        }
-    }
-
-    record EntryList(Identifier metadataId, List<Entry> entries) {
-        List<ResourceRef> toReferenceList() {
-            return this.entries().stream().map(Entry::toReference).toList();
         }
     }
 }

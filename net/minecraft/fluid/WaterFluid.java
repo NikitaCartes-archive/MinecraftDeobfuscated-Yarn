@@ -4,7 +4,6 @@
 package net.minecraft.fluid;
 
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +24,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -49,7 +49,7 @@ extends FlowableFluid {
     }
 
     @Override
-    public void randomDisplayTick(World world, BlockPos pos, FluidState state, Random random) {
+    public void randomDisplayTick(World world, BlockPos pos, FluidState state, AbstractRandom random) {
         if (!state.isStill() && !state.get(FALLING).booleanValue()) {
             if (random.nextInt(64) == 0) {
                 world.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_WATER_AMBIENT, SoundCategory.BLOCKS, random.nextFloat() * 0.25f + 0.75f, random.nextFloat() + 0.5f, false);

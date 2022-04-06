@@ -9,6 +9,7 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -17,6 +18,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
+import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
 import net.minecraft.datafixer.fix.AdvancementRenameFix;
 import net.minecraft.datafixer.fix.AdvancementsFix;
 import net.minecraft.datafixer.fix.ArrowPickupFix;
@@ -80,6 +82,7 @@ import net.minecraft.datafixer.fix.EntityStringUuidFix;
 import net.minecraft.datafixer.fix.EntityTheRenameningBlock;
 import net.minecraft.datafixer.fix.EntityTippedArrowFix;
 import net.minecraft.datafixer.fix.EntityUuidFix;
+import net.minecraft.datafixer.fix.EntityVariantTypeFix;
 import net.minecraft.datafixer.fix.EntityWolfColorFix;
 import net.minecraft.datafixer.fix.EntityZombieSplitFix;
 import net.minecraft.datafixer.fix.EntityZombieVillagerTypeFix;
@@ -658,6 +661,31 @@ public class Schemas {
         builder.addFixer(new GameEventRenamesFix(schema163, TypeReferences.GAME_EVENT_NAME, ImmutableMap.builder().put("minecraft:block_press", "minecraft:block_activate").put("minecraft:block_switch", "minecraft:block_activate").put("minecraft:block_unpress", "minecraft:block_deactivate").put("minecraft:block_unswitch", "minecraft:block_deactivate").put("minecraft:drinking_finish", "minecraft:drink").put("minecraft:elytra_free_fall", "minecraft:elytra_glide").put("minecraft:entity_damaged", "minecraft:entity_damage").put("minecraft:entity_dying", "minecraft:entity_die").put("minecraft:entity_killed", "minecraft:entity_die").put("minecraft:mob_interact", "minecraft:entity_interact").put("minecraft:ravager_roar", "minecraft:entity_roar").put("minecraft:ring_bell", "minecraft:block_change").put("minecraft:shulker_close", "minecraft:container_close").put("minecraft:shulker_open", "minecraft:container_open").put("minecraft:wolf_shaking", "minecraft:entity_shake").build()));
         Schema schema164 = builder.addSchema(3085, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new BlendingDataFix(schema164, "Blending Data Fix v3085"));
+        Schema schema165 = builder.addSchema(3086, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new EntityVariantTypeFix(schema165, "Change cat variant type", TypeReferences.ENTITY, "minecraft:cat", "CatType", Util.make(new Int2ObjectOpenHashMap(), catVariants -> {
+            catVariants.defaultReturnValue("minecraft:tabby");
+            catVariants.put(0, "minecraft:tabby");
+            catVariants.put(1, "minecraft:black");
+            catVariants.put(2, "minecraft:red");
+            catVariants.put(3, "minecraft:siamese");
+            catVariants.put(4, "minecraft:british");
+            catVariants.put(5, "minecraft:calico");
+            catVariants.put(6, "minecraft:persian");
+            catVariants.put(7, "minecraft:ragdoll");
+            catVariants.put(8, "minecraft:white");
+            catVariants.put(9, "minecraft:jellie");
+            catVariants.put(10, "minecraft:all_black");
+        })::get));
+        ImmutableMap<String, String> immutableMap4 = ImmutableMap.builder().put("textures/entity/cat/tabby.png", "minecraft:tabby").put("textures/entity/cat/black.png", "minecraft:black").put("textures/entity/cat/red.png", "minecraft:red").put("textures/entity/cat/siamese.png", "minecraft:siamese").put("textures/entity/cat/british_shorthair.png", "minecraft:british").put("textures/entity/cat/calico.png", "minecraft:calico").put("textures/entity/cat/persian.png", "minecraft:persian").put("textures/entity/cat/ragdoll.png", "minecraft:ragdoll").put("textures/entity/cat/white.png", "minecraft:white").put("textures/entity/cat/jellie.png", "minecraft:jellie").put("textures/entity/cat/all_black.png", "minecraft:all_black").build();
+        builder.addFixer(new AdvancementCriteriaRenameFix(schema165, "Migrate cat variant advancement", "minecraft:husbandry/complete_catalogue", string -> immutableMap4.getOrDefault(string, (String)string)));
+        Schema schema166 = builder.addSchema(3087, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new EntityVariantTypeFix(schema166, "Change frog variant type", TypeReferences.ENTITY, "minecraft:frog", "Variant", Util.make(new Int2ObjectOpenHashMap(), frogVariants -> {
+            frogVariants.put(0, "minecraft:temperate");
+            frogVariants.put(1, "minecraft:warm");
+            frogVariants.put(2, "minecraft:cold");
+        })::get));
+        Schema schema167 = builder.addSchema(3088, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new BlendingDataFix(schema167, "Blending Data Fix v3088"));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

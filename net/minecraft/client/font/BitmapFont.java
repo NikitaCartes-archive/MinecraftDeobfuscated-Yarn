@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -24,7 +25,6 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -147,9 +147,9 @@ implements Font {
         public Font load(ResourceManager manager) {
             BitmapFont bitmapFont;
             block10: {
-                Resource resource = manager.getResource(this.filename);
+                InputStream inputStream = manager.open(this.filename);
                 try {
-                    NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
+                    NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream);
                     int i = nativeImage.getWidth();
                     int j = nativeImage.getHeight();
                     int k = i / this.chars.get(0).length;
@@ -167,12 +167,12 @@ implements Font {
                         }
                     }
                     bitmapFont = new BitmapFont(nativeImage, int2ObjectMap);
-                    if (resource == null) break block10;
+                    if (inputStream == null) break block10;
                 } catch (Throwable throwable) {
                     try {
-                        if (resource != null) {
+                        if (inputStream != null) {
                             try {
-                                resource.close();
+                                inputStream.close();
                             } catch (Throwable throwable2) {
                                 throwable.addSuppressed(throwable2);
                             }
@@ -182,7 +182,7 @@ implements Font {
                         throw new RuntimeException(iOException.getMessage());
                     }
                 }
-                resource.close();
+                inputStream.close();
             }
             return bitmapFont;
         }

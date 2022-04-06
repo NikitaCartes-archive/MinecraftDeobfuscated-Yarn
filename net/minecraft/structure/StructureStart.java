@@ -5,7 +5,6 @@ package net.minecraft.structure;
 
 import com.mojang.logging.LogUtils;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.StructureContext;
@@ -15,12 +14,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.OceanMonumentFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.OceanMonumentStructure;
+import net.minecraft.world.gen.structure.StructureType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -33,7 +33,7 @@ public final class StructureStart {
     public static final String INVALID = "INVALID";
     public static final StructureStart DEFAULT = new StructureStart(null, new ChunkPos(0, 0), 0, new StructurePiecesList(List.of()));
     private static final Logger field_37751 = LogUtils.getLogger();
-    private final StructureFeature feature;
+    private final StructureType feature;
     private final StructurePiecesList children;
     private final ChunkPos pos;
     /**
@@ -49,7 +49,7 @@ public final class StructureStart {
     @Nullable
     private volatile BlockBox boundingBox;
 
-    public StructureStart(StructureFeature feature, ChunkPos pos, int references, StructurePiecesList children) {
+    public StructureStart(StructureType feature, ChunkPos pos, int references, StructurePiecesList children) {
         this.feature = feature;
         this.pos = pos;
         this.references = references;
@@ -62,9 +62,9 @@ public final class StructureStart {
         if (INVALID.equals(string)) {
             return DEFAULT;
         }
-        Registry<StructureFeature> registry = structureContext.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY);
-        StructureFeature structureFeature = registry.get(new Identifier(string));
-        if (structureFeature == null) {
+        Registry<StructureType> registry = structureContext.registryManager().get(Registry.STRUCTURE_KEY);
+        StructureType structureType = registry.get(new Identifier(string));
+        if (structureType == null) {
             field_37751.error("Unknown stucture id: {}", (Object)string);
             return null;
         }
@@ -73,10 +73,10 @@ public final class StructureStart {
         NbtList nbtList = nbtCompound.getList("Children", 10);
         try {
             StructurePiecesList structurePiecesList = StructurePiecesList.fromNbt(nbtList, structureContext);
-            if (structureFeature instanceof OceanMonumentFeature) {
-                structurePiecesList = OceanMonumentFeature.modifyPiecesOnRead(chunkPos, l, structurePiecesList);
+            if (structureType instanceof OceanMonumentStructure) {
+                structurePiecesList = OceanMonumentStructure.modifyPiecesOnRead(chunkPos, l, structurePiecesList);
             }
-            return new StructureStart(structureFeature, chunkPos, i, structurePiecesList);
+            return new StructureStart(structureType, chunkPos, i, structurePiecesList);
         } catch (Exception exception) {
             field_37751.error("Failed Start with id {}", (Object)string, (Object)exception);
             return null;
@@ -91,7 +91,7 @@ public final class StructureStart {
         return blockBox;
     }
 
-    public void place(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos) {
+    public void place(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, AbstractRandom random, BlockBox chunkBox, ChunkPos chunkPos) {
         List<StructurePiece> list = this.children.pieces();
         if (list.isEmpty()) {
             return;
@@ -112,7 +112,7 @@ public final class StructureStart {
             nbtCompound.putString("id", INVALID);
             return nbtCompound;
         }
-        nbtCompound.putString("id", context.registryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).getId(this.feature).toString());
+        nbtCompound.putString("id", context.registryManager().get(Registry.STRUCTURE_KEY).getId(this.feature).toString());
         nbtCompound.putInt("ChunkX", chunkPos.x);
         nbtCompound.putInt("ChunkZ", chunkPos.z);
         nbtCompound.putInt("references", this.references);
@@ -144,7 +144,7 @@ public final class StructureStart {
         return 1;
     }
 
-    public StructureFeature getFeature() {
+    public StructureType getFeature() {
         return this.feature;
     }
 

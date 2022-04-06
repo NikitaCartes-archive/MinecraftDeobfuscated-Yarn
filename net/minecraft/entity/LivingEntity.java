@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criteria;
@@ -95,9 +94,9 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -128,6 +127,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -593,7 +593,7 @@ extends Entity {
         return false;
     }
 
-    public Random getRandom() {
+    public AbstractRandom getRandom() {
         return this.random;
     }
 
@@ -2924,7 +2924,7 @@ extends Entity {
 
     @Override
     public Packet<?> createSpawnPacket() {
-        return new MobSpawnS2CPacket(this);
+        return new EntitySpawnS2CPacket(this);
     }
 
     @Override
@@ -3165,21 +3165,27 @@ extends Entity {
         return !this.world.isClient() && this.hasStatusEffect(StatusEffects.GLOWING) || super.isGlowing();
     }
 
-    public void readFromPacket(MobSpawnS2CPacket packet) {
+    @Override
+    public float getBodyYaw() {
+        return this.bodyYaw;
+    }
+
+    @Override
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         double d = packet.getX();
         double e = packet.getY();
         double f = packet.getZ();
-        float g = (float)(packet.getYaw() * 360) / 256.0f;
-        float h = (float)(packet.getPitch() * 360) / 256.0f;
+        float g = packet.getYaw();
+        float h = packet.getPitch();
         this.updateTrackedPosition(d, e, f);
-        this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
-        this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
+        this.bodyYaw = packet.getHeadYaw();
+        this.headYaw = packet.getHeadYaw();
         this.prevBodyYaw = this.bodyYaw;
         this.prevHeadYaw = this.headYaw;
         this.setId(packet.getId());
         this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);
-        this.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
+        this.setVelocity(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
     }
 
     public boolean disablesShield() {

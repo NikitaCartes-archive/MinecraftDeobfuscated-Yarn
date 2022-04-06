@@ -6,9 +6,9 @@ package net.minecraft.world.gen.random;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.BaseSimpleRandom;
 import net.minecraft.util.thread.LockHelper;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.BaseSimpleRandom;
 import net.minecraft.world.gen.random.GaussianGenerator;
 
 public class AtomicSimpleRandom
@@ -30,13 +30,13 @@ implements BaseSimpleRandom {
     }
 
     @Override
-    public net.minecraft.world.gen.random.RandomDeriver createRandomDeriver() {
+    public net.minecraft.util.math.random.RandomDeriver createRandomDeriver() {
         return new RandomDeriver(this.nextLong());
     }
 
     @Override
-    public void setSeed(long l) {
-        if (!this.seed.compareAndSet(this.seed.get(), (l ^ 0x5DEECE66DL) & 0xFFFFFFFFFFFFL)) {
+    public void setSeed(long seed) {
+        if (!this.seed.compareAndSet(this.seed.get(), (seed ^ 0x5DEECE66DL) & 0xFFFFFFFFFFFFL)) {
             throw LockHelper.crash("LegacyRandomSource", null);
         }
         this.gaussianGenerator.reset();
@@ -58,7 +58,7 @@ implements BaseSimpleRandom {
     }
 
     public static class RandomDeriver
-    implements net.minecraft.world.gen.random.RandomDeriver {
+    implements net.minecraft.util.math.random.RandomDeriver {
         private final long seed;
 
         public RandomDeriver(long seed) {

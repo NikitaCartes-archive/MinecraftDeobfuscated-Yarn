@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class ClampedNormalFloatProvider
 extends FloatProvider {
@@ -39,11 +39,11 @@ extends FloatProvider {
     }
 
     @Override
-    public float get(Random random) {
+    public float get(AbstractRandom random) {
         return ClampedNormalFloatProvider.get(random, this.mean, this.deviation, this.min, this.max);
     }
 
-    public static float get(Random random, float mean, float deviation, float min, float max) {
+    public static float get(AbstractRandom random, float mean, float deviation, float min, float max) {
         return MathHelper.clamp(MathHelper.nextGaussian(random, mean, deviation), min, max);
     }
 

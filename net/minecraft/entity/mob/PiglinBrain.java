@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -78,6 +77,7 @@ import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.GameRules;
 
 public class PiglinBrain {
@@ -330,7 +330,7 @@ public class PiglinBrain {
         if (target.getType() != EntityType.HOGLIN) {
             return false;
         }
-        return new Random(piglin.world.getTime()).nextFloat() < 0.1f;
+        return AbstractRandom.createAtomic(piglin.world.getTime()).nextFloat() < 0.1f;
     }
 
     protected static boolean canGather(PiglinEntity piglin, ItemStack stack) {

@@ -3,7 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
@@ -17,10 +16,10 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class DispenserBlockEntity
 extends LootableContainerBlockEntity {
-    private static final Random RANDOM = new Random();
     public static final int field_31340 = 9;
     private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
@@ -37,12 +36,12 @@ extends LootableContainerBlockEntity {
         return 9;
     }
 
-    public int chooseNonEmptySlot() {
+    public int chooseNonEmptySlot(AbstractRandom random) {
         this.checkLootInteraction(null);
         int i = -1;
         int j = 1;
         for (int k = 0; k < this.inventory.size(); ++k) {
-            if (this.inventory.get(k).isEmpty() || RANDOM.nextInt(j++) != 0) continue;
+            if (this.inventory.get(k).isEmpty() || random.nextInt(j++) != 0) continue;
             i = k;
         }
         return i;

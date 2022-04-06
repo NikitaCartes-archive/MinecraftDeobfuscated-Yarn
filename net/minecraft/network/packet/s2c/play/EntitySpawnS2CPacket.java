@@ -6,6 +6,7 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -16,38 +17,32 @@ import net.minecraft.util.registry.Registry;
 
 public class EntitySpawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    public static final double VELOCITY_SCALE = 8000.0;
+    private static final double VELOCITY_SCALE = 8000.0;
+    /**
+     * The maximum absolute value allowed for each scalar value (velocity x, y, z)
+     * in the velocity vector sent by this packet.
+     */
+    private static final double MAX_ABSOLUTE_VELOCITY = 3.9;
     private final int id;
     private final UUID uuid;
+    private final EntityType<?> entityTypeId;
     private final double x;
     private final double y;
     private final double z;
     private final int velocityX;
     private final int velocityY;
     private final int velocityZ;
-    private final int pitch;
-    private final int yaw;
-    private final EntityType<?> entityTypeId;
+    private final byte pitch;
+    private final byte yaw;
+    private final byte headYaw;
     private final int entityData;
-    /**
-     * The maximum absolute value allowed for each scalar value (velocity x, y, z)
-     * in the velocity vector sent by this packet.
-     */
-    public static final double MAX_ABSOLUTE_VELOCITY = 3.9;
 
-    public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityTypeId, int entityData, Vec3d velocity) {
-        this.id = id;
-        this.uuid = uuid;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.pitch = MathHelper.floor(pitch * 256.0f / 360.0f);
-        this.yaw = MathHelper.floor(yaw * 256.0f / 360.0f);
-        this.entityTypeId = entityTypeId;
-        this.entityData = entityData;
-        this.velocityX = (int)(MathHelper.clamp(velocity.x, -3.9, 3.9) * 8000.0);
-        this.velocityY = (int)(MathHelper.clamp(velocity.y, -3.9, 3.9) * 8000.0);
-        this.velocityZ = (int)(MathHelper.clamp(velocity.z, -3.9, 3.9) * 8000.0);
+    public EntitySpawnS2CPacket(LivingEntity entity) {
+        this(entity, 0);
+    }
+
+    public EntitySpawnS2CPacket(LivingEntity entity, int entityTypeId) {
+        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), entity.headYaw);
     }
 
     public EntitySpawnS2CPacket(Entity entity) {
@@ -55,11 +50,27 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public EntitySpawnS2CPacket(Entity entity, int entityData) {
-        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity());
+        this(entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityData, entity.getVelocity(), 0.0);
     }
 
-    public EntitySpawnS2CPacket(Entity entity, EntityType<?> entityType, int data, BlockPos pos) {
-        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entityType, data, entity.getVelocity());
+    public EntitySpawnS2CPacket(Entity entity, int entityTypeId, BlockPos pos) {
+        this(entity.getId(), entity.getUuid(), pos.getX(), pos.getY(), pos.getZ(), entity.getPitch(), entity.getYaw(), entity.getType(), entityTypeId, entity.getVelocity(), 0.0);
+    }
+
+    public EntitySpawnS2CPacket(int id, UUID uuid, double x, double y, double z, float pitch, float yaw, EntityType<?> entityTypeId, int entityData, Vec3d velocity, double headYaw) {
+        this.id = id;
+        this.uuid = uuid;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.pitch = (byte)MathHelper.floor(pitch * 256.0f / 360.0f);
+        this.yaw = (byte)MathHelper.floor(yaw * 256.0f / 360.0f);
+        this.headYaw = (byte)MathHelper.floor(headYaw * 256.0 / 360.0);
+        this.entityTypeId = entityTypeId;
+        this.entityData = entityData;
+        this.velocityX = (int)(MathHelper.clamp(velocity.x, -3.9, 3.9) * 8000.0);
+        this.velocityY = (int)(MathHelper.clamp(velocity.y, -3.9, 3.9) * 8000.0);
+        this.velocityZ = (int)(MathHelper.clamp(velocity.z, -3.9, 3.9) * 8000.0);
     }
 
     public EntitySpawnS2CPacket(PacketByteBuf buf) {
@@ -71,7 +82,8 @@ implements Packet<ClientPlayPacketListener> {
         this.z = buf.readDouble();
         this.pitch = buf.readByte();
         this.yaw = buf.readByte();
-        this.entityData = buf.readInt();
+        this.headYaw = buf.readByte();
+        this.entityData = buf.readVarInt();
         this.velocityX = buf.readShort();
         this.velocityY = buf.readShort();
         this.velocityZ = buf.readShort();
@@ -87,7 +99,8 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeDouble(this.z);
         buf.writeByte(this.pitch);
         buf.writeByte(this.yaw);
-        buf.writeInt(this.entityData);
+        buf.writeByte(this.headYaw);
+        buf.writeVarInt(this.entityData);
         buf.writeShort(this.velocityX);
         buf.writeShort(this.velocityY);
         buf.writeShort(this.velocityZ);
@@ -104,6 +117,10 @@ implements Packet<ClientPlayPacketListener> {
 
     public UUID getUuid() {
         return this.uuid;
+    }
+
+    public EntityType<?> getEntityTypeId() {
+        return this.entityTypeId;
     }
 
     public double getX() {
@@ -130,16 +147,16 @@ implements Packet<ClientPlayPacketListener> {
         return (double)this.velocityZ / 8000.0;
     }
 
-    public int getPitch() {
-        return this.pitch;
+    public float getPitch() {
+        return (float)(this.pitch * 360) / 256.0f;
     }
 
-    public int getYaw() {
-        return this.yaw;
+    public float getYaw() {
+        return (float)(this.yaw * 360) / 256.0f;
     }
 
-    public EntityType<?> getEntityTypeId() {
-        return this.entityTypeId;
+    public float getHeadYaw() {
+        return (float)(this.headYaw * 360) / 256.0f;
     }
 
     public int getEntityData() {

@@ -13,10 +13,7 @@ import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +28,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
@@ -60,17 +56,15 @@ implements AutoCloseable {
             profiler.startTick();
             Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
             HashMap<Identifier, List<Font>> map = Maps.newHashMap();
-            for (Map.Entry<Identifier, List<ResourceRef>> entry : resourceManager.findAllResources("font", id -> id.getPath().endsWith(".json")).entrySet()) {
+            for (Map.Entry<Identifier, List<Resource>> entry : resourceManager.findAllResources("font", id -> id.getPath().endsWith(".json")).entrySet()) {
                 Identifier identifier = entry.getKey();
                 String string = identifier.getPath();
                 Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring("font/".length(), string.length() - ".json".length()));
                 List list = map.computeIfAbsent(identifier2, id -> Lists.newArrayList(new BlankFont()));
                 profiler.push(identifier2::toString);
-                for (ResourceRef resourceRef : entry.getValue()) {
-                    profiler.push(resourceRef.getPackName());
-                    try (Resource resource = resourceRef.open();
-                         InputStream inputStream = resource.getInputStream();
-                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));){
+                for (Resource resource : entry.getValue()) {
+                    profiler.push(resource.getResourcePackName());
+                    try (BufferedReader reader = resource.getReader();){
                         try {
                             profiler.push("reading");
                             JsonArray jsonArray = JsonHelper.getArray(JsonHelper.deserialize(gson, (Reader)reader, JsonObject.class), "providers");
@@ -93,7 +87,7 @@ implements AutoCloseable {
                             profiler.pop();
                         }
                     } catch (Exception exception) {
-                        LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", identifier2, FontManager.FONTS_JSON, resourceRef.getPackName(), exception);
+                        LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", identifier2, FontManager.FONTS_JSON, resource.getResourcePackName(), exception);
                     }
                     profiler.pop();
                 }

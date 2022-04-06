@@ -18,11 +18,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundEntry;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
+import net.minecraft.util.math.floatprovider.FloatProvider;
 import org.apache.commons.lang3.Validate;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundEntryDeserializer
 implements JsonDeserializer<SoundEntry> {
+    private static final FloatProvider field_38801 = ConstantFloatProvider.create(1.0f);
+
     @Override
     public SoundEntry deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
@@ -40,7 +44,7 @@ implements JsonDeserializer<SoundEntry> {
                 JsonElement jsonElement = jsonArray.get(i);
                 if (JsonHelper.isString(jsonElement)) {
                     String string = JsonHelper.asString(jsonElement, "sound");
-                    list.add(new Sound(string, 1.0f, 1.0f, 1, Sound.RegistrationType.FILE, false, false, 16));
+                    list.add(new Sound(string, field_38801, field_38801, 1, Sound.RegistrationType.FILE, false, false, 16));
                     continue;
                 }
                 list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));
@@ -61,7 +65,7 @@ implements JsonDeserializer<SoundEntry> {
         boolean bl = JsonHelper.getBoolean(json, "preload", false);
         boolean bl2 = JsonHelper.getBoolean(json, "stream", false);
         int j = JsonHelper.getInt(json, "attenuation_distance", 16);
-        return new Sound(string, f, g, i, registrationType, bl2, bl, j);
+        return new Sound(string, ConstantFloatProvider.create(f), ConstantFloatProvider.create(g), i, registrationType, bl2, bl, j);
     }
 
     private Sound.RegistrationType deserializeType(JsonObject json, Sound.RegistrationType fallback) {

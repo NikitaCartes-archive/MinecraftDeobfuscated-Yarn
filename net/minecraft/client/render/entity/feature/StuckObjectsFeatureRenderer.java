@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.entity.feature;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
@@ -15,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M extends PlayerEntityModel<T>>
@@ -30,18 +30,18 @@ extends FeatureRenderer<T, M> {
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         int m = this.getObjectCount(livingEntity);
-        Random random = new Random(((Entity)livingEntity).getId());
+        AbstractRandom abstractRandom = AbstractRandom.createAtomic(((Entity)livingEntity).getId());
         if (m <= 0) {
             return;
         }
         for (int n = 0; n < m; ++n) {
             matrixStack.push();
-            ModelPart modelPart = ((PlayerEntityModel)this.getContextModel()).getRandomPart(random);
-            ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(random);
+            ModelPart modelPart = ((PlayerEntityModel)this.getContextModel()).getRandomPart(abstractRandom);
+            ModelPart.Cuboid cuboid = modelPart.getRandomCuboid(abstractRandom);
             modelPart.rotate(matrixStack);
-            float o = random.nextFloat();
-            float p = random.nextFloat();
-            float q = random.nextFloat();
+            float o = abstractRandom.nextFloat();
+            float p = abstractRandom.nextFloat();
+            float q = abstractRandom.nextFloat();
             float r = MathHelper.lerp(o, cuboid.minX, cuboid.maxX) / 16.0f;
             float s = MathHelper.lerp(p, cuboid.minY, cuboid.maxY) / 16.0f;
             float t = MathHelper.lerp(q, cuboid.minZ, cuboid.maxZ) / 16.0f;

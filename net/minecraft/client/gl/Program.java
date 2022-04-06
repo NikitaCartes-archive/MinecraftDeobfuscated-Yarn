@@ -5,22 +5,20 @@ package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.GLImportProcessor;
 import net.minecraft.client.gl.GlShader;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class Program {
-    private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_32037 = 32768;
     private final Type shaderType;
     private final String name;
@@ -60,7 +58,7 @@ public class Program {
     }
 
     protected static int loadProgram(Type type, String name, InputStream stream, String domain, GLImportProcessor loader) throws IOException {
-        String string = TextureUtil.readResourceAsString(stream);
+        String string = IOUtils.toString(stream, StandardCharsets.UTF_8);
         if (string == null) {
             throw new IOException("Could not load program " + type.getName());
         }
@@ -72,10 +70,6 @@ public class Program {
             throw new IOException("Couldn't compile " + type.getName() + " program (" + domain + ", " + name + ") : " + string2);
         }
         return i;
-    }
-
-    private static Program create(Type shaderType, String name, int shaderRef) {
-        return new Program(shaderType, shaderRef, name);
     }
 
     protected int getShaderRef() {

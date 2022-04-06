@@ -10,8 +10,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import java.util.Random;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
@@ -40,7 +40,7 @@ extends HeightProvider {
     }
 
     @Override
-    public int get(Random random, HeightContext context) {
+    public int get(AbstractRandom abstractRandom, HeightContext context) {
         int j;
         int i = this.minOffset.getY(context);
         if (i > (j = this.maxOffset.getY(context))) {
@@ -49,7 +49,7 @@ extends HeightProvider {
             }
             return i;
         }
-        return MathHelper.nextBetween(random, i, j);
+        return MathHelper.nextBetween(abstractRandom, i, j);
     }
 
     @Override

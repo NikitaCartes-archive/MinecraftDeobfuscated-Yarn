@@ -3,7 +3,6 @@
  */
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -18,6 +17,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.WorldAccess;
 
 public class SculkBlock
@@ -28,7 +28,7 @@ implements SculkSpreadable {
     }
 
     @Override
-    public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, Random random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
+    public int spread(SculkSpreadManager.Cursor cursor, WorldAccess world, BlockPos catalystPos, AbstractRandom random, SculkSpreadManager spreadManager, boolean shouldConvertToBlock) {
         int i = cursor.getCharge();
         if (i == 0 || random.nextInt(spreadManager.getSpreadChance()) != 0) {
             return i;
@@ -59,7 +59,7 @@ implements SculkSpreadable {
         return Math.max(1, (int)((float)charge * g * 0.5f));
     }
 
-    private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, Random random, boolean allowShrieker) {
+    private BlockState getExtraBlockState(WorldAccess world, BlockPos pos, AbstractRandom random, boolean allowShrieker) {
         BlockState blockState = random.nextInt(11) == 0 ? (BlockState)Blocks.SCULK_SHRIEKER.getDefaultState().with(SculkShriekerBlock.CAN_SUMMON, allowShrieker) : Blocks.SCULK_SENSOR.getDefaultState();
         if (blockState.contains(Properties.WATERLOGGED) && !world.getFluidState(pos).isEmpty()) {
             return (BlockState)blockState.with(Properties.WATERLOGGED, true);

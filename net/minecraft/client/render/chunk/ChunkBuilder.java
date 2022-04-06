@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -57,6 +56,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.chunk.ChunkStatus;
 import org.jetbrains.annotations.Nullable;
@@ -583,7 +583,7 @@ public class ChunkBuilder {
                 MatrixStack matrixStack = new MatrixStack();
                 if (chunkRendererRegion != null) {
                     BlockModelRenderer.enableBrightnessCache();
-                    Random random = new Random();
+                    AbstractRandom abstractRandom = AbstractRandom.createAtomic();
                     BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
                     for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
                         BufferBuilder bufferBuilder;
@@ -617,7 +617,7 @@ public class ChunkBuilder {
                         }
                         matrixStack.push();
                         matrixStack.translate(blockPos3.getX() & 0xF, blockPos3.getY() & 0xF, blockPos3.getZ() & 0xF);
-                        if (blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random)) {
+                        if (blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, abstractRandom)) {
                             data.empty = false;
                             data.nonEmptyLayers.add(renderLayer);
                         }

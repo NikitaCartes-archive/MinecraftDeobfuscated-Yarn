@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class ClampedIntProvider
 extends IntProvider {
@@ -37,7 +37,7 @@ extends IntProvider {
     }
 
     @Override
-    public int get(Random random) {
+    public int get(AbstractRandom random) {
         return MathHelper.clamp(this.source.get(random), this.min, this.max);
     }
 

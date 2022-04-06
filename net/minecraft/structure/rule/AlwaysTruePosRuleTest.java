@@ -4,10 +4,10 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class AlwaysTruePosRuleTest
 extends PosRuleTest {
@@ -18,7 +18,7 @@ extends PosRuleTest {
     }
 
     @Override
-    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+    public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
         return true;
     }
 

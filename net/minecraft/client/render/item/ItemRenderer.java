@@ -7,7 +7,6 @@ import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -52,12 +51,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -94,14 +95,14 @@ implements SynchronousResourceReloader {
     }
 
     private void renderBakedItemModel(BakedModel model, ItemStack stack, int light, int overlay, MatrixStack matrices, VertexConsumer vertices) {
-        Random random = new Random();
+        AbstractRandom abstractRandom = AbstractRandom.createAtomic();
         long l = 42L;
         for (Direction direction : Direction.values()) {
-            random.setSeed(42L);
-            this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, random), stack, light, overlay);
+            abstractRandom.setSeed(42L);
+            this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, direction, abstractRandom), stack, light, overlay);
         }
-        random.setSeed(42L);
-        this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, random), stack, light, overlay);
+        abstractRandom.setSeed(42L);
+        this.renderBakedItemQuads(matrices, vertices, model.getQuads(null, null, abstractRandom), stack, light, overlay);
     }
 
     public void renderItem(ItemStack stack, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, BakedModel model) {
@@ -127,7 +128,7 @@ implements SynchronousResourceReloader {
             Block block;
             boolean bl22 = renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem ? !((block = ((BlockItem)stack.getItem()).getBlock()) instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock) : true;
             RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl22);
-            if (stack.isOf(Items.COMPASS) && stack.hasGlint()) {
+            if (stack.isIn(ItemTags.COMPASSES) && stack.hasGlint()) {
                 matrices.push();
                 MatrixStack.Entry entry = matrices.peek();
                 if (renderMode == ModelTransformation.Mode.GUI) {

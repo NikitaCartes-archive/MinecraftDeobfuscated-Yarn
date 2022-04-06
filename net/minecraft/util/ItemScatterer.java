@@ -3,7 +3,6 @@
  */
 package net.minecraft.util;
 
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -14,8 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ItemScatterer {
-    private static final Random RANDOM = new Random();
-
     public static void spawn(World world, BlockPos pos, Inventory inventory) {
         ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), inventory);
     }
@@ -38,13 +35,13 @@ public class ItemScatterer {
         double d = EntityType.ITEM.getWidth();
         double e = 1.0 - d;
         double f = d / 2.0;
-        double g = Math.floor(x) + RANDOM.nextDouble() * e + f;
-        double h = Math.floor(y) + RANDOM.nextDouble() * e;
-        double i = Math.floor(z) + RANDOM.nextDouble() * e + f;
+        double g = Math.floor(x) + world.random.nextDouble() * e + f;
+        double h = Math.floor(y) + world.random.nextDouble() * e;
+        double i = Math.floor(z) + world.random.nextDouble() * e + f;
         while (!stack.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(world, g, h, i, stack.split(RANDOM.nextInt(21) + 10));
+            ItemEntity itemEntity = new ItemEntity(world, g, h, i, stack.split(world.random.nextInt(21) + 10));
             float j = 0.05f;
-            itemEntity.setVelocity(RANDOM.nextGaussian() * (double)0.05f, RANDOM.nextGaussian() * (double)0.05f + (double)0.2f, RANDOM.nextGaussian() * (double)0.05f);
+            itemEntity.setVelocity(world.random.nextGaussian() * (double)0.05f, world.random.nextGaussian() * (double)0.05f + (double)0.2f, world.random.nextGaussian() * (double)0.05f);
             world.spawnEntity(itemEntity);
         }
     }

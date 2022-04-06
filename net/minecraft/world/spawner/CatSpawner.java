@@ -4,7 +4,6 @@
 package net.minecraft.world.spawner;
 
 import java.util.List;
-import java.util.Random;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
@@ -14,6 +13,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.ConfiguredStructureFeatureTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -45,9 +45,9 @@ implements Spawner {
         if (playerEntity == null) {
             return 0;
         }
-        Random random = world.random;
-        int i = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-        int j = (8 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
+        AbstractRandom abstractRandom = world.random;
+        int i = (8 + abstractRandom.nextInt(24)) * (abstractRandom.nextBoolean() ? -1 : 1);
+        int j = (8 + abstractRandom.nextInt(24)) * (abstractRandom.nextBoolean() ? -1 : 1);
         BlockPos blockPos = playerEntity.getBlockPos().add(i, 0, j);
         int k = 10;
         if (!world.isRegionLoaded(blockPos.getX() - 10, blockPos.getZ() - 10, blockPos.getX() + 10, blockPos.getZ() + 10)) {

@@ -136,7 +136,6 @@ public final class BlockTags {
     public static final TagKey<Block> FROG_PREFER_JUMP_TO = BlockTags.of("frog_prefer_jump_to");
     public static final TagKey<Block> SCULK_REPLACEABLE = BlockTags.of("sculk_replaceable");
     public static final TagKey<Block> SCULK_REPLACEABLE_WORLD_GEN = BlockTags.of("sculk_replaceable_world_gen");
-    public static final TagKey<Block> ANCIENT_CITY_CENTER_REPLACEABLE = BlockTags.of("ancient_city_center_replaceable");
     public static final TagKey<Block> ANCIENT_CITY_REPLACEABLE = BlockTags.of("ancient_city_replaceable");
     public static final TagKey<Block> ANIMALS_SPAWNABLE_ON = BlockTags.of("animals_spawnable_on");
     public static final TagKey<Block> AXOLOTLS_SPAWNABLE_ON = BlockTags.of("axolotls_spawnable_on");
@@ -150,6 +149,9 @@ public final class BlockTags {
     public static final TagKey<Block> AZALEA_GROWS_ON = BlockTags.of("azalea_grows_on");
     public static final TagKey<Block> REPLACEABLE_PLANTS = BlockTags.of("replaceable_plants");
     public static final TagKey<Block> CONVERTABLE_TO_MUD = BlockTags.of("convertable_to_mud");
+    public static final TagKey<Block> MANGROVE_LOGS_CAN_GROW_THROUGH = BlockTags.of("mangrove_logs_can_grow_through");
+    public static final TagKey<Block> MANGROVE_ROOTS_CAN_GROW_THROUGH = BlockTags.of("mangrove_roots_can_grow_through");
+    public static final TagKey<Block> DEAD_BUSH_MAY_PLACE_ON = BlockTags.of("dead_bush_may_place_on");
 
     private BlockTags() {
     }

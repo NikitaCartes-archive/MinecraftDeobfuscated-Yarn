@@ -19,14 +19,16 @@ implements Packet<ClientPlayPacketListener> {
     private final int entityId;
     private final float volume;
     private final float pitch;
+    private final long seed;
 
-    public PlaySoundFromEntityS2CPacket(SoundEvent sound, SoundCategory category, Entity entity, float volume, float pitch) {
+    public PlaySoundFromEntityS2CPacket(SoundEvent sound, SoundCategory category, Entity entity, float volume, float pitch, long seed) {
         Validate.notNull(sound, "sound", new Object[0]);
         this.sound = sound;
         this.category = category;
         this.entityId = entity.getId();
         this.volume = volume;
         this.pitch = pitch;
+        this.seed = seed;
     }
 
     public PlaySoundFromEntityS2CPacket(PacketByteBuf buf) {
@@ -35,6 +37,7 @@ implements Packet<ClientPlayPacketListener> {
         this.entityId = buf.readVarInt();
         this.volume = buf.readFloat();
         this.pitch = buf.readFloat();
+        this.seed = buf.readLong();
     }
 
     @Override
@@ -44,6 +47,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.entityId);
         buf.writeFloat(this.volume);
         buf.writeFloat(this.pitch);
+        buf.writeLong(this.seed);
     }
 
     public SoundEvent getSound() {
@@ -64,6 +68,10 @@ implements Packet<ClientPlayPacketListener> {
 
     public float getPitch() {
         return this.pitch;
+    }
+
+    public long getSeed() {
+        return this.seed;
     }
 
     @Override

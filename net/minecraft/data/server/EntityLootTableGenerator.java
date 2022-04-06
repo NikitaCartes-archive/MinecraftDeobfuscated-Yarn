@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
@@ -22,6 +23,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.condition.DamageSourcePropertiesLootCondition;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.KilledByPlayerLootCondition;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.RandomChanceWithLootingLootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -39,9 +41,12 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.SlimePredicate;
+import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.tag.EntityTypeTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
@@ -92,7 +97,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.register(EntityType.ILLUSIONER, LootTable.builder());
         this.register(EntityType.IRON_GOLEM, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Blocks.POPPY).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f))))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.IRON_INGOT).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0f, 5.0f))))));
         this.register(EntityType.LLAMA, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.LEATHER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
-        this.register(EntityType.MAGMA_CUBE, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.MAGMA_CREAM).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-2.0f, 1.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
+        this.register(EntityType.MAGMA_CUBE, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)((LootPoolEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.MAGMA_CREAM).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-2.0f, 1.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f)))).conditionally(this.killedByFrog().invert())).conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.atLeast(2)))))).with((LootPoolEntry.Builder<?>)((LootPoolEntry.Builder)ItemEntry.builder(Items.PEARLESCENT_FROGLIGHT).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f)))).conditionally(this.killedByFrog(FrogVariant.WARM))).with((LootPoolEntry.Builder<?>)((LootPoolEntry.Builder)ItemEntry.builder(Items.VERDANT_FROGLIGHT).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f)))).conditionally(this.killedByFrog(FrogVariant.COLD))).with((LootPoolEntry.Builder<?>)((LootPoolEntry.Builder)ItemEntry.builder(Items.OCHRE_FROGLIGHT).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f)))).conditionally(this.killedByFrog(FrogVariant.TEMPERATE)))));
         this.register(EntityType.MULE, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.LEATHER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
         this.register(EntityType.MOOSHROOM, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.LEATHER).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.BEEF).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0f, 3.0f)))).apply((LootFunction.Builder)FurnaceSmeltLootFunction.builder().conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, NEEDS_ENTITY_ON_FIRE)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
         this.register(EntityType.OCELOT, LootTable.builder());
@@ -127,7 +132,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.register(EntityType.SILVERFISH, LootTable.builder());
         this.register(EntityType.SKELETON, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.ARROW).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.BONE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
         this.register(EntityType.SKELETON_HORSE, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.BONE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
-        this.register(EntityType.SLIME, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
+        this.register(EntityType.SLIME, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LootPoolEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f)))).conditionally(this.killedByFrog().invert())).with((LootPoolEntry.Builder<?>)((LootPoolEntry.Builder)ItemEntry.builder(Items.SLIME_BALL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f)))).conditionally(this.killedByFrog())).conditionally(EntityPropertiesLootCondition.builder(LootContext.EntityTarget.THIS, EntityPredicate.Builder.create().typeSpecific(SlimePredicate.of(NumberRange.IntRange.exactly(1)))))));
         this.register(EntityType.SNOW_GOLEM, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)ItemEntry.builder(Items.SNOWBALL).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 15.0f))))));
         this.register(EntityType.SPIDER, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.STRING).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 2.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.SPIDER_EYE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(-1.0f, 1.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f)))).conditionally(KilledByPlayerLootCondition.builder())));
         this.register(EntityType.SQUID, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.INK_SAC).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0f, 3.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f))))));
@@ -170,6 +175,14 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
             throw new IllegalStateException(String.format("Weird loottable '%s' for '%s', not a LivingEntity so should not have loot", identifier, Registry.ENTITY_TYPE.getId(entityType)));
         }
         this.lootTables.forEach(biConsumer);
+    }
+
+    private LootCondition.Builder killedByFrog() {
+        return DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG)));
+    }
+
+    private LootCondition.Builder killedByFrog(FrogVariant variant) {
+        return DamageSourcePropertiesLootCondition.builder(DamageSourcePredicate.Builder.create().sourceEntity(EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog(variant))));
     }
 
     private void register(EntityType<?> entityType, LootTable.Builder lootTable) {

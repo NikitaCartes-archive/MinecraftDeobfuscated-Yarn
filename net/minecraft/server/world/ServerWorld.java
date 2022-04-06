@@ -145,7 +145,7 @@ import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -850,13 +850,13 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(except, x, y, z, volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch));
+    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
+        this.server.getPlayerManager().sendToAround(except, x, y, z, sound.method_43044(volume), this.getRegistryKey(), new PlaySoundS2CPacket(sound, category, x, y, z, volume, pitch, seed));
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), volume > 1.0f ? (double)(16.0f * volume) : 16.0, this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch));
+    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
+        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.method_43044(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
     }
 
     @Override
@@ -1113,15 +1113,15 @@ implements StructureWorldAccess {
      * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
-    public BlockPos locateStructure(TagKey<StructureFeature> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
+    public BlockPos locateStructure(TagKey<StructureType> structureTag, BlockPos pos, int radius, boolean skipExistingChunks) {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
             return null;
         }
-        Optional<RegistryEntryList.Named<StructureFeature>> optional = this.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).getEntryList(structureTag);
+        Optional<RegistryEntryList.Named<StructureType>> optional = this.getRegistryManager().get(Registry.STRUCTURE_KEY).getEntryList(structureTag);
         if (optional.isEmpty()) {
             return null;
         }
-        Pair<BlockPos, RegistryEntry<StructureFeature>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureFeature>)optional.get(), pos, radius, skipExistingChunks);
+        Pair<BlockPos, RegistryEntry<StructureType>> pair = this.getChunkManager().getChunkGenerator().locateStructure(this, (RegistryEntryList<StructureType>)optional.get(), pos, radius, skipExistingChunks);
         return pair != null ? pair.getFirst() : null;
     }
 
@@ -1177,25 +1177,6 @@ implements StructureWorldAccess {
         this.getChunkManager().removeTicket(ChunkTicketType.START, chunkPos, 11, Unit.INSTANCE);
         this.getChunkManager().addTicket(ChunkTicketType.START, new ChunkPos(pos), 11, Unit.INSTANCE);
         this.getServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(pos, angle));
-    }
-
-    /**
-     * {@return the world spawn point}
-     * 
-     * @implNote If it is outside the world border, this returns the position of the
-     * highest {@linkplain net.minecraft.world.Heightmap.Type#MOTION_BLOCKING motion-blocking}
-     * block at the center of the world border.
-     */
-    public BlockPos getSpawnPos() {
-        BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
-        if (!this.getWorldBorder().contains(blockPos)) {
-            blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
-        }
-        return blockPos;
-    }
-
-    public float getSpawnAngle() {
-        return this.properties.getSpawnAngle();
     }
 
     /**
@@ -1590,6 +1571,16 @@ implements StructureWorldAccess {
         }
 
         @Override
+        public void updateLoadStatus(Entity entity) {
+            entity.updateEventHandler(EntityGameEventHandler::onEntitySetPos);
+        }
+
+        @Override
+        public /* synthetic */ void updateLoadStatus(Object entity) {
+            this.updateLoadStatus((Entity)entity);
+        }
+
+        @Override
         public /* synthetic */ void stopTracking(Object entity) {
             this.stopTracking((Entity)entity);
         }
@@ -1597,11 +1588,6 @@ implements StructureWorldAccess {
         @Override
         public /* synthetic */ void startTracking(Object entity) {
             this.startTracking((Entity)entity);
-        }
-
-        @Override
-        public /* synthetic */ void stopTicking(Object entity) {
-            this.stopTicking((Entity)entity);
         }
 
         @Override

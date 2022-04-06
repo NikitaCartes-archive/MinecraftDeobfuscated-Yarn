@@ -4,10 +4,10 @@
 package net.minecraft.world.gen.stateprovider;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
@@ -46,6 +46,6 @@ public abstract class BlockStateProvider {
     /**
      * {@return a provided block state}
      */
-    public abstract BlockState getBlockState(Random var1, BlockPos var2);
+    public abstract BlockState getBlockState(AbstractRandom var1, BlockPos var2);
 }
 

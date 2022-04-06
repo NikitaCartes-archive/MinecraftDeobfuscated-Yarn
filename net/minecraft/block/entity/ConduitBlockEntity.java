@@ -5,7 +5,6 @@ package net.minecraft.block.entity;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -231,23 +231,23 @@ extends BlockEntity {
 
     private static void spawnNautilusParticles(World world, BlockPos pos, List<BlockPos> activatingBlocks, @Nullable Entity entity, int ticks) {
         float f;
-        Random random = world.random;
+        AbstractRandom abstractRandom = world.random;
         double d = MathHelper.sin((float)(ticks + 35) * 0.1f) / 2.0f + 0.5f;
         d = (d * d + d) * (double)0.3f;
         Vec3d vec3d = new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 1.5 + d, (double)pos.getZ() + 0.5);
         for (BlockPos blockPos : activatingBlocks) {
-            if (random.nextInt(50) != 0) continue;
+            if (abstractRandom.nextInt(50) != 0) continue;
             BlockPos blockPos2 = blockPos.subtract(pos);
-            f = -0.5f + random.nextFloat() + (float)blockPos2.getX();
-            float g = -2.0f + random.nextFloat() + (float)blockPos2.getY();
-            float h = -0.5f + random.nextFloat() + (float)blockPos2.getZ();
+            f = -0.5f + abstractRandom.nextFloat() + (float)blockPos2.getX();
+            float g = -2.0f + abstractRandom.nextFloat() + (float)blockPos2.getY();
+            float h = -0.5f + abstractRandom.nextFloat() + (float)blockPos2.getZ();
             world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, f, g, h);
         }
         if (entity != null) {
             Vec3d vec3d2 = new Vec3d(entity.getX(), entity.getEyeY(), entity.getZ());
-            float i = (-0.5f + random.nextFloat()) * (3.0f + entity.getWidth());
-            float j = -1.0f + random.nextFloat() * entity.getHeight();
-            f = (-0.5f + random.nextFloat()) * (3.0f + entity.getWidth());
+            float i = (-0.5f + abstractRandom.nextFloat()) * (3.0f + entity.getWidth());
+            float j = -1.0f + abstractRandom.nextFloat() * entity.getHeight();
+            f = (-0.5f + abstractRandom.nextFloat()) * (3.0f + entity.getWidth());
             Vec3d vec3d3 = new Vec3d(i, j, f);
             world.addParticle(ParticleTypes.NAUTILUS, vec3d2.x, vec3d2.y, vec3d2.z, vec3d3.x, vec3d3.y, vec3d3.z);
         }

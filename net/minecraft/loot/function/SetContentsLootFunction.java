@@ -73,25 +73,25 @@ extends ConditionalLootFunction {
         }
     }
 
-    public static Builer builder(BlockEntityType<?> type) {
-        return new Builer(type);
+    public static Builder builder(BlockEntityType<?> type) {
+        return new Builder(type);
     }
 
-    public static class Builer
-    extends ConditionalLootFunction.Builder<Builer> {
+    public static class Builder
+    extends ConditionalLootFunction.Builder<Builder> {
         private final List<LootPoolEntry> entries = Lists.newArrayList();
         private final BlockEntityType<?> type;
 
-        public Builer(BlockEntityType<?> type) {
+        public Builder(BlockEntityType<?> type) {
             this.type = type;
         }
 
         @Override
-        protected Builer getThisBuilder() {
+        protected Builder getThisBuilder() {
             return this;
         }
 
-        public Builer withEntry(LootPoolEntry.Builder<?> entryBuilder) {
+        public Builder withEntry(LootPoolEntry.Builder<?> entryBuilder) {
             this.entries.add(entryBuilder.build());
             return this;
         }

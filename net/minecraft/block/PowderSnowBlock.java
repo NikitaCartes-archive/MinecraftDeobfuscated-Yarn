@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -70,10 +70,10 @@ implements FluidDrainable {
             entity.slowMovement(state, new Vec3d(0.9f, 1.5, 0.9f));
             if (world.isClient) {
                 boolean bl;
-                Random random = world.getRandom();
+                AbstractRandom abstractRandom = world.getRandom();
                 boolean bl2 = bl = entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ();
-                if (bl && random.nextBoolean()) {
-                    world.addParticle(ParticleTypes.SNOWFLAKE, entity.getX(), pos.getY() + 1, entity.getZ(), MathHelper.nextBetween(random, -1.0f, 1.0f) * 0.083333336f, 0.05f, MathHelper.nextBetween(random, -1.0f, 1.0f) * 0.083333336f);
+                if (bl && abstractRandom.nextBoolean()) {
+                    world.addParticle(ParticleTypes.SNOWFLAKE, entity.getX(), pos.getY() + 1, entity.getZ(), MathHelper.nextBetween(abstractRandom, -1.0f, 1.0f) * 0.083333336f, 0.05f, MathHelper.nextBetween(abstractRandom, -1.0f, 1.0f) * 0.083333336f);
                 }
             }
         }

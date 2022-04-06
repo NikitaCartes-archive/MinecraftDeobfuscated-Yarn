@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class HugeFungusFeatureConfig
 implements FeatureConfig {
-    public static final Codec<HugeFungusFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("valid_base_block")).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.validBaseBlock), ((MapCodec)BlockState.CODEC.fieldOf("stem_state")).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.stemState), ((MapCodec)BlockState.CODEC.fieldOf("hat_state")).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.hatState), ((MapCodec)BlockState.CODEC.fieldOf("decor_state")).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.decorationState), ((MapCodec)Codec.BOOL.fieldOf("planted")).orElse(false).forGetter(hugeFungusFeatureConfig -> hugeFungusFeatureConfig.planted)).apply((Applicative<HugeFungusFeatureConfig, ?>)instance, HugeFungusFeatureConfig::new));
+    public static final Codec<HugeFungusFeatureConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockState.CODEC.fieldOf("valid_base_block")).forGetter(config -> config.validBaseBlock), ((MapCodec)BlockState.CODEC.fieldOf("stem_state")).forGetter(config -> config.stemState), ((MapCodec)BlockState.CODEC.fieldOf("hat_state")).forGetter(config -> config.hatState), ((MapCodec)BlockState.CODEC.fieldOf("decor_state")).forGetter(config -> config.decorationState), ((MapCodec)Codec.BOOL.fieldOf("planted")).orElse(false).forGetter(config -> config.planted)).apply((Applicative<HugeFungusFeatureConfig, ?>)instance, HugeFungusFeatureConfig::new));
     public final BlockState validBaseBlock;
     public final BlockState stemState;
     public final BlockState hatState;

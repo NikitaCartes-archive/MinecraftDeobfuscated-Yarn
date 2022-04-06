@@ -34,7 +34,7 @@ extends SinglePartEntityModel<T> {
     private final ModelPart leftArm;
     private final ModelPart rightArm;
     private final ModelPart leftLeg;
-    private final ModelPart rightLEg;
+    private final ModelPart rightLeg;
     private final ModelPart field_38448;
 
     public FrogEntityModel(ModelPart root) {
@@ -46,7 +46,7 @@ extends SinglePartEntityModel<T> {
         this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
         this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
         this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
-        this.rightLEg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
+        this.rightLeg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
         this.field_38448 = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
     }
 

@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
@@ -23,6 +22,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -155,7 +155,7 @@ extends Block {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         BlockState blockState4;
         BlockState blockState3;
         BlockPos blockPos2;
@@ -222,7 +222,7 @@ extends Block {
         }
     }
 
-    private BlockState getGrownState(BlockState above, BlockState state, Random random) {
+    private BlockState getGrownState(BlockState above, BlockState state, AbstractRandom random) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BooleanProperty booleanProperty;
             if (!random.nextBoolean() || !above.get(booleanProperty = VineBlock.getFacingProperty(direction)).booleanValue()) continue;

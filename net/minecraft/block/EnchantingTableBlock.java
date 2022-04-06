@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -31,6 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -60,7 +60,7 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
         super.randomDisplayTick(state, world, pos, random);
         for (BlockPos blockPos : BOOKSHELF_OFFSETS) {
             if (random.nextInt(16) != 0 || !EnchantingTableBlock.canAccessBookshelf(world, pos, blockPos)) continue;

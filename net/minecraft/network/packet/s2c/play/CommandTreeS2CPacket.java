@@ -65,10 +65,10 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.rootSize);
     }
 
-    private static void validate(List<CommandNodeData> nodeDatas, BiPredicate<CommandNodeData, IntSet> validater) {
+    private static void validate(List<CommandNodeData> nodeDatas, BiPredicate<CommandNodeData, IntSet> validator) {
         IntOpenHashSet intSet = new IntOpenHashSet(IntSets.fromTo(0, nodeDatas.size()));
         while (!intSet.isEmpty()) {
-            boolean bl = intSet.removeIf(i -> validater.test((CommandNodeData)nodeDatas.get(i), intSet));
+            boolean bl = intSet.removeIf(i -> validator.test((CommandNodeData)nodeDatas.get(i), intSet));
             if (bl) continue;
             throw new IllegalStateException("Server sent an impossible command tree");
         }

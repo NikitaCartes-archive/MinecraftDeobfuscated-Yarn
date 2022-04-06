@@ -13,12 +13,9 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
@@ -30,14 +27,13 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.resource.Resource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.apache.commons.io.IOUtils;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -139,38 +135,25 @@ extends Screen {
         this.creditsHeight = this.credits.size() * 12;
     }
 
-    /*
-     * WARNING - Removed try catching itself - possible behaviour change.
-     */
     private void load(String id, CreditsReader reader) {
-        Resource resource = null;
-        try {
-            resource = this.client.getResourceManager().getResource(new Identifier(id));
-            InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
-            reader.read(inputStreamReader);
+        try (BufferedReader reader2 = this.client.getResourceManager().openAsReader(new Identifier(id));){
+            reader.read(reader2);
         } catch (Exception exception) {
-            try {
-                LOGGER.error("Couldn't load credits", exception);
-            } catch (Throwable throwable) {
-                IOUtils.closeQuietly(resource);
-                throw throwable;
-            }
-            IOUtils.closeQuietly((Closeable)resource);
+            LOGGER.error("Couldn't load credits", exception);
         }
-        IOUtils.closeQuietly((Closeable)resource);
     }
 
-    private void readPoem(InputStreamReader inputStreamReader) throws IOException {
+    private void readPoem(Reader reader) throws IOException {
         int i;
         Object string;
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        Random random = new Random(8124371L);
+        BufferedReader bufferedReader = new BufferedReader(reader);
+        AbstractRandom abstractRandom = AbstractRandom.createAtomic(8124371L);
         while ((string = bufferedReader.readLine()) != null) {
             string = ((String)string).replaceAll("PLAYERNAME", this.client.getSession().getUsername());
             while ((i = ((String)string).indexOf(OBFUSCATION_PLACEHOLDER)) != -1) {
                 String string2 = ((String)string).substring(0, i);
                 String string3 = ((String)string).substring(i + OBFUSCATION_PLACEHOLDER.length());
-                string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string3;
+                string = string2 + Formatting.WHITE + Formatting.OBFUSCATED + "XXXXXXXX".substring(0, abstractRandom.nextInt(4) + 3) + string3;
             }
             this.addText((String)string);
             this.addEmptyLine();
@@ -180,8 +163,8 @@ extends Screen {
         }
     }
 
-    private void readCredits(InputStreamReader inputStreamReader) {
-        JsonArray jsonArray = JsonHelper.deserializeArray(inputStreamReader);
+    private void readCredits(Reader reader) {
+        JsonArray jsonArray = JsonHelper.deserializeArray(reader);
         for (JsonElement jsonElement : jsonArray) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             String string = jsonObject.get("section").getAsString();
@@ -308,7 +291,7 @@ extends Screen {
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
     static interface CreditsReader {
-        public void read(InputStreamReader var1) throws IOException;
+        public void read(Reader var1) throws IOException;
     }
 }
 

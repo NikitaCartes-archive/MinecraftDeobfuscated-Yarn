@@ -4,11 +4,11 @@
 package net.minecraft.resource;
 
 import com.mojang.logging.LogUtils;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -18,7 +18,6 @@ import net.minecraft.resource.NamespaceResourceManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.ResourceFilter;
 import net.minecraft.util.Identifier;
@@ -87,35 +86,26 @@ implements LifecycledResourceManager {
     }
 
     @Override
-    public Resource getResource(Identifier identifier) throws IOException {
+    public Optional<Resource> getResource(Identifier identifier) {
         ResourceManager resourceManager = this.subManagers.get(identifier.getNamespace());
         if (resourceManager != null) {
             return resourceManager.getResource(identifier);
         }
-        throw new FileNotFoundException(identifier.toString());
+        return Optional.empty();
     }
 
     @Override
-    public boolean containsResource(Identifier id) {
-        ResourceManager resourceManager = this.subManagers.get(id.getNamespace());
-        if (resourceManager != null) {
-            return resourceManager.containsResource(id);
-        }
-        return false;
-    }
-
-    @Override
-    public List<ResourceRef> getAllResources(Identifier id) throws IOException {
+    public List<Resource> getAllResources(Identifier id) {
         ResourceManager resourceManager = this.subManagers.get(id.getNamespace());
         if (resourceManager != null) {
             return resourceManager.getAllResources(id);
         }
-        throw new FileNotFoundException(id.toString());
+        return List.of();
     }
 
     @Override
-    public Map<Identifier, ResourceRef> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
-        TreeMap<Identifier, ResourceRef> map = new TreeMap<Identifier, ResourceRef>();
+    public Map<Identifier, Resource> findResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+        TreeMap<Identifier, Resource> map = new TreeMap<Identifier, Resource>();
         for (NamespaceResourceManager namespaceResourceManager : this.subManagers.values()) {
             map.putAll(namespaceResourceManager.findResources(startingPath, allowedPathPredicate));
         }
@@ -123,8 +113,8 @@ implements LifecycledResourceManager {
     }
 
     @Override
-    public Map<Identifier, List<ResourceRef>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
-        TreeMap<Identifier, List<ResourceRef>> map = new TreeMap<Identifier, List<ResourceRef>>();
+    public Map<Identifier, List<Resource>> findAllResources(String startingPath, Predicate<Identifier> allowedPathPredicate) {
+        TreeMap<Identifier, List<Resource>> map = new TreeMap<Identifier, List<Resource>>();
         for (NamespaceResourceManager namespaceResourceManager : this.subManagers.values()) {
             map.putAll(namespaceResourceManager.findAllResources(startingPath, allowedPathPredicate));
         }

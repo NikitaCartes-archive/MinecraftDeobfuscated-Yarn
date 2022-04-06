@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -57,6 +56,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -322,7 +322,7 @@ implements Shearable {
         }
     }
 
-    public static DyeColor generateDefaultColor(Random random) {
+    public static DyeColor generateDefaultColor(AbstractRandom random) {
         int i = random.nextInt(100);
         if (i < 5) {
             return DyeColor.BLACK;

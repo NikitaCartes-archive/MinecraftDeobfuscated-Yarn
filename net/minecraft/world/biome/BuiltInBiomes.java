@@ -29,6 +29,7 @@ public abstract class BuiltinBiomes {
         BuiltinBiomes.register(BiomeKeys.ICE_SPIKES, OverworldBiomeCreator.createPlains(false, true, true));
         BuiltinBiomes.register(BiomeKeys.DESERT, OverworldBiomeCreator.createDesert());
         BuiltinBiomes.register(BiomeKeys.SWAMP, OverworldBiomeCreator.createSwamp());
+        BuiltinBiomes.register(BiomeKeys.MANGROVE_SWAMP, OverworldBiomeCreator.createMangroveSwamp());
         BuiltinBiomes.register(BiomeKeys.FOREST, OverworldBiomeCreator.createNormalForest(false, false, false));
         BuiltinBiomes.register(BiomeKeys.FLOWER_FOREST, OverworldBiomeCreator.createNormalForest(false, false, true));
         BuiltinBiomes.register(BiomeKeys.BIRCH_FOREST, OverworldBiomeCreator.createNormalForest(true, false, false));

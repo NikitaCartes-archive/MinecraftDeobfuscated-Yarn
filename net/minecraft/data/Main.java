@@ -26,6 +26,7 @@ import net.minecraft.data.server.AdvancementProvider;
 import net.minecraft.data.server.BiomeParametersProvider;
 import net.minecraft.data.server.BiomeTagProvider;
 import net.minecraft.data.server.BlockTagProvider;
+import net.minecraft.data.server.CatVariantTagProvider;
 import net.minecraft.data.server.ConfiguredStructureFeatureTagProvider;
 import net.minecraft.data.server.EntityTypeTagProvider;
 import net.minecraft.data.server.FlatLevelGeneratorPresetTagProvider;
@@ -90,6 +91,7 @@ public class Main {
             dataGenerator.addProvider(new ConfiguredStructureFeatureTagProvider(dataGenerator));
             dataGenerator.addProvider(new WorldPresetTagProvider(dataGenerator));
             dataGenerator.addProvider(new FlatLevelGeneratorPresetTagProvider(dataGenerator));
+            dataGenerator.addProvider(new CatVariantTagProvider(dataGenerator));
         }
         if (includeDev) {
             dataGenerator.addProvider(new NbtProvider(dataGenerator));

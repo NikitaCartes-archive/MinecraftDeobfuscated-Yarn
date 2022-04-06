@@ -4,7 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.InfestedBlock;
@@ -32,6 +31,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -129,7 +129,7 @@ extends HostileEntity {
         return super.getPathfindingFavor(pos, world);
     }
 
-    public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<SilverfishEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
         if (SilverfishEntity.canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random)) {
             PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 5.0, true);
             return playerEntity == null;
@@ -167,7 +167,7 @@ extends HostileEntity {
             --this.delay;
             if (this.delay <= 0) {
                 World world = this.silverfish.world;
-                Random random = this.silverfish.getRandom();
+                AbstractRandom abstractRandom = this.silverfish.getRandom();
                 BlockPos blockPos = this.silverfish.getBlockPos();
                 int i = 0;
                 block0: while (i <= 5 && i >= -5) {
@@ -184,7 +184,7 @@ extends HostileEntity {
                                 } else {
                                     world.setBlockState(blockPos2, ((InfestedBlock)block).toRegularState(world.getBlockState(blockPos2)), Block.NOTIFY_ALL);
                                 }
-                                if (random.nextBoolean()) break block0;
+                                if (abstractRandom.nextBoolean()) break block0;
                             }
                             k = (k <= 0 ? 1 : 0) - k;
                         }
@@ -215,9 +215,9 @@ extends HostileEntity {
             if (!this.mob.getNavigation().isIdle()) {
                 return false;
             }
-            Random random = this.mob.getRandom();
-            if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(WanderAndInfestGoal.toGoalTicks(10)) == 0) {
-                this.direction = Direction.random(random);
+            AbstractRandom abstractRandom = this.mob.getRandom();
+            if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && abstractRandom.nextInt(WanderAndInfestGoal.toGoalTicks(10)) == 0) {
+                this.direction = Direction.random(abstractRandom);
                 BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
                 BlockState blockState = this.mob.world.getBlockState(blockPos);
                 if (InfestedBlock.isInfestable(blockState)) {

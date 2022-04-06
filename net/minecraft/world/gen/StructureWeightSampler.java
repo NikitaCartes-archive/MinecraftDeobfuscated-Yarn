@@ -43,7 +43,7 @@ implements DensityFunctionTypes.class_7050 {
         int j = chunkPos.getStartZ();
         ObjectArrayList objectList = new ObjectArrayList(10);
         ObjectArrayList objectList2 = new ObjectArrayList(32);
-        structureAccessor.method_41035(chunkPos, structureFeature -> structureFeature.getTerrainAdaptation() != StructureTerrainAdaptation.NONE).forEach(structureStart -> {
+        structureAccessor.method_41035(chunkPos, structureType -> structureType.getTerrainAdaptation() != StructureTerrainAdaptation.NONE).forEach(structureStart -> {
             StructureTerrainAdaptation structureTerrainAdaptation = structureStart.getFeature().getTerrainAdaptation();
             for (StructurePiece structurePiece : structureStart.getChildren()) {
                 if (!structurePiece.intersectsChunk(chunkPos, 12)) continue;

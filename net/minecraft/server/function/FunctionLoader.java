@@ -8,8 +8,8 @@ import com.google.common.collect.Maps;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,6 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -32,7 +31,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 /**
@@ -95,7 +93,7 @@ implements ResourceReloader {
                 String string = identifier.getPath();
                 Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
                 map2.put(identifier2, CompletableFuture.supplyAsync(() -> {
-                    List<String> list = FunctionLoader.readLines((ResourceRef)entry.getValue());
+                    List<String> list = FunctionLoader.readLines((Resource)entry.getValue());
                     return CommandFunction.create(identifier2, this.commandDispatcher, serverCommandSource, list);
                 }, prepareExecutor));
             }
@@ -118,18 +116,18 @@ implements ResourceReloader {
         }, applyExecutor);
     }
 
-    private static List<String> readLines(ResourceRef resourceRef) {
+    private static List<String> readLines(Resource resource) {
         List<String> list;
         block8: {
-            Resource resource = resourceRef.open();
+            BufferedReader bufferedReader = resource.getReader();
             try {
-                list = IOUtils.readLines(resource.getInputStream(), StandardCharsets.UTF_8);
-                if (resource == null) break block8;
+                list = bufferedReader.lines().toList();
+                if (bufferedReader == null) break block8;
             } catch (Throwable throwable) {
                 try {
-                    if (resource != null) {
+                    if (bufferedReader != null) {
                         try {
-                            resource.close();
+                            bufferedReader.close();
                         } catch (Throwable throwable2) {
                             throwable.addSuppressed(throwable2);
                         }
@@ -139,7 +137,7 @@ implements ResourceReloader {
                     throw new CompletionException(iOException);
                 }
             }
-            resource.close();
+            bufferedReader.close();
         }
         return list;
     }

@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -33,7 +33,7 @@ extends GiantTrunkPlacer {
     }
 
     @Override
-    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, int height, BlockPos startPos, TreeFeatureConfig config) {
+    public List<FoliagePlacer.TreeNode> generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, int height, BlockPos startPos, TreeFeatureConfig config) {
         ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
         list.addAll(super.generate(world, replacer, random, height, startPos, config));
         for (int i = height - 2 - random.nextInt(4); i > height / 2; i -= 2 + random.nextInt(4)) {
@@ -44,7 +44,7 @@ extends GiantTrunkPlacer {
                 j = (int)(1.5f + MathHelper.cos(f) * (float)l);
                 k = (int)(1.5f + MathHelper.sin(f) * (float)l);
                 BlockPos blockPos = startPos.add(j, i - 3 + l / 2, k);
-                MegaJungleTrunkPlacer.getAndSetState(world, replacer, random, blockPos, config);
+                this.getAndSetState(world, replacer, random, blockPos, config);
             }
             list.add(new FoliagePlacer.TreeNode(startPos.add(j, i, k), -2, false));
         }

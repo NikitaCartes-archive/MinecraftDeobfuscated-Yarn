@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -78,6 +77,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.World;
@@ -404,7 +404,7 @@ public final class ItemStack {
         return this.getItem().getMaxDamage();
     }
 
-    public boolean damage(int amount, Random random, @Nullable ServerPlayerEntity player) {
+    public boolean damage(int amount, AbstractRandom random, @Nullable ServerPlayerEntity player) {
         int i;
         if (!this.isDamageable()) {
             return false;

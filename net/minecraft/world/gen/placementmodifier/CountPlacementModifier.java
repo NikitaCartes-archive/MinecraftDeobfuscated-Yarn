@@ -5,10 +5,10 @@ package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.placementmodifier.AbstractCountPlacementModifier;
 import net.minecraft.world.gen.placementmodifier.PlacementModifierType;
 
@@ -30,8 +30,8 @@ extends AbstractCountPlacementModifier {
     }
 
     @Override
-    protected int getCount(Random random, BlockPos pos) {
-        return this.count.get(random);
+    protected int getCount(AbstractRandom abstractRandom, BlockPos pos) {
+        return this.count.get(abstractRandom);
     }
 
     @Override

@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -33,6 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.lang3.mutable.MutableInt;
@@ -330,12 +330,12 @@ public class EnchantmentHelper {
      * {@return the required experience level for an enchanting option in the
      * enchanting table's screen, or the enchantment screen}
      * 
-     * @param random the random, which guarantees consistent results with the same seed
-     * @param slotIndex the index of the enchanting option
      * @param bookshelfCount the number of bookshelves
      * @param stack the item stack to enchant
+     * @param random the random, which guarantees consistent results with the same seed
+     * @param slotIndex the index of the enchanting option
      */
-    public static int calculateRequiredExperienceLevel(Random random, int slotIndex, int bookshelfCount, ItemStack stack) {
+    public static int calculateRequiredExperienceLevel(AbstractRandom random, int slotIndex, int bookshelfCount, ItemStack stack) {
         Item item = stack.getItem();
         int i = item.getEnchantability();
         if (i <= 0) {
@@ -357,12 +357,11 @@ public class EnchantmentHelper {
     /**
      * Enchants the {@code target} item stack and returns it.
      * 
-     * @param level the experience level
      * @param treasureAllowed whether treasure enchantments may appear
-     * @param random the seed
+     * @param level the experience level
      * @param target the item stack to enchant
      */
-    public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
+    public static ItemStack enchant(AbstractRandom random, ItemStack target, int level, boolean treasureAllowed) {
         List<EnchantmentLevelEntry> list = EnchantmentHelper.generateEnchantments(random, target, level, treasureAllowed);
         boolean bl = target.isOf(Items.BOOK);
         if (bl) {
@@ -381,7 +380,7 @@ public class EnchantmentHelper {
     /**
      * Generate the enchantments for enchanting the {@code stack}.
      */
-    public static List<EnchantmentLevelEntry> generateEnchantments(Random random, ItemStack stack, int level, boolean treasureAllowed) {
+    public static List<EnchantmentLevelEntry> generateEnchantments(AbstractRandom random, ItemStack stack, int level, boolean treasureAllowed) {
         ArrayList<EnchantmentLevelEntry> list = Lists.newArrayList();
         Item item = stack.getItem();
         int i = item.getEnchantability();

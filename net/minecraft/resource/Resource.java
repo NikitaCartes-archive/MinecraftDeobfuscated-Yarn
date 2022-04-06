@@ -3,11 +3,12 @@
  */
 package net.minecraft.resource;
 
-import com.google.common.annotations.VisibleForTesting;
-import java.io.Closeable;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
-import net.minecraft.resource.metadata.ResourceMetadataReader;
-import net.minecraft.util.Identifier;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -18,42 +19,62 @@ import org.jetbrains.annotations.Nullable;
  * @see ResourceFactory#getResource(Identifier)
  * @see ResourceManager#getAllResources(Identifier)
  */
-public interface Resource
-extends Closeable {
+public class Resource {
+    private final String resourcePackName;
+    private final InputSupplier<InputStream> inputSupplier;
+    private final InputSupplier<ResourceMetadata> metadataSupplier;
+    @Nullable
+    private ResourceMetadata metadata;
+
+    public Resource(String resourcePackName, InputSupplier<InputStream> inputSupplier, InputSupplier<ResourceMetadata> metadataSupplier) {
+        this.resourcePackName = resourcePackName;
+        this.inputSupplier = inputSupplier;
+        this.metadataSupplier = metadataSupplier;
+    }
+
+    public Resource(String resourcePackName, InputSupplier<InputStream> inputSupplier) {
+        this.resourcePackName = resourcePackName;
+        this.inputSupplier = inputSupplier;
+        this.metadataSupplier = () -> ResourceMetadata.NONE;
+        this.metadata = ResourceMetadata.NONE;
+    }
+
     /**
-     * Returns the location of this resource.
-     * 
-     * <p>Within each resource pack, this location is a unique identifier for a
-     * resource; however, in a resource manager, there may be multiple resources
-     * with the same location available.
+     * Returns the user-friendly name of the pack this resource is from.
      */
-    public Identifier getId();
+    public String getResourcePackName() {
+        return this.resourcePackName;
+    }
 
     /**
      * Returns the input stream of this resource.
      * 
      * <p>This input stream is closed when this resource is closed.
      */
-    public InputStream getInputStream();
+    public InputStream getInputStream() throws IOException {
+        return this.inputSupplier.get();
+    }
+
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(this.getInputStream(), StandardCharsets.UTF_8));
+    }
 
     /**
-     * Returns if this resource has any metadata.
-     */
-    @VisibleForTesting
-    public boolean hasMetadata();
-
-    /**
-     * Returns a metadata of this resource by the {@code metaReader}, or {@code null}
-     * if no such metadata exists.
+     * {@return the metadata for the resource}
      * 
-     * @param metaReader the metadata reader
+     * <p>The metadata must then be decoded using
+     * {@link ResourceMetadata#decode(ResourceMetadataReader)} before using.
      */
-    @Nullable
-    public <T> T getMetadata(ResourceMetadataReader<T> var1);
+    public ResourceMetadata getMetadata() throws IOException {
+        if (this.metadata == null) {
+            this.metadata = this.metadataSupplier.get();
+        }
+        return this.metadata;
+    }
 
-    /**
-     * Returns the user-friendly name of the pack this resource is from.
-     */
-    public String getResourcePackName();
+    @FunctionalInterface
+    public static interface InputSupplier<T> {
+        public T get() throws IOException;
+    }
 }
 

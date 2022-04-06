@@ -3,7 +3,6 @@
  */
 package net.minecraft.util.math;
 
-import java.util.Random;
 import java.util.UUID;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
@@ -11,6 +10,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
@@ -36,7 +36,7 @@ public class MathHelper {
             sineTable[i] = (float)Math.sin((double)i * Math.PI * 2.0 / 65536.0);
         }
     });
-    private static final Random RANDOM = new Random();
+    private static final AbstractRandom RANDOM = AbstractRandom.createBlocking();
     private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9};
     private static final double field_29857 = 0.16666666666666666;
     private static final int field_29858 = 8;
@@ -190,21 +190,21 @@ public class MathHelper {
      * @param max the maximum value, inclusive
      * @param min the minimum value, inclusive
      */
-    public static int nextInt(Random random, int min, int max) {
+    public static int nextInt(AbstractRandom random, int min, int max) {
         if (min >= max) {
             return min;
         }
         return random.nextInt(max - min + 1) + min;
     }
 
-    public static float nextFloat(Random random, float min, float max) {
+    public static float nextFloat(AbstractRandom random, float min, float max) {
         if (min >= max) {
             return min;
         }
         return random.nextFloat() * (max - min) + min;
     }
 
-    public static double nextDouble(Random random, double min, double max) {
+    public static double nextDouble(AbstractRandom random, double min, double max) {
         if (min >= max) {
             return min;
         }
@@ -461,7 +461,7 @@ public class MathHelper {
         return l >> 16;
     }
 
-    public static UUID randomUuid(Random random) {
+    public static UUID randomUuid(AbstractRandom random) {
         long l = random.nextLong() & 0xFFFFFFFFFFFF0FFFL | 0x4000L;
         long m = random.nextLong() & 0x3FFFFFFFFFFFFFFFL | Long.MIN_VALUE;
         return new UUID(l, m);
@@ -675,8 +675,8 @@ public class MathHelper {
         return values;
     }
 
-    public static int method_34950(Random random, double[] ds) {
-        double d = random.nextDouble();
+    public static int method_34950(AbstractRandom abstractRandom, double[] ds) {
+        double d = abstractRandom.nextDouble();
         for (int i = 0; i < ds.length; ++i) {
             if (!(d < ds[i])) continue;
             return i;
@@ -882,7 +882,7 @@ public class MathHelper {
     }
 
     public static double method_34957(double d) {
-        return d + (2.0 * new Random(MathHelper.floor(d * 3000.0)).nextDouble() - 1.0) * 1.0E-7 / 2.0;
+        return d + (2.0 * AbstractRandom.createAtomic(MathHelper.floor(d * 3000.0)).nextDouble() - 1.0) * 1.0E-7 / 2.0;
     }
 
     /**
@@ -904,18 +904,18 @@ public class MathHelper {
      * @throws IllegalArgumentException if the range is empty (i.e. {@code
      * max < min})
      * 
-     * @param min the minimum value, inclusive
      * @param max the maximum value, inclusive
+     * @param min the minimum value, inclusive
      */
-    public static int nextBetween(Random random, int min, int max) {
+    public static int nextBetween(AbstractRandom random, int min, int max) {
         return random.nextInt(max - min + 1) + min;
     }
 
-    public static float nextBetween(Random random, float min, float max) {
+    public static float nextBetween(AbstractRandom random, float min, float max) {
         return random.nextFloat() * (max - min) + min;
     }
 
-    public static float nextGaussian(Random random, float mean, float deviation) {
+    public static float nextGaussian(AbstractRandom random, float mean, float deviation) {
         return mean + (float)random.nextGaussian() * deviation;
     }
 

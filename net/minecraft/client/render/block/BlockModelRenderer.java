@@ -7,7 +7,6 @@ import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
 import java.util.BitSet;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +44,7 @@ public class BlockModelRenderer {
         this.colors = colors;
     }
 
-    public boolean render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
+    public boolean render(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random, long seed, int overlay) {
         boolean bl = MinecraftClient.isAmbientOcclusionEnabled() && state.getLuminance() == 0 && model.useAmbientOcclusion();
         Vec3d vec3d = state.getModelOffset(world, pos);
         matrices.translate(vec3d.x, vec3d.y, vec3d.z);
@@ -62,7 +62,7 @@ public class BlockModelRenderer {
         }
     }
 
-    public boolean renderSmooth(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
+    public boolean renderSmooth(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random, long seed, int overlay) {
         boolean bl = false;
         float[] fs = new float[DIRECTIONS.length * 2];
         BitSet bitSet = new BitSet(3);
@@ -86,7 +86,7 @@ public class BlockModelRenderer {
         return bl;
     }
 
-    public boolean renderFlat(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
+    public boolean renderFlat(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random, long seed, int overlay) {
         boolean bl = false;
         BitSet bitSet = new BitSet(3);
         BlockPos.Mutable mutable = pos.mutableCopy();
@@ -217,14 +217,14 @@ public class BlockModelRenderer {
     }
 
     public void render(MatrixStack.Entry entry, VertexConsumer vertexConsumer, @Nullable BlockState state, BakedModel bakedModel, float red, float green, float blue, int light, int overlay) {
-        Random random = new Random();
+        AbstractRandom abstractRandom = AbstractRandom.createAtomic();
         long l = 42L;
         for (Direction direction : DIRECTIONS) {
-            random.setSeed(42L);
-            BlockModelRenderer.renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, random), light, overlay);
+            abstractRandom.setSeed(42L);
+            BlockModelRenderer.renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, direction, abstractRandom), light, overlay);
         }
-        random.setSeed(42L);
-        BlockModelRenderer.renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, random), light, overlay);
+        abstractRandom.setSeed(42L);
+        BlockModelRenderer.renderQuads(entry, vertexConsumer, red, green, blue, bakedModel.getQuads(state, null, abstractRandom), light, overlay);
     }
 
     private static void renderQuads(MatrixStack.Entry entry, VertexConsumer vertexConsumer, float red, float green, float blue, List<BakedQuad> quads, int light, int overlay) {

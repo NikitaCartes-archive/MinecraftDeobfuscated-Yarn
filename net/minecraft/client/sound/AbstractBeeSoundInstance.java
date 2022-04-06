@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -22,7 +23,7 @@ extends MovingSoundInstance {
     private boolean replaced;
 
     public AbstractBeeSoundInstance(BeeEntity entity, SoundEvent sound, SoundCategory soundCategory) {
-        super(sound, soundCategory);
+        super(sound, soundCategory, SoundInstance.createRandom());
         this.bee = entity;
         this.x = (float)entity.getX();
         this.y = (float)entity.getY();

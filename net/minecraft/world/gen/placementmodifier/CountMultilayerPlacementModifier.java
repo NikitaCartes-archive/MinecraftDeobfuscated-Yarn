@@ -5,13 +5,13 @@ package net.minecraft.world.gen.placementmodifier;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.FeaturePlacementContext;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
@@ -36,17 +36,17 @@ extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(FeaturePlacementContext context, Random random, BlockPos pos) {
+    public Stream<BlockPos> getPositions(FeaturePlacementContext context, AbstractRandom abstractRandom, BlockPos pos) {
         boolean bl;
         Stream.Builder<BlockPos> builder = Stream.builder();
         int i = 0;
         do {
             bl = false;
-            for (int j = 0; j < this.count.get(random); ++j) {
+            for (int j = 0; j < this.count.get(abstractRandom); ++j) {
                 int l;
                 int m;
-                int k = random.nextInt(16) + pos.getX();
-                int n = CountMultilayerPlacementModifier.findPos(context, k, m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l = random.nextInt(16) + pos.getZ()), l, i);
+                int k = abstractRandom.nextInt(16) + pos.getX();
+                int n = CountMultilayerPlacementModifier.findPos(context, k, m = context.getTopY(Heightmap.Type.MOTION_BLOCKING, k, l = abstractRandom.nextInt(16) + pos.getZ()), l, i);
                 if (n == Integer.MAX_VALUE) continue;
                 builder.add(new BlockPos(k, n, l));
                 bl = true;

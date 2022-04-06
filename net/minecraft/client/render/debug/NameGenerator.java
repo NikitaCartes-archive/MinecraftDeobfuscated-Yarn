@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.render.debug;
 
-import java.util.Random;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class NameGenerator {
     private static final String[] PREFIX = new String[]{"Slim", "Far", "River", "Silly", "Fat", "Thin", "Fish", "Bat", "Dark", "Oak", "Sly", "Bush", "Zen", "Bark", "Cry", "Slack", "Soup", "Grim", "Hook", "Dirt", "Mud", "Sad", "Hard", "Crook", "Sneak", "Stink", "Weird", "Fire", "Soot", "Soft", "Rough", "Cling", "Scar"};
@@ -26,16 +26,16 @@ public class NameGenerator {
     }
 
     public static String name(UUID uuid) {
-        Random random = NameGenerator.randomFromUuid(uuid);
-        return NameGenerator.getRandom(random, PREFIX) + NameGenerator.getRandom(random, SUFFIX);
+        AbstractRandom abstractRandom = NameGenerator.randomFromUuid(uuid);
+        return NameGenerator.getRandom(abstractRandom, PREFIX) + NameGenerator.getRandom(abstractRandom, SUFFIX);
     }
 
-    private static String getRandom(Random random, String[] options) {
+    private static String getRandom(AbstractRandom random, String[] options) {
         return Util.getRandom(options, random);
     }
 
-    private static Random randomFromUuid(UUID uuid) {
-        return new Random(uuid.hashCode() >> 2);
+    private static AbstractRandom randomFromUuid(UUID uuid) {
+        return AbstractRandom.createAtomic(uuid.hashCode() >> 2);
     }
 }
 

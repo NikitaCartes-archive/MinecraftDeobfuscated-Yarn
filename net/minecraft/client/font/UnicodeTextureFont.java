@@ -10,6 +10,7 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.Map;
@@ -23,7 +24,6 @@ import net.minecraft.client.font.Glyph;
 import net.minecraft.client.font.GlyphRenderer;
 import net.minecraft.client.font.RenderableGlyph;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -50,8 +50,8 @@ implements Font {
         for (int i = 0; i < 256; ++i) {
             int j = i * 256;
             Identifier identifier = this.getImageId(j);
-            try (Resource resource = this.resourceManager.getResource(identifier);
-                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());){
+            try (InputStream inputStream = this.resourceManager.open(identifier);
+                 NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream);){
                 if (nativeImage.getWidth() == 256 && nativeImage.getHeight() == 256) {
                     for (int k = 0; k < 256; ++k) {
                         byte b = sizes[j + k];
@@ -106,15 +106,15 @@ implements Font {
     private NativeImage getGlyphImage(Identifier glyphId) {
         NativeImage nativeImage;
         block8: {
-            Resource resource = this.resourceManager.getResource(glyphId);
+            InputStream inputStream = this.resourceManager.open(glyphId);
             try {
-                nativeImage = NativeImage.read(NativeImage.Format.RGBA, resource.getInputStream());
-                if (resource == null) break block8;
+                nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream);
+                if (inputStream == null) break block8;
             } catch (Throwable throwable) {
                 try {
-                    if (resource != null) {
+                    if (inputStream != null) {
                         try {
-                            resource.close();
+                            inputStream.close();
                         } catch (Throwable throwable2) {
                             throwable.addSuppressed(throwable2);
                         }
@@ -125,7 +125,7 @@ implements Font {
                     return null;
                 }
             }
-            resource.close();
+            inputStream.close();
         }
         return nativeImage;
     }
@@ -218,16 +218,16 @@ implements Font {
         public Font load(ResourceManager manager) {
             UnicodeTextureFont unicodeTextureFont;
             block8: {
-                Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(this.sizes);
+                InputStream inputStream = MinecraftClient.getInstance().getResourceManager().open(this.sizes);
                 try {
-                    byte[] bs = resource.getInputStream().readNBytes(65536);
+                    byte[] bs = inputStream.readNBytes(65536);
                     unicodeTextureFont = new UnicodeTextureFont(manager, bs, this.template);
-                    if (resource == null) break block8;
+                    if (inputStream == null) break block8;
                 } catch (Throwable throwable) {
                     try {
-                        if (resource != null) {
+                        if (inputStream != null) {
                             try {
-                                resource.close();
+                                inputStream.close();
                             } catch (Throwable throwable2) {
                                 throwable.addSuppressed(throwable2);
                             }
@@ -238,7 +238,7 @@ implements Font {
                         return null;
                     }
                 }
-                resource.close();
+                inputStream.close();
             }
             return unicodeTextureFont;
         }

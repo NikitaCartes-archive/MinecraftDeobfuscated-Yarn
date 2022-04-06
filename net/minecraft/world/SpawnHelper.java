@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
@@ -37,6 +36,7 @@ import net.minecraft.util.math.GravityField;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
@@ -52,9 +52,9 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
-import net.minecraft.world.gen.feature.NetherFortressFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.NetherFortressStructure;
+import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.StructureTypeKeys;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -221,7 +221,7 @@ public final class SpawnHelper {
         return entity.canSpawn(world, SpawnReason.NATURAL) && entity.canSpawn(world);
     }
 
-    private static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, Random random, BlockPos pos) {
+    private static Optional<SpawnSettings.SpawnEntry> pickRandomSpawnEntry(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, AbstractRandom random, BlockPos pos) {
         RegistryEntry<Biome> registryEntry = world.getBiome(pos);
         if (spawnGroup == SpawnGroup.WATER_AMBIENT && registryEntry.isIn(BiomeTags.REDUCE_WATER_AMBIENT_SPAWNS) && random.nextFloat() < 0.98f) {
             return Optional.empty();
@@ -235,7 +235,7 @@ public final class SpawnHelper {
 
     private static Pool<SpawnSettings.SpawnEntry> getSpawnEntries(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable RegistryEntry<Biome> biomeEntry) {
         if (SpawnHelper.shouldUseNetherFortressSpawns(pos, world, spawnGroup, structureAccessor)) {
-            return NetherFortressFeature.MONSTER_SPAWNS;
+            return NetherFortressStructure.MONSTER_SPAWNS;
         }
         return chunkGenerator.getEntitySpawnList(biomeEntry != null ? biomeEntry : world.getBiome(pos), structureAccessor, spawnGroup, pos);
     }
@@ -244,11 +244,11 @@ public final class SpawnHelper {
         if (spawnGroup != SpawnGroup.MONSTER || !world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
             return false;
         }
-        StructureFeature structureFeature = structureAccessor.getRegistryManager().get(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY).get(ConfiguredStructureFeatureKeys.FORTRESS);
-        if (structureFeature == null) {
+        StructureType structureType = structureAccessor.getRegistryManager().get(Registry.STRUCTURE_KEY).get(StructureTypeKeys.FORTRESS);
+        if (structureType == null) {
             return false;
         }
-        return structureAccessor.getStructureAt(pos, structureFeature).hasChildren();
+        return structureAccessor.getStructureAt(pos, structureType).hasChildren();
     }
 
     private static BlockPos getRandomPosInChunkSection(World world, WorldChunk chunk) {
@@ -302,7 +302,7 @@ public final class SpawnHelper {
         return SpawnHelper.isClearForSpawn(world, pos, blockState, fluidState, entityType) && SpawnHelper.isClearForSpawn(world, blockPos, world.getBlockState(blockPos), world.getFluidState(blockPos), entityType);
     }
 
-    public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, Random random) {
+    public static void populateEntities(ServerWorldAccess world, RegistryEntry<Biome> registryEntry, ChunkPos chunkPos, AbstractRandom random) {
         SpawnSettings spawnSettings = registryEntry.value().getSpawnSettings();
         Pool<SpawnSettings.SpawnEntry> pool = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
         if (pool.isEmpty()) {

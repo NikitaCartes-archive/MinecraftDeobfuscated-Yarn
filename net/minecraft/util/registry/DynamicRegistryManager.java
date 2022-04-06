@@ -46,7 +46,7 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.PlacedFeature;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -67,17 +67,17 @@ public interface DynamicRegistryManager {
     public static final Map<RegistryKey<? extends Registry<?>>, Info<?>> INFOS = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
         DynamicRegistryManager.register(builder, Registry.DIMENSION_TYPE_KEY, DimensionType.CODEC, DimensionType.CODEC);
-        DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.field_26633);
+        DynamicRegistryManager.register(builder, Registry.BIOME_KEY, Biome.CODEC, Biome.NETWORK_CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_CARVER_KEY, ConfiguredCarver.CODEC);
         DynamicRegistryManager.register(builder, Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeature.CODEC);
         DynamicRegistryManager.register(builder, Registry.PLACED_FEATURE_KEY, PlacedFeature.CODEC);
-        DynamicRegistryManager.register(builder, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, StructureFeature.FEATURE_CODEC);
+        DynamicRegistryManager.register(builder, Registry.STRUCTURE_KEY, StructureType.STRUCTURE_TYPE_CODEC);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_SET_KEY, StructureSet.CODEC);
-        DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.field_25876);
+        DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.PROCESSORS_CODEC);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
-        DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.field_35424);
-        DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.field_37057);
+        DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.CODEC);
+        DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.CODEC);
         DynamicRegistryManager.register(builder, Registry.WORLD_PRESET_WORLDGEN, WorldPreset.CODEC);
         DynamicRegistryManager.register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPreset.CODEC);
         return builder.build();

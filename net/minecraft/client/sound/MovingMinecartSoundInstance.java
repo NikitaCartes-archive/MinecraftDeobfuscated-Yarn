@@ -6,6 +6,7 @@ package net.minecraft.client.sound;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.sound.MovingSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -26,7 +27,7 @@ extends MovingSoundInstance {
     private float distance = 0.0f;
 
     public MovingMinecartSoundInstance(AbstractMinecartEntity minecart) {
-        super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL);
+        super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL, SoundInstance.createRandom());
         this.minecart = minecart;
         this.repeat = true;
         this.repeatDelay = 0;

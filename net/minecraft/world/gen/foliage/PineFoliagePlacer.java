@@ -7,11 +7,11 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
@@ -33,10 +33,10 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
+    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom abstractRandom, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         int i = 0;
         for (int j = offset; j >= offset - foliageHeight; --j) {
-            this.generateSquare(world, replacer, random, config, treeNode.getCenter(), i, j, treeNode.isGiantTrunk());
+            this.generateSquare(world, replacer, abstractRandom, config, treeNode.getCenter(), i, j, treeNode.isGiantTrunk());
             if (i >= 1 && j == offset - foliageHeight + 1) {
                 --i;
                 continue;
@@ -47,17 +47,17 @@ extends FoliagePlacer {
     }
 
     @Override
-    public int getRandomRadius(Random random, int baseHeight) {
-        return super.getRandomRadius(random, baseHeight) + random.nextInt(Math.max(baseHeight + 1, 1));
+    public int getRandomRadius(AbstractRandom abstractRandom, int baseHeight) {
+        return super.getRandomRadius(abstractRandom, baseHeight) + abstractRandom.nextInt(Math.max(baseHeight + 1, 1));
     }
 
     @Override
-    public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-        return this.height.get(random);
+    public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+        return this.height.get(abstractRandom);
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+    protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
         return dx == radius && dz == radius && radius > 0;
     }
 }

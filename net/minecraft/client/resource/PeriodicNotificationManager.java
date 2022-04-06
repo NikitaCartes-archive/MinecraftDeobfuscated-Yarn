@@ -14,8 +14,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2BooleanFunction;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.text.TranslatableText;
@@ -56,21 +54,32 @@ implements AutoCloseable {
         this.countryPredicate = countryPredicate;
     }
 
-    /*
-     * Enabled aggressive exception aggregation
-     */
     @Override
     protected Map<String, List<Entry>> prepare(ResourceManager resourceManager, Profiler profiler) {
-        try (Resource resource = resourceManager.getResource(this.id);){
-            Map map;
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));){
-                map = (Map)CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(bufferedReader)).result().orElseThrow();
+        Map map;
+        block8: {
+            BufferedReader reader = resourceManager.openAsReader(this.id);
+            try {
+                map = (Map)CODEC.parse(JsonOps.INSTANCE, JsonParser.parseReader(reader)).result().orElseThrow();
+                if (reader == null) break block8;
+            } catch (Throwable throwable) {
+                try {
+                    if (reader != null) {
+                        try {
+                            ((Reader)reader).close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (Exception exception) {
+                    LOGGER.warn("Failed to load {}", (Object)this.id, (Object)exception);
+                    return ImmutableMap.of();
+                }
             }
-            return map;
-        } catch (Exception exception) {
-            LOGGER.warn("Failed to load {}", (Object)this.id, (Object)exception);
-            return ImmutableMap.of();
+            ((Reader)reader).close();
         }
+        return map;
     }
 
     @Override

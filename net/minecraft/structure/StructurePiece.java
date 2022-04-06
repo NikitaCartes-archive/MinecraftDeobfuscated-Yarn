@@ -6,7 +6,6 @@ package net.minecraft.structure;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.logging.LogUtils;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
@@ -31,6 +30,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
@@ -73,7 +73,7 @@ public abstract class StructurePiece {
         return new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
     }
 
-    protected static Direction getRandomHorizontalDirection(Random random) {
+    protected static Direction getRandomHorizontalDirection(AbstractRandom random) {
         return Direction.Type.HORIZONTAL.random(random);
     }
 
@@ -90,10 +90,10 @@ public abstract class StructurePiece {
 
     protected abstract void writeNbt(StructureContext var1, NbtCompound var2);
 
-    public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, Random random) {
+    public void fillOpenings(StructurePiece start, StructurePiecesHolder holder, AbstractRandom random) {
     }
 
-    public abstract void generate(StructureWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, Random var4, BlockBox var5, ChunkPos var6, BlockPos var7);
+    public abstract void generate(StructureWorldAccess var1, StructureAccessor var2, ChunkGenerator var3, AbstractRandom var4, BlockBox var5, ChunkPos var6, BlockPos var7);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;
@@ -241,7 +241,7 @@ public abstract class StructurePiece {
         this.fillWithOutline(world, box, fillBox.getMinX(), fillBox.getMinY(), fillBox.getMinZ(), fillBox.getMaxX(), fillBox.getMaxY(), fillBox.getMaxZ(), outline, inside, cantReplaceAir);
     }
 
-    protected void fillWithOutline(StructureWorldAccess world, BlockBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean cantReplaceAir, Random random, BlockRandomizer randomizer) {
+    protected void fillWithOutline(StructureWorldAccess world, BlockBox box, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean cantReplaceAir, AbstractRandom random, BlockRandomizer randomizer) {
         for (int i = minY; i <= maxY; ++i) {
             for (int j = minX; j <= maxX; ++j) {
                 for (int k = minZ; k <= maxZ; ++k) {
@@ -253,11 +253,11 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void fillWithOutline(StructureWorldAccess world, BlockBox box, BlockBox fillBox, boolean cantReplaceAir, Random random, BlockRandomizer randomizer) {
+    protected void fillWithOutline(StructureWorldAccess world, BlockBox box, BlockBox fillBox, boolean cantReplaceAir, AbstractRandom random, BlockRandomizer randomizer) {
         this.fillWithOutline(world, box, fillBox.getMinX(), fillBox.getMinY(), fillBox.getMinZ(), fillBox.getMaxX(), fillBox.getMaxY(), fillBox.getMaxZ(), cantReplaceAir, random, randomizer);
     }
 
-    protected void fillWithOutlineUnderSeaLevel(StructureWorldAccess world, BlockBox box, Random random, float blockChance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState outline, BlockState inside, boolean cantReplaceAir, boolean stayBelowSeaLevel) {
+    protected void fillWithOutlineUnderSeaLevel(StructureWorldAccess world, BlockBox box, AbstractRandom random, float blockChance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, BlockState outline, BlockState inside, boolean cantReplaceAir, boolean stayBelowSeaLevel) {
         for (int i = minY; i <= maxY; ++i) {
             for (int j = minX; j <= maxX; ++j) {
                 for (int k = minZ; k <= maxZ; ++k) {
@@ -272,7 +272,7 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state) {
+    protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, AbstractRandom random, float threshold, int x, int y, int z, BlockState state) {
         if (random.nextFloat() < threshold) {
             this.addBlock(world, state, x, y, z, bounds);
         }
@@ -313,7 +313,7 @@ public abstract class StructurePiece {
         return state.isAir() || state.getMaterial().isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
     }
 
-    protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+    protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, AbstractRandom random, int x, int y, int z, Identifier lootTableId) {
         return this.addChest(world, boundingBox, random, this.offsetPos(x, y, z), lootTableId, null);
     }
 
@@ -353,7 +353,7 @@ public abstract class StructurePiece {
         return (BlockState)state.with(HorizontalFacingBlock.FACING, direction3);
     }
 
-    protected boolean addChest(ServerWorldAccess world, BlockBox boundingBox, Random random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
+    protected boolean addChest(ServerWorldAccess world, BlockBox boundingBox, AbstractRandom random, BlockPos pos, Identifier lootTableId, @Nullable BlockState block) {
         if (!boundingBox.contains(pos) || world.getBlockState(pos).isOf(Blocks.CHEST)) {
             return false;
         }
@@ -368,7 +368,7 @@ public abstract class StructurePiece {
         return true;
     }
 
-    protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Direction facing, Identifier lootTableId) {
+    protected boolean addDispenser(StructureWorldAccess world, BlockBox boundingBox, AbstractRandom random, int x, int y, int z, Direction facing, Identifier lootTableId) {
         BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
         if (boundingBox.contains(blockPos) && !world.getBlockState(blockPos).isOf(Blocks.DISPENSER)) {
             this.addBlock(world, (BlockState)Blocks.DISPENSER.getDefaultState().with(DispenserBlock.FACING, facing), x, y, z, boundingBox);
@@ -448,7 +448,7 @@ public abstract class StructurePiece {
     public static abstract class BlockRandomizer {
         protected BlockState block = Blocks.AIR.getDefaultState();
 
-        public abstract void setBlock(Random var1, int var2, int var3, int var4, boolean var5);
+        public abstract void setBlock(AbstractRandom var1, int var2, int var3, int var4, boolean var5);
 
         public BlockState getBlock() {
             return this.block;

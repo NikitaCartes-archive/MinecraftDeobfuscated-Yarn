@@ -4,7 +4,6 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
-import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -49,6 +48,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -102,7 +102,7 @@ implements RangedAttackMob {
         return entityData;
     }
 
-    public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
         boolean bl;
         if (!world.getFluidState(pos.down()).isIn(FluidTags.WATER)) {
             return false;
@@ -356,10 +356,10 @@ implements RangedAttackMob {
 
         @Nullable
         private Vec3d getWanderTarget() {
-            Random random = this.mob.getRandom();
+            AbstractRandom abstractRandom = this.mob.getRandom();
             BlockPos blockPos = this.mob.getBlockPos();
             for (int i = 0; i < 10; ++i) {
-                BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, 2 - random.nextInt(8), random.nextInt(20) - 10);
+                BlockPos blockPos2 = blockPos.add(abstractRandom.nextInt(20) - 10, 2 - abstractRandom.nextInt(8), abstractRandom.nextInt(20) - 10);
                 if (!this.world.getBlockState(blockPos2).isOf(Blocks.WATER)) continue;
                 return Vec3d.ofBottomCenter(blockPos2);
             }

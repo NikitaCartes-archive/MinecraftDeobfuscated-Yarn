@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
@@ -63,6 +62,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -233,7 +233,7 @@ Bucketable {
         this.dataTracker.set(VARIANT, variant.getId());
     }
 
-    private static boolean shouldBabyBeDifferent(Random random) {
+    private static boolean shouldBabyBeDifferent(AbstractRandom random) {
         return random.nextInt(1200) == 0;
     }
 
@@ -508,7 +508,7 @@ Bucketable {
         return !this.isFromBucket() && !this.hasCustomName();
     }
 
-    public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, Random random) {
+    public static boolean canSpawn(EntityType<? extends LivingEntity> type, ServerWorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
         return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
     }
 
@@ -569,15 +569,15 @@ Bucketable {
             return this.name;
         }
 
-        public static Variant getRandomNatural(Random random) {
+        public static Variant getRandomNatural(AbstractRandom random) {
             return Variant.getRandom(random, true);
         }
 
-        public static Variant getRandomUnnatural(Random random) {
+        public static Variant getRandomUnnatural(AbstractRandom random) {
             return Variant.getRandom(random, false);
         }
 
-        private static Variant getRandom(Random random, boolean natural) {
+        private static Variant getRandom(AbstractRandom random, boolean natural) {
             Variant[] variants = (Variant[])Arrays.stream(VARIANTS).filter(variant -> variant.natural == natural).toArray(Variant[]::new);
             return Util.getRandom(variants, random);
         }
@@ -596,7 +596,7 @@ Bucketable {
             this.variants = variants;
         }
 
-        public Variant getRandomVariant(Random random) {
+        public Variant getRandomVariant(AbstractRandom random) {
             return this.variants[random.nextInt(this.variants.length)];
         }
     }

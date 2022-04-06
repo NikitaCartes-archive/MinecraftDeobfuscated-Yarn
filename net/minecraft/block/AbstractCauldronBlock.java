@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Map;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -83,12 +83,12 @@ extends Block {
     public abstract boolean isFull(BlockState var1);
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         BlockPos blockPos = PointedDripstoneBlock.getDripPos(world, pos);
         if (blockPos == null) {
             return;
         }
-        Fluid fluid = PointedDripstoneBlock.getDripFluid((World)world, blockPos);
+        Fluid fluid = PointedDripstoneBlock.getDripFluid(world, blockPos);
         if (fluid != Fluids.EMPTY && this.canBeFilledByDripstone(fluid)) {
             this.fillFromDripstone(state, world, pos, fluid);
         }

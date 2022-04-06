@@ -6,7 +6,6 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
@@ -41,6 +40,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -260,12 +260,12 @@ implements Vanishable {
         CrossbowItem.postShoot(world, entity, stack);
     }
 
-    private static float[] getSoundPitches(Random random) {
+    private static float[] getSoundPitches(AbstractRandom random) {
         boolean bl = random.nextBoolean();
         return new float[]{1.0f, CrossbowItem.getSoundPitch(bl, random), CrossbowItem.getSoundPitch(!bl, random)};
     }
 
-    private static float getSoundPitch(boolean flag, Random random) {
+    private static float getSoundPitch(boolean flag, AbstractRandom random) {
         float f = flag ? 0.63f : 0.43f;
         return 1.0f / (random.nextFloat() * 0.5f + 1.8f) + f;
     }

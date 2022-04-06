@@ -39,7 +39,7 @@ extends Task<WardenEntity> {
         Optional<LivingEntity> optional = brain.getOptionalMemory(MemoryModuleType.ROAR_TARGET);
         if (optional.isPresent()) {
             LivingEntity livingEntity = optional.get();
-            if (WardenEntity.isValidTarget(livingEntity)) {
+            if (wardenEntity.isValidTarget(livingEntity)) {
                 return true;
             }
             brain.forget(MemoryModuleType.ROAR_TARGET);

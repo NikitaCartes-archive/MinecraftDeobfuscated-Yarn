@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
@@ -17,6 +16,7 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
@@ -63,8 +63,6 @@ import net.minecraft.world.gen.feature.FossilFeatureConfig;
 import net.minecraft.world.gen.feature.FreezeTopLayerFeature;
 import net.minecraft.world.gen.feature.GeodeFeature;
 import net.minecraft.world.gen.feature.GeodeFeatureConfig;
-import net.minecraft.world.gen.feature.GlowLichenFeature;
-import net.minecraft.world.gen.feature.GlowLichenFeatureConfig;
 import net.minecraft.world.gen.feature.GlowstoneBlobFeature;
 import net.minecraft.world.gen.feature.HugeBrownMushroomFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeature;
@@ -78,6 +76,8 @@ import net.minecraft.world.gen.feature.KelpFeature;
 import net.minecraft.world.gen.feature.LakeFeature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
+import net.minecraft.world.gen.feature.MultifaceGrowthFeature;
+import net.minecraft.world.gen.feature.MultifaceGrowthFeatureConfig;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeature;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeatureConfig;
 import net.minecraft.world.gen.feature.NoOpFeature;
@@ -100,6 +100,7 @@ import net.minecraft.world.gen.feature.SeaPickleFeature;
 import net.minecraft.world.gen.feature.SeagrassFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
+import net.minecraft.world.gen.feature.SimpleDiskFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
@@ -107,11 +108,11 @@ import net.minecraft.world.gen.feature.SmallDripstoneFeature;
 import net.minecraft.world.gen.feature.SmallDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeature;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.feature.SurfaceDiskFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.TwistingVinesFeature;
 import net.minecraft.world.gen.feature.TwistingVinesFeatureConfig;
-import net.minecraft.world.gen.feature.UnderwaterDiskFeature;
 import net.minecraft.world.gen.feature.UnderwaterMagmaFeature;
 import net.minecraft.world.gen.feature.UnderwaterMagmaFeatureConfig;
 import net.minecraft.world.gen.feature.VegetationPatchFeature;
@@ -145,13 +146,14 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<VegetationPatchFeatureConfig> VEGETATION_PATCH = Feature.register("vegetation_patch", new VegetationPatchFeature(VegetationPatchFeatureConfig.CODEC));
     public static final Feature<VegetationPatchFeatureConfig> WATERLOGGED_VEGETATION_PATCH = Feature.register("waterlogged_vegetation_patch", new WaterloggedVegetationPatchFeature(VegetationPatchFeatureConfig.CODEC));
     public static final Feature<RootSystemFeatureConfig> ROOT_SYSTEM = Feature.register("root_system", new RootSystemFeature(RootSystemFeatureConfig.CODEC));
-    public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = Feature.register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
+    public static final Feature<MultifaceGrowthFeatureConfig> MULTIFACE_GROWTH = Feature.register("multiface_growth", new MultifaceGrowthFeature(MultifaceGrowthFeatureConfig.CODEC));
     public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = Feature.register("underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = Feature.register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> BLUE_ICE = Feature.register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> ICEBERG = Feature.register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = Feature.register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
-    public static final Feature<DiskFeatureConfig> DISK = Feature.register("disk", new UnderwaterDiskFeature(DiskFeatureConfig.CODEC));
+    public static final Feature<DiskFeatureConfig> DISK = Feature.register("disk", new SimpleDiskFeature(DiskFeatureConfig.CODEC));
+    public static final Feature<DiskFeatureConfig> SURFACE_DISK = Feature.register("surface_disk", new SurfaceDiskFeature(DiskFeatureConfig.CODEC));
     public static final Feature<DiskFeatureConfig> ICE_PATCH = Feature.register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
     public static final Feature<LakeFeature.Config> LAKE = Feature.register("lake", new LakeFeature(LakeFeature.Config.CODEC));
     public static final Feature<OreFeatureConfig> ORE = Feature.register("ore", new OreFeature(OreFeatureConfig.CODEC));
@@ -215,7 +217,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 
     public abstract boolean generate(FeatureContext<FC> var1);
 
-    public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
+    public boolean generateIfValid(FC config, StructureWorldAccess world, ChunkGenerator chunkGenerator, AbstractRandom random, BlockPos pos) {
         if (world.isValidForSetBlock(pos)) {
             return this.generate(new FeatureContext<FC>(Optional.empty(), world, chunkGenerator, random, pos, config));
         }

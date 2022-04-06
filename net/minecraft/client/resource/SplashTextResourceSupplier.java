@@ -6,23 +6,20 @@ package net.minecraft.client.resource;
 import com.google.common.collect.Lists;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Session;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class SplashTextResourceSupplier
 extends SinglePreparationResourceReloader<List<String>> {
     private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
-    private static final Random RANDOM = new Random();
+    private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
     private final List<String> splashTexts = Lists.newArrayList();
     private final Session session;
 
@@ -38,20 +35,31 @@ extends SinglePreparationResourceReloader<List<String>> {
         this.session = session;
     }
 
-    /*
-     * Enabled aggressive exception aggregation
-     */
     @Override
     protected List<String> prepare(ResourceManager resourceManager, Profiler profiler) {
-        try (Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);){
-            List<String> list;
-            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));){
+        List<String> list;
+        block8: {
+            BufferedReader bufferedReader = MinecraftClient.getInstance().getResourceManager().openAsReader(RESOURCE_ID);
+            try {
                 list = bufferedReader.lines().map(String::trim).filter(splashText -> splashText.hashCode() != 125780783).collect(Collectors.toList());
+                if (bufferedReader == null) break block8;
+            } catch (Throwable throwable) {
+                try {
+                    if (bufferedReader != null) {
+                        try {
+                            bufferedReader.close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (IOException iOException) {
+                    return Collections.emptyList();
+                }
             }
-            return list;
-        } catch (IOException iOException) {
-            return Collections.emptyList();
+            bufferedReader.close();
         }
+        return list;
     }
 
     @Override

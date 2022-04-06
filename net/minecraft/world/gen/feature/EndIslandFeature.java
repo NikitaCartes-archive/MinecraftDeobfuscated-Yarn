@@ -4,10 +4,10 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -22,9 +22,9 @@ extends Feature<DefaultFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         BlockPos blockPos = context.getOrigin();
-        float f = (float)random.nextInt(3) + 4.0f;
+        float f = (float)abstractRandom.nextInt(3) + 4.0f;
         int i = 0;
         while (f > 0.5f) {
             for (int j = MathHelper.floor(-f); j <= MathHelper.ceil(f); ++j) {
@@ -33,7 +33,7 @@ extends Feature<DefaultFeatureConfig> {
                     this.setBlockState(structureWorldAccess, blockPos.add(j, i, k), Blocks.END_STONE.getDefaultState());
                 }
             }
-            f -= (float)random.nextInt(2) + 0.5f;
+            f -= (float)abstractRandom.nextInt(2) + 0.5f;
             --i;
         }
         return true;

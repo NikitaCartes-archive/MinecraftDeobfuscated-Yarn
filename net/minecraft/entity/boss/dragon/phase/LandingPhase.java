@@ -3,12 +3,12 @@
  */
 package net.minecraft.entity.boss.dragon.phase;
 
-import java.util.Random;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.AbstractPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.jetbrains.annotations.Nullable;
@@ -30,10 +30,10 @@ extends AbstractPhase {
         double e = this.dragon.head.getBodyY(0.5);
         double f = this.dragon.head.getZ();
         for (int i = 0; i < 8; ++i) {
-            Random random = this.dragon.getRandom();
-            double g = d + random.nextGaussian() / 2.0;
-            double h = e + random.nextGaussian() / 2.0;
-            double j = f + random.nextGaussian() / 2.0;
+            AbstractRandom abstractRandom = this.dragon.getRandom();
+            double g = d + abstractRandom.nextGaussian() / 2.0;
+            double h = e + abstractRandom.nextGaussian() / 2.0;
+            double j = f + abstractRandom.nextGaussian() / 2.0;
             Vec3d vec3d2 = this.dragon.getVelocity();
             this.dragon.world.addParticle(ParticleTypes.DRAGON_BREATH, g, h, j, -vec3d.x * (double)0.08f + vec3d2.x, -vec3d.y * (double)0.3f + vec3d2.y, -vec3d.z * (double)0.08f + vec3d2.z);
             vec3d.rotateY(0.19634955f);

@@ -26,7 +26,7 @@ extends MovingSoundInstance {
     private final boolean underwater;
 
     public MinecartInsideSoundInstance(PlayerEntity player, AbstractMinecartEntity minecart, boolean underwater) {
-        super(underwater ? SoundEvents.ENTITY_MINECART_INSIDE_UNDERWATER : SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
+        super(underwater ? SoundEvents.ENTITY_MINECART_INSIDE_UNDERWATER : SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL, SoundInstance.createRandom());
         this.player = player;
         this.minecart = minecart;
         this.underwater = underwater;

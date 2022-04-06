@@ -6,7 +6,6 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -41,6 +40,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -129,7 +129,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             if (SculkSensorBlock.getPhase(state) == SculkSensorPhase.COOLDOWN) {
                 world.setBlockState(pos, (BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), Block.NOTIFY_ALL);
@@ -244,11 +244,15 @@ implements Waterloggable {
     }
 
     public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
+        Entity entity2;
         world.setBlockState(pos, (BlockState)((BlockState)state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)).with(POWER, power), Block.NOTIFY_ALL);
         world.createAndScheduleBlockTick(pos, state.getBlock(), 40);
         SculkSensorBlock.updateNeighbors(world, pos);
         if (entity instanceof PlayerEntity) {
             world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
+        } else if (entity != null && (entity2 = entity.getPrimaryPassenger()) instanceof PlayerEntity) {
+            PlayerEntity playerEntity = (PlayerEntity)entity2;
+            world.emitGameEvent((Entity)playerEntity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
         }
         if (!state.get(WATERLOGGED).booleanValue()) {
             world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING, SoundCategory.BLOCKS, 1.0f, world.random.nextFloat() * 0.2f + 0.8f);
@@ -256,7 +260,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
         if (SculkSensorBlock.getPhase(state) != SculkSensorPhase.ACTIVE) {
             return;
         }

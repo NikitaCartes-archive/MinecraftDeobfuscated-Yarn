@@ -10,13 +10,13 @@ import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.Font;
 import net.minecraft.client.font.FontLoader;
 import net.minecraft.client.font.TrueTypeFont;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -80,23 +80,23 @@ implements FontLoader {
         block10: {
             Struct sTBTTFontinfo = null;
             ByteBuffer byteBuffer = null;
-            Resource resource = manager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
+            InputStream inputStream = manager.open(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
             try {
                 LOGGER.debug("Loading font {}", (Object)this.filename);
                 sTBTTFontinfo = STBTTFontinfo.malloc();
-                byteBuffer = TextureUtil.readResource(resource.getInputStream());
+                byteBuffer = TextureUtil.readResource(inputStream);
                 byteBuffer.flip();
                 LOGGER.debug("Reading font {}", (Object)this.filename);
                 if (!STBTruetype.stbtt_InitFont((STBTTFontinfo)sTBTTFontinfo, byteBuffer)) {
                     throw new IOException("Invalid ttf");
                 }
                 trueTypeFont = new TrueTypeFont(byteBuffer, (STBTTFontinfo)sTBTTFontinfo, this.size, this.oversample, this.shiftX, this.shiftY, this.excludedCharacters);
-                if (resource == null) break block10;
+                if (inputStream == null) break block10;
             } catch (Throwable throwable) {
                 try {
-                    if (resource != null) {
+                    if (inputStream != null) {
                         try {
-                            resource.close();
+                            inputStream.close();
                         } catch (Throwable throwable2) {
                             throwable.addSuppressed(throwable2);
                         }
@@ -111,7 +111,7 @@ implements FontLoader {
                     return null;
                 }
             }
-            resource.close();
+            inputStream.close();
         }
         return trueTypeFont;
     }

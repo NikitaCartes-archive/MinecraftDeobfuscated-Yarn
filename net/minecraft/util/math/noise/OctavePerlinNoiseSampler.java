@@ -17,8 +17,8 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.RandomDeriver;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.RandomDeriver;
 import org.jetbrains.annotations.Nullable;
 
 public class OctavePerlinNoiseSampler {

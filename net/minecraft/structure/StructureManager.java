@@ -22,7 +22,6 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.structure.Structure;
 import net.minecraft.util.FileNameUtil;
@@ -74,15 +73,15 @@ public class StructureManager {
         Optional<Structure> optional;
         block9: {
             Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + NBT_FILE_EXTENSION);
-            Resource resource = this.resourceManager.getResource(identifier);
+            InputStream inputStream = this.resourceManager.open(identifier);
             try {
-                optional = Optional.of(this.readStructure(resource.getInputStream()));
-                if (resource == null) break block9;
+                optional = Optional.of(this.readStructure(inputStream));
+                if (inputStream == null) break block9;
             } catch (Throwable throwable) {
                 try {
-                    if (resource != null) {
+                    if (inputStream != null) {
                         try {
-                            resource.close();
+                            inputStream.close();
                         } catch (Throwable throwable2) {
                             throwable.addSuppressed(throwable2);
                         }
@@ -95,7 +94,7 @@ public class StructureManager {
                     return Optional.empty();
                 }
             }
-            resource.close();
+            inputStream.close();
         }
         return optional;
     }

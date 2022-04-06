@@ -65,14 +65,14 @@ GameEventListener {
     protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS);
     private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
-    private final EntityGameEventHandler gameEventHandler;
+    private final EntityGameEventHandler<AllayEntity> gameEventHandler;
     private final SimpleInventory inventory = new SimpleInventory(1);
 
     public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
         super((EntityType<? extends PathAwareEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.setCanPickUpLoot(this.canPickUpLoot());
-        this.gameEventHandler = new EntityGameEventHandler(this);
+        this.gameEventHandler = new EntityGameEventHandler<AllayEntity>(this);
     }
 
     protected Brain.Profile<AllayEntity> createBrainProfile() {
@@ -178,7 +178,7 @@ GameEventListener {
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         this.world.getProfiler().push("allayActivityUpdate");
-        AllayBrain.method_42661(this);
+        AllayBrain.resetIdleActivities(this);
         this.world.getProfiler().pop();
         super.mobTick();
     }
@@ -284,7 +284,7 @@ GameEventListener {
     }
 
     @Override
-    public void updateEventHandler(BiConsumer<EntityGameEventHandler, ServerWorld> biConsumer) {
+    public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
         World world = this.world;
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
@@ -297,7 +297,7 @@ GameEventListener {
         if (event != GameEvent.NOTE_BLOCK_PLAY) {
             return false;
         }
-        AllayBrain.method_42659(this, new BlockPos(pos));
+        AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
         return true;
     }
 

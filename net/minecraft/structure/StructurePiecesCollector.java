@@ -5,11 +5,11 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesHolder;
 import net.minecraft.structure.StructurePiecesList;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -43,7 +43,7 @@ implements StructurePiecesHolder {
      * Somewhat like {@code shiftInto(random, bottomY, topY - topPenalty)}.
      */
     @Deprecated
-    public void shiftInto(int topY, int bottomY, Random random, int topPenalty) {
+    public void shiftInto(int topY, int bottomY, AbstractRandom random, int topPenalty) {
         int i = topY - topPenalty;
         BlockBox blockBox = this.getBoundingBox();
         int j = blockBox.getBlockCountY() + bottomY + 1;
@@ -57,7 +57,7 @@ implements StructurePiecesHolder {
     /**
      * Shifts all pieces so they lie within {@code [baseY, topY]} vertically.
      */
-    public void shiftInto(Random random, int baseY, int topY) {
+    public void shiftInto(AbstractRandom random, int baseY, int topY) {
         BlockBox blockBox = this.getBoundingBox();
         int i = topY - baseY + 1 - blockBox.getBlockCountY();
         int j = i > 1 ? baseY + random.nextInt(i) : baseY;

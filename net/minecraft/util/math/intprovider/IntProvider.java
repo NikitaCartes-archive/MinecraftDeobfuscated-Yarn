@@ -6,10 +6,10 @@ package net.minecraft.util.math.intprovider;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProviderType;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 
 public abstract class IntProvider {
@@ -31,7 +31,7 @@ public abstract class IntProvider {
         return VALUE_CODEC.flatXmap(function, function);
     }
 
-    public abstract int get(Random var1);
+    public abstract int get(AbstractRandom var1);
 
     public abstract int getMin();
 

@@ -17,6 +17,8 @@ import net.minecraft.sound.SoundEvents;
 
 public class SniffTask<E extends WardenEntity>
 extends Task<E> {
+    private static final double field_38708 = 6.0;
+
     public SniffTask(int i) {
         super(ImmutableMap.of(MemoryModuleType.IS_SNIFFING, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleState.REGISTERED), i);
     }
@@ -37,7 +39,7 @@ extends Task<E> {
             ((Entity)wardenEntity).setPose(EntityPose.STANDING);
         }
         ((WardenEntity)wardenEntity).getBrain().forget(MemoryModuleType.IS_SNIFFING);
-        ((WardenEntity)wardenEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(WardenEntity::isValidTarget).ifPresent(livingEntity -> {
+        ((WardenEntity)wardenEntity).getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(arg_0 -> wardenEntity.isValidTarget(arg_0)).ifPresent(livingEntity -> {
             if (wardenEntity.isInRange((Entity)livingEntity, 6.0)) {
                 wardenEntity.increaseAngerAt((Entity)livingEntity);
             }

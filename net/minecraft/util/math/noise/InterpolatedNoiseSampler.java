@@ -13,8 +13,8 @@ import net.minecraft.util.dynamic.CodecHolder;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.minecraft.world.gen.random.AbstractRandom;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class InterpolatedNoiseSampler

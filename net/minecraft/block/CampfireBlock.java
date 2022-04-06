@@ -4,7 +4,6 @@
 package net.minecraft.block;
 
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -48,6 +47,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -150,7 +150,7 @@ implements Waterloggable {
     }
 
     @Override
-    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
         if (!state.get(LIT).booleanValue()) {
             return;
         }
@@ -203,11 +203,11 @@ implements Waterloggable {
     }
 
     public static void spawnSmokeParticle(World world, BlockPos pos, boolean isSignal, boolean lotsOfSmoke) {
-        Random random = world.getRandom();
+        AbstractRandom abstractRandom = world.getRandom();
         DefaultParticleType defaultParticleType = isSignal ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.CAMPFIRE_COSY_SMOKE;
-        world.addImportantParticle(defaultParticleType, true, (double)pos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + random.nextDouble() + random.nextDouble(), (double)pos.getZ() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, 0.07, 0.0);
+        world.addImportantParticle(defaultParticleType, true, (double)pos.getX() + 0.5 + abstractRandom.nextDouble() / 3.0 * (double)(abstractRandom.nextBoolean() ? 1 : -1), (double)pos.getY() + abstractRandom.nextDouble() + abstractRandom.nextDouble(), (double)pos.getZ() + 0.5 + abstractRandom.nextDouble() / 3.0 * (double)(abstractRandom.nextBoolean() ? 1 : -1), 0.0, 0.07, 0.0);
         if (lotsOfSmoke) {
-            world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + 0.5 + random.nextDouble() / 4.0 * (double)(random.nextBoolean() ? 1 : -1), (double)pos.getY() + 0.4, (double)pos.getZ() + 0.5 + random.nextDouble() / 4.0 * (double)(random.nextBoolean() ? 1 : -1), 0.0, 0.005, 0.0);
+            world.addParticle(ParticleTypes.SMOKE, (double)pos.getX() + 0.5 + abstractRandom.nextDouble() / 4.0 * (double)(abstractRandom.nextBoolean() ? 1 : -1), (double)pos.getY() + 0.4, (double)pos.getZ() + 0.5 + abstractRandom.nextDouble() / 4.0 * (double)(abstractRandom.nextBoolean() ? 1 : -1), 0.0, 0.005, 0.0);
         }
     }
 

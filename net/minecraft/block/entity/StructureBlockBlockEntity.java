@@ -6,7 +6,6 @@ package net.minecraft.block.entity;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -35,6 +34,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
 
 public class StructureBlockBlockEntity
@@ -334,11 +334,11 @@ extends BlockEntity {
         return this.loadStructure(world, true);
     }
 
-    private static Random createRandom(long seed) {
+    private static AbstractRandom createRandom(long seed) {
         if (seed == 0L) {
-            return new Random(Util.getMeasuringTimeMs());
+            return AbstractRandom.createAtomic(Util.getMeasuringTimeMs());
         }
-        return new Random(seed);
+        return AbstractRandom.createAtomic(seed);
     }
 
     public boolean loadStructure(ServerWorld world, boolean bl) {
@@ -377,7 +377,7 @@ extends BlockEntity {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }
             BlockPos blockPos2 = blockPos.add(this.offset);
-            structure.place(world, blockPos2, blockPos2, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), Block.NOTIFY_LISTENERS);
+            structure.place(world, blockPos2, blockPos2, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), 2);
             return true;
         }
         return false;

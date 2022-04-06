@@ -24,7 +24,7 @@ extends Task<E> {
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, E wardenEntity) {
-        return this.targetFinder.apply(wardenEntity).filter(WardenEntity::isValidTarget).isPresent();
+        return this.targetFinder.apply(wardenEntity).filter(arg_0 -> wardenEntity.isValidTarget(arg_0)).isPresent();
     }
 
     @Override

@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -31,6 +30,7 @@ import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -295,7 +295,7 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Optional<RegistryEntry<T>> getRandom(Random random) {
+    public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
         return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
     }
 

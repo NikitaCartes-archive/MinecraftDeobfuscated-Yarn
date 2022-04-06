@@ -10,25 +10,25 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 public class TitleFadeS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final int fadeInTicks;
-    private final int remainTicks;
+    private final int stayTicks;
     private final int fadeOutTicks;
 
-    public TitleFadeS2CPacket(int fadeInTicks, int remainTicks, int fadeOutTicks) {
+    public TitleFadeS2CPacket(int fadeInTicks, int stayTicks, int fadeOutTicks) {
         this.fadeInTicks = fadeInTicks;
-        this.remainTicks = remainTicks;
+        this.stayTicks = stayTicks;
         this.fadeOutTicks = fadeOutTicks;
     }
 
     public TitleFadeS2CPacket(PacketByteBuf buf) {
         this.fadeInTicks = buf.readInt();
-        this.remainTicks = buf.readInt();
+        this.stayTicks = buf.readInt();
         this.fadeOutTicks = buf.readInt();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeInt(this.fadeInTicks);
-        buf.writeInt(this.remainTicks);
+        buf.writeInt(this.stayTicks);
         buf.writeInt(this.fadeOutTicks);
     }
 
@@ -41,8 +41,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.fadeInTicks;
     }
 
-    public int getRemainTicks() {
-        return this.remainTicks;
+    public int getStayTicks() {
+        return this.stayTicks;
     }
 
     public int getFadeOutTicks() {

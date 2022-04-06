@@ -37,11 +37,11 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 import net.minecraft.world.gen.densityfunction.DensityFunctions;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
 import net.minecraft.world.gen.feature.PlacedFeature;
 import net.minecraft.world.gen.feature.PlacedFeatures;
-import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.noise.BuiltinNoiseParameters;
+import net.minecraft.world.gen.structure.StructureType;
+import net.minecraft.world.gen.structure.StructureTypes;
 import org.slf4j.Logger;
 
 /**
@@ -64,7 +64,7 @@ public class BuiltinRegistries {
     public static final Registry<ConfiguredCarver<?>> CONFIGURED_CARVER = BuiltinRegistries.addRegistry(Registry.CONFIGURED_CARVER_KEY, () -> ConfiguredCarvers.CAVE);
     public static final Registry<ConfiguredFeature<?, ?>> CONFIGURED_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_FEATURE_KEY, ConfiguredFeatures::getDefaultConfiguredFeature);
     public static final Registry<PlacedFeature> PLACED_FEATURE = BuiltinRegistries.addRegistry(Registry.PLACED_FEATURE_KEY, PlacedFeatures::getDefaultPlacedFeature);
-    public static final Registry<StructureFeature> CONFIGURED_STRUCTURE_FEATURE = BuiltinRegistries.addRegistry(Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, ConfiguredStructureFeatures::getDefault);
+    public static final Registry<StructureType> STRUCTURE = BuiltinRegistries.addRegistry(Registry.STRUCTURE_KEY, StructureTypes::getDefault);
     public static final Registry<StructureSet> STRUCTURE_SET = BuiltinRegistries.addRegistry(Registry.STRUCTURE_SET_KEY, StructureSets::initAndGetDefault);
     public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> STRUCTURE_POOL = BuiltinRegistries.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);

@@ -5,7 +5,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +20,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -45,15 +45,15 @@ extends Feature<DefaultFeatureConfig> {
         int s;
         Predicate<BlockState> predicate = Feature.notInBlockTagPredicate(BlockTags.FEATURES_CANNOT_REPLACE);
         BlockPos blockPos = context.getOrigin();
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         int i = 3;
-        int j = random.nextInt(2) + 2;
+        int j = abstractRandom.nextInt(2) + 2;
         int k = -j - 1;
         int l = j + 1;
         int m = -1;
         int n = 4;
-        int o = random.nextInt(2) + 2;
+        int o = abstractRandom.nextInt(2) + 2;
         int p = -o - 1;
         int q = o + 1;
         int r = 0;
@@ -88,7 +88,7 @@ extends Feature<DefaultFeatureConfig> {
                             continue;
                         }
                         if (!blockState.getMaterial().isSolid() || blockState.isOf(Blocks.CHEST)) continue;
-                        if (t == -1 && random.nextInt(4) != 0) {
+                        if (t == -1 && abstractRandom.nextInt(4) != 0) {
                             this.setBlockStateIf(structureWorldAccess, blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
                             continue;
                         }
@@ -104,8 +104,8 @@ extends Feature<DefaultFeatureConfig> {
             for (t = 0; t < 3; ++t) {
                 int w;
                 int v;
-                u = blockPos.getX() + random.nextInt(j * 2 + 1) - j;
-                BlockPos blockPos3 = new BlockPos(u, v = blockPos.getY(), w = blockPos.getZ() + random.nextInt(o * 2 + 1) - o);
+                u = blockPos.getX() + abstractRandom.nextInt(j * 2 + 1) - j;
+                BlockPos blockPos3 = new BlockPos(u, v = blockPos.getY(), w = blockPos.getZ() + abstractRandom.nextInt(o * 2 + 1) - o);
                 if (!structureWorldAccess.isAir(blockPos3)) continue;
                 int x = 0;
                 for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -114,21 +114,21 @@ extends Feature<DefaultFeatureConfig> {
                 }
                 if (x != 1) continue;
                 this.setBlockStateIf(structureWorldAccess, blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), predicate);
-                LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
+                LootableContainerBlockEntity.setLootTable(structureWorldAccess, abstractRandom, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
                 continue block6;
             }
         }
         this.setBlockStateIf(structureWorldAccess, blockPos, Blocks.SPAWNER.getDefaultState(), predicate);
         BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
         if (blockEntity instanceof MobSpawnerBlockEntity) {
-            ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
+            ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(abstractRandom));
         } else {
             LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", blockPos.getX(), blockPos.getY(), blockPos.getZ());
         }
         return true;
     }
 
-    private EntityType<?> getMobSpawnerEntity(Random random) {
+    private EntityType<?> getMobSpawnerEntity(AbstractRandom random) {
         return Util.getRandom(MOB_SPAWNER_ENTITIES, random);
     }
 }

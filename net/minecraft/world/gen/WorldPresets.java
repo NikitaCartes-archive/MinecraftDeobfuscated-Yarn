@@ -5,10 +5,10 @@ package net.minecraft.world.gen;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -68,7 +68,7 @@ public class WorldPresets {
     }
 
     public static GeneratorOptions createDefaultOptions(DynamicRegistryManager dynamicRegistryManager) {
-        return WorldPresets.createDefaultOptions(dynamicRegistryManager, new Random().nextLong());
+        return WorldPresets.createDefaultOptions(dynamicRegistryManager, AbstractRandom.createAtomic().nextLong());
     }
 
     public static GeneratorOptions createDemoOptions(DynamicRegistryManager dynamicRegistryManager) {

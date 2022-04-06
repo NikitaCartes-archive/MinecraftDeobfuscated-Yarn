@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -47,6 +46,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -98,13 +98,13 @@ AutoCloseable {
     private final Thread thread;
     private final boolean debugWorld;
     private int ambientDarkness;
-    protected int lcgBlockSeed = new Random().nextInt();
+    protected int lcgBlockSeed = AbstractRandom.createAtomic().nextInt();
     protected final int lcgBlockSeedIncrement = 1013904223;
     protected float rainGradientPrev;
     protected float rainGradient;
     protected float thunderGradientPrev;
     protected float thunderGradient;
-    public final Random random = new Random();
+    public final AbstractRandom random = AbstractRandom.createAtomic();
     final DimensionType dimension;
     private final RegistryEntry<DimensionType> dimensionEntry;
     protected final MutableWorldProperties properties;
@@ -395,12 +395,20 @@ AutoCloseable {
     /**
      * @param except the player that should not receive the sound, or {@code null}
      */
-    public abstract void playSound(@Nullable PlayerEntity var1, double var2, double var4, double var6, SoundEvent var8, SoundCategory var9, float var10, float var11);
+    public abstract void playSound(@Nullable PlayerEntity var1, double var2, double var4, double var6, SoundEvent var8, SoundCategory var9, float var10, float var11, long var12);
 
     /**
      * @param except the player that should not receive the sound, or {@code null}
      */
-    public abstract void playSoundFromEntity(@Nullable PlayerEntity var1, Entity var2, SoundEvent var3, SoundCategory var4, float var5, float var6);
+    public abstract void playSoundFromEntity(@Nullable PlayerEntity var1, Entity var2, SoundEvent var3, SoundCategory var4, float var5, float var6, long var7);
+
+    public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.playSound(player, x, y, z, sound, category, volume, pitch, this.random.nextLong());
+    }
+
+    public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
+        this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.random.nextLong());
+    }
 
     public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
     }
@@ -573,6 +581,18 @@ AutoCloseable {
      */
     public void setMobSpawnOptions(boolean spawnMonsters, boolean spawnAnimals) {
         this.getChunkManager().setMobSpawnOptions(spawnMonsters, spawnAnimals);
+    }
+
+    public BlockPos getSpawnPos() {
+        BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
+        if (!this.getWorldBorder().contains(blockPos)) {
+            blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
+        }
+        return blockPos;
+    }
+
+    public float getSpawnAngle() {
+        return this.properties.getSpawnAngle();
     }
 
     protected void initWeatherGradients() {
@@ -940,7 +960,7 @@ AutoCloseable {
     }
 
     @Override
-    public Random getRandom() {
+    public AbstractRandom getRandom() {
         return this.random;
     }
 

@@ -14,9 +14,9 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import org.jetbrains.annotations.Nullable;
 
 public interface DensityFunction {
-    public static final Codec<DensityFunction> field_37057 = DensityFunctionTypes.field_37061;
-    public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, field_37057);
-    public static final Codec<DensityFunction> field_37059 = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, densityFunction -> {
+    public static final Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
+    public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(Registry.DENSITY_FUNCTION_KEY, CODEC);
+    public static final Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, densityFunction -> {
         if (densityFunction instanceof DensityFunctionTypes.RegistryEntryHolder) {
             DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)densityFunction;
             return registryEntryHolder.function();
@@ -102,7 +102,7 @@ public interface DensityFunction {
     }
 
     public record class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> noiseData, @Nullable DoublePerlinNoiseSampler noise) {
-        public static final Codec<class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.CODEC.xmap(registryEntry -> new class_7270((RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>)registryEntry, null), class_7270::noiseData);
+        public static final Codec<class_7270> field_38248 = DoublePerlinNoiseSampler.NoiseParameters.REGISTRY_ENTRY_CODEC.xmap(registryEntry -> new class_7270((RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>)registryEntry, null), class_7270::noiseData);
 
         public class_7270(RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters> registryEntry) {
             this(registryEntry, null);

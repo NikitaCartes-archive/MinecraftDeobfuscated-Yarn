@@ -7,7 +7,6 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -15,6 +14,7 @@ import net.minecraft.block.Material;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -36,21 +36,21 @@ extends Feature<Config> {
         int s;
         BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        Random random = context.getRandom();
+        AbstractRandom abstractRandom = context.getRandom();
         Config config = context.getConfig();
         if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
             return false;
         }
         blockPos = blockPos.down(4);
         boolean[] bls = new boolean[2048];
-        int i = random.nextInt(4) + 4;
+        int i = abstractRandom.nextInt(4) + 4;
         for (int j = 0; j < i; ++j) {
-            double d = random.nextDouble() * 6.0 + 3.0;
-            double e = random.nextDouble() * 4.0 + 2.0;
-            double f = random.nextDouble() * 6.0 + 3.0;
-            double g = random.nextDouble() * (16.0 - d - 2.0) + 1.0 + d / 2.0;
-            double h = random.nextDouble() * (8.0 - e - 4.0) + 2.0 + e / 2.0;
-            double k = random.nextDouble() * (16.0 - f - 2.0) + 1.0 + f / 2.0;
+            double d = abstractRandom.nextDouble() * 6.0 + 3.0;
+            double e = abstractRandom.nextDouble() * 4.0 + 2.0;
+            double f = abstractRandom.nextDouble() * 6.0 + 3.0;
+            double g = abstractRandom.nextDouble() * (16.0 - d - 2.0) + 1.0 + d / 2.0;
+            double h = abstractRandom.nextDouble() * (8.0 - e - 4.0) + 2.0 + e / 2.0;
+            double k = abstractRandom.nextDouble() * (16.0 - f - 2.0) + 1.0 + f / 2.0;
             for (int l = 1; l < 15; ++l) {
                 for (int m = 1; m < 15; ++m) {
                     for (int n = 1; n < 7; ++n) {
@@ -64,7 +64,7 @@ extends Feature<Config> {
                 }
             }
         }
-        BlockState blockState = config.fluid().getBlockState(random, blockPos);
+        BlockState blockState = config.fluid().getBlockState(abstractRandom, blockPos);
         for (s = 0; s < 16; ++s) {
             for (t = 0; t < 16; ++t) {
                 for (int u = 0; u < 8; ++u) {
@@ -93,7 +93,7 @@ extends Feature<Config> {
                 }
             }
         }
-        BlockState blockState2 = config.barrier().getBlockState(random, blockPos);
+        BlockState blockState2 = config.barrier().getBlockState(abstractRandom, blockPos);
         if (!blockState2.isAir()) {
             for (t = 0; t < 16; ++t) {
                 for (int u = 0; u < 16; ++u) {
@@ -101,7 +101,7 @@ extends Feature<Config> {
                         BlockState blockState3;
                         boolean bl2;
                         boolean bl = bl2 = !bls[(t * 16 + u) * 8 + v] && (t < 15 && bls[((t + 1) * 16 + u) * 8 + v] || t > 0 && bls[((t - 1) * 16 + u) * 8 + v] || u < 15 && bls[(t * 16 + u + 1) * 8 + v] || u > 0 && bls[(t * 16 + (u - 1)) * 8 + v] || v < 7 && bls[(t * 16 + u) * 8 + v + 1] || v > 0 && bls[(t * 16 + u) * 8 + (v - 1)]);
-                        if (!bl2 || v >= 4 && random.nextInt(2) == 0 || !(blockState3 = structureWorldAccess.getBlockState(blockPos.add(t, v, u))).getMaterial().isSolid() || blockState3.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) continue;
+                        if (!bl2 || v >= 4 && abstractRandom.nextInt(2) == 0 || !(blockState3 = structureWorldAccess.getBlockState(blockPos.add(t, v, u))).getMaterial().isSolid() || blockState3.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) continue;
                         BlockPos blockPos3 = blockPos.add(t, v, u);
                         structureWorldAccess.setBlockState(blockPos3, blockState2, Block.NOTIFY_LISTENERS);
                         this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);
