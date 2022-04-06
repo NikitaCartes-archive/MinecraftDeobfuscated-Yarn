@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.passive.CatVariant;
+import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -17,94 +19,20 @@ import net.minecraft.util.collection.Int2ObjectBiMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 
 public class TrackedDataHandlerRegistry {
 	private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.create(16);
-	public static final TrackedDataHandler<Byte> BYTE = new TrackedDataHandler<Byte>() {
-		public void write(PacketByteBuf packetByteBuf, Byte byte_) {
-			packetByteBuf.writeByte(byte_);
-		}
-
-		public Byte read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readByte();
-		}
-
-		public Byte copy(Byte byte_) {
-			return byte_;
-		}
-	};
-	public static final TrackedDataHandler<Integer> INTEGER = new TrackedDataHandler<Integer>() {
-		public void write(PacketByteBuf packetByteBuf, Integer integer) {
-			packetByteBuf.writeVarInt(integer);
-		}
-
-		public Integer read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readVarInt();
-		}
-
-		public Integer copy(Integer integer) {
-			return integer;
-		}
-	};
-	public static final TrackedDataHandler<Float> FLOAT = new TrackedDataHandler<Float>() {
-		public void write(PacketByteBuf packetByteBuf, Float float_) {
-			packetByteBuf.writeFloat(float_);
-		}
-
-		public Float read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readFloat();
-		}
-
-		public Float copy(Float float_) {
-			return float_;
-		}
-	};
-	public static final TrackedDataHandler<String> STRING = new TrackedDataHandler<String>() {
-		public void write(PacketByteBuf packetByteBuf, String string) {
-			packetByteBuf.writeString(string);
-		}
-
-		public String read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readString();
-		}
-
-		public String copy(String string) {
-			return string;
-		}
-	};
-	public static final TrackedDataHandler<Text> TEXT_COMPONENT = new TrackedDataHandler<Text>() {
-		public void write(PacketByteBuf packetByteBuf, Text text) {
-			packetByteBuf.writeText(text);
-		}
-
-		public Text read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readText();
-		}
-
-		public Text copy(Text text) {
-			return text;
-		}
-	};
-	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Text>>() {
-		public void write(PacketByteBuf packetByteBuf, Optional<Text> optional) {
-			if (optional.isPresent()) {
-				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeText((Text)optional.get());
-			} else {
-				packetByteBuf.writeBoolean(false);
-			}
-		}
-
-		public Optional<Text> read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readText()) : Optional.empty();
-		}
-
-		public Optional<Text> copy(Optional<Text> optional) {
-			return optional;
-		}
-	};
+	public static final TrackedDataHandler<Byte> BYTE = TrackedDataHandler.of((packetByteBuf, byte_) -> packetByteBuf.writeByte(byte_), PacketByteBuf::readByte);
+	public static final TrackedDataHandler<Integer> INTEGER = TrackedDataHandler.of(PacketByteBuf::writeVarInt, PacketByteBuf::readVarInt);
+	public static final TrackedDataHandler<Float> FLOAT = TrackedDataHandler.of(PacketByteBuf::writeFloat, PacketByteBuf::readFloat);
+	public static final TrackedDataHandler<String> STRING = TrackedDataHandler.of(PacketByteBuf::writeString, PacketByteBuf::readString);
+	public static final TrackedDataHandler<Text> TEXT_COMPONENT = TrackedDataHandler.of(PacketByteBuf::writeText, PacketByteBuf::readText);
+	public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = TrackedDataHandler.ofOptional(
+		PacketByteBuf::writeText, PacketByteBuf::readText
+	);
 	public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>() {
 		public void write(PacketByteBuf packetByteBuf, ItemStack itemStack) {
 			packetByteBuf.writeItemStack(itemStack);
@@ -118,7 +46,7 @@ public class TrackedDataHandlerRegistry {
 			return itemStack.copy();
 		}
 	};
-	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler<Optional<BlockState>>() {
+	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler.ImmutableHandler<Optional<BlockState>>() {
 		public void write(PacketByteBuf packetByteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
 				packetByteBuf.writeVarInt(Block.getRawIdFromState((BlockState)optional.get()));
@@ -131,25 +59,9 @@ public class TrackedDataHandlerRegistry {
 			int i = packetByteBuf.readVarInt();
 			return i == 0 ? Optional.empty() : Optional.of(Block.getStateFromRawId(i));
 		}
-
-		public Optional<BlockState> copy(Optional<BlockState> optional) {
-			return optional;
-		}
 	};
-	public static final TrackedDataHandler<Boolean> BOOLEAN = new TrackedDataHandler<Boolean>() {
-		public void write(PacketByteBuf packetByteBuf, Boolean boolean_) {
-			packetByteBuf.writeBoolean(boolean_);
-		}
-
-		public Boolean read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readBoolean();
-		}
-
-		public Boolean copy(Boolean boolean_) {
-			return boolean_;
-		}
-	};
-	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler<ParticleEffect>() {
+	public static final TrackedDataHandler<Boolean> BOOLEAN = TrackedDataHandler.of(PacketByteBuf::writeBoolean, PacketByteBuf::readBoolean);
+	public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler.ImmutableHandler<ParticleEffect>() {
 		public void write(PacketByteBuf packetByteBuf, ParticleEffect particleEffect) {
 			packetByteBuf.writeRegistryValue(Registry.PARTICLE_TYPE, particleEffect.getType());
 			particleEffect.write(packetByteBuf);
@@ -162,12 +74,8 @@ public class TrackedDataHandlerRegistry {
 		private <T extends ParticleEffect> T read(PacketByteBuf buf, ParticleType<T> type) {
 			return type.getParametersFactory().read(type, buf);
 		}
-
-		public ParticleEffect copy(ParticleEffect particleEffect) {
-			return particleEffect;
-		}
 	};
-	public static final TrackedDataHandler<EulerAngle> ROTATION = new TrackedDataHandler<EulerAngle>() {
+	public static final TrackedDataHandler<EulerAngle> ROTATION = new TrackedDataHandler.ImmutableHandler<EulerAngle>() {
 		public void write(PacketByteBuf packetByteBuf, EulerAngle eulerAngle) {
 			packetByteBuf.writeFloat(eulerAngle.getPitch());
 			packetByteBuf.writeFloat(eulerAngle.getYaw());
@@ -177,69 +85,16 @@ public class TrackedDataHandlerRegistry {
 		public EulerAngle read(PacketByteBuf packetByteBuf) {
 			return new EulerAngle(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		}
-
-		public EulerAngle copy(EulerAngle eulerAngle) {
-			return eulerAngle;
-		}
 	};
-	public static final TrackedDataHandler<BlockPos> BLOCK_POS = new TrackedDataHandler<BlockPos>() {
-		public void write(PacketByteBuf packetByteBuf, BlockPos blockPos) {
-			packetByteBuf.writeBlockPos(blockPos);
-		}
-
-		public BlockPos read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readBlockPos();
-		}
-
-		public BlockPos copy(BlockPos blockPos) {
-			return blockPos;
-		}
-	};
-	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = new TrackedDataHandler<Optional<BlockPos>>() {
-		public void write(PacketByteBuf packetByteBuf, Optional<BlockPos> optional) {
-			packetByteBuf.writeBoolean(optional.isPresent());
-			if (optional.isPresent()) {
-				packetByteBuf.writeBlockPos((BlockPos)optional.get());
-			}
-		}
-
-		public Optional<BlockPos> read(PacketByteBuf packetByteBuf) {
-			return !packetByteBuf.readBoolean() ? Optional.empty() : Optional.of(packetByteBuf.readBlockPos());
-		}
-
-		public Optional<BlockPos> copy(Optional<BlockPos> optional) {
-			return optional;
-		}
-	};
-	public static final TrackedDataHandler<Direction> FACING = new TrackedDataHandler<Direction>() {
-		public void write(PacketByteBuf packetByteBuf, Direction direction) {
-			packetByteBuf.writeEnumConstant(direction);
-		}
-
-		public Direction read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readEnumConstant(Direction.class);
-		}
-
-		public Direction copy(Direction direction) {
-			return direction;
-		}
-	};
-	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = new TrackedDataHandler<Optional<UUID>>() {
-		public void write(PacketByteBuf packetByteBuf, Optional<UUID> optional) {
-			packetByteBuf.writeBoolean(optional.isPresent());
-			if (optional.isPresent()) {
-				packetByteBuf.writeUuid((UUID)optional.get());
-			}
-		}
-
-		public Optional<UUID> read(PacketByteBuf packetByteBuf) {
-			return !packetByteBuf.readBoolean() ? Optional.empty() : Optional.of(packetByteBuf.readUuid());
-		}
-
-		public Optional<UUID> copy(Optional<UUID> optional) {
-			return optional;
-		}
-	};
+	public static final TrackedDataHandler<BlockPos> BLOCK_POS = TrackedDataHandler.of(PacketByteBuf::writeBlockPos, PacketByteBuf::readBlockPos);
+	public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = TrackedDataHandler.ofOptional(
+		PacketByteBuf::writeBlockPos, PacketByteBuf::readBlockPos
+	);
+	public static final TrackedDataHandler<Direction> FACING = TrackedDataHandler.ofEnum(Direction.class);
+	public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = TrackedDataHandler.ofOptional(PacketByteBuf::writeUuid, PacketByteBuf::readUuid);
+	public static final TrackedDataHandler<Optional<GlobalPos>> OPTIONAL_GLOBAL_POS = TrackedDataHandler.ofOptional(
+		(packetByteBuf, globalPos) -> packetByteBuf.encode(GlobalPos.CODEC, globalPos), packetByteBuf -> packetByteBuf.decode(GlobalPos.CODEC)
+	);
 	public static final TrackedDataHandler<NbtCompound> NBT_COMPOUND = new TrackedDataHandler<NbtCompound>() {
 		public void write(PacketByteBuf packetByteBuf, NbtCompound nbtCompound) {
 			packetByteBuf.writeNbt(nbtCompound);
@@ -253,7 +108,7 @@ public class TrackedDataHandlerRegistry {
 			return nbtCompound.copy();
 		}
 	};
-	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {
+	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler.ImmutableHandler<VillagerData>() {
 		public void write(PacketByteBuf packetByteBuf, VillagerData villagerData) {
 			packetByteBuf.writeRegistryValue(Registry.VILLAGER_TYPE, villagerData.getType());
 			packetByteBuf.writeRegistryValue(Registry.VILLAGER_PROFESSION, villagerData.getProfession());
@@ -265,12 +120,8 @@ public class TrackedDataHandlerRegistry {
 				packetByteBuf.readRegistryValue(Registry.VILLAGER_TYPE), packetByteBuf.readRegistryValue(Registry.VILLAGER_PROFESSION), packetByteBuf.readVarInt()
 			);
 		}
-
-		public VillagerData copy(VillagerData villagerData) {
-			return villagerData;
-		}
 	};
-	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = new TrackedDataHandler<OptionalInt>() {
+	public static final TrackedDataHandler<OptionalInt> OPTIONAL_INT = new TrackedDataHandler.ImmutableHandler<OptionalInt>() {
 		public void write(PacketByteBuf packetByteBuf, OptionalInt optionalInt) {
 			packetByteBuf.writeVarInt(optionalInt.orElse(-1) + 1);
 		}
@@ -279,24 +130,10 @@ public class TrackedDataHandlerRegistry {
 			int i = packetByteBuf.readVarInt();
 			return i == 0 ? OptionalInt.empty() : OptionalInt.of(i - 1);
 		}
-
-		public OptionalInt copy(OptionalInt optionalInt) {
-			return optionalInt;
-		}
 	};
-	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = new TrackedDataHandler<EntityPose>() {
-		public void write(PacketByteBuf packetByteBuf, EntityPose entityPose) {
-			packetByteBuf.writeEnumConstant(entityPose);
-		}
-
-		public EntityPose read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readEnumConstant(EntityPose.class);
-		}
-
-		public EntityPose copy(EntityPose entityPose) {
-			return entityPose;
-		}
-	};
+	public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.ofEnum(EntityPose.class);
+	public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registry.CAT_VARIANT);
+	public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registry.FROG_VARIANT);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);
@@ -334,5 +171,8 @@ public class TrackedDataHandlerRegistry {
 		register(VILLAGER_DATA);
 		register(OPTIONAL_INT);
 		register(ENTITY_POSE);
+		register(CAT_VARIANT);
+		register(FROG_VARIANT);
+		register(OPTIONAL_GLOBAL_POS);
 	}
 }

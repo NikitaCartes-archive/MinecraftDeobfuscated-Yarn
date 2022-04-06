@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -30,6 +29,7 @@ import javax.annotation.Nullable;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
@@ -290,7 +290,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry<T>> getRandom(Random random) {
+	public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
 		return Util.getRandomOrEmpty(this.getEntries(), random).map(RegistryEntry::upcast);
 	}
 

@@ -3,7 +3,6 @@ package net.minecraft.world;
 import com.mojang.logging.LogUtils;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -24,6 +23,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -33,6 +33,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
@@ -57,7 +58,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final ServerWorld world;
 	private final long seed;
 	private final WorldProperties levelProperties;
-	private final Random random;
+	private final AbstractRandom random;
 	private final DimensionType dimension;
 	private final MultiTickScheduler<Block> blockTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getBlockTickScheduler());
 	private final MultiTickScheduler<Fluid> fluidTickScheduler = new MultiTickScheduler<>(pos -> this.getChunk(pos).getFluidTickScheduler());
@@ -79,6 +80,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	@Nullable
 	private Supplier<String> currentlyGeneratingStructureName;
 	private final AtomicLong tickOrder = new AtomicLong();
+	private static final Identifier field_38683 = new Identifier("worldgen_region_random");
 
 	public ChunkRegion(ServerWorld world, List<Chunk> chunks, ChunkStatus status, int placementRadius) {
 		this.status = status;
@@ -93,7 +95,7 @@ public class ChunkRegion implements StructureWorldAccess {
 			this.world = world;
 			this.seed = world.getSeed();
 			this.levelProperties = world.getLevelProperties();
-			this.random = world.getRandom();
+			this.random = world.getChunkManager().getNoiseConfig().getOrCreateRandomDeriver(field_38683).createRandom(this.centerPos.getPos().getStartPos());
 			this.dimension = world.getDimension();
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed));
 			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
@@ -401,7 +403,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	}
 
 	@Override
-	public Random getRandom() {
+	public AbstractRandom getRandom() {
 		return this.random;
 	}
 

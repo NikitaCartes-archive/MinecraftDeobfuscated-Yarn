@@ -3,11 +3,11 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
@@ -33,7 +33,7 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		Random random,
+		AbstractRandom abstractRandom,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -42,12 +42,12 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 		int offset
 	) {
 		BlockPos blockPos = treeNode.getCenter();
-		int i = random.nextInt(2);
+		int i = abstractRandom.nextInt(2);
 		int j = 1;
 		int k = 0;
 
 		for(int l = offset; l >= -foliageHeight; --l) {
-			this.generateSquare(world, replacer, random, config, blockPos, i, l, treeNode.isGiantTrunk());
+			this.generateSquare(world, replacer, abstractRandom, config, blockPos, i, l, treeNode.isGiantTrunk());
 			if (i >= j) {
 				i = k;
 				k = 1;
@@ -59,12 +59,12 @@ public class SpruceFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-		return Math.max(4, trunkHeight - this.trunkHeight.get(random));
+	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+		return Math.max(4, trunkHeight - this.trunkHeight.get(abstractRandom));
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return dx == radius && dz == radius && radius > 0;
 	}
 }

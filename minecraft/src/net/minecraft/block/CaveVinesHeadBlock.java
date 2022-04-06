@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -11,6 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -23,7 +23,7 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 	}
 
 	@Override
-	protected int getGrowthLength(Random random) {
+	protected int getGrowthLength(AbstractRandom random) {
 		return 1;
 	}
 
@@ -43,7 +43,7 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 	}
 
 	@Override
-	protected BlockState age(BlockState state, Random random) {
+	protected BlockState age(BlockState state, AbstractRandom random) {
 		return super.age(state, random).with(BERRIES, Boolean.valueOf(random.nextFloat() < 0.11F));
 	}
 
@@ -69,12 +69,12 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(BERRIES, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 	}
 }

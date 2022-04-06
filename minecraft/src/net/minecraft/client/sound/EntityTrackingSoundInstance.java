@@ -5,13 +5,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class EntityTrackingSoundInstance extends MovingSoundInstance {
 	private final Entity entity;
 
-	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
-		super(sound, category);
+	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity, long seed) {
+		super(sound, category, AbstractRandom.createAtomic(seed));
 		this.volume = volume;
 		this.pitch = pitch;
 		this.entity = entity;

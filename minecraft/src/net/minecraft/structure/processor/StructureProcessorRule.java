@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -12,6 +11,7 @@ import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.RuleTest;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class StructureProcessorRule {
 	public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(
@@ -51,7 +51,7 @@ public class StructureProcessorRule {
 		this.outputNbt = (NbtCompound)nbt.orElse(null);
 	}
 
-	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
 		return this.inputPredicate.test(input, random)
 			&& this.locationPredicate.test(location, random)
 			&& this.positionPredicate.test(blockPos, blockPos2, pivot, random);

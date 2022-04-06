@@ -1,9 +1,9 @@
 package net.minecraft.entity;
 
-import java.util.Random;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class SaddledComponent {
 	private static final int MIN_BOOST_TIME = 140;
@@ -27,7 +27,7 @@ public class SaddledComponent {
 		this.currentBoostTime = this.dataTracker.get(this.boostTime);
 	}
 
-	public boolean boost(Random random) {
+	public boolean boost(AbstractRandom random) {
 		if (this.boosted) {
 			return false;
 		} else {

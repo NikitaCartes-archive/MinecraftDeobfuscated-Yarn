@@ -1,6 +1,5 @@
 package net.minecraft.block.entity;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +10,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class EnchantingTableBlockEntity extends BlockEntity implements Nameable {
@@ -24,7 +24,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	public float field_11964;
 	public float field_11963;
 	public float field_11962;
-	private static final Random RANDOM = new Random();
+	private static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
 	private Text customName;
 
 	public EnchantingTableBlockEntity(BlockPos pos, BlockState state) {

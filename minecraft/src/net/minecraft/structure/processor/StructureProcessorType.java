@@ -24,10 +24,10 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 	Codec<StructureProcessor> CODEC = Registry.STRUCTURE_PROCESSOR
 		.getCodec()
 		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
-	Codec<StructureProcessorList> field_26663 = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
-	Codec<StructureProcessorList> field_25876 = Codec.either(field_26663.fieldOf("processors").codec(), field_26663)
+	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
+	Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.either(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC)
 		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
-	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, field_25876);
+	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_PROCESSOR_LIST_KEY, PROCESSORS_CODEC);
 
 	Codec<P> codec();
 

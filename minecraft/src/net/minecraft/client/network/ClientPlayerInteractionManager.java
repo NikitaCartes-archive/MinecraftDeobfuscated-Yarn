@@ -14,6 +14,7 @@ import net.minecraft.block.OperatorBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.RideableInventory;
@@ -213,7 +214,12 @@ public class ClientPlayerInteractionManager {
 						.getSoundManager()
 						.play(
 							new PositionedSoundInstance(
-								blockSoundGroup.getHitSound(), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, pos
+								blockSoundGroup.getHitSound(),
+								SoundCategory.BLOCKS,
+								(blockSoundGroup.getVolume() + 1.0F) / 8.0F,
+								blockSoundGroup.getPitch() * 0.5F,
+								SoundInstance.createRandom(),
+								pos
 							)
 						);
 				}

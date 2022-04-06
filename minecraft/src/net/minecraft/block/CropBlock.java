@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemConvertible;
@@ -12,6 +11,7 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
@@ -73,7 +73,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (world.getBaseLightLevel(pos, 0) >= 9) {
 			int i = this.getAge(state);
 			if (i < this.getMaxAge()) {
@@ -172,12 +172,12 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+	public boolean canGrow(World world, AbstractRandom random, BlockPos pos, BlockState state) {
 		return true;
 	}
 
 	@Override
-	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+	public void grow(ServerWorld world, AbstractRandom random, BlockPos pos, BlockState state) {
 		this.applyGrowth(world, pos, state);
 	}
 

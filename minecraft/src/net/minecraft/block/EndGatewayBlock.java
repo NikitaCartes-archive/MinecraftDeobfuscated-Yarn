@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -10,6 +9,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
@@ -30,7 +30,7 @@ public class EndGatewayBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof EndGatewayBlockEntity) {
 			int i = ((EndGatewayBlockEntity)blockEntity).getDrawnSidesCount();

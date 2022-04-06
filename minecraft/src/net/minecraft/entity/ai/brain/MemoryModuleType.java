@@ -19,8 +19,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 

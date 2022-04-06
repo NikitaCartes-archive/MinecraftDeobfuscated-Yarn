@@ -3,11 +3,11 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
@@ -40,7 +40,7 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		Random random,
+		AbstractRandom abstractRandom,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -54,21 +54,21 @@ public class RandomSpreadFoliagePlacer extends FoliagePlacer {
 		for(int i = 0; i < this.leafPlacementAttempts; ++i) {
 			mutable.set(
 				blockPos,
-				random.nextInt(radius) - random.nextInt(radius),
-				random.nextInt(foliageHeight) - random.nextInt(foliageHeight),
-				random.nextInt(radius) - random.nextInt(radius)
+				abstractRandom.nextInt(radius) - abstractRandom.nextInt(radius),
+				abstractRandom.nextInt(foliageHeight) - abstractRandom.nextInt(foliageHeight),
+				abstractRandom.nextInt(radius) - abstractRandom.nextInt(radius)
 			);
-			placeFoliageBlock(world, replacer, random, config, mutable);
+			placeFoliageBlock(world, replacer, abstractRandom, config, mutable);
 		}
 	}
 
 	@Override
-	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-		return this.foliageHeight.get(random);
+	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+		return this.foliageHeight.get(abstractRandom);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		return false;
 	}
 }

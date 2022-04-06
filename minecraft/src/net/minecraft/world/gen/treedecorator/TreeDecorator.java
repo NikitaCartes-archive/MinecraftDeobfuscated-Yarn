@@ -2,12 +2,12 @@ package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
 
@@ -20,7 +20,12 @@ public abstract class TreeDecorator {
 	protected abstract TreeDecoratorType<?> getType();
 
 	public abstract void generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, List<BlockPos> logPositions, List<BlockPos> leavesPositions
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
+		AbstractRandom random,
+		List<BlockPos> logPositions,
+		List<BlockPos> leavesPositions,
+		List<BlockPos> rootPositions
 	);
 
 	protected static void placeVine(BiConsumer<BlockPos, BlockState> replacer, BlockPos pos, BooleanProperty facing) {

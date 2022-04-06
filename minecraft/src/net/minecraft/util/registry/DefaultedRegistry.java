@@ -2,11 +2,11 @@ package net.minecraft.util.registry;
 
 import com.mojang.serialization.Lifecycle;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
@@ -62,7 +62,7 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	}
 
 	@Override
-	public Optional<RegistryEntry<T>> getRandom(Random random) {
+	public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
 		return super.getRandom(random).or(() -> Optional.of(this.defaultEntry));
 	}
 

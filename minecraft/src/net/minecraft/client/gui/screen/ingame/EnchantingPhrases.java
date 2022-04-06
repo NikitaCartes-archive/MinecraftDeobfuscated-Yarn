@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
@@ -9,13 +8,14 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingPhrases {
 	private static final Identifier FONT_ID = new Identifier("minecraft", "alt");
 	private static final Style STYLE = Style.EMPTY.withFont(FONT_ID);
 	private static final EnchantingPhrases INSTANCE = new EnchantingPhrases();
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final String[] phrases = new String[]{
 		"the",
 		"elder",

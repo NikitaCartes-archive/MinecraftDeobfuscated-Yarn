@@ -4,13 +4,13 @@ import com.mojang.datafixers.util.Either;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +21,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 
 	Either<TagKey<T>, List<RegistryEntry<T>>> getStorage();
 
-	Optional<RegistryEntry<T>> getRandom(Random random);
+	Optional<RegistryEntry<T>> getRandom(AbstractRandom random);
 
 	RegistryEntry<T> get(int index);
 
@@ -103,7 +103,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 		}
 
 		@Override
-		public Optional<RegistryEntry<T>> getRandom(Random random) {
+		public Optional<RegistryEntry<T>> getRandom(AbstractRandom random) {
 			return Util.getRandomOrEmpty(this.getEntries(), random);
 		}
 

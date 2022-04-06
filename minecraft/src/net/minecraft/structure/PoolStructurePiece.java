@@ -5,7 +5,6 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -16,6 +15,7 @@ import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -84,7 +84,7 @@ public class PoolStructurePiece extends StructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		Random random,
+		AbstractRandom random,
 		BlockBox chunkBox,
 		ChunkPos chunkPos,
 		BlockPos pos
@@ -96,7 +96,7 @@ public class PoolStructurePiece extends StructurePiece {
 		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
-		Random random,
+		AbstractRandom random,
 		BlockBox boundingBox,
 		BlockPos pos,
 		boolean keepJigsaws

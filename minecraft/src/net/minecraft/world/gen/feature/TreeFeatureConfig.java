@@ -5,9 +5,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.block.Blocks;
 import net.minecraft.world.gen.feature.size.FeatureSize;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
+import net.minecraft.world.gen.root.RootPlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
@@ -19,6 +21,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 					TrunkPlacer.TYPE_CODEC.fieldOf("trunk_placer").forGetter(config -> config.trunkPlacer),
 					BlockStateProvider.TYPE_CODEC.fieldOf("foliage_provider").forGetter(config -> config.foliageProvider),
 					FoliagePlacer.TYPE_CODEC.fieldOf("foliage_placer").forGetter(config -> config.foliagePlacer),
+					RootPlacer.TYPE_CODEC.optionalFieldOf("root_placer").forGetter(config -> config.rootPlacer),
 					BlockStateProvider.TYPE_CODEC.fieldOf("dirt_provider").forGetter(config -> config.dirtProvider),
 					FeatureSize.TYPE_CODEC.fieldOf("minimum_size").forGetter(config -> config.minimumSize),
 					TreeDecorator.TYPE_CODEC.listOf().fieldOf("decorators").forGetter(config -> config.decorators),
@@ -32,6 +35,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 	public final TrunkPlacer trunkPlacer;
 	public final BlockStateProvider foliageProvider;
 	public final FoliagePlacer foliagePlacer;
+	public final Optional<RootPlacer> rootPlacer;
 	public final FeatureSize minimumSize;
 	public final List<TreeDecorator> decorators;
 	public final boolean ignoreVines;
@@ -42,6 +46,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		TrunkPlacer trunkPlacer,
 		BlockStateProvider foliageProvider,
 		FoliagePlacer foliagePlacer,
+		Optional<RootPlacer> rootPlacer,
 		BlockStateProvider dirtProvider,
 		FeatureSize minimumSize,
 		List<TreeDecorator> decorators,
@@ -52,6 +57,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		this.trunkPlacer = trunkPlacer;
 		this.foliageProvider = foliageProvider;
 		this.foliagePlacer = foliagePlacer;
+		this.rootPlacer = rootPlacer;
 		this.dirtProvider = dirtProvider;
 		this.minimumSize = minimumSize;
 		this.decorators = decorators;
@@ -64,6 +70,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 		private final TrunkPlacer trunkPlacer;
 		public final BlockStateProvider foliageProvider;
 		private final FoliagePlacer foliagePlacer;
+		private final Optional<RootPlacer> rootPlacer;
 		private BlockStateProvider dirtProvider;
 		private final FeatureSize minimumSize;
 		private List<TreeDecorator> decorators = ImmutableList.of();
@@ -71,14 +78,26 @@ public class TreeFeatureConfig implements FeatureConfig {
 		private boolean forceDirt;
 
 		public Builder(
-			BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, FeatureSize minimumSize
+			BlockStateProvider trunkProvider,
+			TrunkPlacer trunkPlacer,
+			BlockStateProvider foliageProvider,
+			FoliagePlacer foliagePlacer,
+			Optional<RootPlacer> rootPlacer,
+			FeatureSize minimumSize
 		) {
 			this.trunkProvider = trunkProvider;
 			this.trunkPlacer = trunkPlacer;
 			this.foliageProvider = foliageProvider;
 			this.dirtProvider = BlockStateProvider.of(Blocks.DIRT);
 			this.foliagePlacer = foliagePlacer;
+			this.rootPlacer = rootPlacer;
 			this.minimumSize = minimumSize;
+		}
+
+		public Builder(
+			BlockStateProvider trunkProvider, TrunkPlacer trunkPlacer, BlockStateProvider foliageProvider, FoliagePlacer foliagePlacer, FeatureSize minimumSize
+		) {
+			this(trunkProvider, trunkPlacer, foliageProvider, foliagePlacer, Optional.empty(), minimumSize);
 		}
 
 		public TreeFeatureConfig.Builder dirtProvider(BlockStateProvider dirtProvider) {
@@ -107,6 +126,7 @@ public class TreeFeatureConfig implements FeatureConfig {
 				this.trunkPlacer,
 				this.foliageProvider,
 				this.foliagePlacer,
+				this.rootPlacer,
 				this.dirtProvider,
 				this.minimumSize,
 				this.decorators,

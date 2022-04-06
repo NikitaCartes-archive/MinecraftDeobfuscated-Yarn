@@ -3,9 +3,9 @@ package net.minecraft.structure.rule;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class LinearPosRuleTest extends PosRuleTest {
 	public static final Codec<LinearPosRuleTest> CODEC = RecordCodecBuilder.create(
@@ -34,7 +34,7 @@ public class LinearPosRuleTest extends PosRuleTest {
 	}
 
 	@Override
-	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, Random random) {
+	public boolean test(BlockPos blockPos, BlockPos blockPos2, BlockPos pivot, AbstractRandom random) {
 		int i = blockPos2.getManhattanDistance(pivot);
 		float f = random.nextFloat();
 		return f <= MathHelper.clampedLerp(this.minChance, this.maxChance, MathHelper.getLerpProgress((float)i, (float)this.minDistance, (float)this.maxDistance));

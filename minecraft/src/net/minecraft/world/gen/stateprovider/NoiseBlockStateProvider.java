@@ -6,11 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class NoiseBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	public static final Codec<NoiseBlockStateProvider> CODEC = RecordCodecBuilder.create(
@@ -35,7 +35,7 @@ public class NoiseBlockStateProvider extends AbstractNoiseBlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(Random random, BlockPos pos) {
+	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
 		return this.getStateFromList(this.states, pos, (double)this.scale);
 	}
 

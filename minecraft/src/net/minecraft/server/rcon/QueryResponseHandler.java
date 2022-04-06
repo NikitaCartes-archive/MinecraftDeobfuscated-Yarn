@@ -13,10 +13,10 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.random.AbstractRandom;
 import org.slf4j.Logger;
 
 public class QueryResponseHandler extends RconBase {
@@ -278,7 +278,7 @@ public class QueryResponseHandler extends RconBase {
 			this.messageBytes[2] = bs[5];
 			this.messageBytes[3] = bs[6];
 			this.message = new String(this.messageBytes, StandardCharsets.UTF_8);
-			this.id = new Random().nextInt(16777216);
+			this.id = AbstractRandom.createAtomic().nextInt(16777216);
 			this.replyBuf = String.format("\t%s%d\u0000", this.message, this.id).getBytes(StandardCharsets.UTF_8);
 		}
 

@@ -2,10 +2,10 @@ package net.minecraft.block;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
@@ -27,7 +27,7 @@ public class LichenGrower {
 		return Direction.stream().anyMatch(direction2 -> this.getGrowPos(state, world, pos, direction, direction2, this.growChecker::canGrow).isPresent());
 	}
 
-	public Optional<LichenGrower.GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, Random random) {
+	public Optional<LichenGrower.GrowPos> grow(BlockState state, WorldAccess world, BlockPos pos, AbstractRandom random) {
 		return (Optional<LichenGrower.GrowPos>)Direction.shuffle(random)
 			.stream()
 			.filter(direction -> this.growChecker.canGrow(state, direction))
@@ -45,7 +45,7 @@ public class LichenGrower {
 	}
 
 	public Optional<LichenGrower.GrowPos> grow(
-		BlockState state, WorldAccess world, BlockPos pos, Direction direction, Random random, boolean markForPostProcessing
+		BlockState state, WorldAccess world, BlockPos pos, Direction direction, AbstractRandom random, boolean markForPostProcessing
 	) {
 		return (Optional<LichenGrower.GrowPos>)Direction.shuffle(random)
 			.stream()

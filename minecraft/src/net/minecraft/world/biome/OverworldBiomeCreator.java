@@ -570,6 +570,38 @@ public class OverworldBiomeCreator {
 			.build();
 	}
 
+	public static Biome createMangroveSwamp() {
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1));
+		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FROG, 10, 2, 5));
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder();
+		DefaultBiomeFeatures.addFossils(builder2);
+		addBasicFeatures(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addGrassAndClayDisks(builder2);
+		DefaultBiomeFeatures.addMangroveSwampFeatures(builder2);
+		builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_SWAMP);
+		return new Biome.Builder()
+			.precipitation(Biome.Precipitation.RAIN)
+			.temperature(0.8F)
+			.downfall(0.9F)
+			.effects(
+				new BiomeEffects.Builder()
+					.waterColor(3832426)
+					.waterFogColor(2302743)
+					.fogColor(12638463)
+					.skyColor(getSkyColor(0.8F))
+					.foliageColor(9285927)
+					.grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP)
+					.moodSound(BiomeMoodSound.CAVE)
+					.build()
+			)
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
+			.build();
+	}
+
 	public static Biome createRiver(boolean frozen) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder()
 			.spawn(SpawnGroup.WATER_CREATURE, new SpawnSettings.SpawnEntry(EntityType.SQUID, 2, 1, 4))

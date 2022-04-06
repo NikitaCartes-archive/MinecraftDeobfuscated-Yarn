@@ -4,19 +4,23 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.floatprovider.FloatSupplier;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class Sound implements SoundContainer<Sound> {
 	private final Identifier id;
-	private final float volume;
-	private final float pitch;
+	private final FloatSupplier volume;
+	private final FloatSupplier pitch;
 	private final int weight;
 	private final Sound.RegistrationType registrationType;
 	private final boolean stream;
 	private final boolean preload;
 	private final int attenuation;
 
-	public Sound(String id, float volume, float pitch, int weight, Sound.RegistrationType registrationType, boolean stream, boolean preload, int attenuation) {
+	public Sound(
+		String id, FloatSupplier volume, FloatSupplier pitch, int weight, Sound.RegistrationType registrationType, boolean stream, boolean preload, int attenuation
+	) {
 		this.id = new Identifier(id);
 		this.volume = volume;
 		this.pitch = pitch;
@@ -35,11 +39,11 @@ public class Sound implements SoundContainer<Sound> {
 		return new Identifier(this.id.getNamespace(), "sounds/" + this.id.getPath() + ".ogg");
 	}
 
-	public float getVolume() {
+	public FloatSupplier getVolume() {
 		return this.volume;
 	}
 
-	public float getPitch() {
+	public FloatSupplier getPitch() {
 		return this.pitch;
 	}
 
@@ -48,7 +52,7 @@ public class Sound implements SoundContainer<Sound> {
 		return this.weight;
 	}
 
-	public Sound getSound() {
+	public Sound getSound(AbstractRandom abstractRandom) {
 		return this;
 	}
 

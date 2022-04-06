@@ -1,6 +1,5 @@
 package net.minecraft.client.render.entity;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
@@ -15,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -42,7 +42,7 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 						matrixStack,
 						vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(blockState)),
 						false,
-						new Random(),
+						AbstractRandom.createAtomic(),
 						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()),
 						OverlayTexture.DEFAULT_UV
 					);

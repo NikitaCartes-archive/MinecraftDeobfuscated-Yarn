@@ -44,7 +44,7 @@ public class RoarTask extends Task<WardenEntity> {
 		Optional<LivingEntity> optional = brain.getOptionalMemory(MemoryModuleType.ROAR_TARGET);
 		if (optional.isPresent()) {
 			LivingEntity livingEntity = (LivingEntity)optional.get();
-			if (WardenEntity.isValidTarget(livingEntity)) {
+			if (wardenEntity.isValidTarget(livingEntity)) {
 				return true;
 			}
 

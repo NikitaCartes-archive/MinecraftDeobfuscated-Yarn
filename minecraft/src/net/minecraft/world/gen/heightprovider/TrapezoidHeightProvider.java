@@ -4,8 +4,8 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class TrapezoidHeightProvider extends HeightProvider {
 	}
 
 	@Override
-	public int get(Random random, HeightContext context) {
+	public int get(AbstractRandom abstractRandom, HeightContext context) {
 		int i = this.minOffset.getY(context);
 		int j = this.maxOffset.getY(context);
 		if (i > j) {
@@ -56,11 +56,11 @@ public class TrapezoidHeightProvider extends HeightProvider {
 		} else {
 			int k = j - i;
 			if (this.plateau >= k) {
-				return MathHelper.nextBetween(random, i, j);
+				return MathHelper.nextBetween(abstractRandom, i, j);
 			} else {
 				int l = (k - this.plateau) / 2;
 				int m = k - l;
-				return i + MathHelper.nextBetween(random, 0, m) + MathHelper.nextBetween(random, 0, l);
+				return i + MathHelper.nextBetween(abstractRandom, 0, m) + MathHelper.nextBetween(abstractRandom, 0, l);
 			}
 		}
 	}

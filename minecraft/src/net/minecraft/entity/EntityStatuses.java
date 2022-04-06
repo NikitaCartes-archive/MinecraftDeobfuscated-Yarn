@@ -39,7 +39,7 @@ public class EntityStatuses {
 	public static final byte DAMAGE_FROM_DROWNING = 36;
 	public static final byte DAMAGE_FROM_FIRE = 37;
 	public static final byte ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES = 38;
-	public static final byte STUN_RAVENGER = 39;
+	public static final byte STUN_RAVAGER = 39;
 	public static final byte TAME_OCELOT_FAILED = 40;
 	public static final byte TAME_OCELOT_SUCCESS = 41;
 	public static final byte ADD_SPLASH_PARTICLES = 42;

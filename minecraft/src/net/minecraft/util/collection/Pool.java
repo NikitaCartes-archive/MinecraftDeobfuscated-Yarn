@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class Pool<E extends Weighted> {
 	private final int totalWeight;
@@ -32,7 +32,7 @@ public class Pool<E extends Weighted> {
 		return this.entries.isEmpty();
 	}
 
-	public Optional<E> getOrEmpty(Random random) {
+	public Optional<E> getOrEmpty(AbstractRandom random) {
 		if (this.totalWeight == 0) {
 			return Optional.empty();
 		} else {

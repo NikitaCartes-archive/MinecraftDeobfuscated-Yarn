@@ -1,6 +1,5 @@
 package net.minecraft.client.render.block;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
@@ -22,6 +21,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
@@ -30,7 +30,7 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 	private final BlockModelRenderer blockModelRenderer;
 	private final BuiltinModelItemRenderer builtinModelItemRenderer;
 	private final FluidRenderer fluidRenderer;
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private final BlockColors blockColors;
 
 	public BlockRenderManager(BlockModels models, BuiltinModelItemRenderer builtinModelItemRenderer, BlockColors blockColors) {
@@ -54,7 +54,7 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 	}
 
 	public boolean renderBlock(
-		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, Random random
+		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random
 	) {
 		try {
 			BlockRenderType blockRenderType = state.getRenderType();

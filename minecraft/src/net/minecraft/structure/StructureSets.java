@@ -11,38 +11,37 @@ import net.minecraft.world.gen.chunk.placement.ConcentricRingsStructurePlacement
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.chunk.placement.SpreadType;
 import net.minecraft.world.gen.chunk.placement.StructurePlacement;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureTypes;
 
 public interface StructureSets {
 	RegistryEntry<StructureSet> VILLAGES = register(
 		StructureSetKeys.VILLAGES,
 		new StructureSet(
 			List.of(
-				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_PLAINS),
-				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_DESERT),
-				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_SAVANNA),
-				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_SNOWY),
-				StructureSet.createEntry(ConfiguredStructureFeatures.VILLAGE_TAIGA)
+				StructureSet.createEntry(StructureTypes.VILLAGE_PLAINS),
+				StructureSet.createEntry(StructureTypes.VILLAGE_DESERT),
+				StructureSet.createEntry(StructureTypes.VILLAGE_SAVANNA),
+				StructureSet.createEntry(StructureTypes.VILLAGE_SNOWY),
+				StructureSet.createEntry(StructureTypes.VILLAGE_TAIGA)
 			),
 			new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312)
 		)
 	);
 	RegistryEntry<StructureSet> DESERT_PYRAMIDS = register(
-		StructureSetKeys.DESERT_PYRAMIDS, ConfiguredStructureFeatures.DESERT_PYRAMID, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357617)
+		StructureSetKeys.DESERT_PYRAMIDS, StructureTypes.DESERT_PYRAMID, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357617)
 	);
 	RegistryEntry<StructureSet> IGLOOS = register(
-		StructureSetKeys.IGLOOS, ConfiguredStructureFeatures.IGLOO, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357618)
+		StructureSetKeys.IGLOOS, StructureTypes.IGLOO, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357618)
 	);
 	RegistryEntry<StructureSet> JUNGLE_TEMPLES = register(
-		StructureSetKeys.JUNGLE_TEMPLES, ConfiguredStructureFeatures.JUNGLE_PYRAMID, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357619)
+		StructureSetKeys.JUNGLE_TEMPLES, StructureTypes.JUNGLE_PYRAMID, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357619)
 	);
 	RegistryEntry<StructureSet> SWAMP_HUTS = register(
-		StructureSetKeys.SWAMP_HUTS, ConfiguredStructureFeatures.SWAMP_HUT, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357620)
+		StructureSetKeys.SWAMP_HUTS, StructureTypes.SWAMP_HUT, new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357620)
 	);
 	RegistryEntry<StructureSet> PILLAGER_OUTPOSTS = register(
 		StructureSetKeys.PILLAGER_OUTPOSTS,
-		ConfiguredStructureFeatures.PILLAGER_OUTPOST,
+		StructureTypes.PILLAGER_OUTPOST,
 		new RandomSpreadStructurePlacement(
 			Vec3i.ZERO,
 			StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_1,
@@ -55,17 +54,17 @@ public interface StructureSets {
 		)
 	);
 	RegistryEntry<StructureSet> field_38475 = register(
-		StructureSetKeys.ANCIENT_CITIES, ConfiguredStructureFeatures.field_38476, new RandomSpreadStructurePlacement(24, 8, SpreadType.LINEAR, 20083232)
+		StructureSetKeys.ANCIENT_CITIES, StructureTypes.ANCIENT_CITY, new RandomSpreadStructurePlacement(24, 8, SpreadType.LINEAR, 20083232)
 	);
 	RegistryEntry<StructureSet> OCEAN_MONUMENTS = register(
-		StructureSetKeys.OCEAN_MONUMENTS, ConfiguredStructureFeatures.MONUMENT, new RandomSpreadStructurePlacement(32, 5, SpreadType.TRIANGULAR, 10387313)
+		StructureSetKeys.OCEAN_MONUMENTS, StructureTypes.MONUMENT, new RandomSpreadStructurePlacement(32, 5, SpreadType.TRIANGULAR, 10387313)
 	);
 	RegistryEntry<StructureSet> WOODLAND_MANSIONS = register(
-		StructureSetKeys.WOODLAND_MANSIONS, ConfiguredStructureFeatures.MANSION, new RandomSpreadStructurePlacement(80, 20, SpreadType.TRIANGULAR, 10387319)
+		StructureSetKeys.WOODLAND_MANSIONS, StructureTypes.MANSION, new RandomSpreadStructurePlacement(80, 20, SpreadType.TRIANGULAR, 10387319)
 	);
 	RegistryEntry<StructureSet> BURIED_TREASURES = register(
 		StructureSetKeys.BURIED_TREASURES,
-		ConfiguredStructureFeatures.BURIED_TREASURE,
+		StructureTypes.BURIED_TREASURE,
 		new RandomSpreadStructurePlacement(
 			new Vec3i(9, 0, 9), StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_2, 0.01F, 0, Optional.empty(), 1, 0, SpreadType.LINEAR
 		)
@@ -73,7 +72,7 @@ public interface StructureSets {
 	RegistryEntry<StructureSet> MINESHAFTS = register(
 		StructureSetKeys.MINESHAFTS,
 		new StructureSet(
-			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT), StructureSet.createEntry(ConfiguredStructureFeatures.MINESHAFT_MESA)),
+			List.of(StructureSet.createEntry(StructureTypes.MINESHAFT), StructureSet.createEntry(StructureTypes.MINESHAFT_MESA)),
 			new RandomSpreadStructurePlacement(
 				Vec3i.ZERO, StructurePlacement.FrequencyReductionMethod.LEGACY_TYPE_3, 0.004F, 0, Optional.empty(), 1, 0, SpreadType.LINEAR
 			)
@@ -83,13 +82,13 @@ public interface StructureSets {
 		StructureSetKeys.RUINED_PORTALS,
 		new StructureSet(
 			List.of(
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_DESERT),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_JUNGLE),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_SWAMP),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_MOUNTAIN),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_OCEAN),
-				StructureSet.createEntry(ConfiguredStructureFeatures.RUINED_PORTAL_NETHER)
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_DESERT),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_JUNGLE),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_SWAMP),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_MOUNTAIN),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_OCEAN),
+				StructureSet.createEntry(StructureTypes.RUINED_PORTAL_NETHER)
 			),
 			new RandomSpreadStructurePlacement(40, 15, SpreadType.LINEAR, 34222645)
 		)
@@ -97,33 +96,33 @@ public interface StructureSets {
 	RegistryEntry<StructureSet> SHIPWRECKS = register(
 		StructureSetKeys.SHIPWRECKS,
 		new StructureSet(
-			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.SHIPWRECK), StructureSet.createEntry(ConfiguredStructureFeatures.SHIPWRECK_BEACHED)),
+			List.of(StructureSet.createEntry(StructureTypes.SHIPWRECK), StructureSet.createEntry(StructureTypes.SHIPWRECK_BEACHED)),
 			new RandomSpreadStructurePlacement(24, 4, SpreadType.LINEAR, 165745295)
 		)
 	);
 	RegistryEntry<StructureSet> OCEAN_RUINS = register(
 		StructureSetKeys.OCEAN_RUINS,
 		new StructureSet(
-			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.OCEAN_RUIN_COLD), StructureSet.createEntry(ConfiguredStructureFeatures.OCEAN_RUIN_WARM)),
+			List.of(StructureSet.createEntry(StructureTypes.OCEAN_RUIN_COLD), StructureSet.createEntry(StructureTypes.OCEAN_RUIN_WARM)),
 			new RandomSpreadStructurePlacement(20, 8, SpreadType.LINEAR, 14357621)
 		)
 	);
 	RegistryEntry<StructureSet> NETHER_COMPLEXES = register(
 		StructureSetKeys.NETHER_COMPLEXES,
 		new StructureSet(
-			List.of(StructureSet.createEntry(ConfiguredStructureFeatures.FORTRESS, 2), StructureSet.createEntry(ConfiguredStructureFeatures.BASTION_REMNANT, 3)),
+			List.of(StructureSet.createEntry(StructureTypes.FORTRESS, 2), StructureSet.createEntry(StructureTypes.BASTION_REMNANT, 3)),
 			new RandomSpreadStructurePlacement(27, 4, SpreadType.LINEAR, 30084232)
 		)
 	);
 	RegistryEntry<StructureSet> NETHER_FOSSILS = register(
-		StructureSetKeys.NETHER_FOSSILS, ConfiguredStructureFeatures.NETHER_FOSSIL, new RandomSpreadStructurePlacement(2, 1, SpreadType.LINEAR, 14357921)
+		StructureSetKeys.NETHER_FOSSILS, StructureTypes.NETHER_FOSSIL, new RandomSpreadStructurePlacement(2, 1, SpreadType.LINEAR, 14357921)
 	);
 	RegistryEntry<StructureSet> END_CITIES = register(
-		StructureSetKeys.END_CITIES, ConfiguredStructureFeatures.END_CITY, new RandomSpreadStructurePlacement(20, 11, SpreadType.TRIANGULAR, 10387313)
+		StructureSetKeys.END_CITIES, StructureTypes.END_CITY, new RandomSpreadStructurePlacement(20, 11, SpreadType.TRIANGULAR, 10387313)
 	);
 	RegistryEntry<StructureSet> STRONGHOLDS = register(
 		StructureSetKeys.STRONGHOLDS,
-		ConfiguredStructureFeatures.STRONGHOLD,
+		StructureTypes.STRONGHOLD,
 		new ConcentricRingsStructurePlacement(32, 3, 128, BuiltinRegistries.BIOME.getOrCreateEntryList(BiomeTags.STRONGHOLD_BIASED_TO))
 	);
 
@@ -136,7 +135,7 @@ public interface StructureSets {
 	}
 
 	static RegistryEntry<StructureSet> register(
-		RegistryKey<StructureSet> key, RegistryEntry<StructureFeature> configuredStructureFigure, StructurePlacement placement
+		RegistryKey<StructureSet> key, RegistryEntry<net.minecraft.world.gen.structure.StructureType> configuredStructureFigure, StructurePlacement placement
 	) {
 		return register(key, new StructureSet(configuredStructureFigure, placement));
 	}

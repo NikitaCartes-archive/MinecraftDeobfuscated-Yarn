@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.ingame;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.DiffuseLighting;
@@ -29,12 +28,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
 	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
-	private final Random random = new Random();
+	private final AbstractRandom random = AbstractRandom.createAtomic();
 	private BookModel BOOK_MODEL;
 	public int ticks;
 	public float nextPageAngle;

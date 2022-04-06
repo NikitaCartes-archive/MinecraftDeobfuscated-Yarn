@@ -34,7 +34,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -511,8 +511,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void readFromPacket(MobSpawnS2CPacket packet) {
-		super.readFromPacket(packet);
+	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+		super.onSpawnPacket(packet);
 		this.bodyYaw = 0.0F;
 		this.prevBodyYaw = 0.0F;
 	}

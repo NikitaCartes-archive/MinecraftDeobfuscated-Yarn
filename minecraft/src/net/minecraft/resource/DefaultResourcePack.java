@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -25,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -35,7 +35,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
-public class DefaultResourcePack implements ResourcePack, ResourceFactory {
+public class DefaultResourcePack implements ResourcePack {
 	@Nullable
 	public static Path resourcePath;
 	private static final Logger LOGGER = LogUtils.getLogger();
@@ -299,49 +299,7 @@ public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	public void close() {
 	}
 
-	@Override
-	public Resource getResource(Identifier identifier) throws IOException {
-		return new Resource() {
-			@Nullable
-			InputStream stream;
-
-			public void close() throws IOException {
-				if (this.stream != null) {
-					this.stream.close();
-				}
-			}
-
-			@Override
-			public Identifier getId() {
-				return identifier;
-			}
-
-			@Override
-			public InputStream getInputStream() {
-				try {
-					this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, identifier);
-				} catch (IOException var2) {
-					throw new UncheckedIOException("Could not get client resource from vanilla pack", var2);
-				}
-
-				return this.stream;
-			}
-
-			@Override
-			public boolean hasMetadata() {
-				return false;
-			}
-
-			@Nullable
-			@Override
-			public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
-				return null;
-			}
-
-			@Override
-			public String getResourcePackName() {
-				return DefaultResourcePack.this.getName();
-			}
-		};
+	public ResourceFactory getFactory() {
+		return id -> Optional.of(new Resource(this.getName(), () -> this.open(ResourceType.CLIENT_RESOURCES, id)));
 	}
 }

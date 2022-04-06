@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -57,6 +56,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -316,7 +316,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		}
 	}
 
-	public static DyeColor generateDefaultColor(Random random) {
+	public static DyeColor generateDefaultColor(AbstractRandom random) {
 		int i = random.nextInt(100);
 		if (i < 5) {
 			return DyeColor.BLACK;

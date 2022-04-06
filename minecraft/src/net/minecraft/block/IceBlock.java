@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -10,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -35,7 +35,7 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (world.getLightLevel(LightType.BLOCK, pos) > 11 - state.getOpacity(world, pos)) {
 			this.melt(state, world, pos);
 		}

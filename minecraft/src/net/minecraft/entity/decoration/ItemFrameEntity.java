@@ -31,6 +31,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -408,7 +409,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.getType(), this.facing.getId(), this.getDecorationBlockPos());
+		return new EntitySpawnS2CPacket(this, this.facing.getId(), this.getDecorationBlockPos());
 	}
 
 	@Override
@@ -425,5 +426,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	protected ItemStack getAsItemStack() {
 		return new ItemStack(Items.ITEM_FRAME);
+	}
+
+	@Override
+	public float getBodyYaw() {
+		Direction direction = this.getHorizontalFacing();
+		int i = direction.getAxis().isVertical() ? 90 * direction.getDirection().offset() : 0;
+		return (float)MathHelper.wrapDegrees(180 + direction.getHorizontal() * 90 + this.getRotation() * 45 + i);
 	}
 }

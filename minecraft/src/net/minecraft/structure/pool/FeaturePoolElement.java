@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
-import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -26,7 +26,7 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), method_28883())
+		instance -> instance.group(PlacedFeature.REGISTRY_CODEC.fieldOf("feature").forGetter(featurePoolElement -> featurePoolElement.feature), projectionGetter())
 				.apply(instance, FeaturePoolElement::new)
 	);
 	private final RegistryEntry<PlacedFeature> feature;
@@ -54,7 +54,9 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random
+	) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(
 			new Structure.StructureBlockInfo(
@@ -80,7 +82,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		BlockPos blockPos,
 		BlockRotation rotation,
 		BlockBox box,
-		Random random,
+		AbstractRandom random,
 		boolean keepJigsaws
 	) {
 		return ((PlacedFeature)this.feature.value()).generateUnregistered(world, chunkGenerator, random, pos);

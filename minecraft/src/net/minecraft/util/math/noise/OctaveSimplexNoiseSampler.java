@@ -3,9 +3,9 @@ package net.minecraft.util.math.noise;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
-import net.minecraft.world.gen.random.AbstractRandom;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.gen.random.AtomicSimpleRandom;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class OctaveSimplexNoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;

@@ -272,9 +272,24 @@ public class EntityModelPartNames {
 	 * The key of an eyes model part, whose value is {@value}.
 	 */
 	public static final String EYES = "eyes";
-	public static final String field_38329 = "right_tendril";
-	public static final String field_38330 = "left_tendril";
-	public static final String field_38457 = "right_ribcage";
-	public static final String field_38458 = "left_ribcage";
-	public static final String field_38331 = "bone";
+	/**
+	 * The key of a right tendril model part, whose value is {@value}.
+	 */
+	public static final String RIGHT_TENDRIL = "right_tendril";
+	/**
+	 * The key of a left tendril model part, whose value is {@value}.
+	 */
+	public static final String LEFT_TENDRIL = "left_tendril";
+	/**
+	 * The key of a right ribcage model part, whose value is {@value}.
+	 */
+	public static final String RIGHT_RIBCAGE = "right_ribcage";
+	/**
+	 * The key of a left ribcage model part, whose value is {@value}.
+	 */
+	public static final String LEFT_RIBCAGE = "left_ribcage";
+	/**
+	 * The key of a bone model part, whose value is {@value}.
+	 */
+	public static final String BONE = "bone";
 }

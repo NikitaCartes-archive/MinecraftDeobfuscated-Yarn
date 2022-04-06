@@ -53,16 +53,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	public StatusEffectInstance(StatusEffect type, int duration, int amplifier, boolean ambient, boolean showParticles, boolean showIcon) {
-		this(
-			type,
-			duration,
-			amplifier,
-			ambient,
-			showParticles,
-			showIcon,
-			null,
-			Optional.ofNullable((StatusEffectInstance.FactorCalculationData)type.getFactorCalculationDataSupplier().get())
-		);
+		this(type, duration, amplifier, ambient, showParticles, showIcon, null, type.getFactorCalculationDataSupplier());
 	}
 
 	public StatusEffectInstance(
@@ -87,7 +78,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 
 	public StatusEffectInstance(StatusEffectInstance instance) {
 		this.type = instance.type;
-		this.factorCalculationData = Optional.ofNullable((StatusEffectInstance.FactorCalculationData)this.type.getFactorCalculationDataSupplier().get());
+		this.factorCalculationData = this.type.getFactorCalculationDataSupplier();
 		this.copyFrom(instance);
 	}
 

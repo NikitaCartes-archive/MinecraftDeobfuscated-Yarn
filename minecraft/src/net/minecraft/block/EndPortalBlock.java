@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
@@ -10,6 +9,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -55,7 +55,7 @@ public class EndPortalBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		double d = (double)pos.getX() + random.nextDouble();
 		double e = (double)pos.getY() + 0.8;
 		double f = (double)pos.getZ() + random.nextDouble();

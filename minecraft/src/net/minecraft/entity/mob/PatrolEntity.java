@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -14,6 +13,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
@@ -94,7 +94,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<? extends PatrolEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getLightLevel(LightType.BLOCK, pos) > 8 ? false : canSpawnIgnoreLightLevel(type, world, spawnReason, pos, random);
 	}
 
@@ -213,10 +213,12 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		private boolean wander() {
-			Random random = this.entity.getRandom();
+			AbstractRandom abstractRandom = this.entity.getRandom();
 			BlockPos blockPos = this.entity
 				.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.entity.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+				.getTopPosition(
+					Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.entity.getBlockPos().add(-8 + abstractRandom.nextInt(16), 0, -8 + abstractRandom.nextInt(16))
+				);
 			return this.entity.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}
 	}

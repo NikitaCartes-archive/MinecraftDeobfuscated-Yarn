@@ -360,8 +360,8 @@ public class FileDownload {
 		@Nullable
 		private ActionListener listener;
 
-		public DownloadCountingOutputStream(OutputStream outputStream) {
-			super(outputStream);
+		public DownloadCountingOutputStream(OutputStream stream) {
+			super(stream);
 		}
 
 		public void setListener(ActionListener listener) {

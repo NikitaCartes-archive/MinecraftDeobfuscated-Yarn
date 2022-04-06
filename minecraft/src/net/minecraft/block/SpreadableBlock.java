@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
@@ -32,7 +32,7 @@ public abstract class SpreadableBlock extends SnowyBlock {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (!canSurvive(state, world, pos)) {
 			world.setBlockState(pos, Blocks.DIRT.getDefaultState());
 		} else {

@@ -17,8 +17,9 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int fixedZ;
 	private final float volume;
 	private final float pitch;
+	private final long seed;
 
-	public PlaySoundS2CPacket(SoundEvent sound, SoundCategory category, double x, double y, double z, float volume, float pitch) {
+	public PlaySoundS2CPacket(SoundEvent sound, SoundCategory category, double x, double y, double z, float volume, float pitch, long seed) {
 		Validate.notNull(sound, "sound");
 		this.sound = sound;
 		this.category = category;
@@ -27,6 +28,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.fixedZ = (int)(z * 8.0);
 		this.volume = volume;
 		this.pitch = pitch;
+		this.seed = seed;
 	}
 
 	public PlaySoundS2CPacket(PacketByteBuf buf) {
@@ -37,6 +39,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.fixedZ = buf.readInt();
 		this.volume = buf.readFloat();
 		this.pitch = buf.readFloat();
+		this.seed = buf.readLong();
 	}
 
 	@Override
@@ -48,6 +51,7 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.fixedZ);
 		buf.writeFloat(this.volume);
 		buf.writeFloat(this.pitch);
+		buf.writeLong(this.seed);
 	}
 
 	public SoundEvent getSound() {
@@ -76,6 +80,10 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public float getPitch() {
 		return this.pitch;
+	}
+
+	public long getSeed() {
+		return this.seed;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

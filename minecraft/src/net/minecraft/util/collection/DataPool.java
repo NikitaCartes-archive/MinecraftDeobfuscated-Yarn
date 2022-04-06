@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class DataPool<E> extends Pool<Weighted.Present<E>> {
 	public static <E> Codec<DataPool<E>> method_39521(Codec<E> codec) {
@@ -32,7 +32,7 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 		return new DataPool<>(List.of(Weighted.of(object, 1)));
 	}
 
-	public Optional<E> getDataOrEmpty(Random random) {
+	public Optional<E> getDataOrEmpty(AbstractRandom random) {
 		return this.getOrEmpty(random).map(Weighted.Present::getData);
 	}
 

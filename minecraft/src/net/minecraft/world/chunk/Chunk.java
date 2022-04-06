@@ -46,7 +46,7 @@ import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.SerializableTickScheduler;
 import org.slf4j.Logger;
@@ -71,8 +71,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	protected BlendingData blendingData;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
-	private final Map<StructureFeature, StructureStart> structureStarts = Maps.<StructureFeature, StructureStart>newHashMap();
-	private final Map<StructureFeature, LongSet> structureReferences = Maps.<StructureFeature, LongSet>newHashMap();
+	private final Map<StructureType, StructureStart> structureStarts = Maps.<StructureType, StructureStart>newHashMap();
+	private final Map<StructureType, LongSet> structureReferences = Maps.<StructureType, LongSet>newHashMap();
 	protected final Map<BlockPos, NbtCompound> blockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
 	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	protected final HeightLimitView heightLimitView;
@@ -193,44 +193,44 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	@Nullable
 	@Override
-	public StructureStart getStructureStart(StructureFeature structureFeature) {
-		return (StructureStart)this.structureStarts.get(structureFeature);
+	public StructureStart getStructureStart(StructureType structureType) {
+		return (StructureStart)this.structureStarts.get(structureType);
 	}
 
 	@Override
-	public void setStructureStart(StructureFeature structureFeature, StructureStart start) {
-		this.structureStarts.put(structureFeature, start);
+	public void setStructureStart(StructureType structureType, StructureStart start) {
+		this.structureStarts.put(structureType, start);
 		this.needsSaving = true;
 	}
 
-	public Map<StructureFeature, StructureStart> getStructureStarts() {
+	public Map<StructureType, StructureStart> getStructureStarts() {
 		return Collections.unmodifiableMap(this.structureStarts);
 	}
 
-	public void setStructureStarts(Map<StructureFeature, StructureStart> structureStarts) {
+	public void setStructureStarts(Map<StructureType, StructureStart> structureStarts) {
 		this.structureStarts.clear();
 		this.structureStarts.putAll(structureStarts);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public LongSet getStructureReferences(StructureFeature structureFeature) {
-		return (LongSet)this.structureReferences.getOrDefault(structureFeature, EMPTY_STRUCTURE_REFERENCES);
+	public LongSet getStructureReferences(StructureType structureType) {
+		return (LongSet)this.structureReferences.getOrDefault(structureType, EMPTY_STRUCTURE_REFERENCES);
 	}
 
 	@Override
-	public void addStructureReference(StructureFeature structureFeature, long reference) {
-		((LongSet)this.structureReferences.computeIfAbsent(structureFeature, structureFeaturex -> new LongOpenHashSet())).add(reference);
+	public void addStructureReference(StructureType structureType, long reference) {
+		((LongSet)this.structureReferences.computeIfAbsent(structureType, structureTypex -> new LongOpenHashSet())).add(reference);
 		this.needsSaving = true;
 	}
 
 	@Override
-	public Map<StructureFeature, LongSet> getStructureReferences() {
+	public Map<StructureType, LongSet> getStructureReferences() {
 		return Collections.unmodifiableMap(this.structureReferences);
 	}
 
 	@Override
-	public void setStructureReferences(Map<StructureFeature, LongSet> structureReferences) {
+	public void setStructureReferences(Map<StructureType, LongSet> structureReferences) {
 		this.structureReferences.clear();
 		this.structureReferences.putAll(structureReferences);
 		this.needsSaving = true;

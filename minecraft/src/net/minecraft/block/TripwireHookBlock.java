@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import com.google.common.base.MoreObjects;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -17,6 +16,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -173,7 +173,7 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		this.update(world, pos, state, false, true, -1, null);
 	}
 

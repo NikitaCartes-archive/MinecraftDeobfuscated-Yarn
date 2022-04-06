@@ -2,7 +2,6 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.BlockMirror;
@@ -11,6 +10,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class StructurePlacementData {
 	private BlockMirror mirror = BlockMirror.NONE;
@@ -21,7 +21,7 @@ public class StructurePlacementData {
 	private BlockBox boundingBox;
 	private boolean placeFluids = true;
 	@Nullable
-	private Random random;
+	private AbstractRandom random;
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
 	private boolean updateNeighbors;
@@ -68,7 +68,7 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setRandom(@Nullable Random random) {
+	public StructurePlacementData setRandom(@Nullable AbstractRandom random) {
 		this.random = random;
 		return this;
 	}
@@ -110,11 +110,11 @@ public class StructurePlacementData {
 		return this.position;
 	}
 
-	public Random getRandom(@Nullable BlockPos pos) {
+	public AbstractRandom getRandom(@Nullable BlockPos pos) {
 		if (this.random != null) {
 			return this.random;
 		} else {
-			return pos == null ? new Random(Util.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(pos));
+			return pos == null ? AbstractRandom.createAtomic(Util.getMeasuringTimeMs()) : AbstractRandom.createAtomic(MathHelper.hashCode(pos));
 		}
 	}
 

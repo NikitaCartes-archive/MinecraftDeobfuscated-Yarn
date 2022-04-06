@@ -1,8 +1,8 @@
 package net.minecraft.structure.rule;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class BlockStateMatchRuleTest extends RuleTest {
 	public static final Codec<BlockStateMatchRuleTest> CODEC = BlockState.CODEC
@@ -16,7 +16,7 @@ public class BlockStateMatchRuleTest extends RuleTest {
 	}
 
 	@Override
-	public boolean test(BlockState state, Random random) {
+	public boolean test(BlockState state, AbstractRandom random) {
 		return state == this.blockState;
 	}
 

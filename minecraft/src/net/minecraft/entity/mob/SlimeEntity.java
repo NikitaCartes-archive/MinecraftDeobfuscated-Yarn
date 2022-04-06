@@ -1,7 +1,7 @@
 package net.minecraft.entity.mob;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.EnumSet;
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -21,7 +21,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -29,18 +28,18 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.random.ChunkRandom;
 
 public class SlimeEntity extends MobEntity implements Monster {
 	private static final TrackedData<Integer> SLIME_SIZE = DataTracker.registerData(SlimeEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -73,7 +72,8 @@ public class SlimeEntity extends MobEntity implements Monster {
 		this.dataTracker.startTracking(SLIME_SIZE, 1);
 	}
 
-	protected void setSize(int size, boolean heal) {
+	@VisibleForTesting
+	public void setSize(int size, boolean heal) {
 		int i = MathHelper.clamp(size, 1, 127);
 		this.dataTracker.set(SLIME_SIZE, i);
 		this.refreshPosition();
@@ -265,12 +265,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		return this.isSmall() ? SoundEvents.ENTITY_SLIME_SQUISH_SMALL : SoundEvents.ENTITY_SLIME_SQUISH;
 	}
 
-	@Override
-	protected Identifier getLootTableId() {
-		return this.getSize() == 1 ? this.getType().getLootTableId() : LootTables.EMPTY;
-	}
-
-	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
 			if (world.getBiome(pos).isIn(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)
 				&& pos.getY() > 50

@@ -453,7 +453,11 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		private void updateLoadStatus(EntityTrackingStatus oldStatus, EntityTrackingStatus newStatus) {
 			EntityTrackingStatus entityTrackingStatus = ServerEntityManager.getNeededLoadStatus(this.entity, oldStatus);
 			EntityTrackingStatus entityTrackingStatus2 = ServerEntityManager.getNeededLoadStatus(this.entity, newStatus);
-			if (entityTrackingStatus != entityTrackingStatus2) {
+			if (entityTrackingStatus == entityTrackingStatus2) {
+				if (entityTrackingStatus2.shouldTrack()) {
+					ServerEntityManager.this.handler.updateLoadStatus(this.entity);
+				}
+			} else {
 				boolean bl = entityTrackingStatus.shouldTrack();
 				boolean bl2 = entityTrackingStatus2.shouldTrack();
 				if (bl && !bl2) {
@@ -468,6 +472,10 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 					ServerEntityManager.this.stopTicking(this.entity);
 				} else if (!bl3 && bl4) {
 					ServerEntityManager.this.startTicking(this.entity);
+				}
+
+				if (bl2) {
+					ServerEntityManager.this.handler.updateLoadStatus(this.entity);
 				}
 			}
 		}

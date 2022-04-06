@@ -14,7 +14,7 @@ public class PlantBlock extends Block {
 	}
 
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isIn(BlockTags.DIRT) || floor.isOf(Blocks.FARMLAND);
+		return floor.isIn(BlockTags.DIRT) || floor.isOf(Blocks.FARMLAND) || floor.isOf(Blocks.MUD);
 	}
 
 	@Override

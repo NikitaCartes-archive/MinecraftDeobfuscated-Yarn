@@ -1,22 +1,20 @@
 package net.minecraft.entity.mob;
 
-import java.util.Random;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.loot.LootTables;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -31,7 +29,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 		return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2F);
 	}
 
-	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canMagmaCubeSpawn(EntityType<MagmaCubeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
@@ -41,7 +39,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void setSize(int size, boolean heal) {
+	public void setSize(int size, boolean heal) {
 		super.setSize(size, heal);
 		this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue((double)(size * 3));
 	}
@@ -54,11 +52,6 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected ParticleEffect getParticles() {
 		return ParticleTypes.FLAME;
-	}
-
-	@Override
-	protected Identifier getLootTableId() {
-		return this.isSmall() ? LootTables.EMPTY : this.getType().getLootTableId();
 	}
 
 	@Override

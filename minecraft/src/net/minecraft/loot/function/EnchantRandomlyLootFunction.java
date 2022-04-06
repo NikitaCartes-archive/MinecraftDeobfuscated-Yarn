@@ -13,7 +13,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
@@ -26,6 +25,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
@@ -45,7 +45,7 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		Enchantment enchantment;
 		if (this.enchantments.isEmpty()) {
 			boolean bl = stack.isOf(Items.BOOK);
@@ -59,15 +59,15 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 				return stack;
 			}
 
-			enchantment = (Enchantment)list.get(random.nextInt(list.size()));
+			enchantment = (Enchantment)list.get(abstractRandom.nextInt(list.size()));
 		} else {
-			enchantment = (Enchantment)this.enchantments.get(random.nextInt(this.enchantments.size()));
+			enchantment = (Enchantment)this.enchantments.get(abstractRandom.nextInt(this.enchantments.size()));
 		}
 
-		return addEnchantmentToStack(stack, enchantment, random);
+		return addEnchantmentToStack(stack, enchantment, abstractRandom);
 	}
 
-	private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, Random random) {
+	private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, AbstractRandom random) {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
 		if (stack.isOf(Items.BOOK)) {
 			stack = new ItemStack(Items.ENCHANTED_BOOK);

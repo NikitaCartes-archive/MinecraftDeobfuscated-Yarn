@@ -3,8 +3,8 @@ package net.minecraft.world.gen.placementmodifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.biome.Biome;
 
 public class NoiseThresholdCountPlacementModifier extends AbstractCountPlacementModifier {
@@ -31,7 +31,7 @@ public class NoiseThresholdCountPlacementModifier extends AbstractCountPlacement
 	}
 
 	@Override
-	protected int getCount(Random random, BlockPos pos) {
+	protected int getCount(AbstractRandom abstractRandom, BlockPos pos) {
 		double d = Biome.FOLIAGE_NOISE.sample((double)pos.getX() / 200.0, (double)pos.getZ() / 200.0, false);
 		return d < this.noiseLevel ? this.belowNoise : this.aboveNoise;
 	}

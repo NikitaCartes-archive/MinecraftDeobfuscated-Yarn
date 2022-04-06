@@ -1,9 +1,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -17,7 +16,7 @@ public class IcePatchFeature extends DiskFeature {
 	public boolean generate(FeatureContext<DiskFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		ChunkGenerator chunkGenerator = context.getGenerator();
-		Random random = context.getRandom();
+		AbstractRandom abstractRandom = context.getRandom();
 		DiskFeatureConfig diskFeatureConfig = context.getConfig();
 		BlockPos blockPos = context.getOrigin();
 
@@ -25,7 +24,7 @@ public class IcePatchFeature extends DiskFeature {
 			blockPos = blockPos.down();
 		}
 
-		return !structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)
+		return !context.getWorld().getBlockState(blockPos).isIn(diskFeatureConfig.canOriginReplace())
 			? false
 			: super.generate(
 				new FeatureContext<>(context.getFeature(), structureWorldAccess, context.getGenerator(), context.getRandom(), blockPos, context.getConfig())

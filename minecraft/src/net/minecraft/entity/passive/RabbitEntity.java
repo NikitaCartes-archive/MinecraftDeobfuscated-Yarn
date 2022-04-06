@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -51,6 +50,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
@@ -383,7 +383,7 @@ public class RabbitEntity extends AnimalEntity {
 		}
 	}
 
-	public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+	public static boolean canSpawn(EntityType<RabbitEntity> entity, WorldAccess world, SpawnReason spawnReason, BlockPos pos, AbstractRandom random) {
 		return world.getBlockState(pos.down()).isIn(BlockTags.RABBITS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 

@@ -9,7 +9,7 @@ import net.minecraft.advancement.criterion.CuredZombieVillagerCriterion;
 import net.minecraft.advancement.criterion.EnchantedItemCriterion;
 import net.minecraft.advancement.criterion.EntityHurtPlayerCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.advancement.criterion.LocationArrivalCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
@@ -20,7 +20,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
+import net.minecraft.world.gen.structure.StructureTypeKeys;
 
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	public void accept(Consumer<Advancement> consumer) {
@@ -242,7 +242,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.STRONGHOLD)))
+			.criterion("in_stronghold", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		Advancement.Builder.create()
 			.parent(advancement11)

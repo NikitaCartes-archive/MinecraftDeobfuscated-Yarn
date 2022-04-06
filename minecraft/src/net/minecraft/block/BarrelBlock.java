@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -25,6 +24,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
 public class BarrelBlock extends BlockWithEntity {
@@ -66,7 +66,7 @@ public class BarrelBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof BarrelBlockEntity) {
 			((BarrelBlockEntity)blockEntity).tick();

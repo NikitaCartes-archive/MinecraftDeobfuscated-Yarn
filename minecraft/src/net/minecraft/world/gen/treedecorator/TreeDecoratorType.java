@@ -9,6 +9,7 @@ public class TreeDecoratorType<P extends TreeDecorator> {
 	public static final TreeDecoratorType<CocoaBeansTreeDecorator> COCOA = register("cocoa", CocoaBeansTreeDecorator.CODEC);
 	public static final TreeDecoratorType<BeehiveTreeDecorator> BEEHIVE = register("beehive", BeehiveTreeDecorator.CODEC);
 	public static final TreeDecoratorType<AlterGroundTreeDecorator> ALTER_GROUND = register("alter_ground", AlterGroundTreeDecorator.CODEC);
+	public static final TreeDecoratorType<AttachedToLeavesTreeDecorator> ATTACHED_TO_LEAVES = register("attached_to_leaves", AttachedToLeavesTreeDecorator.CODEC);
 	private final Codec<P> codec;
 
 	private static <P extends TreeDecorator> TreeDecoratorType<P> register(String id, Codec<P> codec) {

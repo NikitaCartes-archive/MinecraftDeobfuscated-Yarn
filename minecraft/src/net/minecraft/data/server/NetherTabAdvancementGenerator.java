@@ -12,14 +12,14 @@ import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.ConstructBeaconCriterion;
 import net.minecraft.advancement.criterion.EffectsChangedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.ItemDurabilityChangedCriterion;
-import net.minecraft.advancement.criterion.ItemUsedOnBlockCriterion;
-import net.minecraft.advancement.criterion.LocationArrivalCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
 import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
 import net.minecraft.advancement.criterion.ThrownItemPickedUpByEntityCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.RespawnAnchorBlock;
@@ -47,7 +47,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.gen.feature.ConfiguredStructureFeatureKeys;
+import net.minecraft.world.gen.structure.StructureTypeKeys;
 
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
 	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
@@ -131,7 +131,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.FORTRESS)))
+			.criterion("fortress", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.FORTRESS)))
 			.build(consumer, "nether/find_fortress");
 		Advancement.Builder.create()
 			.parent(advancement)
@@ -377,7 +377,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"use_lodestone",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE).build()),
 					ItemPredicate.Builder.create().items(Items.COMPASS)
 				)
@@ -411,7 +411,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"charge_respawn_anchor",
-				ItemUsedOnBlockCriterion.Conditions.create(
+				ItemCriterion.Conditions.create(
 					LocationPredicate.Builder.create()
 						.block(
 							BlockPredicate.Builder.create()
@@ -492,7 +492,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 				true,
 				false
 			)
-			.criterion("bastion", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(ConfiguredStructureFeatureKeys.BASTION_REMNANT)))
+			.criterion("bastion", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureTypeKeys.BASTION_REMNANT)))
 			.build(consumer, "nether/find_bastion");
 		Advancement.Builder.create()
 			.parent(advancement13)

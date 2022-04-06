@@ -3,7 +3,6 @@ package net.minecraft.client.render.entity.model;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.util.List;
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -18,6 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.math.random.AbstractRandom;
 
 /**
  * Represents the model of a player-like entity.
@@ -259,7 +259,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		}
 	}
 
-	public ModelPart getRandomPart(Random random) {
+	public ModelPart getRandomPart(AbstractRandom random) {
 		return (ModelPart)this.parts.get(random.nextInt(this.parts.size()));
 	}
 }

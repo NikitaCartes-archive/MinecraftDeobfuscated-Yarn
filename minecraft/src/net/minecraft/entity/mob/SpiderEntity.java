@@ -1,6 +1,5 @@
 package net.minecraft.entity.mob;
 
-import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -37,6 +36,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -218,7 +218,7 @@ public class SpiderEntity extends HostileEntity {
 		@Nullable
 		public StatusEffect effect;
 
-		public void setEffect(Random random) {
+		public void setEffect(AbstractRandom random) {
 			int i = random.nextInt(5);
 			if (i <= 1) {
 				this.effect = StatusEffects.SPEED;

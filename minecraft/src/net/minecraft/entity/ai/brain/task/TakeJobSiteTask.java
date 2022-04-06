@@ -8,8 +8,8 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 

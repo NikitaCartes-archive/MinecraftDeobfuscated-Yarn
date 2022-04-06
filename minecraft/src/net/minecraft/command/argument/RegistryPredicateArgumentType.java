@@ -26,7 +26,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.structure.StructureType;
 
 public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPredicateArgumentType.RegistryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
@@ -58,10 +58,10 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 		return getPredicate(context, name, Registry.BIOME_KEY, INVALID_BIOME_EXCEPTION);
 	}
 
-	public static RegistryPredicateArgumentType.RegistryPredicate<StructureFeature> getConfiguredStructureFeaturePredicate(
+	public static RegistryPredicateArgumentType.RegistryPredicate<StructureType> getConfiguredStructureFeaturePredicate(
 		CommandContext<ServerCommandSource> context, String name
 	) throws CommandSyntaxException {
-		return getPredicate(context, name, Registry.CONFIGURED_STRUCTURE_FEATURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
+		return getPredicate(context, name, Registry.STRUCTURE_KEY, INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION);
 	}
 
 	public RegistryPredicateArgumentType.RegistryPredicate<T> parse(StringReader stringReader) throws CommandSyntaxException {

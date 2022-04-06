@@ -13,8 +13,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.dynamic.GlobalPos;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.WorldEvents;
 
 public class FarmerWorkTask extends VillagerWorkTask {

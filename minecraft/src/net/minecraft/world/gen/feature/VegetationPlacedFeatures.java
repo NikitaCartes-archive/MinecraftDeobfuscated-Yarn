@@ -425,6 +425,16 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 		BiomePlacementModifier.of()
 	);
+	public static final RegistryEntry<PlacedFeature> TREES_MANGROVE = PlacedFeatures.register(
+		"trees_mangrove",
+		VegetationConfiguredFeatures.MANGROVE_VEGETATION,
+		PlacedFeatures.createCountExtraModifier(30, 0.1F, 1),
+		SquarePlacementModifier.of(),
+		SurfaceWaterDepthFilterPlacementModifier.of(5),
+		PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP,
+		BiomePlacementModifier.of(),
+		BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(Blocks.MANGROVE_PROPAGULE.getDefaultState(), BlockPos.ORIGIN))
+	);
 
 	public static List<PlacementModifier> modifiers(int count) {
 		return List.of(CountPlacementModifier.of(count), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of());

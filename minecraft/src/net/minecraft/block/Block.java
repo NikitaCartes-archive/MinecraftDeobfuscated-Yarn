@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -50,6 +49,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.shape.VoxelShape;
@@ -332,7 +332,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return !isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
 	}
 
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 	}
 
 	public void onBroken(WorldAccess world, BlockPos pos, BlockState state) {

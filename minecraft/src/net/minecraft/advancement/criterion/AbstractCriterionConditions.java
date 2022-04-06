@@ -9,9 +9,9 @@ public abstract class AbstractCriterionConditions implements CriterionConditions
 	private final Identifier id;
 	private final EntityPredicate.Extended playerPredicate;
 
-	public AbstractCriterionConditions(Identifier id, EntityPredicate.Extended playerPredicate) {
+	public AbstractCriterionConditions(Identifier id, EntityPredicate.Extended entity) {
 		this.id = id;
-		this.playerPredicate = playerPredicate;
+		this.playerPredicate = entity;
 	}
 
 	@Override

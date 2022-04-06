@@ -18,25 +18,25 @@ import net.minecraft.util.Identifier;
 public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntityModel<T>> extends FeatureRenderer<T, M> {
 	private final Identifier texture;
 	private final WardenFeatureRenderer.AnimationAngleAdjuster<T> animationAngleAdjuster;
-	private final WardenFeatureRenderer.class_7311<T, M> field_38464;
+	private final WardenFeatureRenderer.ModelPartVisibility<T, M> modelPartVisibility;
 
 	public WardenFeatureRenderer(
 		FeatureRendererContext<T, M> context,
 		Identifier texture,
 		WardenFeatureRenderer.AnimationAngleAdjuster<T> animationAngleAdjuster,
-		WardenFeatureRenderer.class_7311<T, M> arg
+		WardenFeatureRenderer.ModelPartVisibility<T, M> modelPartVisibility
 	) {
 		super(context);
 		this.texture = texture;
 		this.animationAngleAdjuster = animationAngleAdjuster;
-		this.field_38464 = arg;
+		this.modelPartVisibility = modelPartVisibility;
 	}
 
 	public void render(
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T wardenEntity, float f, float g, float h, float j, float k, float l
 	) {
 		if (!wardenEntity.isInvisible()) {
-			this.method_42746();
+			this.updateModelPartVisibility();
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityTranslucentEmissive(this.texture));
 			this.getContextModel()
 				.render(
@@ -49,18 +49,18 @@ public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntit
 					1.0F,
 					this.animationAngleAdjuster.apply(wardenEntity, h, j)
 				);
-			this.method_42748();
+			this.unhideAllModelParts();
 		}
 	}
 
-	private void method_42746() {
-		List<ModelPart> list = this.field_38464.getPartsToDraw(this.getContextModel());
-		this.getContextModel().getPart().traverse().forEach(modelPart -> modelPart.field_38456 = true);
-		list.forEach(modelPart -> modelPart.field_38456 = false);
+	private void updateModelPartVisibility() {
+		List<ModelPart> list = this.modelPartVisibility.getPartsToDraw(this.getContextModel());
+		this.getContextModel().getPart().traverse().forEach(part -> part.hidden = true);
+		list.forEach(part -> part.hidden = false);
 	}
 
-	private void method_42748() {
-		this.getContextModel().getPart().traverse().forEach(modelPart -> modelPart.field_38456 = false);
+	private void unhideAllModelParts() {
+		this.getContextModel().getPart().traverse().forEach(part -> part.hidden = false);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -69,7 +69,7 @@ public class WardenFeatureRenderer<T extends WardenEntity, M extends WardenEntit
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface class_7311<T extends WardenEntity, M extends EntityModel<T>> {
-		List<ModelPart> getPartsToDraw(M entityModel);
+	public interface ModelPartVisibility<T extends WardenEntity, M extends EntityModel<T>> {
+		List<ModelPart> getPartsToDraw(M model);
 	}
 }

@@ -1,6 +1,5 @@
 package net.minecraft.structure;
 
-import java.util.Random;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockMirror;
@@ -10,6 +9,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -33,7 +33,7 @@ public class NetherFossilGenerator {
 		new Identifier("nether_fossils/fossil_14")
 	};
 
-	public static void addPieces(StructureManager manager, StructurePiecesHolder holder, Random random, BlockPos pos) {
+	public static void addPieces(StructureManager manager, StructurePiecesHolder holder, AbstractRandom random, BlockPos pos) {
 		BlockRotation blockRotation = BlockRotation.random(random);
 		holder.addPiece(new NetherFossilGenerator.Piece(manager, Util.getRandom(FOSSILS, random), pos, blockRotation));
 	}
@@ -61,7 +61,7 @@ public class NetherFossilGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, AbstractRandom random, BlockBox boundingBox) {
 		}
 
 		@Override
@@ -69,7 +69,7 @@ public class NetherFossilGenerator {
 			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
-			Random random,
+			AbstractRandom random,
 			BlockBox chunkBox,
 			ChunkPos chunkPos,
 			BlockPos pos

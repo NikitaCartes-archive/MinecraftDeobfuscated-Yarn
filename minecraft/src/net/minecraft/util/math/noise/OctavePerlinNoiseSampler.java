@@ -15,8 +15,8 @@ import java.util.Objects;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.RandomDeriver;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.RandomDeriver;
 
 public class OctavePerlinNoiseSampler {
 	private static final int field_31704 = 33554432;

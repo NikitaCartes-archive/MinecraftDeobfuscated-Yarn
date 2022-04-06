@@ -1,15 +1,15 @@
 package net.minecraft.client.particle;
 
-import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class GlowParticle extends SpriteBillboardParticle {
-	static final Random RANDOM = new Random();
+	static final AbstractRandom RANDOM = AbstractRandom.createAtomic();
 	private final SpriteProvider spriteProvider;
 
 	GlowParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
@@ -182,7 +182,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 			glowParticle.setVelocity(g * 0.01, h * 0.01, i * 0.01);
 			int j = 20;
 			int k = 40;
-			glowParticle.setMaxAge(clientWorld.random.nextInt(20, 40));
+			glowParticle.setMaxAge(clientWorld.random.nextBetweenExclusive(20, 40));
 			return glowParticle;
 		}
 	}

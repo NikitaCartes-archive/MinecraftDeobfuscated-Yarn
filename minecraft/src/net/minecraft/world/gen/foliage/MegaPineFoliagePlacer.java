@@ -3,12 +3,12 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
@@ -34,7 +34,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	protected void generate(
 		TestableWorld world,
 		BiConsumer<BlockPos, BlockState> replacer,
-		Random random,
+		AbstractRandom abstractRandom,
 		TreeFeatureConfig config,
 		int trunkHeight,
 		FoliagePlacer.TreeNode treeNode,
@@ -55,18 +55,18 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 				m = l;
 			}
 
-			this.generateSquare(world, replacer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
+			this.generateSquare(world, replacer, abstractRandom, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
 			i = l;
 		}
 	}
 
 	@Override
-	public int getRandomHeight(Random random, int trunkHeight, TreeFeatureConfig config) {
-		return this.crownHeight.get(random);
+	public int getRandomHeight(AbstractRandom abstractRandom, int trunkHeight, TreeFeatureConfig config) {
+		return this.crownHeight.get(abstractRandom);
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+	protected boolean isInvalidForLeaves(AbstractRandom abstractRandom, int dx, int y, int dz, int radius, boolean giantTrunk) {
 		if (dx + dz >= 7) {
 			return true;
 		} else {

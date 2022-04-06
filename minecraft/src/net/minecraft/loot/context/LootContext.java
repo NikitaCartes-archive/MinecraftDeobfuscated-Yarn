@@ -9,7 +9,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -21,9 +20,10 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class LootContext {
-	private final Random random;
+	private final AbstractRandom random;
 	private final float luck;
 	private final ServerWorld world;
 	private final Function<Identifier, LootTable> tableGetter;
@@ -34,7 +34,7 @@ public class LootContext {
 	private final Map<Identifier, LootContext.Dropper> drops;
 
 	LootContext(
-		Random random,
+		AbstractRandom random,
 		float luck,
 		ServerWorld world,
 		Function<Identifier, LootTable> tableGetter,
@@ -100,7 +100,7 @@ public class LootContext {
 		return (LootCondition)this.conditionGetter.apply(id);
 	}
 
-	public Random getRandom() {
+	public AbstractRandom getRandom() {
 		return this.random;
 	}
 
@@ -116,31 +116,31 @@ public class LootContext {
 		private final ServerWorld world;
 		private final Map<LootContextParameter<?>, Object> parameters = Maps.<LootContextParameter<?>, Object>newIdentityHashMap();
 		private final Map<Identifier, LootContext.Dropper> drops = Maps.<Identifier, LootContext.Dropper>newHashMap();
-		private Random random;
+		private AbstractRandom random;
 		private float luck;
 
 		public Builder(ServerWorld world) {
 			this.world = world;
 		}
 
-		public LootContext.Builder random(Random random) {
+		public LootContext.Builder random(AbstractRandom random) {
 			this.random = random;
 			return this;
 		}
 
 		public LootContext.Builder random(long seed) {
 			if (seed != 0L) {
-				this.random = new Random(seed);
+				this.random = AbstractRandom.createAtomic(seed);
 			}
 
 			return this;
 		}
 
-		public LootContext.Builder random(long seed, Random random) {
+		public LootContext.Builder random(long seed, AbstractRandom random) {
 			if (seed == 0L) {
 				this.random = random;
 			} else {
-				this.random = new Random(seed);
+				this.random = AbstractRandom.createAtomic(seed);
 			}
 
 			return this;
@@ -202,14 +202,20 @@ public class LootContext {
 				if (!set2.isEmpty()) {
 					throw new IllegalArgumentException("Missing required parameters: " + set2);
 				} else {
-					Random random = this.random;
-					if (random == null) {
-						random = new Random();
+					AbstractRandom abstractRandom = this.random;
+					if (abstractRandom == null) {
+						abstractRandom = AbstractRandom.createAtomic();
 					}
 
 					MinecraftServer minecraftServer = this.world.getServer();
 					return new LootContext(
-						random, this.luck, this.world, minecraftServer.getLootManager()::getTable, minecraftServer.getPredicateManager()::get, this.parameters, this.drops
+						abstractRandom,
+						this.luck,
+						this.world,
+						minecraftServer.getLootManager()::getTable,
+						minecraftServer.getPredicateManager()::get,
+						this.parameters,
+						this.drops
 					);
 				}
 			}

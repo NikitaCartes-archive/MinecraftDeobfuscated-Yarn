@@ -49,4 +49,6 @@ public interface EntityHandler<T> {
 	 * @param entity the tracked entity
 	 */
 	void stopTracking(T entity);
+
+	void updateLoadStatus(T entity);
 }

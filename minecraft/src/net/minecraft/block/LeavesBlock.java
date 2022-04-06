@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -13,6 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -44,7 +44,7 @@ public class LeavesBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (this.shouldDecay(state)) {
 			dropStacks(state, world, pos);
 			world.removeBlock(pos, false);
@@ -56,7 +56,7 @@ public class LeavesBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		world.setBlockState(pos, updateDistanceFromLogs(state, world, pos), Block.NOTIFY_ALL);
 	}
 
@@ -110,7 +110,7 @@ public class LeavesBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if (world.hasRain(pos.up())) {
 			if (random.nextInt(15) == 1) {
 				BlockPos blockPos = pos.down();

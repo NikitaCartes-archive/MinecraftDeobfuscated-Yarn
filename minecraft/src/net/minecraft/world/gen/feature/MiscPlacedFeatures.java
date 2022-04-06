@@ -90,6 +90,14 @@ public class MiscPlacedFeatures {
 		PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP,
 		BiomePlacementModifier.of()
 	);
+	public static final RegistryEntry<PlacedFeature> DISK_GRASS = PlacedFeatures.register(
+		"disk_grass",
+		MiscConfiguredFeatures.DISK_GRASS,
+		CountPlacementModifier.of(3),
+		SquarePlacementModifier.of(),
+		PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP,
+		BiomePlacementModifier.of()
+	);
 	public static final RegistryEntry<PlacedFeature> FREEZE_TOP_LAYER = PlacedFeatures.register(
 		"freeze_top_layer", MiscConfiguredFeatures.FREEZE_TOP_LAYER, BiomePlacementModifier.of()
 	);

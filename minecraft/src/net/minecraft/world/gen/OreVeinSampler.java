@@ -3,10 +3,10 @@ package net.minecraft.world.gen;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
-import net.minecraft.world.gen.random.AbstractRandom;
-import net.minecraft.world.gen.random.RandomDeriver;
 
 public final class OreVeinSampler {
 	private static final float field_36620 = 0.4F;

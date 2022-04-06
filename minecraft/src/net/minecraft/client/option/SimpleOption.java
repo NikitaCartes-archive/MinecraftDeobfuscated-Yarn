@@ -294,7 +294,7 @@ public final class SimpleOption<T> {
 		/**
 		 * {@return the button creator}
 		 * 
-		 * <p>Button creatores are responsible for rendering the option.
+		 * <p>Button creators are responsible for rendering the option.
 		 */
 		Function<SimpleOption<T>, ClickableWidget> getButtonCreator(SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width);
 

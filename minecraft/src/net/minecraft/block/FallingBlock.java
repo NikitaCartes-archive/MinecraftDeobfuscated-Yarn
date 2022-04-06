@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.Random;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -8,6 +7,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -31,7 +31,7 @@ public class FallingBlock extends Block implements LandingBlock {
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, AbstractRandom random) {
 		if (canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomY()) {
 			FallingBlockEntity fallingBlockEntity = FallingBlockEntity.spawnFromBlock(world, pos, state);
 			this.configureFallingBlockEntity(fallingBlockEntity);
@@ -54,7 +54,7 @@ public class FallingBlock extends Block implements LandingBlock {
 	}
 
 	@Override
-	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+	public void randomDisplayTick(BlockState state, World world, BlockPos pos, AbstractRandom random) {
 		if (random.nextInt(16) == 0) {
 			BlockPos blockPos = pos.down();
 			if (canFallThrough(world.getBlockState(blockPos))) {

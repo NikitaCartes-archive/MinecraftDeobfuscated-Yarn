@@ -12,11 +12,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,7 +53,6 @@ import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceRef;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -364,82 +360,53 @@ public class ModelLoader {
 				Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair = Pair.of(unbakedModel, (Supplier)() -> modelDefinition);
 
 				try {
-					List<Pair<String, ModelVariantMap>> list2;
-					try {
-						list2 = (List)this.resourceManager
-							.getAllResources(identifier2)
-							.stream()
-							.map(
-								resourceRef -> {
+					for(Pair<String, ModelVariantMap> pair2 : this.resourceManager
+						.getAllResources(identifier2)
+						.stream()
+						.map(
+							resource -> {
+								try {
+									Reader reader = resource.getReader();
+		
+									Pair var4x;
 									try {
-										Resource resource = resourceRef.open();
-		
-										Pair var5x;
-										try {
-											InputStream inputStream = resource.getInputStream();
-		
+										var4x = Pair.of(resource.getResourcePackName(), ModelVariantMap.fromJson(this.variantMapDeserializationContext, reader));
+									} catch (Throwable var7xx) {
+										if (reader != null) {
 											try {
-												var5x = Pair.of(
-													resourceRef.getPackName(),
-													ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-												);
-											} catch (Throwable var9xx) {
-												if (inputStream != null) {
-													try {
-														inputStream.close();
-													} catch (Throwable var8xx) {
-														var9xx.addSuppressed(var8xx);
-													}
-												}
-		
-												throw var9xx;
+												reader.close();
+											} catch (Throwable var6xx) {
+												var7xx.addSuppressed(var6xx);
 											}
-		
-											if (inputStream != null) {
-												inputStream.close();
-											}
-										} catch (Throwable var10xx) {
-											if (resource != null) {
-												try {
-													resource.close();
-												} catch (Throwable var7xx) {
-													var10xx.addSuppressed(var7xx);
-												}
-											}
-		
-											throw var10xx;
 										}
 		
-										if (resource != null) {
-											resource.close();
-										}
-		
-										return var5x;
-									} catch (Exception var11xx) {
-										throw new ModelLoader.ModelLoaderException(
-											String.format(
-												"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resourceRef.getPackName(), var11xx.getMessage()
-											)
-										);
+										throw var7xx;
 									}
+		
+									if (reader != null) {
+										reader.close();
+									}
+		
+									return var4x;
+								} catch (Exception var8xx) {
+									throw new ModelLoader.ModelLoaderException(
+										String.format(
+											"Exception loading blockstate definition: '%s' in resourcepack: '%s': %s", identifier2, resource.getResourcePackName(), var8xx.getMessage()
+										)
+									);
 								}
-							)
-							.collect(Collectors.toList());
-					} catch (IOException var25) {
-						LOGGER.warn("Exception loading blockstate definition: {}: {}", identifier2, var25);
-						return;
-					}
-
-					for(Pair<String, ModelVariantMap> pair2 : list2) {
+							}
+						)
+						.toList()) {
 						ModelVariantMap modelVariantMap = pair2.getSecond();
-						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map4 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newIdentityHashMap(
+						Map<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>> map3 = Maps.<BlockState, Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>>>newIdentityHashMap(
 							
 						);
 						MultipartUnbakedModel multipartUnbakedModel;
 						if (modelVariantMap.hasMultipartModel()) {
 							multipartUnbakedModel = modelVariantMap.getMultipartModel();
 							immutableList.forEach(
-								blockState -> map4.put(
+								blockState -> map3.put(
 										blockState, Pair.of(multipartUnbakedModel, (Supplier)() -> ModelLoader.ModelDefinition.create(blockState, multipartUnbakedModel, list))
 									)
 							);
@@ -455,11 +422,11 @@ public class ModelLoader {
 											.filter(stateKeyToPredicate(stateManager, string))
 											.forEach(
 												blockState -> {
-													Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2xxx = (Pair)map4.put(
+													Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2xxx = (Pair)map3.put(
 														blockState, Pair.of(weightedUnbakedModel, (Supplier)() -> ModelLoader.ModelDefinition.create(blockState, weightedUnbakedModel, list))
 													);
 													if (pair2xxx != null && pair2xxx.getFirst() != multipartUnbakedModel) {
-														map4.put(blockState, pair);
+														map3.put(blockState, pair);
 														throw new RuntimeException(
 															"Overlapping definition with: "
 																+ (String)((Entry)modelVariantMap.getVariantMap()
@@ -484,14 +451,14 @@ public class ModelLoader {
 									}
 								}
 							);
-						map2.putAll(map4);
+						map2.putAll(map3);
 					}
-				} catch (ModelLoader.ModelLoaderException var26) {
-					throw var26;
-				} catch (Exception var27) {
-					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var27));
+				} catch (ModelLoader.ModelLoaderException var24) {
+					throw var24;
+				} catch (Exception var25) {
+					throw new ModelLoader.ModelLoaderException(String.format("Exception loading blockstate definition: '%s': %s", identifier2, var25));
 				} finally {
-					Map<ModelLoader.ModelDefinition, Set<BlockState>> map6 = Maps.newHashMap();
+					Map<ModelLoader.ModelDefinition, Set<BlockState>> map5 = Maps.newHashMap();
 					map.forEach((idx, blockState) -> {
 						Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair2xx = (Pair)map2.get(blockState);
 						if (pair2xx == null) {
@@ -503,12 +470,12 @@ public class ModelLoader {
 
 						try {
 							ModelLoader.ModelDefinition modelDefinitionxx = (ModelLoader.ModelDefinition)((Supplier)pair2xx.getSecond()).get();
-							((Set)map6.computeIfAbsent(modelDefinitionxx, modelDefinitionxx -> Sets.newIdentityHashSet())).add(blockState);
+							((Set)map5.computeIfAbsent(modelDefinitionxx, modelDefinitionxx -> Sets.newIdentityHashSet())).add(blockState);
 						} catch (Exception var9xx) {
 							LOGGER.warn("Exception evaluating model definition: '{}'", idx, var9xx);
 						}
 					});
-					map6.forEach((modelDefinitionx, set) -> {
+					map5.forEach((modelDefinitionx, set) -> {
 						Iterator<BlockState> iterator = set.iterator();
 
 						while(iterator.hasNext()) {
@@ -566,7 +533,6 @@ public class ModelLoader {
 
 	private JsonUnbakedModel loadModelFromJson(Identifier id) throws IOException {
 		Reader reader = null;
-		Resource resource = null;
 
 		JsonUnbakedModel jsonUnbakedModel;
 		try {
@@ -585,8 +551,7 @@ public class ModelLoader {
 
 					reader = new StringReader(string3);
 				} else {
-					resource = this.resourceManager.getResource(new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json"));
-					reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8);
+					reader = this.resourceManager.openAsReader(new Identifier(id.getNamespace(), "models/" + id.getPath() + ".json"));
 				}
 
 				jsonUnbakedModel = JsonUnbakedModel.deserialize(reader);
@@ -597,7 +562,6 @@ public class ModelLoader {
 			jsonUnbakedModel = BLOCK_ENTITY_MARKER;
 		} finally {
 			IOUtils.closeQuietly(reader);
-			IOUtils.closeQuietly(resource);
 		}
 
 		return jsonUnbakedModel;

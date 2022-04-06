@@ -102,7 +102,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 
 	public BeeEntityModel(ModelPart root) {
 		super(false, 24.0F, 0.0F);
-		this.bone = root.getChild("bone");
+		this.bone = root.getChild(EntityModelPartNames.BONE);
 		ModelPart modelPart = this.bone.getChild(EntityModelPartNames.BODY);
 		this.stinger = modelPart.getChild("stinger");
 		this.leftAntenna = modelPart.getChild("left_antenna");
@@ -118,7 +118,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		float f = 19.0F;
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild("bone", ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 19.0F, 0.0F));
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.BONE, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 19.0F, 0.0F));
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F), ModelTransform.NONE
 		);

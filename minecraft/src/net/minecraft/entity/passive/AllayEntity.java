@@ -70,14 +70,14 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS
 	);
 	private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
-	private final EntityGameEventHandler gameEventHandler;
+	private final EntityGameEventHandler<AllayEntity> gameEventHandler;
 	private final SimpleInventory inventory = new SimpleInventory(1);
 
 	public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.setCanPickUpLoot(this.canPickUpLoot());
-		this.gameEventHandler = new EntityGameEventHandler(this);
+		this.gameEventHandler = new EntityGameEventHandler<>(this);
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("allayActivityUpdate");
-		AllayBrain.method_42661(this);
+		AllayBrain.resetIdleActivities(this);
 		this.world.getProfiler().pop();
 		super.mobTick();
 	}
@@ -306,7 +306,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	}
 
 	@Override
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
 		World var3 = this.world;
 		if (var3 instanceof ServerWorld serverWorld) {
 			biConsumer.accept(this.gameEventHandler, serverWorld);
@@ -318,7 +318,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		if (event != GameEvent.NOTE_BLOCK_PLAY) {
 			return false;
 		} else {
-			AllayBrain.method_42659(this, new BlockPos(pos));
+			AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
 			return true;
 		}
 	}
