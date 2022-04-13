@@ -4,6 +4,7 @@
 package net.minecraft.entity.decoration;
 
 import com.mojang.logging.LogUtils;
+import java.util.OptionalInt;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -24,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvent;
@@ -187,12 +189,12 @@ extends AbstractDecorationEntity {
 
     @Override
     public int getWidthPixels() {
-        return 12;
+        return this.containsMap() ? 16 : 12;
     }
 
     @Override
     public int getHeightPixels() {
-        return 12;
+        return this.containsMap() ? 16 : 12;
     }
 
     @Override
@@ -251,17 +253,32 @@ extends AbstractDecorationEntity {
         }
     }
 
-    private void removeFromFrame(ItemStack map) {
-        MapState mapState;
-        if (map.isOf(Items.FILLED_MAP) && (mapState = FilledMapItem.getOrCreateMapState(map, this.world)) != null) {
-            mapState.removeFrame(this.attachmentPos, this.getId());
-            mapState.setDirty(true);
-        }
-        map.setHolder(null);
+    private void removeFromFrame(ItemStack itemStack) {
+        this.getMapId().ifPresent(i -> {
+            MapState mapState = FilledMapItem.getMapState(i, this.world);
+            if (mapState != null) {
+                mapState.removeFrame(this.attachmentPos, this.getId());
+                mapState.setDirty(true);
+            }
+        });
+        itemStack.setHolder(null);
     }
 
     public ItemStack getHeldItemStack() {
         return this.getDataTracker().get(ITEM_STACK);
+    }
+
+    public OptionalInt getMapId() {
+        Integer integer;
+        ItemStack itemStack = this.getHeldItemStack();
+        if (itemStack.isOf(Items.FILLED_MAP) && (integer = FilledMapItem.getMapId(itemStack)) != null) {
+            return OptionalInt.of(integer);
+        }
+        return OptionalInt.empty();
+    }
+
+    public boolean containsMap() {
+        return this.getMapId().isPresent();
     }
 
     public void setHeldItemStack(ItemStack stack) {
@@ -272,8 +289,8 @@ extends AbstractDecorationEntity {
         if (!value.isEmpty()) {
             value = value.copy();
             value.setCount(1);
-            value.setHolder(this);
         }
+        this.setAsStackHolder(value);
         this.getDataTracker().set(ITEM_STACK, value);
         if (!value.isEmpty()) {
             this.playSound(this.getAddItemSound(), 1.0f, 1.0f);
@@ -309,10 +326,16 @@ extends AbstractDecorationEntity {
 
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
-        ItemStack itemStack;
-        if (data.equals(ITEM_STACK) && !(itemStack = this.getHeldItemStack()).isEmpty() && itemStack.getFrame() != this) {
-            itemStack.setHolder(this);
+        if (data.equals(ITEM_STACK)) {
+            this.setAsStackHolder(this.getHeldItemStack());
         }
+    }
+
+    private void setAsStackHolder(ItemStack stack) {
+        if (!stack.isEmpty() && stack.getFrame() != this) {
+            stack.setHolder(this);
+        }
+        this.updateAttachmentPosition();
     }
 
     public int getRotation() {
@@ -358,7 +381,7 @@ extends AbstractDecorationEntity {
             }
             this.setHeldItemStack(itemStack, false);
             this.setRotation(nbt.getByte("ItemRotation"), false);
-            if (nbt.contains("ItemDropChance", 99)) {
+            if (nbt.contains("ItemDropChance", NbtElement.NUMBER_TYPE)) {
                 this.itemDropChance = nbt.getFloat("ItemDropChance");
             }
         }

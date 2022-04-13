@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -212,7 +213,7 @@ NamedScreenHandlerFactory {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        this.book = nbt.contains("Book", 10) ? this.resolveBook(ItemStack.fromNbt(nbt.getCompound("Book")), null) : ItemStack.EMPTY;
+        this.book = nbt.contains("Book", NbtElement.COMPOUND_TYPE) ? this.resolveBook(ItemStack.fromNbt(nbt.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
         this.currentPage = MathHelper.clamp(nbt.getInt("Page"), 0, this.pageCount - 1);
     }

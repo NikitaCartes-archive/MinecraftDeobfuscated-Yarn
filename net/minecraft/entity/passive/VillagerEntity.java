@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
@@ -227,11 +228,11 @@ VillagerDataContainer {
         }
         if (this.lastCustomer != null && this.world instanceof ServerWorld) {
             ((ServerWorld)this.world).handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
-            this.world.sendEntityStatus(this, (byte)14);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
             this.lastCustomer = null;
         }
         if (!this.isAiDisabled() && this.random.nextInt(100) == 0 && (raid = ((ServerWorld)this.world).getRaidAt(this.getBlockPos())) != null && raid.isActive() && !raid.isFinished()) {
-            this.world.sendEntityStatus(this, (byte)42);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
         }
         if (this.getVillagerData().getProfession() == VillagerProfession.NONE && this.hasCustomer()) {
             this.resetCustomer();
@@ -428,19 +429,19 @@ VillagerDataContainer {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("VillagerData", 10)) {
+        if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
             DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
             dataResult.resultOrPartial(field_36335::error).ifPresent(this::setVillagerData);
         }
-        if (nbt.contains("Offers", 10)) {
+        if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        if (nbt.contains("FoodLevel", 1)) {
+        if (nbt.contains("FoodLevel", NbtElement.BYTE_TYPE)) {
             this.foodLevel = nbt.getByte("FoodLevel");
         }
-        NbtList nbtList = nbt.getList("Gossips", 10);
+        NbtList nbtList = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
         this.gossip.deserialize(new Dynamic<NbtList>(NbtOps.INSTANCE, nbtList));
-        if (nbt.contains("Xp", 3)) {
+        if (nbt.contains("Xp", NbtElement.INT_TYPE)) {
             this.experience = nbt.getInt("Xp");
         }
         this.lastRestockTime = nbt.getLong("LastRestock");
@@ -531,7 +532,7 @@ VillagerDataContainer {
         if (attacker != null && this.world instanceof ServerWorld) {
             ((ServerWorld)this.world).handleInteraction(EntityInteraction.VILLAGER_HURT, attacker, this);
             if (this.isAlive() && attacker instanceof PlayerEntity) {
-                this.world.sendEntityStatus(this, (byte)13);
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
             }
         }
         super.setAttacker(attacker);
@@ -649,13 +650,13 @@ VillagerDataContainer {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 12) {
+        if (status == EntityStatuses.ADD_VILLAGER_HEART_PARTICLES) {
             this.produceParticles(ParticleTypes.HEART);
-        } else if (status == 13) {
+        } else if (status == EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES) {
             this.produceParticles(ParticleTypes.ANGRY_VILLAGER);
-        } else if (status == 14) {
+        } else if (status == EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES) {
             this.produceParticles(ParticleTypes.HAPPY_VILLAGER);
-        } else if (status == 42) {
+        } else if (status == EntityStatuses.ADD_SPLASH_PARTICLES) {
             this.produceParticles(ParticleTypes.SPLASH);
         } else {
             super.handleStatus(status);

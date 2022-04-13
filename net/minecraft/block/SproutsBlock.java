@@ -31,10 +31,5 @@ extends PlantBlock {
     protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.isIn(BlockTags.NYLIUM) || floor.isOf(Blocks.SOUL_SOIL) || super.canPlantOnTop(floor, world, pos);
     }
-
-    @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
-    }
 }
 

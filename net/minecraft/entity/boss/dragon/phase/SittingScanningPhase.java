@@ -14,9 +14,9 @@ import net.minecraft.util.math.Vec3d;
 public class SittingScanningPhase
 extends AbstractSittingPhase {
     private static final int DURATION = 100;
-    private static final int field_30437 = 10;
-    private static final int field_30438 = 20;
-    private static final int field_30439 = 150;
+    private static final int MAX_HEIGHT_CLOSE_PLAYER_RANGE = 10;
+    private static final int MAX_HORIZONTAL_CLOSE_PLAYER_RANGE = 20;
+    private static final int MAX_PLAYER_RANGE = 150;
     private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(150.0);
     private final TargetPredicate CLOSE_PLAYER_PREDICATE = TargetPredicate.createAttackable().setBaseMaxDistance(20.0).setPredicate(player -> Math.abs(player.getY() - enderDragonEntity.getY()) <= 10.0);
     private int ticks;

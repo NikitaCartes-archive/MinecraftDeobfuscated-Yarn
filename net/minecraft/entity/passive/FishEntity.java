@@ -152,7 +152,7 @@ implements Bucketable {
     }
 
     @Override
-    public SoundEvent getBucketedSound() {
+    public SoundEvent getBucketFillSound() {
         return SoundEvents.ITEM_BUCKET_FILL_FISH;
     }
 

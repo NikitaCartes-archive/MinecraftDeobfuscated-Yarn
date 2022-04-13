@@ -6,7 +6,7 @@ package net.minecraft.world.gen.feature;
 import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.RegistryEntry;
@@ -36,7 +36,7 @@ public class ConfiguredFeatures {
     }
 
     private static BlockPredicate createBlockPredicate(List<Block> validGround) {
-        BlockPredicate blockPredicate = !validGround.isEmpty() ? BlockPredicate.bothOf(BlockPredicate.IS_AIR, BlockPredicate.matchingBlocks(validGround, new BlockPos(0, -1, 0))) : BlockPredicate.IS_AIR;
+        BlockPredicate blockPredicate = !validGround.isEmpty() ? BlockPredicate.bothOf(BlockPredicate.IS_AIR, BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), validGround)) : BlockPredicate.IS_AIR;
         return blockPredicate;
     }
 

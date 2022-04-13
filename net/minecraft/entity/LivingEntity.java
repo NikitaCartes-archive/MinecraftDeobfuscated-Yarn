@@ -41,6 +41,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -149,19 +150,19 @@ extends Entity {
     private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
     public static final int field_30069 = 2;
     public static final int field_30070 = 4;
-    public static final int field_30071 = 98;
+    public static final int EQUIPMENT_SLOT_ID = 98;
     public static final int field_30072 = 100;
-    public static final int field_30073 = 6;
+    public static final int GLOWING_FLAG = 6;
     public static final int field_30074 = 100;
     private static final int field_30078 = 40;
     public static final double field_30075 = 0.003;
-    public static final double field_30076 = 0.08;
-    public static final int field_30077 = 20;
-    private static final int field_30079 = 7;
+    public static final double GRAVITY = 0.08;
+    public static final int DEATH_TICKS = 20;
+    private static final int FALL_FLYING_FLAG = 7;
     private static final int field_30080 = 10;
     private static final int field_30081 = 2;
     public static final int field_30063 = 4;
-    private static final double field_33908 = 128.0;
+    private static final double MAX_ENTITY_VIEWING_DISTANCE = 128.0;
     protected static final int USING_ITEM_FLAG = 1;
     protected static final int OFF_HAND_ACTIVE_FLAG = 2;
     protected static final int USING_RIPTIDE_FLAG = 4;
@@ -174,7 +175,7 @@ extends Entity {
     private static final TrackedData<Optional<BlockPos>> SLEEPING_POSITION = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     protected static final float field_30067 = 1.74f;
     protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2f, 0.2f);
-    public static final float field_30068 = 0.5f;
+    public static final float BABY_SCALE_FACTOR = 0.5f;
     private final AttributeContainer attributes;
     private final DamageTracker damageTracker = new DamageTracker(this);
     private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.newHashMap();
@@ -530,7 +531,7 @@ extends Entity {
     protected void updatePostDeath() {
         ++this.deathTime;
         if (this.deathTime == 20 && !this.world.isClient()) {
-            this.world.sendEntityStatus(this, (byte)60);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
             this.remove(Entity.RemovalReason.KILLED);
         }
     }
@@ -687,11 +688,11 @@ extends Entity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         this.setAbsorptionAmount(nbt.getFloat("AbsorptionAmount"));
-        if (nbt.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
-            this.getAttributes().readNbt(nbt.getList("Attributes", 10));
+        if (nbt.contains("Attributes", NbtElement.LIST_TYPE) && this.world != null && !this.world.isClient) {
+            this.getAttributes().readNbt(nbt.getList("Attributes", NbtElement.COMPOUND_TYPE));
         }
-        if (nbt.contains("ActiveEffects", 9)) {
-            NbtList nbtList = nbt.getList("ActiveEffects", 10);
+        if (nbt.contains("ActiveEffects", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("ActiveEffects", NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
@@ -699,13 +700,13 @@ extends Entity {
                 this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
             }
         }
-        if (nbt.contains("Health", 99)) {
+        if (nbt.contains("Health", NbtElement.NUMBER_TYPE)) {
             this.setHealth(nbt.getFloat("Health"));
         }
         this.hurtTime = nbt.getShort("HurtTime");
         this.deathTime = nbt.getShort("DeathTime");
         this.lastAttackedTime = nbt.getInt("HurtByTimestamp");
-        if (nbt.contains("Team", 8)) {
+        if (nbt.contains("Team", NbtElement.STRING_TYPE)) {
             boolean bl;
             String string = nbt.getString("Team");
             Team team = this.world.getScoreboard().getTeam(string);
@@ -717,7 +718,7 @@ extends Entity {
         if (nbt.getBoolean("FallFlying")) {
             this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, true);
         }
-        if (nbt.contains("SleepingX", 99) && nbt.contains("SleepingY", 99) && nbt.contains("SleepingZ", 99)) {
+        if (nbt.contains("SleepingX", NbtElement.NUMBER_TYPE) && nbt.contains("SleepingY", NbtElement.NUMBER_TYPE) && nbt.contains("SleepingZ", NbtElement.NUMBER_TYPE)) {
             BlockPos blockPos = new BlockPos(nbt.getInt("SleepingX"), nbt.getInt("SleepingY"), nbt.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
@@ -725,7 +726,7 @@ extends Entity {
                 this.setPositionInBed(blockPos);
             }
         }
-        if (nbt.contains("Brain", 10)) {
+        if (nbt.contains("Brain", NbtElement.COMPOUND_TYPE)) {
             this.brain = this.deserializeBrain(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Brain")));
         }
     }
@@ -1103,11 +1104,11 @@ extends Entity {
         }
         if (bl2) {
             if (bl) {
-                this.world.sendEntityStatus(this, (byte)29);
+                this.world.sendEntityStatus(this, EntityStatuses.BLOCK_WITH_SHIELD);
             } else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
-                this.world.sendEntityStatus(this, (byte)33);
+                this.world.sendEntityStatus(this, EntityStatuses.DAMAGE_FROM_THORNS);
             } else {
-                int b = source == DamageSource.DROWN ? 36 : (source.isFire() ? 37 : (source == DamageSource.SWEET_BERRY_BUSH ? 44 : (source == DamageSource.FREEZE ? 57 : 2)));
+                int b = source == DamageSource.DROWN ? 36 : (source.isFire() ? 37 : (source == DamageSource.SWEET_BERRY_BUSH ? 44 : (source == DamageSource.FREEZE ? 57 : (int)EntityStatuses.DAMAGE_FROM_GENERIC_SOURCE)));
                 this.world.sendEntityStatus(this, (byte)b);
             }
             if (source != DamageSource.DROWN && (!bl || amount > 0.0f)) {
@@ -1185,7 +1186,7 @@ extends Entity {
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 900, 1));
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 100, 1));
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 800, 0));
-            this.world.sendEntityStatus(this, (byte)35);
+            this.world.sendEntityStatus(this, EntityStatuses.USE_TOTEM_OF_UNDYING);
         }
         return itemStack != null;
     }
@@ -1258,7 +1259,7 @@ extends Entity {
             this.drop(source);
             this.onKilledBy(livingEntity);
         }
-        this.world.sendEntityStatus(this, (byte)3);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
         this.setPose(EntityPose.DYING);
     }
 
@@ -1616,10 +1617,10 @@ extends Entity {
                 this.timeUntilRegen = 20;
                 this.hurtTime = this.maxHurtTime = 10;
                 this.knockbackVelocity = 0.0f;
-                if (status == 33) {
+                if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
                     this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
-                if ((soundEvent = this.getHurtSound(damageSource = status == 37 ? DamageSource.ON_FIRE : (status == 36 ? DamageSource.DROWN : (status == 44 ? DamageSource.SWEET_BERRY_BUSH : (status == 57 ? DamageSource.FREEZE : DamageSource.GENERIC))))) != null) {
+                if ((soundEvent = this.getHurtSound(damageSource = status == EntityStatuses.DAMAGE_FROM_FIRE ? DamageSource.ON_FIRE : (status == EntityStatuses.DAMAGE_FROM_DROWNING ? DamageSource.DROWN : (status == EntityStatuses.DAMAGE_FROM_BERRY_BUSH ? DamageSource.SWEET_BERRY_BUSH : (status == EntityStatuses.DAMAGE_FROM_FREEZING ? DamageSource.FREEZE : DamageSource.GENERIC))))) != null) {
                     this.playSound(soundEvent, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
                 this.damage(DamageSource.GENERIC, 0.0f);
@@ -1924,7 +1925,7 @@ extends Entity {
     /**
      * Allows you to do certain speed and velocity calculations. This is useful for custom vehicle behavior, or custom entity movement. This is not to be confused with AI.
      * 
-     * <p>See vanilla examples of {@linkplain net.minecraft.entity.passive.HorseBaseEntity#travel
+     * <p>See vanilla examples of {@linkplain net.minecraft.entity.passive.AbstractHorseEntity#travel
      * custom horse vehicle} and {@linkplain net.minecraft.entity.mob.FlyingEntity#travel
      * flying entities}.
      * 
@@ -2267,7 +2268,7 @@ extends Entity {
         ItemStack itemStack = equipmentChanges.get((Object)EquipmentSlot.MAINHAND);
         ItemStack itemStack2 = equipmentChanges.get((Object)EquipmentSlot.OFFHAND);
         if (itemStack != null && itemStack2 != null && ItemStack.areEqual(itemStack, this.getSyncedHandStack(EquipmentSlot.OFFHAND)) && ItemStack.areEqual(itemStack2, this.getSyncedHandStack(EquipmentSlot.MAINHAND))) {
-            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, 55));
+            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, EntityStatuses.SWAP_HANDS));
             equipmentChanges.remove((Object)EquipmentSlot.MAINHAND);
             equipmentChanges.remove((Object)EquipmentSlot.OFFHAND);
             this.setSyncedHandStack(EquipmentSlot.MAINHAND, itemStack.copy());
@@ -2899,7 +2900,7 @@ extends Entity {
             return false;
         }
         if (particleEffects) {
-            world.sendEntityStatus(this, (byte)46);
+            world.sendEntityStatus(this, EntityStatuses.ADD_PORTAL_PARTICLES);
         }
         if (this instanceof PathAwareEntity) {
             ((PathAwareEntity)this).getNavigation().stop();

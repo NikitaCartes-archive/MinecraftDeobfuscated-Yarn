@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.DebugInfoSender;
@@ -257,7 +258,7 @@ extends BlockEntity {
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.bees.clear();
-        NbtList nbtList = nbt.getList(BEES_KEY, 10);
+        NbtList nbtList = nbt.getList(BEES_KEY, NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
             Bee bee = new Bee(nbtCompound.getCompound(ENTITY_DATA_KEY), nbtCompound.getInt(TICKS_IN_HIVE_KEY), nbtCompound.getInt(MIN_OCCUPATION_TICKS_KEY));

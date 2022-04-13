@@ -3,11 +3,9 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -33,7 +31,7 @@ extends CoralFeature {
         }
         BlockPos blockPos = mutable.toImmutable();
         int k = random.nextInt(3) + 2;
-        List<Direction> list = Util.copyShuffled(Lists.newArrayList(Direction.Type.HORIZONTAL), random);
+        List<Direction> list = Direction.Type.HORIZONTAL.getShuffled(random);
         List<Direction> list2 = list.subList(0, k);
         for (Direction direction : list2) {
             mutable.set(blockPos);

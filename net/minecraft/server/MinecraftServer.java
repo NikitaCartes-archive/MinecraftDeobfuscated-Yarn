@@ -20,13 +20,11 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
@@ -201,11 +199,8 @@ AutoCloseable {
     public static final int field_33206 = 50;
     private static final int field_33215 = 2000;
     private static final int field_33216 = 15000;
-    public static final String LEVEL_PROTOCOL_NAME = "level";
-    public static final String LEVEL_PROTOCOL = "level://";
     private static final long PLAYER_SAMPLE_UPDATE_INTERVAL = 5000000000L;
     private static final int field_33218 = 12;
-    public static final String RESOURCES_ZIP_FILE_NAME = "resources.zip";
     public static final File USER_CACHE_FILE = new File("usercache.json");
     public static final int START_TICKET_CHUNK_RADIUS = 11;
     private static final int START_TICKET_CHUNKS = 441;
@@ -342,7 +337,6 @@ AutoCloseable {
         }
         boolean bl = false;
         Finishable finishable = FlightProfiler.INSTANCE.startWorldLoadProfiling();
-        this.loadWorldResourcePack();
         this.saveProperties.addServerBrand(this.getServerModName(), this.getModStatus().isModded());
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldGenerationProgressListener);
@@ -491,18 +485,6 @@ AutoCloseable {
         worldGenerationProgressListener.stop();
         serverChunkManager.getLightingProvider().setTaskBatchSize(5);
         this.updateMobSpawnOptions();
-    }
-
-    protected void loadWorldResourcePack() {
-        File file = this.session.getDirectory(WorldSavePath.RESOURCES_ZIP).toFile();
-        if (file.isFile()) {
-            String string = this.session.getDirectoryName();
-            try {
-                this.setResourcePack(LEVEL_PROTOCOL + URLEncoder.encode(string, StandardCharsets.UTF_8.toString()) + "/resources.zip", "");
-            } catch (UnsupportedEncodingException unsupportedEncodingException) {
-                LOGGER.warn("Something went wrong url encoding {}", (Object)string);
-            }
-        }
     }
 
     public GameMode getDefaultGameMode() {

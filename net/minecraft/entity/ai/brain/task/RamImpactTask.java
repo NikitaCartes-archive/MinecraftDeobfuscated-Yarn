@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
@@ -95,7 +96,7 @@ extends Task<E> {
     }
 
     protected void finishRam(ServerWorld world, E entity) {
-        world.sendEntityStatus((Entity)entity, (byte)59);
+        world.sendEntityStatus((Entity)entity, EntityStatuses.FINISH_RAM);
         ((LivingEntity)entity).getBrain().remember(MemoryModuleType.RAM_COOLDOWN_TICKS, this.cooldownRangeFactory.apply(entity).get(world.random));
         ((LivingEntity)entity).getBrain().forget(MemoryModuleType.RAM_TARGET);
     }

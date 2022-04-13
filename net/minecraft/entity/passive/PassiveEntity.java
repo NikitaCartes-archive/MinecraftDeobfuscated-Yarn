@@ -37,7 +37,7 @@ extends PathAwareEntity {
         if (entityData == null) {
             entityData = new PassiveData(true);
         }
-        if ((passiveData = (PassiveData)entityData).canSpawnBaby() && passiveData.getSpawnedCount() > 0 && this.random.nextFloat() <= passiveData.getBabyChance()) {
+        if ((passiveData = (PassiveData)entityData).canSpawnBaby() && passiveData.getSpawnedCount() > 0 && world.getRandom().nextFloat() <= passiveData.getBabyChance()) {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();

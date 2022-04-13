@@ -34,7 +34,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 
     public PandaEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new PandaEntityModel(context.getPart(EntityModelLayers.PANDA)), 0.9f);
-        this.addFeature(new PandaHeldItemFeatureRenderer(this));
+        this.addFeature(new PandaHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
     }
 
     @Override

@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.LiteralText;
@@ -85,10 +86,10 @@ extends Item {
         if (nbtCompound == null) {
             return;
         }
-        if (nbtCompound.contains(FLIGHT_KEY, 99)) {
+        if (nbtCompound.contains(FLIGHT_KEY, NbtElement.NUMBER_TYPE)) {
             tooltip.add(new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte(FLIGHT_KEY))).formatted(Formatting.GRAY));
         }
-        if (!(nbtList = nbtCompound.getList(EXPLOSIONS_KEY, 10)).isEmpty()) {
+        if (!(nbtList = nbtCompound.getList(EXPLOSIONS_KEY, NbtElement.COMPOUND_TYPE)).isEmpty()) {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 ArrayList<Text> list = Lists.newArrayList();

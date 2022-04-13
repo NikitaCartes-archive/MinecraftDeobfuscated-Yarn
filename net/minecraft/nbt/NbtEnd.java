@@ -76,7 +76,7 @@ implements NbtElement {
 
     @Override
     public byte getType() {
-        return 0;
+        return NbtElement.END_TYPE;
     }
 
     public NbtType<NbtEnd> getNbtType() {

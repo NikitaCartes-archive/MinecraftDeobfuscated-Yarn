@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.registry.Registry;
@@ -38,7 +39,7 @@ public class ItemColors {
                 return -1;
             }
             NbtCompound nbtCompound = stack.getSubNbt("Explosion");
-            int[] nArray = is = nbtCompound != null && nbtCompound.contains("Colors", 11) ? nbtCompound.getIntArray("Colors") : null;
+            int[] nArray = is = nbtCompound != null && nbtCompound.contains("Colors", NbtElement.INT_ARRAY_TYPE) ? nbtCompound.getIntArray("Colors") : null;
             if (is == null || is.length == 0) {
                 return 0x8A8A8A;
             }

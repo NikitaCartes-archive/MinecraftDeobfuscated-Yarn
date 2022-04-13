@@ -13,7 +13,6 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -23,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -95,7 +95,7 @@ extends Item {
         }
         BlockSoundGroup blockSoundGroup = blockState2.getSoundGroup();
         world.playSound(playerEntity, blockPos, this.getPlaceSound(blockState2), SoundCategory.BLOCKS, (blockSoundGroup.getVolume() + 1.0f) / 2.0f, blockSoundGroup.getPitch() * 0.8f);
-        world.emitGameEvent((Entity)playerEntity, GameEvent.BLOCK_PLACE, blockPos);
+        world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(playerEntity, blockState2));
         if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }
@@ -216,8 +216,8 @@ extends Item {
     public void onItemEntityDestroyed(ItemEntity entity) {
         ItemStack itemStack;
         NbtCompound nbtCompound;
-        if (this.block instanceof ShulkerBoxBlock && (nbtCompound = BlockItem.getBlockEntityNbt(itemStack = entity.getStack())) != null && nbtCompound.contains("Items", 9)) {
-            NbtList nbtList = nbtCompound.getList("Items", 10);
+        if (this.block instanceof ShulkerBoxBlock && (nbtCompound = BlockItem.getBlockEntityNbt(itemStack = entity.getStack())) != null && nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbtCompound.getList("Items", NbtElement.COMPOUND_TYPE);
             ItemUsage.spawnItemContents(entity, nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt));
         }
     }

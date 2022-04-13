@@ -9,6 +9,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -18,8 +19,8 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class WitchHeldItemFeatureRenderer<T extends LivingEntity>
 extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
-    public WitchHeldItemFeatureRenderer(FeatureRendererContext<T, WitchEntityModel<T>> featureRendererContext) {
-        super(featureRendererContext);
+    public WitchHeldItemFeatureRenderer(FeatureRendererContext<T, WitchEntityModel<T>> featureRendererContext, HeldItemRenderer heldItemRenderer) {
+        super(featureRendererContext, heldItemRenderer);
     }
 
     @Override

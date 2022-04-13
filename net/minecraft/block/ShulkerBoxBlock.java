@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -186,10 +187,10 @@ extends BlockWithEntity {
         super.appendTooltip(stack, world, tooltip, options);
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null) {
-            if (nbtCompound.contains("LootTable", 8)) {
+            if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
                 tooltip.add(new LiteralText("???????"));
             }
-            if (nbtCompound.contains("Items", 9)) {
+            if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
                 Inventories.readNbt(nbtCompound, defaultedList);
                 int i = 0;

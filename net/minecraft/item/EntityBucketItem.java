@@ -16,6 +16,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -64,7 +65,7 @@ extends BucketItem {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         NbtCompound nbtCompound;
-        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getNbt()) != null && nbtCompound.contains("BucketVariantTag", 3)) {
+        if (this.entityType == EntityType.TROPICAL_FISH && (nbtCompound = stack.getNbt()) != null && nbtCompound.contains("BucketVariantTag", NbtElement.INT_TYPE)) {
             int i = nbtCompound.getInt("BucketVariantTag");
             Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
             String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);

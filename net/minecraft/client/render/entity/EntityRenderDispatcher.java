@@ -22,10 +22,12 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
@@ -70,6 +72,8 @@ implements SynchronousResourceReloader {
     private Quaternion rotation;
     public Entity targetedEntity;
     private final ItemRenderer itemRenderer;
+    private final BlockRenderManager blockRenderManager;
+    private final HeldItemRenderer heldItemRenderer;
     private final TextRenderer textRenderer;
     public final GameOptions gameOptions;
     private final EntityModelLoader modelLoader;
@@ -80,9 +84,11 @@ implements SynchronousResourceReloader {
         return this.getRenderer(entity).getLight(entity, tickDelta);
     }
 
-    public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, TextRenderer textRenderer, GameOptions gameOptions, EntityModelLoader modelLoader) {
+    public EntityRenderDispatcher(MinecraftClient client, TextureManager textureManager, ItemRenderer itemRenderer, BlockRenderManager blockRenderManager, TextRenderer textRenderer, GameOptions gameOptions, EntityModelLoader modelLoader) {
         this.textureManager = textureManager;
         this.itemRenderer = itemRenderer;
+        this.heldItemRenderer = new HeldItemRenderer(client, this, itemRenderer);
+        this.blockRenderManager = blockRenderManager;
         this.textRenderer = textRenderer;
         this.gameOptions = gameOptions;
         this.modelLoader = modelLoader;
@@ -322,9 +328,13 @@ implements SynchronousResourceReloader {
         return this.rotation;
     }
 
+    public HeldItemRenderer getHeldItemRenderer() {
+        return this.heldItemRenderer;
+    }
+
     @Override
     public void reload(ResourceManager manager) {
-        EntityRendererFactory.Context context = new EntityRendererFactory.Context(this, this.itemRenderer, manager, this.modelLoader, this.textRenderer);
+        EntityRendererFactory.Context context = new EntityRendererFactory.Context(this, this.itemRenderer, this.blockRenderManager, this.heldItemRenderer, manager, this.modelLoader, this.textRenderer);
         this.renderers = EntityRenderers.reloadEntityRenderers(context);
         this.modelRenderers = EntityRenderers.reloadPlayerRenderers(context);
     }

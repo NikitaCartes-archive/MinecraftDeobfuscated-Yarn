@@ -52,7 +52,7 @@ public class TadpoleBrain {
         brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(3, new SeekWaterTask(6, 0.15f)), Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(0.5f, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5))))));
     }
 
-    public static void method_41401(TadpoleEntity tadpole) {
+    public static void updateActivities(TadpoleEntity tadpole) {
         tadpole.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
     }
 }

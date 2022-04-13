@@ -86,9 +86,9 @@ public class ChunkSerializer {
         if (!Objects.equals(chunkPos, chunkPos2)) {
             LOGGER.error("Chunk file at {} is in the wrong location; relocating. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
         }
-        UpgradeData upgradeData = nbt.contains(UPGRADE_DATA_KEY, 10) ? new UpgradeData(nbt.getCompound(UPGRADE_DATA_KEY), world) : UpgradeData.NO_UPGRADE_DATA;
+        UpgradeData upgradeData = nbt.contains(UPGRADE_DATA_KEY, NbtElement.COMPOUND_TYPE) ? new UpgradeData(nbt.getCompound(UPGRADE_DATA_KEY), world) : UpgradeData.NO_UPGRADE_DATA;
         boolean bl = nbt.getBoolean(field_37662);
-        NbtList nbtList = nbt.getList(field_37663, 10);
+        NbtList nbtList = nbt.getList(field_37663, NbtElement.COMPOUND_TYPE);
         int i = world.countVerticalSections();
         ChunkSection[] chunkSections = new ChunkSection[i];
         boolean bl2 = world.getDimension().hasSkyLight();
@@ -104,13 +104,13 @@ public class ChunkSerializer {
             int l = world.sectionCoordToIndex(k);
             if (l >= 0 && l < chunkSections.length) {
                 ChunkSection chunkSection;
-                PalettedContainer palettedContainer = nbtCompound.contains("block_states", 10) ? (PalettedContainer)CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states")).promotePartial(errorMessage -> ChunkSerializer.logRecoverableError(chunkPos, k, errorMessage)).getOrThrow(false, LOGGER::error) : new PalettedContainer(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
-                PalettedContainer palettedContainer2 = nbtCompound.contains("biomes", 10) ? (PalettedContainer)codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes")).promotePartial(errorMessage -> ChunkSerializer.logRecoverableError(chunkPos, k, errorMessage)).getOrThrow(false, LOGGER::error) : new PalettedContainer(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
+                PalettedContainer palettedContainer = nbtCompound.contains("block_states", NbtElement.COMPOUND_TYPE) ? (PalettedContainer)CODEC.parse(NbtOps.INSTANCE, nbtCompound.getCompound("block_states")).promotePartial(errorMessage -> ChunkSerializer.logRecoverableError(chunkPos, k, errorMessage)).getOrThrow(false, LOGGER::error) : new PalettedContainer(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
+                PalettedContainer palettedContainer2 = nbtCompound.contains("biomes", NbtElement.COMPOUND_TYPE) ? (PalettedContainer)codec.parse(NbtOps.INSTANCE, nbtCompound.getCompound("biomes")).promotePartial(errorMessage -> ChunkSerializer.logRecoverableError(chunkPos, k, errorMessage)).getOrThrow(false, LOGGER::error) : new PalettedContainer(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
                 chunkSections[l] = chunkSection = new ChunkSection(k, palettedContainer, palettedContainer2);
                 poiStorage.initForPalette(chunkPos, chunkSection);
             }
-            boolean bl4 = nbtCompound.contains(field_37664, 7);
-            boolean bl6 = bl5 = bl2 && nbtCompound.contains(field_37665, 7);
+            boolean bl4 = nbtCompound.contains(field_37664, NbtElement.BYTE_ARRAY_TYPE);
+            boolean bl6 = bl5 = bl2 && nbtCompound.contains(field_37665, NbtElement.BYTE_ARRAY_TYPE);
             if (!bl4 && !bl5) continue;
             if (!bl3) {
                 lightingProvider.setRetainData(chunkPos, true);
@@ -124,19 +124,19 @@ public class ChunkSerializer {
         }
         long m = nbt.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbt);
-        BlendingData blendingData = nbt.contains("blending_data", 10) ? (BlendingData)BlendingData.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial(LOGGER::error).orElse(null) : null;
+        BlendingData blendingData = nbt.contains("blending_data", NbtElement.COMPOUND_TYPE) ? (BlendingData)BlendingData.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("blending_data"))).resultOrPartial(LOGGER::error).orElse(null) : null;
         if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
-            ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(nbt.getList(BLOCK_TICKS, 10), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
-            ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            ChunkTickScheduler<Block> chunkTickScheduler = ChunkTickScheduler.create(nbt.getList(BLOCK_TICKS, NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            ChunkTickScheduler<Fluid> chunkTickScheduler2 = ChunkTickScheduler.create(nbt.getList(FLUID_TICKS, NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             chunk = new WorldChunk(world.toServerWorld(), chunkPos, upgradeData, chunkTickScheduler, chunkTickScheduler2, m, chunkSections, ChunkSerializer.getEntityLoadingCallback(world, nbt), blendingData);
         } else {
             boolean bl6;
-            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, 10), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
-            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, 10), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            SimpleTickScheduler<Block> simpleTickScheduler = SimpleTickScheduler.tick(nbt.getList(BLOCK_TICKS, NbtElement.COMPOUND_TYPE), id -> Registry.BLOCK.getOrEmpty(Identifier.tryParse(id)), chunkPos);
+            SimpleTickScheduler<Fluid> simpleTickScheduler2 = SimpleTickScheduler.tick(nbt.getList(FLUID_TICKS, NbtElement.COMPOUND_TYPE), id -> Registry.FLUID.getOrEmpty(Identifier.tryParse(id)), chunkPos);
             ProtoChunk protoChunk = new ProtoChunk(chunkPos, upgradeData, chunkSections, simpleTickScheduler, simpleTickScheduler2, world, registry, blendingData);
             chunk = protoChunk;
             chunk.setInhabitedTime(m);
-            if (nbt.contains("below_zero_retrogen", 10)) {
+            if (nbt.contains("below_zero_retrogen", NbtElement.COMPOUND_TYPE)) {
                 BelowZeroRetrogen.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("below_zero_retrogen"))).resultOrPartial(LOGGER::error).ifPresent(protoChunk::setBelowZeroRetrogen);
             }
             ChunkStatus chunkStatus = ChunkStatus.byId(nbt.getString("Status"));
@@ -158,7 +158,7 @@ public class ChunkSerializer {
         EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
         for (Heightmap.Type type : chunk.getStatus().getHeightmapTypes()) {
             String string = type.getName();
-            if (nbtCompound2.contains(string, 12)) {
+            if (nbtCompound2.contains(string, NbtElement.LONG_ARRAY_TYPE)) {
                 chunk.setHeightmap(type, nbtCompound2.getLongArray(string));
                 continue;
             }
@@ -171,7 +171,7 @@ public class ChunkSerializer {
         if (nbt.getBoolean("shouldSave")) {
             chunk.setNeedsSaving(true);
         }
-        NbtList nbtList2 = nbt.getList("PostProcessing", 9);
+        NbtList nbtList2 = nbt.getList("PostProcessing", NbtElement.LIST_TYPE);
         for (int n = 0; n < nbtList2.size(); ++n) {
             NbtList nbtList3 = nbtList2.getList(n);
             for (int o = 0; o < nbtList3.size(); ++o) {
@@ -182,16 +182,16 @@ public class ChunkSerializer {
             return new ReadOnlyChunk((WorldChunk)chunk, false);
         }
         ProtoChunk protoChunk2 = (ProtoChunk)chunk;
-        NbtList nbtList3 = nbt.getList("entities", 10);
+        NbtList nbtList3 = nbt.getList("entities", NbtElement.COMPOUND_TYPE);
         for (int o = 0; o < nbtList3.size(); ++o) {
             protoChunk2.addEntity(nbtList3.getCompound(o));
         }
-        NbtList nbtList4 = nbt.getList("block_entities", 10);
+        NbtList nbtList4 = nbt.getList("block_entities", NbtElement.COMPOUND_TYPE);
         for (int p = 0; p < nbtList4.size(); ++p) {
             NbtCompound nbtCompound4 = nbtList4.getCompound(p);
             chunk.addPendingBlockEntityNbt(nbtCompound4);
         }
-        NbtList nbtList5 = nbt.getList("Lights", 9);
+        NbtList nbtList5 = nbt.getList("Lights", NbtElement.LIST_TYPE);
         for (int q = 0; q < nbtList5.size(); ++q) {
             NbtList nbtList6 = nbtList5.getList(q);
             for (int r = 0; r < nbtList6.size(); ++r) {
@@ -345,7 +345,7 @@ public class ChunkSerializer {
 
     @Nullable
     private static NbtList getList(NbtCompound nbt, String key) {
-        NbtList nbtList = nbt.getList(key, 10);
+        NbtList nbtList = nbt.getList(key, NbtElement.COMPOUND_TYPE);
         return nbtList.isEmpty() ? null : nbtList;
     }
 

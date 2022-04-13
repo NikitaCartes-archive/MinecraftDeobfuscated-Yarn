@@ -18,6 +18,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -50,7 +51,7 @@ extends LlamaEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("DespawnDelay", 99)) {
+        if (nbt.contains("DespawnDelay", NbtElement.NUMBER_TYPE)) {
             this.despawnDelay = nbt.getInt("DespawnDelay");
         }
     }

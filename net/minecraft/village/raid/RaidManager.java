@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.server.network.DebugInfoSender;
@@ -116,11 +118,11 @@ extends PersistentState {
             bl = true;
         } else {
             player.removeStatusEffect(StatusEffects.BAD_OMEN);
-            player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, 43));
+            player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
         }
         if (bl) {
             raid.start(player);
-            player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, 43));
+            player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, EntityStatuses.ADD_CLOUD_PARTICLES));
             if (!raid.hasSpawned()) {
                 player.incrementStat(Stats.RAID_TRIGGER);
                 Criteria.VOLUNTARY_EXILE.trigger(player);
@@ -139,7 +141,7 @@ extends PersistentState {
         RaidManager raidManager = new RaidManager(world);
         raidManager.nextAvailableId = nbt.getInt("NextAvailableID");
         raidManager.currentTime = nbt.getInt("Tick");
-        NbtList nbtList = nbt.getList("Raids", 10);
+        NbtList nbtList = nbt.getList("Raids", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
             Raid raid = new Raid(world, nbtCompound);

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -76,7 +77,7 @@ public class GameRules {
      * In vanilla, this includes the visibility of coordinates on the clients' debug HUDs.
      */
     public static final Key<BooleanRule> REDUCED_DEBUG_INFO = GameRules.register("reducedDebugInfo", Category.MISC, BooleanRule.create(false, (server, rule) -> {
-        byte b = rule.get() ? (byte)22 : (byte)23;
+        byte b = rule.get() ? EntityStatuses.USE_REDUCED_DEBUG_INFO : EntityStatuses.USE_FULL_DEBUG_INFO;
         for (ServerPlayerEntity serverPlayerEntity : server.getPlayerManager().getPlayerList()) {
             serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
         }

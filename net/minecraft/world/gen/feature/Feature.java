@@ -43,6 +43,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.DeltaFeature;
 import net.minecraft.world.gen.feature.DeltaFeatureConfig;
 import net.minecraft.world.gen.feature.DesertWellFeature;
+import net.minecraft.world.gen.feature.DiskFeature;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.DripstoneClusterFeature;
 import net.minecraft.world.gen.feature.DripstoneClusterFeatureConfig;
@@ -69,7 +70,6 @@ import net.minecraft.world.gen.feature.HugeFungusFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
 import net.minecraft.world.gen.feature.HugeRedMushroomFeature;
-import net.minecraft.world.gen.feature.IcePatchFeature;
 import net.minecraft.world.gen.feature.IceSpikeFeature;
 import net.minecraft.world.gen.feature.IcebergFeature;
 import net.minecraft.world.gen.feature.KelpFeature;
@@ -100,7 +100,6 @@ import net.minecraft.world.gen.feature.SeaPickleFeature;
 import net.minecraft.world.gen.feature.SeagrassFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
-import net.minecraft.world.gen.feature.SimpleDiskFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
@@ -108,7 +107,6 @@ import net.minecraft.world.gen.feature.SmallDripstoneFeature;
 import net.minecraft.world.gen.feature.SmallDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeature;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
-import net.minecraft.world.gen.feature.SurfaceDiskFeature;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.TwistingVinesFeature;
@@ -152,9 +150,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> BLUE_ICE = Feature.register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> ICEBERG = Feature.register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = Feature.register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
-    public static final Feature<DiskFeatureConfig> DISK = Feature.register("disk", new SimpleDiskFeature(DiskFeatureConfig.CODEC));
-    public static final Feature<DiskFeatureConfig> SURFACE_DISK = Feature.register("surface_disk", new SurfaceDiskFeature(DiskFeatureConfig.CODEC));
-    public static final Feature<DiskFeatureConfig> ICE_PATCH = Feature.register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
+    public static final Feature<DiskFeatureConfig> DISK = Feature.register("disk", new DiskFeature(DiskFeatureConfig.CODEC));
     public static final Feature<LakeFeature.Config> LAKE = Feature.register("lake", new LakeFeature(LakeFeature.Config.CODEC));
     public static final Feature<OreFeatureConfig> ORE = Feature.register("ore", new OreFeature(OreFeatureConfig.CODEC));
     public static final Feature<EndSpikeFeatureConfig> END_SPIKE = Feature.register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
@@ -234,10 +230,6 @@ public abstract class Feature<FC extends FeatureConfig> {
 
     public static boolean isSoil(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, Feature::isSoil);
-    }
-
-    public static boolean isAir(TestableWorld world, BlockPos pos) {
-        return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
     }
 
     public static boolean testAdjacentStates(Function<BlockPos, BlockState> posToState, BlockPos pos, Predicate<BlockState> predicate) {

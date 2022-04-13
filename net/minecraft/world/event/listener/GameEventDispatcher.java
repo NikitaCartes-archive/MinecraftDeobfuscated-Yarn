@@ -3,11 +3,9 @@
  */
 package net.minecraft.world.event.listener;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A game event dispatcher dispatches game events to its listeners.
@@ -32,7 +30,7 @@ public interface GameEventDispatcher {
         }
 
         @Override
-        public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos) {
+        public void dispatch(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
         }
     };
 
@@ -59,8 +57,7 @@ public interface GameEventDispatcher {
      * Dispatches an event to all the listeners in this dispatcher.
      * 
      * @param event the event
-     * @param entity an entity related to the event
      */
-    public void dispatch(GameEvent var1, @Nullable Entity var2, Vec3d var3);
+    public void dispatch(GameEvent var1, Vec3d var2, GameEvent.Emitter var3);
 }
 

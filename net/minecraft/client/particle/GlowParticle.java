@@ -56,18 +56,18 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_7309
+    public static class AllayDustFactory
     implements ParticleFactory<DefaultParticleType> {
         private static final double field_38459 = 0.01;
-        private final SpriteProvider field_38460;
+        private final SpriteProvider spriteProvider;
 
-        public class_7309(SpriteProvider spriteProvider) {
-            this.field_38460 = spriteProvider;
+        public AllayDustFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.field_38460);
+            GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
             if (clientWorld.random.nextBoolean()) {
                 glowParticle.setColor(0.39f, 0.98f, 1.0f);
             } else {

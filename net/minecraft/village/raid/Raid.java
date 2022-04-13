@@ -37,6 +37,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -135,8 +136,8 @@ public class Raid {
         this.waveCount = nbt.getInt("NumGroups");
         this.status = Status.fromName(nbt.getString("Status"));
         this.heroesOfTheVillage.clear();
-        if (nbt.contains("HeroesOfTheVillage", 9)) {
-            NbtList nbtList = nbt.getList("HeroesOfTheVillage", 11);
+        if (nbt.contains("HeroesOfTheVillage", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("HeroesOfTheVillage", NbtElement.INT_ARRAY_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtList.get(i)));
             }

@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
@@ -37,12 +38,12 @@ extends Item {
         if (!user.getAbilities().creativeMode) {
             user.setStackInHand(hand, ItemStack.EMPTY);
         }
-        if (nbtCompound == null || !nbtCompound.contains(RECIPES_KEY, 9)) {
+        if (nbtCompound == null || !nbtCompound.contains(RECIPES_KEY, NbtElement.LIST_TYPE)) {
             LOGGER.error("Tag not valid: {}", (Object)nbtCompound);
             return TypedActionResult.fail(itemStack);
         }
         if (!world.isClient) {
-            NbtList nbtList = nbtCompound.getList(RECIPES_KEY, 8);
+            NbtList nbtList = nbtCompound.getList(RECIPES_KEY, NbtElement.STRING_TYPE);
             ArrayList<Recipe<?>> list = Lists.newArrayList();
             RecipeManager recipeManager = world.getServer().getRecipeManager();
             for (int i = 0; i < nbtList.size(); ++i) {

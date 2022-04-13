@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -129,7 +130,7 @@ extends WaterCreatureEntity {
                 if (this.random.nextInt(10) == 0) {
                     this.thrustTimerSpeed = 1.0f / (this.random.nextFloat() + 1.0f) * 0.2f;
                 }
-                this.world.sendEntityStatus(this, (byte)19);
+                this.world.sendEntityStatus(this, EntityStatuses.RESET_SQUID_THRUST_TIMER);
             }
         }
         if (this.isInsideWaterOrBubbleColumn()) {
@@ -209,7 +210,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 19) {
+        if (status == EntityStatuses.RESET_SQUID_THRUST_TIMER) {
             this.thrustTimer = 0.0f;
         } else {
             super.handleStatus(status);

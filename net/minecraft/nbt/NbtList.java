@@ -66,7 +66,7 @@ extends AbstractNbtList<NbtElement> {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
              * 
-             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [4[SWITCH], 8[CASE]], but top level block is 9[SWITCH]
+             * org.benf.cfr.reader.util.ConfusedCFRException: Tried to end blocks [8[CASE], 4[SWITCH]], but top level block is 9[SWITCH]
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.processEndingBlocks(Op04StructuredStatement.java:435)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op04StructuredStatement.buildNestedBlocks(Op04StructuredStatement.java:484)
              *     at org.benf.cfr.reader.bytecode.analysis.opgraph.Op03SimpleStatement.createInitialStructuredBlock(Op03SimpleStatement.java:736)
@@ -145,7 +145,7 @@ extends AbstractNbtList<NbtElement> {
     }
 
     public NbtList() {
-        this(Lists.newArrayList(), 0);
+        this(Lists.newArrayList(), NbtElement.END_TYPE);
     }
 
     @Override
@@ -160,7 +160,7 @@ extends AbstractNbtList<NbtElement> {
 
     @Override
     public byte getType() {
-        return 9;
+        return NbtElement.LIST_TYPE;
     }
 
     public NbtType<NbtList> getNbtType() {
@@ -192,7 +192,7 @@ extends AbstractNbtList<NbtElement> {
 
     public NbtCompound getCompound(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 10) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.COMPOUND_TYPE) {
             return (NbtCompound)nbtElement;
         }
         return new NbtCompound();
@@ -200,7 +200,7 @@ extends AbstractNbtList<NbtElement> {
 
     public NbtList getList(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 9) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.LIST_TYPE) {
             return (NbtList)nbtElement;
         }
         return new NbtList();
@@ -208,7 +208,7 @@ extends AbstractNbtList<NbtElement> {
 
     public short getShort(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 2) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.SHORT_TYPE) {
             return ((NbtShort)nbtElement).shortValue();
         }
         return 0;
@@ -216,7 +216,7 @@ extends AbstractNbtList<NbtElement> {
 
     public int getInt(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 3) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.INT_TYPE) {
             return ((NbtInt)nbtElement).intValue();
         }
         return 0;
@@ -224,7 +224,7 @@ extends AbstractNbtList<NbtElement> {
 
     public int[] getIntArray(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 11) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.INT_ARRAY_TYPE) {
             return ((NbtIntArray)nbtElement).getIntArray();
         }
         return new int[0];
@@ -232,7 +232,7 @@ extends AbstractNbtList<NbtElement> {
 
     public long[] getLongArray(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 11) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.INT_ARRAY_TYPE) {
             return ((NbtLongArray)nbtElement).getLongArray();
         }
         return new long[0];
@@ -240,7 +240,7 @@ extends AbstractNbtList<NbtElement> {
 
     public double getDouble(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 6) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.DOUBLE_TYPE) {
             return ((NbtDouble)nbtElement).doubleValue();
         }
         return 0.0;
@@ -248,7 +248,7 @@ extends AbstractNbtList<NbtElement> {
 
     public float getFloat(int index) {
         NbtElement nbtElement;
-        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == 5) {
+        if (index >= 0 && index < this.value.size() && (nbtElement = this.value.get(index)).getType() == NbtElement.FLOAT_TYPE) {
             return ((NbtFloat)nbtElement).floatValue();
         }
         return 0.0f;
@@ -259,7 +259,7 @@ extends AbstractNbtList<NbtElement> {
             return "";
         }
         NbtElement nbtElement = this.value.get(index);
-        if (nbtElement.getType() == 8) {
+        if (nbtElement.getType() == NbtElement.STRING_TYPE) {
             return nbtElement.asString();
         }
         return nbtElement.toString();

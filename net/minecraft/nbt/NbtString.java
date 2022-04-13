@@ -89,7 +89,7 @@ implements NbtElement {
 
     @Override
     public byte getType() {
-        return 8;
+        return NbtElement.STRING_TYPE;
     }
 
     public NbtType<NbtString> getNbtType() {

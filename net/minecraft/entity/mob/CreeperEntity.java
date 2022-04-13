@@ -35,6 +35,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -122,10 +123,10 @@ implements SkinOverlayOwner {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.dataTracker.set(CHARGED, nbt.getBoolean("powered"));
-        if (nbt.contains("Fuse", 99)) {
+        if (nbt.contains("Fuse", NbtElement.NUMBER_TYPE)) {
             this.fuseTime = nbt.getShort("Fuse");
         }
-        if (nbt.contains("ExplosionRadius", 99)) {
+        if (nbt.contains("ExplosionRadius", NbtElement.NUMBER_TYPE)) {
             this.explosionRadius = nbt.getByte("ExplosionRadius");
         }
         if (nbt.getBoolean("ignited")) {

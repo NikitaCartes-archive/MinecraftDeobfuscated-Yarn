@@ -24,6 +24,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -328,21 +329,21 @@ extends Entity {
         if (nbt.containsUuid("Owner")) {
             this.ownerUuid = nbt.getUuid("Owner");
         }
-        if (nbt.contains("Particle", 8)) {
+        if (nbt.contains("Particle", NbtElement.STRING_TYPE)) {
             try {
                 this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(nbt.getString("Particle"))));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Couldn't load custom particle {}", (Object)nbt.getString("Particle"), (Object)commandSyntaxException);
             }
         }
-        if (nbt.contains("Color", 99)) {
+        if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
             this.setColor(nbt.getInt("Color"));
         }
-        if (nbt.contains("Potion", 8)) {
+        if (nbt.contains("Potion", NbtElement.STRING_TYPE)) {
             this.setPotion(PotionUtil.getPotion(nbt));
         }
-        if (nbt.contains("Effects", 9)) {
-            NbtList nbtList = nbt.getList("Effects", 10);
+        if (nbt.contains("Effects", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("Effects", NbtElement.COMPOUND_TYPE);
             this.effects.clear();
             for (int i = 0; i < nbtList.size(); ++i) {
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtList.getCompound(i));

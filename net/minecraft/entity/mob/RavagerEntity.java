@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -219,7 +220,7 @@ extends RaiderEntity {
             if (this.random.nextDouble() < 0.5) {
                 this.stunTick = 40;
                 this.playSound(SoundEvents.ENTITY_RAVAGER_STUNNED, 1.0f, 1.0f);
-                this.world.sendEntityStatus(this, (byte)39);
+                this.world.sendEntityStatus(this, EntityStatuses.STUN_RAVAGER);
                 target.pushAwayFrom(this);
             } else {
                 this.knockBack(target);
@@ -263,10 +264,10 @@ extends RaiderEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 4) {
+        if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
             this.attackTick = 10;
             this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0f, 1.0f);
-        } else if (status == 39) {
+        } else if (status == EntityStatuses.STUN_RAVAGER) {
             this.stunTick = 40;
         }
         super.handleStatus(status);
@@ -287,7 +288,7 @@ extends RaiderEntity {
     @Override
     public boolean tryAttack(Entity target) {
         this.attackTick = 10;
-        this.world.sendEntityStatus(this, (byte)4);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
         this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0f, 1.0f);
         return super.tryAttack(target);
     }

@@ -19,6 +19,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -73,7 +74,7 @@ NamedScreenHandlerFactory {
 
     default public void readInventoryFromNbt(NbtCompound nbt) {
         this.resetInventory();
-        if (nbt.contains("LootTable", 8)) {
+        if (nbt.contains("LootTable", NbtElement.STRING_TYPE)) {
             this.setLootTableId(new Identifier(nbt.getString("LootTable")));
             this.setLootTableSeed(nbt.getLong("LootTableSeed"));
         } else {

@@ -136,11 +136,11 @@ public class StructureLocator {
 
     @Nullable
     private Object2IntMap<StructureType> collectStructuresAndReferences(NbtCompound nbt) {
-        if (!nbt.contains("structures", 10)) {
+        if (!nbt.contains("structures", NbtElement.COMPOUND_TYPE)) {
             return null;
         }
         NbtCompound nbtCompound = nbt.getCompound("structures");
-        if (!nbtCompound.contains("starts", 10)) {
+        if (!nbtCompound.contains("starts", NbtElement.COMPOUND_TYPE)) {
             return null;
         }
         NbtCompound nbtCompound2 = nbtCompound.getCompound("starts");

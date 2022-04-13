@@ -19,7 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 public class MoveControl
 implements Control {
     public static final float field_30197 = 5.0E-4f;
-    public static final float field_30198 = 2.5000003E-7f;
+    public static final float REACHED_DESTINATION_DISTANCE_SQUARED = 2.5000003E-7f;
     protected static final int field_30199 = 90;
     protected final MobEntity entity;
     protected double targetX;
@@ -74,7 +74,7 @@ implements Control {
             float k = MathHelper.sin(this.entity.getYaw() * ((float)Math.PI / 180));
             float l = MathHelper.cos(this.entity.getYaw() * ((float)Math.PI / 180));
             float m = (h *= j) * l - (i *= j) * k;
-            if (!this.method_25946(m, n = i * l + h * k)) {
+            if (!this.isPosWalkable(m, n = i * l + h * k)) {
                 this.forwardMovement = 1.0f;
                 this.sidewaysMovement = 0.0f;
             }
@@ -112,10 +112,10 @@ implements Control {
         }
     }
 
-    private boolean method_25946(float f, float g) {
+    private boolean isPosWalkable(float x, float z) {
         PathNodeMaker pathNodeMaker;
         EntityNavigation entityNavigation = this.entity.getNavigation();
-        return entityNavigation == null || (pathNodeMaker = entityNavigation.getNodeMaker()) == null || pathNodeMaker.getDefaultNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)f), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double)g)) == PathNodeType.WALKABLE;
+        return entityNavigation == null || (pathNodeMaker = entityNavigation.getNodeMaker()) == null || pathNodeMaker.getDefaultNodeType(this.entity.world, MathHelper.floor(this.entity.getX() + (double)x), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double)z)) == PathNodeType.WALKABLE;
     }
 
     protected float wrapDegrees(float from, float to, float max) {

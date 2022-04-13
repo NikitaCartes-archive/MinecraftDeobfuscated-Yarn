@@ -268,10 +268,6 @@ public abstract class AbstractBlock {
         return false;
     }
 
-    public OffsetType getOffsetType() {
-        return OffsetType.NONE;
-    }
-
     public float getMaxHorizontalModelOffset() {
         return 0.25f;
     }
@@ -561,6 +557,7 @@ public abstract class AbstractBlock {
         ContextPredicate postProcessPredicate = (state, world, pos) -> false;
         ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
         boolean dynamicBounds;
+        Function<BlockState, OffsetType> offsetType = state -> OffsetType.NONE;
 
         private Settings(Material material, MapColor mapColorProvider) {
             this(material, (BlockState state) -> mapColorProvider);
@@ -603,6 +600,7 @@ public abstract class AbstractBlock {
             settings.opaque = block.settings.opaque;
             settings.isAir = block.settings.isAir;
             settings.toolRequired = block.settings.toolRequired;
+            settings.offsetType = block.settings.offsetType;
             return settings;
         }
 
@@ -729,13 +727,15 @@ public abstract class AbstractBlock {
             this.resistance = Math.max(0.0f, resistance);
             return this;
         }
-    }
 
-    public static enum OffsetType {
-        NONE,
-        XZ,
-        XYZ;
+        public Settings offsetType(OffsetType offsetType) {
+            return this.offsetType((BlockState state) -> offsetType);
+        }
 
+        public Settings offsetType(Function<BlockState, OffsetType> offsetType) {
+            this.offsetType = offsetType;
+            return this;
+        }
     }
 
     public static interface TypedContextPredicate<A> {
@@ -761,6 +761,7 @@ public abstract class AbstractBlock {
         private final ContextPredicate blockVisionPredicate;
         private final ContextPredicate postProcessPredicate;
         private final ContextPredicate emissiveLightingPredicate;
+        private final OffsetType offsetType;
         @Nullable
         protected ShapeCache shapeCache;
 
@@ -780,6 +781,7 @@ public abstract class AbstractBlock {
             this.blockVisionPredicate = settings.blockVisionPredicate;
             this.postProcessPredicate = settings.postProcessPredicate;
             this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
+            this.offsetType = settings.offsetType.apply(this.asBlockState());
         }
 
         public void initShapeCache() {
@@ -964,15 +966,14 @@ public abstract class AbstractBlock {
         }
 
         public Vec3d getModelOffset(BlockView world, BlockPos pos) {
-            Block block = this.getBlock();
-            OffsetType offsetType = block.getOffsetType();
-            if (offsetType == OffsetType.NONE) {
+            if (this.offsetType == OffsetType.NONE) {
                 return Vec3d.ZERO;
             }
+            Block block = this.getBlock();
             long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
             float f = block.getMaxHorizontalModelOffset();
             double d = MathHelper.clamp(((double)((float)(l & 0xFL) / 15.0f) - 0.5) * 0.5, (double)(-f), (double)f);
-            double e = offsetType == OffsetType.XYZ ? ((double)((float)(l >> 4 & 0xFL) / 15.0f) - 1.0) * (double)block.getVerticalModelOffsetMultiplier() : 0.0;
+            double e = this.offsetType == OffsetType.XYZ ? ((double)((float)(l >> 4 & 0xFL) / 15.0f) - 1.0) * (double)block.getVerticalModelOffsetMultiplier() : 0.0;
             double g = MathHelper.clamp(((double)((float)(l >> 8 & 0xFL) / 15.0f) - 0.5) * 0.5, (double)(-f), (double)f);
             return new Vec3d(d, e, g);
         }
@@ -1156,6 +1157,10 @@ public abstract class AbstractBlock {
             return this.toolRequired;
         }
 
+        public OffsetType getOffsetType() {
+            return this.offsetType;
+        }
+
         static final class ShapeCache {
             private static final Direction[] DIRECTIONS = Direction.values();
             private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
@@ -1187,7 +1192,7 @@ public abstract class AbstractBlock {
                     }
                 }
                 this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
-                if (!this.collisionShape.isEmpty() && block.getOffsetType() != OffsetType.NONE) {
+                if (!this.collisionShape.isEmpty() && state.getOffsetType() != OffsetType.NONE) {
                     throw new IllegalStateException(String.format("%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block)));
                 }
                 this.exceedsCube = Arrays.stream(Direction.Axis.values()).anyMatch(axis -> this.collisionShape.getMin((Direction.Axis)axis) < 0.0 || this.collisionShape.getMax((Direction.Axis)axis) > 1.0);
@@ -1208,6 +1213,13 @@ public abstract class AbstractBlock {
                 return direction.ordinal() * SHAPE_TYPE_LENGTH + shapeType.ordinal();
             }
         }
+    }
+
+    public static enum OffsetType {
+        NONE,
+        XZ,
+        XYZ;
+
     }
 }
 

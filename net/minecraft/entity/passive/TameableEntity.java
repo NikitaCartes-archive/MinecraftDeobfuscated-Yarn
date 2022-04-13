@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
@@ -102,9 +103,9 @@ implements Tameable {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 7) {
+        if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
             this.showEmoteParticle(true);
-        } else if (status == 6) {
+        } else if (status == EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES) {
             this.showEmoteParticle(false);
         } else {
             super.handleStatus(status);

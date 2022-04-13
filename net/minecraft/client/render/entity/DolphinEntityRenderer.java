@@ -20,7 +20,7 @@ extends MobEntityRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
 
     public DolphinEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new DolphinEntityModel(context.getPart(EntityModelLayers.DOLPHIN)), 0.7f);
-        this.addFeature(new DolphinHeldItemFeatureRenderer(this));
+        this.addFeature(new DolphinHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
     }
 
     @Override

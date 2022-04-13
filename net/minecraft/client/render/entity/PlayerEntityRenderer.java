@@ -50,11 +50,11 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     public PlayerEntityRenderer(EntityRendererFactory.Context ctx, boolean slim) {
         super(ctx, new PlayerEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim), 0.5f);
         this.addFeature(new ArmorFeatureRenderer(this, new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)), new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))));
-        this.addFeature(new PlayerHeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
+        this.addFeature(new PlayerHeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this, ctx.getHeldItemRenderer()));
         this.addFeature(new StuckArrowsFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(ctx, this));
         this.addFeature(new Deadmau5FeatureRenderer(this));
         this.addFeature(new CapeFeatureRenderer(this));
-        this.addFeature(new HeadFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this, ctx.getModelLoader()));
+        this.addFeature(new HeadFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
         this.addFeature(new ElytraFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this, ctx.getModelLoader()));
         this.addFeature(new ShoulderParrotFeatureRenderer<AbstractClientPlayerEntity>(this, ctx.getModelLoader()));
         this.addFeature(new TridentRiptideFeatureRenderer<AbstractClientPlayerEntity>(this, ctx.getModelLoader()));

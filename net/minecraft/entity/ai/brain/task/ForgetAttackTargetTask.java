@@ -19,13 +19,13 @@ extends Task<E> {
     private static final int REMEMBER_TIME = 200;
     private final Predicate<LivingEntity> alternativeCondition;
     private final BiConsumer<E, LivingEntity> forgetCallback;
-    private final boolean field_38102;
+    private final boolean shouldForgetIfTargetUnreachable;
 
-    public ForgetAttackTargetTask(Predicate<LivingEntity> condition, BiConsumer<E, LivingEntity> biConsumer, boolean bl) {
+    public ForgetAttackTargetTask(Predicate<LivingEntity> condition, BiConsumer<E, LivingEntity> biConsumer, boolean shouldForgetIfTargetUnreachable) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleState.REGISTERED));
         this.alternativeCondition = condition;
         this.forgetCallback = biConsumer;
-        this.field_38102 = bl;
+        this.shouldForgetIfTargetUnreachable = shouldForgetIfTargetUnreachable;
     }
 
     public ForgetAttackTargetTask(Predicate<LivingEntity> predicate, BiConsumer<E, LivingEntity> biConsumer) {
@@ -51,7 +51,7 @@ extends Task<E> {
             this.forgetAttackTarget(mobEntity);
             return;
         }
-        if (this.field_38102 && ForgetAttackTargetTask.cannotReachTarget(mobEntity)) {
+        if (this.shouldForgetIfTargetUnreachable && ForgetAttackTargetTask.cannotReachTarget(mobEntity)) {
             this.forgetAttackTarget(mobEntity);
             return;
         }

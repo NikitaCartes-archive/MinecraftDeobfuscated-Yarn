@@ -94,6 +94,7 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.3f, Items.MOSS_CARPET);
         ComposterBlock.registerCompostableItem(0.3f, Items.SMALL_DRIPLEAF);
         ComposterBlock.registerCompostableItem(0.3f, Items.HANGING_ROOTS);
+        ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_ROOTS);
         ComposterBlock.registerCompostableItem(0.5f, Items.DRIED_KELP_BLOCK);
         ComposterBlock.registerCompostableItem(0.5f, Items.TALL_GRASS);
         ComposterBlock.registerCompostableItem(0.5f, Items.FLOWERING_AZALEA_LEAVES);

@@ -29,9 +29,9 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,7 +101,7 @@ implements BlockEntityRenderer<SkullBlockEntity> {
         if (map.containsKey((Object)MinecraftProfileTexture.Type.SKIN)) {
             return RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN));
         }
-        return RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(profile)));
+        return RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile)));
     }
 }
 

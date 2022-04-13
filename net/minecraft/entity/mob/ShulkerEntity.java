@@ -38,6 +38,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -159,7 +160,7 @@ implements Monster {
         super.readCustomDataFromNbt(nbt);
         this.setAttachedFace(Direction.byId(nbt.getByte("AttachFace")));
         this.dataTracker.set(PEEK_AMOUNT, nbt.getByte("Peek"));
-        if (nbt.contains("Color", 99)) {
+        if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
             this.dataTracker.set(COLOR, nbt.getByte("Color"));
         }
     }

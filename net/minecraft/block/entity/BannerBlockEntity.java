@@ -16,6 +16,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -55,8 +56,8 @@ implements Nameable {
     public static NbtList getPatternListNbt(ItemStack stack) {
         NbtList nbtList = null;
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-        if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY, 9)) {
-            nbtList = nbtCompound.getList(PATTERNS_KEY, 10).copy();
+        if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY, NbtElement.LIST_TYPE)) {
+            nbtList = nbtCompound.getList(PATTERNS_KEY, NbtElement.COMPOUND_TYPE).copy();
         }
         return nbtList;
     }
@@ -104,10 +105,10 @@ implements Nameable {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        if (nbt.contains("CustomName", 8)) {
+        if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
-        this.patternListNbt = nbt.getList(PATTERNS_KEY, 10);
+        this.patternListNbt = nbt.getList(PATTERNS_KEY, NbtElement.COMPOUND_TYPE);
         this.patterns = null;
     }
 
@@ -123,7 +124,7 @@ implements Nameable {
     public static int getPatternCount(ItemStack stack) {
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null && nbtCompound.contains(PATTERNS_KEY)) {
-            return nbtCompound.getList(PATTERNS_KEY, 10).size();
+            return nbtCompound.getList(PATTERNS_KEY, NbtElement.COMPOUND_TYPE).size();
         }
         return 0;
     }
@@ -152,10 +153,10 @@ implements Nameable {
 
     public static void loadFromItemStack(ItemStack stack) {
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
-        if (nbtCompound == null || !nbtCompound.contains(PATTERNS_KEY, 9)) {
+        if (nbtCompound == null || !nbtCompound.contains(PATTERNS_KEY, NbtElement.LIST_TYPE)) {
             return;
         }
-        NbtList nbtList = nbtCompound.getList(PATTERNS_KEY, 10);
+        NbtList nbtList = nbtCompound.getList(PATTERNS_KEY, NbtElement.COMPOUND_TYPE);
         if (nbtList.isEmpty()) {
             return;
         }

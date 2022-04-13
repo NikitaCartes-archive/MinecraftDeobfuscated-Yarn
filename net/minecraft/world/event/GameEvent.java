@@ -3,9 +3,12 @@
  */
 package net.minecraft.world.event;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
+import org.jetbrains.annotations.Nullable;
 
 public class GameEvent {
     public static final GameEvent BLOCK_ACTIVATE = GameEvent.register("block_activate");
@@ -87,6 +90,30 @@ public class GameEvent {
 
     public boolean isIn(TagKey<GameEvent> tag) {
         return this.registryEntry.isIn(tag);
+    }
+
+    public record Emitter(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {
+        public static Emitter of(@Nullable Entity sourceEntity) {
+            return new Emitter(sourceEntity, null);
+        }
+
+        public static Emitter of(@Nullable BlockState affectedState) {
+            return new Emitter(null, affectedState);
+        }
+
+        public static Emitter of(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {
+            return new Emitter(sourceEntity, affectedState);
+        }
+
+        @Nullable
+        public Entity sourceEntity() {
+            return this.sourceEntity;
+        }
+
+        @Nullable
+        public BlockState affectedState() {
+            return this.affectedState;
+        }
     }
 }
 

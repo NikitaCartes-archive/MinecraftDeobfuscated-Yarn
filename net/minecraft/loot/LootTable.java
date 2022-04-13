@@ -12,9 +12,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -83,10 +85,10 @@ public class LootTable {
         this.generateUnprocessedLoot(context, LootTable.processStacks(lootConsumer));
     }
 
-    public List<ItemStack> generateLoot(LootContext context) {
-        ArrayList<ItemStack> list = Lists.newArrayList();
-        this.generateLoot(context, list::add);
-        return list;
+    public ObjectArrayList<ItemStack> generateLoot(LootContext context) {
+        ObjectArrayList<ItemStack> objectArrayList = new ObjectArrayList<ItemStack>();
+        this.generateLoot(context, objectArrayList::add);
+        return objectArrayList;
     }
 
     public LootContextType getType() {
@@ -104,28 +106,28 @@ public class LootTable {
     }
 
     public void supplyInventory(Inventory inventory, LootContext context) {
-        List<ItemStack> list = this.generateLoot(context);
+        ObjectArrayList<ItemStack> objectArrayList = this.generateLoot(context);
         AbstractRandom abstractRandom = context.getRandom();
-        List<Integer> list2 = this.getFreeSlots(inventory, abstractRandom);
-        this.shuffle(list, list2.size(), abstractRandom);
-        for (ItemStack itemStack : list) {
-            if (list2.isEmpty()) {
+        List<Integer> list = this.getFreeSlots(inventory, abstractRandom);
+        this.shuffle(objectArrayList, list.size(), abstractRandom);
+        for (ItemStack itemStack : objectArrayList) {
+            if (list.isEmpty()) {
                 LOGGER.warn("Tried to over-fill a container");
                 return;
             }
             if (itemStack.isEmpty()) {
-                inventory.setStack(list2.remove(list2.size() - 1), ItemStack.EMPTY);
+                inventory.setStack(list.remove(list.size() - 1), ItemStack.EMPTY);
                 continue;
             }
-            inventory.setStack(list2.remove(list2.size() - 1), itemStack);
+            inventory.setStack(list.remove(list.size() - 1), itemStack);
         }
     }
 
-    private void shuffle(List<ItemStack> drops, int freeSlots, AbstractRandom random) {
+    private void shuffle(ObjectArrayList<ItemStack> drops, int freeSlots, AbstractRandom random) {
         ArrayList<ItemStack> list = Lists.newArrayList();
-        Iterator<ItemStack> iterator = drops.iterator();
+        ObjectIterator iterator = drops.iterator();
         while (iterator.hasNext()) {
-            ItemStack itemStack = iterator.next();
+            ItemStack itemStack = (ItemStack)iterator.next();
             if (itemStack.isEmpty()) {
                 iterator.remove();
                 continue;
@@ -149,18 +151,18 @@ public class LootTable {
             }
             drops.add(itemStack3);
         }
-        drops.addAll(list);
+        drops.addAll((Collection<ItemStack>)list);
         Util.shuffle(drops, random);
     }
 
     private List<Integer> getFreeSlots(Inventory inventory, AbstractRandom random) {
-        ArrayList<Integer> list = Lists.newArrayList();
+        ObjectArrayList<Integer> objectArrayList = new ObjectArrayList<Integer>();
         for (int i = 0; i < inventory.size(); ++i) {
             if (!inventory.getStack(i).isEmpty()) continue;
-            list.add(i);
+            objectArrayList.add(i);
         }
-        Util.shuffle(list, random);
-        return list;
+        Util.shuffle(objectArrayList, random);
+        return objectArrayList;
     }
 
     public static Builder builder() {

@@ -24,6 +24,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -70,6 +71,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
@@ -199,7 +201,7 @@ extends AnimalEntity {
                     this.eatingTime = 0;
                 } else if (this.eatingTime > 560 && this.random.nextFloat() < 0.1f) {
                     this.playSound(this.getEatSound(itemStack), 1.0f, 1.0f);
-                    this.world.sendEntityStatus(this, (byte)45);
+                    this.world.sendEntityStatus(this, EntityStatuses.CREATE_EATING_PARTICLES);
                 }
             }
             if ((livingEntity = this.getTarget()) == null || !livingEntity.isAlive()) {
@@ -228,17 +230,17 @@ extends AnimalEntity {
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
-        if (this.random.nextFloat() < 0.2f) {
-            float f = this.random.nextFloat();
-            ItemStack itemStack = f < 0.05f ? new ItemStack(Items.EMERALD) : (f < 0.2f ? new ItemStack(Items.EGG) : (f < 0.4f ? (this.random.nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE)) : (f < 0.6f ? new ItemStack(Items.WHEAT) : (f < 0.8f ? new ItemStack(Items.LEATHER) : new ItemStack(Items.FEATHER)))));
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+        if (random.nextFloat() < 0.2f) {
+            float f = random.nextFloat();
+            ItemStack itemStack = f < 0.05f ? new ItemStack(Items.EMERALD) : (f < 0.2f ? new ItemStack(Items.EGG) : (f < 0.4f ? (random.nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE)) : (f < 0.6f ? new ItemStack(Items.WHEAT) : (f < 0.8f ? new ItemStack(Items.LEATHER) : new ItemStack(Items.FEATHER)))));
             this.equipStack(EquipmentSlot.MAINHAND, itemStack);
         }
     }
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 45) {
+        if (status == EntityStatuses.CREATE_EATING_PARTICLES) {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
             if (!itemStack.isEmpty()) {
                 for (int i = 0; i < 8; ++i) {
@@ -273,8 +275,9 @@ extends AnimalEntity {
         Type type = Type.fromBiome(registryEntry);
         boolean bl = false;
         if (entityData instanceof FoxData) {
-            type = ((FoxData)entityData).type;
-            if (((FoxData)entityData).getSpawnedCount() >= 2) {
+            FoxData foxData = (FoxData)entityData;
+            type = foxData.type;
+            if (foxData.getSpawnedCount() >= 2) {
                 bl = true;
             }
         } else {
@@ -287,7 +290,7 @@ extends AnimalEntity {
         if (world instanceof ServerWorld) {
             this.addTypeSpecificGoals();
         }
-        this.initEquipment(difficulty);
+        this.initEquipment(world.getRandom(), difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -361,7 +364,7 @@ extends AnimalEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        NbtList nbtList = nbt.getList("Trusted", 11);
+        NbtList nbtList = nbt.getList("Trusted", NbtElement.INT_ARRAY_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
         }
@@ -794,7 +797,7 @@ extends AnimalEntity {
             foxEntity.setBreedingAge(-24000);
             foxEntity.refreshPositionAndAngles(this.animal.getX(), this.animal.getY(), this.animal.getZ(), 0.0f, 0.0f);
             serverWorld.spawnEntityAndPassengers(foxEntity);
-            this.world.sendEntityStatus(this.animal, (byte)18);
+            this.world.sendEntityStatus(this.animal, EntityStatuses.ADD_BREEDING_PARTICLES);
             if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
                 this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.animal.getX(), this.animal.getY(), this.animal.getZ(), this.animal.getRandom().nextInt(7) + 1));
             }

@@ -95,6 +95,7 @@ extends SinglePartEntityModel<T> {
         this.setHeadAndBodyAngles(h);
         this.setTendrilPitches(wardenEntity, h, k);
         this.runAnimation(((WardenEntity)wardenEntity).attackingAnimationState, WardenAnimations.ATTACKING, l);
+        this.runAnimation(((WardenEntity)wardenEntity).chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, l);
         this.runAnimation(((WardenEntity)wardenEntity).diggingAnimationState, WardenAnimations.DIGGING, l);
         this.runAnimation(((WardenEntity)wardenEntity).emergingAnimationState, WardenAnimations.EMERGING, l);
         this.runAnimation(((WardenEntity)wardenEntity).roaringAnimationState, WardenAnimations.ROARING, l);

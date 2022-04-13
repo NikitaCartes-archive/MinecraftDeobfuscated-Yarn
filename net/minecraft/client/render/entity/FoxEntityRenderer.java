@@ -26,7 +26,7 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
 
     public FoxEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new FoxEntityModel(context.getPart(EntityModelLayers.FOX)), 0.4f);
-        this.addFeature(new FoxHeldItemFeatureRenderer(this));
+        this.addFeature(new FoxHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
     }
 
     @Override

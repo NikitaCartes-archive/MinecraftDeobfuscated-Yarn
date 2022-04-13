@@ -708,7 +708,7 @@ public class MineshaftGenerator {
 
         public MineshaftRoom(NbtCompound nbtCompound) {
             super(StructurePieceType.MINESHAFT_ROOM, nbtCompound);
-            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbtCompound.getList("Entrances", 11)).resultOrPartial(LOGGER::error).ifPresent(this.entrances::addAll);
+            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbtCompound.getList("Entrances", NbtElement.INT_ARRAY_TYPE)).resultOrPartial(LOGGER::error).ifPresent(this.entrances::addAll);
         }
 
         @Override

@@ -23,6 +23,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -56,7 +57,7 @@ extends ConditionalLootFunction {
         if (blockState != null) {
             NbtCompound nbtCompound2;
             NbtCompound nbtCompound = stack.getOrCreateNbt();
-            if (nbtCompound.contains("BlockStateTag", 10)) {
+            if (nbtCompound.contains("BlockStateTag", NbtElement.COMPOUND_TYPE)) {
                 nbtCompound2 = nbtCompound.getCompound("BlockStateTag");
             } else {
                 nbtCompound2 = new NbtCompound();

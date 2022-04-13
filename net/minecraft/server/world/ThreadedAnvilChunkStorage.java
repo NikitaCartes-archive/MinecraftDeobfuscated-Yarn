@@ -52,6 +52,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -522,7 +523,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.world.getProfiler().visit("chunkLoad");
                 NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
                 if (nbtCompound != null) {
-                    boolean bl = nbtCompound.contains("Status", 8);
+                    boolean bl = nbtCompound.contains("Status", NbtElement.STRING_TYPE);
                     if (bl) {
                         ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, nbtCompound);
                         this.mark(pos, ((Chunk)chunk).getStatus().getChunkType());

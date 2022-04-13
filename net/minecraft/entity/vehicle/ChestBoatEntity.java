@@ -89,7 +89,7 @@ VehicleInventory {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        if (player.shouldCancelInteraction()) {
+        if (!this.canAddPassenger(player) || player.shouldCancelInteraction()) {
             return this.open(this::emitGameEvent, player);
         }
         return super.interact(player, hand);

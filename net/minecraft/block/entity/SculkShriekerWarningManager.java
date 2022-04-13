@@ -109,9 +109,7 @@ public class SculkShriekerWarningManager {
     }
 
     private void copy(SculkShriekerWarningManager other) {
-        this.ticksSinceLastWarning = other.ticksSinceLastWarning;
         this.warningLevel = other.warningLevel;
-        this.cooldownTicks = other.cooldownTicks;
     }
 }
 

@@ -11,6 +11,7 @@ import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -142,7 +143,7 @@ Hoglin {
             return false;
         }
         this.movementCooldownTicks = 10;
-        this.world.sendEntityStatus(this, (byte)4);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
         this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0f, this.getSoundPitch());
         return Hoglin.tryAttack(this, (LivingEntity)target);
     }
@@ -230,7 +231,7 @@ Hoglin {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 4) {
+        if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
             this.movementCooldownTicks = 10;
             this.playSound(SoundEvents.ENTITY_ZOGLIN_ATTACK, 1.0f, this.getSoundPitch());
         } else {

@@ -5,21 +5,22 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class HorseBondWithPlayerGoal
 extends Goal {
-    private final HorseBaseEntity horse;
+    private final AbstractHorseEntity horse;
     private final double speed;
     private double targetX;
     private double targetY;
     private double targetZ;
 
-    public HorseBondWithPlayerGoal(HorseBaseEntity horse, double speed) {
+    public HorseBondWithPlayerGoal(AbstractHorseEntity horse, double speed) {
         this.horse = horse;
         this.speed = speed;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
@@ -68,7 +69,7 @@ extends Goal {
             }
             this.horse.removeAllPassengers();
             this.horse.playAngrySound();
-            this.horse.world.sendEntityStatus(this.horse, (byte)6);
+            this.horse.world.sendEntityStatus(this.horse, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
         }
     }
 }

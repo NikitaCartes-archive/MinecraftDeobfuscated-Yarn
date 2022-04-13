@@ -34,6 +34,7 @@ public final class ItemTags {
     public static final TagKey<Item> MANGROVE_LOGS = ItemTags.of("mangrove_logs");
     public static final TagKey<Item> CRIMSON_STEMS = ItemTags.of("crimson_stems");
     public static final TagKey<Item> WARPED_STEMS = ItemTags.of("warped_stems");
+    public static final TagKey<Item> WART_BLOCKS = ItemTags.of("wart_blocks");
     public static final TagKey<Item> BANNERS = ItemTags.of("banners");
     public static final TagKey<Item> SAND = ItemTags.of("sand");
     public static final TagKey<Item> STAIRS = ItemTags.of("stairs");
@@ -66,6 +67,7 @@ public final class ItemTags {
     public static final TagKey<Item> CANDLES = ItemTags.of("candles");
     public static final TagKey<Item> DIRT = ItemTags.of("dirt");
     public static final TagKey<Item> TERRACOTTA = ItemTags.of("terracotta");
+    public static final TagKey<Item> COMPLETES_FIND_TREE_TUTORIAL = ItemTags.of("completes_find_tree_tutorial");
     public static final TagKey<Item> BOATS = ItemTags.of("boats");
     public static final TagKey<Item> CHEST_BOATS = ItemTags.of("chest_boats");
     public static final TagKey<Item> FISHES = ItemTags.of("fishes");
@@ -80,7 +82,7 @@ public final class ItemTags {
     public static final TagKey<Item> STONE_CRAFTING_MATERIALS = ItemTags.of("stone_crafting_materials");
     public static final TagKey<Item> FREEZE_IMMUNE_WEARABLES = ItemTags.of("freeze_immune_wearables");
     public static final TagKey<Item> AXOLOTL_TEMPT_ITEMS = ItemTags.of("axolotl_tempt_items");
-    public static final TagKey<Item> OCCLUDES_VIBRATION_SIGNALS = ItemTags.of("occludes_vibration_signals");
+    public static final TagKey<Item> DAMPENS_VIBRATIONS = ItemTags.of("dampens_vibrations");
     public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = ItemTags.of("cluster_max_harvestables");
     public static final TagKey<Item> COMPASSES = ItemTags.of("compasses");
 

@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -49,10 +50,10 @@ extends Item {
         if (nbt == null) {
             return false;
         }
-        if (!nbt.contains("pages", 9)) {
+        if (!nbt.contains("pages", NbtElement.LIST_TYPE)) {
             return false;
         }
-        NbtList nbtList = nbt.getList("pages", 8);
+        NbtList nbtList = nbt.getList("pages", NbtElement.STRING_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             String string = nbtList.getString(i);
             if (string.length() <= Short.MAX_VALUE) continue;

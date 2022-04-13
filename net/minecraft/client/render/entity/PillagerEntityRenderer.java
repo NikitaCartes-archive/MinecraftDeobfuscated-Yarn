@@ -20,7 +20,7 @@ extends IllagerEntityRenderer<PillagerEntity> {
 
     public PillagerEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.PILLAGER)), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<PillagerEntity, IllagerEntityModel<PillagerEntity>>(this));
+        this.addFeature(new HeldItemFeatureRenderer<PillagerEntity, IllagerEntityModel<PillagerEntity>>(this, context.getHeldItemRenderer()));
     }
 
     @Override

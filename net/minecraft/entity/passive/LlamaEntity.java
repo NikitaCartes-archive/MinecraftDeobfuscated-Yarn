@@ -42,6 +42,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -52,6 +53,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -84,9 +86,9 @@ implements RangedAttackMob {
         this.dataTracker.set(STRENGTH, Math.max(1, Math.min(5, strength)));
     }
 
-    private void initializeStrength() {
-        int i = this.random.nextFloat() < 0.04f ? 5 : 3;
-        this.setStrength(1 + this.random.nextInt(i));
+    private void initializeStrength(AbstractRandom random) {
+        int i = random.nextFloat() < 0.04f ? 5 : 3;
+        this.setStrength(1 + random.nextInt(i));
     }
 
     public int getStrength() {
@@ -108,7 +110,7 @@ implements RangedAttackMob {
         this.setStrength(nbt.getInt("Strength"));
         super.readCustomDataFromNbt(nbt);
         this.setVariant(nbt.getInt("Variant"));
-        if (nbt.contains("DecorItem", 10)) {
+        if (nbt.contains("DecorItem", NbtElement.COMPOUND_TYPE)) {
             this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
         }
         this.updateSaddle();
@@ -238,11 +240,12 @@ implements RangedAttackMob {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i;
-        this.initializeStrength();
+        AbstractRandom abstractRandom = world.getRandom();
+        this.initializeStrength(abstractRandom);
         if (entityData instanceof LlamaData) {
             i = ((LlamaData)entityData).variant;
         } else {
-            i = this.random.nextInt(4);
+            i = abstractRandom.nextInt(4);
             entityData = new LlamaData(i);
         }
         this.setVariant(i);

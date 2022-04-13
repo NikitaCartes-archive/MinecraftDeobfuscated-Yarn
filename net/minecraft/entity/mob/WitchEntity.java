@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -153,7 +154,7 @@ implements RangedAttackMob {
                 }
             }
             if (this.random.nextFloat() < 7.5E-4f) {
-                this.world.sendEntityStatus(this, (byte)15);
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_WITCH_PARTICLES);
             }
         }
         super.tickMovement();
@@ -166,7 +167,7 @@ implements RangedAttackMob {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 15) {
+        if (status == EntityStatuses.ADD_WITCH_PARTICLES) {
             for (int i = 0; i < this.random.nextInt(35) + 10; ++i) {
                 this.world.addParticle(ParticleTypes.WITCH, this.getX() + this.random.nextGaussian() * (double)0.13f, this.getBoundingBox().maxY + 0.5 + this.random.nextGaussian() * (double)0.13f, this.getZ() + this.random.nextGaussian() * (double)0.13f, 0.0, 0.0, 0.0);
             }

@@ -80,7 +80,7 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    protected boolean method_37004() {
+    protected boolean isAmphibious() {
         return true;
     }
 

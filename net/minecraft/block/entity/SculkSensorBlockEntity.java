@@ -39,7 +39,7 @@ implements SculkSensorListener.Callback {
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
-        if (nbt.contains("listener", 10)) {
+        if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
             SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38236::error).ifPresent(listener -> {
                 this.listener = listener;
             });
@@ -62,7 +62,7 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
         if (pos.equals(this.getPos()) && (event == GameEvent.BLOCK_DESTROY || event == GameEvent.BLOCK_PLACE)) {
             return false;
         }

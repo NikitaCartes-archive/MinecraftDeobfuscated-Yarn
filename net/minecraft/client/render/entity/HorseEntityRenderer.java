@@ -7,8 +7,8 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.AbstractHorseEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.HorseBaseEntityRenderer;
 import net.minecraft.client.render.entity.feature.HorseArmorFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HorseMarkingFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -20,7 +20,7 @@ import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public final class HorseEntityRenderer
-extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
+extends AbstractHorseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
     private static final Map<HorseColor, Identifier> TEXTURES = Util.make(Maps.newEnumMap(HorseColor.class), enumMap -> {
         enumMap.put(HorseColor.WHITE, new Identifier("textures/entity/horse/horse_white.png"));
         enumMap.put(HorseColor.CREAMY, new Identifier("textures/entity/horse/horse_creamy.png"));

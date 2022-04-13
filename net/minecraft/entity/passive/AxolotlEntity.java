@@ -180,14 +180,15 @@ Bucketable {
         if (spawnReason == SpawnReason.BUCKET) {
             return entityData;
         }
+        AbstractRandom abstractRandom = world.getRandom();
         if (entityData instanceof AxolotlData) {
             if (((AxolotlData)entityData).getSpawnedCount() >= 2) {
                 bl = true;
             }
         } else {
-            entityData = new AxolotlData(Variant.getRandomNatural(this.world.random), Variant.getRandomNatural(this.world.random));
+            entityData = new AxolotlData(Variant.getRandomNatural(abstractRandom), Variant.getRandomNatural(abstractRandom));
         }
-        this.setVariant(((AxolotlData)entityData).getRandomVariant(this.world.random));
+        this.setVariant(((AxolotlData)entityData).getRandomVariant(abstractRandom));
         if (bl) {
             this.setBreedingAge(-24000);
         }
@@ -399,7 +400,7 @@ Bucketable {
     }
 
     @Override
-    public SoundEvent getBucketedSound() {
+    public SoundEvent getBucketFillSound() {
         return SoundEvents.ITEM_BUCKET_FILL_AXOLOTL;
     }
 

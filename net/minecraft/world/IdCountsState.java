@@ -6,6 +6,7 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.PersistentState;
 
 public class IdCountsState
@@ -20,7 +21,7 @@ extends PersistentState {
     public static IdCountsState fromNbt(NbtCompound nbt) {
         IdCountsState idCountsState = new IdCountsState();
         for (String string : nbt.getKeys()) {
-            if (!nbt.contains(string, 99)) continue;
+            if (!nbt.contains(string, NbtElement.NUMBER_TYPE)) continue;
             idCountsState.idCounts.put(string, nbt.getInt(string));
         }
         return idCountsState;

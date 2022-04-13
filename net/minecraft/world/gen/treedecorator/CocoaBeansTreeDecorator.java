@@ -5,16 +5,13 @@ package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.List;
-import java.util.function.BiConsumer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 
@@ -33,17 +30,19 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, List<BlockPos> rootPositions) {
-        if (random.nextFloat() >= this.probability) {
+    public void generate(TreeDecorator.Generator generator) {
+        AbstractRandom abstractRandom = generator.getRandom();
+        if (abstractRandom.nextFloat() >= this.probability) {
             return;
         }
-        int i = logPositions.get(0).getY();
-        logPositions.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
+        ObjectArrayList<BlockPos> list = generator.getLogPositions();
+        int i = ((BlockPos)list.get(0)).getY();
+        list.stream().filter(pos -> pos.getY() - i <= 2).forEach(pos -> {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 Direction direction2;
                 BlockPos blockPos;
-                if (!(random.nextFloat() <= 0.25f) || !Feature.isAir(world, blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
-                replacer.accept(blockPos, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, random.nextInt(3))).with(CocoaBlock.FACING, direction));
+                if (!(abstractRandom.nextFloat() <= 0.25f) || !generator.isAir(blockPos = pos.add((direction2 = direction.getOpposite()).getOffsetX(), 0, direction2.getOffsetZ()))) continue;
+                generator.replace(blockPos, (BlockState)((BlockState)Blocks.COCOA.getDefaultState().with(CocoaBlock.AGE, abstractRandom.nextInt(3))).with(CocoaBlock.FACING, direction));
             }
         });
     }

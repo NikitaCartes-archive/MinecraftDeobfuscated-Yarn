@@ -4,12 +4,13 @@
 package net.minecraft.entity.projectile;
 
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Collections;
-import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -398,12 +399,12 @@ extends ProjectileEntity {
         if (this.hookedEntity != null) {
             this.pullHookedEntity(this.hookedEntity);
             Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, Collections.emptyList());
-            this.world.sendEntityStatus(this, (byte)31);
+            this.world.sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
             i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
         } else if (this.hookCountdown > 0) {
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).parameter(LootContextParameters.ORIGIN, this.getPos()).parameter(LootContextParameters.TOOL, usedItem).parameter(LootContextParameters.THIS_ENTITY, this).random(this.random).luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
             LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
-            List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
+            ObjectArrayList<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
             Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
             for (ItemStack itemStack : list) {
                 ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
@@ -428,7 +429,7 @@ extends ProjectileEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
+        if (status == EntityStatuses.PULL_HOOKED_ENTITY && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
             this.pullHookedEntity(this.hookedEntity);
         }
         super.handleStatus(status);

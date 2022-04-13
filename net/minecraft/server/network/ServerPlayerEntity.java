@@ -25,6 +25,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -34,7 +35,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -308,18 +309,18 @@ extends PlayerEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("enteredNetherPosition", 10)) {
+        if (nbt.contains("enteredNetherPosition", NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = nbt.getCompound("enteredNetherPosition");
             this.enteredNetherPos = new Vec3d(nbtCompound.getDouble("x"), nbtCompound.getDouble("y"), nbtCompound.getDouble("z"));
         }
         this.seenCredits = nbt.getBoolean("seenCredits");
-        if (nbt.contains("recipeBook", 10)) {
+        if (nbt.contains("recipeBook", NbtElement.COMPOUND_TYPE)) {
             this.recipeBook.readNbt(nbt.getCompound("recipeBook"), this.server.getRecipeManager());
         }
         if (this.isSleeping()) {
             this.wakeUp();
         }
-        if (nbt.contains("SpawnX", 99) && nbt.contains("SpawnY", 99) && nbt.contains("SpawnZ", 99)) {
+        if (nbt.contains("SpawnX", NbtElement.NUMBER_TYPE) && nbt.contains("SpawnY", NbtElement.NUMBER_TYPE) && nbt.contains("SpawnZ", NbtElement.NUMBER_TYPE)) {
             this.spawnPointPosition = new BlockPos(nbt.getInt("SpawnX"), nbt.getInt("SpawnY"), nbt.getInt("SpawnZ"));
             this.spawnForced = nbt.getBoolean("SpawnForced");
             this.spawnAngle = nbt.getFloat("SpawnAngle");
@@ -579,7 +580,7 @@ extends PlayerEntity {
             livingEntity.updateKilledAdvancementCriterion(this, this.scoreAmount, source);
             this.onKilledBy(livingEntity);
         }
-        this.world.sendEntityStatus(this, (byte)3);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
         this.incrementStat(Stats.DEATHS);
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
@@ -943,7 +944,7 @@ extends PlayerEntity {
     }
 
     @Override
-    public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
+    public void openHorseInventory(AbstractHorseEntity horse, Inventory inventory) {
         if (this.currentScreenHandler != this.playerScreenHandler) {
             this.closeHandledScreen();
         }
@@ -1058,7 +1059,7 @@ extends PlayerEntity {
     @Override
     protected void consumeItem() {
         if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
-            this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, 9));
+            this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, EntityStatuses.CONSUME_ITEM));
             super.consumeItem();
         }
     }
@@ -1492,7 +1493,7 @@ extends PlayerEntity {
 
     @Nullable
     private static GameMode gameModeFromNbt(@Nullable NbtCompound nbt, String key) {
-        return nbt != null && nbt.contains(key, 99) ? GameMode.byId(nbt.getInt(key)) : null;
+        return nbt != null && nbt.contains(key, NbtElement.NUMBER_TYPE) ? GameMode.byId(nbt.getInt(key)) : null;
     }
 
     /**
@@ -1554,6 +1555,16 @@ extends PlayerEntity {
 
     public boolean allowsServerListing() {
         return this.allowServerListing;
+    }
+
+    @Override
+    public void triggerItemPickedUpByEntityCriteria(ItemEntity item) {
+        Entity entity;
+        super.triggerItemPickedUpByEntityCriteria(item);
+        Entity entity2 = entity = item.getThrower() != null ? this.getWorld().getEntity(item.getThrower()) : null;
+        if (entity != null) {
+            Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.trigger(this, item.getStack(), entity);
+        }
     }
 
     @Override

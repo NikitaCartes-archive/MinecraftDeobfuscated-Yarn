@@ -23,9 +23,9 @@ extends MobEntityRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity
 
     public VillagerEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new VillagerResemblingModel(context.getPart(EntityModelLayers.VILLAGER)), 0.5f);
-        this.addFeature(new HeadFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this, context.getModelLoader()));
+        this.addFeature(new HeadFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this, context.getModelLoader(), context.getHeldItemRenderer()));
         this.addFeature(new VillagerClothingFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this, context.getResourceManager(), "villager"));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this));
+        this.addFeature(new VillagerHeldItemFeatureRenderer<VillagerEntity, VillagerResemblingModel<VillagerEntity>>(this, context.getHeldItemRenderer()));
     }
 
     @Override

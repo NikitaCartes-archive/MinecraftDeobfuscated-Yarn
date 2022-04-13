@@ -5,7 +5,6 @@ package net.minecraft.world.gen.feature;
 
 import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.BlockPos;
@@ -72,7 +71,7 @@ public class PlacedFeatures {
     }
 
     public static AbstractConditionalPlacementModifier isAir() {
-        return BlockFilterPlacementModifier.of(BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+        return BlockFilterPlacementModifier.of(BlockPredicate.IS_AIR);
     }
 
     public static BlockFilterPlacementModifier wouldSurvive(Block block) {
@@ -88,7 +87,7 @@ public class PlacedFeatures {
     }
 
     public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig) {
-        return PlacedFeatures.createEntry(feature, featureConfig, BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN));
+        return PlacedFeatures.createEntry(feature, featureConfig, BlockPredicate.IS_AIR);
     }
 
     public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(F feature, FC featureConfig, BlockPredicate predicate) {

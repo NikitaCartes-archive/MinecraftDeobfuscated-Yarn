@@ -17,6 +17,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -173,7 +174,7 @@ extends PersistentProjectileEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("Trident", 10)) {
+        if (nbt.contains("Trident", NbtElement.COMPOUND_TYPE)) {
             this.tridentStack = ItemStack.fromNbt(nbt.getCompound("Trident"));
         }
         this.dealtDamage = nbt.getBoolean("DealtDamage");

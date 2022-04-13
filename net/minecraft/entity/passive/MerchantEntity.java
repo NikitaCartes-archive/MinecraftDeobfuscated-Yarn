@@ -26,6 +26,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -180,10 +181,10 @@ Merchant {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("Offers", 10)) {
+        if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        this.inventory.readNbtList(nbt.getList("Inventory", 10));
+        this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
     }
 
     @Override

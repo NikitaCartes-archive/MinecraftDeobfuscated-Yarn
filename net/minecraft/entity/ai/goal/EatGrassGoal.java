@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.predicate.block.BlockStatePredicate;
@@ -45,7 +46,7 @@ extends Goal {
     @Override
     public void start() {
         this.timer = this.getTickCount(40);
-        this.world.sendEntityStatus(this.mob, (byte)10);
+        this.world.sendEntityStatus(this.mob, EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART);
         this.mob.getNavigation().stop();
     }
 

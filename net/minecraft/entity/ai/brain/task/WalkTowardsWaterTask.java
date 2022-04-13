@@ -22,7 +22,7 @@ public class WalkTowardsWaterTask
 extends Task<PathAwareEntity> {
     private final int range;
     private final float speed;
-    private long field_37439;
+    private long walkTowardsWaterTime;
 
     public WalkTowardsWaterTask(int range, float speed) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
@@ -32,7 +32,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        this.field_37439 = l + 40L;
+        this.walkTowardsWaterTime = l + 40L;
     }
 
     @Override
@@ -42,7 +42,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        if (l < this.field_37439) {
+        if (l < this.walkTowardsWaterTime) {
             return;
         }
         ShapeContext shapeContext = ShapeContext.of(pathAwareEntity);
@@ -53,7 +53,7 @@ extends Task<PathAwareEntity> {
             for (Direction direction : Direction.Type.HORIZONTAL) {
                 mutable.set((Vec3i)blockPos2, direction);
                 if (!serverWorld.getBlockState(mutable).isAir() || !serverWorld.getBlockState(mutable.move(Direction.DOWN)).isOf(Blocks.WATER)) continue;
-                this.field_37439 = l + 40L;
+                this.walkTowardsWaterTime = l + 40L;
                 LookTargetUtil.walkTowards((LivingEntity)pathAwareEntity, blockPos2, this.speed, 0);
                 return;
             }

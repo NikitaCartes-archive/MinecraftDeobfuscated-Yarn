@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.GameRules;
@@ -61,7 +62,7 @@ extends AbstractFireballEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("ExplosionPower", 99)) {
+        if (nbt.contains("ExplosionPower", NbtElement.NUMBER_TYPE)) {
             this.explosionPower = nbt.getByte("ExplosionPower");
         }
     }

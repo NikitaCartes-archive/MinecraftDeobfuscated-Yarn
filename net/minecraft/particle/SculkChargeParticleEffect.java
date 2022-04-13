@@ -23,6 +23,7 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect
 
         @Override
         public SculkChargeParticleEffect read(ParticleType<SculkChargeParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+            stringReader.expect(' ');
             float f = stringReader.readFloat();
             return new SculkChargeParticleEffect(f);
         }

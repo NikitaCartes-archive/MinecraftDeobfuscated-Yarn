@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -65,7 +66,7 @@ implements AutoCloseable {
     }
 
     public static int getDataVersion(NbtCompound nbt) {
-        return nbt.contains("DataVersion", 99) ? nbt.getInt("DataVersion") : -1;
+        return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") : -1;
     }
 
     @Nullable

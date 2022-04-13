@@ -363,7 +363,6 @@ public class Items {
     public static final Item PURPUR_PILLAR = Items.register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
     public static final Item PURPUR_STAIRS = Items.register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPAWNER = Items.register(new BlockItem(Blocks.SPAWNER, new Item.Settings().rarity(Rarity.EPIC)));
-    public static final Item OAK_STAIRS = Items.register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CHEST = Items.register(Blocks.CHEST, ItemGroup.DECORATIONS);
     public static final Item CRAFTING_TABLE = Items.register(Blocks.CRAFTING_TABLE, ItemGroup.DECORATIONS);
     public static final Item FARMLAND = Items.register(Blocks.FARMLAND, ItemGroup.DECORATIONS);
@@ -446,9 +445,13 @@ public class Items {
     public static final Item SANDSTONE_STAIRS = Items.register(Blocks.SANDSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item ENDER_CHEST = Items.register(Blocks.ENDER_CHEST, ItemGroup.DECORATIONS);
     public static final Item EMERALD_BLOCK = Items.register(Blocks.EMERALD_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item OAK_STAIRS = Items.register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_STAIRS = Items.register(Blocks.SPRUCE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item BIRCH_STAIRS = Items.register(Blocks.BIRCH_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item JUNGLE_STAIRS = Items.register(Blocks.JUNGLE_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item ACACIA_STAIRS = Items.register(Blocks.ACACIA_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DARK_OAK_STAIRS = Items.register(Blocks.DARK_OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item MANGROVE_STAIRS = Items.register(Blocks.MANGROVE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRIMSON_STAIRS = Items.register(Blocks.CRIMSON_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item WARPED_STAIRS = Items.register(Blocks.WARPED_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item COMMAND_BLOCK = Items.register(new CommandBlockItem(Blocks.COMMAND_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
@@ -520,9 +523,6 @@ public class Items {
     public static final Item BLACK_CARPET = Items.register(Blocks.BLACK_CARPET, ItemGroup.DECORATIONS);
     public static final Item TERRACOTTA = Items.register(Blocks.TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
     public static final Item PACKED_ICE = Items.register(Blocks.PACKED_ICE, ItemGroup.BUILDING_BLOCKS);
-    public static final Item ACACIA_STAIRS = Items.register(Blocks.ACACIA_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item DARK_OAK_STAIRS = Items.register(Blocks.DARK_OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
-    public static final Item MANGROVE_STAIRS = Items.register(Blocks.MANGROVE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item DIRT_PATH = Items.register(Blocks.DIRT_PATH, ItemGroup.DECORATIONS);
     public static final Item SUNFLOWER = Items.register(new TallBlockItem(Blocks.SUNFLOWER, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item LILAC = Items.register(new TallBlockItem(Blocks.LILAC, new Item.Settings().group(ItemGroup.DECORATIONS)));
@@ -941,6 +941,7 @@ public class Items {
     public static final Item SLIME_BALL = Items.register("slime_ball", new Item(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item EGG = Items.register("egg", (Item)new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
     public static final Item COMPASS = Items.register("compass", (Item)new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
+    public static final Item RECOVERY_COMPASS = Items.register("recovery_compass", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
     public static final Item BUNDLE = Items.register("bundle", (Item)new BundleItem(new Item.Settings().maxCount(1).group(Items.createEmptyOptional(ItemGroup.TOOLS).orElse(null))));
     public static final Item FISHING_ROD = Items.register("fishing_rod", (Item)new FishingRodItem(new Item.Settings().maxDamage(64).group(ItemGroup.TOOLS)));
     public static final Item CLOCK = Items.register("clock", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
@@ -1255,7 +1256,6 @@ public class Items {
     public static final Item PEARLESCENT_FROGLIGHT = Items.register(Blocks.PEARLESCENT_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item FROGSPAWN = Items.register(new LilyPadItem(Blocks.FROGSPAWN, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ECHO_SHARD = Items.register("echo_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item RECOVERY_COMPASS = Items.register("recovery_compass", (Item)new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
 
     private static <T> Optional<T> createEmptyOptional(T of) {
         return Optional.empty();

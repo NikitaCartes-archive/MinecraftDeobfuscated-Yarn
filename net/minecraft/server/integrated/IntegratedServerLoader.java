@@ -9,6 +9,7 @@ import com.mojang.serialization.Lifecycle;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -16,6 +17,7 @@ import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.toast.SystemToast;
@@ -35,6 +37,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
@@ -153,7 +156,27 @@ public class IntegratedServerLoader {
             IntegratedServerLoader.close(session, levelName);
             return;
         }
-        this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+        ((CompletableFuture)((CompletableFuture)((CompletableFuture)this.client.getResourcePackProvider().loadServerPack(session).thenApply(void_ -> true)).exceptionallyComposeAsync(throwable -> {
+            LOGGER.warn("Failed to load pack: ", (Throwable)throwable);
+            return this.showPackLoadFailureScreen();
+        }, (Executor)this.client)).thenAcceptAsync(proceed -> {
+            if (proceed.booleanValue()) {
+                this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+            } else {
+                saveLoader.close();
+                IntegratedServerLoader.close(session, levelName);
+                this.client.getResourcePackProvider().clear().thenRunAsync(() -> this.client.setScreen(parent), this.client);
+            }
+        }, (Executor)this.client)).exceptionally(throwable -> {
+            this.client.setCrashReportSupplier(() -> CrashReport.create(throwable, "Load world"));
+            return null;
+        });
+    }
+
+    private CompletableFuture<Boolean> showPackLoadFailureScreen() {
+        CompletableFuture<Boolean> completableFuture = new CompletableFuture<Boolean>();
+        this.client.setScreen(new ConfirmScreen(completableFuture::complete, new TranslatableText("multiplayer.texturePrompt.failure.line1"), new TranslatableText("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+        return completableFuture;
     }
 
     private static void close(LevelStorage.Session session, String levelName) {

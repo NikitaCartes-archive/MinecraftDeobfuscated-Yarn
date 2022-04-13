@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.SpawnReason;
@@ -149,7 +150,7 @@ implements Flutterer {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.setVariant(this.random.nextInt(5));
+        this.setVariant(world.getRandom().nextInt(5));
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
@@ -257,9 +258,9 @@ implements Flutterer {
             if (!this.world.isClient) {
                 if (this.random.nextInt(10) == 0) {
                     this.setOwner(player);
-                    this.world.sendEntityStatus(this, (byte)7);
+                    this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
                 } else {
-                    this.world.sendEntityStatus(this, (byte)6);
+                    this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
                 }
             }
             return ActionResult.success(this.world.isClient);

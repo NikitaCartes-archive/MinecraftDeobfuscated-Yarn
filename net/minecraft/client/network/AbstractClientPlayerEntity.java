@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
@@ -105,7 +106,7 @@ extends PlayerEntity {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
         AbstractTexture abstractTexture = textureManager.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
         if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
-            abstractTexture = new PlayerSkinTexture(null, String.format(SKIN_URL, StringHelper.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
+            abstractTexture = new PlayerSkinTexture(null, String.format(SKIN_URL, StringHelper.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(DynamicSerializableUuid.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
     }

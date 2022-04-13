@@ -22,8 +22,8 @@ extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<Wanderi
 
     public WanderingTraderEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new VillagerResemblingModel(context.getPart(EntityModelLayers.WANDERING_TRADER)), 0.5f);
-        this.addFeature(new HeadFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this, context.getModelLoader()));
-        this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this));
+        this.addFeature(new HeadFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this, context.getModelLoader(), context.getHeldItemRenderer()));
+        this.addFeature(new VillagerHeldItemFeatureRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>>(this, context.getHeldItemRenderer()));
     }
 
     @Override

@@ -27,6 +27,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -90,17 +91,17 @@ extends StatHandler {
                 return;
             }
             NbtCompound nbtCompound = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
-            if (!nbtCompound.contains("DataVersion", 99)) {
+            if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
                 nbtCompound.putInt("DataVersion", 1343);
             }
-            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", 10)) {
+            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", NbtElement.COMPOUND_TYPE)) {
                 NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
                 for (String string : nbtCompound2.getKeys()) {
-                    if (!nbtCompound2.contains(string, 10)) continue;
+                    if (!nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) continue;
                     Util.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string)), statType -> {
                         NbtCompound nbtCompound2 = nbtCompound2.getCompound(string);
                         for (String string2 : nbtCompound2.getKeys()) {
-                            if (nbtCompound2.contains(string2, 99)) {
+                            if (nbtCompound2.contains(string2, NbtElement.NUMBER_TYPE)) {
                                 Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, nbtCompound2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                                 continue;
                             }

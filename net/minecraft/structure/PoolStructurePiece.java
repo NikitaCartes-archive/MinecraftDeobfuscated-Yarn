@@ -57,7 +57,7 @@ extends StructurePiece {
         this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC.parse(dynamicOps, nbt.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalStateException("Invalid pool element found"));
         this.rotation = BlockRotation.valueOf(nbt.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
-        NbtList nbtList = nbt.getList("junctions", 10);
+        NbtList nbtList = nbt.getList("junctions", NbtElement.COMPOUND_TYPE);
         this.junctions.clear();
         nbtList.forEach(junctionTag -> this.junctions.add(JigsawJunction.deserialize(new Dynamic<NbtElement>((DynamicOps<NbtElement>)dynamicOps, (NbtElement)junctionTag))));
     }

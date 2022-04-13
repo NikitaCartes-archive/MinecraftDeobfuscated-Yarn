@@ -24,6 +24,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.Vanishable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -160,7 +161,7 @@ implements Vanishable {
 
     private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
         NbtCompound nbtCompound = crossbow.getOrCreateNbt();
-        NbtList nbtList = nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) ? nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10) : new NbtList();
+        NbtList nbtList = nbtCompound.contains(CHARGED_PROJECTILES_KEY, NbtElement.LIST_TYPE) ? nbtCompound.getList(CHARGED_PROJECTILES_KEY, NbtElement.COMPOUND_TYPE) : new NbtList();
         NbtCompound nbtCompound2 = new NbtCompound();
         projectile.writeNbt(nbtCompound2);
         nbtList.add(nbtCompound2);
@@ -171,7 +172,7 @@ implements Vanishable {
         NbtList nbtList;
         ArrayList<ItemStack> list = Lists.newArrayList();
         NbtCompound nbtCompound = crossbow.getNbt();
-        if (nbtCompound != null && nbtCompound.contains(CHARGED_PROJECTILES_KEY, 9) && (nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 10)) != null) {
+        if (nbtCompound != null && nbtCompound.contains(CHARGED_PROJECTILES_KEY, NbtElement.LIST_TYPE) && (nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, NbtElement.COMPOUND_TYPE)) != null) {
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 list.add(ItemStack.fromNbt(nbtCompound2));
@@ -183,7 +184,7 @@ implements Vanishable {
     private static void clearProjectiles(ItemStack crossbow) {
         NbtCompound nbtCompound = crossbow.getNbt();
         if (nbtCompound != null) {
-            NbtList nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, 9);
+            NbtList nbtList = nbtCompound.getList(CHARGED_PROJECTILES_KEY, NbtElement.LIST_TYPE);
             nbtList.clear();
             nbtCompound.put(CHARGED_PROJECTILES_KEY, nbtList);
         }

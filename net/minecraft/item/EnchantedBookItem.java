@@ -13,6 +13,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -42,7 +43,7 @@ extends Item {
     public static NbtList getEnchantmentNbt(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null) {
-            return nbtCompound.getList(STORED_ENCHANTMENTS_KEY, 10);
+            return nbtCompound.getList(STORED_ENCHANTMENTS_KEY, NbtElement.COMPOUND_TYPE);
         }
         return new NbtList();
     }

@@ -3,19 +3,19 @@
  */
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
-import java.util.Collections;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryCodecs;
 import net.minecraft.util.registry.RegistryEntryList;
@@ -31,7 +31,7 @@ implements FeatureConfig {
     public final boolean placeOnWalls;
     public final float spreadChance;
     public final RegistryEntryList<Block> canPlaceOn;
-    public final List<Direction> directions;
+    private final ObjectArrayList<Direction> directions;
 
     private static DataResult<AbstractLichenBlock> validateBlock(Block block) {
         DataResult<AbstractLichenBlock> dataResult;
@@ -52,17 +52,24 @@ implements FeatureConfig {
         this.placeOnWalls = placeOnWalls;
         this.spreadChance = spreadChance;
         this.canPlaceOn = canPlaceOn;
-        ArrayList<Direction> list = Lists.newArrayList();
+        this.directions = new ObjectArrayList(6);
         if (placeOnCeiling) {
-            list.add(Direction.UP);
+            this.directions.add(Direction.UP);
         }
         if (placeOnFloor) {
-            list.add(Direction.DOWN);
+            this.directions.add(Direction.DOWN);
         }
         if (placeOnWalls) {
-            Direction.Type.HORIZONTAL.forEach(list::add);
+            Direction.Type.HORIZONTAL.forEach(this.directions::add);
         }
-        this.directions = Collections.unmodifiableList(list);
+    }
+
+    public List<Direction> shuffleDirections(AbstractRandom random, Direction excluded) {
+        return Util.copyShuffled(this.directions.stream().filter(direction -> direction != excluded), random);
+    }
+
+    public List<Direction> shuffleDirections(AbstractRandom random) {
+        return Util.copyShuffled(this.directions, random);
     }
 }
 

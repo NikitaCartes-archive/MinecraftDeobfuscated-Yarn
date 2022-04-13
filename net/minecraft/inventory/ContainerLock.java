@@ -5,6 +5,7 @@ package net.minecraft.inventory;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.Unmodifiable;
 
 @Unmodifiable
@@ -47,7 +48,7 @@ public class ContainerLock {
      * If the {@code Lock} key is not present, returns an empty lock.
      */
     public static ContainerLock fromNbt(NbtCompound nbt) {
-        if (nbt.contains(LOCK_KEY, 8)) {
+        if (nbt.contains(LOCK_KEY, NbtElement.STRING_TYPE)) {
             return new ContainerLock(nbt.getString(LOCK_KEY));
         }
         return EMPTY;

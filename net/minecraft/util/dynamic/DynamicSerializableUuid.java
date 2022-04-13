@@ -3,14 +3,17 @@
  */
 package net.minecraft.util.dynamic;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 import net.minecraft.util.Util;
 
 public final class DynamicSerializableUuid {
     public static final Codec<UUID> CODEC = Codec.INT_STREAM.comapFlatMap(uuidStream -> Util.toArray(uuidStream, 4).map(DynamicSerializableUuid::toUuid), uuid -> Arrays.stream(DynamicSerializableUuid.toIntArray(uuid)));
+    private static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 
     private DynamicSerializableUuid() {
     }
@@ -35,6 +38,18 @@ public final class DynamicSerializableUuid {
             throw new IllegalArgumentException("Could not read UUID. Expected int-array of length 4, got " + is.length + ".");
         }
         return DynamicSerializableUuid.toUuid(is);
+    }
+
+    public static UUID getUuidFromProfile(GameProfile profile) {
+        UUID uUID = profile.getId();
+        if (uUID == null) {
+            uUID = DynamicSerializableUuid.getOfflinePlayerUuid(profile.getName());
+        }
+        return uUID;
+    }
+
+    public static UUID getOfflinePlayerUuid(String nickname) {
+        return UUID.nameUUIDFromBytes((OFFLINE_PLAYER_UUID_PREFIX + nickname).getBytes(StandardCharsets.UTF_8));
     }
 }
 

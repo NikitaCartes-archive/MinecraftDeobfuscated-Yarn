@@ -106,15 +106,19 @@ LunarWorldView {
 
     /**
      * Emits an game event.
-     * 
-     * @param event the game event
-     * @param entity the entity that triggered the game event, or {@code null} for events
-     * not triggered by entities (such as dispensers)
      */
-    public void emitGameEvent(@Nullable Entity var1, GameEvent var2, Vec3d var3);
+    public void emitGameEvent(GameEvent var1, Vec3d var2, @Nullable GameEvent.Emitter var3);
+
+    default public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+        this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));
+    }
 
     default public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
-        this.emitGameEvent(entity, event, Vec3d.ofCenter(pos));
+        this.emitGameEvent(event, pos, new GameEvent.Emitter(entity, null));
+    }
+
+    default public void emitGameEvent(GameEvent event, BlockPos pos, GameEvent.Emitter emitter) {
+        this.emitGameEvent(event, Vec3d.ofCenter(pos), emitter);
     }
 }
 

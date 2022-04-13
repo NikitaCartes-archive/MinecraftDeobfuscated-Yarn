@@ -428,12 +428,13 @@ Saddleable {
         if (this.isBaby()) {
             return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         }
-        if (this.random.nextInt(30) == 0) {
+        AbstractRandom abstractRandom = world.getRandom();
+        if (abstractRandom.nextInt(30) == 0) {
             MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-            entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(this.random), false));
+            entityData = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(abstractRandom), false));
             mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
             this.saddle(null);
-        } else if (this.random.nextInt(10) == 0) {
+        } else if (abstractRandom.nextInt(10) == 0) {
             PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
             passiveEntity.setBreedingAge(-24000);
             entityData = this.initializeRider(world, difficulty, passiveEntity, null);

@@ -29,27 +29,29 @@ extends MobEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.isTouchingWater()) {
-            this.updateVelocity(0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(0.8f));
-        } else if (this.isInLava()) {
-            this.updateVelocity(0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(0.5));
-        } else {
-            float f = 0.91f;
-            if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
+        if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+            if (this.isTouchingWater()) {
+                this.updateVelocity(0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(0.8f));
+            } else if (this.isInLava()) {
+                this.updateVelocity(0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(0.5));
+            } else {
+                float f = 0.91f;
+                if (this.onGround) {
+                    f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
+                }
+                float g = 0.16277137f / (f * f * f);
+                f = 0.91f;
+                if (this.onGround) {
+                    f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
+                }
+                this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(f));
             }
-            float g = 0.16277137f / (f * f * f);
-            f = 0.91f;
-            if (this.onGround) {
-                f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
-            }
-            this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(f));
         }
         this.updateLimbs(this, false);
     }

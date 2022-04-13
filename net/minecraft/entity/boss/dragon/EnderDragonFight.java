@@ -9,7 +9,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +34,7 @@ import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtList;
@@ -74,7 +78,7 @@ public class EnderDragonFight {
     private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maxDistance(0.0, 128.0, 0.0, 192.0));
     private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(new TranslatableText("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS).setDragonMusic(true).setThickenFog(true);
     private final ServerWorld world;
-    private final List<Integer> gateways = Lists.newArrayList();
+    private final ObjectArrayList<Integer> gateways = new ObjectArrayList();
     private final BlockPattern endPortalPattern;
     private int dragonSeenTimer;
     private int endCrystalsAlive;
@@ -98,7 +102,7 @@ public class EnderDragonFight {
         if (nbt.contains("NeedsStateScanning")) {
             this.doLegacyCheck = nbt.getBoolean("NeedsStateScanning");
         }
-        if (nbt.contains("DragonKilled", 99)) {
+        if (nbt.contains("DragonKilled", NbtElement.NUMBER_TYPE)) {
             if (nbt.containsUuid("Dragon")) {
                 this.dragonUuid = nbt.getUuid("Dragon");
             }
@@ -107,20 +111,20 @@ public class EnderDragonFight {
             if (nbt.getBoolean("IsRespawning")) {
                 this.dragonSpawnState = EnderDragonSpawnState.START;
             }
-            if (nbt.contains("ExitPortalLocation", 10)) {
+            if (nbt.contains("ExitPortalLocation", NbtElement.COMPOUND_TYPE)) {
                 this.exitPortalLocation = NbtHelper.toBlockPos(nbt.getCompound("ExitPortalLocation"));
             }
         } else {
             this.dragonKilled = true;
             this.previouslyKilled = true;
         }
-        if (nbt.contains("Gateways", 9)) {
-            NbtList nbtList = nbt.getList("Gateways", 3);
+        if (nbt.contains("Gateways", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("Gateways", NbtElement.INT_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 this.gateways.add(nbtList.getInt(i));
             }
         } else {
-            this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+            this.gateways.addAll((Collection<Integer>)ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
             Util.shuffle(this.gateways, AbstractRandom.createAtomic(gatewaysSeed));
         }
         this.endPortalPattern = BlockPatternBuilder.start().aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").aisle("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").where('#', CachedBlockPosition.matchesBlockState(BlockPredicate.make(Blocks.BEDROCK))).build();
@@ -138,7 +142,9 @@ public class EnderDragonFight {
             nbtCompound.put("ExitPortalLocation", NbtHelper.fromBlockPos(this.exitPortalLocation));
         }
         NbtList nbtList = new NbtList();
-        for (int i : this.gateways) {
+        ObjectIterator objectIterator = this.gateways.iterator();
+        while (objectIterator.hasNext()) {
+            int i = (Integer)objectIterator.next();
             nbtList.add(NbtInt.of(i));
         }
         nbtCompound.put("Gateways", nbtList);

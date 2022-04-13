@@ -55,12 +55,12 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
-        BlockState blockState = this.source.getBlockState(abstractRandom, pos);
+    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+        BlockState blockState = this.source.getBlockState(random, pos);
         if (this.property == null || !blockState.contains(this.property)) {
             this.property = RandomizedIntBlockStateProvider.getIntPropertyByName(blockState, this.propertyName);
         }
-        return (BlockState)blockState.with(this.property, this.values.get(abstractRandom));
+        return (BlockState)blockState.with(this.property, this.values.get(random));
     }
 
     private static IntProperty getIntPropertyByName(BlockState state, String propertyName) {

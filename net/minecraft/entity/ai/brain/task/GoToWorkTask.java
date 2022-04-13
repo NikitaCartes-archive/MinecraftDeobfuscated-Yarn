@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
@@ -33,7 +34,7 @@ extends Task<VillagerEntity> {
         GlobalPos globalPos = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.POTENTIAL_JOB_SITE).get();
         villagerEntity.getBrain().forget(MemoryModuleType.POTENTIAL_JOB_SITE);
         villagerEntity.getBrain().remember(MemoryModuleType.JOB_SITE, globalPos);
-        serverWorld.sendEntityStatus(villagerEntity, (byte)14);
+        serverWorld.sendEntityStatus(villagerEntity, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
         if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.NONE) {
             return;
         }

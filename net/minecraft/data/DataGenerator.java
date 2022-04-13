@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.Bootstrap;
+import net.minecraft.GameVersion;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataProvider;
 import org.slf4j.Logger;
@@ -21,10 +22,15 @@ public class DataGenerator {
     private final Collection<Path> inputs;
     private final Path output;
     private final List<DataProvider> providers = Lists.newArrayList();
+    private final List<DataProvider> runningProviders = Lists.newArrayList();
+    private final GameVersion gameVersion;
+    private final boolean ignoreCache;
 
-    public DataGenerator(Path output, Collection<Path> inputs) {
+    public DataGenerator(Path output, Collection<Path> inputs, GameVersion gameVersion, boolean ignoreCache) {
         this.output = output;
         this.inputs = inputs;
+        this.gameVersion = gameVersion;
+        this.ignoreCache = ignoreCache;
     }
 
     public Collection<Path> getInputs() {
@@ -36,14 +42,17 @@ public class DataGenerator {
     }
 
     public void run() throws IOException {
-        DataCache dataCache = new DataCache(this.output, "cache");
-        dataCache.ignore(this.getOutput().resolve("version.json"));
+        DataCache dataCache = new DataCache(this.output, this.providers, this.gameVersion);
         Stopwatch stopwatch = Stopwatch.createStarted();
         Stopwatch stopwatch2 = Stopwatch.createUnstarted();
-        for (DataProvider dataProvider : this.providers) {
+        for (DataProvider dataProvider : this.runningProviders) {
+            if (!this.ignoreCache && !dataCache.isVersionDifferent(dataProvider)) {
+                LOGGER.debug("Generator {} already run for version {}", (Object)dataProvider.getName(), (Object)this.gameVersion.getName());
+                continue;
+            }
             LOGGER.info("Starting provider: {}", (Object)dataProvider.getName());
             stopwatch2.start();
-            dataProvider.run(dataCache);
+            dataProvider.run(dataCache.getOrCreateWriter(dataProvider));
             stopwatch2.stop();
             LOGGER.info("{} finished after {} ms", (Object)dataProvider.getName(), (Object)stopwatch2.elapsed(TimeUnit.MILLISECONDS));
             stopwatch2.reset();
@@ -52,7 +61,10 @@ public class DataGenerator {
         dataCache.write();
     }
 
-    public void addProvider(DataProvider provider) {
+    public void addProvider(boolean shouldRun, DataProvider provider) {
+        if (shouldRun) {
+            this.runningProviders.add(provider);
+        }
         this.providers.add(provider);
     }
 

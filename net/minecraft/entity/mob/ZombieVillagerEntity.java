@@ -14,6 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityInteraction;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
@@ -102,20 +103,20 @@ implements VillagerDataContainer {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("VillagerData", 10)) {
+        if (nbt.contains("VillagerData", NbtElement.COMPOUND_TYPE)) {
             DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
             dataResult.resultOrPartial(field_36334::error).ifPresent(this::setVillagerData);
         }
-        if (nbt.contains("Offers", 10)) {
+        if (nbt.contains("Offers", NbtElement.COMPOUND_TYPE)) {
             this.offerData = nbt.getCompound("Offers");
         }
-        if (nbt.contains("Gossips", 10)) {
-            this.gossipData = nbt.getList("Gossips", 10);
+        if (nbt.contains("Gossips", NbtElement.COMPOUND_TYPE)) {
+            this.gossipData = nbt.getList("Gossips", NbtElement.COMPOUND_TYPE);
         }
-        if (nbt.contains("ConversionTime", 99) && nbt.getInt("ConversionTime") > -1) {
+        if (nbt.contains("ConversionTime", NbtElement.NUMBER_TYPE) && nbt.getInt("ConversionTime") > -1) {
             this.setConverting(nbt.containsUuid("ConversionPlayer") ? nbt.getUuid("ConversionPlayer") : null, nbt.getInt("ConversionTime"));
         }
-        if (nbt.contains("Xp", 3)) {
+        if (nbt.contains("Xp", NbtElement.INT_TYPE)) {
             this.xp = nbt.getInt("Xp");
         }
     }
@@ -170,12 +171,12 @@ implements VillagerDataContainer {
         this.getDataTracker().set(CONVERTING, true);
         this.removeStatusEffect(StatusEffects.WEAKNESS);
         this.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, delay, Math.min(this.world.getDifficulty().getId() - 1, 0)));
-        this.world.sendEntityStatus(this, (byte)16);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_CURE_ZOMBIE_VILLAGER_SOUND);
     }
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 16) {
+        if (status == EntityStatuses.PLAY_CURE_ZOMBIE_VILLAGER_SOUND) {
             if (!this.isSilent()) {
                 this.world.playSound(this.getX(), this.getEyeY(), this.getZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0f + this.random.nextFloat(), this.random.nextFloat() * 0.7f + 0.3f, false);
             }

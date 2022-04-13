@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -201,8 +202,8 @@ public class EntityAttributeInstance {
 
     public void readNbt(NbtCompound nbt) {
         this.baseValue = nbt.getDouble("Base");
-        if (nbt.contains("Modifiers", 9)) {
-            NbtList nbtList = nbt.getList("Modifiers", 10);
+        if (nbt.contains("Modifiers", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList("Modifiers", NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(nbtList.getCompound(i));
                 if (entityAttributeModifier == null) continue;

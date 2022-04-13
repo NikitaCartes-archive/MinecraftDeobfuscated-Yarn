@@ -74,7 +74,7 @@ public final class NbtHelper {
     public static GameProfile toGameProfile(NbtCompound compound) {
         String string = null;
         UUID uUID = null;
-        if (compound.contains("Name", 8)) {
+        if (compound.contains("Name", NbtElement.STRING_TYPE)) {
             string = compound.getString("Name");
         }
         if (compound.containsUuid("Id")) {
@@ -82,14 +82,14 @@ public final class NbtHelper {
         }
         try {
             GameProfile gameProfile = new GameProfile(uUID, string);
-            if (compound.contains("Properties", 10)) {
+            if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
                 NbtCompound nbtCompound = compound.getCompound("Properties");
                 for (String string2 : nbtCompound.getKeys()) {
-                    NbtList nbtList = nbtCompound.getList(string2, 10);
+                    NbtList nbtList = nbtCompound.getList(string2, NbtElement.COMPOUND_TYPE);
                     for (int i = 0; i < nbtList.size(); ++i) {
                         NbtCompound nbtCompound2 = nbtList.getCompound(i);
                         String string3 = nbtCompound2.getString("Value");
-                        if (nbtCompound2.contains("Signature", 8)) {
+                        if (nbtCompound2.contains("Signature", NbtElement.STRING_TYPE)) {
                             gameProfile.getProperties().put(string2, new Property(string2, string3, nbtCompound2.getString("Signature")));
                             continue;
                         }
@@ -215,12 +215,12 @@ public final class NbtHelper {
     }
 
     public static BlockState toBlockState(NbtCompound compound) {
-        if (!compound.contains("Name", 8)) {
+        if (!compound.contains("Name", NbtElement.STRING_TYPE)) {
             return Blocks.AIR.getDefaultState();
         }
         Block block = Registry.BLOCK.get(new Identifier(compound.getString("Name")));
         BlockState blockState = block.getDefaultState();
-        if (compound.contains("Properties", 10)) {
+        if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = compound.getCompound("Properties");
             StateManager<Block, BlockState> stateManager = block.getStateManager();
             for (String string : nbtCompound.getKeys()) {
@@ -541,13 +541,13 @@ public final class NbtHelper {
     static NbtCompound toNbtProviderFormat(NbtCompound compound) {
         NbtList nbtList4;
         NbtList nbtList3;
-        boolean bl = compound.contains("palettes", 9);
-        NbtList nbtList = bl ? compound.getList("palettes", 9).getList(0) : compound.getList("palette", 10);
+        boolean bl = compound.contains("palettes", NbtElement.LIST_TYPE);
+        NbtList nbtList = bl ? compound.getList("palettes", NbtElement.LIST_TYPE).getList(0) : compound.getList("palette", NbtElement.COMPOUND_TYPE);
         NbtList nbtList2 = nbtList.stream().map(NbtCompound.class::cast).map(NbtHelper::toNbtProviderFormattedPalette).map(NbtString::of).collect(Collectors.toCollection(NbtList::new));
         compound.put("palette", nbtList2);
         if (bl) {
             nbtList3 = new NbtList();
-            nbtList4 = compound.getList("palettes", 9);
+            nbtList4 = compound.getList("palettes", NbtElement.LIST_TYPE);
             nbtList4.stream().map(NbtList.class::cast).forEach(nbt -> {
                 NbtCompound nbtCompound = new NbtCompound();
                 for (int i = 0; i < nbt.size(); ++i) {
@@ -557,12 +557,12 @@ public final class NbtHelper {
             });
             compound.put("palettes", nbtList3);
         }
-        if (compound.contains("entities", 10)) {
-            nbtList3 = compound.getList("entities", 10);
-            nbtList4 = nbtList3.stream().map(NbtCompound.class::cast).sorted(Comparator.comparing(nbt -> nbt.getList("pos", 6), ENTITY_POS_COMPARATOR)).collect(Collectors.toCollection(NbtList::new));
+        if (compound.contains("entities", NbtElement.COMPOUND_TYPE)) {
+            nbtList3 = compound.getList("entities", NbtElement.COMPOUND_TYPE);
+            nbtList4 = nbtList3.stream().map(NbtCompound.class::cast).sorted(Comparator.comparing(nbt -> nbt.getList("pos", NbtElement.DOUBLE_TYPE), ENTITY_POS_COMPARATOR)).collect(Collectors.toCollection(NbtList::new));
             compound.put("entities", nbtList4);
         }
-        nbtList3 = compound.getList("blocks", 10).stream().map(NbtCompound.class::cast).sorted(Comparator.comparing(nbt -> nbt.getList("pos", 3), BLOCK_POS_COMPARATOR)).peek(nbt -> nbt.putString("state", nbtList2.getString(nbt.getInt("state")))).collect(Collectors.toCollection(NbtList::new));
+        nbtList3 = compound.getList("blocks", NbtElement.COMPOUND_TYPE).stream().map(NbtCompound.class::cast).sorted(Comparator.comparing(nbt -> nbt.getList("pos", NbtElement.INT_TYPE), BLOCK_POS_COMPARATOR)).peek(nbt -> nbt.putString("state", nbtList2.getString(nbt.getInt("state")))).collect(Collectors.toCollection(NbtList::new));
         compound.put(DATA_KEY, nbtList3);
         compound.remove("blocks");
         return compound;
@@ -570,21 +570,21 @@ public final class NbtHelper {
 
     @VisibleForTesting
     static NbtCompound fromNbtProviderFormat(NbtCompound compound) {
-        NbtList nbtList = compound.getList("palette", 8);
+        NbtList nbtList = compound.getList("palette", NbtElement.STRING_TYPE);
         Map map = nbtList.stream().map(NbtString.class::cast).map(NbtString::asString).collect(ImmutableMap.toImmutableMap(Function.identity(), NbtHelper::fromNbtProviderFormattedPalette));
-        if (compound.contains("palettes", 9)) {
-            compound.put("palettes", compound.getList("palettes", 10).stream().map(NbtCompound.class::cast).map(nbt -> map.keySet().stream().map(nbt::getString).map(NbtHelper::fromNbtProviderFormattedPalette).collect(Collectors.toCollection(NbtList::new))).collect(Collectors.toCollection(NbtList::new)));
+        if (compound.contains("palettes", NbtElement.LIST_TYPE)) {
+            compound.put("palettes", compound.getList("palettes", NbtElement.COMPOUND_TYPE).stream().map(NbtCompound.class::cast).map(nbt -> map.keySet().stream().map(nbt::getString).map(NbtHelper::fromNbtProviderFormattedPalette).collect(Collectors.toCollection(NbtList::new))).collect(Collectors.toCollection(NbtList::new)));
             compound.remove("palette");
         } else {
             compound.put("palette", map.values().stream().collect(Collectors.toCollection(NbtList::new)));
         }
-        if (compound.contains(DATA_KEY, 9)) {
+        if (compound.contains(DATA_KEY, NbtElement.LIST_TYPE)) {
             Object2IntOpenHashMap<String> object2IntMap = new Object2IntOpenHashMap<String>();
             object2IntMap.defaultReturnValue(-1);
             for (int i = 0; i < nbtList.size(); ++i) {
                 object2IntMap.put(nbtList.getString(i), i);
             }
-            NbtList nbtList2 = compound.getList(DATA_KEY, 10);
+            NbtList nbtList2 = compound.getList(DATA_KEY, NbtElement.COMPOUND_TYPE);
             for (int j = 0; j < nbtList2.size(); ++j) {
                 NbtCompound nbtCompound = nbtList2.getCompound(j);
                 String string = nbtCompound.getString("state");
@@ -603,7 +603,7 @@ public final class NbtHelper {
     @VisibleForTesting
     static String toNbtProviderFormattedPalette(NbtCompound compound) {
         StringBuilder stringBuilder = new StringBuilder(compound.getString("Name"));
-        if (compound.contains("Properties", 10)) {
+        if (compound.contains("Properties", NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = compound.getCompound("Properties");
             String string = nbtCompound.getKeys().stream().sorted().map(key -> key + ":" + nbtCompound.get((String)key).asString()).collect(Collectors.joining(COMMA));
             stringBuilder.append('{').append(string).append('}');

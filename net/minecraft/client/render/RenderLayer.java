@@ -408,6 +408,10 @@ extends RenderPhase {
         return this.hasCrumbling;
     }
 
+    public boolean method_43332() {
+        return !this.drawMode.field_38878;
+    }
+
     public Optional<RenderLayer> asOptional() {
         return this.optionalThis;
     }

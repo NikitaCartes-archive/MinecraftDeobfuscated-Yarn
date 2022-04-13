@@ -24,6 +24,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -252,17 +253,17 @@ extends Entity {
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         this.block = NbtHelper.toBlockState(nbt.getCompound("BlockState"));
         this.timeFalling = nbt.getInt("Time");
-        if (nbt.contains("HurtEntities", 99)) {
+        if (nbt.contains("HurtEntities", NbtElement.NUMBER_TYPE)) {
             this.hurtEntities = nbt.getBoolean("HurtEntities");
             this.fallHurtAmount = nbt.getFloat("FallHurtAmount");
             this.fallHurtMax = nbt.getInt("FallHurtMax");
         } else if (this.block.isIn(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
-        if (nbt.contains("DropItem", 99)) {
+        if (nbt.contains("DropItem", NbtElement.NUMBER_TYPE)) {
             this.dropItem = nbt.getBoolean("DropItem");
         }
-        if (nbt.contains("TileEntityData", 10)) {
+        if (nbt.contains("TileEntityData", NbtElement.COMPOUND_TYPE)) {
             this.blockEntityData = nbt.getCompound("TileEntityData");
         }
         if (this.block.isAir()) {

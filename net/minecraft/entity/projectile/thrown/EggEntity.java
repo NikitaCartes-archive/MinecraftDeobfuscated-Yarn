@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.projectile.thrown;
 
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -32,7 +33,7 @@ extends ThrownItemEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 3) {
+        if (status == EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES) {
             double d = 0.08;
             for (int i = 0; i < 8; ++i) {
                 this.world.addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()), this.getX(), this.getY(), this.getZ(), ((double)this.random.nextFloat() - 0.5) * 0.08, ((double)this.random.nextFloat() - 0.5) * 0.08, ((double)this.random.nextFloat() - 0.5) * 0.08);
@@ -62,7 +63,7 @@ extends ThrownItemEntity {
                     this.world.spawnEntity(chickenEntity);
                 }
             }
-            this.world.sendEntityStatus(this, (byte)3);
+            this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
             this.discard();
         }
     }

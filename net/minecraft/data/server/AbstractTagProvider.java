@@ -8,21 +8,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
 import net.minecraft.tag.TagManagerLoader;
@@ -52,7 +47,7 @@ implements DataProvider {
     protected abstract void configure();
 
     @Override
-    public void run(DataCache cache) {
+    public void run(DataWriter cache) {
         this.tagBuilders.clear();
         this.configure();
         this.tagBuilders.forEach((id, builder) -> {
@@ -64,14 +59,7 @@ implements DataProvider {
             Path path = this.getOutput((Identifier)id);
             try {
                 String string = GSON.toJson(jsonObject);
-                String string2 = SHA1.hashUnencodedChars(string).toString();
-                if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
-                    Files.createDirectories(path.getParent(), new FileAttribute[0]);
-                    try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
-                        bufferedWriter.write(string);
-                    }
-                }
-                cache.updateSha1(path, string2);
+                cache.write(path, string);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't save tags to {}", (Object)path, (Object)iOException);
             }

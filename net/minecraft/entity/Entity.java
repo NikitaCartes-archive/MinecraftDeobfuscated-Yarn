@@ -57,6 +57,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
@@ -234,7 +235,7 @@ CommandOutput {
      * For example: {@code horizontalSpeed = velocity.horizontalSpeed() * FRICTION_RATE}
      */
     public static final float DEFAULT_FRICTION = 0.6f;
-    public static final float field_29974 = 1.8f;
+    public static final float MIN_RISING_BUBBLE_COLUMN_SPEED = 1.8f;
     public float prevHorizontalSpeed;
     public float horizontalSpeed;
     public float distanceTraveled;
@@ -449,6 +450,13 @@ CommandOutput {
      */
     public boolean isInRange(Entity entity, double radius) {
         return this.getPos().isInRange(entity.getPos(), radius);
+    }
+
+    public boolean isInRange(Entity entity, double horizontalRadius, double verticalRadius) {
+        double d = entity.getX() - this.getX();
+        double e = entity.getY() - this.getY();
+        double f = entity.getZ() - this.getZ();
+        return MathHelper.squaredHypot(d, f) < MathHelper.square(horizontalRadius) && MathHelper.square(e) < MathHelper.square(verticalRadius);
     }
 
     protected void setRotation(float yaw, float pitch) {
@@ -684,11 +692,13 @@ CommandOutput {
             block.onSteppedOn(this.world, blockPos, blockState, this);
         }
         if ((moveEffect = this.getMoveEffect()).hasAny() && !this.hasVehicle()) {
+            boolean bl3;
             double e = vec3d.x;
             double f = vec3d.y;
             double g = vec3d.z;
             this.speed += (float)(vec3d.length() * 0.6);
-            if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
+            boolean bl4 = bl3 = blockState.isIn(BlockTags.CLIMBABLE) || blockState.isOf(Blocks.POWDER_SNOW);
+            if (!bl3) {
                 f = 0.0;
             }
             this.horizontalSpeed += (float)vec3d.horizontalLength() * 0.6f;
@@ -711,7 +721,7 @@ CommandOutput {
                         this.playAmethystChimeSound(blockState);
                         this.playStepSound(blockPos, blockState);
                     }
-                    if (moveEffect.emitsGameEvents()) {
+                    if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
                         this.emitGameEvent(GameEvent.STEP);
                     }
                 }
@@ -771,13 +781,42 @@ CommandOutput {
         }
     }
 
+    /**
+     * {@return the landing position}
+     * 
+     * @implNote Landing position is the entity's position, with {@code 0.2} subtracted
+     * from the Y coordinate. This means that, for example, if a player is on a carpet on
+     * a soul soil, the soul soil's position would be returned.
+     * 
+     * @see #getSteppingPos()
+     * @see #getLandingBlockState()
+     */
+    @Deprecated
     public BlockPos getLandingPos() {
+        return this.getPosWithYOffset(0.2f);
+    }
+
+    /**
+     * {@return the stepping position}
+     * 
+     * @implNote Stepping position is the entity's position, with {@code 1e-05} subtracted
+     * from the Y coordinate. This means that, for example, if a player is on a carpet on
+     * a soul soil, the carpet's position would be returned.
+     * 
+     * @see #getLandingPos()
+     * @see #getSteppingBlockState()
+     */
+    public BlockPos getSteppingPos() {
+        return this.getPosWithYOffset(1.0E-5f);
+    }
+
+    private BlockPos getPosWithYOffset(float offset) {
         BlockPos blockPos2;
         BlockState blockState;
         int k;
         int j;
         int i = MathHelper.floor(this.pos.x);
-        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.pos.y - (double)0.2f), k = MathHelper.floor(this.pos.z));
+        BlockPos blockPos = new BlockPos(i, j = MathHelper.floor(this.pos.y - (double)offset), k = MathHelper.floor(this.pos.z));
         if (this.world.getBlockState(blockPos).isAir() && ((blockState = this.world.getBlockState(blockPos2 = blockPos.down())).isIn(BlockTags.FENCES) || blockState.isIn(BlockTags.WALLS) || blockState.getBlock() instanceof FenceGateBlock)) {
             return blockPos2;
         }
@@ -1188,8 +1227,31 @@ CommandOutput {
         this.emitGameEvent(GameEvent.SPLASH);
     }
 
+    /**
+     * {@return the block state at the landing position}
+     * 
+     * @implNote Landing position is the entity's position, with {@code 0.2} subtracted
+     * from the Y coordinate. This means that, for example, if a player is on a carpet on
+     * a soul soil, the soul soil's position would be returned.
+     * 
+     * @see #getLandingPos()
+     */
+    @Deprecated
     protected BlockState getLandingBlockState() {
         return this.world.getBlockState(this.getLandingPos());
+    }
+
+    /**
+     * {@return the block state at the stepping position}
+     * 
+     * @implNote Stepping position is the entity's position, with {@code 1e-05} subtracted
+     * from the Y coordinate. This means that, for example, if a player is on a carpet on
+     * a soul soil, the carpet's position would be returned.
+     * 
+     * @see #getSteppingPos()
+     */
+    public BlockState getSteppingBlockState() {
+        return this.world.getBlockState(this.getSteppingPos());
     }
 
     public boolean shouldSpawnSprintingParticles() {
@@ -1341,10 +1403,10 @@ CommandOutput {
             e *= g;
             d *= (double)0.05f;
             e *= (double)0.05f;
-            if (!this.hasPassengers()) {
+            if (!this.hasPassengers() && this.isPushable()) {
                 this.addVelocity(-d, 0.0, -e);
             }
-            if (!entity.hasPassengers()) {
+            if (!entity.hasPassengers() && entity.isPushable()) {
                 entity.addVelocity(d, 0.0, e);
             }
         }
@@ -1553,9 +1615,9 @@ CommandOutput {
 
     public void readNbt(NbtCompound nbt) {
         try {
-            NbtList nbtList = nbt.getList("Pos", 6);
-            NbtList nbtList2 = nbt.getList("Motion", 6);
-            NbtList nbtList3 = nbt.getList("Rotation", 5);
+            NbtList nbtList = nbt.getList("Pos", NbtElement.DOUBLE_TYPE);
+            NbtList nbtList2 = nbt.getList("Motion", NbtElement.DOUBLE_TYPE);
+            NbtList nbtList3 = nbt.getList("Rotation", NbtElement.FLOAT_TYPE);
             double d = nbtList2.getDouble(0);
             double e = nbtList2.getDouble(1);
             double f = nbtList2.getDouble(2);
@@ -1586,7 +1648,7 @@ CommandOutput {
             }
             this.refreshPosition();
             this.setRotation(this.getYaw(), this.getPitch());
-            if (nbt.contains("CustomName", 8)) {
+            if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
                 String string = nbt.getString("CustomName");
                 try {
                     this.setCustomName(Text.Serializer.fromJson(string));
@@ -1600,9 +1662,9 @@ CommandOutput {
             this.setGlowing(nbt.getBoolean("Glowing"));
             this.setFrozenTicks(nbt.getInt("TicksFrozen"));
             this.hasVisualFire = nbt.getBoolean("HasVisualFire");
-            if (nbt.contains("Tags", 9)) {
+            if (nbt.contains("Tags", NbtElement.LIST_TYPE)) {
                 this.scoreboardTags.clear();
-                NbtList nbtList4 = nbt.getList("Tags", 8);
+                NbtList nbtList4 = nbt.getList("Tags", NbtElement.STRING_TYPE);
                 int i = Math.min(nbtList4.size(), 1024);
                 for (int j = 0; j < i; ++j) {
                     this.scoreboardTags.add(nbtList4.getString(j));

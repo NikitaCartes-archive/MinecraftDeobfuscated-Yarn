@@ -92,7 +92,8 @@ public class Criteria {
     public static final TargetHitCriterion TARGET_HIT = Criteria.register(new TargetHitCriterion());
     public static final ItemCriterion ITEM_USED_ON_BLOCK = Criteria.register(new ItemCriterion(new Identifier("item_used_on_block")));
     public static final PlayerGeneratesContainerLootCriterion PLAYER_GENERATES_CONTAINER_LOOT = Criteria.register(new PlayerGeneratesContainerLootCriterion());
-    public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion());
+    public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_ENTITY = Criteria.register(new ThrownItemPickedUpByEntityCriterion(new Identifier("thrown_item_picked_up_by_entity")));
+    public static final ThrownItemPickedUpByEntityCriterion THROWN_ITEM_PICKED_UP_BY_PLAYER = Criteria.register(new ThrownItemPickedUpByEntityCriterion(new Identifier("thrown_item_picked_up_by_player")));
     public static final PlayerInteractedWithEntityCriterion PLAYER_INTERACTED_WITH_ENTITY = Criteria.register(new PlayerInteractedWithEntityCriterion());
     public static final StartedRidingCriterion STARTED_RIDING = Criteria.register(new StartedRidingCriterion());
     public static final LightningStrikeCriterion LIGHTNING_STRIKE = Criteria.register(new LightningStrikeCriterion());
@@ -100,8 +101,8 @@ public class Criteria {
     public static final TravelCriterion FALL_FROM_HEIGHT = Criteria.register(new TravelCriterion(new Identifier("fall_from_height")));
     public static final TravelCriterion RIDE_ENTITY_IN_LAVA = Criteria.register(new TravelCriterion(new Identifier("ride_entity_in_lava")));
     public static final OnKilledCriterion KILL_MOB_NEAR_SCULK_CATALYST = Criteria.register(new OnKilledCriterion(new Identifier("kill_mob_near_sculk_catalyst")));
-    public static final TickCriterion ITEM_DELIVERED_TO_PLAYER = Criteria.register(new TickCriterion(new Identifier("item_delivered_to_player")));
     public static final ItemCriterion ALLAY_DROP_ITEM_ON_BLOCK = Criteria.register(new ItemCriterion(new Identifier("allay_drop_item_on_block")));
+    public static final TickCriterion AVOID_VIBRATION = Criteria.register(new TickCriterion(new Identifier("avoid_vibration")));
 
     private static <T extends Criterion<?>> T register(T object) {
         if (VALUES.containsKey(object.getId())) {

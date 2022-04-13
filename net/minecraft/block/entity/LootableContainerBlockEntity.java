@@ -17,6 +17,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -48,7 +49,7 @@ extends LockableContainerBlockEntity {
     }
 
     protected boolean deserializeLootTable(NbtCompound nbt) {
-        if (nbt.contains(LOOT_TABLE_KEY, 8)) {
+        if (nbt.contains(LOOT_TABLE_KEY, NbtElement.STRING_TYPE)) {
             this.lootTableId = new Identifier(nbt.getString(LOOT_TABLE_KEY));
             this.lootTableSeed = nbt.getLong(LOOT_TABLE_SEED_KEY);
             return true;

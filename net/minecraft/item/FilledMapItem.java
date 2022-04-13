@@ -21,6 +21,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BiomeTags;
@@ -72,7 +73,7 @@ extends NetworkSyncedItem {
     @Nullable
     public static Integer getMapId(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
-        return nbtCompound != null && nbtCompound.contains(MAP_KEY, 99) ? Integer.valueOf(nbtCompound.getInt(MAP_KEY)) : null;
+        return nbtCompound != null && nbtCompound.contains(MAP_KEY, NbtElement.NUMBER_TYPE) ? Integer.valueOf(nbtCompound.getInt(MAP_KEY)) : null;
     }
 
     private static int allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
@@ -294,10 +295,10 @@ extends NetworkSyncedItem {
     @Override
     public void onCraft(ItemStack stack, World world, PlayerEntity player) {
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("map_scale_direction", 99)) {
+        if (nbtCompound != null && nbtCompound.contains("map_scale_direction", NbtElement.NUMBER_TYPE)) {
             FilledMapItem.scale(stack, world, nbtCompound.getInt("map_scale_direction"));
             nbtCompound.remove("map_scale_direction");
-        } else if (nbtCompound != null && nbtCompound.contains("map_to_lock", 1) && nbtCompound.getBoolean("map_to_lock")) {
+        } else if (nbtCompound != null && nbtCompound.contains("map_to_lock", NbtElement.BYTE_TYPE) && nbtCompound.getBoolean("map_to_lock")) {
             FilledMapItem.copyMap(world, stack);
             nbtCompound.remove("map_to_lock");
         }
@@ -344,7 +345,7 @@ extends NetworkSyncedItem {
 
     public static int getMapColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getSubNbt("display");
-        if (nbtCompound != null && nbtCompound.contains("MapColor", 99)) {
+        if (nbtCompound != null && nbtCompound.contains("MapColor", NbtElement.NUMBER_TYPE)) {
             int i = nbtCompound.getInt("MapColor");
             return 0xFF000000 | i & 0xFFFFFF;
         }

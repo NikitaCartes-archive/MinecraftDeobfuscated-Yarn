@@ -10,14 +10,12 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.criterion.Criteria;
@@ -37,6 +35,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -54,7 +53,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.StriderEntity;
@@ -108,6 +107,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -127,7 +127,6 @@ import org.slf4j.Logger;
 public abstract class PlayerEntity
 extends LivingEntity {
     private static final Logger field_38197 = LogUtils.getLogger();
-    public static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
     public static final int field_30643 = 16;
     public static final int field_30644 = 20;
     public static final int field_30645 = 100;
@@ -182,7 +181,7 @@ extends LivingEntity {
 
     public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile) {
         super((EntityType<? extends LivingEntity>)EntityType.PLAYER, world);
-        this.setUuid(PlayerEntity.getUuidFromProfile(profile));
+        this.setUuid(DynamicSerializableUuid.getUuidFromProfile(profile));
         this.gameProfile = profile;
         this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
         this.currentScreenHandler = this.playerScreenHandler;
@@ -397,13 +396,13 @@ extends LivingEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 9) {
+        if (status == EntityStatuses.CONSUME_ITEM) {
             this.consumeItem();
-        } else if (status == 23) {
+        } else if (status == EntityStatuses.USE_FULL_DEBUG_INFO) {
             this.reducedDebugInfo = false;
-        } else if (status == 22) {
+        } else if (status == EntityStatuses.USE_REDUCED_DEBUG_INFO) {
             this.reducedDebugInfo = true;
-        } else if (status == 43) {
+        } else if (status == EntityStatuses.ADD_CLOUD_PARTICLES) {
             this.spawnParticles(ParticleTypes.CLOUD);
         } else {
             super.handleStatus(status);
@@ -671,8 +670,8 @@ extends LivingEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setUuid(PlayerEntity.getUuidFromProfile(this.gameProfile));
-        NbtList nbtList = nbt.getList("Inventory", 10);
+        this.setUuid(DynamicSerializableUuid.getUuidFromProfile(this.gameProfile));
+        NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
         this.inventory.readNbt(nbtList);
         this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
         this.sleepTimer = nbt.getShort("SleepTimer");
@@ -685,23 +684,23 @@ extends LivingEntity {
         }
         this.setScore(nbt.getInt("Score"));
         this.hungerManager.readNbt(nbt);
-        if (nbt.contains("warden_spawn_tracker", 10)) {
+        if (nbt.contains("warden_spawn_tracker", NbtElement.COMPOUND_TYPE)) {
             SculkShriekerWarningManager.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("warden_spawn_tracker"))).resultOrPartial(field_38197::error).ifPresent(sculkShriekerWarningManager -> {
                 this.sculkShriekerWarningManager = sculkShriekerWarningManager;
             });
         }
         this.abilities.readNbt(nbt);
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkSpeed());
-        if (nbt.contains("EnderItems", 9)) {
-            this.enderChestInventory.readNbtList(nbt.getList("EnderItems", 10));
+        if (nbt.contains("EnderItems", NbtElement.LIST_TYPE)) {
+            this.enderChestInventory.readNbtList(nbt.getList("EnderItems", NbtElement.COMPOUND_TYPE));
         }
-        if (nbt.contains("ShoulderEntityLeft", 10)) {
+        if (nbt.contains("ShoulderEntityLeft", NbtElement.COMPOUND_TYPE)) {
             this.setShoulderEntityLeft(nbt.getCompound("ShoulderEntityLeft"));
         }
-        if (nbt.contains("ShoulderEntityRight", 10)) {
+        if (nbt.contains("ShoulderEntityRight", NbtElement.COMPOUND_TYPE)) {
             this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
         }
-        if (nbt.contains("LastDeathLocation", 10)) {
+        if (nbt.contains("LastDeathLocation", NbtElement.COMPOUND_TYPE)) {
             this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(field_38197::error));
         }
     }
@@ -887,7 +886,7 @@ extends LivingEntity {
     public void openJigsawScreen(JigsawBlockEntity jigsaw) {
     }
 
-    public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
+    public void openHorseInventory(AbstractHorseEntity horse, Inventory inventory) {
     }
 
     public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
@@ -1155,7 +1154,7 @@ extends LivingEntity {
         if (this.random.nextFloat() < f) {
             this.getItemCooldownManager().set(Items.SHIELD, 100);
             this.clearActiveItem();
-            this.world.sendEntityStatus(this, (byte)30);
+            this.world.sendEntityStatus(this, EntityStatuses.BREAK_SHIELD);
         }
     }
 
@@ -1470,7 +1469,7 @@ extends LivingEntity {
                 this.increaseStat(Stats.BOAT_ONE_CM, i);
             } else if (entity instanceof PigEntity) {
                 this.increaseStat(Stats.PIG_ONE_CM, i);
-            } else if (entity instanceof HorseBaseEntity) {
+            } else if (entity instanceof AbstractHorseEntity) {
                 this.increaseStat(Stats.HORSE_ONE_CM, i);
             } else if (entity instanceof StriderEntity) {
                 this.increaseStat(Stats.STRIDER_ONE_CM, i);
@@ -1812,18 +1811,6 @@ extends LivingEntity {
     @Override
     public float getAbsorptionAmount() {
         return this.getDataTracker().get(ABSORPTION_AMOUNT).floatValue();
-    }
-
-    public static UUID getUuidFromProfile(GameProfile profile) {
-        UUID uUID = profile.getId();
-        if (uUID == null) {
-            uUID = PlayerEntity.getOfflinePlayerUuid(profile.getName());
-        }
-        return uUID;
-    }
-
-    public static UUID getOfflinePlayerUuid(String nickname) {
-        return UUID.nameUUIDFromBytes((OFFLINE_PLAYER_UUID_PREFIX + nickname).getBytes(StandardCharsets.UTF_8));
     }
 
     public boolean isPartVisible(PlayerModelPart modelPart) {

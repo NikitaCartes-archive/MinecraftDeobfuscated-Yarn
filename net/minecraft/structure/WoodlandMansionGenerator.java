@@ -4,6 +4,7 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -34,159 +35,166 @@ import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.ServerWorldAccess;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The generator for the woodland mansion structure.
+ * 
+ * <p>The cobblestones underneath the mansion are generated {@linkplain
+ * net.minecraft.world.gen.feature.WoodlandMansionFeature#postPlace after
+ * the mansion placement}.
+ */
 public class WoodlandMansionGenerator {
-    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<Piece> pieces, AbstractRandom abstractRandom) {
-        MansionParameters mansionParameters = new MansionParameters(abstractRandom);
-        LayoutGenerator layoutGenerator = new LayoutGenerator(manager, abstractRandom);
+    public static void addPieces(StructureManager manager, BlockPos pos, BlockRotation rotation, List<Piece> pieces, AbstractRandom random) {
+        MansionParameters mansionParameters = new MansionParameters(random);
+        LayoutGenerator layoutGenerator = new LayoutGenerator(manager, random);
         layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
     }
 
-    public static void method_35471(String[] strings) {
+    public static void printRandomFloorLayouts(String[] args) {
         AbstractRandom abstractRandom = AbstractRandom.createAtomic();
         long l = abstractRandom.nextLong();
         System.out.println("Seed: " + l);
         abstractRandom.setSeed(l);
         MansionParameters mansionParameters = new MansionParameters(abstractRandom);
-        mansionParameters.method_35472();
+        mansionParameters.printFloorLayouts();
     }
 
     static class MansionParameters {
-        private static final int field_31665 = 11;
-        private static final int field_31666 = 0;
-        private static final int field_31667 = 1;
-        private static final int field_31668 = 2;
-        private static final int field_31669 = 3;
-        private static final int field_31670 = 4;
-        private static final int field_31671 = 5;
-        private static final int field_31672 = 65536;
-        private static final int field_31673 = 131072;
-        private static final int field_31674 = 262144;
-        private static final int field_31675 = 0x100000;
-        private static final int field_31676 = 0x200000;
-        private static final int field_31677 = 0x400000;
-        private static final int field_31678 = 0x800000;
-        private static final int field_31679 = 983040;
-        private static final int field_31680 = 65535;
+        private static final int SIZE = 11;
+        private static final int UNSET = 0;
+        private static final int CORRIDOR = 1;
+        private static final int ROOM = 2;
+        private static final int STAIRCASE = 3;
+        private static final int UNUSED = 4;
+        private static final int OUTSIDE = 5;
+        private static final int SMALL_ROOM_FLAG = 65536;
+        private static final int MEDIUM_ROOM_FLAG = 131072;
+        private static final int BIG_ROOM_FLAG = 262144;
+        private static final int ORIGIN_CELL_FLAG = 0x100000;
+        private static final int ENTRANCE_CELL_FLAG = 0x200000;
+        private static final int STAIRCASE_CELL_FLAG = 0x400000;
+        private static final int CARPET_CELL_FLAG = 0x800000;
+        private static final int ROOM_SIZE_MASK = 983040;
+        private static final int ROOM_ID_MASK = 65535;
         private final AbstractRandom random;
-        final FlagMatrix field_15440;
-        final FlagMatrix field_15439;
-        final FlagMatrix[] field_15443;
-        final int field_15442;
-        final int field_15441;
+        final FlagMatrix baseLayout;
+        final FlagMatrix thirdFloorLayout;
+        final FlagMatrix[] roomFlagsByFloor;
+        final int entranceI;
+        final int entranceJ;
 
         public MansionParameters(AbstractRandom random) {
             this.random = random;
             int i = 11;
-            this.field_15442 = 7;
-            this.field_15441 = 4;
-            this.field_15440 = new FlagMatrix(11, 11, 5);
-            this.field_15440.fill(this.field_15442, this.field_15441, this.field_15442 + 1, this.field_15441 + 1, 3);
-            this.field_15440.fill(this.field_15442 - 1, this.field_15441, this.field_15442 - 1, this.field_15441 + 1, 2);
-            this.field_15440.fill(this.field_15442 + 2, this.field_15441 - 2, this.field_15442 + 3, this.field_15441 + 3, 5);
-            this.field_15440.fill(this.field_15442 + 1, this.field_15441 - 2, this.field_15442 + 1, this.field_15441 - 1, 1);
-            this.field_15440.fill(this.field_15442 + 1, this.field_15441 + 2, this.field_15442 + 1, this.field_15441 + 3, 1);
-            this.field_15440.set(this.field_15442 - 1, this.field_15441 - 1, 1);
-            this.field_15440.set(this.field_15442 - 1, this.field_15441 + 2, 1);
-            this.field_15440.fill(0, 0, 11, 1, 5);
-            this.field_15440.fill(0, 9, 11, 11, 5);
-            this.method_15045(this.field_15440, this.field_15442, this.field_15441 - 2, Direction.WEST, 6);
-            this.method_15045(this.field_15440, this.field_15442, this.field_15441 + 3, Direction.WEST, 6);
-            this.method_15045(this.field_15440, this.field_15442 - 2, this.field_15441 - 1, Direction.WEST, 3);
-            this.method_15045(this.field_15440, this.field_15442 - 2, this.field_15441 + 2, Direction.WEST, 3);
-            while (this.method_15046(this.field_15440)) {
+            this.entranceI = 7;
+            this.entranceJ = 4;
+            this.baseLayout = new FlagMatrix(SIZE, SIZE, OUTSIDE);
+            this.baseLayout.fill(this.entranceI, this.entranceJ, this.entranceI + 1, this.entranceJ + 1, STAIRCASE);
+            this.baseLayout.fill(this.entranceI - 1, this.entranceJ, this.entranceI - 1, this.entranceJ + 1, ROOM);
+            this.baseLayout.fill(this.entranceI + 2, this.entranceJ - 2, this.entranceI + 3, this.entranceJ + 3, OUTSIDE);
+            this.baseLayout.fill(this.entranceI + 1, this.entranceJ - 2, this.entranceI + 1, this.entranceJ - 1, CORRIDOR);
+            this.baseLayout.fill(this.entranceI + 1, this.entranceJ + 2, this.entranceI + 1, this.entranceJ + 3, CORRIDOR);
+            this.baseLayout.set(this.entranceI - 1, this.entranceJ - 1, CORRIDOR);
+            this.baseLayout.set(this.entranceI - 1, this.entranceJ + 2, CORRIDOR);
+            this.baseLayout.fill(0, 0, 11, 1, OUTSIDE);
+            this.baseLayout.fill(0, 9, 11, 11, OUTSIDE);
+            this.layoutCorridor(this.baseLayout, this.entranceI, this.entranceJ - 2, Direction.WEST, 6);
+            this.layoutCorridor(this.baseLayout, this.entranceI, this.entranceJ + 3, Direction.WEST, 6);
+            this.layoutCorridor(this.baseLayout, this.entranceI - 2, this.entranceJ - 1, Direction.WEST, 3);
+            this.layoutCorridor(this.baseLayout, this.entranceI - 2, this.entranceJ + 2, Direction.WEST, 3);
+            while (this.adjustLayoutWithRooms(this.baseLayout)) {
             }
-            this.field_15443 = new FlagMatrix[3];
-            this.field_15443[0] = new FlagMatrix(11, 11, 5);
-            this.field_15443[1] = new FlagMatrix(11, 11, 5);
-            this.field_15443[2] = new FlagMatrix(11, 11, 5);
-            this.method_15042(this.field_15440, this.field_15443[0]);
-            this.method_15042(this.field_15440, this.field_15443[1]);
-            this.field_15443[0].fill(this.field_15442 + 1, this.field_15441, this.field_15442 + 1, this.field_15441 + 1, 0x800000);
-            this.field_15443[1].fill(this.field_15442 + 1, this.field_15441, this.field_15442 + 1, this.field_15441 + 1, 0x800000);
-            this.field_15439 = new FlagMatrix(this.field_15440.n, this.field_15440.m, 5);
-            this.method_15048();
-            this.method_15042(this.field_15439, this.field_15443[2]);
+            this.roomFlagsByFloor = new FlagMatrix[3];
+            this.roomFlagsByFloor[0] = new FlagMatrix(SIZE, SIZE, OUTSIDE);
+            this.roomFlagsByFloor[1] = new FlagMatrix(SIZE, SIZE, OUTSIDE);
+            this.roomFlagsByFloor[2] = new FlagMatrix(SIZE, SIZE, OUTSIDE);
+            this.updateRoomFlags(this.baseLayout, this.roomFlagsByFloor[0]);
+            this.updateRoomFlags(this.baseLayout, this.roomFlagsByFloor[1]);
+            this.roomFlagsByFloor[0].fill(this.entranceI + 1, this.entranceJ, this.entranceI + 1, this.entranceJ + 1, 0x800000);
+            this.roomFlagsByFloor[1].fill(this.entranceI + 1, this.entranceJ, this.entranceI + 1, this.entranceJ + 1, 0x800000);
+            this.thirdFloorLayout = new FlagMatrix(this.baseLayout.n, this.baseLayout.m, OUTSIDE);
+            this.layoutThirdFloor();
+            this.updateRoomFlags(this.thirdFloorLayout, this.roomFlagsByFloor[2]);
         }
 
-        public static boolean method_15047(FlagMatrix flagMatrix, int i, int j) {
-            int k = flagMatrix.get(i, j);
-            return k == 1 || k == 2 || k == 3 || k == 4;
+        public static boolean isInsideMansion(FlagMatrix layout, int i, int j) {
+            int k = layout.get(i, j);
+            return k == CORRIDOR || k == ROOM || k == STAIRCASE || k == UNUSED;
         }
 
-        public boolean method_15039(FlagMatrix flagMatrix, int i, int j, int k, int l) {
-            return (this.field_15443[k].get(i, j) & 0xFFFF) == l;
+        public boolean isRoomId(FlagMatrix layout, int i, int j, int floor, int roomId) {
+            return (this.roomFlagsByFloor[floor].get(i, j) & 0xFFFF) == roomId;
         }
 
         @Nullable
-        public Direction method_15040(FlagMatrix flagMatrix, int i, int j, int k, int l) {
+        public Direction findConnectedRoomDirection(FlagMatrix layout, int i, int j, int floor, int roomId) {
             for (Direction direction : Direction.Type.HORIZONTAL) {
-                if (!this.method_15039(flagMatrix, i + direction.getOffsetX(), j + direction.getOffsetZ(), k, l)) continue;
+                if (!this.isRoomId(layout, i + direction.getOffsetX(), j + direction.getOffsetZ(), floor, roomId)) continue;
                 return direction;
             }
             return null;
         }
 
-        private void method_15045(FlagMatrix flagMatrix, int i, int j, Direction direction, int k) {
+        private void layoutCorridor(FlagMatrix layout, int i, int j, Direction direction, int length) {
             Direction direction2;
-            if (k <= 0) {
+            if (length <= 0) {
                 return;
             }
-            flagMatrix.set(i, j, 1);
-            flagMatrix.update(i + direction.getOffsetX(), j + direction.getOffsetZ(), 0, 1);
-            for (int l = 0; l < 8; ++l) {
+            layout.set(i, j, CORRIDOR);
+            layout.update(i + direction.getOffsetX(), j + direction.getOffsetZ(), UNSET, CORRIDOR);
+            for (int k = 0; k < 8; ++k) {
                 direction2 = Direction.fromHorizontal(this.random.nextInt(4));
                 if (direction2 == direction.getOpposite() || direction2 == Direction.EAST && this.random.nextBoolean()) continue;
-                int m = i + direction.getOffsetX();
-                int n = j + direction.getOffsetZ();
-                if (flagMatrix.get(m + direction2.getOffsetX(), n + direction2.getOffsetZ()) != 0 || flagMatrix.get(m + direction2.getOffsetX() * 2, n + direction2.getOffsetZ() * 2) != 0) continue;
-                this.method_15045(flagMatrix, i + direction.getOffsetX() + direction2.getOffsetX(), j + direction.getOffsetZ() + direction2.getOffsetZ(), direction2, k - 1);
+                int l = i + direction.getOffsetX();
+                int m = j + direction.getOffsetZ();
+                if (layout.get(l + direction2.getOffsetX(), m + direction2.getOffsetZ()) != 0 || layout.get(l + direction2.getOffsetX() * 2, m + direction2.getOffsetZ() * 2) != 0) continue;
+                this.layoutCorridor(layout, i + direction.getOffsetX() + direction2.getOffsetX(), j + direction.getOffsetZ() + direction2.getOffsetZ(), direction2, length - 1);
                 break;
             }
             Direction direction3 = direction.rotateYClockwise();
             direction2 = direction.rotateYCounterclockwise();
-            flagMatrix.update(i + direction3.getOffsetX(), j + direction3.getOffsetZ(), 0, 2);
-            flagMatrix.update(i + direction2.getOffsetX(), j + direction2.getOffsetZ(), 0, 2);
-            flagMatrix.update(i + direction.getOffsetX() + direction3.getOffsetX(), j + direction.getOffsetZ() + direction3.getOffsetZ(), 0, 2);
-            flagMatrix.update(i + direction.getOffsetX() + direction2.getOffsetX(), j + direction.getOffsetZ() + direction2.getOffsetZ(), 0, 2);
-            flagMatrix.update(i + direction.getOffsetX() * 2, j + direction.getOffsetZ() * 2, 0, 2);
-            flagMatrix.update(i + direction3.getOffsetX() * 2, j + direction3.getOffsetZ() * 2, 0, 2);
-            flagMatrix.update(i + direction2.getOffsetX() * 2, j + direction2.getOffsetZ() * 2, 0, 2);
+            layout.update(i + direction3.getOffsetX(), j + direction3.getOffsetZ(), UNSET, ROOM);
+            layout.update(i + direction2.getOffsetX(), j + direction2.getOffsetZ(), UNSET, ROOM);
+            layout.update(i + direction.getOffsetX() + direction3.getOffsetX(), j + direction.getOffsetZ() + direction3.getOffsetZ(), UNSET, ROOM);
+            layout.update(i + direction.getOffsetX() + direction2.getOffsetX(), j + direction.getOffsetZ() + direction2.getOffsetZ(), UNSET, ROOM);
+            layout.update(i + direction.getOffsetX() * 2, j + direction.getOffsetZ() * 2, UNSET, ROOM);
+            layout.update(i + direction3.getOffsetX() * 2, j + direction3.getOffsetZ() * 2, UNSET, ROOM);
+            layout.update(i + direction2.getOffsetX() * 2, j + direction2.getOffsetZ() * 2, UNSET, ROOM);
         }
 
-        private boolean method_15046(FlagMatrix flagMatrix) {
+        private boolean adjustLayoutWithRooms(FlagMatrix layout) {
             boolean bl = false;
-            for (int i = 0; i < flagMatrix.m; ++i) {
-                for (int j = 0; j < flagMatrix.n; ++j) {
-                    if (flagMatrix.get(j, i) != 0) continue;
+            for (int i = 0; i < layout.m; ++i) {
+                for (int j = 0; j < layout.n; ++j) {
+                    if (layout.get(j, i) != 0) continue;
                     int k = 0;
-                    k += MansionParameters.method_15047(flagMatrix, j + 1, i) ? 1 : 0;
-                    k += MansionParameters.method_15047(flagMatrix, j - 1, i) ? 1 : 0;
-                    k += MansionParameters.method_15047(flagMatrix, j, i + 1) ? 1 : 0;
-                    if ((k += MansionParameters.method_15047(flagMatrix, j, i - 1) ? 1 : 0) >= 3) {
-                        flagMatrix.set(j, i, 2);
+                    k += MansionParameters.isInsideMansion(layout, j + 1, i) ? 1 : 0;
+                    k += MansionParameters.isInsideMansion(layout, j - 1, i) ? 1 : 0;
+                    k += MansionParameters.isInsideMansion(layout, j, i + 1) ? 1 : 0;
+                    if ((k += MansionParameters.isInsideMansion(layout, j, i - 1) ? 1 : 0) >= 3) {
+                        layout.set(j, i, ROOM);
                         bl = true;
                         continue;
                     }
                     if (k != 2) continue;
                     int l = 0;
-                    l += MansionParameters.method_15047(flagMatrix, j + 1, i + 1) ? 1 : 0;
-                    l += MansionParameters.method_15047(flagMatrix, j - 1, i + 1) ? 1 : 0;
-                    l += MansionParameters.method_15047(flagMatrix, j + 1, i - 1) ? 1 : 0;
-                    if ((l += MansionParameters.method_15047(flagMatrix, j - 1, i - 1) ? 1 : 0) > 1) continue;
-                    flagMatrix.set(j, i, 2);
+                    l += MansionParameters.isInsideMansion(layout, j + 1, i + 1) ? 1 : 0;
+                    l += MansionParameters.isInsideMansion(layout, j - 1, i + 1) ? 1 : 0;
+                    l += MansionParameters.isInsideMansion(layout, j + 1, i - 1) ? 1 : 0;
+                    if ((l += MansionParameters.isInsideMansion(layout, j - 1, i - 1) ? 1 : 0) > 1) continue;
+                    layout.set(j, i, ROOM);
                     bl = true;
                 }
             }
             return bl;
         }
 
-        private void method_15048() {
+        private void layoutThirdFloor() {
             int l;
             int j;
             ArrayList<Pair<Integer, Integer>> list = Lists.newArrayList();
-            FlagMatrix flagMatrix = this.field_15443[1];
-            for (int i = 0; i < this.field_15439.m; ++i) {
-                for (j = 0; j < this.field_15439.n; ++j) {
+            FlagMatrix flagMatrix = this.roomFlagsByFloor[1];
+            for (int i = 0; i < this.thirdFloorLayout.m; ++i) {
+                for (j = 0; j < this.thirdFloorLayout.n; ++j) {
                     int k = flagMatrix.get(j, i);
                     l = k & 0xF0000;
                     if (l != 131072 || (k & 0x200000) != 0x200000) continue;
@@ -194,103 +202,103 @@ public class WoodlandMansionGenerator {
                 }
             }
             if (list.isEmpty()) {
-                this.field_15439.fill(0, 0, this.field_15439.n, this.field_15439.m, 5);
+                this.thirdFloorLayout.fill(0, 0, this.thirdFloorLayout.n, this.thirdFloorLayout.m, OUTSIDE);
                 return;
             }
             Pair pair = (Pair)list.get(this.random.nextInt(list.size()));
             j = flagMatrix.get((Integer)pair.getLeft(), (Integer)pair.getRight());
             flagMatrix.set((Integer)pair.getLeft(), (Integer)pair.getRight(), j | 0x400000);
-            Direction direction = this.method_15040(this.field_15440, (Integer)pair.getLeft(), (Integer)pair.getRight(), 1, j & 0xFFFF);
+            Direction direction = this.findConnectedRoomDirection(this.baseLayout, (Integer)pair.getLeft(), (Integer)pair.getRight(), 1, j & 0xFFFF);
             l = (Integer)pair.getLeft() + direction.getOffsetX();
             int m = (Integer)pair.getRight() + direction.getOffsetZ();
-            for (int n = 0; n < this.field_15439.m; ++n) {
-                for (int o = 0; o < this.field_15439.n; ++o) {
-                    if (!MansionParameters.method_15047(this.field_15440, o, n)) {
-                        this.field_15439.set(o, n, 5);
+            for (int n = 0; n < this.thirdFloorLayout.m; ++n) {
+                for (int o = 0; o < this.thirdFloorLayout.n; ++o) {
+                    if (!MansionParameters.isInsideMansion(this.baseLayout, o, n)) {
+                        this.thirdFloorLayout.set(o, n, OUTSIDE);
                         continue;
                     }
                     if (o == (Integer)pair.getLeft() && n == (Integer)pair.getRight()) {
-                        this.field_15439.set(o, n, 3);
+                        this.thirdFloorLayout.set(o, n, STAIRCASE);
                         continue;
                     }
                     if (o != l || n != m) continue;
-                    this.field_15439.set(o, n, 3);
-                    this.field_15443[2].set(o, n, 0x800000);
+                    this.thirdFloorLayout.set(o, n, STAIRCASE);
+                    this.roomFlagsByFloor[2].set(o, n, 0x800000);
                 }
             }
             ArrayList<Direction> list2 = Lists.newArrayList();
             for (Direction direction2 : Direction.Type.HORIZONTAL) {
-                if (this.field_15439.get(l + direction2.getOffsetX(), m + direction2.getOffsetZ()) != 0) continue;
+                if (this.thirdFloorLayout.get(l + direction2.getOffsetX(), m + direction2.getOffsetZ()) != 0) continue;
                 list2.add(direction2);
             }
             if (list2.isEmpty()) {
-                this.field_15439.fill(0, 0, this.field_15439.n, this.field_15439.m, 5);
+                this.thirdFloorLayout.fill(0, 0, this.thirdFloorLayout.n, this.thirdFloorLayout.m, OUTSIDE);
                 flagMatrix.set((Integer)pair.getLeft(), (Integer)pair.getRight(), j);
                 return;
             }
             Direction direction3 = (Direction)list2.get(this.random.nextInt(list2.size()));
-            this.method_15045(this.field_15439, l + direction3.getOffsetX(), m + direction3.getOffsetZ(), direction3, 4);
-            while (this.method_15046(this.field_15439)) {
+            this.layoutCorridor(this.thirdFloorLayout, l + direction3.getOffsetX(), m + direction3.getOffsetZ(), direction3, 4);
+            while (this.adjustLayoutWithRooms(this.thirdFloorLayout)) {
             }
         }
 
-        private void method_15042(FlagMatrix flagMatrix, FlagMatrix flagMatrix2) {
+        private void updateRoomFlags(FlagMatrix layout, FlagMatrix roomFlags) {
             int i;
-            ArrayList<Pair<Integer, Integer>> list = Lists.newArrayList();
-            for (i = 0; i < flagMatrix.m; ++i) {
-                for (int j = 0; j < flagMatrix.n; ++j) {
-                    if (flagMatrix.get(j, i) != 2) continue;
-                    list.add(new Pair<Integer, Integer>(j, i));
+            ObjectArrayList<Pair<Integer, Integer>> objectArrayList = new ObjectArrayList<Pair<Integer, Integer>>();
+            for (i = 0; i < layout.m; ++i) {
+                for (int j = 0; j < layout.n; ++j) {
+                    if (layout.get(j, i) != ROOM) continue;
+                    objectArrayList.add(new Pair<Integer, Integer>(j, i));
                 }
             }
-            Util.shuffle(list, this.random);
+            Util.shuffle(objectArrayList, this.random);
             i = 10;
-            for (Pair pair : list) {
+            for (Pair pair : objectArrayList) {
                 int l;
                 int k = (Integer)pair.getLeft();
-                if (flagMatrix2.get(k, l = ((Integer)pair.getRight()).intValue()) != 0) continue;
+                if (roomFlags.get(k, l = ((Integer)pair.getRight()).intValue()) != 0) continue;
                 int m = k;
                 int n = k;
                 int o = l;
                 int p = l;
                 int q = 65536;
-                if (flagMatrix2.get(k + 1, l) == 0 && flagMatrix2.get(k, l + 1) == 0 && flagMatrix2.get(k + 1, l + 1) == 0 && flagMatrix.get(k + 1, l) == 2 && flagMatrix.get(k, l + 1) == 2 && flagMatrix.get(k + 1, l + 1) == 2) {
+                if (roomFlags.get(k + 1, l) == 0 && roomFlags.get(k, l + 1) == 0 && roomFlags.get(k + 1, l + 1) == 0 && layout.get(k + 1, l) == ROOM && layout.get(k, l + 1) == ROOM && layout.get(k + 1, l + 1) == ROOM) {
                     ++n;
                     ++p;
                     q = 262144;
-                } else if (flagMatrix2.get(k - 1, l) == 0 && flagMatrix2.get(k, l + 1) == 0 && flagMatrix2.get(k - 1, l + 1) == 0 && flagMatrix.get(k - 1, l) == 2 && flagMatrix.get(k, l + 1) == 2 && flagMatrix.get(k - 1, l + 1) == 2) {
+                } else if (roomFlags.get(k - 1, l) == 0 && roomFlags.get(k, l + 1) == 0 && roomFlags.get(k - 1, l + 1) == 0 && layout.get(k - 1, l) == ROOM && layout.get(k, l + 1) == ROOM && layout.get(k - 1, l + 1) == ROOM) {
                     --m;
                     ++p;
                     q = 262144;
-                } else if (flagMatrix2.get(k - 1, l) == 0 && flagMatrix2.get(k, l - 1) == 0 && flagMatrix2.get(k - 1, l - 1) == 0 && flagMatrix.get(k - 1, l) == 2 && flagMatrix.get(k, l - 1) == 2 && flagMatrix.get(k - 1, l - 1) == 2) {
+                } else if (roomFlags.get(k - 1, l) == 0 && roomFlags.get(k, l - 1) == 0 && roomFlags.get(k - 1, l - 1) == 0 && layout.get(k - 1, l) == ROOM && layout.get(k, l - 1) == ROOM && layout.get(k - 1, l - 1) == ROOM) {
                     --m;
                     --o;
                     q = 262144;
-                } else if (flagMatrix2.get(k + 1, l) == 0 && flagMatrix.get(k + 1, l) == 2) {
+                } else if (roomFlags.get(k + 1, l) == 0 && layout.get(k + 1, l) == ROOM) {
                     ++n;
                     q = 131072;
-                } else if (flagMatrix2.get(k, l + 1) == 0 && flagMatrix.get(k, l + 1) == 2) {
+                } else if (roomFlags.get(k, l + 1) == 0 && layout.get(k, l + 1) == ROOM) {
                     ++p;
                     q = 131072;
-                } else if (flagMatrix2.get(k - 1, l) == 0 && flagMatrix.get(k - 1, l) == 2) {
+                } else if (roomFlags.get(k - 1, l) == 0 && layout.get(k - 1, l) == ROOM) {
                     --m;
                     q = 131072;
-                } else if (flagMatrix2.get(k, l - 1) == 0 && flagMatrix.get(k, l - 1) == 2) {
+                } else if (roomFlags.get(k, l - 1) == 0 && layout.get(k, l - 1) == ROOM) {
                     --o;
                     q = 131072;
                 }
                 int r = this.random.nextBoolean() ? m : n;
                 int s = this.random.nextBoolean() ? o : p;
                 int t = 0x200000;
-                if (!flagMatrix.anyMatchAround(r, s, 1)) {
+                if (!layout.anyMatchAround(r, s, CORRIDOR)) {
                     r = r == m ? n : m;
                     int n2 = s = s == o ? p : o;
-                    if (!flagMatrix.anyMatchAround(r, s, 1)) {
+                    if (!layout.anyMatchAround(r, s, CORRIDOR)) {
                         int n3 = s = s == o ? p : o;
-                        if (!flagMatrix.anyMatchAround(r, s, 1)) {
+                        if (!layout.anyMatchAround(r, s, CORRIDOR)) {
                             r = r == m ? n : m;
                             int n4 = s = s == o ? p : o;
-                            if (!flagMatrix.anyMatchAround(r, s, 1)) {
+                            if (!layout.anyMatchAround(r, s, CORRIDOR)) {
                                 t = 0;
                                 r = m;
                                 s = o;
@@ -301,39 +309,39 @@ public class WoodlandMansionGenerator {
                 for (int u = o; u <= p; ++u) {
                     for (int v = m; v <= n; ++v) {
                         if (v == r && u == s) {
-                            flagMatrix2.set(v, u, 0x100000 | t | q | i);
+                            roomFlags.set(v, u, 0x100000 | t | q | i);
                             continue;
                         }
-                        flagMatrix2.set(v, u, q | i);
+                        roomFlags.set(v, u, q | i);
                     }
                 }
                 ++i;
             }
         }
 
-        public void method_35472() {
+        public void printFloorLayouts() {
             for (int i = 0; i < 2; ++i) {
-                FlagMatrix flagMatrix = i == 0 ? this.field_15440 : this.field_15439;
+                FlagMatrix flagMatrix = i == 0 ? this.baseLayout : this.thirdFloorLayout;
                 for (int j = 0; j < flagMatrix.m; ++j) {
                     for (int k = 0; k < flagMatrix.n; ++k) {
                         int l = flagMatrix.get(k, j);
-                        if (l == 1) {
+                        if (l == CORRIDOR) {
                             System.out.print("+");
                             continue;
                         }
-                        if (l == 4) {
+                        if (l == UNUSED) {
                             System.out.print("x");
                             continue;
                         }
-                        if (l == 2) {
+                        if (l == ROOM) {
                             System.out.print("X");
                             continue;
                         }
-                        if (l == 3) {
+                        if (l == STAIRCASE) {
                             System.out.print("O");
                             continue;
                         }
-                        if (l == 5) {
+                        if (l == OUTSIDE) {
                             System.out.print("#");
                             continue;
                         }
@@ -349,8 +357,8 @@ public class WoodlandMansionGenerator {
     static class LayoutGenerator {
         private final StructureManager manager;
         private final AbstractRandom random;
-        private int field_15446;
-        private int field_15445;
+        private int entranceI;
+        private int entranceJ;
 
         public LayoutGenerator(StructureManager manager, AbstractRandom random) {
             this.manager = manager;
@@ -371,14 +379,14 @@ public class WoodlandMansionGenerator {
             if (!pieces.isEmpty()) {
                 // empty if block
             }
-            FlagMatrix flagMatrix = parameters.field_15440;
-            FlagMatrix flagMatrix2 = parameters.field_15439;
-            this.field_15446 = parameters.field_15442 + 1;
-            this.field_15445 = parameters.field_15441 + 1;
-            int i = parameters.field_15442 + 1;
-            int j = parameters.field_15441;
-            this.addRoof(pieces, generationPiece, flagMatrix, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
-            this.addRoof(pieces, generationPiece2, flagMatrix, Direction.SOUTH, this.field_15446, this.field_15445, i, j);
+            FlagMatrix flagMatrix = parameters.baseLayout;
+            FlagMatrix flagMatrix2 = parameters.thirdFloorLayout;
+            this.entranceI = parameters.entranceI + 1;
+            this.entranceJ = parameters.entranceJ + 1;
+            int i = parameters.entranceI + 1;
+            int j = parameters.entranceJ;
+            this.addOuterWall(pieces, generationPiece, flagMatrix, Direction.SOUTH, this.entranceI, this.entranceJ, i, j);
+            this.addOuterWall(pieces, generationPiece2, flagMatrix, Direction.SOUTH, this.entranceI, this.entranceJ, i, j);
             GenerationPiece generationPiece3 = new GenerationPiece();
             generationPiece3.position = generationPiece.position.up(19);
             generationPiece3.rotation = generationPiece.rotation;
@@ -386,42 +394,42 @@ public class WoodlandMansionGenerator {
             boolean bl = false;
             for (int k = 0; k < flagMatrix2.m && !bl; ++k) {
                 for (l = flagMatrix2.n - 1; l >= 0 && !bl; --l) {
-                    if (!MansionParameters.method_15047(flagMatrix2, l, k)) continue;
-                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.SOUTH), 8 + (k - this.field_15445) * 8);
-                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.EAST), (l - this.field_15446) * 8);
-                    this.method_15052(pieces, generationPiece3);
-                    this.addRoof(pieces, generationPiece3, flagMatrix2, Direction.SOUTH, l, k, l, k);
+                    if (!MansionParameters.isInsideMansion(flagMatrix2, l, k)) continue;
+                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.SOUTH), 8 + (k - this.entranceJ) * 8);
+                    generationPiece3.position = generationPiece3.position.offset(rotation.rotate(Direction.EAST), (l - this.entranceI) * 8);
+                    this.addWallPiece(pieces, generationPiece3);
+                    this.addOuterWall(pieces, generationPiece3, flagMatrix2, Direction.SOUTH, l, k, l, k);
                     bl = true;
                 }
             }
-            this.method_15055(pieces, pos.up(16), rotation, flagMatrix, flagMatrix2);
-            this.method_15055(pieces, pos.up(27), rotation, flagMatrix2, null);
+            this.addRoof(pieces, pos.up(16), rotation, flagMatrix, flagMatrix2);
+            this.addRoof(pieces, pos.up(27), rotation, flagMatrix2, null);
             if (!pieces.isEmpty()) {
                 // empty if block
             }
             RoomPool[] roomPools = new RoomPool[]{new FirstFloorRoomPool(), new SecondFloorRoomPool(), new ThirdFloorRoomPool()};
             for (l = 0; l < 3; ++l) {
                 BlockPos blockPos = pos.up(8 * l + (l == 2 ? 3 : 0));
-                FlagMatrix flagMatrix3 = parameters.field_15443[l];
+                FlagMatrix flagMatrix3 = parameters.roomFlagsByFloor[l];
                 FlagMatrix flagMatrix4 = l == 2 ? flagMatrix2 : flagMatrix;
                 String string = l == 0 ? "carpet_south_1" : "carpet_south_2";
                 String string2 = l == 0 ? "carpet_west_1" : "carpet_west_2";
                 for (int m = 0; m < flagMatrix4.m; ++m) {
                     for (int n = 0; n < flagMatrix4.n; ++n) {
-                        if (flagMatrix4.get(n, m) != 1) continue;
-                        BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (m - this.field_15445) * 8);
-                        blockPos2 = blockPos2.offset(rotation.rotate(Direction.EAST), (n - this.field_15446) * 8);
+                        if (flagMatrix4.get(n, m) != MansionParameters.CORRIDOR) continue;
+                        BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (m - this.entranceJ) * 8);
+                        blockPos2 = blockPos2.offset(rotation.rotate(Direction.EAST), (n - this.entranceI) * 8);
                         pieces.add(new Piece(this.manager, "corridor_floor", blockPos2, rotation));
-                        if (flagMatrix4.get(n, m - 1) == 1 || (flagMatrix3.get(n, m - 1) & 0x800000) == 0x800000) {
+                        if (flagMatrix4.get(n, m - 1) == MansionParameters.CORRIDOR || (flagMatrix3.get(n, m - 1) & 0x800000) == 0x800000) {
                             pieces.add(new Piece(this.manager, "carpet_north", blockPos2.offset(rotation.rotate(Direction.EAST), 1).up(), rotation));
                         }
-                        if (flagMatrix4.get(n + 1, m) == 1 || (flagMatrix3.get(n + 1, m) & 0x800000) == 0x800000) {
+                        if (flagMatrix4.get(n + 1, m) == MansionParameters.CORRIDOR || (flagMatrix3.get(n + 1, m) & 0x800000) == 0x800000) {
                             pieces.add(new Piece(this.manager, "carpet_east", blockPos2.offset(rotation.rotate(Direction.SOUTH), 1).offset(rotation.rotate(Direction.EAST), 5).up(), rotation));
                         }
-                        if (flagMatrix4.get(n, m + 1) == 1 || (flagMatrix3.get(n, m + 1) & 0x800000) == 0x800000) {
+                        if (flagMatrix4.get(n, m + 1) == MansionParameters.CORRIDOR || (flagMatrix3.get(n, m + 1) & 0x800000) == 0x800000) {
                             pieces.add(new Piece(this.manager, string, blockPos2.offset(rotation.rotate(Direction.SOUTH), 5).offset(rotation.rotate(Direction.WEST), 1), rotation));
                         }
-                        if (flagMatrix4.get(n - 1, m) != 1 && (flagMatrix3.get(n - 1, m) & 0x800000) != 0x800000) continue;
+                        if (flagMatrix4.get(n - 1, m) != MansionParameters.CORRIDOR && (flagMatrix3.get(n - 1, m) & 0x800000) != 0x800000) continue;
                         pieces.add(new Piece(this.manager, string2, blockPos2.offset(rotation.rotate(Direction.WEST), 1).offset(rotation.rotate(Direction.NORTH), 1), rotation));
                     }
                 }
@@ -433,8 +441,8 @@ public class WoodlandMansionGenerator {
                         Direction direction3;
                         BlockPos blockPos4;
                         boolean bl2;
-                        boolean bl3 = bl2 = l == 2 && flagMatrix4.get(p, o) == 3;
-                        if (flagMatrix4.get(p, o) != 2 && !bl2) continue;
+                        boolean bl3 = bl2 = l == 2 && flagMatrix4.get(p, o) == MansionParameters.STAIRCASE;
+                        if (flagMatrix4.get(p, o) != MansionParameters.ROOM && !bl2) continue;
                         int q = flagMatrix3.get(p, o);
                         int r = q & 0xF0000;
                         int s = q & 0xFFFF;
@@ -442,7 +450,7 @@ public class WoodlandMansionGenerator {
                         list.clear();
                         if ((q & 0x200000) == 0x200000) {
                             for (Direction direction : Direction.Type.HORIZONTAL) {
-                                if (flagMatrix4.get(p + direction.getOffsetX(), o + direction.getOffsetZ()) != 1) continue;
+                                if (flagMatrix4.get(p + direction.getOffsetX(), o + direction.getOffsetZ()) != MansionParameters.CORRIDOR) continue;
                                 list.add(direction);
                             }
                         }
@@ -452,21 +460,21 @@ public class WoodlandMansionGenerator {
                         } else if ((q & 0x100000) == 0x100000) {
                             direction2 = Direction.UP;
                         }
-                        BlockPos blockPos3 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (o - this.field_15445) * 8);
-                        blockPos3 = blockPos3.offset(rotation.rotate(Direction.EAST), -1 + (p - this.field_15446) * 8);
-                        if (MansionParameters.method_15047(flagMatrix4, p - 1, o) && !parameters.method_15039(flagMatrix4, p - 1, o, l, s)) {
+                        BlockPos blockPos3 = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (o - this.entranceJ) * 8);
+                        blockPos3 = blockPos3.offset(rotation.rotate(Direction.EAST), -1 + (p - this.entranceI) * 8);
+                        if (MansionParameters.isInsideMansion(flagMatrix4, p - 1, o) && !parameters.isRoomId(flagMatrix4, p - 1, o, l, s)) {
                             pieces.add(new Piece(this.manager, direction2 == Direction.WEST ? string4 : string3, blockPos3, rotation));
                         }
-                        if (flagMatrix4.get(p + 1, o) == 1 && !bl2) {
+                        if (flagMatrix4.get(p + 1, o) == MansionParameters.CORRIDOR && !bl2) {
                             blockPos4 = blockPos3.offset(rotation.rotate(Direction.EAST), 8);
                             pieces.add(new Piece(this.manager, direction2 == Direction.EAST ? string4 : string3, blockPos4, rotation));
                         }
-                        if (MansionParameters.method_15047(flagMatrix4, p, o + 1) && !parameters.method_15039(flagMatrix4, p, o + 1, l, s)) {
+                        if (MansionParameters.isInsideMansion(flagMatrix4, p, o + 1) && !parameters.isRoomId(flagMatrix4, p, o + 1, l, s)) {
                             blockPos4 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 7);
                             blockPos4 = blockPos4.offset(rotation.rotate(Direction.EAST), 7);
                             pieces.add(new Piece(this.manager, direction2 == Direction.SOUTH ? string4 : string3, blockPos4, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                         }
-                        if (flagMatrix4.get(p, o - 1) == 1 && !bl2) {
+                        if (flagMatrix4.get(p, o - 1) == MansionParameters.CORRIDOR && !bl2) {
                             blockPos4 = blockPos3.offset(rotation.rotate(Direction.NORTH), 1);
                             blockPos4 = blockPos4.offset(rotation.rotate(Direction.EAST), 7);
                             pieces.add(new Piece(this.manager, direction2 == Direction.NORTH ? string4 : string3, blockPos4, rotation.rotate(BlockRotation.CLOCKWISE_90)));
@@ -476,14 +484,14 @@ public class WoodlandMansionGenerator {
                             continue;
                         }
                         if (r == 131072 && direction2 != null) {
-                            direction3 = parameters.method_15040(flagMatrix4, p, o, l, s);
+                            direction3 = parameters.findConnectedRoomDirection(flagMatrix4, p, o, l, s);
                             boolean bl32 = (q & 0x400000) == 0x400000;
                             this.addMediumRoom(pieces, blockPos3, rotation, direction3, direction2, roomPools[l], bl32);
                             continue;
                         }
                         if (r == 262144 && direction2 != null && direction2 != Direction.UP) {
                             direction3 = direction2.rotateYClockwise();
-                            if (!parameters.method_15039(flagMatrix4, p + direction3.getOffsetX(), o + direction3.getOffsetZ(), l, s)) {
+                            if (!parameters.isRoomId(flagMatrix4, p + direction3.getOffsetX(), o + direction3.getOffsetZ(), l, s)) {
                                 direction3 = direction3.getOpposite();
                             }
                             this.addBigRoom(pieces, blockPos3, rotation, direction3, direction2, roomPools[l]);
@@ -496,190 +504,190 @@ public class WoodlandMansionGenerator {
             }
         }
 
-        private void addRoof(List<Piece> pieces, GenerationPiece generationPiece, FlagMatrix flagMatrix, Direction direction, int i, int j, int k, int l) {
-            int m = i;
-            int n = j;
+        private void addOuterWall(List<Piece> pieces, GenerationPiece wallPiece, FlagMatrix layout, Direction direction, int startI, int startJ, int endI, int endJ) {
+            int i = startI;
+            int j = startJ;
             Direction direction2 = direction;
             do {
-                if (!MansionParameters.method_15047(flagMatrix, m + direction.getOffsetX(), n + direction.getOffsetZ())) {
-                    this.method_15058(pieces, generationPiece);
+                if (!MansionParameters.isInsideMansion(layout, i + direction.getOffsetX(), j + direction.getOffsetZ())) {
+                    this.turnLeft(pieces, wallPiece);
                     direction = direction.rotateYClockwise();
-                    if (m == k && n == l && direction2 == direction) continue;
-                    this.method_15052(pieces, generationPiece);
+                    if (i == endI && j == endJ && direction2 == direction) continue;
+                    this.addWallPiece(pieces, wallPiece);
                     continue;
                 }
-                if (MansionParameters.method_15047(flagMatrix, m + direction.getOffsetX(), n + direction.getOffsetZ()) && MansionParameters.method_15047(flagMatrix, m + direction.getOffsetX() + direction.rotateYCounterclockwise().getOffsetX(), n + direction.getOffsetZ() + direction.rotateYCounterclockwise().getOffsetZ())) {
-                    this.method_15060(pieces, generationPiece);
-                    m += direction.getOffsetX();
-                    n += direction.getOffsetZ();
+                if (MansionParameters.isInsideMansion(layout, i + direction.getOffsetX(), j + direction.getOffsetZ()) && MansionParameters.isInsideMansion(layout, i + direction.getOffsetX() + direction.rotateYCounterclockwise().getOffsetX(), j + direction.getOffsetZ() + direction.rotateYCounterclockwise().getOffsetZ())) {
+                    this.turnRight(pieces, wallPiece);
+                    i += direction.getOffsetX();
+                    j += direction.getOffsetZ();
                     direction = direction.rotateYCounterclockwise();
                     continue;
                 }
-                if ((m += direction.getOffsetX()) == k && (n += direction.getOffsetZ()) == l && direction2 == direction) continue;
-                this.method_15052(pieces, generationPiece);
-            } while (m != k || n != l || direction2 != direction);
+                if ((i += direction.getOffsetX()) == endI && (j += direction.getOffsetZ()) == endJ && direction2 == direction) continue;
+                this.addWallPiece(pieces, wallPiece);
+            } while (i != endI || j != endJ || direction2 != direction);
         }
 
-        private void method_15055(List<Piece> list, BlockPos blockPos, BlockRotation blockRotation, FlagMatrix flagMatrix, @Nullable FlagMatrix flagMatrix2) {
-            BlockPos blockPos3;
-            boolean bl;
+        private void addRoof(List<Piece> pieces, BlockPos pos, BlockRotation rotation, FlagMatrix layout, @Nullable FlagMatrix nextFloorLayout) {
             BlockPos blockPos2;
+            boolean bl;
+            BlockPos blockPos;
             int j;
             int i;
-            for (i = 0; i < flagMatrix.m; ++i) {
-                for (j = 0; j < flagMatrix.n; ++j) {
-                    blockPos2 = blockPos;
-                    blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-                    blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.EAST), (j - this.field_15446) * 8);
-                    boolean bl2 = bl = flagMatrix2 != null && MansionParameters.method_15047(flagMatrix2, j, i);
-                    if (!MansionParameters.method_15047(flagMatrix, j, i) || bl) continue;
-                    list.add(new Piece(this.manager, "roof", blockPos2.up(3), blockRotation));
-                    if (!MansionParameters.method_15047(flagMatrix, j + 1, i)) {
-                        blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 6);
-                        list.add(new Piece(this.manager, "roof_front", blockPos3, blockRotation));
+            for (i = 0; i < layout.m; ++i) {
+                for (j = 0; j < layout.n; ++j) {
+                    blockPos = pos;
+                    blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (i - this.entranceJ) * 8);
+                    blockPos = blockPos.offset(rotation.rotate(Direction.EAST), (j - this.entranceI) * 8);
+                    boolean bl2 = bl = nextFloorLayout != null && MansionParameters.isInsideMansion(nextFloorLayout, j, i);
+                    if (!MansionParameters.isInsideMansion(layout, j, i) || bl) continue;
+                    pieces.add(new Piece(this.manager, "roof", blockPos.up(3), rotation));
+                    if (!MansionParameters.isInsideMansion(layout, j + 1, i)) {
+                        blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 6);
+                        pieces.add(new Piece(this.manager, "roof_front", blockPos2, rotation));
                     }
-                    if (!MansionParameters.method_15047(flagMatrix, j - 1, i)) {
-                        blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 0);
-                        blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 7);
-                        list.add(new Piece(this.manager, "roof_front", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                    if (!MansionParameters.isInsideMansion(layout, j - 1, i)) {
+                        blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 0);
+                        blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 7);
+                        pieces.add(new Piece(this.manager, "roof_front", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_180)));
                     }
-                    if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                        blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.WEST), 1);
-                        list.add(new Piece(this.manager, "roof_front", blockPos3, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                    if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                        blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 1);
+                        pieces.add(new Piece(this.manager, "roof_front", blockPos2, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
                     }
-                    if (MansionParameters.method_15047(flagMatrix, j, i + 1)) continue;
-                    blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 6);
-                    blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                    list.add(new Piece(this.manager, "roof_front", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                    if (MansionParameters.isInsideMansion(layout, j, i + 1)) continue;
+                    blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 6);
+                    blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
+                    pieces.add(new Piece(this.manager, "roof_front", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                 }
             }
-            if (flagMatrix2 != null) {
-                for (i = 0; i < flagMatrix.m; ++i) {
-                    for (j = 0; j < flagMatrix.n; ++j) {
-                        blockPos2 = blockPos;
-                        blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-                        blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.EAST), (j - this.field_15446) * 8);
-                        bl = MansionParameters.method_15047(flagMatrix2, j, i);
-                        if (!MansionParameters.method_15047(flagMatrix, j, i) || !bl) continue;
-                        if (!MansionParameters.method_15047(flagMatrix, j + 1, i)) {
-                            blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 7);
-                            list.add(new Piece(this.manager, "small_wall", blockPos3, blockRotation));
+            if (nextFloorLayout != null) {
+                for (i = 0; i < layout.m; ++i) {
+                    for (j = 0; j < layout.n; ++j) {
+                        blockPos = pos;
+                        blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (i - this.entranceJ) * 8);
+                        blockPos = blockPos.offset(rotation.rotate(Direction.EAST), (j - this.entranceI) * 8);
+                        bl = MansionParameters.isInsideMansion(nextFloorLayout, j, i);
+                        if (!MansionParameters.isInsideMansion(layout, j, i) || !bl) continue;
+                        if (!MansionParameters.isInsideMansion(layout, j + 1, i)) {
+                            blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
+                            pieces.add(new Piece(this.manager, "small_wall", blockPos2, rotation));
                         }
-                        if (!MansionParameters.method_15047(flagMatrix, j - 1, i)) {
-                            blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.WEST), 1);
-                            blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                            list.add(new Piece(this.manager, "small_wall", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                        if (!MansionParameters.isInsideMansion(layout, j - 1, i)) {
+                            blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 1);
+                            blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
+                            pieces.add(new Piece(this.manager, "small_wall", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_180)));
                         }
-                        if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                            blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.WEST), 0);
-                            blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.NORTH), 1);
-                            list.add(new Piece(this.manager, "small_wall", blockPos3, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                        if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                            blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 0);
+                            blockPos2 = blockPos2.offset(rotation.rotate(Direction.NORTH), 1);
+                            pieces.add(new Piece(this.manager, "small_wall", blockPos2, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
                         }
-                        if (!MansionParameters.method_15047(flagMatrix, j, i + 1)) {
-                            blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 6);
-                            blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 7);
-                            list.add(new Piece(this.manager, "small_wall", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                        if (!MansionParameters.isInsideMansion(layout, j, i + 1)) {
+                            blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 6);
+                            blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 7);
+                            pieces.add(new Piece(this.manager, "small_wall", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                         }
-                        if (!MansionParameters.method_15047(flagMatrix, j + 1, i)) {
-                            if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                                blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 7);
-                                blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.NORTH), 2);
-                                list.add(new Piece(this.manager, "small_wall_corner", blockPos3, blockRotation));
+                        if (!MansionParameters.isInsideMansion(layout, j + 1, i)) {
+                            if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                                blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
+                                blockPos2 = blockPos2.offset(rotation.rotate(Direction.NORTH), 2);
+                                pieces.add(new Piece(this.manager, "small_wall_corner", blockPos2, rotation));
                             }
-                            if (!MansionParameters.method_15047(flagMatrix, j, i + 1)) {
-                                blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 8);
-                                blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 7);
-                                list.add(new Piece(this.manager, "small_wall_corner", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                            if (!MansionParameters.isInsideMansion(layout, j, i + 1)) {
+                                blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 8);
+                                blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 7);
+                                pieces.add(new Piece(this.manager, "small_wall_corner", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                             }
                         }
-                        if (MansionParameters.method_15047(flagMatrix, j - 1, i)) continue;
-                        if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                            blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.WEST), 2);
-                            blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.NORTH), 1);
-                            list.add(new Piece(this.manager, "small_wall_corner", blockPos3, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                        if (MansionParameters.isInsideMansion(layout, j - 1, i)) continue;
+                        if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                            blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 2);
+                            blockPos2 = blockPos2.offset(rotation.rotate(Direction.NORTH), 1);
+                            pieces.add(new Piece(this.manager, "small_wall_corner", blockPos2, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
                         }
-                        if (MansionParameters.method_15047(flagMatrix, j, i + 1)) continue;
-                        blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.WEST), 1);
-                        blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 8);
-                        list.add(new Piece(this.manager, "small_wall_corner", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                        if (MansionParameters.isInsideMansion(layout, j, i + 1)) continue;
+                        blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 1);
+                        blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 8);
+                        pieces.add(new Piece(this.manager, "small_wall_corner", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_180)));
                     }
                 }
             }
-            for (i = 0; i < flagMatrix.m; ++i) {
-                for (j = 0; j < flagMatrix.n; ++j) {
-                    BlockPos blockPos4;
-                    blockPos2 = blockPos;
-                    blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.SOUTH), 8 + (i - this.field_15445) * 8);
-                    blockPos2 = blockPos2.offset(blockRotation.rotate(Direction.EAST), (j - this.field_15446) * 8);
-                    boolean bl3 = bl = flagMatrix2 != null && MansionParameters.method_15047(flagMatrix2, j, i);
-                    if (!MansionParameters.method_15047(flagMatrix, j, i) || bl) continue;
-                    if (!MansionParameters.method_15047(flagMatrix, j + 1, i)) {
-                        blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 6);
-                        if (!MansionParameters.method_15047(flagMatrix, j, i + 1)) {
-                            blockPos4 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                            list.add(new Piece(this.manager, "roof_corner", blockPos4, blockRotation));
-                        } else if (MansionParameters.method_15047(flagMatrix, j + 1, i + 1)) {
-                            blockPos4 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 5);
-                            list.add(new Piece(this.manager, "roof_inner_corner", blockPos4, blockRotation));
+            for (i = 0; i < layout.m; ++i) {
+                for (j = 0; j < layout.n; ++j) {
+                    BlockPos blockPos3;
+                    blockPos = pos;
+                    blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 8 + (i - this.entranceJ) * 8);
+                    blockPos = blockPos.offset(rotation.rotate(Direction.EAST), (j - this.entranceI) * 8);
+                    boolean bl3 = bl = nextFloorLayout != null && MansionParameters.isInsideMansion(nextFloorLayout, j, i);
+                    if (!MansionParameters.isInsideMansion(layout, j, i) || bl) continue;
+                    if (!MansionParameters.isInsideMansion(layout, j + 1, i)) {
+                        blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 6);
+                        if (!MansionParameters.isInsideMansion(layout, j, i + 1)) {
+                            blockPos3 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
+                            pieces.add(new Piece(this.manager, "roof_corner", blockPos3, rotation));
+                        } else if (MansionParameters.isInsideMansion(layout, j + 1, i + 1)) {
+                            blockPos3 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 5);
+                            pieces.add(new Piece(this.manager, "roof_inner_corner", blockPos3, rotation));
                         }
-                        if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                            list.add(new Piece(this.manager, "roof_corner", blockPos3, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
-                        } else if (MansionParameters.method_15047(flagMatrix, j + 1, i - 1)) {
-                            blockPos4 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 9);
-                            blockPos4 = blockPos4.offset(blockRotation.rotate(Direction.NORTH), 2);
-                            list.add(new Piece(this.manager, "roof_inner_corner", blockPos4, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
+                        if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                            pieces.add(new Piece(this.manager, "roof_corner", blockPos2, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                        } else if (MansionParameters.isInsideMansion(layout, j + 1, i - 1)) {
+                            blockPos3 = blockPos.offset(rotation.rotate(Direction.EAST), 9);
+                            blockPos3 = blockPos3.offset(rotation.rotate(Direction.NORTH), 2);
+                            pieces.add(new Piece(this.manager, "roof_inner_corner", blockPos3, rotation.rotate(BlockRotation.CLOCKWISE_90)));
                         }
                     }
-                    if (MansionParameters.method_15047(flagMatrix, j - 1, i)) continue;
-                    blockPos3 = blockPos2.offset(blockRotation.rotate(Direction.EAST), 0);
-                    blockPos3 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 0);
-                    if (!MansionParameters.method_15047(flagMatrix, j, i + 1)) {
-                        blockPos4 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 6);
-                        list.add(new Piece(this.manager, "roof_corner", blockPos4, blockRotation.rotate(BlockRotation.CLOCKWISE_90)));
-                    } else if (MansionParameters.method_15047(flagMatrix, j - 1, i + 1)) {
-                        blockPos4 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 8);
-                        blockPos4 = blockPos4.offset(blockRotation.rotate(Direction.WEST), 3);
-                        list.add(new Piece(this.manager, "roof_inner_corner", blockPos4, blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+                    if (MansionParameters.isInsideMansion(layout, j - 1, i)) continue;
+                    blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 0);
+                    blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 0);
+                    if (!MansionParameters.isInsideMansion(layout, j, i + 1)) {
+                        blockPos3 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
+                        pieces.add(new Piece(this.manager, "roof_corner", blockPos3, rotation.rotate(BlockRotation.CLOCKWISE_90)));
+                    } else if (MansionParameters.isInsideMansion(layout, j - 1, i + 1)) {
+                        blockPos3 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 8);
+                        blockPos3 = blockPos3.offset(rotation.rotate(Direction.WEST), 3);
+                        pieces.add(new Piece(this.manager, "roof_inner_corner", blockPos3, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
                     }
-                    if (!MansionParameters.method_15047(flagMatrix, j, i - 1)) {
-                        list.add(new Piece(this.manager, "roof_corner", blockPos3, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                    if (!MansionParameters.isInsideMansion(layout, j, i - 1)) {
+                        pieces.add(new Piece(this.manager, "roof_corner", blockPos2, rotation.rotate(BlockRotation.CLOCKWISE_180)));
                         continue;
                     }
-                    if (!MansionParameters.method_15047(flagMatrix, j - 1, i - 1)) continue;
-                    blockPos4 = blockPos3.offset(blockRotation.rotate(Direction.SOUTH), 1);
-                    list.add(new Piece(this.manager, "roof_inner_corner", blockPos4, blockRotation.rotate(BlockRotation.CLOCKWISE_180)));
+                    if (!MansionParameters.isInsideMansion(layout, j - 1, i - 1)) continue;
+                    blockPos3 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 1);
+                    pieces.add(new Piece(this.manager, "roof_inner_corner", blockPos3, rotation.rotate(BlockRotation.CLOCKWISE_180)));
                 }
             }
         }
 
-        private void addEntrance(List<Piece> pieces, GenerationPiece generationPiece) {
-            Direction direction = generationPiece.rotation.rotate(Direction.WEST);
-            pieces.add(new Piece(this.manager, "entrance", generationPiece.position.offset(direction, 9), generationPiece.rotation));
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.SOUTH), 16);
+        private void addEntrance(List<Piece> pieces, GenerationPiece wallPiece) {
+            Direction direction = wallPiece.rotation.rotate(Direction.WEST);
+            pieces.add(new Piece(this.manager, "entrance", wallPiece.position.offset(direction, 9), wallPiece.rotation));
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.SOUTH), 16);
         }
 
-        private void method_15052(List<Piece> list, GenerationPiece generationPiece) {
-            list.add(new Piece(this.manager, generationPiece.template, generationPiece.position.offset(generationPiece.rotation.rotate(Direction.EAST), 7), generationPiece.rotation));
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.SOUTH), 8);
+        private void addWallPiece(List<Piece> pieces, GenerationPiece wallPiece) {
+            pieces.add(new Piece(this.manager, wallPiece.template, wallPiece.position.offset(wallPiece.rotation.rotate(Direction.EAST), 7), wallPiece.rotation));
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.SOUTH), 8);
         }
 
-        private void method_15058(List<Piece> list, GenerationPiece generationPiece) {
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.SOUTH), -1);
-            list.add(new Piece(this.manager, "wall_corner", generationPiece.position, generationPiece.rotation));
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.SOUTH), -7);
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.WEST), -6);
-            generationPiece.rotation = generationPiece.rotation.rotate(BlockRotation.CLOCKWISE_90);
+        private void turnLeft(List<Piece> pieces, GenerationPiece wallPiece) {
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.SOUTH), -1);
+            pieces.add(new Piece(this.manager, "wall_corner", wallPiece.position, wallPiece.rotation));
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.SOUTH), -7);
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.WEST), -6);
+            wallPiece.rotation = wallPiece.rotation.rotate(BlockRotation.CLOCKWISE_90);
         }
 
-        private void method_15060(List<Piece> list, GenerationPiece generationPiece) {
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.SOUTH), 6);
-            generationPiece.position = generationPiece.position.offset(generationPiece.rotation.rotate(Direction.EAST), 8);
-            generationPiece.rotation = generationPiece.rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
+        private void turnRight(List<Piece> pieces, GenerationPiece wallPiece) {
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.SOUTH), 6);
+            wallPiece.position = wallPiece.position.offset(wallPiece.rotation.rotate(Direction.EAST), 8);
+            wallPiece.rotation = wallPiece.rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
         }
 
-        private void addSmallRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction direction, RoomPool roomPool) {
+        private void addSmallRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction direction, RoomPool pool) {
             BlockRotation blockRotation = BlockRotation.NONE;
-            String string = roomPool.getSmallRoom(this.random);
+            String string = pool.getSmallRoom(this.random);
             if (direction != Direction.EAST) {
                 if (direction == Direction.NORTH) {
                     blockRotation = blockRotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
@@ -688,7 +696,7 @@ public class WoodlandMansionGenerator {
                 } else if (direction == Direction.SOUTH) {
                     blockRotation = blockRotation.rotate(BlockRotation.CLOCKWISE_90);
                 } else {
-                    string = roomPool.getSmallSecretRoom(this.random);
+                    string = pool.getSmallSecretRoom(this.random);
                 }
             }
             BlockPos blockPos = Structure.applyTransformedOffset(new BlockPos(1, 0, 0), BlockMirror.NONE, blockRotation, 7, 7);
@@ -698,105 +706,105 @@ public class WoodlandMansionGenerator {
             pieces.add(new Piece(this.manager, string, blockPos2, blockRotation));
         }
 
-        private void addMediumRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction direction, Direction direction2, RoomPool roomPool, boolean staircase) {
-            if (direction2 == Direction.EAST && direction == Direction.SOUTH) {
+        private void addMediumRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction connectedRoomDirection, Direction entranceDirection, RoomPool pool, boolean staircase) {
+            if (entranceDirection == Direction.EAST && connectedRoomDirection == Direction.SOUTH) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation));
-            } else if (direction2 == Direction.EAST && direction == Direction.NORTH) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
-                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation, BlockMirror.LEFT_RIGHT));
-            } else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
-                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180)));
-            } else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation, BlockMirror.FRONT_BACK));
-            } else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.LEFT_RIGHT));
-            } else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
-            } else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
-                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
-                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.FRONT_BACK));
-            } else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation));
+            } else if (entranceDirection == Direction.EAST && connectedRoomDirection == Direction.NORTH) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
                 blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
-                pieces.add(new Piece(this.manager, roomPool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
-            } else if (direction2 == Direction.SOUTH && direction == Direction.NORTH) {
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation, BlockMirror.LEFT_RIGHT));
+            } else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.NORTH) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
+                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180)));
+            } else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.SOUTH) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation, BlockMirror.FRONT_BACK));
+            } else if (entranceDirection == Direction.SOUTH && connectedRoomDirection == Direction.EAST) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.LEFT_RIGHT));
+            } else if (entranceDirection == Direction.SOUTH && connectedRoomDirection == Direction.WEST) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
+            } else if (entranceDirection == Direction.NORTH && connectedRoomDirection == Direction.WEST) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
+                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90), BlockMirror.FRONT_BACK));
+            } else if (entranceDirection == Direction.NORTH && connectedRoomDirection == Direction.EAST) {
+                BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
+                blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
+                pieces.add(new Piece(this.manager, pool.getMediumFunctionalRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+            } else if (entranceDirection == Direction.SOUTH && connectedRoomDirection == Direction.NORTH) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
                 blockPos = blockPos.offset(rotation.rotate(Direction.NORTH), 8);
-                pieces.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos, rotation));
-            } else if (direction2 == Direction.NORTH && direction == Direction.SOUTH) {
+                pieces.add(new Piece(this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation));
+            } else if (entranceDirection == Direction.NORTH && connectedRoomDirection == Direction.SOUTH) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 7);
                 blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 14);
-                pieces.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180)));
-            } else if (direction2 == Direction.WEST && direction == Direction.EAST) {
+                pieces.add(new Piece(this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_180)));
+            } else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.EAST) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 15);
-                pieces.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
-            } else if (direction2 == Direction.EAST && direction == Direction.WEST) {
+                pieces.add(new Piece(this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
+            } else if (entranceDirection == Direction.EAST && connectedRoomDirection == Direction.WEST) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.WEST), 7);
                 blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), 6);
-                pieces.add(new Piece(this.manager, roomPool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
-            } else if (direction2 == Direction.UP && direction == Direction.EAST) {
+                pieces.add(new Piece(this.manager, pool.getMediumGenericRoom(this.random, staircase), blockPos, rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90)));
+            } else if (entranceDirection == Direction.UP && connectedRoomDirection == Direction.EAST) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 15);
-                pieces.add(new Piece(this.manager, roomPool.getMediumSecretRoom(this.random), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
-            } else if (direction2 == Direction.UP && direction == Direction.SOUTH) {
+                pieces.add(new Piece(this.manager, pool.getMediumSecretRoom(this.random), blockPos, rotation.rotate(BlockRotation.CLOCKWISE_90)));
+            } else if (entranceDirection == Direction.UP && connectedRoomDirection == Direction.SOUTH) {
                 BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
                 blockPos = blockPos.offset(rotation.rotate(Direction.NORTH), 0);
-                pieces.add(new Piece(this.manager, roomPool.getMediumSecretRoom(this.random), blockPos, rotation));
+                pieces.add(new Piece(this.manager, pool.getMediumSecretRoom(this.random), blockPos, rotation));
             }
         }
 
-        private void addBigRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction direction, Direction direction2, RoomPool roomPool) {
+        private void addBigRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, Direction connectedRoomDirection, Direction entranceDirection, RoomPool pool) {
             int i = 0;
             int j = 0;
             BlockRotation blockRotation = rotation;
             BlockMirror blockMirror = BlockMirror.NONE;
-            if (direction2 == Direction.EAST && direction == Direction.SOUTH) {
+            if (entranceDirection == Direction.EAST && connectedRoomDirection == Direction.SOUTH) {
                 i = -7;
-            } else if (direction2 == Direction.EAST && direction == Direction.NORTH) {
+            } else if (entranceDirection == Direction.EAST && connectedRoomDirection == Direction.NORTH) {
                 i = -7;
                 j = 6;
                 blockMirror = BlockMirror.LEFT_RIGHT;
-            } else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
+            } else if (entranceDirection == Direction.NORTH && connectedRoomDirection == Direction.EAST) {
                 i = 1;
                 j = 14;
                 blockRotation = rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
-            } else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
+            } else if (entranceDirection == Direction.NORTH && connectedRoomDirection == Direction.WEST) {
                 i = 7;
                 j = 14;
                 blockRotation = rotation.rotate(BlockRotation.COUNTERCLOCKWISE_90);
                 blockMirror = BlockMirror.LEFT_RIGHT;
-            } else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
+            } else if (entranceDirection == Direction.SOUTH && connectedRoomDirection == Direction.WEST) {
                 i = 7;
                 j = -8;
                 blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_90);
-            } else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
+            } else if (entranceDirection == Direction.SOUTH && connectedRoomDirection == Direction.EAST) {
                 i = 1;
                 j = -8;
                 blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_90);
                 blockMirror = BlockMirror.LEFT_RIGHT;
-            } else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
+            } else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.NORTH) {
                 i = 15;
                 j = 6;
                 blockRotation = rotation.rotate(BlockRotation.CLOCKWISE_180);
-            } else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
+            } else if (entranceDirection == Direction.WEST && connectedRoomDirection == Direction.SOUTH) {
                 i = 15;
                 blockMirror = BlockMirror.FRONT_BACK;
             }
             BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), i);
             blockPos = blockPos.offset(rotation.rotate(Direction.SOUTH), j);
-            pieces.add(new Piece(this.manager, roomPool.getBigRoom(this.random), blockPos, blockRotation, blockMirror));
+            pieces.add(new Piece(this.manager, pool.getBigRoom(this.random), blockPos, blockRotation, blockMirror));
         }
 
-        private void addBigSecretRoom(List<Piece> list, BlockPos blockPos, BlockRotation blockRotation, RoomPool roomPool) {
-            BlockPos blockPos2 = blockPos.offset(blockRotation.rotate(Direction.EAST), 1);
-            list.add(new Piece(this.manager, roomPool.getBigSecretRoom(this.random), blockPos2, blockRotation, BlockMirror.NONE));
+        private void addBigSecretRoom(List<Piece> pieces, BlockPos pos, BlockRotation rotation, RoomPool pool) {
+            BlockPos blockPos = pos.offset(rotation.rotate(Direction.EAST), 1);
+            pieces.add(new Piece(this.manager, pool.getBigSecretRoom(this.random), blockPos, rotation, BlockMirror.NONE));
         }
     }
 
@@ -978,7 +986,7 @@ public class WoodlandMansionGenerator {
         }
 
         public Piece(StructureManager manager, NbtCompound nbt) {
-            super(StructurePieceType.WOODLAND_MANSION, nbt, manager, (Identifier identifier) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
+            super(StructurePieceType.WOODLAND_MANSION, nbt, manager, (Identifier id) -> Piece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mi")), BlockRotation.valueOf(nbt.getString("Rot"))));
         }
 
         @Override

@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.ServerCommandSource;
@@ -57,14 +58,14 @@ extends Item {
         if (!WritableBookItem.isValid(nbt)) {
             return false;
         }
-        if (!nbt.contains(TITLE_KEY, 8)) {
+        if (!nbt.contains(TITLE_KEY, NbtElement.STRING_TYPE)) {
             return false;
         }
         String string = nbt.getString(TITLE_KEY);
         if (string.length() > 32) {
             return false;
         }
-        return nbt.contains(AUTHOR_KEY, 8);
+        return nbt.contains(AUTHOR_KEY, NbtElement.STRING_TYPE);
     }
 
     public static int getGeneration(ItemStack stack) {
@@ -73,7 +74,7 @@ extends Item {
 
     public static int getPageCount(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
-        return nbtCompound != null ? nbtCompound.getList(PAGES_KEY, 8).size() : 0;
+        return nbtCompound != null ? nbtCompound.getList(PAGES_KEY, NbtElement.STRING_TYPE).size() : 0;
     }
 
     @Override
@@ -126,11 +127,11 @@ extends Item {
         if (!WrittenBookItem.isValid(nbtCompound)) {
             return false;
         }
-        NbtList nbtList = nbtCompound.getList(PAGES_KEY, 8);
+        NbtList nbtList = nbtCompound.getList(PAGES_KEY, NbtElement.STRING_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             nbtList.set(i, NbtString.of(WrittenBookItem.textToJson(commandSource, player, nbtList.getString(i))));
         }
-        if (nbtCompound.contains(FILTERED_PAGES_KEY, 10)) {
+        if (nbtCompound.contains(FILTERED_PAGES_KEY, NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound2 = nbtCompound.getCompound(FILTERED_PAGES_KEY);
             for (String string : nbtCompound2.getKeys()) {
                 nbtCompound2.putString(string, WrittenBookItem.textToJson(commandSource, player, nbtCompound2.getString(string)));

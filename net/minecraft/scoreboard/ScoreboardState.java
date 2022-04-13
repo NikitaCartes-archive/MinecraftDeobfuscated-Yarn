@@ -5,6 +5,7 @@ package net.minecraft.scoreboard;
 
 import java.util.Collection;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -27,13 +28,13 @@ extends PersistentState {
     }
 
     public ScoreboardState readNbt(NbtCompound nbt) {
-        this.readObjectivesNbt(nbt.getList("Objectives", 10));
-        this.scoreboard.readNbt(nbt.getList("PlayerScores", 10));
-        if (nbt.contains("DisplaySlots", 10)) {
+        this.readObjectivesNbt(nbt.getList("Objectives", NbtElement.COMPOUND_TYPE));
+        this.scoreboard.readNbt(nbt.getList("PlayerScores", NbtElement.COMPOUND_TYPE));
+        if (nbt.contains("DisplaySlots", NbtElement.COMPOUND_TYPE)) {
             this.readDisplaySlotsNbt(nbt.getCompound("DisplaySlots"));
         }
-        if (nbt.contains("Teams", 9)) {
-            this.readTeamsNbt(nbt.getList("Teams", 10));
+        if (nbt.contains("Teams", NbtElement.LIST_TYPE)) {
+            this.readTeamsNbt(nbt.getList("Teams", NbtElement.COMPOUND_TYPE));
         }
         return this;
     }
@@ -50,31 +51,31 @@ extends PersistentState {
             if (text != null) {
                 team.setDisplayName(text);
             }
-            if (nbtCompound.contains("TeamColor", 8)) {
+            if (nbtCompound.contains("TeamColor", NbtElement.STRING_TYPE)) {
                 team.setColor(Formatting.byName(nbtCompound.getString("TeamColor")));
             }
-            if (nbtCompound.contains("AllowFriendlyFire", 99)) {
+            if (nbtCompound.contains("AllowFriendlyFire", NbtElement.NUMBER_TYPE)) {
                 team.setFriendlyFireAllowed(nbtCompound.getBoolean("AllowFriendlyFire"));
             }
-            if (nbtCompound.contains("SeeFriendlyInvisibles", 99)) {
+            if (nbtCompound.contains("SeeFriendlyInvisibles", NbtElement.NUMBER_TYPE)) {
                 team.setShowFriendlyInvisibles(nbtCompound.getBoolean("SeeFriendlyInvisibles"));
             }
-            if (nbtCompound.contains("MemberNamePrefix", 8) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"))) != null) {
+            if (nbtCompound.contains("MemberNamePrefix", NbtElement.STRING_TYPE) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"))) != null) {
                 team.setPrefix(text2);
             }
-            if (nbtCompound.contains("MemberNameSuffix", 8) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"))) != null) {
+            if (nbtCompound.contains("MemberNameSuffix", NbtElement.STRING_TYPE) && (text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"))) != null) {
                 team.setSuffix(text2);
             }
-            if (nbtCompound.contains("NameTagVisibility", 8) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"))) != null) {
+            if (nbtCompound.contains("NameTagVisibility", NbtElement.STRING_TYPE) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"))) != null) {
                 team.setNameTagVisibilityRule(visibilityRule);
             }
-            if (nbtCompound.contains("DeathMessageVisibility", 8) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"))) != null) {
+            if (nbtCompound.contains("DeathMessageVisibility", NbtElement.STRING_TYPE) && (visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"))) != null) {
                 team.setDeathMessageVisibilityRule(visibilityRule);
             }
-            if (nbtCompound.contains("CollisionRule", 8) && (collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"))) != null) {
+            if (nbtCompound.contains("CollisionRule", NbtElement.STRING_TYPE) && (collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"))) != null) {
                 team.setCollisionRule(collisionRule);
             }
-            this.readTeamPlayersNbt(team, nbtCompound.getList("Players", 8));
+            this.readTeamPlayersNbt(team, nbtCompound.getList("Players", NbtElement.STRING_TYPE));
         }
     }
 
@@ -86,7 +87,7 @@ extends PersistentState {
 
     private void readDisplaySlotsNbt(NbtCompound nbt) {
         for (int i = 0; i < 19; ++i) {
-            if (!nbt.contains("slot_" + i, 8)) continue;
+            if (!nbt.contains("slot_" + i, NbtElement.STRING_TYPE)) continue;
             String string = nbt.getString("slot_" + i);
             ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
             this.scoreboard.setObjectiveSlot(i, scoreboardObjective);

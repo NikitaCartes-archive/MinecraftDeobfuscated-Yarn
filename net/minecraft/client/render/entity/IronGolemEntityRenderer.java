@@ -24,7 +24,7 @@ extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>
     public IronGolemEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new IronGolemEntityModel(context.getPart(EntityModelLayers.IRON_GOLEM)), 0.7f);
         this.addFeature(new IronGolemCrackFeatureRenderer(this));
-        this.addFeature(new IronGolemFlowerFeatureRenderer(this));
+        this.addFeature(new IronGolemFlowerFeatureRenderer(this, context.getBlockRenderManager()));
     }
 
     @Override

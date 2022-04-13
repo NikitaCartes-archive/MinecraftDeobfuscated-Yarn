@@ -11,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.CommandOutput;
@@ -75,7 +76,7 @@ extends BlockEntity {
             String string = nbt.getString(TEXT_KEYS[i]);
             this.texts[i] = text = this.parseTextFromJson(string);
             String string2 = FILTERED_TEXT_KEYS[i];
-            this.filteredTexts[i] = nbt.contains(string2, 8) ? this.parseTextFromJson(nbt.getString(string2)) : text;
+            this.filteredTexts[i] = nbt.contains(string2, NbtElement.STRING_TYPE) ? this.parseTextFromJson(nbt.getString(string2)) : text;
         }
         this.textsBeingEdited = null;
         this.glowingText = nbt.getBoolean("GlowingText");

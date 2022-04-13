@@ -84,7 +84,7 @@ extends FishEntity {
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         this.world.getProfiler().push("tadpoleActivityUpdate");
-        TadpoleBrain.method_41401(this);
+        TadpoleBrain.updateActivities(this);
         this.world.getProfiler().pop();
         super.mobTick();
     }
@@ -182,7 +182,7 @@ extends FishEntity {
     }
 
     @Override
-    public SoundEvent getBucketedSound() {
+    public SoundEvent getBucketFillSound() {
         return SoundEvents.ITEM_BUCKET_FILL_TADPOLE;
     }
 

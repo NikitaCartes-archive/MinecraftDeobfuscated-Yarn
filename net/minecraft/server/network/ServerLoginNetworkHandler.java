@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -34,6 +33,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.AbstractRandom;
 import org.apache.commons.lang3.Validate;
@@ -258,7 +258,7 @@ implements ServerLoginPacketListener {
     }
 
     protected GameProfile toOfflineProfile(GameProfile profile) {
-        UUID uUID = PlayerEntity.getOfflinePlayerUuid(profile.getName());
+        UUID uUID = DynamicSerializableUuid.getOfflinePlayerUuid(profile.getName());
         return new GameProfile(uUID, profile.getName());
     }
 

@@ -7,18 +7,13 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.treedecorator.TreeDecorator;
 import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
@@ -43,27 +38,26 @@ extends TreeDecorator {
     }
 
     @Override
-    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, List<BlockPos> logPositions, List<BlockPos> leavesPositions, List<BlockPos> rootPositions) {
+    public void generate(TreeDecorator.Generator generator) {
         HashSet<BlockPos> set = new HashSet<BlockPos>();
-        ArrayList<BlockPos> list = new ArrayList<BlockPos>(leavesPositions);
-        Util.shuffle(list, random);
-        for (BlockPos blockPos : list) {
+        AbstractRandom abstractRandom = generator.getRandom();
+        for (BlockPos blockPos : Util.copyShuffled(generator.getLeavesPositions(), abstractRandom)) {
             Direction direction;
-            BlockPos blockPos2 = blockPos.offset(direction = Util.getRandom(this.directions, random));
-            if (set.contains(blockPos2) || !(random.nextFloat() < this.probability) || !this.meetsRequiredEmptyBlocks(world, blockPos, direction)) continue;
+            BlockPos blockPos2 = blockPos.offset(direction = Util.getRandom(this.directions, abstractRandom));
+            if (set.contains(blockPos2) || !(abstractRandom.nextFloat() < this.probability) || !this.meetsRequiredEmptyBlocks(generator, blockPos, direction)) continue;
             BlockPos blockPos3 = blockPos2.add(-this.exclusionRadiusXZ, -this.exclusionRadiusY, -this.exclusionRadiusXZ);
             BlockPos blockPos4 = blockPos2.add(this.exclusionRadiusXZ, this.exclusionRadiusY, this.exclusionRadiusXZ);
             for (BlockPos blockPos5 : BlockPos.iterate(blockPos3, blockPos4)) {
                 set.add(blockPos5.toImmutable());
             }
-            replacer.accept(blockPos2, this.blockProvider.getBlockState(random, blockPos2));
+            generator.replace(blockPos2, this.blockProvider.getBlockState(abstractRandom, blockPos2));
         }
     }
 
-    private boolean meetsRequiredEmptyBlocks(TestableWorld world, BlockPos pos, Direction direction) {
+    private boolean meetsRequiredEmptyBlocks(TreeDecorator.Generator generator, BlockPos pos, Direction direction) {
         for (int i = 1; i <= this.requiredEmptyBlocks; ++i) {
             BlockPos blockPos = pos.offset(direction, i);
-            if (Feature.isAir(world, blockPos)) continue;
+            if (generator.isAir(blockPos)) continue;
             return false;
         }
         return true;

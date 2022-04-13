@@ -42,6 +42,7 @@ public class ParticleTypes {
     public static final DefaultParticleType ENTITY_EFFECT = ParticleTypes.register("entity_effect", false);
     public static final DefaultParticleType EXPLOSION_EMITTER = ParticleTypes.register("explosion_emitter", true);
     public static final DefaultParticleType EXPLOSION = ParticleTypes.register("explosion", true);
+    public static final DefaultParticleType SONIC_BOOM = ParticleTypes.register("sonic_boom", true);
     public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = ParticleTypes.register("falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec);
     public static final DefaultParticleType FIREWORK = ParticleTypes.register("firework", false);
     public static final DefaultParticleType FISHING = ParticleTypes.register("fishing", false);

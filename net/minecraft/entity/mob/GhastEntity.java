@@ -24,6 +24,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -139,7 +140,7 @@ implements Monster {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("ExplosionPower", 99)) {
+        if (nbt.contains("ExplosionPower", NbtElement.NUMBER_TYPE)) {
             this.fireballStrength = nbt.getByte("ExplosionPower");
         }
     }

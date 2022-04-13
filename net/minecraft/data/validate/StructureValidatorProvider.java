@@ -8,6 +8,7 @@ import net.minecraft.data.SnbtProvider;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.Structure;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ implements SnbtProvider.Tweaker {
     }
 
     private static NbtCompound addDataVersion(NbtCompound nbt) {
-        if (!nbt.contains("DataVersion", 99)) {
+        if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
             nbt.putInt("DataVersion", 500);
         }
         return nbt;

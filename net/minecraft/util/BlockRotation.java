@@ -3,7 +3,6 @@
  */
 package net.minecraft.util;
 
-import java.util.Arrays;
 import java.util.List;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
@@ -118,7 +117,7 @@ public enum BlockRotation {
     }
 
     public static List<BlockRotation> randomRotationOrder(AbstractRandom random) {
-        return Util.copyShuffled(Arrays.asList(BlockRotation.values()), random);
+        return Util.copyShuffled(BlockRotation.values(), random);
     }
 }
 

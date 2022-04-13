@@ -19,7 +19,7 @@ import net.minecraft.world.WorldView;
 
 public class FollowOwnerGoal
 extends Goal {
-    public static final int field_30205 = 12;
+    public static final int TELEPORT_DISTANCE = 12;
     private static final int HORIZONTAL_RANGE = 2;
     private static final int HORIZONTAL_VARIATION = 3;
     private static final int VERTICAL_VARIATION = 1;

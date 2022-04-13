@@ -29,6 +29,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -65,8 +66,11 @@ extends Entity {
     public static final int field_30697 = 0;
     public static final int field_30698 = 1;
     private static final int field_30695 = 60;
-    private static final float field_30696 = 0.3926991f;
-    public static final double field_30699 = 0.7853981852531433;
+    private static final float NEXT_PADDLE_PHASE = 0.3926991f;
+    /**
+     * A boat will emit a sound event every time a paddle is near this rotation.
+     */
+    public static final double EMIT_SOUND_EVENT_PADDLE_ROTATION = 0.7853981852531433;
     public static final int field_30700 = 60;
     private final float[] paddlePhases = new float[2];
     private float velocityDecay;
@@ -83,7 +87,7 @@ extends Entity {
     private boolean pressingForward;
     private boolean pressingBack;
     private double waterLevel;
-    private float field_7714;
+    private float nearbySlipperiness;
     private Location location;
     private Location lastLocation;
     private double fallVelocity;
@@ -278,7 +282,7 @@ extends Entity {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
         super.tick();
-        this.method_7555();
+        this.updatePositionAndRotation();
         if (this.isLogicalSideForUpdatingMovement()) {
             if (!(this.getFirstPassenger() instanceof PlayerEntity)) {
                 this.setPaddleMovings(false, false);
@@ -370,7 +374,7 @@ extends Entity {
         return null;
     }
 
-    private void method_7555() {
+    private void updatePositionAndRotation() {
         if (this.isLogicalSideForUpdatingMovement()) {
             this.field_7708 = 0;
             this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
@@ -410,15 +414,15 @@ extends Entity {
         if (this.checkBoatInWater()) {
             return Location.IN_WATER;
         }
-        float f = this.method_7548();
+        float f = this.getNearbySlipperiness();
         if (f > 0.0f) {
-            this.field_7714 = f;
+            this.nearbySlipperiness = f;
             return Location.ON_LAND;
         }
         return Location.IN_AIR;
     }
 
-    public float method_7544() {
+    public float getWaterHeightBelow() {
         Box box = this.getBoundingBox();
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.ceil(box.maxX);
@@ -445,7 +449,7 @@ extends Entity {
         return l + 1;
     }
 
-    public float method_7548() {
+    public float getNearbySlipperiness() {
         Box box = this.getBoundingBox();
         Box box2 = new Box(box.minX, box.minY - 0.001, box.minZ, box.maxX, box.minY, box.maxZ);
         int i = MathHelper.floor(box2.minX) - 1;
@@ -537,7 +541,7 @@ extends Entity {
         this.velocityDecay = 0.05f;
         if (this.lastLocation == Location.IN_AIR && this.location != Location.IN_AIR && this.location != Location.ON_LAND) {
             this.waterLevel = this.getBodyY(1.0);
-            this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
+            this.setPosition(this.getX(), (double)(this.getWaterHeightBelow() - this.getHeight()) + 0.101, this.getZ());
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallVelocity = 0.0;
             this.location = Location.IN_WATER;
@@ -554,9 +558,9 @@ extends Entity {
             } else if (this.location == Location.IN_AIR) {
                 this.velocityDecay = 0.9f;
             } else if (this.location == Location.ON_LAND) {
-                this.velocityDecay = this.field_7714;
+                this.velocityDecay = this.nearbySlipperiness;
                 if (this.getPrimaryPassenger() instanceof PlayerEntity) {
-                    this.field_7714 /= 2.0f;
+                    this.nearbySlipperiness /= 2.0f;
                 }
             }
             Vec3d vec3d = this.getVelocity();
@@ -673,7 +677,7 @@ extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        if (nbt.contains("Type", 8)) {
+        if (nbt.contains("Type", NbtElement.STRING_TYPE)) {
             this.setBoatType(Type.getType(nbt.getString("Type")));
         }
     }

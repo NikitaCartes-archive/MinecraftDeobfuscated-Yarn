@@ -102,7 +102,7 @@ extends AbstractNbtList<NbtLong> {
 
     @Override
     public byte getType() {
-        return 12;
+        return NbtElement.LONG_ARRAY_TYPE;
     }
 
     public NbtType<NbtLongArray> getNbtType() {
@@ -191,7 +191,7 @@ extends AbstractNbtList<NbtLong> {
 
     @Override
     public byte getHeldType() {
-        return 4;
+        return NbtElement.LONG_TYPE;
     }
 
     @Override

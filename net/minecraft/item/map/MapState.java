@@ -113,7 +113,7 @@ extends PersistentState {
         int i = nbt.getInt("xCenter");
         int j = nbt.getInt("zCenter");
         byte b = (byte)MathHelper.clamp((int)nbt.getByte("scale"), 0, 4);
-        boolean bl = !nbt.contains("trackingPosition", 1) || nbt.getBoolean("trackingPosition");
+        boolean bl = !nbt.contains("trackingPosition", NbtElement.BYTE_TYPE) || nbt.getBoolean("trackingPosition");
         boolean bl2 = nbt.getBoolean("unlimitedTracking");
         boolean bl3 = nbt.getBoolean("locked");
         MapState mapState = new MapState(i, j, b, bl, bl2, bl3, registryKey);
@@ -121,13 +121,13 @@ extends PersistentState {
         if (bs.length == 16384) {
             mapState.colors = bs;
         }
-        NbtList nbtList = nbt.getList("banners", 10);
+        NbtList nbtList = nbt.getList("banners", NbtElement.COMPOUND_TYPE);
         for (int k = 0; k < nbtList.size(); ++k) {
             MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(nbtList.getCompound(k));
             mapState.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
             mapState.addIcon(mapBannerMarker.getIconType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
         }
-        NbtList nbtList2 = nbt.getList("frames", 10);
+        NbtList nbtList2 = nbt.getList("frames", NbtElement.COMPOUND_TYPE);
         for (int l = 0; l < nbtList2.size(); ++l) {
             MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList2.getCompound(l));
             mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
@@ -215,8 +215,8 @@ extends PersistentState {
             this.addIcon(MapIcon.Type.FRAME, player.world, "frame-" + itemFrameEntity.getId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
-        if ((nbtCompound = stack.getNbt()) != null && nbtCompound.contains("Decorations", 9)) {
-            NbtList nbtList = nbtCompound.getList("Decorations", 10);
+        if ((nbtCompound = stack.getNbt()) != null && nbtCompound.contains("Decorations", NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbtCompound.getList("Decorations", NbtElement.COMPOUND_TYPE);
             for (int j = 0; j < nbtList.size(); ++j) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(j);
                 if (this.icons.containsKey(nbtCompound2.getString("id"))) continue;
@@ -235,8 +235,8 @@ extends PersistentState {
 
     public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
         NbtList nbtList;
-        if (stack.hasNbt() && stack.getNbt().contains("Decorations", 9)) {
-            nbtList = stack.getNbt().getList("Decorations", 10);
+        if (stack.hasNbt() && stack.getNbt().contains("Decorations", NbtElement.LIST_TYPE)) {
+            nbtList = stack.getNbt().getList("Decorations", NbtElement.COMPOUND_TYPE);
         } else {
             nbtList = new NbtList();
             stack.setSubNbt("Decorations", nbtList);

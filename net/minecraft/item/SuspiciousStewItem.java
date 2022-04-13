@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.world.World;
 
@@ -26,7 +27,7 @@ extends Item {
 
     public static void addEffectToStew(ItemStack stew, StatusEffect effect, int duration) {
         NbtCompound nbtCompound = stew.getOrCreateNbt();
-        NbtList nbtList = nbtCompound.getList(EFFECTS_KEY, 9);
+        NbtList nbtList = nbtCompound.getList(EFFECTS_KEY, NbtElement.LIST_TYPE);
         NbtCompound nbtCompound2 = new NbtCompound();
         nbtCompound2.putInt(EFFECT_ID_KEY, StatusEffect.getRawId(effect));
         nbtCompound2.putInt(EFFECT_DURATION_KEY, duration);
@@ -38,13 +39,13 @@ extends Item {
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         ItemStack itemStack = super.finishUsing(stack, world, user);
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains(EFFECTS_KEY, 9)) {
-            NbtList nbtList = nbtCompound.getList(EFFECTS_KEY, 10);
+        if (nbtCompound != null && nbtCompound.contains(EFFECTS_KEY, NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbtCompound.getList(EFFECTS_KEY, NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 StatusEffect statusEffect;
                 int j = 160;
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
-                if (nbtCompound2.contains(EFFECT_DURATION_KEY, 3)) {
+                if (nbtCompound2.contains(EFFECT_DURATION_KEY, NbtElement.INT_TYPE)) {
                     j = nbtCompound2.getInt(EFFECT_DURATION_KEY);
                 }
                 if ((statusEffect = StatusEffect.byRawId(nbtCompound2.getInt(EFFECT_ID_KEY))) == null) continue;

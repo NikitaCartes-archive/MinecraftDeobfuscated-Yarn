@@ -7,8 +7,10 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProvider;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.CarverDebugConfig;
@@ -20,14 +22,14 @@ extends CarverConfig {
     public final FloatProvider verticalRotation;
     public final Shape shape;
 
-    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig, FloatProvider verticalRotation, Shape shape) {
-        super(probability, y, yScale, lavaLevel, debugConfig);
+    public RavineCarverConfig(float probability, HeightProvider y, FloatProvider yScale, YOffset lavaLevel, CarverDebugConfig debugConfig, RegistryEntryList<Block> replaceable, FloatProvider verticalRotation, Shape shape) {
+        super(probability, y, yScale, lavaLevel, debugConfig, replaceable);
         this.verticalRotation = verticalRotation;
         this.shape = shape;
     }
 
     public RavineCarverConfig(CarverConfig config, FloatProvider verticalRotation, Shape shape) {
-        this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, verticalRotation, shape);
+        this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, config.replaceable, verticalRotation, shape);
     }
 
     public static class Shape {

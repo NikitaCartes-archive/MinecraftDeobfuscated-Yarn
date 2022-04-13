@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
@@ -135,7 +136,7 @@ extends AnimalEntity {
     public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
         if (goatEntity != null) {
-            GoatBrain.resetLongJumpCooldown(goatEntity);
+            GoatBrain.resetLongJumpCooldown(goatEntity, serverWorld.getRandom());
             boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
             goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
         }
@@ -193,8 +194,9 @@ extends AnimalEntity {
 
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        GoatBrain.resetLongJumpCooldown(this);
-        this.setScreaming(world.getRandom().nextDouble() < 0.02);
+        AbstractRandom abstractRandom = world.getRandom();
+        GoatBrain.resetLongJumpCooldown(this, abstractRandom);
+        this.setScreaming(abstractRandom.nextDouble() < 0.02);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -223,9 +225,9 @@ extends AnimalEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 58) {
+        if (status == EntityStatuses.PREPARE_RAM) {
             this.preparingRam = true;
-        } else if (status == 59) {
+        } else if (status == EntityStatuses.FINISH_RAM) {
             this.preparingRam = false;
         } else {
             super.handleStatus(status);

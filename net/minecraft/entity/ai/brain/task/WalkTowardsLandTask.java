@@ -21,10 +21,10 @@ import net.minecraft.util.math.Vec3i;
 
 public class WalkTowardsLandTask
 extends Task<PathAwareEntity> {
-    private static final int field_37433 = 60;
+    private static final int TASK_COOLDOWN = 60;
     private final int range;
     private final float speed;
-    private long field_37436;
+    private long walkTowardsLandTime;
 
     public WalkTowardsLandTask(int range, float speed) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
@@ -34,7 +34,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        this.field_37436 = l + 60L;
+        this.walkTowardsLandTime = l + 60L;
     }
 
     @Override
@@ -44,7 +44,7 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        if (l < this.field_37436) {
+        if (l < this.walkTowardsLandTime) {
             return;
         }
         BlockPos blockPos = pathAwareEntity.getBlockPos();
@@ -55,7 +55,7 @@ extends Task<PathAwareEntity> {
             BlockState blockState = serverWorld.getBlockState(blockPos2);
             BlockState blockState2 = serverWorld.getBlockState(mutable.set((Vec3i)blockPos2, Direction.DOWN));
             if (blockState.isOf(Blocks.WATER) || !serverWorld.getFluidState(blockPos2).isEmpty() || !blockState.getCollisionShape(serverWorld, blockPos2, shapeContext).isEmpty() || !blockState2.isSideSolidFullSquare(serverWorld, mutable, Direction.UP)) continue;
-            this.field_37436 = l + 60L;
+            this.walkTowardsLandTime = l + 60L;
             LookTargetUtil.walkTowards((LivingEntity)pathAwareEntity, blockPos2.toImmutable(), this.speed, 1);
             return;
         }

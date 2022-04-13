@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -10,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -52,6 +54,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -188,7 +191,7 @@ extends TameableEntity {
         if (catVariant != null) {
             this.setVariant(catVariant);
         }
-        if (nbt.contains("CollarColor", 99)) {
+        if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
             this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
         }
     }
@@ -359,7 +362,7 @@ extends TameableEntity {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         boolean bl = world.getMoonSize() > 0.9f;
         TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
-        Registry.CAT_VARIANT.getEntryList(tagKey).flatMap(list -> list.getRandom(this.random)).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
+        Registry.CAT_VARIANT.getEntryList(tagKey).flatMap(list -> list.getRandom(world.getRandom())).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
         ServerWorld serverWorld = world.toServerWorld();
         if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
             this.setVariant(CatVariant.ALL_BLACK);
@@ -415,9 +418,9 @@ extends TameableEntity {
             if (this.random.nextInt(3) == 0) {
                 this.setOwner(player);
                 this.setSitting(true);
-                this.world.sendEntityStatus(this, (byte)7);
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
             } else {
-                this.world.sendEntityStatus(this, (byte)6);
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
             }
             this.setPersistent();
             return ActionResult.CONSUME;
@@ -581,7 +584,7 @@ extends TameableEntity {
             mutable.set(this.cat.getBlockPos());
             LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
             LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world).parameter(LootContextParameters.ORIGIN, this.cat.getPos()).parameter(LootContextParameters.THIS_ENTITY, this.cat).random(abstractRandom);
-            List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
+            ObjectArrayList<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
             for (ItemStack itemStack : list) {
                 this.cat.world.spawnEntity(new ItemEntity(this.cat.world, (double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * ((float)Math.PI / 180)), mutable.getY(), (double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * ((float)Math.PI / 180)), itemStack));
             }

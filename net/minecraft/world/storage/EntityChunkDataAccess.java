@@ -19,6 +19,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
@@ -67,7 +68,7 @@ implements ChunkDataAccess<Entity> {
                 LOGGER.warn("Failed to parse chunk {} position info", (Object)pos, (Object)exception);
             }
             NbtCompound nbtCompound = this.fixChunkData((NbtCompound)compound);
-            NbtList nbtList = nbtCompound.getList(ENTITIES_KEY, 10);
+            NbtList nbtList = nbtCompound.getList(ENTITIES_KEY, NbtElement.COMPOUND_TYPE);
             List list = EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
             return new ChunkDataList(pos, list);
         }, this.taskExecutor::send);
@@ -125,7 +126,7 @@ implements ChunkDataAccess<Entity> {
     }
 
     public static int getChunkDataVersion(NbtCompound chunkNbt) {
-        return chunkNbt.contains("DataVersion", 99) ? chunkNbt.getInt("DataVersion") : -1;
+        return chunkNbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? chunkNbt.getInt("DataVersion") : -1;
     }
 
     @Override

@@ -177,7 +177,7 @@ implements NbtElement {
 
     @Override
     public byte getType() {
-        return 10;
+        return NbtElement.COMPOUND_TYPE;
     }
 
     public NbtType<NbtCompound> getNbtType() {
@@ -285,7 +285,7 @@ implements NbtElement {
     public byte getType(String key) {
         NbtElement nbtElement = this.entries.get(key);
         if (nbtElement == null) {
-            return 0;
+            return NbtElement.END_TYPE;
         }
         return nbtElement.getType();
     }
@@ -311,15 +311,15 @@ implements NbtElement {
         if (i == type) {
             return true;
         }
-        if (type == 99) {
-            return i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6;
+        if (type == NbtElement.NUMBER_TYPE) {
+            return i == NbtElement.BYTE_TYPE || i == NbtElement.SHORT_TYPE || i == NbtElement.INT_TYPE || i == NbtElement.LONG_TYPE || i == NbtElement.FLOAT_TYPE || i == NbtElement.DOUBLE_TYPE;
         }
         return false;
     }
 
     public byte getByte(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).byteValue();
             }
         } catch (ClassCastException classCastException) {
@@ -330,7 +330,7 @@ implements NbtElement {
 
     public short getShort(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).shortValue();
             }
         } catch (ClassCastException classCastException) {
@@ -341,7 +341,7 @@ implements NbtElement {
 
     public int getInt(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).intValue();
             }
         } catch (ClassCastException classCastException) {
@@ -352,7 +352,7 @@ implements NbtElement {
 
     public long getLong(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).longValue();
             }
         } catch (ClassCastException classCastException) {
@@ -363,7 +363,7 @@ implements NbtElement {
 
     public float getFloat(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).floatValue();
             }
         } catch (ClassCastException classCastException) {
@@ -374,7 +374,7 @@ implements NbtElement {
 
     public double getDouble(String key) {
         try {
-            if (this.contains(key, 99)) {
+            if (this.contains(key, NbtElement.NUMBER_TYPE)) {
                 return ((AbstractNbtNumber)this.entries.get(key)).doubleValue();
             }
         } catch (ClassCastException classCastException) {
@@ -385,7 +385,7 @@ implements NbtElement {
 
     public String getString(String key) {
         try {
-            if (this.contains(key, 8)) {
+            if (this.contains(key, NbtElement.STRING_TYPE)) {
                 return this.entries.get(key).asString();
             }
         } catch (ClassCastException classCastException) {
@@ -396,7 +396,7 @@ implements NbtElement {
 
     public byte[] getByteArray(String key) {
         try {
-            if (this.contains(key, 7)) {
+            if (this.contains(key, NbtElement.BYTE_ARRAY_TYPE)) {
                 return ((NbtByteArray)this.entries.get(key)).getByteArray();
             }
         } catch (ClassCastException classCastException) {
@@ -407,7 +407,7 @@ implements NbtElement {
 
     public int[] getIntArray(String key) {
         try {
-            if (this.contains(key, 11)) {
+            if (this.contains(key, NbtElement.INT_ARRAY_TYPE)) {
                 return ((NbtIntArray)this.entries.get(key)).getIntArray();
             }
         } catch (ClassCastException classCastException) {
@@ -418,7 +418,7 @@ implements NbtElement {
 
     public long[] getLongArray(String key) {
         try {
-            if (this.contains(key, 12)) {
+            if (this.contains(key, NbtElement.LONG_ARRAY_TYPE)) {
                 return ((NbtLongArray)this.entries.get(key)).getLongArray();
             }
         } catch (ClassCastException classCastException) {
@@ -429,7 +429,7 @@ implements NbtElement {
 
     public NbtCompound getCompound(String key) {
         try {
-            if (this.contains(key, 10)) {
+            if (this.contains(key, NbtElement.COMPOUND_TYPE)) {
                 return (NbtCompound)this.entries.get(key);
             }
         } catch (ClassCastException classCastException) {
@@ -440,7 +440,7 @@ implements NbtElement {
 
     public NbtList getList(String key, int type) {
         try {
-            if (this.getType(key) == 9) {
+            if (this.getType(key) == NbtElement.LIST_TYPE) {
                 NbtList nbtList = (NbtList)this.entries.get(key);
                 if (nbtList.isEmpty() || nbtList.getHeldType() == type) {
                     return nbtList;
@@ -528,8 +528,8 @@ implements NbtElement {
     public NbtCompound copyFrom(NbtCompound source) {
         for (String string : source.entries.keySet()) {
             NbtElement nbtElement = source.entries.get(string);
-            if (nbtElement.getType() == 10) {
-                if (this.contains(string, 10)) {
+            if (nbtElement.getType() == NbtElement.COMPOUND_TYPE) {
+                if (this.contains(string, NbtElement.COMPOUND_TYPE)) {
                     NbtCompound nbtCompound = this.getCompound(string);
                     nbtCompound.copyFrom((NbtCompound)nbtElement);
                     continue;

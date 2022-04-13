@@ -6,6 +6,7 @@ package net.minecraft.entity.mob;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -104,7 +105,7 @@ extends Entity {
                 }
             }
             if (!this.startedAttack) {
-                this.world.sendEntityStatus(this, (byte)4);
+                this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
                 this.startedAttack = true;
             }
             if (--this.ticksLeft < 0) {
@@ -131,7 +132,7 @@ extends Entity {
     @Override
     public void handleStatus(byte status) {
         super.handleStatus(status);
-        if (status == 4) {
+        if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
             this.playingAnimation = true;
             if (!this.isSilent()) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_EVOKER_FANGS_ATTACK, this.getSoundCategory(), 1.0f, this.random.nextFloat() * 0.2f + 0.85f, false);

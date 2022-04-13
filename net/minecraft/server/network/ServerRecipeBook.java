@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
@@ -82,9 +83,9 @@ extends RecipeBook {
 
     public void readNbt(NbtCompound nbt, RecipeManager recipeManager) {
         this.setOptions(RecipeBookOptions.fromNbt(nbt));
-        NbtList nbtList = nbt.getList("recipes", 8);
+        NbtList nbtList = nbt.getList("recipes", NbtElement.STRING_TYPE);
         this.handleList(nbtList, this::add, recipeManager);
-        NbtList nbtList2 = nbt.getList("toBeDisplayed", 8);
+        NbtList nbtList2 = nbt.getList("toBeDisplayed", NbtElement.STRING_TYPE);
         this.handleList(nbtList2, this::display, recipeManager);
     }
 

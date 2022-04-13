@@ -3,11 +3,11 @@
  */
 package net.minecraft.world.explosion;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +62,7 @@ public class Explosion {
     private final float power;
     private final DamageSource damageSource;
     private final ExplosionBehavior behavior;
-    private final List<BlockPos> affectedBlocks = Lists.newArrayList();
+    private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList();
     private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.newHashMap();
 
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {
@@ -75,7 +75,7 @@ public class Explosion {
 
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType, List<BlockPos> affectedBlocks) {
         this(world, entity, x, y, z, power, createFire, destructionType);
-        this.affectedBlocks.addAll(affectedBlocks);
+        this.affectedBlocks.addAll((Collection<BlockPos>)affectedBlocks);
     }
 
     public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
@@ -168,7 +168,7 @@ public class Explosion {
                 }
             }
         }
-        this.affectedBlocks.addAll(set);
+        this.affectedBlocks.addAll((Collection<BlockPos>)set);
         float q = this.power * 2.0f;
         k = MathHelper.floor(this.x - (double)q - 1.0);
         l = MathHelper.floor(this.x + (double)q + 1.0);

@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +28,7 @@ extends CoralFeature {
         }
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         int i = random.nextInt(2) + 2;
-        List<Direction> list = Util.copyShuffled(List.of(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise()), random);
+        List<Direction> list = Util.copyShuffled(Stream.of(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise()), random);
         List<Direction> list2 = list.subList(0, i);
         block0: for (Direction direction2 : list2) {
             int l;

@@ -13,6 +13,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -230,7 +231,7 @@ public class LootCommand {
         builder.parameter(LootContextParameters.THIS_ENTITY, entity);
         builder.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
         LootTable lootTable = serverCommandSource.getServer().getLootManager().getTable(identifier);
-        List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
+        ObjectArrayList<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
         return constructor.accept(context, list, stacks -> LootCommand.sendDroppedFeedback(serverCommandSource, stacks, identifier));
     }
 
@@ -249,7 +250,7 @@ public class LootCommand {
     private static int getFeedbackMessageSingle(CommandContext<ServerCommandSource> context, Identifier lootTable, LootContext lootContext, Target constructor) throws CommandSyntaxException {
         ServerCommandSource serverCommandSource = context.getSource();
         LootTable lootTable2 = serverCommandSource.getServer().getLootManager().getTable(lootTable);
-        List<ItemStack> list = lootTable2.generateLoot(lootContext);
+        ObjectArrayList<ItemStack> list = lootTable2.generateLoot(lootContext);
         return constructor.accept(context, list, stacks -> LootCommand.sendDroppedFeedback(serverCommandSource, stacks));
     }
 

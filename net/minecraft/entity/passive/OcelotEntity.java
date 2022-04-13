@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -187,10 +188,10 @@ extends AnimalEntity {
                 if (this.random.nextInt(3) == 0) {
                     this.setTrusting(true);
                     this.showEmoteParticle(true);
-                    this.world.sendEntityStatus(this, (byte)41);
+                    this.world.sendEntityStatus(this, EntityStatuses.TAME_OCELOT_SUCCESS);
                 } else {
                     this.showEmoteParticle(false);
-                    this.world.sendEntityStatus(this, (byte)40);
+                    this.world.sendEntityStatus(this, EntityStatuses.TAME_OCELOT_FAILED);
                 }
             }
             return ActionResult.success(this.world.isClient);
@@ -200,9 +201,9 @@ extends AnimalEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 41) {
+        if (status == EntityStatuses.TAME_OCELOT_SUCCESS) {
             this.showEmoteParticle(true);
-        } else if (status == 40) {
+        } else if (status == EntityStatuses.TAME_OCELOT_FAILED) {
             this.showEmoteParticle(false);
         } else {
             super.handleStatus(status);

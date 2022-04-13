@@ -21,7 +21,6 @@ import java.util.function.Supplier;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
@@ -101,7 +100,7 @@ AutoCloseable {
             ChunkPos chunkPos22 = ChunkPos.fromRegionCenter(chunkX, chunkZ);
             BitSet bitSet = new BitSet();
             ChunkPos.stream(chunkPos2, chunkPos22).forEach(chunkPos -> {
-                SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new NbtScanQuery("Level", NbtInt.TYPE, "DataVersion"), new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery("Level", "blending_data", NbtString.TYPE, "old_noise"), new NbtScanQuery(NbtCompound.TYPE, "blending_data"));
+                SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery(NbtCompound.TYPE, "blending_data"));
                 this.scanChunk((ChunkPos)chunkPos, selectiveNbtCollector).join();
                 NbtElement nbtElement = selectiveNbtCollector.getRoot();
                 if (nbtElement instanceof NbtCompound) {
@@ -115,21 +114,10 @@ AutoCloseable {
     }
 
     private boolean needsBlending(NbtCompound nbt) {
-        NbtCompound nbtCompound;
-        if (nbt.contains("Level", 10) && ((nbtCompound = nbt.getCompound("Level")).contains("blending_data", 10) || nbtCompound.contains("DataVersion", 99))) {
-            nbt = nbtCompound;
-        }
-        if (nbt.contains("blending_data", 10)) {
-            nbtCompound = nbt.getCompound("blending_data");
-            if (nbtCompound.contains("old_noise", 99)) {
-                return nbtCompound.getBoolean("old_noise");
-            }
+        if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) || nbt.getInt("DataVersion") < 3088) {
             return true;
         }
-        if (nbt.contains("DataVersion", 99)) {
-            return nbt.getInt("DataVersion") < 2832;
-        }
-        return true;
+        return nbt.contains("blending_data", NbtElement.COMPOUND_TYPE);
     }
 
     public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {

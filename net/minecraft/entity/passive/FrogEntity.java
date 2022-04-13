@@ -14,6 +14,7 @@ import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -233,7 +234,7 @@ extends AnimalEntity {
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         FrogEntity frogEntity = EntityType.FROG.create(world);
         if (frogEntity != null) {
-            FrogBrain.coolDownLongJump(frogEntity);
+            FrogBrain.coolDownLongJump(frogEntity, world.getRandom());
         }
         return frogEntity;
     }
@@ -262,7 +263,7 @@ extends AnimalEntity {
         this.resetLoveTicks();
         other.resetLoveTicks();
         this.getBrain().remember(MemoryModuleType.IS_PREGNANT, Unit.INSTANCE);
-        world.sendEntityStatus(this, (byte)18);
+        world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
         if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
             world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
         }
@@ -278,7 +279,7 @@ extends AnimalEntity {
         } else {
             this.setVariant(FrogVariant.TEMPERATE);
         }
-        FrogBrain.coolDownLongJump(this);
+        FrogBrain.coolDownLongJump(this, world.getRandom());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 

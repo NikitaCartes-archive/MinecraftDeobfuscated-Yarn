@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -128,7 +129,7 @@ extends Item {
         if (k == 0) {
             return 0;
         }
-        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
         Optional<NbtCompound> optional = BundleItem.canMergeStack(stack, nbtList);
         if (optional.isPresent()) {
             NbtCompound nbtCompound2 = optional.get();
@@ -159,7 +160,7 @@ extends Item {
         if (stack.isOf(Items.BUNDLE)) {
             return 4 + BundleItem.getBundleOccupancy(stack);
         }
-        if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasNbt() && (nbtCompound = BlockItem.getBlockEntityNbt(stack)) != null && !nbtCompound.getList("Bees", 10).isEmpty()) {
+        if ((stack.isOf(Items.BEEHIVE) || stack.isOf(Items.BEE_NEST)) && stack.hasNbt() && (nbtCompound = BlockItem.getBlockEntityNbt(stack)) != null && !nbtCompound.getList("Bees", NbtElement.COMPOUND_TYPE).isEmpty()) {
             return 64;
         }
         return 64 / stack.getMaxCount();
@@ -174,7 +175,7 @@ extends Item {
         if (!nbtCompound.contains(ITEMS_KEY)) {
             return Optional.empty();
         }
-        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
         if (nbtList.isEmpty()) {
             return Optional.empty();
         }
@@ -194,7 +195,7 @@ extends Item {
             return false;
         }
         if (player instanceof ServerPlayerEntity) {
-            NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
+            NbtList nbtList = nbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound2 = nbtList.getCompound(i);
                 ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
@@ -210,7 +211,7 @@ extends Item {
         if (nbtCompound == null) {
             return Stream.empty();
         }
-        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, 10);
+        NbtList nbtList = nbtCompound.getList(ITEMS_KEY, NbtElement.COMPOUND_TYPE);
         return nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt);
     }
 

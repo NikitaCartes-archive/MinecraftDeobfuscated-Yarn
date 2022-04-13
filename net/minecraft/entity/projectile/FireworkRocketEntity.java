@@ -6,6 +6,7 @@ package net.minecraft.entity.projectile;
 import java.util.List;
 import java.util.OptionalInt;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -19,6 +20,7 @@ import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -153,7 +155,7 @@ implements FlyingItemEntity {
     }
 
     private void explodeAndRemove() {
-        this.world.sendEntityStatus(this, (byte)17);
+        this.world.sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
         this.emitGameEvent(GameEvent.EXPLODE, this.getOwner());
         this.explode();
         this.discard();
@@ -181,7 +183,7 @@ implements FlyingItemEntity {
     private boolean hasExplosionEffects() {
         ItemStack itemStack = this.dataTracker.get(ITEM);
         NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
-        NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
+        NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
         return nbtList != null && !nbtList.isEmpty();
     }
 
@@ -190,7 +192,7 @@ implements FlyingItemEntity {
         float f = 0.0f;
         ItemStack itemStack = this.dataTracker.get(ITEM);
         NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
-        NbtList nbtList2 = nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
+        NbtList nbtList2 = nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtElement.COMPOUND_TYPE) : null;
         if (nbtList != null && !nbtList.isEmpty()) {
             f = 5.0f + (float)(nbtList.size() * 2);
         }
@@ -228,7 +230,7 @@ implements FlyingItemEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 17 && this.world.isClient) {
+        if (status == EntityStatuses.EXPLODE_FIREWORK_CLIENT && this.world.isClient) {
             if (!this.hasExplosionEffects()) {
                 for (int i = 0; i < this.random.nextInt(3) + 2; ++i) {
                     this.world.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);

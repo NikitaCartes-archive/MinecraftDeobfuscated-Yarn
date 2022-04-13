@@ -11,6 +11,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -26,6 +27,7 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -208,14 +210,14 @@ extends LivingEntity {
         int i;
         NbtList nbtList;
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("ArmorItems", 9)) {
-            nbtList = nbt.getList("ArmorItems", 10);
+        if (nbt.contains("ArmorItems", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("ArmorItems", NbtElement.COMPOUND_TYPE);
             for (i = 0; i < this.armorItems.size(); ++i) {
                 this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
         }
-        if (nbt.contains("HandItems", 9)) {
-            nbtList = nbt.getList("HandItems", 10);
+        if (nbt.contains("HandItems", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
             for (i = 0; i < this.heldItems.size(); ++i) {
                 this.heldItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
@@ -232,17 +234,17 @@ extends LivingEntity {
     }
 
     private void readPoseNbt(NbtCompound nbt) {
-        NbtList nbtList = nbt.getList("Head", 5);
+        NbtList nbtList = nbt.getList("Head", NbtElement.FLOAT_TYPE);
         this.setHeadRotation(nbtList.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerAngle(nbtList));
-        NbtList nbtList2 = nbt.getList("Body", 5);
+        NbtList nbtList2 = nbt.getList("Body", NbtElement.FLOAT_TYPE);
         this.setBodyRotation(nbtList2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerAngle(nbtList2));
-        NbtList nbtList3 = nbt.getList("LeftArm", 5);
+        NbtList nbtList3 = nbt.getList("LeftArm", NbtElement.FLOAT_TYPE);
         this.setLeftArmRotation(nbtList3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerAngle(nbtList3));
-        NbtList nbtList4 = nbt.getList("RightArm", 5);
+        NbtList nbtList4 = nbt.getList("RightArm", NbtElement.FLOAT_TYPE);
         this.setRightArmRotation(nbtList4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerAngle(nbtList4));
-        NbtList nbtList5 = nbt.getList("LeftLeg", 5);
+        NbtList nbtList5 = nbt.getList("LeftLeg", NbtElement.FLOAT_TYPE);
         this.setLeftLegRotation(nbtList5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerAngle(nbtList5));
-        NbtList nbtList6 = nbt.getList("RightLeg", 5);
+        NbtList nbtList6 = nbt.getList("RightLeg", NbtElement.FLOAT_TYPE);
         this.setRightLegRotation(nbtList6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerAngle(nbtList6));
     }
 
@@ -441,7 +443,7 @@ extends LivingEntity {
             this.spawnBreakParticles();
             this.kill();
         } else {
-            this.world.sendEntityStatus(this, (byte)32);
+            this.world.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
             this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
             this.lastHitTime = l;
         }
@@ -450,7 +452,7 @@ extends LivingEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 32) {
+        if (status == EntityStatuses.HIT_ARMOR_STAND) {
             if (this.world.isClient) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ARMOR_STAND_HIT, this.getSoundCategory(), 0.3f, 1.0f, false);
                 this.lastHitTime = this.world.getTime();

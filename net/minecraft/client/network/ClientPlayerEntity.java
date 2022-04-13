@@ -43,6 +43,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
@@ -483,8 +484,8 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status >= 24 && status <= 28) {
-            this.setClientPermissionLevel(status - 24);
+        if (status >= EntityStatuses.SET_OP_LEVEL_0 && status <= EntityStatuses.SET_OP_LEVEL_4) {
+            this.setClientPermissionLevel(status - EntityStatuses.SET_OP_LEVEL_0);
         } else {
             super.handleStatus(status);
         }

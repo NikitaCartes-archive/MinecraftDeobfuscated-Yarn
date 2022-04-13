@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 
@@ -23,7 +24,7 @@ implements Clearable {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        if (nbt.contains("RecordItem", 10)) {
+        if (nbt.contains("RecordItem", NbtElement.COMPOUND_TYPE)) {
             this.setRecord(ItemStack.fromNbt(nbt.getCompound("RecordItem")));
         }
     }

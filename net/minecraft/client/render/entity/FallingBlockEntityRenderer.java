@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -25,9 +24,12 @@ import net.minecraft.world.World;
 @Environment(value=EnvType.CLIENT)
 public class FallingBlockEntityRenderer
 extends EntityRenderer<FallingBlockEntity> {
+    private final BlockRenderManager field_38890;
+
     public FallingBlockEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
         this.shadowRadius = 0.5f;
+        this.field_38890 = context.getBlockRenderManager();
     }
 
     @Override
@@ -43,8 +45,7 @@ extends EntityRenderer<FallingBlockEntity> {
         matrixStack.push();
         BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.getZ());
         matrixStack.translate(-0.5, 0.0, -0.5);
-        BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-        blockRenderManager.getModelRenderer().render(world, blockRenderManager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(blockState)), false, AbstractRandom.createAtomic(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()), OverlayTexture.DEFAULT_UV);
+        this.field_38890.getModelRenderer().render(world, this.field_38890.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumerProvider.getBuffer(RenderLayers.getMovingBlockLayer(blockState)), false, AbstractRandom.createAtomic(), blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos()), OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
         super.render(fallingBlockEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }

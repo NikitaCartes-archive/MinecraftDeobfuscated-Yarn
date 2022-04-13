@@ -17,7 +17,7 @@ public abstract class IllagerEntityRenderer<T extends IllagerEntity>
 extends MobEntityRenderer<T, IllagerEntityModel<T>> {
     protected IllagerEntityRenderer(EntityRendererFactory.Context ctx, IllagerEntityModel<T> model, float shadowRadius) {
         super(ctx, model, shadowRadius);
-        this.addFeature(new HeadFeatureRenderer(this, ctx.getModelLoader()));
+        this.addFeature(new HeadFeatureRenderer(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
     }
 
     @Override

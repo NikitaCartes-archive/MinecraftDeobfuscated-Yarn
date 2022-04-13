@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -80,7 +81,7 @@ public class FeatureUpdater {
         NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
         for (String string : this.field_17659) {
             boolean bl = field_37194.contains(string.toLowerCase(Locale.ROOT));
-            if (nbtCompound3.contains(string, 12) || !bl) continue;
+            if (nbtCompound3.contains(string, NbtElement.LONG_ARRAY_TYPE) || !bl) continue;
             int i = 8;
             LongArrayList longList = new LongArrayList();
             for (int j = chunkPos.x - 8; j <= chunkPos.x + 8; ++j) {
@@ -152,7 +153,7 @@ public class FeatureUpdater {
                 String string4;
                 NbtCompound nbtCompound2 = nbtCompound.getCompound(string22);
                 long l = ChunkPos.toLong(nbtCompound2.getInt("ChunkX"), nbtCompound2.getInt("ChunkZ"));
-                NbtList nbtList = nbtCompound2.getList("Children", 10);
+                NbtList nbtList = nbtCompound2.getList("Children", NbtElement.COMPOUND_TYPE);
                 if (!nbtList.isEmpty() && (string4 = ANCIENT_TO_OLD.get(string3 = nbtList.getCompound(0).getString("id"))) != null) {
                     nbtCompound2.putString("id", string4);
                 }

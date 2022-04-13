@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.world.PersistentState;
@@ -89,7 +90,7 @@ public class PersistentStateManager {
                         nbtCompound2 = NbtIo.read(dataInputStream);
                     }
                 }
-                int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : 1343;
+                int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : 1343;
                 nbtCompound = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, nbtCompound2, i, dataVersion);
             }
             return nbtCompound;

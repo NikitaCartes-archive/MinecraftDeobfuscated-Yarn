@@ -16,6 +16,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -74,10 +75,10 @@ extends Entity {
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        if (nbt.contains("BeamTarget", 10)) {
+        if (nbt.contains("BeamTarget", NbtElement.COMPOUND_TYPE)) {
             this.setBeamTarget(NbtHelper.toBlockPos(nbt.getCompound("BeamTarget")));
         }
-        if (nbt.contains("ShowBottom", 1)) {
+        if (nbt.contains("ShowBottom", NbtElement.BYTE_TYPE)) {
             this.setShowBottom(nbt.getBoolean("ShowBottom"));
         }
     }

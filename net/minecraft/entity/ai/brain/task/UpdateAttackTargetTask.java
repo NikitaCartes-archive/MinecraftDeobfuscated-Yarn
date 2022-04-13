@@ -47,12 +47,12 @@ extends Task<E> {
 
     @Override
     protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-        this.targetGetter.apply(mobEntity).ifPresent(target -> this.updateAttackTarget(mobEntity, (LivingEntity)target));
+        this.targetGetter.apply(mobEntity).ifPresent(target -> UpdateAttackTargetTask.updateAttackTarget(mobEntity, target));
     }
 
-    private void updateAttackTarget(E entity, LivingEntity target) {
-        ((LivingEntity)entity).getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
-        ((LivingEntity)entity).getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
+    public static <E extends MobEntity> void updateAttackTarget(E entity, LivingEntity target) {
+        entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
+        entity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
     }
 }
 

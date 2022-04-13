@@ -26,7 +26,7 @@ extends IllagerEntityRenderer<IllusionerEntity> {
 
     public IllusionerEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.ILLUSIONER)), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<IllusionerEntity, IllagerEntityModel<IllusionerEntity>>((FeatureRendererContext)this){
+        this.addFeature(new HeldItemFeatureRenderer<IllusionerEntity, IllagerEntityModel<IllusionerEntity>>((FeatureRendererContext)this, context.getHeldItemRenderer()){
 
             @Override
             public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, IllusionerEntity illusionerEntity, float f, float g, float h, float j, float k, float l) {

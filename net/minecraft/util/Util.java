@@ -15,6 +15,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -715,13 +717,35 @@ public class Util {
         };
     }
 
-    public static <T> List<T> copyShuffled(List<T> list, AbstractRandom random) {
-        ArrayList<T> list2 = new ArrayList<T>(list);
-        Util.shuffle(list2, random);
-        return list2;
+    public static <T> List<T> copyShuffled(Stream<T> stream, AbstractRandom random) {
+        ObjectArrayList objectArrayList = stream.collect(ObjectArrayList.toList());
+        Util.shuffle(objectArrayList, random);
+        return objectArrayList;
     }
 
-    public static <T> void shuffle(List<T> list, AbstractRandom random) {
+    public static IntArrayList shuffle(IntStream stream, AbstractRandom random) {
+        int i;
+        IntArrayList intArrayList = IntArrayList.wrap(stream.toArray());
+        for (int j = i = intArrayList.size(); j > 1; --j) {
+            int k = random.nextInt(j);
+            intArrayList.set(j - 1, intArrayList.set(k, intArrayList.getInt(j - 1)));
+        }
+        return intArrayList;
+    }
+
+    public static <T> List<T> copyShuffled(T[] array, AbstractRandom random) {
+        ObjectArrayList<T> objectArrayList = new ObjectArrayList<T>(array);
+        Util.shuffle(objectArrayList, random);
+        return objectArrayList;
+    }
+
+    public static <T> List<T> copyShuffled(ObjectArrayList<T> list, AbstractRandom random) {
+        ObjectArrayList<T> objectArrayList = new ObjectArrayList<T>(list);
+        Util.shuffle(objectArrayList, random);
+        return objectArrayList;
+    }
+
+    public static <T> void shuffle(ObjectArrayList<T> list, AbstractRandom random) {
         int i;
         for (int j = i = list.size(); j > 1; --j) {
             int k = random.nextInt(j);

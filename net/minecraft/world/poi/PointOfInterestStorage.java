@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
@@ -111,7 +110,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, OccupationStatus occupationStatus, BlockPos pos, int radius, AbstractRandom random) {
-        List list = Util.copyShuffled(this.getInCircle(typePredicate, pos, radius, occupationStatus).collect(Collectors.toList()), random);
+        List<PointOfInterest> list = Util.copyShuffled(this.getInCircle(typePredicate, pos, radius, occupationStatus), random);
         return list.stream().filter(poi -> positionPredicate.test(poi.getPos())).findFirst().map(PointOfInterest::getPos);
     }
 

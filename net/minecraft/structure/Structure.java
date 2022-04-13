@@ -7,8 +7,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.NbtList;
@@ -177,19 +178,19 @@ public class Structure {
         return this.getInfosForBlock(pos, placementData, block, true);
     }
 
-    public List<StructureBlockInfo> getInfosForBlock(BlockPos pos, StructurePlacementData placementData, Block block, boolean transformed) {
-        ArrayList<StructureBlockInfo> list = Lists.newArrayList();
+    public ObjectArrayList<StructureBlockInfo> getInfosForBlock(BlockPos pos, StructurePlacementData placementData, Block block, boolean transformed) {
+        ObjectArrayList<StructureBlockInfo> objectArrayList = new ObjectArrayList<StructureBlockInfo>();
         BlockBox blockBox = placementData.getBoundingBox();
         if (this.blockInfoLists.isEmpty()) {
-            return Collections.emptyList();
+            return objectArrayList;
         }
         for (StructureBlockInfo structureBlockInfo : placementData.getRandomBlockInfos(this.blockInfoLists, pos).getAllOf(block)) {
             BlockPos blockPos;
             BlockPos blockPos2 = blockPos = transformed ? Structure.transform(placementData, structureBlockInfo.pos).add(pos) : structureBlockInfo.pos;
             if (blockBox != null && !blockBox.contains(blockPos)) continue;
-            list.add(new StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
+            objectArrayList.add(new StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
         }
-        return list;
+        return objectArrayList;
     }
 
     public BlockPos transformBox(StructurePlacementData placementData1, BlockPos pos1, StructurePlacementData placementData2, BlockPos pos2) {
@@ -565,23 +566,23 @@ public class Structure {
         NbtList nbtList3;
         this.blockInfoLists.clear();
         this.entities.clear();
-        NbtList nbtList = nbt.getList(SIZE_KEY, 3);
+        NbtList nbtList = nbt.getList(SIZE_KEY, NbtElement.INT_TYPE);
         this.size = new Vec3i(nbtList.getInt(0), nbtList.getInt(1), nbtList.getInt(2));
-        NbtList nbtList2 = nbt.getList(BLOCKS_KEY, 10);
-        if (nbt.contains(PALETTES_KEY, 9)) {
-            nbtList3 = nbt.getList(PALETTES_KEY, 9);
+        NbtList nbtList2 = nbt.getList(BLOCKS_KEY, NbtElement.COMPOUND_TYPE);
+        if (nbt.contains(PALETTES_KEY, NbtElement.LIST_TYPE)) {
+            nbtList3 = nbt.getList(PALETTES_KEY, NbtElement.LIST_TYPE);
             for (i = 0; i < nbtList3.size(); ++i) {
                 this.loadPalettedBlockInfo(nbtList3.getList(i), nbtList2);
             }
         } else {
-            this.loadPalettedBlockInfo(nbt.getList(PALETTE_KEY, 10), nbtList2);
+            this.loadPalettedBlockInfo(nbt.getList(PALETTE_KEY, NbtElement.COMPOUND_TYPE), nbtList2);
         }
-        nbtList3 = nbt.getList(ENTITIES_KEY, 10);
+        nbtList3 = nbt.getList(ENTITIES_KEY, NbtElement.COMPOUND_TYPE);
         for (i = 0; i < nbtList3.size(); ++i) {
             NbtCompound nbtCompound = nbtList3.getCompound(i);
-            NbtList nbtList4 = nbtCompound.getList("pos", 6);
+            NbtList nbtList4 = nbtCompound.getList("pos", NbtElement.DOUBLE_TYPE);
             Vec3d vec3d = new Vec3d(nbtList4.getDouble(0), nbtList4.getDouble(1), nbtList4.getDouble(2));
-            NbtList nbtList5 = nbtCompound.getList(ENTITIES_BLOCK_POS_KEY, 3);
+            NbtList nbtList5 = nbtCompound.getList(ENTITIES_BLOCK_POS_KEY, NbtElement.INT_TYPE);
             BlockPos blockPos = new BlockPos(nbtList5.getInt(0), nbtList5.getInt(1), nbtList5.getInt(2));
             if (!nbtCompound.contains("nbt")) continue;
             NbtCompound nbtCompound2 = nbtCompound.getCompound("nbt");
@@ -599,7 +600,7 @@ public class Structure {
         ArrayList<StructureBlockInfo> list3 = Lists.newArrayList();
         for (int j = 0; j < blocksNbt.size(); ++j) {
             NbtCompound nbtCompound = blocksNbt.getCompound(j);
-            NbtList nbtList = nbtCompound.getList("pos", 3);
+            NbtList nbtList = nbtCompound.getList("pos", NbtElement.INT_TYPE);
             BlockPos blockPos = new BlockPos(nbtList.getInt(0), nbtList.getInt(1), nbtList.getInt(2));
             BlockState blockState = palette.getState(nbtCompound.getInt(BLOCKS_STATE_KEY));
             NbtCompound nbtCompound2 = nbtCompound.contains("nbt") ? nbtCompound.getCompound("nbt") : null;

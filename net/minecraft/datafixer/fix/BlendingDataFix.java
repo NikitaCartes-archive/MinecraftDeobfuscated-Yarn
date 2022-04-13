@@ -19,37 +19,37 @@ import net.minecraft.util.math.ChunkSectionPos;
 public class BlendingDataFix
 extends DataFix {
     private final String name;
-    private static final Set<String> field_37415 = Set.of("minecraft:empty", "minecraft:structure_starts", "minecraft:structure_references", "minecraft:biomes");
+    private static final Set<String> SKIP_BLENDING_STATUSES = Set.of("minecraft:empty", "minecraft:structure_starts", "minecraft:structure_references", "minecraft:biomes");
 
-    public BlendingDataFix(Schema schema, String name) {
+    public BlendingDataFix(Schema schema) {
         super(schema, false);
-        this.name = name;
+        this.name = "Blending Data Fix v" + schema.getVersionKey();
     }
 
     @Override
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getOutputSchema().getType(TypeReferences.CHUNK);
-        return this.fixTypeEverywhereTyped(this.name, type, typed -> typed.update(DSL.remainderFinder(), BlendingDataFix::method_41312));
+        return this.fixTypeEverywhereTyped(this.name, type, typed -> typed.update(DSL.remainderFinder(), BlendingDataFix::update));
     }
 
-    private static Dynamic<?> method_41312(Dynamic<?> dynamic) {
+    private static Dynamic<?> update(Dynamic<?> dynamic) {
         Optional<Dynamic<?>> optional = (dynamic = dynamic.remove("blending_data")).get("Status").result();
         if (optional.isPresent()) {
             Dynamic<?> dynamic2;
             String string2;
             String string = IdentifierNormalizingSchema.normalize(optional.get().asString("empty"));
             Optional<Dynamic<?>> optional2 = dynamic.get("below_zero_retrogen").result();
-            if (!field_37415.contains(string)) {
-                dynamic = BlendingDataFix.method_41313(dynamic, 384, -64);
-            } else if (optional2.isPresent() && !field_37415.contains(string2 = IdentifierNormalizingSchema.normalize((dynamic2 = optional2.get()).get("target_status").asString("empty")))) {
-                dynamic = BlendingDataFix.method_41313(dynamic, 256, 0);
+            if (!SKIP_BLENDING_STATUSES.contains(string)) {
+                dynamic = BlendingDataFix.setSections(dynamic, 384, -64);
+            } else if (optional2.isPresent() && !SKIP_BLENDING_STATUSES.contains(string2 = IdentifierNormalizingSchema.normalize((dynamic2 = optional2.get()).get("target_status").asString("empty")))) {
+                dynamic = BlendingDataFix.setSections(dynamic, 256, 0);
             }
         }
         return dynamic;
     }
 
-    private static Dynamic<?> method_41313(Dynamic<?> dynamic, int i, int j) {
-        return dynamic.set("blending_data", dynamic.createMap(Map.of(dynamic.createString("min_section"), dynamic.createInt(ChunkSectionPos.getSectionCoord(j)), dynamic.createString("max_section"), dynamic.createInt(ChunkSectionPos.getSectionCoord(j + i)))));
+    private static Dynamic<?> setSections(Dynamic<?> dynamic, int height, int minY) {
+        return dynamic.set("blending_data", dynamic.createMap(Map.of(dynamic.createString("min_section"), dynamic.createInt(ChunkSectionPos.getSectionCoord(minY)), dynamic.createString("max_section"), dynamic.createInt(ChunkSectionPos.getSectionCoord(minY + height)))));
     }
 }
 

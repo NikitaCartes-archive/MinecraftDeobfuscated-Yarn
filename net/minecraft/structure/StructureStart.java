@@ -6,6 +6,7 @@ package net.minecraft.structure;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
@@ -70,7 +71,7 @@ public final class StructureStart {
         }
         ChunkPos chunkPos = new ChunkPos(nbtCompound.getInt("ChunkX"), nbtCompound.getInt("ChunkZ"));
         int i = nbtCompound.getInt("references");
-        NbtList nbtList = nbtCompound.getList("Children", 10);
+        NbtList nbtList = nbtCompound.getList("Children", NbtElement.COMPOUND_TYPE);
         try {
             StructurePiecesList structurePiecesList = StructurePiecesList.fromNbt(nbtList, structureContext);
             if (structureType instanceof OceanMonumentStructure) {

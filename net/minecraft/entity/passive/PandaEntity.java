@@ -495,8 +495,9 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.setMainGene(Gene.createRandom(this.random));
-        this.setHiddenGene(Gene.createRandom(this.random));
+        AbstractRandom abstractRandom = world.getRandom();
+        this.setMainGene(Gene.createRandom(abstractRandom));
+        this.setHiddenGene(Gene.createRandom(abstractRandom));
         this.resetAttributes();
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);

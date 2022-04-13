@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -258,8 +259,8 @@ extends Screen {
 
     public static void filterPages(NbtCompound nbt, Consumer<String> pageConsumer) {
         IntFunction<String> intFunction;
-        NbtList nbtList = nbt.getList("pages", 8).copy();
-        if (MinecraftClient.getInstance().shouldFilterText() && nbt.contains("filtered_pages", 10)) {
+        NbtList nbtList = nbt.getList("pages", NbtElement.STRING_TYPE).copy();
+        if (MinecraftClient.getInstance().shouldFilterText() && nbt.contains("filtered_pages", NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = nbt.getCompound("filtered_pages");
             intFunction = page -> {
                 String string = String.valueOf(page);

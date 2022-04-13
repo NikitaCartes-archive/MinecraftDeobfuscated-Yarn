@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
@@ -48,7 +49,7 @@ implements Nameable {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        if (nbt.contains("CustomName", 8)) {
+        if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
     }

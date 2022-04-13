@@ -28,7 +28,7 @@ extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
     public EndermanEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new EndermanEntityModel(context.getPart(EntityModelLayers.ENDERMAN)), 0.5f);
         this.addFeature(new EndermanEyesFeatureRenderer<EndermanEntity>(this));
-        this.addFeature(new EndermanBlockFeatureRenderer(this));
+        this.addFeature(new EndermanBlockFeatureRenderer(this, context.getBlockRenderManager()));
     }
 
     @Override

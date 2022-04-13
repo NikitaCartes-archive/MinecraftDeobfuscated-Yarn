@@ -33,6 +33,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -209,7 +210,7 @@ extends PatrolEntity {
         super.readCustomDataFromNbt(nbt);
         this.wave = nbt.getInt("Wave");
         this.ableToJoinRaid = nbt.getBoolean("CanJoinRaid");
-        if (nbt.contains("RaidId", 3)) {
+        if (nbt.contains("RaidId", NbtElement.INT_TYPE)) {
             if (this.world instanceof ServerWorld) {
                 this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(nbt.getInt("RaidId"));
             }

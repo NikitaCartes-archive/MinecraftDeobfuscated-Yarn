@@ -38,10 +38,10 @@ implements Waterloggable {
     private static final VoxelShape[] SHAPES = new VoxelShape[]{Block.createCuboidShape(7.0, 13.0, 7.0, 9.0, 16.0, 9.0), Block.createCuboidShape(7.0, 10.0, 7.0, 9.0, 16.0, 9.0), Block.createCuboidShape(7.0, 7.0, 7.0, 9.0, 16.0, 9.0), Block.createCuboidShape(7.0, 3.0, 7.0, 9.0, 16.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)};
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final BooleanProperty HANGING = Properties.HANGING;
-    private static final float field_38749 = 0.75f;
+    private static final float field_38749 = 0.85f;
 
     public PropaguleBlock(AbstractBlock.Settings settings) {
-        super(new MangroveSaplingGenerator(0.75f), settings);
+        super(new MangroveSaplingGenerator(0.85f), settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(STAGE, 0)).with(AGE, 0)).with(WATERLOGGED, false)).with(HANGING, false));
     }
 
@@ -68,11 +68,6 @@ implements Waterloggable {
         Vec3d vec3d = state.getModelOffset(world, pos);
         VoxelShape voxelShape = state.get(HANGING) == false ? SHAPES[4] : SHAPES[state.get(AGE)];
         return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
-    }
-
-    @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
     }
 
     @Override

@@ -28,6 +28,7 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -188,10 +189,10 @@ implements Shearable {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.setType(Type.fromName(nbt.getString("Type")));
-        if (nbt.contains("EffectId", 1)) {
+        if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
             this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
         }
-        if (nbt.contains("EffectDuration", 3)) {
+        if (nbt.contains("EffectDuration", NbtElement.INT_TYPE)) {
             this.stewEffectDuration = nbt.getInt("EffectDuration");
         }
     }

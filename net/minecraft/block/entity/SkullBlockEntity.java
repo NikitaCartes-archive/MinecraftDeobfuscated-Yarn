@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -67,9 +68,9 @@ extends BlockEntity {
     public void readNbt(NbtCompound nbt) {
         String string;
         super.readNbt(nbt);
-        if (nbt.contains(SKULL_OWNER_KEY, 10)) {
+        if (nbt.contains(SKULL_OWNER_KEY, NbtElement.COMPOUND_TYPE)) {
             this.setOwner(NbtHelper.toGameProfile(nbt.getCompound(SKULL_OWNER_KEY)));
-        } else if (nbt.contains("ExtraType", 8) && !StringHelper.isEmpty(string = nbt.getString("ExtraType"))) {
+        } else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE) && !StringHelper.isEmpty(string = nbt.getString("ExtraType"))) {
             this.setOwner(new GameProfile(null, string));
         }
     }

@@ -29,7 +29,7 @@ extends AbstractMinecartEntity {
     static final TrackedData<String> COMMAND = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.STRING);
     static final TrackedData<Text> LAST_OUTPUT = DataTracker.registerData(CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT);
     private final CommandBlockExecutor commandExecutor = new CommandExecutor();
-    private static final int field_30701 = 4;
+    private static final int EXECUTE_TICK_COOLDOWN = 4;
     private int lastExecuted;
 
     public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {

@@ -22,7 +22,7 @@ extends IllagerEntityRenderer<T> {
 
     public EvokerEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.EVOKER)), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this){
+        this.addFeature(new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this, context.getHeldItemRenderer()){
 
             @Override
             public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T spellcastingIllagerEntity, float f, float g, float h, float j, float k, float l) {

@@ -4,7 +4,7 @@
 package net.minecraft.screen;
 
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -16,9 +16,9 @@ import net.minecraft.screen.slot.Slot;
 public class HorseScreenHandler
 extends ScreenHandler {
     private final Inventory inventory;
-    private final HorseBaseEntity entity;
+    private final AbstractHorseEntity entity;
 
-    public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, final HorseBaseEntity entity) {
+    public HorseScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory, final AbstractHorseEntity entity) {
         super(null, syncId);
         int l;
         int k;
@@ -78,7 +78,7 @@ extends ScreenHandler {
         return !this.entity.areInventoriesDifferent(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
     }
 
-    private boolean hasChest(HorseBaseEntity horse) {
+    private boolean hasChest(AbstractHorseEntity horse) {
         return horse instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horse).hasChest();
     }
 

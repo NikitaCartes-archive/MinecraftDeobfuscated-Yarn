@@ -464,7 +464,7 @@ implements StructureWorldAccess {
     }
 
     private Optional<BlockPos> getLightningRodPos(BlockPos pos2) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(poiType -> poiType == PointOfInterestType.LIGHTNING_ROD, pos -> pos.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, pos.getX(), pos.getZ()) - 1, pos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
         return optional.map(pos -> pos.up(1));
     }
 
@@ -874,7 +874,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+    public void emitGameEvent(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
         int i = event.getRange();
         BlockPos blockPos = new BlockPos(pos);
         int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
@@ -888,7 +888,7 @@ implements StructureWorldAccess {
                 WorldChunk chunk = this.getChunkManager().getWorldChunk(p, q);
                 if (chunk == null) continue;
                 for (int r = k; r <= n; ++r) {
-                    ((Chunk)chunk).getGameEventDispatcher(r).dispatch(event, entity, pos);
+                    ((Chunk)chunk).getGameEventDispatcher(r).dispatch(event, pos, emitter);
                 }
             }
         }

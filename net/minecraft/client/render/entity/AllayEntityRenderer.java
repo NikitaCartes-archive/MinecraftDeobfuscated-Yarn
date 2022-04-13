@@ -13,18 +13,15 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class AllayEntityRenderer
 extends MobEntityRenderer<AllayEntity, AllayEntityModel> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/allay/allay.png");
-    private static final int field_38462 = 60;
-    private static final int field_38463 = 5;
 
     public AllayEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new AllayEntityModel(context.getPart(EntityModelLayers.ALLAY)), 0.4f);
-        this.addFeature(new HeldItemFeatureRenderer<AllayEntity, AllayEntityModel>(this));
+        this.addFeature(new HeldItemFeatureRenderer<AllayEntity, AllayEntityModel>(this, context.getHeldItemRenderer()));
     }
 
     @Override
@@ -34,10 +31,7 @@ extends MobEntityRenderer<AllayEntity, AllayEntityModel> {
 
     @Override
     protected int getBlockLight(AllayEntity allayEntity, BlockPos blockPos) {
-        long l = allayEntity.getWorld().getTime() + (long)Math.abs(allayEntity.getUuid().hashCode());
-        float f = Math.abs(l % 120L - 60L);
-        float g = f / 60.0f;
-        return (int)MathHelper.lerp(g, 5.0f, 15.0f);
+        return 15;
     }
 }
 

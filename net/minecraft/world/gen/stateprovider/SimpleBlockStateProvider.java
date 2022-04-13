@@ -26,7 +26,7 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
         return this.state;
     }
 }

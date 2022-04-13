@@ -23,7 +23,7 @@ extends IllagerEntityRenderer<VindicatorEntity> {
 
     public VindicatorEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new IllagerEntityModel(context.getPart(EntityModelLayers.VINDICATOR)), 0.5f);
-        this.addFeature(new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>((FeatureRendererContext)this){
+        this.addFeature(new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>((FeatureRendererContext)this, context.getHeldItemRenderer()){
 
             @Override
             public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, VindicatorEntity vindicatorEntity, float f, float g, float h, float j, float k, float l) {

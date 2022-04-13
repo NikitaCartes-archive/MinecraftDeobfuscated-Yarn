@@ -10,12 +10,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -95,6 +91,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -109,8 +106,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -240,7 +237,6 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -308,7 +304,7 @@ implements ClientPlayPacketListener {
     private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
     private int chunkLoadDistance = 3;
     private int simulationDistance = 3;
-    private final AbstractRandom random = AbstractRandom.createAtomic();
+    private final AbstractRandom random = AbstractRandom.createBlocking();
     private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher();
     private final RecipeManager recipeManager = new RecipeManager();
     private final UUID sessionId = UUID.randomUUID();
@@ -817,9 +813,9 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = packet.getEntity(this.world);
         if (entity != null) {
-            if (packet.getStatus() == 21) {
+            if (packet.getStatus() == EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND) {
                 this.client.getSoundManager().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
-            } else if (packet.getStatus() == 35) {
+            } else if (packet.getStatus() == EntityStatuses.USE_TOTEM_OF_UNDYING) {
                 int i = 40;
                 this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
                 this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0f, 1.0f, false);
@@ -905,13 +901,13 @@ implements ClientPlayPacketListener {
     public void onOpenHorseScreen(OpenHorseScreenS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = this.world.getEntityById(packet.getHorseId());
-        if (entity instanceof HorseBaseEntity) {
+        if (entity instanceof AbstractHorseEntity) {
             ClientPlayerEntity clientPlayerEntity = this.client.player;
-            HorseBaseEntity horseBaseEntity = (HorseBaseEntity)entity;
+            AbstractHorseEntity abstractHorseEntity = (AbstractHorseEntity)entity;
             SimpleInventory simpleInventory = new SimpleInventory(packet.getSlotCount());
-            HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, horseBaseEntity);
+            HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, abstractHorseEntity);
             clientPlayerEntity.currentScreenHandler = horseScreenHandler;
-            this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), horseBaseEntity));
+            this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), abstractHorseEntity));
         }
     }
 
@@ -1472,33 +1468,17 @@ implements ClientPlayPacketListener {
 
     @Override
     public void onResourcePackSend(ResourcePackSendS2CPacket packet) {
-        String string = packet.getURL();
-        String string2 = packet.getSHA1();
-        boolean bl = packet.isRequired();
-        if (!this.validateResourcePackUrl(string)) {
-            return;
-        }
-        if (string.startsWith("level://")) {
-            try {
-                String string3 = URLDecoder.decode(string.substring("level://".length()), StandardCharsets.UTF_8.toString());
-                File file = new File(this.client.runDirectory, "saves");
-                File file2 = new File(file, string3);
-                if (file2.isFile()) {
-                    this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-                    CompletableFuture<Void> completableFuture = this.client.getResourcePackProvider().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
-                    this.feedbackAfterDownload(completableFuture);
-                    return;
-                }
-            } catch (UnsupportedEncodingException string3) {
-                // empty catch block
-            }
+        URL uRL = ClientPlayNetworkHandler.resolveUrl(packet.getURL());
+        if (uRL == null) {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
             return;
         }
+        String string = packet.getSHA1();
+        boolean bl = packet.isRequired();
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
         if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-            this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
+            this.feedbackAfterDownload(this.client.getResourcePackProvider().download(uRL, string, true));
         } else if (serverInfo == null || serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.PROMPT || bl && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.DISABLED) {
             this.client.execute(() -> this.client.setScreen(new ConfirmScreen(enabled -> {
                 this.client.setScreen(null);
@@ -1508,7 +1488,7 @@ implements ClientPlayPacketListener {
                         serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
                     }
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-                    this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
+                    this.feedbackAfterDownload(this.client.getResourcePackProvider().download(uRL, string, true));
                 } else {
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
                     if (bl) {
@@ -1536,22 +1516,18 @@ implements ClientPlayPacketListener {
         return new TranslatableText("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt);
     }
 
-    private boolean validateResourcePackUrl(String url) {
+    @Nullable
+    private static URL resolveUrl(String url) {
         try {
-            URI uRI = new URI(url);
-            String string = uRI.getScheme();
-            boolean bl = "level".equals(string);
-            if (!("http".equals(string) || "https".equals(string) || bl)) {
-                throw new URISyntaxException(url, "Wrong protocol");
+            URL uRL = new URL(url);
+            String string = uRL.getProtocol();
+            if ("http".equals(string) || "https".equals(string)) {
+                return uRL;
             }
-            if (bl && (url.contains("..") || !url.endsWith("/resources.zip"))) {
-                throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-            }
-        } catch (URISyntaxException uRISyntaxException) {
-            this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
-            return false;
+        } catch (MalformedURLException malformedURLException) {
+            return null;
         }
-        return true;
+        return null;
     }
 
     private void feedbackAfterDownload(CompletableFuture<?> downloadFuture) {

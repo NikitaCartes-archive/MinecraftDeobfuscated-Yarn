@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.ResourceManager;
@@ -133,7 +134,7 @@ public class StructureManager {
     }
 
     public Structure createStructure(NbtCompound nbt) {
-        if (!nbt.contains("DataVersion", 99)) {
+        if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
             nbt.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();

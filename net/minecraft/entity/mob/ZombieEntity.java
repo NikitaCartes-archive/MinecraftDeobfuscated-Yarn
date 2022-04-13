@@ -54,6 +54,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -352,12 +353,12 @@ extends HostileEntity {
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
-        super.initEquipment(difficulty);
-        float f = this.random.nextFloat();
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+        super.initEquipment(random, localDifficulty);
+        float f = random.nextFloat();
         float f2 = this.world.getDifficulty() == Difficulty.HARD ? 0.05f : 0.01f;
         if (f < f2) {
-            int i = this.random.nextInt(3);
+            int i = random.nextInt(3);
             if (i == 0) {
                 this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
             } else {
@@ -381,7 +382,7 @@ extends HostileEntity {
         this.setBaby(nbt.getBoolean("IsBaby"));
         this.setCanBreakDoors(nbt.getBoolean("CanBreakDoors"));
         this.inWaterTime = nbt.getInt("InWaterTime");
-        if (nbt.contains("DrownedConversionTime", 99) && nbt.getInt("DrownedConversionTime") > -1) {
+        if (nbt.contains("DrownedConversionTime", NbtElement.NUMBER_TYPE) && nbt.getInt("DrownedConversionTime") > -1) {
             this.setTicksUntilWaterConversion(nbt.getInt("DrownedConversionTime"));
         }
     }
@@ -430,25 +431,26 @@ extends HostileEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        AbstractRandom abstractRandom = world.getRandom();
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         float f = difficulty.getClampedLocalDifficulty();
-        this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
+        this.setCanPickUpLoot(abstractRandom.nextFloat() < 0.55f * f);
         if (entityData == null) {
-            entityData = new ZombieData(ZombieEntity.shouldBeBaby(world.getRandom()), true);
+            entityData = new ZombieData(ZombieEntity.shouldBeBaby(abstractRandom), true);
         }
         if (entityData instanceof ZombieData) {
             ZombieData zombieData = (ZombieData)entityData;
             if (zombieData.baby) {
                 this.setBaby(true);
                 if (zombieData.tryChickenJockey) {
-                    if ((double)world.getRandom().nextFloat() < 0.05) {
+                    if ((double)abstractRandom.nextFloat() < 0.05) {
                         List<Entity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
                         if (!list.isEmpty()) {
                             ChickenEntity chickenEntity = (ChickenEntity)list.get(0);
                             chickenEntity.setHasJockey(true);
                             this.startRiding(chickenEntity);
                         }
-                    } else if ((double)world.getRandom().nextFloat() < 0.05) {
+                    } else if ((double)abstractRandom.nextFloat() < 0.05) {
                         ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
                         chickenEntity2.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0f);
                         chickenEntity2.initialize(world, difficulty, SpawnReason.JOCKEY, null, null);
@@ -458,16 +460,16 @@ extends HostileEntity {
                     }
                 }
             }
-            this.setCanBreakDoors(this.shouldBreakDoors() && this.random.nextFloat() < f * 0.1f);
-            this.initEquipment(difficulty);
-            this.updateEnchantments(difficulty);
+            this.setCanBreakDoors(this.shouldBreakDoors() && abstractRandom.nextFloat() < f * 0.1f);
+            this.initEquipment(abstractRandom, difficulty);
+            this.updateEnchantments(abstractRandom, difficulty);
         }
         if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             LocalDate localDate = LocalDate.now();
             int i = localDate.get(ChronoField.DAY_OF_MONTH);
             int j = localDate.get(ChronoField.MONTH_OF_YEAR);
-            if (j == 10 && i == 31 && this.random.nextFloat() < 0.25f) {
-                this.equipStack(EquipmentSlot.HEAD, new ItemStack(this.random.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+            if (j == 10 && i == 31 && abstractRandom.nextFloat() < 0.25f) {
+                this.equipStack(EquipmentSlot.HEAD, new ItemStack(abstractRandom.nextFloat() < 0.1f ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
                 this.armorDropChances[EquipmentSlot.HEAD.getEntitySlotId()] = 0.0f;
             }
         }

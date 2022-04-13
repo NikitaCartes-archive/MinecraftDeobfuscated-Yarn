@@ -91,7 +91,7 @@ extends AbstractNbtList<NbtByte> {
 
     @Override
     public byte getType() {
-        return 7;
+        return NbtElement.BYTE_ARRAY_TYPE;
     }
 
     public NbtType<NbtByteArray> getNbtType() {
@@ -179,7 +179,7 @@ extends AbstractNbtList<NbtByte> {
 
     @Override
     public byte getHeldType() {
-        return 1;
+        return NbtElement.BYTE_TYPE;
     }
 
     @Override

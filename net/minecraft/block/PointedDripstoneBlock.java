@@ -266,11 +266,6 @@ Waterloggable {
     }
 
     @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
-    }
-
-    @Override
     public float getMaxHorizontalModelOffset() {
         return 0.125f;
     }

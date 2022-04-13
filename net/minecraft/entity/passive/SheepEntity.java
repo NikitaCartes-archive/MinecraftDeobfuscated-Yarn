@@ -12,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Shearable;
@@ -203,7 +204,7 @@ implements Shearable {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 10) {
+        if (status == EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART) {
             this.eatGrassTimer = 40;
         } else {
             super.handleStatus(status);

@@ -20,7 +20,9 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -41,8 +43,12 @@ implements SynchronousResourceReloader {
     public Camera camera;
     public HitResult crosshairTarget;
     private final Supplier<BlockRenderManager> blockRenderManager;
+    private final Supplier<ItemRenderer> itemRenderer;
+    private final Supplier<EntityRenderDispatcher> entityRenderDispatcher;
 
-    public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> blockRenderManager) {
+    public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> blockRenderManager, Supplier<ItemRenderer> itemRenderer, Supplier<EntityRenderDispatcher> entityRenderDispatcher) {
+        this.itemRenderer = itemRenderer;
+        this.entityRenderDispatcher = entityRenderDispatcher;
         this.textRenderer = textRenderer;
         this.entityModelLoader = entityModelLoader;
         this.blockRenderManager = blockRenderManager;
@@ -110,7 +116,7 @@ implements SynchronousResourceReloader {
 
     @Override
     public void reload(ResourceManager manager) {
-        BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(this, this.blockRenderManager.get(), this.entityModelLoader, this.textRenderer);
+        BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(this, this.blockRenderManager.get(), this.itemRenderer.get(), this.entityRenderDispatcher.get(), this.entityModelLoader, this.textRenderer);
         this.renderers = BlockEntityRendererFactories.reload(context);
     }
 }

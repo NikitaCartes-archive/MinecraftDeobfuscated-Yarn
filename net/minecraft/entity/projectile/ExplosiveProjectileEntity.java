@@ -10,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -121,7 +122,7 @@ extends ProjectileEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         NbtList nbtList;
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("power", 9) && (nbtList = nbt.getList("power", 6)).size() == 3) {
+        if (nbt.contains("power", NbtElement.LIST_TYPE) && (nbtList = nbt.getList("power", NbtElement.DOUBLE_TYPE)).size() == 3) {
             this.powerX = nbtList.getDouble(0);
             this.powerY = nbtList.getDouble(1);
             this.powerZ = nbtList.getDouble(2);

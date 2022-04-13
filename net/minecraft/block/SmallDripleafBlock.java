@@ -142,11 +142,6 @@ Waterloggable {
     }
 
     @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XYZ;
-    }
-
-    @Override
     public float getVerticalModelOffsetMultiplier() {
         return 0.1f;
     }

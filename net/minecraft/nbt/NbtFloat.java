@@ -79,7 +79,7 @@ extends AbstractNbtNumber {
 
     @Override
     public byte getType() {
-        return 5;
+        return NbtElement.FLOAT_TYPE;
     }
 
     public NbtType<NbtFloat> getNbtType() {

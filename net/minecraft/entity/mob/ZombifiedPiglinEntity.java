@@ -205,7 +205,7 @@ implements Angerable {
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
     }
 

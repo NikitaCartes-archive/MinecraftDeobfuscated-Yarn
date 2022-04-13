@@ -40,10 +40,12 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -114,7 +116,7 @@ extends IllagerEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains(JOHNNY_KEY, 99)) {
+        if (nbt.contains(JOHNNY_KEY, NbtElement.NUMBER_TYPE)) {
             this.johnny = nbt.getBoolean(JOHNNY_KEY);
         }
     }
@@ -129,13 +131,14 @@ extends IllagerEntity {
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         EntityData entityData2 = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
-        this.initEquipment(difficulty);
-        this.updateEnchantments(difficulty);
+        AbstractRandom abstractRandom = world.getRandom();
+        this.initEquipment(abstractRandom, difficulty);
+        this.updateEnchantments(abstractRandom, difficulty);
         return entityData2;
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
         if (this.getRaid() == null) {
             this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_AXE));
         }

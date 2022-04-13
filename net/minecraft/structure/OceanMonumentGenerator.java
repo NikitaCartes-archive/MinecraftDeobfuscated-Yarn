@@ -5,6 +5,7 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -1218,16 +1219,16 @@ public class OceanMonumentGenerator {
             this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
             this.field_14466.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
             this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
-            ArrayList<PieceSetting> list = Lists.newArrayList();
+            ObjectArrayList<PieceSetting> objectArrayList = new ObjectArrayList<PieceSetting>();
             for (PieceSetting pieceSetting4 : pieceSettings) {
                 if (pieceSetting4 == null) continue;
                 pieceSetting4.checkNeighborStates();
-                list.add(pieceSetting4);
+                objectArrayList.add(pieceSetting4);
             }
             pieceSetting.checkNeighborStates();
-            Util.shuffle(list, random);
+            Util.shuffle(objectArrayList, random);
             int q = 1;
-            for (PieceSetting pieceSetting5 : list) {
+            for (PieceSetting pieceSetting5 : objectArrayList) {
                 int r = 0;
                 for (m = 0; r < 2 && m < 5; ++m) {
                     n = random.nextInt(6);
@@ -1243,10 +1244,10 @@ public class OceanMonumentGenerator {
                     pieceSetting5.neighbors[n].neighborPresences[o] = true;
                 }
             }
-            list.add(pieceSetting);
-            list.add(pieceSetting2);
-            list.add(pieceSetting3);
-            return list;
+            objectArrayList.add(pieceSetting);
+            objectArrayList.add(pieceSetting2);
+            objectArrayList.add(pieceSetting3);
+            return objectArrayList;
         }
 
         @Override

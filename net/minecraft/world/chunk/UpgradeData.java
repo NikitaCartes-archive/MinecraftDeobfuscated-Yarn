@@ -67,11 +67,11 @@ public class UpgradeData {
 
     public UpgradeData(NbtCompound nbt, HeightLimitView world) {
         this(world);
-        if (nbt.contains(INDICES_KEY, 10)) {
+        if (nbt.contains(INDICES_KEY, NbtElement.COMPOUND_TYPE)) {
             NbtCompound nbtCompound = nbt.getCompound(INDICES_KEY);
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
-                if (!nbtCompound.contains(string, 11)) continue;
+                if (!nbtCompound.contains(string, NbtElement.INT_ARRAY_TYPE)) continue;
                 this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
             }
         }
@@ -85,8 +85,8 @@ public class UpgradeData {
     }
 
     private static <T> void addNeighborTicks(NbtCompound nbt, String key, Function<String, Optional<T>> nameToType, List<Tick<T>> ticks) {
-        if (nbt.contains(key, 9)) {
-            NbtList nbtList = nbt.getList(key, 10);
+        if (nbt.contains(key, NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList(key, NbtElement.COMPOUND_TYPE);
             for (NbtElement nbtElement : nbtList) {
                 Tick.fromNbt((NbtCompound)nbtElement, nameToType).ifPresent(ticks::add);
             }

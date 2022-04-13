@@ -11,10 +11,10 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -160,18 +160,18 @@ extends Feature<EndSpikeFeatureConfig> {
 
         @Override
         public List<Spike> load(Long long_) {
-            List list = Util.copyShuffled(IntStream.range(0, 10).boxed().collect(Collectors.toList()), AbstractRandom.createAtomic(long_));
-            ArrayList<Spike> list2 = Lists.newArrayList();
+            IntArrayList intArrayList = Util.shuffle(IntStream.range(0, 10), AbstractRandom.createAtomic(long_));
+            ArrayList<Spike> list = Lists.newArrayList();
             for (int i = 0; i < 10; ++i) {
                 int j = MathHelper.floor(42.0 * Math.cos(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
                 int k = MathHelper.floor(42.0 * Math.sin(2.0 * (-Math.PI + 0.3141592653589793 * (double)i)));
-                int l = (Integer)list.get(i);
+                int l = intArrayList.get(i);
                 int m = 2 + l / 3;
                 int n = 76 + l * 3;
                 boolean bl = l == 1 || l == 2;
-                list2.add(new Spike(j, k, m, n, bl));
+                list.add(new Spike(j, k, m, n, bl));
             }
-            return list2;
+            return list;
         }
 
         @Override

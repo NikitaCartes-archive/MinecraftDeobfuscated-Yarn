@@ -3,12 +3,10 @@
  */
 package net.minecraft.world.event.listener;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * A game event listener listens to game events from {@link GameEventDispatcher}s.
@@ -29,6 +27,6 @@ public interface GameEventListener {
      * 
      * @return {@code true} if the game event has been accepted by this listener
      */
-    public boolean listen(ServerWorld var1, GameEvent var2, @Nullable Entity var3, Vec3d var4);
+    public boolean listen(ServerWorld var1, GameEvent var2, GameEvent.Emitter var3, Vec3d var4);
 }
 

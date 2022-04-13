@@ -17,6 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -62,7 +63,7 @@ extends ProjectileEntity {
         this.refreshPositionAndAngles(d, e, f, this.getYaw(), this.getPitch());
         this.target = target;
         this.direction = Direction.UP;
-        this.method_7486(axis);
+        this.changeTargetDirection(axis);
     }
 
     @Override
@@ -92,7 +93,7 @@ extends ProjectileEntity {
         this.targetX = nbt.getDouble("TXD");
         this.targetY = nbt.getDouble("TYD");
         this.targetZ = nbt.getDouble("TZD");
-        if (nbt.contains("Dir", 99)) {
+        if (nbt.contains("Dir", NbtElement.NUMBER_TYPE)) {
             this.direction = Direction.byId(nbt.getInt("Dir"));
         }
         if (nbt.containsUuid("Target")) {
@@ -113,7 +114,7 @@ extends ProjectileEntity {
         this.direction = direction;
     }
 
-    private void method_7486(@Nullable Direction.Axis axis) {
+    private void changeTargetDirection(@Nullable Direction.Axis axis) {
         BlockPos blockPos;
         double d = 0.5;
         if (this.target == null) {
@@ -222,18 +223,18 @@ extends ProjectileEntity {
             if (this.stepCount > 0) {
                 --this.stepCount;
                 if (this.stepCount == 0) {
-                    this.method_7486(this.direction == null ? null : this.direction.getAxis());
+                    this.changeTargetDirection(this.direction == null ? null : this.direction.getAxis());
                 }
             }
             if (this.direction != null) {
                 BlockPos blockPos = this.getBlockPos();
                 Direction.Axis axis = this.direction.getAxis();
                 if (this.world.isTopSolid(blockPos.offset(this.direction), this)) {
-                    this.method_7486(axis);
+                    this.changeTargetDirection(axis);
                 } else {
                     BlockPos blockPos2 = this.target.getBlockPos();
                     if (axis == Direction.Axis.X && blockPos.getX() == blockPos2.getX() || axis == Direction.Axis.Z && blockPos.getZ() == blockPos2.getZ() || axis == Direction.Axis.Y && blockPos.getY() == blockPos2.getY()) {
-                        this.method_7486(axis);
+                        this.changeTargetDirection(axis);
                     }
                 }
             }

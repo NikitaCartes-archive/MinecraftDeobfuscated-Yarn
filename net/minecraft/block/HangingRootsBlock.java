@@ -80,10 +80,5 @@ implements Waterloggable {
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
-
-    @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
-    }
 }
 

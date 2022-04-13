@@ -22,6 +22,7 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.JsonHelper;
@@ -48,7 +49,7 @@ extends ConditionalLootFunction {
         this.patterns.forEach(patterns::add);
         NbtList nbtList = patterns.toNbt();
         if (this.append) {
-            nbtList2 = nbtCompound.getList("Patterns", 10).copy();
+            nbtList2 = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).copy();
             nbtList2.addAll(nbtList);
         } else {
             nbtList2 = nbtList;

@@ -46,6 +46,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -106,7 +107,7 @@ InventoryOwner {
         super.readCustomDataFromNbt(nbt);
         this.setBaby(nbt.getBoolean("IsBaby"));
         this.setCannotHunt(nbt.getBoolean("CannotHunt"));
-        this.inventory.readNbtList(nbt.getList("Inventory", 10));
+        this.inventory.readNbtList(nbt.getList("Inventory", NbtElement.COMPOUND_TYPE));
     }
 
     @Override
@@ -156,16 +157,17 @@ InventoryOwner {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        AbstractRandom abstractRandom = world.getRandom();
         if (spawnReason != SpawnReason.STRUCTURE) {
-            if (world.getRandom().nextFloat() < 0.2f) {
+            if (abstractRandom.nextFloat() < 0.2f) {
                 this.setBaby(true);
             } else if (this.isAdult()) {
                 this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
             }
         }
-        PiglinBrain.setHuntedRecently(this);
-        this.initEquipment(difficulty);
-        this.updateEnchantments(difficulty);
+        PiglinBrain.setHuntedRecently(this, world.getRandom());
+        this.initEquipment(abstractRandom, difficulty);
+        this.updateEnchantments(abstractRandom, difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -180,17 +182,17 @@ InventoryOwner {
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
         if (this.isAdult()) {
-            this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
-            this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
-            this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
-            this.equipAtChance(EquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS));
+            this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET), random);
+            this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE), random);
+            this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS), random);
+            this.equipAtChance(EquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS), random);
         }
     }
 
-    private void equipAtChance(EquipmentSlot slot, ItemStack stack) {
-        if (this.world.random.nextFloat() < 0.1f) {
+    private void equipAtChance(EquipmentSlot slot, ItemStack stack, AbstractRandom random) {
+        if (random.nextFloat() < 0.1f) {
             this.equipStack(slot, stack);
         }
     }

@@ -26,6 +26,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.server.world.ChunkHolder;
@@ -409,7 +410,7 @@ extends Chunk {
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!nbt2.contains(string, 12)) continue;
+            if (!nbt2.contains(string, NbtElement.LONG_ARRAY_TYPE)) continue;
             this.setHeightmap(type, nbt2.getLongArray(string));
         }
         consumer.accept((pos, blockEntityType, nbt) -> {

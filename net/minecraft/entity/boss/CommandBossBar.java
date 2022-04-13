@@ -11,6 +11,7 @@ import java.util.UUID;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -149,7 +150,7 @@ extends ServerBossBar {
         commandBossBar.setDarkenSky(nbt.getBoolean("DarkenScreen"));
         commandBossBar.setDragonMusic(nbt.getBoolean("PlayBossMusic"));
         commandBossBar.setThickenFog(nbt.getBoolean("CreateWorldFog"));
-        NbtList nbtList = nbt.getList("Players", 11);
+        NbtList nbtList = nbt.getList("Players", NbtElement.INT_ARRAY_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             commandBossBar.addPlayer(NbtHelper.toUuid(nbtList.get(i)));
         }

@@ -24,6 +24,7 @@ import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.function.SetNameLootFunction;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
@@ -79,7 +80,7 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (nbtCompound.contains("display", 10)) {
+        if (nbtCompound.contains("display", NbtElement.COMPOUND_TYPE)) {
             nbtCompound2 = nbtCompound.getCompound("display");
         } else if (otherLoreExists) {
             nbtCompound2 = new NbtCompound();
@@ -87,8 +88,8 @@ extends ConditionalLootFunction {
         } else {
             return null;
         }
-        if (nbtCompound2.contains("Lore", 9)) {
-            return nbtCompound2.getList("Lore", 8);
+        if (nbtCompound2.contains("Lore", NbtElement.LIST_TYPE)) {
+            return nbtCompound2.getList("Lore", NbtElement.STRING_TYPE);
         }
         if (otherLoreExists) {
             NbtList nbtList = new NbtList();

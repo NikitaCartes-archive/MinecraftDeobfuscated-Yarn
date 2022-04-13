@@ -9,8 +9,11 @@ import com.google.common.hash.Hashing;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -46,6 +49,8 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -113,8 +118,8 @@ implements ResourcePackProvider {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public CompletableFuture<?> download(String url, String packSha1, boolean closeAfterDownload) {
-        String string = Hashing.sha1().hashString(url, StandardCharsets.UTF_8).toString();
+    public CompletableFuture<?> download(URL url, String packSha1, boolean closeAfterDownload) {
+        String string = Hashing.sha1().hashString(url.toString(), StandardCharsets.UTF_8).toString();
         String string2 = SHA1_PATTERN.matcher(packSha1).matches() ? packSha1 : "";
         this.lock.lock();
         try {
@@ -173,7 +178,7 @@ implements ResourcePackProvider {
         }
     }
 
-    public void clear() {
+    public CompletableFuture<?> clear() {
         this.lock.lock();
         try {
             if (this.downloadTask != null) {
@@ -182,11 +187,13 @@ implements ResourcePackProvider {
             this.downloadTask = null;
             if (this.serverContainer != null) {
                 this.serverContainer = null;
-                MinecraftClient.getInstance().reloadResourcesConcurrently();
+                CompletableFuture<Void> completableFuture = MinecraftClient.getInstance().reloadResourcesConcurrently();
+                return completableFuture;
             }
         } finally {
             this.lock.unlock();
         }
+        return CompletableFuture.completedFuture(null);
     }
 
     private boolean verifyFile(String expectedSha1, File file) {
@@ -223,6 +230,14 @@ implements ResourcePackProvider {
         } catch (Exception exception) {
             LOGGER.error("Error while deleting old server resource pack : {}", (Object)exception.getMessage());
         }
+    }
+
+    public CompletableFuture<Void> loadServerPack(LevelStorage.Session session) {
+        Path path = session.getDirectory(WorldSavePath.RESOURCES_ZIP);
+        if (Files.exists(path, new LinkOption[0]) && !Files.isDirectory(path, new LinkOption[0])) {
+            return this.loadServerPack(path.toFile(), ResourcePackSource.PACK_SOURCE_WORLD);
+        }
+        return CompletableFuture.completedFuture(null);
     }
 
     public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource packSource) {

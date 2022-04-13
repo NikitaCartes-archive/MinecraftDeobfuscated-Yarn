@@ -24,6 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
@@ -70,18 +71,12 @@ implements NamedScreenHandlerFactory {
 
         @Override
         public int get(int index) {
-            switch (index) {
-                case 0: {
-                    return BeaconBlockEntity.this.level;
-                }
-                case 1: {
-                    return StatusEffect.getRawId(BeaconBlockEntity.this.primary);
-                }
-                case 2: {
-                    return StatusEffect.getRawId(BeaconBlockEntity.this.secondary);
-                }
-            }
-            return 0;
+            return switch (index) {
+                case 0 -> BeaconBlockEntity.this.level;
+                case 1 -> StatusEffect.method_43257(BeaconBlockEntity.this.primary);
+                case 2 -> StatusEffect.method_43257(BeaconBlockEntity.this.secondary);
+                default -> 0;
+            };
         }
 
         @Override
@@ -268,7 +263,7 @@ implements NamedScreenHandlerFactory {
         super.readNbt(nbt);
         this.primary = BeaconBlockEntity.getPotionEffectById(nbt.getInt("Primary"));
         this.secondary = BeaconBlockEntity.getPotionEffectById(nbt.getInt("Secondary"));
-        if (nbt.contains("CustomName", 8)) {
+        if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
         this.lock = ContainerLock.fromNbt(nbt);
@@ -277,8 +272,8 @@ implements NamedScreenHandlerFactory {
     @Override
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
-        nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
-        nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+        nbt.putInt("Primary", StatusEffect.method_43257(this.primary));
+        nbt.putInt("Secondary", StatusEffect.method_43257(this.secondary));
         nbt.putInt("Levels", this.level);
         if (this.customName != null) {
             nbt.putString("CustomName", Text.Serializer.toJson(this.customName));

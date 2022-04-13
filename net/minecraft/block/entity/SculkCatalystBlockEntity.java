@@ -23,7 +23,6 @@ import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 public class SculkCatalystBlockEntity
 extends BlockEntity
@@ -48,8 +47,9 @@ implements GameEventListener {
     }
 
     @Override
-    public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
-        if (event == GameEvent.ENTITY_DIE && entity instanceof LivingEntity) {
+    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
+        Entity entity;
+        if (event == GameEvent.ENTITY_DIE && (entity = emitter.sourceEntity()) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             if (!livingEntity.isExperienceDroppingDisabled()) {
                 this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
@@ -58,7 +58,7 @@ implements GameEventListener {
                 if (livingEntity2 instanceof ServerPlayerEntity) {
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity2;
                     DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();
-                    Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, entity, damageSource);
+                    Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, emitter.sourceEntity(), damageSource);
                 }
                 SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
             }

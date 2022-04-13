@@ -9,6 +9,7 @@ import java.time.Duration;
 import net.minecraft.GameVersion;
 import net.minecraft.MinecraftVersion;
 import net.minecraft.command.TranslatableBuiltInExceptions;
+import net.minecraft.datafixer.DataFixerPhase;
 import net.minecraft.util.math.ChunkPos;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,17 +17,17 @@ public class SharedConstants {
     @Deprecated
     public static final boolean IS_DEVELOPMENT_VERSION = true;
     @Deprecated
-    public static final int WORLD_VERSION = 3088;
+    public static final int WORLD_VERSION = 3089;
     @Deprecated
     public static final String CURRENT_SERIES = "main";
     @Deprecated
-    public static final String VERSION_NAME = "22w14a";
+    public static final String VERSION_NAME = "22w15a";
     @Deprecated
     public static final String RELEASE_TARGET = "1.19";
     @Deprecated
     public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
     @Deprecated
-    public static final int field_29736 = 78;
+    public static final int field_29736 = 79;
     public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
     private static final int field_29708 = 30;
     public static final boolean field_36325 = true;
@@ -114,6 +115,7 @@ public class SharedConstants {
      */
     public static boolean useChoiceTypeRegistrations = true;
     public static boolean isDevelopment;
+    public static DataFixerPhase dataFixerPhase;
     public static final int CHUNK_WIDTH = 16;
     public static final int DEFAULT_WORLD_HEIGHT = 256;
     public static final int COMMAND_MAX_LENGTH = 32500;
@@ -174,7 +176,7 @@ public class SharedConstants {
     }
 
     public static int getProtocolVersion() {
-        return 0x4000004E;
+        return 0x4000004F;
     }
 
     public static boolean method_37896(ChunkPos chunkPos) {
@@ -186,7 +188,16 @@ public class SharedConstants {
         return false;
     }
 
+    public static void method_43250() {
+        dataFixerPhase = switch (dataFixerPhase) {
+            case DataFixerPhase.INITIALIZED_UNOPTIMIZED -> throw new IllegalStateException("Tried to enable datafixer optimization after unoptimized initialization");
+            case DataFixerPhase.INITIALIZED_OPTIMIZED -> DataFixerPhase.INITIALIZED_OPTIMIZED;
+            default -> DataFixerPhase.UNINITIALIZED_OPTIMIZED;
+        };
+    }
+
     static {
+        dataFixerPhase = DataFixerPhase.UNINITIALIZED_UNOPTIMIZED;
         INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'};
         ResourceLeakDetector.setLevel(RESOURCE_LEAK_DETECTOR_DISABLED);
         CommandSyntaxException.ENABLE_COMMAND_STACK_TRACES = false;

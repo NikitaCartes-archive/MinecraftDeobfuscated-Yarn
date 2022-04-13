@@ -16,6 +16,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandler;
@@ -154,7 +155,7 @@ extends ScreenHandler {
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
             boolean bl;
             NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
-            boolean bl2 = bl = nbtCompound != null && nbtCompound.contains("Patterns", 9) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
+            boolean bl2 = bl = nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
             if (bl) {
                 this.selectedPattern.set(0);
             } else {
@@ -215,8 +216,8 @@ extends ScreenHandler {
                 BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
                 DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
                 NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
-                if (nbtCompound != null && nbtCompound.contains("Patterns", 9)) {
-                    nbtList = nbtCompound.getList("Patterns", 10);
+                if (nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE)) {
+                    nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
                 } else {
                     nbtList = new NbtList();
                     if (nbtCompound == null) {

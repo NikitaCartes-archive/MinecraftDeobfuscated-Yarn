@@ -6,6 +6,8 @@ package net.minecraft.world.gen.feature;
 import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -30,7 +32,7 @@ public class OceanPlacedFeatures {
     public static final RegistryEntry<PlacedFeature> SEAGRASS_DEEP_WARM = PlacedFeatures.register("seagrass_deep_warm", OceanConfiguredFeatures.SEAGRASS_TALL, OceanPlacedFeatures.seagrassModifiers(80));
     public static final RegistryEntry<PlacedFeature> SEAGRASS_DEEP = PlacedFeatures.register("seagrass_deep", OceanConfiguredFeatures.SEAGRASS_TALL, OceanPlacedFeatures.seagrassModifiers(48));
     public static final RegistryEntry<PlacedFeature> SEAGRASS_DEEP_COLD = PlacedFeatures.register("seagrass_deep_cold", OceanConfiguredFeatures.SEAGRASS_TALL, OceanPlacedFeatures.seagrassModifiers(40));
-    public static final RegistryEntry<PlacedFeature> SEAGRASS_SIMPLE = PlacedFeatures.register("seagrass_simple", OceanConfiguredFeatures.SEAGRASS_SIMPLE, CarvingMaskPlacementModifier.of(GenerationStep.Carver.LIQUID), RarityFilterPlacementModifier.of(10), BlockFilterPlacementModifier.of(BlockPredicate.allOf(BlockPredicate.matchingBlock(Blocks.STONE, new BlockPos(0, -1, 0)), BlockPredicate.matchingBlock(Blocks.WATER, BlockPos.ORIGIN), BlockPredicate.matchingBlock(Blocks.WATER, new BlockPos(0, 1, 0)))), BiomePlacementModifier.of());
+    public static final RegistryEntry<PlacedFeature> SEAGRASS_SIMPLE = PlacedFeatures.register("seagrass_simple", OceanConfiguredFeatures.SEAGRASS_SIMPLE, CarvingMaskPlacementModifier.of(GenerationStep.Carver.LIQUID), RarityFilterPlacementModifier.of(10), BlockFilterPlacementModifier.of(BlockPredicate.allOf(BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.STONE), BlockPredicate.matchingBlocks((Vec3i)BlockPos.ORIGIN, Blocks.WATER), BlockPredicate.matchingBlocks(Direction.UP.getVector(), Blocks.WATER))), BiomePlacementModifier.of());
     public static final RegistryEntry<PlacedFeature> SEA_PICKLE = PlacedFeatures.register("sea_pickle", OceanConfiguredFeatures.SEA_PICKLE, RarityFilterPlacementModifier.of(16), SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of());
     public static final RegistryEntry<PlacedFeature> KELP_COLD = PlacedFeatures.register("kelp_cold", OceanConfiguredFeatures.KELP, NoiseBasedCountPlacementModifier.of(120, 80.0, 0.0), SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of());
     public static final RegistryEntry<PlacedFeature> KELP_WARM = PlacedFeatures.register("kelp_warm", OceanConfiguredFeatures.KELP, NoiseBasedCountPlacementModifier.of(80, 80.0, 0.0), SquarePlacementModifier.of(), PlacedFeatures.OCEAN_FLOOR_WG_HEIGHTMAP, BiomePlacementModifier.of());

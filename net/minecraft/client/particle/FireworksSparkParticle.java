@@ -19,6 +19,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
@@ -165,7 +166,7 @@ public class FireworksSparkParticle {
             this.particleManager = particleManager;
             this.maxAge = 8;
             if (nbt != null) {
-                this.explosions = nbt.getList("Explosions", 10);
+                this.explosions = nbt.getList("Explosions", NbtElement.COMPOUND_TYPE);
                 if (this.explosions.isEmpty()) {
                     this.explosions = null;
                 } else {

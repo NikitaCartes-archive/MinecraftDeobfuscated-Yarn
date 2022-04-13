@@ -16,6 +16,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
@@ -63,8 +64,8 @@ public class PotionUtil {
     }
 
     public static void getCustomPotionEffects(@Nullable NbtCompound nbt, List<StatusEffectInstance> list) {
-        if (nbt != null && nbt.contains(CUSTOM_POTION_EFFECTS_KEY, 9)) {
-            NbtList nbtList = nbt.getList(CUSTOM_POTION_EFFECTS_KEY, 10);
+        if (nbt != null && nbt.contains(CUSTOM_POTION_EFFECTS_KEY, NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbt.getList(CUSTOM_POTION_EFFECTS_KEY, NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 NbtCompound nbtCompound = nbtList.getCompound(i);
                 StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
@@ -76,7 +77,7 @@ public class PotionUtil {
 
     public static int getColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains(CUSTOM_POTION_COLOR_KEY, 99)) {
+        if (nbtCompound != null && nbtCompound.contains(CUSTOM_POTION_COLOR_KEY, NbtElement.NUMBER_TYPE)) {
             return nbtCompound.getInt(CUSTOM_POTION_COLOR_KEY);
         }
         return PotionUtil.getPotion(stack) == Potions.EMPTY ? 0xF800F8 : PotionUtil.getColor(PotionUtil.getPotionEffects(stack));
@@ -139,7 +140,7 @@ public class PotionUtil {
             return stack;
         }
         NbtCompound nbtCompound = stack.getOrCreateNbt();
-        NbtList nbtList = nbtCompound.getList(CUSTOM_POTION_EFFECTS_KEY, 9);
+        NbtList nbtList = nbtCompound.getList(CUSTOM_POTION_EFFECTS_KEY, NbtElement.LIST_TYPE);
         for (StatusEffectInstance statusEffectInstance : effects) {
             nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
         }

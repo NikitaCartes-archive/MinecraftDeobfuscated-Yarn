@@ -278,7 +278,7 @@ implements TypeFilter<Entity, T> {
     public static final EntityType<VillagerEntity> VILLAGER = EntityType.register("villager", Builder.create(VillagerEntity::new, SpawnGroup.MISC).setDimensions(0.6f, 1.95f).maxTrackingRange(10));
     public static final EntityType<VindicatorEntity> VINDICATOR = EntityType.register("vindicator", Builder.create(VindicatorEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
     public static final EntityType<WanderingTraderEntity> WANDERING_TRADER = EntityType.register("wandering_trader", Builder.create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 1.95f).maxTrackingRange(10));
-    public static final EntityType<WardenEntity> WARDEN = EntityType.register("warden", Builder.create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9f, 2.9f).maxTrackingRange(10).makeFireImmune());
+    public static final EntityType<WardenEntity> WARDEN = EntityType.register("warden", Builder.create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9f, 2.9f).maxTrackingRange(16).makeFireImmune());
     public static final EntityType<WitchEntity> WITCH = EntityType.register("witch", Builder.create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6f, 1.95f).maxTrackingRange(8));
     public static final EntityType<WitherEntity> WITHER = EntityType.register("wither", Builder.create(WitherEntity::new, SpawnGroup.MONSTER).makeFireImmune().allowSpawningInside(Blocks.WITHER_ROSE).setDimensions(0.9f, 3.5f).maxTrackingRange(10));
     public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = EntityType.register("wither_skeleton", Builder.create(WitherSkeletonEntity::new, SpawnGroup.MONSTER).makeFireImmune().allowSpawningInside(Blocks.WITHER_ROSE).setDimensions(0.7f, 2.4f).maxTrackingRange(8));
@@ -385,7 +385,7 @@ implements TypeFilter<Entity, T> {
     }
 
     public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemNbt) {
-        if (itemNbt == null || !itemNbt.contains(ENTITY_TAG_KEY, 10)) {
+        if (itemNbt == null || !itemNbt.contains(ENTITY_TAG_KEY, NbtElement.COMPOUND_TYPE)) {
             return;
         }
         MinecraftServer minecraftServer = world.getServer();
@@ -504,8 +504,8 @@ implements TypeFilter<Entity, T> {
     @Nullable
     public static Entity loadEntityWithPassengers(NbtCompound nbt, World world, Function<Entity, Entity> entityProcessor) {
         return EntityType.loadEntityFromNbt(nbt, world).map(entityProcessor).map(entity -> {
-            if (nbt.contains("Passengers", 9)) {
-                NbtList nbtList = nbt.getList("Passengers", 10);
+            if (nbt.contains("Passengers", NbtElement.LIST_TYPE)) {
+                NbtList nbtList = nbt.getList("Passengers", NbtElement.COMPOUND_TYPE);
                 for (int i = 0; i < nbtList.size(); ++i) {
                     Entity entity2 = EntityType.loadEntityWithPassengers(nbtList.getCompound(i), world, entityProcessor);
                     if (entity2 == null) continue;

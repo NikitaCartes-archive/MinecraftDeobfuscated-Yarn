@@ -105,6 +105,8 @@ AutoCloseable {
     protected float thunderGradientPrev;
     protected float thunderGradient;
     public final AbstractRandom random = AbstractRandom.createAtomic();
+    @Deprecated
+    private final AbstractRandom blockingRandom = AbstractRandom.createBlocking();
     final DimensionType dimension;
     private final RegistryEntry<DimensionType> dimensionEntry;
     protected final MutableWorldProperties properties;
@@ -115,8 +117,8 @@ AutoCloseable {
     private final RegistryKey<World> registryKey;
     private long tickOrder;
 
-    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
-        this.profiler = profiler;
+    protected World(MutableWorldProperties properties, RegistryKey<World> registryRef, RegistryEntry<DimensionType> dimension, Supplier<Profiler> supplier, boolean isClient, boolean debugWorld, long seed, int maxChainedNeighborUpdates) {
+        this.profiler = supplier;
         this.properties = properties;
         this.dimensionEntry = dimension;
         this.dimension = dimension.value();
@@ -299,7 +301,7 @@ AutoCloseable {
             Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
         }
         if (bl = this.setBlockState(pos, fluidState.getBlockState(), Block.NOTIFY_ALL, maxUpdateDepth)) {
-            this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
+            this.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(breakingEntity, blockState));
         }
         return bl;
     }
@@ -403,11 +405,11 @@ AutoCloseable {
     public abstract void playSoundFromEntity(@Nullable PlayerEntity var1, Entity var2, SoundEvent var3, SoundCategory var4, float var5, float var6, long var7);
 
     public void playSound(@Nullable PlayerEntity player, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.playSound(player, x, y, z, sound, category, volume, pitch, this.random.nextLong());
+        this.playSound(player, x, y, z, sound, category, volume, pitch, this.blockingRandom.nextLong());
     }
 
     public void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-        this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.random.nextLong());
+        this.playSoundFromEntity(player, entity, sound, category, volume, pitch, this.blockingRandom.nextLong());
     }
 
     public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {

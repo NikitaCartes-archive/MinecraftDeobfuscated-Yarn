@@ -51,6 +51,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
@@ -96,9 +97,9 @@ implements SynchronousResourceReloader {
                 GameProfile gameProfile2 = null;
                 if (stack.hasNbt()) {
                     NbtCompound nbtCompound = stack.getNbt();
-                    if (nbtCompound.contains("SkullOwner", 10)) {
+                    if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
                         gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-                    } else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+                    } else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
                         gameProfile2 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                         nbtCompound.remove("SkullOwner");
                         SkullBlockEntity.loadProperties(gameProfile2, gameProfile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));

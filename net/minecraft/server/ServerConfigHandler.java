@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.BanEntry;
 import net.minecraft.server.BannedIpEntry;
 import net.minecraft.server.BannedIpList;
@@ -39,6 +38,7 @@ import net.minecraft.server.WhitelistEntry;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -65,7 +65,7 @@ public class ServerConfigHandler {
             server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
         } else {
             for (String string2 : strings) {
-                UUID uUID = PlayerEntity.getUuidFromProfile(new GameProfile(null, string2));
+                UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, string2));
                 GameProfile gameProfile = new GameProfile(uUID, string2);
                 callback.onProfileLookupSucceeded(gameProfile);
             }
@@ -257,7 +257,7 @@ public class ServerConfigHandler {
             return optional.get();
         }
         if (server.isSingleplayer() || !server.isOnlineMode()) {
-            return PlayerEntity.getUuidFromProfile(new GameProfile(null, name));
+            return DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, name));
         }
         final ArrayList list = Lists.newArrayList();
         ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback(){

@@ -198,7 +198,7 @@ extends PathNodeMaker {
         return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMax(Direction.Axis.Y));
     }
 
-    protected boolean method_37004() {
+    protected boolean isAmphibious() {
         return false;
     }
 
@@ -224,13 +224,13 @@ extends PathNodeMaker {
         if (nodeType == PathNodeType.FENCE && pathNode != null && pathNode.penalty >= 0.0f && !this.isBlocked(pathNode)) {
             pathNode = null;
         }
-        if (pathNodeType == PathNodeType.WALKABLE || this.method_37004() && pathNodeType == PathNodeType.WATER) {
+        if (pathNodeType == PathNodeType.WALKABLE || this.isAmphibious() && pathNodeType == PathNodeType.WATER) {
             return pathNode;
         }
         if ((pathNode == null || pathNode.penalty < 0.0f) && maxYStep > 0 && pathNodeType != PathNodeType.FENCE && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR && pathNodeType != PathNodeType.POWDER_SNOW && (pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType)) != null && (pathNode.type == PathNodeType.OPEN || pathNode.type == PathNodeType.WALKABLE) && this.entity.getWidth() < 1.0f && this.checkBoxCollision(box = new Box((g = (double)(x - direction.getOffsetX()) + 0.5) - e, LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set(g, (double)(y + 1), h = (double)(z - direction.getOffsetZ()) + 0.5)) + 0.001, h - e, g + e, (double)this.entity.getHeight() + LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002, h + e))) {
             pathNode = null;
         }
-        if (!this.method_37004() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
+        if (!this.isAmphibious() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
             if (this.getNodeType(this.entity, x, y - 1, z) != PathNodeType.WATER) {
                 return pathNode;
             }

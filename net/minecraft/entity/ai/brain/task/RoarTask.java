@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.WardenBrain;
 import net.minecraft.entity.mob.WardenEntity;
@@ -30,6 +31,7 @@ extends Task<WardenEntity> {
         Brain<WardenEntity> brain = wardenEntity.getBrain();
         brain.remember(MemoryModuleType.ROAR_SOUND_DELAY, Unit.INSTANCE, 25L);
         brain.forget(MemoryModuleType.WALK_TARGET);
+        LookTargetUtil.lookAt(wardenEntity, wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).get());
         wardenEntity.setPose(EntityPose.ROARING);
     }
 
@@ -61,6 +63,8 @@ extends Task<WardenEntity> {
         if (wardenEntity.isInPose(EntityPose.ROARING)) {
             wardenEntity.setPose(EntityPose.STANDING);
         }
+        wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).ifPresent(wardenEntity::updateAttackTarget);
+        wardenEntity.getBrain().forget(MemoryModuleType.ROAR_TARGET);
     }
 
     @Override

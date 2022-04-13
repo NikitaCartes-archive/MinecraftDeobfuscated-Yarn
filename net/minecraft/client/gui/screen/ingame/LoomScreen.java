@@ -29,6 +29,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.LoomScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -242,7 +243,7 @@ extends HandledScreen<LoomScreenHandler> {
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack2);
-        boolean bl = this.hasTooManyPatterns = nbtCompound != null && nbtCompound.contains("Patterns", 9) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
+        boolean bl = this.hasTooManyPatterns = nbtCompound != null && nbtCompound.contains("Patterns", NbtElement.LIST_TYPE) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
         if (this.hasTooManyPatterns) {
             this.bannerPatterns = null;
         }

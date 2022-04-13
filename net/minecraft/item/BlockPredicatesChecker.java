@@ -12,6 +12,7 @@ import net.minecraft.command.CommandRegistryWrapper;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -69,8 +70,8 @@ public class BlockPredicatesChecker {
         this.cachedPos = pos;
         this.nbtAware = false;
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains(this.key, 9)) {
-            NbtList nbtList = nbtCompound.getList(this.key, 8);
+        if (nbtCompound != null && nbtCompound.contains(this.key, NbtElement.LIST_TYPE)) {
+            NbtList nbtList = nbtCompound.getList(this.key, NbtElement.STRING_TYPE);
             for (int i = 0; i < nbtList.size(); ++i) {
                 String string = nbtList.getString(i);
                 try {

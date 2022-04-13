@@ -9,6 +9,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -140,7 +141,7 @@ extends AnimalEntity {
             this.updateVelocity(0.1f, new Vec3d(0.0, 0.0, 1.0));
         }
         if (!this.world.isClient) {
-            this.world.sendEntityStatus(this, (byte)1);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY);
         }
     }
 
@@ -359,7 +360,7 @@ extends AnimalEntity {
 
     private int chooseType(WorldAccess world) {
         RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
-        int i = this.random.nextInt(100);
+        int i = world.getRandom().nextInt(100);
         if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
             return i < 80 ? 1 : 3;
         }
@@ -379,7 +380,7 @@ extends AnimalEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 1) {
+        if (status == EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY) {
             this.spawnSprintingParticles();
             this.jumpDuration = 10;
             this.jumpTicks = 0;

@@ -77,7 +77,7 @@ extends AbstractNbtNumber {
 
     @Override
     public byte getType() {
-        return 3;
+        return NbtElement.INT_TYPE;
     }
 
     public NbtType<NbtInt> getNbtType() {

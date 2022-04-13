@@ -452,6 +452,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addBatsAndMonsters(builder);
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1));
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FROG, 10, 2, 5));
+        builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8));
         GenerationSettings.Builder builder2 = new GenerationSettings.Builder();
         DefaultBiomeFeatures.addFossils(builder2);
         OverworldBiomeCreator.addBasicFeatures(builder2);
@@ -459,7 +460,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addGrassAndClayDisks(builder2);
         DefaultBiomeFeatures.addMangroveSwampFeatures(builder2);
         builder2.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_SWAMP);
-        return new Biome.Builder().precipitation(Biome.Precipitation.RAIN).temperature(0.8f).downfall(0.9f).effects(new BiomeEffects.Builder().waterColor(3832426).waterFogColor(2302743).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(0.8f)).foliageColor(9285927).grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder.build()).generationSettings(builder2.build()).build();
+        return new Biome.Builder().precipitation(Biome.Precipitation.RAIN).temperature(0.8f).downfall(0.9f).effects(new BiomeEffects.Builder().waterColor(3832426).waterFogColor(5077600).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(0.8f)).foliageColor(9285927).grassColorModifier(BiomeEffects.GrassColorModifier.SWAMP).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder.build()).generationSettings(builder2.build()).build();
     }
 
     public static Biome createRiver(boolean frozen) {

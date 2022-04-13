@@ -80,7 +80,7 @@ extends AbstractNbtNumber {
 
     @Override
     public byte getType() {
-        return 1;
+        return NbtElement.BYTE_TYPE;
     }
 
     public NbtType<NbtByte> getNbtType() {

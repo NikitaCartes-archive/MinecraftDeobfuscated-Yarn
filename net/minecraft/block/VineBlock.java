@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -117,8 +118,7 @@ extends Block {
     }
 
     public static boolean shouldConnectTo(BlockView world, BlockPos pos, Direction direction) {
-        BlockState blockState = world.getBlockState(pos);
-        return Block.isFaceFullSquare(blockState.getCollisionShape(world, pos), direction.getOpposite());
+        return AbstractLichenBlock.canGrowOn(world, direction, pos, world.getBlockState(pos));
     }
 
     private BlockState getPlacementShape(BlockState state, BlockView world, BlockPos pos) {

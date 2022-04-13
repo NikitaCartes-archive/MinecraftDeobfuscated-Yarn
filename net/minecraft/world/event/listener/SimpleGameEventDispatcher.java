@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.entity.Entity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
@@ -64,7 +63,7 @@ implements GameEventDispatcher {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     @Override
-    public void dispatch(GameEvent event, @Nullable Entity entity, Vec3d pos) {
+    public void dispatch(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter) {
         boolean bl = false;
         this.dispatching = true;
         try {
@@ -75,7 +74,7 @@ implements GameEventDispatcher {
                     iterator.remove();
                     continue;
                 }
-                if (!SimpleGameEventDispatcher.dispatchTo(this.world, event, entity, pos, gameEventListener)) continue;
+                if (!SimpleGameEventDispatcher.dispatchTo(this.world, event, emitter, pos, gameEventListener)) continue;
                 bl = true;
             }
         } finally {
@@ -94,14 +93,14 @@ implements GameEventDispatcher {
         }
     }
 
-    private static boolean dispatchTo(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos, GameEventListener listener) {
+    private static boolean dispatchTo(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos, GameEventListener listener) {
         int i;
         Optional<Vec3d> optional = listener.getPositionSource().getPos(world);
         if (optional.isEmpty()) {
             return false;
         }
         double d = optional.get().squaredDistanceTo(pos);
-        return d <= (double)(i = listener.getRange() * listener.getRange()) && listener.listen(world, event, entity, pos);
+        return d <= (double)(i = listener.getRange() * listener.getRange()) && listener.listen(world, event, emitter, pos);
     }
 }
 

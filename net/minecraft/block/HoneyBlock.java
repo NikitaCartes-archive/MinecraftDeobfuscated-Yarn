@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -51,7 +52,7 @@ extends TransparentBlock {
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0f, 1.0f);
         if (!world.isClient) {
-            world.sendEntityStatus(entity, (byte)54);
+            world.sendEntityStatus(entity, EntityStatuses.DRIP_RICH_HONEY);
         }
         if (entity.handleFallDamage(fallDistance, 0.2f, DamageSource.FALL)) {
             entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5f, this.soundGroup.getPitch() * 0.75f);
@@ -107,7 +108,7 @@ extends TransparentBlock {
                 entity.playSound(SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, 1.0f, 1.0f);
             }
             if (!world.isClient && world.random.nextInt(5) == 0) {
-                world.sendEntityStatus(entity, (byte)53);
+                world.sendEntityStatus(entity, EntityStatuses.DRIP_HONEY);
             }
         }
     }

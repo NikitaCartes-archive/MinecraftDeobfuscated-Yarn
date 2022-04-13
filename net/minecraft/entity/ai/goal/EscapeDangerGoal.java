@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EscapeDangerGoal
 extends Goal {
-    public static final int field_36271 = 1;
+    public static final int RANGE_Y = 1;
     protected final PathAwareEntity mob;
     protected final double speed;
     protected double targetX;

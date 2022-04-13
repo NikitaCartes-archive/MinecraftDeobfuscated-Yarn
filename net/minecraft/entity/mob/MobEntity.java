@@ -12,6 +12,7 @@ import java.util.UUID;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -335,13 +336,13 @@ extends LivingEntity {
                 this.world.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
             }
         } else {
-            this.world.sendEntityStatus(this, (byte)20);
+            this.world.sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
         }
     }
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 20) {
+        if (status == EntityStatuses.PLAY_SPAWN_EFFECTS) {
             this.playSpawnEffects();
         } else {
             super.handleStatus(status);
@@ -443,39 +444,39 @@ extends LivingEntity {
         int i;
         NbtList nbtList;
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("CanPickUpLoot", 1)) {
+        if (nbt.contains("CanPickUpLoot", NbtElement.BYTE_TYPE)) {
             this.setCanPickUpLoot(nbt.getBoolean("CanPickUpLoot"));
         }
         this.persistent = nbt.getBoolean("PersistenceRequired");
-        if (nbt.contains("ArmorItems", 9)) {
-            nbtList = nbt.getList("ArmorItems", 10);
+        if (nbt.contains("ArmorItems", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("ArmorItems", NbtElement.COMPOUND_TYPE);
             for (i = 0; i < this.armorItems.size(); ++i) {
                 this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
         }
-        if (nbt.contains("HandItems", 9)) {
-            nbtList = nbt.getList("HandItems", 10);
+        if (nbt.contains("HandItems", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("HandItems", NbtElement.COMPOUND_TYPE);
             for (i = 0; i < this.handItems.size(); ++i) {
                 this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
             }
         }
-        if (nbt.contains("ArmorDropChances", 9)) {
-            nbtList = nbt.getList("ArmorDropChances", 5);
+        if (nbt.contains("ArmorDropChances", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("ArmorDropChances", NbtElement.FLOAT_TYPE);
             for (i = 0; i < nbtList.size(); ++i) {
                 this.armorDropChances[i] = nbtList.getFloat(i);
             }
         }
-        if (nbt.contains("HandDropChances", 9)) {
-            nbtList = nbt.getList("HandDropChances", 5);
+        if (nbt.contains("HandDropChances", NbtElement.LIST_TYPE)) {
+            nbtList = nbt.getList("HandDropChances", NbtElement.FLOAT_TYPE);
             for (i = 0; i < nbtList.size(); ++i) {
                 this.handDropChances[i] = nbtList.getFloat(i);
             }
         }
-        if (nbt.contains(LEASH_KEY, 10)) {
+        if (nbt.contains(LEASH_KEY, NbtElement.COMPOUND_TYPE)) {
             this.leashNbt = nbt.getCompound(LEASH_KEY);
         }
         this.setLeftHanded(nbt.getBoolean("LeftHanded"));
-        if (nbt.contains("DeathLootTable", 8)) {
+        if (nbt.contains("DeathLootTable", NbtElement.STRING_TYPE)) {
             this.lootTable = new Identifier(nbt.getString("DeathLootTable"));
             this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
         }
@@ -640,7 +641,7 @@ extends LivingEntity {
             return true;
         }
         if (newStack.hasNbt() && oldStack.hasNbt()) {
-            return newStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage")) && !oldStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"));
+            return newStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage")) && !oldStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage"));
         }
         return false;
     }
@@ -907,18 +908,18 @@ extends LivingEntity {
         };
     }
 
-    protected void initEquipment(LocalDifficulty difficulty) {
-        if (this.random.nextFloat() < 0.15f * difficulty.getClampedLocalDifficulty()) {
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+        if (random.nextFloat() < 0.15f * localDifficulty.getClampedLocalDifficulty()) {
             float f;
-            int i = this.random.nextInt(2);
+            int i = random.nextInt(2);
             float f2 = f = this.world.getDifficulty() == Difficulty.HARD ? 0.1f : 0.25f;
-            if (this.random.nextFloat() < 0.095f) {
+            if (random.nextFloat() < 0.095f) {
                 ++i;
             }
-            if (this.random.nextFloat() < 0.095f) {
+            if (random.nextFloat() < 0.095f) {
                 ++i;
             }
-            if (this.random.nextFloat() < 0.095f) {
+            if (random.nextFloat() < 0.095f) {
                 ++i;
             }
             boolean bl = true;
@@ -926,7 +927,7 @@ extends LivingEntity {
                 Item item;
                 if (equipmentSlot.getType() != EquipmentSlot.Type.ARMOR) continue;
                 ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-                if (!bl && this.random.nextFloat() < f) break;
+                if (!bl && random.nextFloat() < f) break;
                 bl = false;
                 if (!itemStack.isEmpty() || (item = MobEntity.getEquipmentForSlot(equipmentSlot, i)) == null) continue;
                 this.equipStack(equipmentSlot, new ItemStack(item));
@@ -1008,32 +1009,33 @@ extends LivingEntity {
         return null;
     }
 
-    protected void updateEnchantments(LocalDifficulty difficulty) {
-        float f = difficulty.getClampedLocalDifficulty();
-        this.enchantMainHandItem(f);
+    protected void updateEnchantments(AbstractRandom random, LocalDifficulty localDifficulty) {
+        float f = localDifficulty.getClampedLocalDifficulty();
+        this.enchantMainHandItem(random, f);
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             if (equipmentSlot.getType() != EquipmentSlot.Type.ARMOR) continue;
-            this.enchantEquipment(f, equipmentSlot);
+            this.enchantEquipment(random, f, equipmentSlot);
         }
     }
 
-    protected void enchantMainHandItem(float power) {
-        if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25f * power) {
-            this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0f + power * (float)this.random.nextInt(18)), false));
+    protected void enchantMainHandItem(AbstractRandom random, float power) {
+        if (!this.getMainHandStack().isEmpty() && random.nextFloat() < 0.25f * power) {
+            this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(random, this.getMainHandStack(), (int)(5.0f + power * (float)random.nextInt(18)), false));
         }
     }
 
-    protected void enchantEquipment(float power, EquipmentSlot slot) {
+    protected void enchantEquipment(AbstractRandom random, float power, EquipmentSlot slot) {
         ItemStack itemStack = this.getEquippedStack(slot);
-        if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5f * power) {
-            this.equipStack(slot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0f + power * (float)this.random.nextInt(18)), false));
+        if (!itemStack.isEmpty() && random.nextFloat() < 0.5f * power) {
+            this.equipStack(slot, EnchantmentHelper.enchant(random, itemStack, (int)(5.0f + power * (float)random.nextInt(18)), false));
         }
     }
 
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
-        if (this.random.nextFloat() < 0.05f) {
+        AbstractRandom abstractRandom = world.getRandom();
+        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        if (abstractRandom.nextFloat() < 0.05f) {
             this.setLeftHanded(true);
         } else {
             this.setLeftHanded(false);
@@ -1279,7 +1281,7 @@ extends LivingEntity {
                     this.attachLeash(entity, true);
                     return;
                 }
-            } else if (this.leashNbt.contains("X", 99) && this.leashNbt.contains("Y", 99) && this.leashNbt.contains("Z", 99)) {
+            } else if (this.leashNbt.contains("X", NbtElement.NUMBER_TYPE) && this.leashNbt.contains("Y", NbtElement.NUMBER_TYPE) && this.leashNbt.contains("Z", NbtElement.NUMBER_TYPE)) {
                 BlockPos blockPos = NbtHelper.toBlockPos(this.leashNbt);
                 this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
                 return;
@@ -1378,7 +1380,7 @@ extends LivingEntity {
             float f = 0.25f + (float)EnchantmentHelper.getEfficiency(this) * 0.05f;
             if (this.random.nextFloat() < f) {
                 player.getItemCooldownManager().set(Items.SHIELD, 100);
-                this.world.sendEntityStatus(player, (byte)30);
+                this.world.sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
             }
         }
     }

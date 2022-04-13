@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 public class SittingFlamingPhase
 extends AbstractSittingPhase {
     private static final int DURATION = 200;
-    private static final int field_30434 = 4;
-    private static final int field_30435 = 10;
+    private static final int MAX_TIMES_RUN = 4;
+    private static final int DRAGON_BREATH_MAX_TICK = 10;
     private int ticks;
     private int timesRun;
     @Nullable

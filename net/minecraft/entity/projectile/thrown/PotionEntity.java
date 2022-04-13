@@ -22,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -169,7 +170,7 @@ implements FlyingItemEntity {
             areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
         }
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
+        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
             areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
         }
         this.world.spawnEntity(areaEffectCloudEntity);

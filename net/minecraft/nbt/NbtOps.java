@@ -221,7 +221,7 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, nbtElement2.getType());
+        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE, nbtElement2.getType());
         NbtOps.addAll(abstractNbtList, nbtElement, nbtElement2);
         return DataResult.success(abstractNbtList);
     }
@@ -231,7 +231,7 @@ implements DynamicOps<NbtElement> {
         if (!(nbtElement instanceof AbstractNbtList) && !(nbtElement instanceof NbtEnd)) {
             return DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement);
         }
-        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : (byte)0, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
+        AbstractNbtList<?> abstractNbtList = NbtOps.createList(nbtElement instanceof AbstractNbtList ? ((AbstractNbtList)nbtElement).getHeldType() : NbtElement.END_TYPE, list.stream().findFirst().map(NbtElement::getType).orElse((byte)0));
         NbtOps.addAll(abstractNbtList, nbtElement, list);
         return DataResult.success(abstractNbtList);
     }

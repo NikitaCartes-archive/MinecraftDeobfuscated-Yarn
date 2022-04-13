@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -47,7 +48,7 @@ public class Inventories {
     }
 
     public static void readNbt(NbtCompound nbt, DefaultedList<ItemStack> stacks) {
-        NbtList nbtList = nbt.getList("Items", 10);
+        NbtList nbtList = nbt.getList("Items", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             NbtCompound nbtCompound = nbtList.getCompound(i);
             int j = nbtCompound.getByte("Slot") & 0xFF;

@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.server.BarterLootTableGenerator;
 import net.minecraft.data.server.BlockLootTableGenerator;
 import net.minecraft.data.server.ChestLootTableGenerator;
@@ -48,7 +48,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache cache) {
+    public void run(DataWriter cache) {
         Path path = this.root.getOutput();
         HashMap<Identifier, LootTable> map = Maps.newHashMap();
         this.lootTypeGenerators.forEach(generator -> ((Consumer)((Supplier)generator.getFirst()).get()).accept((id, builder) -> {

@@ -65,7 +65,7 @@ public class AllayBrain {
         brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new WalkToNearestVisibleWantedItemTask<AllayEntity>(allay -> true, 2.0f, true, 9)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 1.25f)), Pair.of(2, new WalkTowardsLookTargetTask(AllayBrain::getLookTarget, 16, 1.25f)), Pair.of(3, new TimeLimitedTask<LivingEntity>(new FollowMobTask(allay -> true, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(new NoPenaltyStrollTask(1.0f), 2), Pair.of(new GoTowardsLookTarget(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
     }
 
-    public static void resetIdleActivities(AllayEntity allay) {
+    public static void updateActivities(AllayEntity allay) {
         allay.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
     }
 

@@ -31,13 +31,14 @@ import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
 import net.minecraft.entity.ai.brain.task.RoarTask;
 import net.minecraft.entity.ai.brain.task.SniffTask;
+import net.minecraft.entity.ai.brain.task.SonicBoomTask;
 import net.minecraft.entity.ai.brain.task.StartSniffingTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.Task;
-import net.minecraft.entity.ai.brain.task.UpdateRoarTargetTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.Angriness;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -46,7 +47,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class WardenBrain {
-    private static final int field_38174 = 8;
     private static final float field_38175 = 0.5f;
     private static final float field_38176 = 0.7f;
     private static final float field_38177 = 1.2f;
@@ -58,7 +58,7 @@ public class WardenBrain {
     public static final int DIG_COOLDOWN = 1200;
     private static final int field_38181 = 100;
     private static final List<SensorType<? extends Sensor<? super WardenEntity>>> SENSORS = List.of(SensorType.NEAREST_PLAYERS, SensorType.WARDEN_ENTITY_SENSOR);
-    private static final List<MemoryModuleType<?>> MEMORY_MODULES = List.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.ROAR_TARGET, MemoryModuleType.DISTURBANCE_LOCATION, MemoryModuleType.RECENT_PROJECTILE, MemoryModuleType.IS_SNIFFING, MemoryModuleType.IS_EMERGING, MemoryModuleType.ROAR_SOUND_DELAY, MemoryModuleType.DIG_COOLDOWN, MemoryModuleType.ROAR_SOUND_COOLDOWN, MemoryModuleType.SNIFF_COOLDOWN, MemoryModuleType.TOUCH_COOLDOWN, MemoryModuleType.VIBRATION_COOLDOWN);
+    private static final List<MemoryModuleType<?>> MEMORY_MODULES = List.of(MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.ROAR_TARGET, MemoryModuleType.DISTURBANCE_LOCATION, MemoryModuleType.RECENT_PROJECTILE, MemoryModuleType.IS_SNIFFING, MemoryModuleType.IS_EMERGING, MemoryModuleType.ROAR_SOUND_DELAY, MemoryModuleType.DIG_COOLDOWN, MemoryModuleType.ROAR_SOUND_COOLDOWN, MemoryModuleType.SNIFF_COOLDOWN, MemoryModuleType.TOUCH_COOLDOWN, MemoryModuleType.VIBRATION_COOLDOWN, MemoryModuleType.SONIC_BOOM_COOLDOWN, MemoryModuleType.SONIC_BOOM_SOUND_COOLDOWN, MemoryModuleType.SONIC_BOOM_SOUND_DELAY);
     private static final Task<WardenEntity> RESET_DIG_COOLDOWN_TASK = new Task<WardenEntity>(ImmutableMap.of(MemoryModuleType.DIG_COOLDOWN, MemoryModuleState.REGISTERED)){
 
         @Override
@@ -113,11 +113,11 @@ public class WardenBrain {
     }
 
     private static void addRoarActivities(Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.ROAR, 10, ImmutableList.of(new RoarTask(), new UpdateRoarTargetTask(warden -> true, WardenEntity::getPrimeSuspect, ROAR_DURATION)), MemoryModuleType.ROAR_TARGET);
+        brain.setTaskList(Activity.ROAR, 10, ImmutableList.of(new RoarTask()), MemoryModuleType.ROAR_TARGET);
     }
 
     private static void addFightActivities(WardenEntity warden, Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, new ForgetAttackTargetTask<WardenEntity>(entity -> warden.getAngriness() != Angriness.ANGRY || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), new RangedApproachTask(1.2f), new FollowMobTask(entity -> WardenBrain.isTargeting(warden, entity), 8.0f), new MeleeAttackTask(18)), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, new ForgetAttackTargetTask<WardenEntity>(entity -> warden.getAngriness() != Angriness.ANGRY || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), new FollowMobTask(entity -> WardenBrain.isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)), new RangedApproachTask(1.2f), new SonicBoomTask(), new MeleeAttackTask(18)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static boolean isTargeting(WardenEntity warden, LivingEntity entity2) {
@@ -125,7 +125,9 @@ public class WardenBrain {
     }
 
     private static void removeDeadSuspect(WardenEntity warden, LivingEntity suspect) {
-        warden.removeSuspect(suspect);
+        if (!warden.isValidTarget(suspect)) {
+            warden.removeSuspect(suspect);
+        }
         WardenBrain.resetDigCooldown(warden);
     }
 

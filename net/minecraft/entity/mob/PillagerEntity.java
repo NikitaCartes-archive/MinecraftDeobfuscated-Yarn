@@ -47,10 +47,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -146,7 +148,7 @@ InventoryOwner {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        NbtList nbtList = nbt.getList("Inventory", 10);
+        NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size(); ++i) {
             ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
             if (itemStack.isEmpty()) continue;
@@ -168,21 +170,22 @@ InventoryOwner {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        this.initEquipment(difficulty);
-        this.updateEnchantments(difficulty);
+        AbstractRandom abstractRandom = world.getRandom();
+        this.initEquipment(abstractRandom, difficulty);
+        this.updateEnchantments(abstractRandom, difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
-    protected void initEquipment(LocalDifficulty difficulty) {
+    protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.CROSSBOW));
     }
 
     @Override
-    protected void enchantMainHandItem(float power) {
+    protected void enchantMainHandItem(AbstractRandom random, float power) {
         ItemStack itemStack;
-        super.enchantMainHandItem(power);
-        if (this.random.nextInt(300) == 0 && (itemStack = this.getMainHandStack()).isOf(Items.CROSSBOW)) {
+        super.enchantMainHandItem(random, power);
+        if (random.nextInt(300) == 0 && (itemStack = this.getMainHandStack()).isOf(Items.CROSSBOW)) {
             Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
             map.putIfAbsent(Enchantments.PIERCING, 1);
             EnchantmentHelper.set(map, itemStack);

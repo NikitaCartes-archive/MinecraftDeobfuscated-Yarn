@@ -15,14 +15,14 @@ import org.jetbrains.annotations.Nullable;
 
 public class LookAtEntityGoal
 extends Goal {
-    public static final float field_33760 = 0.02f;
+    public static final float DEFAULT_CHANCE = 0.02f;
     protected final MobEntity mob;
     @Nullable
     protected Entity target;
     protected final float range;
     private int lookTime;
     protected final float chance;
-    private final boolean field_33761;
+    private final boolean lookForward;
     protected final Class<? extends LivingEntity> targetType;
     protected final TargetPredicate targetPredicate;
 
@@ -34,12 +34,12 @@ extends Goal {
         this(mob, targetType, range, chance, false);
     }
 
-    public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean bl) {
+    public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean lookForward) {
         this.mob = mob;
         this.targetType = targetType;
         this.range = range;
         this.chance = chance;
-        this.field_33761 = bl;
+        this.lookForward = lookForward;
         this.setControls(EnumSet.of(Goal.Control.LOOK));
         this.targetPredicate = targetType == PlayerEntity.class ? TargetPredicate.createNonAttackable().setBaseMaxDistance(range).setPredicate(entity -> EntityPredicates.rides(mob).test((Entity)entity)) : TargetPredicate.createNonAttackable().setBaseMaxDistance(range);
     }
@@ -82,7 +82,7 @@ extends Goal {
         if (!this.target.isAlive()) {
             return;
         }
-        double d = this.field_33761 ? this.mob.getEyeY() : this.target.getEyeY();
+        double d = this.lookForward ? this.mob.getEyeY() : this.target.getEyeY();
         this.mob.getLookControl().lookAt(this.target.getX(), d, this.target.getZ());
         --this.lookTime;
     }

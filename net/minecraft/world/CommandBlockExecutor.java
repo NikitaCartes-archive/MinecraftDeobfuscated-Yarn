@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.UUID;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -75,13 +76,13 @@ implements CommandOutput {
     public void readNbt(NbtCompound nbt) {
         this.command = nbt.getString("Command");
         this.successCount = nbt.getInt("SuccessCount");
-        if (nbt.contains("CustomName", 8)) {
+        if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
             this.setCustomName(Text.Serializer.fromJson(nbt.getString("CustomName")));
         }
-        if (nbt.contains("TrackOutput", 1)) {
+        if (nbt.contains("TrackOutput", NbtElement.BYTE_TYPE)) {
             this.trackOutput = nbt.getBoolean("TrackOutput");
         }
-        if (nbt.contains("LastOutput", 8) && this.trackOutput) {
+        if (nbt.contains("LastOutput", NbtElement.STRING_TYPE) && this.trackOutput) {
             try {
                 this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
             } catch (Throwable throwable) {

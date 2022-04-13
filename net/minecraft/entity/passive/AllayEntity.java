@@ -53,7 +53,6 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 public class AllayEntity
 extends PathAwareEntity
@@ -61,7 +60,7 @@ implements InventoryOwner,
 GameEventListener {
     private static final boolean field_38404 = false;
     private static final int field_38405 = 16;
-    private static final Vec3i field_38399 = new Vec3i(1, 1, 1);
+    private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
     protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS);
     private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
@@ -103,20 +102,22 @@ GameEventListener {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.isTouchingWater()) {
-            this.updateVelocity(0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(0.8f));
-        } else if (this.isInLava()) {
-            this.updateVelocity(0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(0.5));
-        } else {
-            float f = this.onGround ? this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f : 0.91f;
-            float g = MathHelper.magnitude(0.6f) * MathHelper.magnitude(0.91f) / MathHelper.magnitude(f);
-            this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
-            this.move(MovementType.SELF, this.getVelocity());
-            this.setVelocity(this.getVelocity().multiply(f));
+        if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+            if (this.isTouchingWater()) {
+                this.updateVelocity(0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(0.8f));
+            } else if (this.isInLava()) {
+                this.updateVelocity(0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(0.5));
+            } else {
+                float f = this.onGround ? this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f : 0.91f;
+                float g = MathHelper.magnitude(0.6f) * MathHelper.magnitude(0.91f) / MathHelper.magnitude(f);
+                this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
+                this.move(MovementType.SELF, this.getVelocity());
+                this.setVelocity(this.getVelocity().multiply(f));
+            }
         }
         this.updateLimbs(this, false);
     }
@@ -178,7 +179,7 @@ GameEventListener {
         this.getBrain().tick((ServerWorld)this.world, this);
         this.world.getProfiler().pop();
         this.world.getProfiler().push("allayActivityUpdate");
-        AllayBrain.resetIdleActivities(this);
+        AllayBrain.updateActivities(this);
         this.world.getProfiler().pop();
         super.mobTick();
     }
@@ -186,6 +187,9 @@ GameEventListener {
     @Override
     public void tickMovement() {
         super.tickMovement();
+        if (!this.world.isClient && this.isAlive() && this.age % 10 == 0) {
+            this.heal(1.0f);
+        }
     }
 
     @Override
@@ -233,7 +237,7 @@ GameEventListener {
 
     @Override
     protected Vec3i getItemPickUpRangeExpander() {
-        return field_38399;
+        return ITEM_PICKUP_RANGE_EXPANDER;
     }
 
     @Override
@@ -293,7 +297,7 @@ GameEventListener {
     }
 
     @Override
-    public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
+    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
         if (event != GameEvent.NOTE_BLOCK_PLAY) {
             return false;
         }

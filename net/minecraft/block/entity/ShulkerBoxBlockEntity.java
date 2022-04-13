@@ -20,6 +20,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -201,7 +202,7 @@ implements SidedInventory {
 
     public void readInventoryNbt(NbtCompound nbt) {
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(nbt) && nbt.contains(ITEMS_KEY, 9)) {
+        if (!this.deserializeLootTable(nbt) && nbt.contains(ITEMS_KEY, NbtElement.LIST_TYPE)) {
             Inventories.readNbt(nbt, this.inventory);
         }
     }

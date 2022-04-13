@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -37,7 +38,7 @@ Nameable {
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
         this.lock = ContainerLock.fromNbt(nbt);
-        if (nbt.contains("CustomName", 8)) {
+        if (nbt.contains("CustomName", NbtElement.STRING_TYPE)) {
             this.customName = Text.Serializer.fromJson(nbt.getString("CustomName"));
         }
     }

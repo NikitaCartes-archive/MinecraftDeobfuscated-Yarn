@@ -26,7 +26,7 @@ extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
 
     public MooshroomEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new CowEntityModel(context.getPart(EntityModelLayers.MOOSHROOM)), 0.7f);
-        this.addFeature(new MooshroomMushroomFeatureRenderer<MooshroomEntity>(this));
+        this.addFeature(new MooshroomMushroomFeatureRenderer<MooshroomEntity>(this, context.getBlockRenderManager()));
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -85,7 +86,7 @@ extends StructurePoolElement {
 
     public List<Structure.StructureBlockInfo> getDataStructureBlocks(StructureManager structureManager, BlockPos pos, BlockRotation rotation, boolean mirroredAndRotated) {
         Structure structure = this.getStructure(structureManager);
-        List<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
+        ObjectArrayList<Structure.StructureBlockInfo> list = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.STRUCTURE_BLOCK, mirroredAndRotated);
         ArrayList<Structure.StructureBlockInfo> list2 = Lists.newArrayList();
         for (Structure.StructureBlockInfo structureBlockInfo : list) {
             StructureBlockMode structureBlockMode;
@@ -98,7 +99,9 @@ extends StructurePoolElement {
     @Override
     public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos pos, BlockRotation rotation, AbstractRandom random) {
         Structure structure = this.getStructure(structureManager);
-        return Util.copyShuffled(structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true), random);
+        ObjectArrayList<Structure.StructureBlockInfo> objectArrayList = structure.getInfosForBlock(pos, new StructurePlacementData().setRotation(rotation), Blocks.JIGSAW, true);
+        Util.shuffle(objectArrayList, random);
+        return objectArrayList;
     }
 
     @Override

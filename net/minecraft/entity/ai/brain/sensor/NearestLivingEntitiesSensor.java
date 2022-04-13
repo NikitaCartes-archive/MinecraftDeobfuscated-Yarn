@@ -20,7 +20,7 @@ public class NearestLivingEntitiesSensor<T extends LivingEntity>
 extends Sensor<T> {
     @Override
     protected void sense(ServerWorld world, T entity) {
-        Box box = ((Entity)entity).getBoundingBox().expand(this.method_43081(), this.method_43082(), this.method_43081());
+        Box box = ((Entity)entity).getBoundingBox().expand(this.getHorizontalExpansion(), this.getHeightExpansion(), this.getHorizontalExpansion());
         List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, box, e -> e != entity && e.isAlive());
         list.sort(Comparator.comparingDouble(arg_0 -> entity.squaredDistanceTo(arg_0)));
         Brain<?> brain = ((LivingEntity)entity).getBrain();
@@ -28,11 +28,11 @@ extends Sensor<T> {
         brain.remember(MemoryModuleType.VISIBLE_MOBS, new LivingTargetCache((LivingEntity)entity, list));
     }
 
-    protected int method_43081() {
+    protected int getHorizontalExpansion() {
         return 16;
     }
 
-    protected int method_43082() {
+    protected int getHeightExpansion() {
         return 16;
     }
 

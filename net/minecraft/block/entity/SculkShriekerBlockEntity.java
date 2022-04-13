@@ -73,10 +73,10 @@ implements SculkSensorListener.Callback {
     @Override
     public void readNbt(NbtCompound nbt) {
         super.readNbt(nbt);
-        if (nbt.contains("warning_level", 99)) {
+        if (nbt.contains("warning_level", NbtElement.NUMBER_TYPE)) {
             this.warningLevel = nbt.getInt("warning_level");
         }
-        if (nbt.contains("listener", 10)) {
+        if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
             SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38237::error).ifPresent(vibrationListener -> {
                 this.vibrationListener = vibrationListener;
             });
@@ -96,7 +96,7 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
         return this.canWarn(world);
     }
 

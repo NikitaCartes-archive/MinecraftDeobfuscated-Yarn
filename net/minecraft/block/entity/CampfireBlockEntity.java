@@ -14,6 +14,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -107,11 +108,11 @@ implements Clearable {
         super.readNbt(nbt);
         this.itemsBeingCooked.clear();
         Inventories.readNbt(nbt, this.itemsBeingCooked);
-        if (nbt.contains("CookingTimes", 11)) {
+        if (nbt.contains("CookingTimes", NbtElement.INT_ARRAY_TYPE)) {
             is = nbt.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (nbt.contains("CookingTotalTimes", 11)) {
+        if (nbt.contains("CookingTotalTimes", NbtElement.INT_ARRAY_TYPE)) {
             is = nbt.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }

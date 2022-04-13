@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -142,7 +143,7 @@ extends Item {
 
     public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
         NbtCompound nbtCompound;
-        if (nbt != null && nbt.contains("EntityTag", 10) && (nbtCompound = nbt.getCompound("EntityTag")).contains("id", 8)) {
+        if (nbt != null && nbt.contains("EntityTag", NbtElement.COMPOUND_TYPE) && (nbtCompound = nbt.getCompound("EntityTag")).contains("id", NbtElement.STRING_TYPE)) {
             return EntityType.get(nbtCompound.getString("id")).orElse(this.type);
         }
         return this.type;

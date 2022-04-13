@@ -57,6 +57,10 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(player, itemBuilder.build(), entity);
         }
 
+        public static Conditions create(ItemPredicate.Builder itemBuilder, EntityPredicate.Extended entity) {
+            return Conditions.create(EntityPredicate.Extended.EMPTY, itemBuilder, entity);
+        }
+
         public boolean test(ItemStack stack, LootContext context) {
             if (!this.item.test(stack)) {
                 return false;

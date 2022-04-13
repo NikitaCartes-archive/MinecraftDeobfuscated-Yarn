@@ -8,6 +8,7 @@ import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 
 public interface DyeableItem {
     public static final String COLOR_KEY = "color";
@@ -16,12 +17,12 @@ public interface DyeableItem {
 
     default public boolean hasColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-        return nbtCompound != null && nbtCompound.contains(COLOR_KEY, 99);
+        return nbtCompound != null && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE);
     }
 
     default public int getColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
-        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY, 99)) {
+        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY, NbtElement.NUMBER_TYPE)) {
             return nbtCompound.getInt(COLOR_KEY);
         }
         return 10511680;

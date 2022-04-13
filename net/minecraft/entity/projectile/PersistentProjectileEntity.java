@@ -28,6 +28,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -417,18 +418,18 @@ extends ProjectileEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.life = nbt.getShort("life");
-        if (nbt.contains("inBlockState", 10)) {
+        if (nbt.contains("inBlockState", NbtElement.COMPOUND_TYPE)) {
             this.inBlockState = NbtHelper.toBlockState(nbt.getCompound("inBlockState"));
         }
         this.shake = nbt.getByte("shake") & 0xFF;
         this.inGround = nbt.getBoolean("inGround");
-        if (nbt.contains("damage", 99)) {
+        if (nbt.contains("damage", NbtElement.NUMBER_TYPE)) {
             this.damage = nbt.getDouble("damage");
         }
         this.pickupType = PickupPermission.fromOrdinal(nbt.getByte("pickup"));
         this.setCritical(nbt.getBoolean("crit"));
         this.setPierceLevel(nbt.getByte("PierceLevel"));
-        if (nbt.contains("SoundEvent", 8)) {
+        if (nbt.contains("SoundEvent", NbtElement.STRING_TYPE)) {
             this.sound = Registry.SOUND_EVENT.getOrEmpty(new Identifier(nbt.getString("SoundEvent"))).orElse(this.getHitSound());
         }
         this.setShotFromCrossbow(nbt.getBoolean("ShotFromCrossbow"));

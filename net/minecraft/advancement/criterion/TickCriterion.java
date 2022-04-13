@@ -67,8 +67,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY);
         }
 
-        public static Conditions createItemDeliveredToPlayer() {
-            return new Conditions(Criteria.ITEM_DELIVERED_TO_PLAYER.id, EntityPredicate.Extended.EMPTY);
+        public static Conditions createAvoidVibration() {
+            return new Conditions(Criteria.AVOID_VIBRATION.id, EntityPredicate.Extended.EMPTY);
         }
 
         public static Conditions createLocation(Block block, Item item) {

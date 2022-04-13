@@ -17,6 +17,7 @@ import net.minecraft.entity.passive.SchoolingFishEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BiomeTags;
@@ -183,18 +184,19 @@ extends SchoolingFishEntity {
         int j;
         int i;
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-        if (spawnReason == SpawnReason.BUCKET && entityNbt != null && entityNbt.contains(BUCKET_VARIANT_TAG_KEY, 3)) {
+        if (spawnReason == SpawnReason.BUCKET && entityNbt != null && entityNbt.contains(BUCKET_VARIANT_TAG_KEY, NbtElement.INT_TYPE)) {
             this.setVariant(entityNbt.getInt(BUCKET_VARIANT_TAG_KEY));
             return entityData;
         }
+        AbstractRandom abstractRandom = world.getRandom();
         if (entityData instanceof TropicalFishData) {
             TropicalFishData tropicalFishData = (TropicalFishData)entityData;
             i = tropicalFishData.shape;
             j = tropicalFishData.pattern;
             k = tropicalFishData.baseColor;
             l = tropicalFishData.patternColor;
-        } else if ((double)this.random.nextFloat() < 0.9) {
-            int m = Util.getRandom(COMMON_VARIANTS, this.random);
+        } else if ((double)abstractRandom.nextFloat() < 0.9) {
+            int m = Util.getRandom(COMMON_VARIANTS, abstractRandom);
             i = m & 0xFF;
             j = (m & 0xFF00) >> 8;
             k = (m & 0xFF0000) >> 16;
@@ -202,10 +204,10 @@ extends SchoolingFishEntity {
             entityData = new TropicalFishData(this, i, j, k, l);
         } else {
             this.commonSpawn = false;
-            i = this.random.nextInt(2);
-            j = this.random.nextInt(6);
-            k = this.random.nextInt(15);
-            l = this.random.nextInt(15);
+            i = abstractRandom.nextInt(2);
+            j = abstractRandom.nextInt(6);
+            k = abstractRandom.nextInt(15);
+            l = abstractRandom.nextInt(15);
         }
         this.setVariant(i | j << 8 | k << 16 | l << 24);
         return entityData;

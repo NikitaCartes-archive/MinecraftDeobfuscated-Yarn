@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -274,7 +275,7 @@ extends WaterCreatureEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 38) {
+        if (status == EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES) {
             this.spawnParticlesAround(ParticleTypes.HAPPY_VILLAGER);
         } else {
             super.handleStatus(status);
@@ -401,7 +402,7 @@ extends WaterCreatureEntity {
                 return;
             }
             this.dolphin.setTreasurePos(blockPos2);
-            serverWorld.sendEntityStatus(this.dolphin, (byte)38);
+            serverWorld.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
         }
 
         @Override
@@ -432,7 +433,7 @@ extends WaterCreatureEntity {
                 this.dolphin.getLookControl().lookAt(vec3d2.x, vec3d2.y, vec3d2.z, this.dolphin.getMaxHeadRotation() + 20, this.dolphin.getMaxLookPitchChange());
                 this.dolphin.getNavigation().startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.3);
                 if (world.random.nextInt(this.getTickCount(80)) == 0) {
-                    world.sendEntityStatus(this.dolphin, (byte)38);
+                    world.sendEntityStatus(this.dolphin, EntityStatuses.ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES);
                 }
             }
         }

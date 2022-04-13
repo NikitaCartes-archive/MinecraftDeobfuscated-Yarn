@@ -20,7 +20,7 @@ extends MobEntityRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>
 
     public SnowGolemEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new SnowGolemEntityModel(context.getPart(EntityModelLayers.SNOW_GOLEM)), 0.5f);
-        this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
+        this.addFeature(new SnowmanPumpkinFeatureRenderer(this, context.getBlockRenderManager(), context.getItemRenderer()));
     }
 
     @Override

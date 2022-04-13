@@ -24,6 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -132,7 +133,7 @@ public class WorldUpdater {
                                 nbtCompound2.remove("Heightmaps");
                                 bl3 = bl3 || nbtCompound2.contains("isLightOn");
                                 nbtCompound2.remove("isLightOn");
-                                NbtList nbtList = nbtCompound2.getList("sections", 10);
+                                NbtList nbtList = nbtCompound2.getList("sections", NbtElement.COMPOUND_TYPE);
                                 for (int j = 0; j < nbtList.size(); ++j) {
                                     NbtCompound nbtCompound3 = nbtList.getCompound(j);
                                     bl3 = bl3 || nbtCompound3.contains("BlockLight");

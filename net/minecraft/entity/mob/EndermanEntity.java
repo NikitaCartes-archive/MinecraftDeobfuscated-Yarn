@@ -46,6 +46,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -197,7 +198,7 @@ implements Angerable {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         BlockState blockState = null;
-        if (nbt.contains("carriedBlockState", 10) && (blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"))).isAir()) {
+        if (nbt.contains("carriedBlockState", NbtElement.COMPOUND_TYPE) && (blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"))).isAir()) {
             blockState = null;
         }
         this.setCarriedBlock(blockState);
@@ -446,7 +447,7 @@ implements Angerable {
             }
             if (this.canPlaceOn(world, blockPos, blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos), blockState, blockState2, blockPos2)) {
                 world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
-                world.emitGameEvent((Entity)this.enderman, GameEvent.BLOCK_PLACE, blockPos);
+                world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.enderman, blockState3));
                 this.enderman.setCarriedBlock(null);
             }
         }
@@ -490,7 +491,7 @@ implements Angerable {
             boolean bl = blockHitResult.getBlockPos().equals(blockPos);
             if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
                 world.removeBlock(blockPos, false);
-                world.emitGameEvent((Entity)this.enderman, GameEvent.BLOCK_DESTROY, blockPos);
+                world.emitGameEvent(GameEvent.BLOCK_DESTROY, blockPos, GameEvent.Emitter.of(this.enderman, blockState));
                 this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
             }
         }

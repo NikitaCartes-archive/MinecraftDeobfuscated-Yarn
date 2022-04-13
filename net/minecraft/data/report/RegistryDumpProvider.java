@@ -9,9 +9,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.nio.file.Path;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
@@ -26,7 +26,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache cache) throws IOException {
+    public void run(DataWriter cache) throws IOException {
         JsonObject jsonObject = new JsonObject();
         Registry.REGISTRIES.streamEntries().forEach(entry -> jsonObject.add(entry.registryKey().getValue().toString(), RegistryDumpProvider.toJson((Registry)entry.value())));
         Path path = this.generator.getOutput().resolve("reports/registries.json");

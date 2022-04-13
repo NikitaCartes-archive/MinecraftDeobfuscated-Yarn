@@ -26,6 +26,7 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -89,6 +90,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -199,7 +201,7 @@ public abstract class PlayerManager {
         for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
             serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
         }
-        if (nbtCompound != null && nbtCompound.contains("RootVehicle", 10) && (entity = EntityType.loadEntityWithPassengers((nbtCompound2 = nbtCompound.getCompound("RootVehicle")).getCompound("Entity"), serverWorld2, vehicle -> {
+        if (nbtCompound != null && nbtCompound.contains("RootVehicle", NbtElement.COMPOUND_TYPE) && (entity = EntityType.loadEntityWithPassengers((nbtCompound2 = nbtCompound.getCompound("RootVehicle")).getCompound("Entity"), serverWorld2, vehicle -> {
             if (!serverWorld2.tryLoadEntity((Entity)vehicle)) {
                 return null;
             }
@@ -359,7 +361,7 @@ public abstract class PlayerManager {
     }
 
     public ServerPlayerEntity createPlayer(GameProfile profile) {
-        UUID uUID = PlayerEntity.getUuidFromProfile(profile);
+        UUID uUID = DynamicSerializableUuid.getUuidFromProfile(profile);
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (int i = 0; i < this.players.size(); ++i) {
             ServerPlayerEntity serverPlayerEntity = this.players.get(i);
@@ -519,7 +521,7 @@ public abstract class PlayerManager {
 
     private void sendCommandTree(ServerPlayerEntity player, int permissionLevel) {
         if (player.networkHandler != null) {
-            byte b = permissionLevel <= 0 ? (byte)24 : (permissionLevel >= 4 ? (byte)28 : (byte)((byte)(24 + permissionLevel)));
+            byte b = permissionLevel <= 0 ? (byte)24 : (permissionLevel >= 4 ? (byte)28 : (byte)((byte)(EntityStatuses.SET_OP_LEVEL_0 + permissionLevel)));
             player.networkHandler.sendPacket(new EntityStatusS2CPacket(player, b));
         }
         this.server.getCommandManager().sendCommandTree(player);

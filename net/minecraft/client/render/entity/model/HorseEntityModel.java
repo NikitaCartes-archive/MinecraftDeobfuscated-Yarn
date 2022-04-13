@@ -15,12 +15,12 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class HorseEntityModel<T extends HorseBaseEntity>
+public class HorseEntityModel<T extends AbstractHorseEntity>
 extends AnimalModel<T> {
     private static final float EATING_GRASS_ANIMATION_HEAD_BASE_PITCH = 2.1816616f;
     private static final float ANGRY_ANIMATION_FRONT_LEG_PITCH_MULTIPLIER = 1.0471976f;
@@ -144,9 +144,9 @@ extends AnimalModel<T> {
     }
 
     @Override
-    public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {
-        boolean bl = ((HorseBaseEntity)horseBaseEntity).isSaddled();
-        boolean bl2 = ((Entity)horseBaseEntity).hasPassengers();
+    public void setAngles(T abstractHorseEntity, float f, float g, float h, float i, float j) {
+        boolean bl = ((AbstractHorseEntity)abstractHorseEntity).isSaddled();
+        boolean bl2 = ((Entity)abstractHorseEntity).hasPassengers();
         for (ModelPart modelPart : this.saddle) {
             modelPart.visible = bl;
         }
@@ -167,11 +167,11 @@ extends AnimalModel<T> {
     }
 
     @Override
-    public void animateModel(T horseBaseEntity, float f, float g, float h) {
-        super.animateModel(horseBaseEntity, f, g, h);
-        float i = MathHelper.lerpAngle(((HorseBaseEntity)horseBaseEntity).prevBodyYaw, ((HorseBaseEntity)horseBaseEntity).bodyYaw, h);
-        float j = MathHelper.lerpAngle(((HorseBaseEntity)horseBaseEntity).prevHeadYaw, ((HorseBaseEntity)horseBaseEntity).headYaw, h);
-        float k = MathHelper.lerp(h, ((HorseBaseEntity)horseBaseEntity).prevPitch, ((Entity)horseBaseEntity).getPitch());
+    public void animateModel(T abstractHorseEntity, float f, float g, float h) {
+        super.animateModel(abstractHorseEntity, f, g, h);
+        float i = MathHelper.lerpAngle(((AbstractHorseEntity)abstractHorseEntity).prevBodyYaw, ((AbstractHorseEntity)abstractHorseEntity).bodyYaw, h);
+        float j = MathHelper.lerpAngle(((AbstractHorseEntity)abstractHorseEntity).prevHeadYaw, ((AbstractHorseEntity)abstractHorseEntity).headYaw, h);
+        float k = MathHelper.lerp(h, ((AbstractHorseEntity)abstractHorseEntity).prevPitch, ((Entity)abstractHorseEntity).getPitch());
         float l = j - i;
         float m = k * ((float)Math.PI / 180);
         if (l > 20.0f) {
@@ -183,18 +183,18 @@ extends AnimalModel<T> {
         if (g > 0.2f) {
             m += MathHelper.cos(f * 0.4f) * 0.15f * g;
         }
-        float n = ((HorseBaseEntity)horseBaseEntity).getEatingGrassAnimationProgress(h);
-        float o = ((HorseBaseEntity)horseBaseEntity).getAngryAnimationProgress(h);
+        float n = ((AbstractHorseEntity)abstractHorseEntity).getEatingGrassAnimationProgress(h);
+        float o = ((AbstractHorseEntity)abstractHorseEntity).getAngryAnimationProgress(h);
         float p = 1.0f - o;
-        float q = ((HorseBaseEntity)horseBaseEntity).getEatingAnimationProgress(h);
-        boolean bl = ((HorseBaseEntity)horseBaseEntity).tailWagTicks != 0;
-        float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
+        float q = ((AbstractHorseEntity)abstractHorseEntity).getEatingAnimationProgress(h);
+        boolean bl = ((AbstractHorseEntity)abstractHorseEntity).tailWagTicks != 0;
+        float r = (float)((AbstractHorseEntity)abstractHorseEntity).age + h;
         this.head.pivotY = 4.0f;
         this.head.pivotZ = -12.0f;
         this.body.pitch = 0.0f;
         this.head.pitch = 0.5235988f + m;
         this.head.yaw = l * ((float)Math.PI / 180);
-        float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
+        float s = ((Entity)abstractHorseEntity).isTouchingWater() ? 0.2f : 1.0f;
         float t = MathHelper.cos(s * f * 0.6662f + (float)Math.PI);
         float u = t * 0.8f * g;
         float v = (1.0f - Math.max(o, n)) * (0.5235988f + m + q * MathHelper.sin(r) * 0.05f);
@@ -231,7 +231,7 @@ extends AnimalModel<T> {
         this.leftFrontBabyLeg.pivotY = this.leftFrontLeg.pivotY;
         this.leftFrontBabyLeg.pivotZ = this.leftFrontLeg.pivotZ;
         this.leftFrontBabyLeg.pitch = this.leftFrontLeg.pitch;
-        boolean bl2 = ((PassiveEntity)horseBaseEntity).isBaby();
+        boolean bl2 = ((PassiveEntity)abstractHorseEntity).isBaby();
         this.rightHindLeg.visible = !bl2;
         this.leftHindLeg.visible = !bl2;
         this.rightFrontLeg.visible = !bl2;

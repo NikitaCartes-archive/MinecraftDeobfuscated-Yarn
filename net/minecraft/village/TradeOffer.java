@@ -5,6 +5,7 @@ package net.minecraft.village;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.MathHelper;
 
@@ -25,14 +26,14 @@ public class TradeOffer {
         this.secondBuyItem = ItemStack.fromNbt(nbt.getCompound("buyB"));
         this.sellItem = ItemStack.fromNbt(nbt.getCompound("sell"));
         this.uses = nbt.getInt("uses");
-        this.maxUses = nbt.contains("maxUses", 99) ? nbt.getInt("maxUses") : 4;
-        if (nbt.contains("rewardExp", 1)) {
+        this.maxUses = nbt.contains("maxUses", NbtElement.NUMBER_TYPE) ? nbt.getInt("maxUses") : 4;
+        if (nbt.contains("rewardExp", NbtElement.BYTE_TYPE)) {
             this.rewardingPlayerExperience = nbt.getBoolean("rewardExp");
         }
-        if (nbt.contains("xp", 3)) {
+        if (nbt.contains("xp", NbtElement.INT_TYPE)) {
             this.merchantExperience = nbt.getInt("xp");
         }
-        if (nbt.contains("priceMultiplier", 5)) {
+        if (nbt.contains("priceMultiplier", NbtElement.FLOAT_TYPE)) {
             this.priceMultiplier = nbt.getFloat("priceMultiplier");
         }
         this.specialPrice = nbt.getInt("specialPrice");

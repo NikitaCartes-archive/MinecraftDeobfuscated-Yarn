@@ -9,6 +9,7 @@ import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 
@@ -72,7 +73,7 @@ public class HungerManager {
     }
 
     public void readNbt(NbtCompound nbt) {
-        if (nbt.contains("foodLevel", 99)) {
+        if (nbt.contains("foodLevel", NbtElement.NUMBER_TYPE)) {
             this.foodLevel = nbt.getInt("foodLevel");
             this.foodTickTimer = nbt.getInt("foodTickTimer");
             this.saturationLevel = nbt.getFloat("foodSaturationLevel");

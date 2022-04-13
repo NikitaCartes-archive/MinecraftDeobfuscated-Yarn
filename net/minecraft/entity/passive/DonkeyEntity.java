@@ -6,8 +6,8 @@ package net.minecraft.entity.passive;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -58,7 +58,7 @@ extends AbstractDonkeyEntity {
             return false;
         }
         if (other instanceof DonkeyEntity || other instanceof HorseEntity) {
-            return this.canBreed() && ((HorseBaseEntity)other).canBreed();
+            return this.canBreed() && ((AbstractHorseEntity)other).canBreed();
         }
         return false;
     }
@@ -66,9 +66,9 @@ extends AbstractDonkeyEntity {
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         EntityType<AbstractDonkeyEntity> entityType = entity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
-        HorseBaseEntity horseBaseEntity = entityType.create(world);
-        this.setChildAttributes(entity, horseBaseEntity);
-        return horseBaseEntity;
+        AbstractHorseEntity abstractHorseEntity = entityType.create(world);
+        this.setChildAttributes(entity, abstractHorseEntity);
+        return abstractHorseEntity;
     }
 }
 

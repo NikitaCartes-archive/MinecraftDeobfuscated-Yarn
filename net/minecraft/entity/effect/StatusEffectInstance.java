@@ -257,18 +257,18 @@ implements Comparable<StatusEffectInstance> {
         int j = nbt.getInt("Duration");
         boolean bl = nbt.getBoolean("Ambient");
         boolean bl2 = true;
-        if (nbt.contains("ShowParticles", 1)) {
+        if (nbt.contains("ShowParticles", NbtElement.BYTE_TYPE)) {
             bl2 = nbt.getBoolean("ShowParticles");
         }
         boolean bl3 = bl2;
-        if (nbt.contains("ShowIcon", 1)) {
+        if (nbt.contains("ShowIcon", NbtElement.BYTE_TYPE)) {
             bl3 = nbt.getBoolean("ShowIcon");
         }
         StatusEffectInstance statusEffectInstance = null;
-        if (nbt.contains("HiddenEffect", 10)) {
+        if (nbt.contains("HiddenEffect", NbtElement.COMPOUND_TYPE)) {
             statusEffectInstance = StatusEffectInstance.fromNbt(type, nbt.getCompound("HiddenEffect"));
         }
-        Optional<FactorCalculationData> optional = nbt.contains("FactorCalculationData", 10) ? FactorCalculationData.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("FactorCalculationData"))).resultOrPartial(LOGGER::error) : Optional.empty();
+        Optional<FactorCalculationData> optional = nbt.contains("FactorCalculationData", NbtElement.COMPOUND_TYPE) ? FactorCalculationData.CODEC.parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("FactorCalculationData"))).resultOrPartial(LOGGER::error) : Optional.empty();
         return new StatusEffectInstance(type, j, Math.max(i, 0), bl, bl2, bl3, statusEffectInstance, optional);
     }
 

@@ -65,5 +65,6 @@ public class EntityStatuses {
     public static final byte FINISH_RAM = 59;
     public static final byte ADD_DEATH_PARTICLES = 60;
     public static final byte EARS_TWITCH = 61;
+    public static final byte SONIC_BOOM = 62;
 }
 

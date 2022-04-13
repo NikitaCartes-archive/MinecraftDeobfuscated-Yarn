@@ -12,6 +12,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.slf4j.Logger;
@@ -39,12 +40,12 @@ public class HotbarStorage {
             if (nbtCompound == null) {
                 return;
             }
-            if (!nbtCompound.contains("DataVersion", 99)) {
+            if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
                 nbtCompound.putInt("DataVersion", 1343);
             }
             nbtCompound = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, nbtCompound, nbtCompound.getInt("DataVersion"));
             for (int i = 0; i < 9; ++i) {
-                this.entries[i].readNbtList(nbtCompound.getList(String.valueOf(i), 10));
+                this.entries[i].readNbtList(nbtCompound.getList(String.valueOf(i), NbtElement.COMPOUND_TYPE));
             }
         } catch (Exception exception) {
             LOGGER.error("Failed to load creative mode options", exception);

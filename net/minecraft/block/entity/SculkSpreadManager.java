@@ -14,6 +14,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -109,9 +110,9 @@ public class SculkSpreadManager {
     }
 
     public void readNbt(NbtCompound nbt) {
-        if (nbt.contains("cursors", 9)) {
+        if (nbt.contains("cursors", NbtElement.LIST_TYPE)) {
             this.cursors.clear();
-            List list = Cursor.CODEC.listOf().parse(new Dynamic<NbtList>(NbtOps.INSTANCE, nbt.getList("cursors", 10))).resultOrPartial(LOGGER::error).orElseGet(ArrayList::new);
+            List list = Cursor.CODEC.listOf().parse(new Dynamic<NbtList>(NbtOps.INSTANCE, nbt.getList("cursors", NbtElement.COMPOUND_TYPE))).resultOrPartial(LOGGER::error).orElseGet(ArrayList::new);
             int i = Math.min(list.size(), 32);
             for (int j = 0; j < i; ++j) {
                 this.addCursor((Cursor)list.get(j));
@@ -183,7 +184,7 @@ public class SculkSpreadManager {
     }
 
     public static class Cursor {
-        private static final List<Vec3i> OFFSETS = Util.make(new ArrayList(18), offsets -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1)).filter(pos -> (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) && !pos.equals(BlockPos.ORIGIN)).map(BlockPos::toImmutable).forEach(offsets::add));
+        private static final ObjectArrayList<Vec3i> OFFSETS = Util.make(new ObjectArrayList(18), objectArrayList -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1)).filter(pos -> (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) && !pos.equals(BlockPos.ORIGIN)).map(BlockPos::toImmutable).forEach(objectArrayList::add));
         public static final int field_37622 = 1;
         private BlockPos pos;
         int charge;

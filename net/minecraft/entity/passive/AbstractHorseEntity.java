@@ -15,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.JumpingMount;
@@ -49,6 +50,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -66,13 +68,14 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class HorseBaseEntity
+public abstract class AbstractHorseEntity
 extends AnimalEntity
 implements InventoryChangedListener,
 RideableInventory,
@@ -81,11 +84,11 @@ Saddleable {
     public static final int field_30413 = 400;
     public static final int field_30414 = 499;
     public static final int field_30415 = 500;
-    private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
+    private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).ignoreVisibility().setPredicate(IS_BRED_HORSE);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
-    private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final int TAMED_FLAG = 2;
     private static final int SADDLED_FLAG = 4;
     private static final int BRED_FLAG = 8;
@@ -114,7 +117,7 @@ Saddleable {
     protected boolean playExtraHorseSounds = true;
     protected int soundTicks;
 
-    protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
+    protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
         this.stepHeight = 1.0f;
         this.onChestedStatusChanged();
@@ -124,7 +127,7 @@ Saddleable {
     protected void initGoals() {
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.2));
         this.goalSelector.add(1, new HorseBondWithPlayerGoal(this, 1.2));
-        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, HorseBaseEntity.class));
+        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, AbstractHorseEntity.class));
         this.goalSelector.add(4, new FollowParentGoal(this, 1.0));
         this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
         this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0f));
@@ -541,8 +544,8 @@ Saddleable {
     }
 
     protected void walkToParent() {
-        HorseBaseEntity livingEntity;
-        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
+        AbstractHorseEntity livingEntity;
+        if (this.isBred() && this.isBaby() && !this.isEatingGrass() && (livingEntity = this.world.getClosestEntity(AbstractHorseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0))) != null && this.squaredDistanceTo(livingEntity) > 4.0) {
             this.navigation.findPathTo(livingEntity, 0);
         }
     }
@@ -652,7 +655,7 @@ Saddleable {
         if (player instanceof ServerPlayerEntity) {
             Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
         }
-        this.world.sendEntityStatus(this, (byte)7);
+        this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
         return true;
     }
 
@@ -748,7 +751,7 @@ Saddleable {
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (nbt.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
+        if (nbt.contains("SaddleItem", NbtElement.COMPOUND_TYPE) && (itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
@@ -769,12 +772,12 @@ Saddleable {
         return null;
     }
 
-    protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
-        double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + (double)this.getChildHealthBonus();
+    protected void setChildAttributes(PassiveEntity mate, AbstractHorseEntity child) {
+        double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + (double)this.getChildHealthBonus(this.random);
         child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
-        double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + this.getChildJumpStrengthBonus();
+        double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + this.getChildJumpStrengthBonus(this.random);
         child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
-        double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus();
+        double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus(this.random);
         child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
     }
 
@@ -832,9 +835,9 @@ Saddleable {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 7) {
+        if (status == EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES) {
             this.spawnPlayerReactionParticles(true);
-        } else if (status == 6) {
+        } else if (status == EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES) {
             this.spawnPlayerReactionParticles(false);
         } else {
             super.handleStatus(status);
@@ -860,16 +863,16 @@ Saddleable {
         }
     }
 
-    protected float getChildHealthBonus() {
-        return 15.0f + (float)this.random.nextInt(8) + (float)this.random.nextInt(9);
+    protected float getChildHealthBonus(AbstractRandom random) {
+        return 15.0f + (float)random.nextInt(8) + (float)random.nextInt(9);
     }
 
-    protected double getChildJumpStrengthBonus() {
-        return (double)0.4f + this.random.nextDouble() * 0.2 + this.random.nextDouble() * 0.2 + this.random.nextDouble() * 0.2;
+    protected double getChildJumpStrengthBonus(AbstractRandom random) {
+        return (double)0.4f + random.nextDouble() * 0.2 + random.nextDouble() * 0.2 + random.nextDouble() * 0.2;
     }
 
-    protected double getChildMovementSpeedBonus() {
-        return ((double)0.45f + this.random.nextDouble() * 0.3 + this.random.nextDouble() * 0.3 + this.random.nextDouble() * 0.3) * 0.25;
+    protected double getChildMovementSpeedBonus(AbstractRandom random) {
+        return ((double)0.45f + random.nextDouble() * 0.3 + random.nextDouble() * 0.3 + random.nextDouble() * 0.3) * 0.25;
     }
 
     @Override
@@ -920,7 +923,7 @@ Saddleable {
 
             @Override
             public ItemStack get() {
-                return HorseBaseEntity.this.items.getStack(slot);
+                return AbstractHorseEntity.this.items.getStack(slot);
             }
 
             @Override
@@ -928,8 +931,8 @@ Saddleable {
                 if (!predicate.test(stack)) {
                     return false;
                 }
-                HorseBaseEntity.this.items.setStack(slot, stack);
-                HorseBaseEntity.this.updateSaddle();
+                AbstractHorseEntity.this.items.setStack(slot, stack);
+                AbstractHorseEntity.this.updateSaddle();
                 return true;
             }
         };
@@ -993,12 +996,12 @@ Saddleable {
 
     @Override
     public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        Vec3d vec3d = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
+        Vec3d vec3d = AbstractHorseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.RIGHT ? 90.0f : -90.0f));
         Vec3d vec3d2 = this.locateSafeDismountingPos(vec3d, passenger);
         if (vec3d2 != null) {
             return vec3d2;
         }
-        Vec3d vec3d3 = HorseBaseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.LEFT ? 90.0f : -90.0f));
+        Vec3d vec3d3 = AbstractHorseEntity.getPassengerDismountOffset(this.getWidth(), passenger.getWidth(), this.getYaw() + (passenger.getMainArm() == Arm.LEFT ? 90.0f : -90.0f));
         Vec3d vec3d4 = this.locateSafeDismountingPos(vec3d3, passenger);
         if (vec3d4 != null) {
             return vec3d4;
@@ -1006,7 +1009,7 @@ Saddleable {
         return this.getPos();
     }
 
-    protected void initAttributes() {
+    protected void initAttributes(AbstractRandom random) {
     }
 
     @Override
@@ -1015,7 +1018,7 @@ Saddleable {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
-        this.initAttributes();
+        this.initAttributes(world.getRandom());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 

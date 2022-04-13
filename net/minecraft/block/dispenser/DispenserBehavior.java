@@ -40,7 +40,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -255,10 +255,10 @@ public interface DispenserBehavior {
             @Override
             protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
                 BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-                List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot());
-                for (HorseBaseEntity horseBaseEntity : list) {
-                    if (!horseBaseEntity.isHorseArmor(stack) || horseBaseEntity.hasArmorInSlot() || !horseBaseEntity.isTame()) continue;
-                    horseBaseEntity.getStackReference(401).set(stack.split(1));
+                List<AbstractHorseEntity> list = pointer.getWorld().getEntitiesByClass(AbstractHorseEntity.class, new Box(blockPos), entity -> entity.isAlive() && entity.hasArmorSlot());
+                for (AbstractHorseEntity abstractHorseEntity : list) {
+                    if (!abstractHorseEntity.isHorseArmor(stack) || abstractHorseEntity.hasArmorInSlot() || !abstractHorseEntity.isTame()) continue;
+                    abstractHorseEntity.getStackReference(401).set(stack.split(1));
                     this.setSuccess(true);
                     return stack;
                 }

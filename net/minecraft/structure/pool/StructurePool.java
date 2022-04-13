@@ -11,6 +11,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.structure.StructureManager;
@@ -37,14 +38,14 @@ public class StructurePool {
     public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
     private final Identifier id;
     private final List<Pair<StructurePoolElement, Integer>> elementCounts;
-    private final List<StructurePoolElement> elements;
+    private final ObjectArrayList<StructurePoolElement> elements;
     private final Identifier terminatorsId;
     private int highestY = Integer.MIN_VALUE;
 
     public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts) {
         this.id = id;
         this.elementCounts = elementCounts;
-        this.elements = Lists.newArrayList();
+        this.elements = new ObjectArrayList();
         for (Pair<StructurePoolElement, Integer> pair : elementCounts) {
             StructurePoolElement structurePoolElement = pair.getFirst();
             for (int i = 0; i < pair.getSecond(); ++i) {
@@ -57,7 +58,7 @@ public class StructurePool {
     public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<Function<Projection, ? extends StructurePoolElement>, Integer>> elementCounts, Projection projection) {
         this.id = id;
         this.elementCounts = Lists.newArrayList();
-        this.elements = Lists.newArrayList();
+        this.elements = new ObjectArrayList();
         for (Pair<Function<Projection, ? extends StructurePoolElement>, Integer> pair : elementCounts) {
             StructurePoolElement structurePoolElement = pair.getFirst().apply(projection);
             this.elementCounts.add(Pair.of(structurePoolElement, pair.getSecond()));

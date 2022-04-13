@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -433,7 +434,7 @@ extends HostileEntity {
             if (this.beamTicks == 0) {
                 this.guardian.setBeamTarget(livingEntity.getId());
                 if (!this.guardian.isSilent()) {
-                    this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
+                    this.guardian.world.sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
                 }
             } else if (this.beamTicks >= this.guardian.getWarmupTime()) {
                 float f = 1.0f;

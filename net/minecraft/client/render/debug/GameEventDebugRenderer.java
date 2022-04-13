@@ -23,7 +23,6 @@ import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -165,7 +164,7 @@ implements DebugRenderer.Renderer {
         }
 
         @Override
-        public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
+        public boolean listen(ServerWorld world, GameEvent event, @Nullable GameEvent.Emitter emitter, Vec3d pos) {
             return false;
         }
     }

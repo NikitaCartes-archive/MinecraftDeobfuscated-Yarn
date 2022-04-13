@@ -819,7 +819,7 @@ public class BlockStateModelGenerator {
     }
 
     private static List<BlockStateVariant> buildBlockStateVariants(List<Identifier> modelIds, UnaryOperator<BlockStateVariant> processor) {
-        return modelIds.stream().map(identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).map(processor).collect(Collectors.toList());
+        return modelIds.stream().map(modelId -> BlockStateVariant.create().put(VariantSettings.MODEL, modelId)).map(processor).collect(Collectors.toList());
     }
 
     private void registerFire() {
@@ -993,8 +993,8 @@ public class BlockStateModelGenerator {
     }
 
     private void registerSculkShrieker() {
-        Identifier identifier = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, TextureMap.method_42753(false), this.modelCollector);
-        Identifier identifier2 = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, "_can_summon", TextureMap.method_42753(true), this.modelCollector);
+        Identifier identifier = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, TextureMap.sculkShrieker(false), this.modelCollector);
+        Identifier identifier2 = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, "_can_summon", TextureMap.sculkShrieker(true), this.modelCollector);
         this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.CAN_SUMMON, identifier2, identifier)));
     }
@@ -1044,13 +1044,13 @@ public class BlockStateModelGenerator {
 
     private void registerRepeater() {
         this.registerItemModel(Items.REPEATER);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.REPEATER).coordinate(BlockStateVariantMap.create(Properties.DELAY, Properties.LOCKED, Properties.POWERED).register((integer, boolean_, boolean2) -> {
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.REPEATER).coordinate(BlockStateVariantMap.create(Properties.DELAY, Properties.LOCKED, Properties.POWERED).register((tick, locked, on) -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append('_').append(integer).append("tick");
-            if (boolean2.booleanValue()) {
+            stringBuilder.append('_').append(tick).append("tick");
+            if (on.booleanValue()) {
                 stringBuilder.append("_on");
             }
-            if (boolean_.booleanValue()) {
+            if (locked.booleanValue()) {
                 stringBuilder.append("_locked");
             }
             return BlockStateVariant.create().put(VariantSettings.MODEL, TextureMap.getSubId(Blocks.REPEATER, stringBuilder.toString()));
@@ -1065,7 +1065,7 @@ public class BlockStateModelGenerator {
     private void registerSnows() {
         TextureMap textureMap = TextureMap.all(Blocks.SNOW);
         Identifier identifier = Models.CUBE_ALL.upload(Blocks.SNOW_BLOCK, textureMap, this.modelCollector);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SNOW).coordinate(BlockStateVariantMap.create(Properties.LAYERS).register(integer -> BlockStateVariant.create().put(VariantSettings.MODEL, integer < 8 ? ModelIds.getBlockSubModelId(Blocks.SNOW, "_height" + integer * 2) : identifier))));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SNOW).coordinate(BlockStateVariantMap.create(Properties.LAYERS).register(height -> BlockStateVariant.create().put(VariantSettings.MODEL, height < 8 ? ModelIds.getBlockSubModelId(Blocks.SNOW, "_height" + height * 2) : identifier))));
         this.registerParentedItemModel(Blocks.SNOW, ModelIds.getBlockSubModelId(Blocks.SNOW, "_height2"));
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(Blocks.SNOW_BLOCK, identifier));
     }
@@ -1077,12 +1077,12 @@ public class BlockStateModelGenerator {
     private void registerStructureBlock() {
         Identifier identifier = TexturedModel.CUBE_ALL.upload(Blocks.STRUCTURE_BLOCK, this.modelCollector);
         this.registerParentedItemModel(Blocks.STRUCTURE_BLOCK, identifier);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.STRUCTURE_BLOCK).coordinate(BlockStateVariantMap.create(Properties.STRUCTURE_BLOCK_MODE).register(structureBlockMode -> BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + structureBlockMode.asString(), Models.CUBE_ALL, TextureMap::all)))));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.STRUCTURE_BLOCK).coordinate(BlockStateVariantMap.create(Properties.STRUCTURE_BLOCK_MODE).register(mode -> BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + mode.asString(), Models.CUBE_ALL, TextureMap::all)))));
     }
 
     private void registerSweetBerryBush() {
         this.registerItemModel(Items.SWEET_BERRIES);
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SWEET_BERRY_BUSH).coordinate(BlockStateVariantMap.create(Properties.AGE_3).register(integer -> BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + integer, Models.CROSS, TextureMap::cross)))));
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SWEET_BERRY_BUSH).coordinate(BlockStateVariantMap.create(Properties.AGE_3).register(stage -> BlockStateVariant.create().put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + stage, Models.CROSS, TextureMap::cross)))));
     }
 
     private void registerTripwire() {

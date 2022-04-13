@@ -36,6 +36,7 @@ public final class BlockTags {
     public static final TagKey<Block> MANGROVE_LOGS = BlockTags.of("mangrove_logs");
     public static final TagKey<Block> CRIMSON_STEMS = BlockTags.of("crimson_stems");
     public static final TagKey<Block> WARPED_STEMS = BlockTags.of("warped_stems");
+    public static final TagKey<Block> WART_BLOCKS = BlockTags.of("wart_blocks");
     public static final TagKey<Block> BANNERS = BlockTags.of("banners");
     public static final TagKey<Block> SAND = BlockTags.of("sand");
     public static final TagKey<Block> STAIRS = BlockTags.of("stairs");
@@ -63,6 +64,7 @@ public final class BlockTags {
     public static final TagKey<Block> CANDLES = BlockTags.of("candles");
     public static final TagKey<Block> DIRT = BlockTags.of("dirt");
     public static final TagKey<Block> TERRACOTTA = BlockTags.of("terracotta");
+    public static final TagKey<Block> COMPLETES_FIND_TREE_TUTORIAL = BlockTags.of("completes_find_tree_tutorial");
     public static final TagKey<Block> FLOWER_POTS = BlockTags.of("flower_pots");
     public static final TagKey<Block> ENDERMAN_HOLDABLE = BlockTags.of("enderman_holdable");
     public static final TagKey<Block> ICE = BlockTags.of("ice");
@@ -87,7 +89,6 @@ public final class BlockTags {
     public static final TagKey<Block> PORTALS = BlockTags.of("portals");
     public static final TagKey<Block> FIRE = BlockTags.of("fire");
     public static final TagKey<Block> NYLIUM = BlockTags.of("nylium");
-    public static final TagKey<Block> WART_BLOCKS = BlockTags.of("wart_blocks");
     public static final TagKey<Block> BEACON_BASE_BLOCKS = BlockTags.of("beacon_base_blocks");
     public static final TagKey<Block> SOUL_SPEED_BLOCKS = BlockTags.of("soul_speed_blocks");
     public static final TagKey<Block> WALL_POST_OVERRIDE = BlockTags.of("wall_post_override");
@@ -110,11 +111,14 @@ public final class BlockTags {
     public static final TagKey<Block> STONE_ORE_REPLACEABLES = BlockTags.of("stone_ore_replaceables");
     public static final TagKey<Block> DEEPSLATE_ORE_REPLACEABLES = BlockTags.of("deepslate_ore_replaceables");
     public static final TagKey<Block> BASE_STONE_NETHER = BlockTags.of("base_stone_nether");
+    public static final TagKey<Block> OVERWORLD_CARVER_REPLACEABLES = BlockTags.of("overworld_carver_replaceables");
+    public static final TagKey<Block> NETHER_CARVER_REPLACEABLES = BlockTags.of("nether_carver_replaceables");
     public static final TagKey<Block> CANDLE_CAKES = BlockTags.of("candle_cakes");
     public static final TagKey<Block> CAULDRONS = BlockTags.of("cauldrons");
     public static final TagKey<Block> CRYSTAL_SOUND_BLOCKS = BlockTags.of("crystal_sound_blocks");
     public static final TagKey<Block> INSIDE_STEP_SOUND_BLOCKS = BlockTags.of("inside_step_sound_blocks");
     public static final TagKey<Block> OCCLUDES_VIBRATION_SIGNALS = BlockTags.of("occludes_vibration_signals");
+    public static final TagKey<Block> DAMPENS_VIBRATIONS = BlockTags.of("dampens_vibrations");
     public static final TagKey<Block> DRIPSTONE_REPLACEABLE_BLOCKS = BlockTags.of("dripstone_replaceable_blocks");
     public static final TagKey<Block> CAVE_VINES = BlockTags.of("cave_vines");
     public static final TagKey<Block> MOSS_REPLACEABLE = BlockTags.of("moss_replaceable");

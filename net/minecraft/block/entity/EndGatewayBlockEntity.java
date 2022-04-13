@@ -14,6 +14,7 @@ import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -72,7 +73,7 @@ extends EndPortalBlockEntity {
         BlockPos blockPos;
         super.readNbt(nbt);
         this.age = nbt.getLong("Age");
-        if (nbt.contains("ExitPortal", 10) && World.isValid(blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal")))) {
+        if (nbt.contains("ExitPortal", NbtElement.COMPOUND_TYPE) && World.isValid(blockPos = NbtHelper.toBlockPos(nbt.getCompound("ExitPortal")))) {
             this.exitPortalPos = blockPos;
         }
         this.exactTeleport = nbt.getBoolean("ExactTeleport");

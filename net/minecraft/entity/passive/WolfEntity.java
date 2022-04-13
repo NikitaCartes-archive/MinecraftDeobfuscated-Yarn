@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -42,8 +43,8 @@ import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -55,6 +56,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -154,7 +156,7 @@ implements Angerable {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("CollarColor", 99)) {
+        if (nbt.contains("CollarColor", NbtElement.NUMBER_TYPE)) {
             this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
         }
         this.readAngerFromNbt(this.world, nbt);
@@ -196,7 +198,7 @@ implements Angerable {
             this.canShakeWaterOff = true;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
-            this.world.sendEntityStatus(this, (byte)8);
+            this.world.sendEntityStatus(this, EntityStatuses.SHAKE_OFF_WATER);
         }
         if (!this.world.isClient) {
             this.tickAngerLogic((ServerWorld)this.world, true);
@@ -214,7 +216,7 @@ implements Angerable {
         if (this.isWet()) {
             this.furWet = true;
             if (this.canShakeWaterOff && !this.world.isClient) {
-                this.world.sendEntityStatus(this, (byte)56);
+                this.world.sendEntityStatus(this, EntityStatuses.RESET_WOLF_SHAKE);
                 this.resetShake();
             }
         } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
@@ -389,21 +391,21 @@ implements Angerable {
             this.navigation.stop();
             this.setTarget(null);
             this.setSitting(true);
-            this.world.sendEntityStatus(this, (byte)7);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
             return ActionResult.SUCCESS;
         } else {
-            this.world.sendEntityStatus(this, (byte)6);
+            this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
         }
         return ActionResult.SUCCESS;
     }
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 8) {
+        if (status == EntityStatuses.SHAKE_OFF_WATER) {
             this.canShakeWaterOff = true;
             this.shakeProgress = 0.0f;
             this.lastShakeProgress = 0.0f;
-        } else if (status == 56) {
+        } else if (status == EntityStatuses.RESET_WOLF_SHAKE) {
             this.resetShake();
         } else {
             super.handleStatus(status);
@@ -517,7 +519,7 @@ implements Angerable {
         if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
             return false;
         }
-        if (target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame()) {
+        if (target instanceof AbstractHorseEntity && ((AbstractHorseEntity)target).isTame()) {
             return false;
         }
         return !(target instanceof TameableEntity) || !((TameableEntity)target).isTamed();

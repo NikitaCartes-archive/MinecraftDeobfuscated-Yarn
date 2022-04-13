@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.entity;
 
+import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -43,12 +44,13 @@ extends EntityRenderer<T> {
     private static final ModelIdentifier MAP_GLOW_FRAME = new ModelIdentifier("glow_item_frame", "map=true");
     public static final int GLOW_FRAME_BLOCK_LIGHT = 5;
     public static final int field_32933 = 30;
-    private final MinecraftClient client = MinecraftClient.getInstance();
     private final ItemRenderer itemRenderer;
+    private final BlockRenderManager blockRenderManager;
 
     public ItemFrameEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
         this.itemRenderer = context.getItemRenderer();
+        this.blockRenderManager = context.getBlockRenderManager();
     }
 
     @Override
@@ -73,34 +75,32 @@ extends EntityRenderer<T> {
         boolean bl = ((Entity)itemFrameEntity).isInvisible();
         ItemStack itemStack = ((ItemFrameEntity)itemFrameEntity).getHeldItemStack();
         if (!bl) {
-            BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
-            BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
+            BakedModelManager bakedModelManager = this.blockRenderManager.getModels().getModelManager();
             ModelIdentifier modelIdentifier = this.getModelId(itemFrameEntity, itemStack);
             matrixStack.push();
             matrixStack.translate(-0.5, -0.5, -0.5);
-            blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
+            this.blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(TexturedRenderLayers.getEntitySolid()), null, bakedModelManager.getModel(modelIdentifier), 1.0f, 1.0f, 1.0f, i, OverlayTexture.DEFAULT_UV);
             matrixStack.pop();
         }
         if (!itemStack.isEmpty()) {
-            boolean bl2 = itemStack.isOf(Items.FILLED_MAP);
+            OptionalInt optionalInt = ((ItemFrameEntity)itemFrameEntity).getMapId();
             if (bl) {
                 matrixStack.translate(0.0, 0.0, 0.5);
             } else {
                 matrixStack.translate(0.0, 0.0, 0.4375);
             }
-            int j = bl2 ? ((ItemFrameEntity)itemFrameEntity).getRotation() % 4 * 2 : ((ItemFrameEntity)itemFrameEntity).getRotation();
+            int j = optionalInt.isPresent() ? ((ItemFrameEntity)itemFrameEntity).getRotation() % 4 * 2 : ((ItemFrameEntity)itemFrameEntity).getRotation();
             matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
-            if (bl2) {
+            if (optionalInt.isPresent()) {
                 matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
                 matrixStack.translate(-64.0, -64.0, 0.0);
-                Integer integer = FilledMapItem.getMapId(itemStack);
-                MapState mapState = FilledMapItem.getMapState(integer, ((ItemFrameEntity)itemFrameEntity).world);
+                MapState mapState = FilledMapItem.getMapState(optionalInt.getAsInt(), ((ItemFrameEntity)itemFrameEntity).world);
                 matrixStack.translate(0.0, 0.0, -1.0);
                 if (mapState != null) {
                     int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 0xD2, i);
-                    this.client.gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, integer, mapState, true, k);
+                    MinecraftClient.getInstance().gameRenderer.getMapRenderer().draw(matrixStack, vertexConsumerProvider, optionalInt.getAsInt(), mapState, true, k);
                 }
             } else {
                 int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);

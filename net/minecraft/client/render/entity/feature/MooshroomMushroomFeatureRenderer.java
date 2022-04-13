@@ -25,8 +25,11 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity>
 extends FeatureRenderer<T, CowEntityModel<T>> {
-    public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> featureRendererContext) {
-        super(featureRendererContext);
+    private final BlockRenderManager blockRenderManager;
+
+    public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> context, BlockRenderManager blockRenderManager) {
+        super(context);
+        this.blockRenderManager = blockRenderManager;
     }
 
     @Override
@@ -40,16 +43,15 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         if (((Entity)mooshroomEntity).isInvisible() && !bl) {
             return;
         }
-        BlockRenderManager blockRenderManager = minecraftClient.getBlockRenderManager();
         BlockState blockState = ((MooshroomEntity)mooshroomEntity).getMooshroomType().getMushroomState();
         int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0f);
-        BakedModel bakedModel = blockRenderManager.getModel(blockState);
+        BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
         matrixStack.push();
         matrixStack.translate(0.2f, -0.35f, 0.5);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(0.2f, -0.35f, 0.5);
@@ -58,7 +60,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
         matrixStack.push();
         ((CowEntityModel)this.getContextModel()).getHead().rotate(matrixStack);
@@ -66,15 +68,15 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0f));
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+        this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
         matrixStack.pop();
     }
 
-    private void renderMushroom(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean renderAsModel, BlockRenderManager blockRenderManager, BlockState mushroomState, int overlay, BakedModel mushroomModel) {
+    private void renderMushroom(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, boolean renderAsModel, BlockState mushroomState, int overlay, BakedModel mushroomModel) {
         if (renderAsModel) {
-            blockRenderManager.getModelRenderer().render(matrices.peek(), vertexConsumers.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), mushroomState, mushroomModel, 0.0f, 0.0f, 0.0f, light, overlay);
+            this.blockRenderManager.getModelRenderer().render(matrices.peek(), vertexConsumers.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), mushroomState, mushroomModel, 0.0f, 0.0f, 0.0f, light, overlay);
         } else {
-            blockRenderManager.renderBlockAsEntity(mushroomState, matrices, vertexConsumers, light, overlay);
+            this.blockRenderManager.renderBlockAsEntity(mushroomState, matrices, vertexConsumers, light, overlay);
         }
     }
 }

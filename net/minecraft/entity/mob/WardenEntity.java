@@ -16,12 +16,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.WardenAngerManager;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.SonicBoomTask;
+import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -75,6 +78,7 @@ implements SculkSensorListener.Callback {
     private static final Logger field_38138 = LogUtils.getLogger();
     private static final int field_38139 = 16;
     private static final int field_38142 = 40;
+    private static final int field_38860 = 200;
     private static final int field_38143 = 500;
     private static final float field_38144 = 0.3f;
     private static final float field_38145 = 1.0f;
@@ -102,6 +106,7 @@ implements SculkSensorListener.Callback {
     public AnimationState emergingAnimationState = new AnimationState();
     public AnimationState diggingAnimationState = new AnimationState();
     public AnimationState attackingAnimationState = new AnimationState();
+    public AnimationState chargingSonicBoomAnimationState = new AnimationState();
     private final EntityGameEventHandler<SculkSensorListener> gameEventHandler;
     private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyList());
 
@@ -205,8 +210,9 @@ implements SculkSensorListener.Callback {
 
     @Override
     public boolean tryAttack(Entity target) {
-        this.world.sendEntityStatus(this, (byte)4);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
         this.playSound(SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, 10.0f, this.getSoundPitch());
+        SonicBoomTask.cooldown(this, 100);
         return super.tryAttack(target);
     }
 
@@ -281,10 +287,12 @@ implements SculkSensorListener.Callback {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 4) {
+        if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
             this.attackingAnimationState.start();
-        } else if (status == 61) {
+        } else if (status == EntityStatuses.EARS_TWITCH) {
             this.field_38162 = 10;
+        } else if (status == EntityStatuses.SONIC_BOOM) {
+            this.chargingSonicBoomAnimationState.start();
         } else {
             super.handleStatus(status);
         }
@@ -408,7 +416,7 @@ implements SculkSensorListener.Callback {
             });
             this.updateAnger();
         }
-        if (nbt.contains("listener", 10)) {
+        if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
             SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38138::error).ifPresent(sculkSensorListener -> this.gameEventHandler.setListener((SculkSensorListener)sculkSensorListener, this.world));
         }
     }
@@ -460,6 +468,11 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
+    public boolean canImmediatelyDespawn(double distanceSquared) {
+        return !this.isPersistent();
+    }
+
+    @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.getBrain().remember(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200L);
@@ -469,17 +482,6 @@ implements SculkSensorListener.Callback {
             this.setPersistent();
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-    }
-
-    @Override
-    public double squaredAttackRange(LivingEntity target) {
-        return 8.0;
-    }
-
-    @Override
-    public boolean isInAttackRange(LivingEntity entity) {
-        double d = this.squaredDistanceTo(entity.getX(), entity.getY() - (double)(this.getHeight() / 2.0f), entity.getZ());
-        return d <= this.squaredAttackRange(entity);
     }
 
     @Override
@@ -494,11 +496,16 @@ implements SculkSensorListener.Callback {
             if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty() && entity instanceof LivingEntity) {
                 LivingEntity livingEntity = (LivingEntity)entity;
                 if (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0)) {
-                    this.brain.remember(MemoryModuleType.ATTACK_TARGET, livingEntity);
+                    this.updateAttackTarget(livingEntity);
                 }
             }
         }
         return bl;
+    }
+
+    public void updateAttackTarget(LivingEntity entity) {
+        UpdateAttackTargetTask.updateAttackTarget(this, entity);
+        SonicBoomTask.cooldown(this, 200);
     }
 
     @Override
@@ -526,20 +533,20 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
         if (this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)) {
             return false;
         }
         if (this.isDiggingOrEmerging()) {
             return false;
         }
-        return !(entity instanceof LivingEntity) || this.isValidTarget(entity);
+        return !(emitter.sourceEntity() instanceof LivingEntity) || this.isValidTarget(emitter.sourceEntity());
     }
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
         this.brain.remember(MemoryModuleType.VIBRATION_COOLDOWN, Unit.INSTANCE, 40L);
-        world.sendEntityStatus(this, (byte)61);
+        world.sendEntityStatus(this, EntityStatuses.EARS_TWITCH);
         this.playSound(SoundEvents.ENTITY_WARDEN_TENDRIL_CLICKS, 5.0f, this.getSoundPitch());
         BlockPos blockPos = pos;
         if (sourceEntity != null) {

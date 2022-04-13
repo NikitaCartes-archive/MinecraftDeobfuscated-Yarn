@@ -8,20 +8,15 @@ import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.dev.NbtProvider;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
@@ -57,7 +52,7 @@ implements DataProvider {
     }
 
     @Override
-    public void run(DataCache cache) throws IOException {
+    public void run(DataWriter cache) throws IOException {
         Path path3 = this.root.getOutput();
         ArrayList<CompletableFuture> list = Lists.newArrayList();
         for (Path path22 : this.root.getInputs()) {
@@ -120,7 +115,7 @@ implements DataProvider {
         return compressedData;
     }
 
-    private void write(DataCache cache, CompressedData data, Path root) {
+    private void write(DataWriter cache, CompressedData data, Path root) {
         Path path;
         if (data.snbtContent != null) {
             path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
@@ -132,13 +127,7 @@ implements DataProvider {
         }
         path = root.resolve(data.name + ".nbt");
         try {
-            if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
-                Files.createDirectories(path.getParent(), new FileAttribute[0]);
-                try (OutputStream outputStream = Files.newOutputStream(path, new OpenOption[0]);){
-                    outputStream.write(data.bytes);
-                }
-            }
-            cache.updateSha1(path, data.sha1);
+            cache.write(path, data.bytes, data.sha1);
         } catch (IOException iOException) {
             LOGGER.error("Couldn't write structure {} at {}", data.name, path, iOException);
         }

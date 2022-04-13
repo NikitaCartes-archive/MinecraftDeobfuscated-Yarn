@@ -15,6 +15,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -26,8 +27,13 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
 extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
-    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> featureRendererContext) {
+    private final BlockRenderManager field_38905;
+    private final ItemRenderer field_38906;
+
+    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> featureRendererContext, BlockRenderManager blockRenderManager, ItemRenderer itemRenderer) {
         super(featureRendererContext);
+        this.field_38905 = blockRenderManager;
+        this.field_38906 = itemRenderer;
     }
 
     @Override
@@ -36,8 +42,7 @@ extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> 
         if (!snowGolemEntity.hasPumpkin()) {
             return;
         }
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        boolean bl2 = bl = minecraftClient.hasOutline(snowGolemEntity) && snowGolemEntity.isInvisible();
+        boolean bl2 = bl = MinecraftClient.getInstance().hasOutline(snowGolemEntity) && snowGolemEntity.isInvisible();
         if (snowGolemEntity.isInvisible() && !bl) {
             return;
         }
@@ -50,13 +55,12 @@ extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> 
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
         if (bl) {
             BlockState blockState = Blocks.CARVED_PUMPKIN.getDefaultState();
-            BlockRenderManager blockRenderManager = minecraftClient.getBlockRenderManager();
-            BakedModel bakedModel = blockRenderManager.getModel(blockState);
+            BakedModel bakedModel = this.field_38905.getModel(blockState);
             int n = LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f);
             matrixStack.translate(-0.5, -0.5, -0.5);
-            blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, n);
+            this.field_38905.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, n);
         } else {
-            minecraftClient.getItemRenderer().renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f), snowGolemEntity.getId());
+            this.field_38906.renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f), snowGolemEntity.getId());
         }
         matrixStack.pop();
     }

@@ -61,11 +61,6 @@ implements Fertilizable {
     }
 
     @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XZ;
-    }
-
-    @Override
     public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
         return true;
     }

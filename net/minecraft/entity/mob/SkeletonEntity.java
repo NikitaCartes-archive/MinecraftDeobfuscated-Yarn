@@ -13,6 +13,7 @@ import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
@@ -80,7 +81,7 @@ extends AbstractSkeletonEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains(STRAY_CONVERSION_TIME_KEY, 99) && nbt.getInt(STRAY_CONVERSION_TIME_KEY) > -1) {
+        if (nbt.contains(STRAY_CONVERSION_TIME_KEY, NbtElement.NUMBER_TYPE) && nbt.getInt(STRAY_CONVERSION_TIME_KEY) > -1) {
             this.setConversionTime(nbt.getInt(STRAY_CONVERSION_TIME_KEY));
         }
     }

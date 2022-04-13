@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -68,13 +69,13 @@ implements Waterloggable {
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
             if (state.get(SHRIEKING).booleanValue() && !state.isOf(newState.getBlock())) {
                 serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.warn(serverWorld));
             }
         }
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
@@ -117,6 +118,12 @@ implements Waterloggable {
             world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    @Nullable
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return (BlockState)this.getDefaultState().with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
     }
 
     @Override

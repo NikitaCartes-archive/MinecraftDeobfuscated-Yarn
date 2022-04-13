@@ -39,8 +39,8 @@ extends BlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
-        return this.states.getDataOrEmpty(abstractRandom).orElseThrow(IllegalStateException::new);
+    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+        return this.states.getDataOrEmpty(random).orElseThrow(IllegalStateException::new);
     }
 }
 

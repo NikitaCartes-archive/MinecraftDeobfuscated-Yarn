@@ -46,6 +46,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.IndexedIterable;
@@ -816,7 +817,11 @@ extends ByteBuf {
      * @see #MAX_TEXT_LENGTH
      */
     public Text readText() {
-        return Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
+        MutableText text = Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
+        if (text == null) {
+            throw new DecoderException("Received unexpected null component");
+        }
+        return text;
     }
 
     /**

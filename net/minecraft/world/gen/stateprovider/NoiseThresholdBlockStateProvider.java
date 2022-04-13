@@ -40,13 +40,13 @@ extends AbstractNoiseBlockStateProvider {
     }
 
     @Override
-    public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+    public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
         double d = this.getNoiseValue(pos, this.scale);
         if (d < (double)this.threshold) {
-            return Util.getRandom(this.lowStates, abstractRandom);
+            return Util.getRandom(this.lowStates, random);
         }
-        if (abstractRandom.nextFloat() < this.highChance) {
-            return Util.getRandom(this.highStates, abstractRandom);
+        if (random.nextFloat() < this.highChance) {
+            return Util.getRandom(this.highStates, random);
         }
         return this.defaultState;
     }

@@ -757,7 +757,7 @@ extends World {
     }
 
     @Override
-    public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+    public void emitGameEvent(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter) {
     }
 
     protected Map<String, MapState> getMapStates() {

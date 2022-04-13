@@ -6,6 +6,7 @@ package net.minecraft.entity.vehicle;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
@@ -14,6 +15,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -118,7 +120,7 @@ extends AbstractMinecartEntity {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 10) {
+        if (status == EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART) {
             this.prime();
         } else {
             super.handleStatus(status);
@@ -128,7 +130,7 @@ extends AbstractMinecartEntity {
     public void prime() {
         this.fuseTicks = 80;
         if (!this.world.isClient) {
-            this.world.sendEntityStatus(this, (byte)10);
+            this.world.sendEntityStatus(this, EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART);
             if (!this.isSilent()) {
                 this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
@@ -162,7 +164,7 @@ extends AbstractMinecartEntity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("TNTFuse", 99)) {
+        if (nbt.contains("TNTFuse", NbtElement.NUMBER_TYPE)) {
             this.fuseTicks = nbt.getInt("TNTFuse");
         }
     }

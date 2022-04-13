@@ -11,7 +11,7 @@ import net.minecraft.tag.EntityTypeTags;
 
 public class AxolotlAttackablesSensor
 extends NearestVisibleLivingEntitySensor {
-    public static final float field_30248 = 8.0f;
+    public static final float TARGET_RANGE = 8.0f;
 
     @Override
     protected boolean matches(LivingEntity entity, LivingEntity target) {

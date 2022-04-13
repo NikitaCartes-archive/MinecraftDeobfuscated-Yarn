@@ -6,10 +6,10 @@ package net.minecraft.client.render.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -19,7 +19,10 @@ import net.minecraft.world.MobSpawnerLogic;
 @Environment(value=EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer
 implements BlockEntityRenderer<MobSpawnerBlockEntity> {
+    private final EntityRenderDispatcher field_38885;
+
     public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.field_38885 = ctx.getEntityRenderDIspatcher();
     }
 
     @Override
@@ -39,7 +42,7 @@ implements BlockEntityRenderer<MobSpawnerBlockEntity> {
             matrixStack.translate(0.0, -0.2f, 0.0);
             matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
             matrixStack.scale(g, g, g);
-            MinecraftClient.getInstance().getEntityRenderDispatcher().render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
+            this.field_38885.render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

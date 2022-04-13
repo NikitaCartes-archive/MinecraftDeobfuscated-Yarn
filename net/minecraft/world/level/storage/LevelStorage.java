@@ -184,7 +184,7 @@ public class LevelStorage {
             if (nbtElement instanceof NbtCompound) {
                 NbtCompound nbtCompound = (NbtCompound)nbtElement;
                 NbtCompound nbtCompound2 = nbtCompound.getCompound(DATA_KEY);
-                int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+                int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
                 Dynamic<NbtCompound> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion());
                 return dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
             }
@@ -199,9 +199,9 @@ public class LevelStorage {
             try {
                 NbtCompound nbtCompound = NbtIo.readCompressed(file);
                 NbtCompound nbtCompound2 = nbtCompound.getCompound(DATA_KEY);
-                NbtCompound nbtCompound3 = nbtCompound2.contains("Player", 10) ? nbtCompound2.getCompound("Player") : null;
+                NbtCompound nbtCompound3 = nbtCompound2.contains("Player", NbtElement.COMPOUND_TYPE) ? nbtCompound2.getCompound("Player") : null;
                 nbtCompound2.remove("Player");
-                int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+                int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
                 Dynamic<NbtElement> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<NbtCompound>(ops, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion());
                 Pair<GeneratorOptions, Lifecycle> pair = LevelStorage.readGeneratorProperties(dynamic, dataFixer, i);
                 SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
@@ -222,7 +222,7 @@ public class LevelStorage {
                 if (nbtElement instanceof NbtCompound) {
                     NbtCompound nbtCompound = (NbtCompound)nbtElement;
                     NbtCompound nbtCompound2 = nbtCompound.getCompound(DATA_KEY);
-                    int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+                    int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
                     Dynamic<NbtCompound> dynamic = dataFixer.update(DataFixTypes.LEVEL.getTypeReference(), new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion());
                     SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
                     int j = saveVersionInfo.getLevelFormatVersion();

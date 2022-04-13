@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.WallStandingBlockItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -37,7 +38,7 @@ extends WallStandingBlockItem {
         if (nbtCompound == null || !nbtCompound.contains("Patterns")) {
             return;
         }
-        NbtList nbtList = nbtCompound.getList("Patterns", 10);
+        NbtList nbtList = nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < nbtList.size() && i < 6; ++i) {
             NbtCompound nbtCompound2 = nbtList.getCompound(i);
             DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));

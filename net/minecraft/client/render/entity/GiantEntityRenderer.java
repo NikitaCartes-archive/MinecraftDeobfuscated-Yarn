@@ -25,7 +25,7 @@ extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
     public GiantEntityRenderer(EntityRendererFactory.Context ctx, float scale) {
         super(ctx, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT)), 0.5f * scale);
         this.scale = scale;
-        this.addFeature(new HeldItemFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>>(this));
+        this.addFeature(new HeldItemFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>>(this, ctx.getHeldItemRenderer()));
         this.addFeature(new ArmorFeatureRenderer<GiantEntity, BipedEntityModel<GiantEntity>, GiantEntityModel>(this, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR))));
     }
 

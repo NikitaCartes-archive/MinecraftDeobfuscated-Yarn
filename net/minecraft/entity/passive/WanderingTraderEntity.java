@@ -32,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -141,7 +142,7 @@ extends MerchantEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("DespawnDelay", 99)) {
+        if (nbt.contains("DespawnDelay", NbtElement.NUMBER_TYPE)) {
             this.despawnDelay = nbt.getInt("DespawnDelay");
         }
         if (nbt.contains("WanderTarget")) {

@@ -75,7 +75,7 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class VillagerTaskListProvider {
-    private static final float field_30189 = 0.4f;
+    private static final float JOB_WALKING_SPEED = 0.4f;
 
     public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession profession, float speed) {
         return ImmutableList.of(Pair.of(0, new StayAboveWaterTask(0.8f)), Pair.of(0, new OpenDoorsTask()), Pair.of(0, new LookAroundTask(45, 90)), Pair.of(0, new PanicTask()), Pair.of(0, new WakeUpTask()), Pair.of(0, new HideWhenBellRingsTask()), Pair.of(0, new StartRaidTask()), Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE)), Pair.of(0, new ForgetCompletedPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.POTENTIAL_JOB_SITE)), Pair.of(1, new WanderAroundTask()), Pair.of(2, new WorkStationCompetitionTask(profession)), Pair.of(3, new FollowCustomerTask(speed)), new Pair[]{Pair.of(5, new WalkToNearestVisibleWantedItemTask(speed, false, 4)), Pair.of(6, new FindPointOfInterestTask(profession.getWorkStation(), MemoryModuleType.JOB_SITE, MemoryModuleType.POTENTIAL_JOB_SITE, true, Optional.empty())), Pair.of(7, new WalkTowardJobSiteTask(speed)), Pair.of(8, new TakeJobSiteTask(speed)), Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.HOME, MemoryModuleType.HOME, false, Optional.of((byte)14))), Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.MEETING, MemoryModuleType.MEETING_POINT, true, Optional.of((byte)14))), Pair.of(10, new GoToWorkTask()), Pair.of(10, new LoseJobOnSiteLossTask())});

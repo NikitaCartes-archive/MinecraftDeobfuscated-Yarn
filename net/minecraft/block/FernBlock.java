@@ -50,10 +50,5 @@ implements Fertilizable {
             TallPlantBlock.placeAt(world, tallPlantBlock.getDefaultState(), pos, 2);
         }
     }
-
-    @Override
-    public AbstractBlock.OffsetType getOffsetType() {
-        return AbstractBlock.OffsetType.XYZ;
-    }
 }
 

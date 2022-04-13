@@ -27,15 +27,20 @@ extends NearestLivingEntitiesSensor<WardenEntity> {
     @Override
     protected void sense(ServerWorld serverWorld, WardenEntity wardenEntity) {
         super.sense(serverWorld, wardenEntity);
-        WardenAttackablesSensor.method_43086(wardenEntity, entity -> entity.getType() == EntityType.PLAYER).or(() -> WardenAttackablesSensor.method_43086(wardenEntity, livingEntity -> livingEntity.getType() != EntityType.PLAYER)).ifPresentOrElse(entity -> wardenEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity), () -> wardenEntity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE));
+        WardenAttackablesSensor.findNearestTarget(wardenEntity, entity -> entity.getType() == EntityType.PLAYER).or(() -> WardenAttackablesSensor.findNearestTarget(wardenEntity, livingEntity -> livingEntity.getType() != EntityType.PLAYER)).ifPresentOrElse(entity -> wardenEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity), () -> wardenEntity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE));
     }
 
-    private static Optional<LivingEntity> method_43086(WardenEntity wardenEntity, Predicate<LivingEntity> predicate) {
-        return wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.MOBS).stream().flatMap(Collection::stream).filter(wardenEntity::isValidTarget).filter(predicate).findFirst();
+    private static Optional<LivingEntity> findNearestTarget(WardenEntity warden, Predicate<LivingEntity> targetPredicate) {
+        return warden.getBrain().getOptionalMemory(MemoryModuleType.MOBS).stream().flatMap(Collection::stream).filter(warden::isValidTarget).filter(targetPredicate).findFirst();
     }
 
     @Override
-    protected int method_43081() {
+    protected int getHorizontalExpansion() {
+        return 24;
+    }
+
+    @Override
+    protected int getHeightExpansion() {
         return 24;
     }
 }

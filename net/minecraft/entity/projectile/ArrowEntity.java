@@ -17,6 +17,7 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
@@ -27,10 +28,10 @@ import net.minecraft.world.World;
 
 public class ArrowEntity
 extends PersistentProjectileEntity {
-    private static final int field_30660 = 600;
-    private static final int field_30658 = -1;
+    private static final int MAX_POTION_DURATION_TICKS = 600;
+    private static final int NO_POTION_COLOR = -1;
     private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final byte field_30659 = 0;
+    private static final byte PARTICLE_EFFECT_STATUS = 0;
     private Potion potion = Potions.EMPTY;
     private final Set<StatusEffectInstance> effects = Sets.newHashSet();
     private boolean colorSet;
@@ -71,7 +72,7 @@ extends PersistentProjectileEntity {
 
     public static int getCustomPotionColor(ItemStack stack) {
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
+        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtElement.NUMBER_TYPE)) {
             return nbtCompound.getInt("CustomPotionColor");
         }
         return -1;
@@ -159,13 +160,13 @@ extends PersistentProjectileEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("Potion", 8)) {
+        if (nbt.contains("Potion", NbtElement.STRING_TYPE)) {
             this.potion = PotionUtil.getPotion(nbt);
         }
         for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(nbt)) {
             this.addEffect(statusEffectInstance);
         }
-        if (nbt.contains("Color", 99)) {
+        if (nbt.contains("Color", NbtElement.NUMBER_TYPE)) {
             this.setColor(nbt.getInt("Color"));
         } else {
             this.initColor();

@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -196,7 +197,7 @@ implements Angerable {
     @Override
     public boolean tryAttack(Entity target) {
         this.attackTicksLeft = 10;
-        this.world.sendEntityStatus(this, (byte)4);
+        this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
         float f = this.getAttackDamage();
         float g = (int)f > 0 ? f / 2.0f + (float)this.random.nextInt((int)f) : f;
         boolean bl = target.damage(DamageSource.mob(this), g);
@@ -233,12 +234,12 @@ implements Angerable {
 
     @Override
     public void handleStatus(byte status) {
-        if (status == 4) {
+        if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
             this.attackTicksLeft = 10;
             this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0f, 1.0f);
-        } else if (status == 11) {
+        } else if (status == EntityStatuses.LOOK_AT_VILLAGER) {
             this.lookingAtVillagerTicksLeft = 400;
-        } else if (status == 34) {
+        } else if (status == EntityStatuses.STOP_LOOKING_AT_VILLAGER) {
             this.lookingAtVillagerTicksLeft = 0;
         } else {
             super.handleStatus(status);
@@ -252,10 +253,10 @@ implements Angerable {
     public void setLookingAtVillager(boolean lookingAtVillager) {
         if (lookingAtVillager) {
             this.lookingAtVillagerTicksLeft = 400;
-            this.world.sendEntityStatus(this, (byte)11);
+            this.world.sendEntityStatus(this, EntityStatuses.LOOK_AT_VILLAGER);
         } else {
             this.lookingAtVillagerTicksLeft = 0;
-            this.world.sendEntityStatus(this, (byte)34);
+            this.world.sendEntityStatus(this, EntityStatuses.STOP_LOOKING_AT_VILLAGER);
         }
     }
 
