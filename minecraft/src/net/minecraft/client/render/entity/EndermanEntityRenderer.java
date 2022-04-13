@@ -22,7 +22,7 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 	public EndermanEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new EndermanEntityModel<>(context.getPart(EntityModelLayers.ENDERMAN)), 0.5F);
 		this.addFeature(new EndermanEyesFeatureRenderer<>(this));
-		this.addFeature(new EndermanBlockFeatureRenderer(this));
+		this.addFeature(new EndermanBlockFeatureRenderer(this, context.getBlockRenderManager()));
 	}
 
 	public void render(EndermanEntity endermanEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

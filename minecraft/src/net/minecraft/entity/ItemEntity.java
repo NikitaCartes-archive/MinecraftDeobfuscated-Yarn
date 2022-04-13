@@ -74,7 +74,7 @@ public class ItemEntity extends Entity {
 
 	@Override
 	public boolean occludeVibrationSignals() {
-		return this.getStack().isIn(ItemTags.OCCLUDES_VIBRATION_SIGNALS);
+		return this.getStack().isIn(ItemTags.DAMPENS_VIBRATIONS);
 	}
 
 	@Override

@@ -132,23 +132,25 @@ public class VertexFormat {
 
 	@Environment(EnvType.CLIENT)
 	public static enum DrawMode {
-		LINES(4, 2, 2),
-		LINE_STRIP(5, 2, 1),
-		DEBUG_LINES(1, 2, 2),
-		DEBUG_LINE_STRIP(3, 2, 1),
-		TRIANGLES(4, 3, 3),
-		TRIANGLE_STRIP(5, 3, 1),
-		TRIANGLE_FAN(6, 3, 1),
-		QUADS(4, 4, 4);
+		LINES(4, 2, 2, false),
+		LINE_STRIP(5, 2, 1, true),
+		DEBUG_LINES(1, 2, 2, false),
+		DEBUG_LINE_STRIP(3, 2, 1, true),
+		TRIANGLES(4, 3, 3, false),
+		TRIANGLE_STRIP(5, 3, 1, true),
+		TRIANGLE_FAN(6, 3, 1, true),
+		QUADS(4, 4, 4, false);
 
 		public final int mode;
 		public final int vertexCount;
 		public final int size;
+		public final boolean field_38878;
 
-		private DrawMode(int mode, int vertexCount, int size) {
+		private DrawMode(int mode, int vertexCount, int size, boolean bl) {
 			this.mode = mode;
 			this.vertexCount = vertexCount;
 			this.size = size;
+			this.field_38878 = bl;
 		}
 
 		public int getSize(int vertexCount) {

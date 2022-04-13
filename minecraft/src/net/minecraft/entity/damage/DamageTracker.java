@@ -16,8 +16,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
-	public static final int field_29967 = 100;
-	public static final int field_29968 = 300;
+	public static final int DAMAGE_COOLDOWN = 100;
+	public static final int ATTACK_DAMAGE_COOLDOWN = 300;
 	private final List<DamageRecord> recentDamage = Lists.<DamageRecord>newArrayList();
 	private final LivingEntity entity;
 	private int ageOnLastDamage;

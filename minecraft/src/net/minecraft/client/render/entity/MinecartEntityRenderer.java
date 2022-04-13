@@ -4,10 +4,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
@@ -22,11 +22,13 @@ import net.minecraft.util.math.Vec3f;
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
 	protected final EntityModel<T> model;
+	private final BlockRenderManager field_38892;
 
 	public MinecartEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
 		super(ctx);
 		this.shadowRadius = 0.7F;
 		this.model = new MinecartEntityModel<>(ctx.getPart(layer));
+		this.field_38892 = ctx.getBlockRenderManager();
 	}
 
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -101,6 +103,6 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	}
 
 	protected void renderBlock(T entity, float delta, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(state, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+		this.field_38892.renderBlockAsEntity(state, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
 	}
 }

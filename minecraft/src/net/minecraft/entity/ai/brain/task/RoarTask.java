@@ -36,6 +36,7 @@ public class RoarTask extends Task<WardenEntity> {
 		Brain<WardenEntity> brain = wardenEntity.getBrain();
 		brain.remember(MemoryModuleType.ROAR_SOUND_DELAY, Unit.INSTANCE, 25L);
 		brain.forget(MemoryModuleType.WALK_TARGET);
+		LookTargetUtil.lookAt(wardenEntity, (LivingEntity)wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).get());
 		wardenEntity.setPose(EntityPose.ROARING);
 	}
 
@@ -66,5 +67,8 @@ public class RoarTask extends Task<WardenEntity> {
 		if (wardenEntity.isInPose(EntityPose.ROARING)) {
 			wardenEntity.setPose(EntityPose.STANDING);
 		}
+
+		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.ROAR_TARGET).ifPresent(wardenEntity::updateAttackTarget);
+		wardenEntity.getBrain().forget(MemoryModuleType.ROAR_TARGET);
 	}
 }

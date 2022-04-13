@@ -50,15 +50,15 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 		} else if (!(other instanceof DonkeyEntity) && !(other instanceof HorseEntity)) {
 			return false;
 		} else {
-			return this.canBreed() && ((HorseBaseEntity)other).canBreed();
+			return this.canBreed() && ((AbstractHorseEntity)other).canBreed();
 		}
 	}
 
 	@Override
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-		EntityType<? extends HorseBaseEntity> entityType = entity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
-		HorseBaseEntity horseBaseEntity = entityType.create(world);
-		this.setChildAttributes(entity, horseBaseEntity);
-		return horseBaseEntity;
+		EntityType<? extends AbstractHorseEntity> entityType = entity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
+		AbstractHorseEntity abstractHorseEntity = entityType.create(world);
+		this.setChildAttributes(entity, abstractHorseEntity);
+		return abstractHorseEntity;
 	}
 }

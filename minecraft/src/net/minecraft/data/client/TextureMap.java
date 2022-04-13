@@ -293,8 +293,8 @@ public class TextureMap {
 			.put(TextureKey.CONTENT, content);
 	}
 
-	public static TextureMap method_42753(boolean bl) {
-		String string = bl ? "_can_summon" : "";
+	public static TextureMap sculkShrieker(boolean canSummon) {
+		String string = canSummon ? "_can_summon" : "";
 		return new TextureMap()
 			.put(TextureKey.PARTICLE, getSubId(Blocks.SCULK_SHRIEKER, "_bottom"))
 			.put(TextureKey.SIDE, getSubId(Blocks.SCULK_SHRIEKER, "_side"))

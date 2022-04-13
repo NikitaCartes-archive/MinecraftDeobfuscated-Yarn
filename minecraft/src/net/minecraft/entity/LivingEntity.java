@@ -134,19 +134,19 @@ public abstract class LivingEntity extends Entity {
 	);
 	public static final int field_30069 = 2;
 	public static final int field_30070 = 4;
-	public static final int field_30071 = 98;
+	public static final int EQUIPMENT_SLOT_ID = 98;
 	public static final int field_30072 = 100;
-	public static final int field_30073 = 6;
+	public static final int GLOWING_FLAG = 6;
 	public static final int field_30074 = 100;
 	private static final int field_30078 = 40;
 	public static final double field_30075 = 0.003;
-	public static final double field_30076 = 0.08;
-	public static final int field_30077 = 20;
-	private static final int field_30079 = 7;
+	public static final double GRAVITY = 0.08;
+	public static final int DEATH_TICKS = 20;
+	private static final int FALL_FLYING_FLAG = 7;
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
-	private static final double field_33908 = 128.0;
+	private static final double MAX_ENTITY_VIEWING_DISTANCE = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
 	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
 	protected static final int USING_RIPTIDE_FLAG = 4;
@@ -161,7 +161,7 @@ public abstract class LivingEntity extends Entity {
 	);
 	protected static final float field_30067 = 1.74F;
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F);
-	public static final float field_30068 = 0.5F;
+	public static final float BABY_SCALE_FACTOR = 0.5F;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
@@ -2131,7 +2131,7 @@ public abstract class LivingEntity extends Entity {
 	/**
 	 * Allows you to do certain speed and velocity calculations. This is useful for custom vehicle behavior, or custom entity movement. This is not to be confused with AI.
 	 * 
-	 * <p>See vanilla examples of {@linkplain net.minecraft.entity.passive.HorseBaseEntity#travel
+	 * <p>See vanilla examples of {@linkplain net.minecraft.entity.passive.AbstractHorseEntity#travel
 	 * custom horse vehicle} and {@linkplain net.minecraft.entity.mob.FlyingEntity#travel
 	 * flying entities}.
 	 * 

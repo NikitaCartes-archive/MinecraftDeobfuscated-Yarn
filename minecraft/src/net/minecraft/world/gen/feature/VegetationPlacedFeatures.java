@@ -428,7 +428,7 @@ public class VegetationPlacedFeatures {
 	public static final RegistryEntry<PlacedFeature> TREES_MANGROVE = PlacedFeatures.register(
 		"trees_mangrove",
 		VegetationConfiguredFeatures.MANGROVE_VEGETATION,
-		PlacedFeatures.createCountExtraModifier(30, 0.1F, 1),
+		CountPlacementModifier.of(30),
 		SquarePlacementModifier.of(),
 		SurfaceWaterDepthFilterPlacementModifier.of(5),
 		PlacedFeatures.OCEAN_FLOOR_HEIGHTMAP,

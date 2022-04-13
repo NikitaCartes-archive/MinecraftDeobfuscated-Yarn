@@ -21,26 +21,31 @@ public class WardenAttackablesSensor extends NearestLivingEntitiesSensor<WardenE
 
 	protected void sense(ServerWorld serverWorld, WardenEntity wardenEntity) {
 		super.sense(serverWorld, wardenEntity);
-		method_43086(wardenEntity, entity -> entity.getType() == EntityType.PLAYER)
-			.or(() -> method_43086(wardenEntity, livingEntity -> livingEntity.getType() != EntityType.PLAYER))
+		findNearestTarget(wardenEntity, entity -> entity.getType() == EntityType.PLAYER)
+			.or(() -> findNearestTarget(wardenEntity, livingEntity -> livingEntity.getType() != EntityType.PLAYER))
 			.ifPresentOrElse(
 				entity -> wardenEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity),
 				() -> wardenEntity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE)
 			);
 	}
 
-	private static Optional<LivingEntity> method_43086(WardenEntity wardenEntity, Predicate<LivingEntity> predicate) {
-		return wardenEntity.getBrain()
+	private static Optional<LivingEntity> findNearestTarget(WardenEntity warden, Predicate<LivingEntity> targetPredicate) {
+		return warden.getBrain()
 			.getOptionalMemory(MemoryModuleType.MOBS)
 			.stream()
 			.flatMap(Collection::stream)
-			.filter(wardenEntity::isValidTarget)
-			.filter(predicate)
+			.filter(warden::isValidTarget)
+			.filter(targetPredicate)
 			.findFirst();
 	}
 
 	@Override
-	protected int method_43081() {
+	protected int getHorizontalExpansion() {
+		return 24;
+	}
+
+	@Override
+	protected int getHeightExpansion() {
 		return 24;
 	}
 }

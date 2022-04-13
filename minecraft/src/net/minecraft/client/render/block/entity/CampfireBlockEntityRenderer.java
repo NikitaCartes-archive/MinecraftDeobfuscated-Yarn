@@ -4,8 +4,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -16,8 +16,10 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer implements BlockEntityRenderer<CampfireBlockEntity> {
 	private static final float SCALE = 0.375F;
+	private final ItemRenderer field_38884;
 
 	public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.field_38884 = ctx.getItemRenderer();
 	}
 
 	public void render(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -36,7 +38,7 @@ public class CampfireBlockEntityRenderer implements BlockEntityRenderer<Campfire
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
+				this.field_38884.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
 				matrixStack.pop();
 			}
 		}

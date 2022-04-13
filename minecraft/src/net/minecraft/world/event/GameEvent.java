@@ -1,5 +1,8 @@
 package net.minecraft.world.event;
 
+import javax.annotation.Nullable;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -84,5 +87,19 @@ public class GameEvent {
 
 	public boolean isIn(TagKey<GameEvent> tag) {
 		return this.registryEntry.isIn(tag);
+	}
+
+	public static record Emitter(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {
+		public static GameEvent.Emitter of(@Nullable Entity sourceEntity) {
+			return new GameEvent.Emitter(sourceEntity, null);
+		}
+
+		public static GameEvent.Emitter of(@Nullable BlockState affectedState) {
+			return new GameEvent.Emitter(null, affectedState);
+		}
+
+		public static GameEvent.Emitter of(@Nullable Entity sourceEntity, @Nullable BlockState affectedState) {
+			return new GameEvent.Emitter(sourceEntity, affectedState);
+		}
 	}
 }

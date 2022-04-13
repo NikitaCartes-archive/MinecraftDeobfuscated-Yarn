@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.TntEntity;
@@ -13,9 +14,12 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class TntEntityRenderer extends EntityRenderer<TntEntity> {
+	private final BlockRenderManager field_38894;
+
 	public TntEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 		this.shadowRadius = 0.5F;
+		this.field_38894 = context.getBlockRenderManager();
 	}
 
 	public void render(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -34,7 +38,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
 		matrixStack.translate(-0.5, -0.5, 0.5);
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-		TntMinecartEntityRenderer.renderFlashingBlock(Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
+		TntMinecartEntityRenderer.renderFlashingBlock(this.field_38894, Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
 		matrixStack.pop();
 		super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

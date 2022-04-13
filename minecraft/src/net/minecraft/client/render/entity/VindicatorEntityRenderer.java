@@ -18,7 +18,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 	public VindicatorEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.VINDICATOR)), 0.5F);
 		this.addFeature(
-			new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>(this) {
+			new HeldItemFeatureRenderer<VindicatorEntity, IllagerEntityModel<VindicatorEntity>>(this, context.getHeldItemRenderer()) {
 				public void render(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,

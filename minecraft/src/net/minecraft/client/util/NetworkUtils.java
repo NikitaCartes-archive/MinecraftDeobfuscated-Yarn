@@ -47,7 +47,7 @@ public class NetworkUtils {
 	}
 
 	public static CompletableFuture<?> downloadResourcePack(
-		File file, String url, Map<String, String> headers, int maxFileSize, @Nullable ProgressListener progressListener, Proxy proxy
+		File file, URL url, Map<String, String> headers, int maxFileSize, @Nullable ProgressListener progressListener, Proxy proxy
 	) {
 		return CompletableFuture.supplyAsync(() -> {
 			HttpURLConnection httpURLConnection = null;
@@ -60,8 +60,7 @@ public class NetworkUtils {
 
 			try {
 				byte[] bs = new byte[4096];
-				URL uRL = new URL(url);
-				httpURLConnection = (HttpURLConnection)uRL.openConnection(proxy);
+				httpURLConnection = (HttpURLConnection)url.openConnection(proxy);
 				httpURLConnection.setInstanceFollowRedirects(true);
 				float f = 0.0F;
 				float g = (float)headers.entrySet().size();
@@ -137,14 +136,14 @@ public class NetworkUtils {
 
 					return null;
 				}
-			} catch (Throwable var22) {
-				LOGGER.error("Failed to download file", var22);
+			} catch (Throwable var21) {
+				LOGGER.error("Failed to download file", var21);
 				if (httpURLConnection != null) {
 					InputStream inputStream2 = httpURLConnection.getErrorStream();
 
 					try {
 						LOGGER.error("HTTP response error: {}", IOUtils.toString(inputStream2, StandardCharsets.UTF_8));
-					} catch (IOException var21) {
+					} catch (IOException var20) {
 						LOGGER.error("Failed to read response from server");
 					}
 				}

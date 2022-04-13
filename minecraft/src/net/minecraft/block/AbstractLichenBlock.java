@@ -230,8 +230,9 @@ public abstract class AbstractLichenBlock extends Block {
 		return state.contains(booleanProperty) && state.get(booleanProperty);
 	}
 
-	protected static boolean canGrowOn(BlockView world, Direction direction, BlockPos pos, BlockState state) {
-		return Block.isFaceFullSquare(state.getCollisionShape(world, pos), direction.getOpposite());
+	public static boolean canGrowOn(BlockView world, Direction direction, BlockPos pos, BlockState state) {
+		return Block.isFaceFullSquare(state.getSidesShape(world, pos), direction.getOpposite())
+			|| Block.isFaceFullSquare(state.getCollisionShape(world, pos), direction.getOpposite());
 	}
 
 	private boolean isWaterlogged() {

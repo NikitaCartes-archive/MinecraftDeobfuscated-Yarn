@@ -77,7 +77,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		if (spawnReason != SpawnReason.PATROL
 			&& spawnReason != SpawnReason.EVENT
 			&& spawnReason != SpawnReason.STRUCTURE
-			&& this.random.nextFloat() < 0.06F
+			&& world.getRandom().nextFloat() < 0.06F
 			&& this.canLead()) {
 			this.patrolLeader = true;
 		}

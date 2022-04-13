@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 
@@ -34,7 +34,7 @@ public class AdvancementProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Consumer<Advancement> consumer = advancement -> {

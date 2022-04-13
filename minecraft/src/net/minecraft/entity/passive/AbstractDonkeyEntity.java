@@ -17,9 +17,10 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
-public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
+public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	private static final TrackedData<Boolean> CHEST = DataTracker.registerData(AbstractDonkeyEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final int field_30412 = 15;
 
@@ -29,8 +30,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
+	protected void initAttributes(AbstractRandom random) {
+		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus(random));
 	}
 
 	@Override

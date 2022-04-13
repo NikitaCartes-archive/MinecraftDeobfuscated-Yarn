@@ -1,7 +1,6 @@
 package net.minecraft.block.entity;
 
 import com.google.common.annotations.VisibleForTesting;
-import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SculkCatalystBlock;
@@ -38,24 +37,29 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 	}
 
 	@Override
-	public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
-		if (event == GameEvent.ENTITY_DIE && entity instanceof LivingEntity livingEntity) {
-			if (!livingEntity.isExperienceDroppingDisabled()) {
-				this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
-				livingEntity.disableExperienceDropping();
-				LivingEntity livingEntity2 = livingEntity.getAttacker();
-				if (livingEntity2 instanceof ServerPlayerEntity serverPlayerEntity) {
-					DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();
-					Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, entity, damageSource);
+	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
+		if (event == GameEvent.ENTITY_DIE) {
+			Entity livingEntity2 = emitter.sourceEntity();
+			if (livingEntity2 instanceof LivingEntity livingEntity) {
+				if (!livingEntity.isExperienceDroppingDisabled()) {
+					this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
+					livingEntity.disableExperienceDropping();
+					LivingEntity livingEntity2x = livingEntity.getAttacker();
+					if (livingEntity2x instanceof ServerPlayerEntity serverPlayerEntity) {
+						DamageSource damageSource = livingEntity.getRecentDamageSource() == null
+							? DamageSource.player(serverPlayerEntity)
+							: livingEntity.getRecentDamageSource();
+						Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, emitter.sourceEntity(), damageSource);
+					}
+
+					SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
 				}
 
-				SculkCatalystBlock.bloom(world, this.pos, this.getCachedState(), world.getRandom());
+				return true;
 			}
-
-			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	public static void tick(World world, BlockPos pos, BlockState state, SculkCatalystBlockEntity blockEntity) {

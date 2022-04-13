@@ -158,7 +158,8 @@ public class SpiderEntity extends HostileEntity {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		if (world.getRandom().nextInt(100) == 0) {
+		AbstractRandom abstractRandom = world.getRandom();
+		if (abstractRandom.nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 			skeletonEntity.initialize(world, difficulty, spawnReason, null, null);
@@ -167,8 +168,8 @@ public class SpiderEntity extends HostileEntity {
 
 		if (entityData == null) {
 			entityData = new SpiderEntity.SpiderData();
-			if (world.getDifficulty() == Difficulty.HARD && world.getRandom().nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
-				((SpiderEntity.SpiderData)entityData).setEffect(world.getRandom());
+			if (world.getDifficulty() == Difficulty.HARD && abstractRandom.nextFloat() < 0.1F * difficulty.getClampedLocalDifficulty()) {
+				((SpiderEntity.SpiderData)entityData).setEffect(abstractRandom);
 			}
 		}
 

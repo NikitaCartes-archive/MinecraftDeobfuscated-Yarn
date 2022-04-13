@@ -522,7 +522,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			return !wolfEntity.isTamed() || wolfEntity.getOwner() != owner;
 		} else if (target instanceof PlayerEntity && owner instanceof PlayerEntity && !((PlayerEntity)owner).shouldDamagePlayer((PlayerEntity)target)) {
 			return false;
-		} else if (target instanceof HorseBaseEntity && ((HorseBaseEntity)target).isTame()) {
+		} else if (target instanceof AbstractHorseEntity && ((AbstractHorseEntity)target).isTame()) {
 			return false;
 		} else {
 			return !(target instanceof TameableEntity) || !((TameableEntity)target).isTamed();

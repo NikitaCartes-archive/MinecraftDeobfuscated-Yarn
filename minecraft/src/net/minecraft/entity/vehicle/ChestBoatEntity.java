@@ -81,7 +81,7 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		return player.shouldCancelInteraction() ? this.open(this::emitGameEvent, player) : super.interact(player, hand);
+		return this.canAddPassenger(player) && !player.shouldCancelInteraction() ? super.interact(player, hand) : this.open(this::emitGameEvent, player);
 	}
 
 	@Override

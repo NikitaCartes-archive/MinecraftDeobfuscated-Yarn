@@ -328,6 +328,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 						.withEffect(StatusEffects.BLINDNESS)
 						.withEffect(StatusEffects.BAD_OMEN)
 						.withEffect(StatusEffects.HERO_OF_THE_VILLAGE)
+						.withEffect(StatusEffects.DARKNESS)
 				)
 			)
 			.build(consumer, "nether/all_effects");
@@ -527,9 +528,9 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			)
 			.criterion(
 				"distract_piglin",
-				ThrownItemPickedUpByEntityCriterion.Conditions.create(
+				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByEntity(
 					PIGLIN_DISTRACTION_PREDICATE,
-					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
+					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build(),
 					EntityPredicate.Extended.ofLegacy(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)

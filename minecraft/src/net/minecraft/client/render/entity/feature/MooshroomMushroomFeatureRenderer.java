@@ -17,8 +17,11 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends FeatureRenderer<T, CowEntityModel<T>> {
-	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> featureRendererContext) {
-		super(featureRendererContext);
+	private final BlockRenderManager blockRenderManager;
+
+	public MooshroomMushroomFeatureRenderer(FeatureRendererContext<T, CowEntityModel<T>> context, BlockRenderManager blockRenderManager) {
+		super(context);
+		this.blockRenderManager = blockRenderManager;
 	}
 
 	public void render(
@@ -28,16 +31,15 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			boolean bl = minecraftClient.hasOutline(mooshroomEntity) && mooshroomEntity.isInvisible();
 			if (!mooshroomEntity.isInvisible() || bl) {
-				BlockRenderManager blockRenderManager = minecraftClient.getBlockRenderManager();
 				BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
 				int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0F);
-				BakedModel bakedModel = blockRenderManager.getModel(blockState);
+				BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
 				matrixStack.push();
 				matrixStack.translate(0.2F, -0.35F, 0.5);
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
 				matrixStack.scale(-1.0F, -1.0F, 1.0F);
 				matrixStack.translate(-0.5, -0.5, -0.5);
-				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
 				matrixStack.pop();
 				matrixStack.push();
 				matrixStack.translate(0.2F, -0.35F, 0.5);
@@ -46,7 +48,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
 				matrixStack.scale(-1.0F, -1.0F, 1.0F);
 				matrixStack.translate(-0.5, -0.5, -0.5);
-				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
 				matrixStack.pop();
 				matrixStack.push();
 				this.getContextModel().getHead().rotate(matrixStack);
@@ -54,7 +56,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
 				matrixStack.scale(-1.0F, -1.0F, 1.0F);
 				matrixStack.translate(-0.5, -0.5, -0.5);
-				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockRenderManager, blockState, m, bakedModel);
+				this.renderMushroom(matrixStack, vertexConsumerProvider, i, bl, blockState, m, bakedModel);
 				matrixStack.pop();
 			}
 		}
@@ -65,13 +67,13 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 		VertexConsumerProvider vertexConsumers,
 		int light,
 		boolean renderAsModel,
-		BlockRenderManager blockRenderManager,
 		BlockState mushroomState,
 		int overlay,
 		BakedModel mushroomModel
 	) {
 		if (renderAsModel) {
-			blockRenderManager.getModelRenderer()
+			this.blockRenderManager
+				.getModelRenderer()
 				.render(
 					matrices.peek(),
 					vertexConsumers.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)),
@@ -84,7 +86,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 					overlay
 				);
 		} else {
-			blockRenderManager.renderBlockAsEntity(mushroomState, matrices, vertexConsumers, light, overlay);
+			this.blockRenderManager.renderBlockAsEntity(mushroomState, matrices, vertexConsumers, light, overlay);
 		}
 	}
 }

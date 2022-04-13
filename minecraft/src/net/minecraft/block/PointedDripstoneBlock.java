@@ -272,11 +272,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.XZ;
-	}
-
-	@Override
 	public float getMaxHorizontalModelOffset() {
 		return 0.125F;
 	}

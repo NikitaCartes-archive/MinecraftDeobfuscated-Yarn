@@ -16,7 +16,7 @@ public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEnt
 
 	public WitchEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WitchEntityModel<>(context.getPart(EntityModelLayers.WITCH)), 0.5F);
-		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
+		this.addFeature(new WitchHeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 	}
 
 	public void render(WitchEntity witchEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {

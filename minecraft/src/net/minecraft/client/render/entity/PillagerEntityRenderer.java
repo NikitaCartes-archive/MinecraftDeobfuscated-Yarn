@@ -14,7 +14,7 @@ public class PillagerEntityRenderer extends IllagerEntityRenderer<PillagerEntity
 
 	public PillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.PILLAGER)), 0.5F);
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(PillagerEntity pillagerEntity) {

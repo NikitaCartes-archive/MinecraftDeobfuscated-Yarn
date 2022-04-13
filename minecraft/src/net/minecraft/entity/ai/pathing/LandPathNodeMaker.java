@@ -221,7 +221,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return (double)blockPos.getY() + (voxelShape.isEmpty() ? 0.0 : voxelShape.getMax(Direction.Axis.Y));
 	}
 
-	protected boolean method_37004() {
+	protected boolean isAmphibious() {
 		return false;
 	}
 
@@ -246,7 +246,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				pathNode = null;
 			}
 
-			if (pathNodeType != PathNodeType.WALKABLE && (!this.method_37004() || pathNodeType != PathNodeType.WATER)) {
+			if (pathNodeType != PathNodeType.WALKABLE && (!this.isAmphibious() || pathNodeType != PathNodeType.WATER)) {
 				if ((pathNode == null || pathNode.penalty < 0.0F)
 					&& maxYStep > 0
 					&& pathNodeType != PathNodeType.FENCE
@@ -271,7 +271,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					}
 				}
 
-				if (!this.method_37004() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
+				if (!this.isAmphibious() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
 					if (this.getNodeType(this.entity, x, y - 1, z) != PathNodeType.WATER) {
 						return pathNode;
 					}

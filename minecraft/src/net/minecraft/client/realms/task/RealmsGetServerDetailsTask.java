@@ -2,6 +2,7 @@ package net.minecraft.client.realms.task;
 
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
+import java.net.URL;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
@@ -141,7 +142,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 
 	private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {
 		try {
-			return MinecraftClient.getInstance().getResourcePackProvider().download(address.resourcePackUrl, address.resourcePackHash, false);
+			return MinecraftClient.getInstance().getResourcePackProvider().download(new URL(address.resourcePackUrl), address.resourcePackHash, false);
 		} catch (Exception var4) {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
 			completableFuture.completeExceptionally(var4);

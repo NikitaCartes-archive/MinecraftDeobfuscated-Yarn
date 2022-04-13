@@ -61,8 +61,11 @@ public class BoatEntity extends Entity {
 	public static final int field_30697 = 0;
 	public static final int field_30698 = 1;
 	private static final int field_30695 = 60;
-	private static final float field_30696 = (float) (Math.PI / 8);
-	public static final double field_30699 = (float) (Math.PI / 4);
+	private static final float NEXT_PADDLE_PHASE = (float) (Math.PI / 8);
+	/**
+	 * A boat will emit a sound event every time a paddle is near this rotation.
+	 */
+	public static final double EMIT_SOUND_EVENT_PADDLE_ROTATION = (float) (Math.PI / 4);
 	public static final int field_30700 = 60;
 	private final float[] paddlePhases = new float[2];
 	private float velocityDecay;
@@ -79,7 +82,7 @@ public class BoatEntity extends Entity {
 	private boolean pressingForward;
 	private boolean pressingBack;
 	private double waterLevel;
-	private float field_7714;
+	private float nearbySlipperiness;
 	private BoatEntity.Location location;
 	private BoatEntity.Location lastLocation;
 	private double fallVelocity;
@@ -284,7 +287,7 @@ public class BoatEntity extends Entity {
 		}
 
 		super.tick();
-		this.method_7555();
+		this.updatePositionAndRotation();
 		if (this.isLogicalSideForUpdatingMovement()) {
 			if (!(this.getFirstPassenger() instanceof PlayerEntity)) {
 				this.setPaddleMovings(false, false);
@@ -401,7 +404,7 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	private void method_7555() {
+	private void updatePositionAndRotation() {
 		if (this.isLogicalSideForUpdatingMovement()) {
 			this.field_7708 = 0;
 			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
@@ -437,9 +440,9 @@ public class BoatEntity extends Entity {
 		} else if (this.checkBoatInWater()) {
 			return BoatEntity.Location.IN_WATER;
 		} else {
-			float f = this.method_7548();
+			float f = this.getNearbySlipperiness();
 			if (f > 0.0F) {
-				this.field_7714 = f;
+				this.nearbySlipperiness = f;
 				return BoatEntity.Location.ON_LAND;
 			} else {
 				return BoatEntity.Location.IN_AIR;
@@ -447,7 +450,7 @@ public class BoatEntity extends Entity {
 		}
 	}
 
-	public float method_7544() {
+	public float getWaterHeightBelow() {
 		Box box = this.getBoundingBox();
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.ceil(box.maxX);
@@ -483,7 +486,7 @@ public class BoatEntity extends Entity {
 		return (float)(l + 1);
 	}
 
-	public float method_7548() {
+	public float getNearbySlipperiness() {
 		Box box = this.getBoundingBox();
 		Box box2 = new Box(box.minX, box.minY - 0.001, box.minZ, box.maxX, box.minY, box.maxZ);
 		int i = MathHelper.floor(box2.minX) - 1;
@@ -589,7 +592,7 @@ public class BoatEntity extends Entity {
 		this.velocityDecay = 0.05F;
 		if (this.lastLocation == BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.IN_AIR && this.location != BoatEntity.Location.ON_LAND) {
 			this.waterLevel = this.getBodyY(1.0);
-			this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
+			this.setPosition(this.getX(), (double)(this.getWaterHeightBelow() - this.getHeight()) + 0.101, this.getZ());
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
 			this.fallVelocity = 0.0;
 			this.location = BoatEntity.Location.IN_WATER;
@@ -606,9 +609,9 @@ public class BoatEntity extends Entity {
 			} else if (this.location == BoatEntity.Location.IN_AIR) {
 				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.ON_LAND) {
-				this.velocityDecay = this.field_7714;
+				this.velocityDecay = this.nearbySlipperiness;
 				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
-					this.field_7714 /= 2.0F;
+					this.nearbySlipperiness /= 2.0F;
 				}
 			}
 

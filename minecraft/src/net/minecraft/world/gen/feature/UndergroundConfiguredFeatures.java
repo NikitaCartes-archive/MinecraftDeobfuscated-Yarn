@@ -163,7 +163,7 @@ public class UndergroundConfiguredFeatures {
 					BlockPredicate.matchingBlockTag(BlockTags.LEAVES),
 					BlockPredicate.matchingBlockTag(BlockTags.REPLACEABLE_PLANTS)
 				),
-				BlockPredicate.matchingBlockTag(BlockTags.AZALEA_GROWS_ON, Direction.DOWN.getVector())
+				BlockPredicate.matchingBlockTag(Direction.DOWN.getVector(), BlockTags.AZALEA_GROWS_ON)
 			)
 		)
 	);

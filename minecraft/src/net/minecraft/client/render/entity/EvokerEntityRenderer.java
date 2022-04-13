@@ -18,7 +18,7 @@ public class EvokerEntityRenderer<T extends SpellcastingIllagerEntity> extends I
 	public EvokerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.EVOKER)), 0.5F);
 		this.addFeature(
-			new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this) {
+			new HeldItemFeatureRenderer<T, IllagerEntityModel<T>>(this, context.getHeldItemRenderer()) {
 				public void render(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,

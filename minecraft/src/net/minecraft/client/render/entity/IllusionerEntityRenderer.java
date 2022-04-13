@@ -20,7 +20,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 	public IllusionerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IllagerEntityModel<>(context.getPart(EntityModelLayers.ILLUSIONER)), 0.5F);
 		this.addFeature(
-			new HeldItemFeatureRenderer<IllusionerEntity, IllagerEntityModel<IllusionerEntity>>(this) {
+			new HeldItemFeatureRenderer<IllusionerEntity, IllagerEntityModel<IllusionerEntity>>(this, context.getHeldItemRenderer()) {
 				public void render(
 					MatrixStack matrixStack,
 					VertexConsumerProvider vertexConsumerProvider,

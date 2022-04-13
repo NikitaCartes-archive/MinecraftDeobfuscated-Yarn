@@ -30,9 +30,9 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))
 			)
 		);
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, context.getModelLoader()));
-		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(ArmorStandEntity armorStandEntity) {

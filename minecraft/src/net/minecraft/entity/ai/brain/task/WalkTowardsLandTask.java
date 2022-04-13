@@ -13,10 +13,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class WalkTowardsLandTask extends Task<PathAwareEntity> {
-	private static final int field_37433 = 60;
+	private static final int TASK_COOLDOWN = 60;
 	private final int range;
 	private final float speed;
-	private long field_37436;
+	private long walkTowardsLandTime;
 
 	public WalkTowardsLandTask(int range, float speed) {
 		super(
@@ -34,7 +34,7 @@ public class WalkTowardsLandTask extends Task<PathAwareEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		this.field_37436 = l + 60L;
+		this.walkTowardsLandTime = l + 60L;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -42,7 +42,7 @@ public class WalkTowardsLandTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		if (l >= this.field_37436) {
+		if (l >= this.walkTowardsLandTime) {
 			BlockPos blockPos = pathAwareEntity.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			ShapeContext shapeContext = ShapeContext.of(pathAwareEntity);
@@ -55,7 +55,7 @@ public class WalkTowardsLandTask extends Task<PathAwareEntity> {
 						&& serverWorld.getFluidState(blockPos2).isEmpty()
 						&& blockState.getCollisionShape(serverWorld, blockPos2, shapeContext).isEmpty()
 						&& blockState2.isSideSolidFullSquare(serverWorld, mutable, Direction.UP)) {
-						this.field_37436 = l + 60L;
+						this.walkTowardsLandTime = l + 60L;
 						LookTargetUtil.walkTowards(pathAwareEntity, blockPos2.toImmutable(), this.speed, 1);
 						return;
 					}

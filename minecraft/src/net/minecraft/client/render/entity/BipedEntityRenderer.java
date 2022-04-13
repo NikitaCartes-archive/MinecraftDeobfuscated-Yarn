@@ -19,9 +19,9 @@ public class BipedEntityRenderer<T extends MobEntity, M extends BipedEntityModel
 
 	public BipedEntityRenderer(EntityRendererFactory.Context ctx, M model, float shadowRadius, float scaleX, float scaleY, float scaleZ) {
 		super(ctx, model, shadowRadius);
-		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), scaleX, scaleY, scaleZ));
+		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), scaleX, scaleY, scaleZ, ctx.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(T mobEntity) {

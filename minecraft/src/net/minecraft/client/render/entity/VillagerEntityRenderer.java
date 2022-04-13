@@ -17,9 +17,9 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 
 	public VillagerEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new VillagerResemblingModel<>(context.getPart(EntityModelLayers.VILLAGER)), 0.5F);
-		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), context.getHeldItemRenderer()));
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, context.getResourceManager(), "villager"));
-		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(VillagerEntity villagerEntity) {

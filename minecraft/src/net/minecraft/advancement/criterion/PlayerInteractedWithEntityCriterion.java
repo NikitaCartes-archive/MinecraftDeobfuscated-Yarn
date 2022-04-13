@@ -48,6 +48,10 @@ public class PlayerInteractedWithEntityCriterion extends AbstractCriterion<Playe
 			return new PlayerInteractedWithEntityCriterion.Conditions(player, itemBuilder.build(), entity);
 		}
 
+		public static PlayerInteractedWithEntityCriterion.Conditions create(ItemPredicate.Builder itemBuilder, EntityPredicate.Extended entity) {
+			return create(EntityPredicate.Extended.EMPTY, itemBuilder, entity);
+		}
+
 		public boolean test(ItemStack stack, LootContext context) {
 			return !this.item.test(stack) ? false : this.entity.test(context);
 		}

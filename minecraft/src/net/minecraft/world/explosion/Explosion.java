@@ -1,6 +1,5 @@
 package net.minecraft.world.explosion;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.util.Pair;
@@ -57,7 +56,7 @@ public class Explosion {
 	private final float power;
 	private final DamageSource damageSource;
 	private final ExplosionBehavior behavior;
-	private final List<BlockPos> affectedBlocks = Lists.<BlockPos>newArrayList();
+	private final ObjectArrayList<BlockPos> affectedBlocks = new ObjectArrayList<>();
 	private final Map<PlayerEntity, Vec3d> affectedPlayers = Maps.<PlayerEntity, Vec3d>newHashMap();
 
 	public Explosion(World world, @Nullable Entity entity, double x, double y, double z, float power) {

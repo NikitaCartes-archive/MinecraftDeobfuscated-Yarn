@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import java.util.List;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -47,9 +48,9 @@ public class OceanPlacedFeatures {
 		RarityFilterPlacementModifier.of(10),
 		BlockFilterPlacementModifier.of(
 			BlockPredicate.allOf(
-				BlockPredicate.matchingBlock(Blocks.STONE, new BlockPos(0, -1, 0)),
-				BlockPredicate.matchingBlock(Blocks.WATER, BlockPos.ORIGIN),
-				BlockPredicate.matchingBlock(Blocks.WATER, new BlockPos(0, 1, 0))
+				BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.STONE),
+				BlockPredicate.matchingBlocks(BlockPos.ORIGIN, Blocks.WATER),
+				BlockPredicate.matchingBlocks(Direction.UP.getVector(), Blocks.WATER)
 			)
 		),
 		BiomePlacementModifier.of()

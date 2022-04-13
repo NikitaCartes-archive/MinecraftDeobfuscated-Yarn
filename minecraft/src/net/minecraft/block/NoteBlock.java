@@ -13,7 +13,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -62,8 +61,7 @@ public class NoteBlock extends Block {
 	}
 
 	private void playNote(@Nullable Entity entity, World world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos.up());
-		if (!blockState.isIn(BlockTags.WOOL) && !blockState.isIn(BlockTags.WOOL_CARPETS)) {
+		if (world.getBlockState(pos.up()).isAir()) {
 			world.addSyncedBlockEvent(pos, this, 0, 0);
 			world.emitGameEvent(entity, GameEvent.NOTE_BLOCK_PLAY, pos);
 		}

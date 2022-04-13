@@ -1,15 +1,10 @@
 package net.minecraft.world.gen.treedecorator;
 
 import com.mojang.serialization.Codec;
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.VineBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.Feature;
 
 public class TrunkVineTreeDecorator extends TreeDecorator {
 	public static final Codec<TrunkVineTreeDecorator> CODEC = Codec.unit((Supplier<TrunkVineTreeDecorator>)(() -> TrunkVineTreeDecorator.INSTANCE));
@@ -21,40 +16,34 @@ public class TrunkVineTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(
-		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom random,
-		List<BlockPos> logPositions,
-		List<BlockPos> leavesPositions,
-		List<BlockPos> rootPositions
-	) {
-		logPositions.forEach(pos -> {
-			if (random.nextInt(3) > 0) {
+	public void generate(TreeDecorator.Generator generator) {
+		AbstractRandom abstractRandom = generator.getRandom();
+		generator.getLogPositions().forEach(pos -> {
+			if (abstractRandom.nextInt(3) > 0) {
 				BlockPos blockPos = pos.west();
-				if (Feature.isAir(world, blockPos)) {
-					placeVine(replacer, blockPos, VineBlock.EAST);
+				if (generator.isAir(blockPos)) {
+					generator.replaceWithVine(blockPos, VineBlock.EAST);
 				}
 			}
 
-			if (random.nextInt(3) > 0) {
+			if (abstractRandom.nextInt(3) > 0) {
 				BlockPos blockPos = pos.east();
-				if (Feature.isAir(world, blockPos)) {
-					placeVine(replacer, blockPos, VineBlock.WEST);
+				if (generator.isAir(blockPos)) {
+					generator.replaceWithVine(blockPos, VineBlock.WEST);
 				}
 			}
 
-			if (random.nextInt(3) > 0) {
+			if (abstractRandom.nextInt(3) > 0) {
 				BlockPos blockPos = pos.north();
-				if (Feature.isAir(world, blockPos)) {
-					placeVine(replacer, blockPos, VineBlock.SOUTH);
+				if (generator.isAir(blockPos)) {
+					generator.replaceWithVine(blockPos, VineBlock.SOUTH);
 				}
 			}
 
-			if (random.nextInt(3) > 0) {
+			if (abstractRandom.nextInt(3) > 0) {
 				BlockPos blockPos = pos.south();
-				if (Feature.isAir(world, blockPos)) {
-					placeVine(replacer, blockPos, VineBlock.NORTH);
+				if (generator.isAir(blockPos)) {
+					generator.replaceWithVine(blockPos, VineBlock.NORTH);
 				}
 			}
 		});

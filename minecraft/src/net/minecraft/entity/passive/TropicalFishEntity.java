@@ -217,6 +217,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 			this.setVariant(entityNbt.getInt("BucketVariantTag"));
 			return entityData;
 		} else {
+			AbstractRandom abstractRandom = world.getRandom();
 			int i;
 			int j;
 			int k;
@@ -226,8 +227,8 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 				j = tropicalFishData.pattern;
 				k = tropicalFishData.baseColor;
 				l = tropicalFishData.patternColor;
-			} else if ((double)this.random.nextFloat() < 0.9) {
-				int m = Util.getRandom(COMMON_VARIANTS, this.random);
+			} else if ((double)abstractRandom.nextFloat() < 0.9) {
+				int m = Util.getRandom(COMMON_VARIANTS, abstractRandom);
 				i = m & 0xFF;
 				j = (m & 0xFF00) >> 8;
 				k = (m & 0xFF0000) >> 16;
@@ -235,10 +236,10 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 				entityData = new TropicalFishEntity.TropicalFishData(this, i, j, k, l);
 			} else {
 				this.commonSpawn = false;
-				i = this.random.nextInt(2);
-				j = this.random.nextInt(6);
-				k = this.random.nextInt(15);
-				l = this.random.nextInt(15);
+				i = abstractRandom.nextInt(2);
+				j = abstractRandom.nextInt(6);
+				k = abstractRandom.nextInt(15);
+				l = abstractRandom.nextInt(15);
 			}
 
 			this.setVariant(i | j << 8 | k << 16 | l << 24);

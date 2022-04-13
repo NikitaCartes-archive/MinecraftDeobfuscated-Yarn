@@ -59,7 +59,7 @@ public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorLi
 	}
 
 	@Override
-	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
 		return !pos.equals(this.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
 			? SculkSensorBlock.isInactive(this.getCachedState())
 			: false;

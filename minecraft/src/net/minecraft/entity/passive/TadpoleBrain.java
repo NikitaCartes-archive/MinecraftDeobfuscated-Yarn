@@ -74,7 +74,7 @@ public class TadpoleBrain {
 		);
 	}
 
-	public static void method_41401(TadpoleEntity tadpole) {
+	public static void updateActivities(TadpoleEntity tadpole) {
 		tadpole.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
 	}
 }

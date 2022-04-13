@@ -109,7 +109,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				return ActionResult.SUCCESS;
 			} else {
 				player.trySleep(pos).ifLeft(reason -> {
-					if (reason != null) {
+					if (reason.getMessage() != null) {
 						player.sendMessage(reason.getMessage(), true);
 					}
 				});

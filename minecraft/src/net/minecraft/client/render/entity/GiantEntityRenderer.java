@@ -19,7 +19,7 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 	public GiantEntityRenderer(EntityRendererFactory.Context ctx, float scale) {
 		super(ctx, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT)), 0.5F * scale);
 		this.scale = scale;
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
 				this, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR))

@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
@@ -45,7 +45,7 @@ public class LootTableProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		Path path = this.root.getOutput();
 		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		this.lootTypeGenerators.forEach(generator -> ((Consumer)((Supplier)generator.getFirst()).get()).accept((BiConsumer)(id, builder) -> {

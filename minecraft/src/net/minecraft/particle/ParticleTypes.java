@@ -37,6 +37,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType ENTITY_EFFECT = register("entity_effect", false);
 	public static final DefaultParticleType EXPLOSION_EMITTER = register("explosion_emitter", true);
 	public static final DefaultParticleType EXPLOSION = register("explosion", true);
+	public static final DefaultParticleType SONIC_BOOM = register("sonic_boom", true);
 	public static final ParticleType<BlockStateParticleEffect> FALLING_DUST = register(
 		"falling_dust", false, BlockStateParticleEffect.PARAMETERS_FACTORY, BlockStateParticleEffect::createCodec
 	);

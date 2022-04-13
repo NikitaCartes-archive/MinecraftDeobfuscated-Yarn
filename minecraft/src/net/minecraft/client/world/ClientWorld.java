@@ -801,7 +801,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+	public void emitGameEvent(GameEvent event, Vec3d pos, @Nullable GameEvent.Emitter emitter) {
 	}
 
 	public Map<String, MapState> getMapStates() {

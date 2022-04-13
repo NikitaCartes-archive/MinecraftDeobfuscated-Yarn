@@ -4,10 +4,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -65,13 +63,6 @@ public class GiveInventoryToLookTargetTask<E extends LivingEntity & InventoryOwn
 				ItemStack itemStack = entity.getInventory().removeStack(0, 1);
 				if (!itemStack.isEmpty()) {
 					LookTargetUtil.give(entity, itemStack, offsetTarget(lookTarget));
-					if (lookTarget instanceof EntityLookTarget entityLookTarget) {
-						Entity var12 = entityLookTarget.getEntity();
-						if (var12 instanceof ServerPlayerEntity serverPlayerEntity) {
-							Criteria.ITEM_DELIVERED_TO_PLAYER.trigger(serverPlayerEntity);
-						}
-					}
-
 					if (entity instanceof AllayEntity allayEntity) {
 						AllayBrain.getLikedPlayer(allayEntity).ifPresent(player -> this.triggerCriterion(lookTarget, itemStack, player));
 					}

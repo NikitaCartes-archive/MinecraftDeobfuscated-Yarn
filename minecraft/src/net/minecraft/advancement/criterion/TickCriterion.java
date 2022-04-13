@@ -55,8 +55,8 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 			return new TickCriterion.Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY);
 		}
 
-		public static TickCriterion.Conditions createItemDeliveredToPlayer() {
-			return new TickCriterion.Conditions(Criteria.ITEM_DELIVERED_TO_PLAYER.id, EntityPredicate.Extended.EMPTY);
+		public static TickCriterion.Conditions createAvoidVibration() {
+			return new TickCriterion.Conditions(Criteria.AVOID_VIBRATION.id, EntityPredicate.Extended.EMPTY);
 		}
 
 		public static TickCriterion.Conditions createLocation(Block block, Item item) {

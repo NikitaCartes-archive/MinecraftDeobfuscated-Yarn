@@ -16,8 +16,8 @@ public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTr
 
 	public WanderingTraderEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new VillagerResemblingModel<>(context.getPart(EntityModelLayers.WANDERING_TRADER)), 0.5F);
-		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader()));
-		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), context.getHeldItemRenderer()));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(WanderingTraderEntity wanderingTraderEntity) {

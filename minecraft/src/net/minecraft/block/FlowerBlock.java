@@ -28,11 +28,6 @@ public class FlowerBlock extends PlantBlock {
 		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
-	@Override
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.XZ;
-	}
-
 	public StatusEffect getEffectInStew() {
 		return this.effectInStew;
 	}

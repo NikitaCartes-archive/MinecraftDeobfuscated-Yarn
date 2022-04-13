@@ -36,7 +36,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		}
 
 		PassiveEntity.PassiveData passiveData = (PassiveEntity.PassiveData)entityData;
-		if (passiveData.canSpawnBaby() && passiveData.getSpawnedCount() > 0 && this.random.nextFloat() <= passiveData.getBabyChance()) {
+		if (passiveData.canSpawnBaby() && passiveData.getSpawnedCount() > 0 && world.getRandom().nextFloat() <= passiveData.getBabyChance()) {
 			this.setBreedingAge(-24000);
 		}
 

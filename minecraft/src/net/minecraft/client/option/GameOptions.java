@@ -1075,6 +1075,7 @@ public class GameOptions {
 		visitor.accept("fov", this.fov);
 		visitor.accept("screenEffectScale", this.distortionEffectScale);
 		visitor.accept("fovEffectScale", this.fovEffectScale);
+		visitor.accept("darknessEffectScale", this.darknessEffectScale);
 		visitor.accept("gamma", this.gamma);
 		visitor.accept("renderDistance", this.viewDistance);
 		visitor.accept("simulationDistance", this.simulationDistance);
@@ -1500,6 +1501,7 @@ public class GameOptions {
 			.add(Pair.of("forceUnicodeFont", this.forceUnicodeFont.getValue()))
 			.add(Pair.of("fov", this.fov.getValue()))
 			.add(Pair.of("fovEffectScale", this.fovEffectScale.getValue()))
+			.add(Pair.of("darknessEffectScale", this.darknessEffectScale.getValue()))
 			.add(Pair.of("prioritizeChunkUpdates", this.chunkBuilderMode.getValue()))
 			.add(Pair.of("fullscreen", this.fullscreen.getValue()))
 			.add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))

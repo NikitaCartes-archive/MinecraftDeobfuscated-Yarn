@@ -194,17 +194,16 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		if (spawnReason == SpawnReason.BUCKET) {
 			return entityData;
 		} else {
+			AbstractRandom abstractRandom = world.getRandom();
 			if (entityData instanceof AxolotlEntity.AxolotlData) {
 				if (((AxolotlEntity.AxolotlData)entityData).getSpawnedCount() >= 2) {
 					bl = true;
 				}
 			} else {
-				entityData = new AxolotlEntity.AxolotlData(
-					AxolotlEntity.Variant.getRandomNatural(this.world.random), AxolotlEntity.Variant.getRandomNatural(this.world.random)
-				);
+				entityData = new AxolotlEntity.AxolotlData(AxolotlEntity.Variant.getRandomNatural(abstractRandom), AxolotlEntity.Variant.getRandomNatural(abstractRandom));
 			}
 
-			this.setVariant(((AxolotlEntity.AxolotlData)entityData).getRandomVariant(this.world.random));
+			this.setVariant(((AxolotlEntity.AxolotlData)entityData).getRandomVariant(abstractRandom));
 			if (bl) {
 				this.setBreedingAge(-24000);
 			}
@@ -439,7 +438,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 	}
 
 	@Override
-	public SoundEvent getBucketedSound() {
+	public SoundEvent getBucketFillSound() {
 		return SoundEvents.ITEM_BUCKET_FILL_AXOLOTL;
 	}
 

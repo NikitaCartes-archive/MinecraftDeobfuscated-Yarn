@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
 
@@ -104,7 +105,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			AbstractTexture var4 = new PlayerSkinTexture(
 				null,
 				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", StringHelper.stripTextFormat(playerName)),
-				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(playerName)),
+				DefaultSkinHelper.getTexture(DynamicSerializableUuid.getOfflinePlayerUuid(playerName)),
 				true,
 				null
 			);

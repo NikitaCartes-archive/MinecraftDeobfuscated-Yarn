@@ -14,7 +14,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 
 	public DolphinEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new DolphinEntityModel<>(context.getPart(EntityModelLayers.DOLPHIN)), 0.7F);
-		this.addFeature(new DolphinHeldItemFeatureRenderer(this));
+		this.addFeature(new DolphinHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(DolphinEntity dolphinEntity) {

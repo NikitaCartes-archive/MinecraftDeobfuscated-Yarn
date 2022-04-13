@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.HorseScreenHandler;
@@ -15,11 +15,11 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/horse.png");
-	private final HorseBaseEntity entity;
+	private final AbstractHorseEntity entity;
 	private float mouseX;
 	private float mouseY;
 
-	public HorseScreen(HorseScreenHandler handler, PlayerInventory inventory, HorseBaseEntity entity) {
+	public HorseScreen(HorseScreenHandler handler, PlayerInventory inventory, AbstractHorseEntity entity) {
 		super(handler, inventory, entity.getDisplayName());
 		this.entity = entity;
 		this.passEvents = false;

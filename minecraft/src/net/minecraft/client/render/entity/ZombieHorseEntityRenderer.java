@@ -8,11 +8,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBaseEntity, HorseEntityModel<HorseBaseEntity>> {
+public class ZombieHorseEntityRenderer extends AbstractHorseEntityRenderer<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>> {
 	private static final Map<EntityType<?>, Identifier> TEXTURES = Maps.<EntityType<?>, Identifier>newHashMap(
 		ImmutableMap.of(
 			EntityType.ZOMBIE_HORSE,
@@ -26,7 +26,7 @@ public class ZombieHorseEntityRenderer extends HorseBaseEntityRenderer<HorseBase
 		super(ctx, new HorseEntityModel<>(ctx.getPart(layer)), 1.0F);
 	}
 
-	public Identifier getTexture(HorseBaseEntity horseBaseEntity) {
-		return (Identifier)TEXTURES.get(horseBaseEntity.getType());
+	public Identifier getTexture(AbstractHorseEntity abstractHorseEntity) {
+		return (Identifier)TEXTURES.get(abstractHorseEntity.getType());
 	}
 }

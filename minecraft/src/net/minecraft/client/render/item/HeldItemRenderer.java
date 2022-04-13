@@ -110,13 +110,13 @@ public class HeldItemRenderer {
 	private float prevEquipProgressMainHand;
 	private float equipProgressOffHand;
 	private float prevEquipProgressOffHand;
-	private final EntityRenderDispatcher renderManager;
+	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final ItemRenderer itemRenderer;
 
-	public HeldItemRenderer(MinecraftClient client) {
+	public HeldItemRenderer(MinecraftClient client, EntityRenderDispatcher entityRenderDispatcher, ItemRenderer itemRenderer) {
 		this.client = client;
-		this.renderManager = client.getEntityRenderDispatcher();
-		this.itemRenderer = client.getItemRenderer();
+		this.entityRenderDispatcher = entityRenderDispatcher;
+		this.itemRenderer = itemRenderer;
 	}
 
 	public void renderItem(
@@ -144,7 +144,7 @@ public class HeldItemRenderer {
 
 	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm) {
 		RenderSystem.setShaderTexture(0, this.client.player.getSkinTexture());
-		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(this.client.player);
+		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.entityRenderDispatcher.<AbstractClientPlayerEntity>getRenderer(this.client.player);
 		matrices.push();
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
 		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(92.0F));
@@ -249,7 +249,8 @@ public class HeldItemRenderer {
 		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(200.0F));
 		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(f * -135.0F));
 		matrices.translate((double)(f * 5.6F), 0.0, 0.0);
-		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
+		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.entityRenderDispatcher
+			.<AbstractClientPlayerEntity>getRenderer(abstractClientPlayerEntity);
 		if (bl) {
 			playerEntityRenderer.renderRightArm(matrices, vertexConsumers, light, abstractClientPlayerEntity);
 		} else {

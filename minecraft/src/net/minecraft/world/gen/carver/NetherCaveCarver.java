@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -17,25 +16,6 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
 public class NetherCaveCarver extends CaveCarver {
 	public NetherCaveCarver(Codec<CaveCarverConfig> codec) {
 		super(codec);
-		this.alwaysCarvableBlocks = ImmutableSet.of(
-			Blocks.STONE,
-			Blocks.GRANITE,
-			Blocks.DIORITE,
-			Blocks.ANDESITE,
-			Blocks.DIRT,
-			Blocks.COARSE_DIRT,
-			Blocks.PODZOL,
-			Blocks.GRASS_BLOCK,
-			Blocks.NETHERRACK,
-			Blocks.SOUL_SAND,
-			Blocks.SOUL_SOIL,
-			Blocks.CRIMSON_NYLIUM,
-			Blocks.WARPED_NYLIUM,
-			Blocks.NETHER_WART_BLOCK,
-			Blocks.WARPED_WART_BLOCK,
-			Blocks.BASALT,
-			Blocks.BLACKSTONE
-		);
 		this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
 	}
 
@@ -65,7 +45,7 @@ public class NetherCaveCarver extends CaveCarver {
 		AquiferSampler aquiferSampler,
 		MutableBoolean mutableBoolean
 	) {
-		if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+		if (this.canAlwaysCarveBlock(caveCarverConfig, chunk.getBlockState(mutable))) {
 			BlockState blockState;
 			if (mutable.getY() <= carverContext.getMinY() + 31) {
 				blockState = LAVA.getBlockState();

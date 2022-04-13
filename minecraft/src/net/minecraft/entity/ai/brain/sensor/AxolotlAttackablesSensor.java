@@ -5,7 +5,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.tag.EntityTypeTags;
 
 public class AxolotlAttackablesSensor extends NearestVisibleLivingEntitySensor {
-	public static final float field_30248 = 8.0F;
+	public static final float TARGET_RANGE = 8.0F;
 
 	@Override
 	protected boolean matches(LivingEntity entity, LivingEntity target) {

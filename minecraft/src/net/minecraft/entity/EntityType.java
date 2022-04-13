@@ -579,7 +579,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		EntityType.Builder.<WanderingTraderEntity>create(WanderingTraderEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 1.95F).maxTrackingRange(10)
 	);
 	public static final EntityType<WardenEntity> WARDEN = register(
-		"warden", EntityType.Builder.<WardenEntity>create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(10).makeFireImmune()
+		"warden", EntityType.Builder.<WardenEntity>create(WardenEntity::new, SpawnGroup.MONSTER).setDimensions(0.9F, 2.9F).maxTrackingRange(16).makeFireImmune()
 	);
 	public static final EntityType<WitchEntity> WITCH = register(
 		"witch", EntityType.Builder.<WitchEntity>create(WitchEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)

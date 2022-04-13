@@ -797,6 +797,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Blocks.JUNGLE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(ItemEntry.builder(Blocks.ACACIA_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(ItemEntry.builder(Blocks.DARK_OAK_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Blocks.MANGROVE_LOG).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 				)
 		);
 		biConsumer.accept(

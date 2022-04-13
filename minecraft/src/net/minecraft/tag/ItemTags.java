@@ -30,6 +30,7 @@ public final class ItemTags {
 	public static final TagKey<Item> MANGROVE_LOGS = of("mangrove_logs");
 	public static final TagKey<Item> CRIMSON_STEMS = of("crimson_stems");
 	public static final TagKey<Item> WARPED_STEMS = of("warped_stems");
+	public static final TagKey<Item> WART_BLOCKS = of("wart_blocks");
 	public static final TagKey<Item> BANNERS = of("banners");
 	public static final TagKey<Item> SAND = of("sand");
 	public static final TagKey<Item> STAIRS = of("stairs");
@@ -62,6 +63,7 @@ public final class ItemTags {
 	public static final TagKey<Item> CANDLES = of("candles");
 	public static final TagKey<Item> DIRT = of("dirt");
 	public static final TagKey<Item> TERRACOTTA = of("terracotta");
+	public static final TagKey<Item> COMPLETES_FIND_TREE_TUTORIAL = of("completes_find_tree_tutorial");
 	public static final TagKey<Item> BOATS = of("boats");
 	public static final TagKey<Item> CHEST_BOATS = of("chest_boats");
 	public static final TagKey<Item> FISHES = of("fishes");
@@ -76,7 +78,7 @@ public final class ItemTags {
 	public static final TagKey<Item> STONE_CRAFTING_MATERIALS = of("stone_crafting_materials");
 	public static final TagKey<Item> FREEZE_IMMUNE_WEARABLES = of("freeze_immune_wearables");
 	public static final TagKey<Item> AXOLOTL_TEMPT_ITEMS = of("axolotl_tempt_items");
-	public static final TagKey<Item> OCCLUDES_VIBRATION_SIGNALS = of("occludes_vibration_signals");
+	public static final TagKey<Item> DAMPENS_VIBRATIONS = of("dampens_vibrations");
 	public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = of("cluster_max_harvestables");
 	public static final TagKey<Item> COMPASSES = of("compasses");
 

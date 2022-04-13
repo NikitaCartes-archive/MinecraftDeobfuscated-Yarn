@@ -7,6 +7,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.function.Function;
 import net.minecraft.structure.StructureManager;
@@ -42,14 +43,14 @@ public class StructurePool {
 	public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.STRUCTURE_POOL_KEY, CODEC);
 	private final Identifier id;
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
-	private final List<StructurePoolElement> elements;
+	private final ObjectArrayList<StructurePoolElement> elements;
 	private final Identifier terminatorsId;
 	private int highestY = Integer.MIN_VALUE;
 
 	public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts) {
 		this.id = id;
 		this.elementCounts = elementCounts;
-		this.elements = Lists.<StructurePoolElement>newArrayList();
+		this.elements = new ObjectArrayList<>();
 
 		for(Pair<StructurePoolElement, Integer> pair : elementCounts) {
 			StructurePoolElement structurePoolElement = pair.getFirst();
@@ -70,7 +71,7 @@ public class StructurePool {
 	) {
 		this.id = id;
 		this.elementCounts = Lists.<Pair<StructurePoolElement, Integer>>newArrayList();
-		this.elements = Lists.<StructurePoolElement>newArrayList();
+		this.elements = new ObjectArrayList<>();
 
 		for(Pair<Function<StructurePool.Projection, ? extends StructurePoolElement>, Integer> pair : elementCounts) {
 			StructurePoolElement structurePoolElement = (StructurePoolElement)((Function)pair.getFirst()).apply(projection);
@@ -102,7 +103,7 @@ public class StructurePool {
 	}
 
 	public StructurePoolElement getRandomElement(AbstractRandom random) {
-		return (StructurePoolElement)this.elements.get(random.nextInt(this.elements.size()));
+		return this.elements.get(random.nextInt(this.elements.size()));
 	}
 
 	public List<StructurePoolElement> getElementIndicesInRandomOrder(AbstractRandom random) {

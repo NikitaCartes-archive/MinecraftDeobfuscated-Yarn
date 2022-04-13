@@ -92,7 +92,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	}
 
 	@Override
-	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
 		return this.canWarn(world);
 	}
 

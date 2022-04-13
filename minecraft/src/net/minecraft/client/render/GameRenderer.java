@@ -255,10 +255,10 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 	@Nullable
 	private static Shader renderTypeCrumblingShader;
 
-	public GameRenderer(MinecraftClient client, ResourceManager resourceManager, BufferBuilderStorage buffers) {
+	public GameRenderer(MinecraftClient client, HeldItemRenderer heldItemRenderer, ResourceManager resourceManager, BufferBuilderStorage buffers) {
 		this.client = client;
 		this.resourceManager = resourceManager;
-		this.firstPersonRenderer = client.getHeldItemRenderer();
+		this.firstPersonRenderer = heldItemRenderer;
 		this.mapRenderer = new MapRenderer(client.getTextureManager());
 		this.lightmapTextureManager = new LightmapTextureManager(this, client);
 		this.buffers = buffers;
