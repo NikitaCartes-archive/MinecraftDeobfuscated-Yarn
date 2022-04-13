@@ -135,7 +135,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		this.setVariant(this.random.nextInt(5));
+		this.setVariant(world.getRandom().nextInt(5));
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}

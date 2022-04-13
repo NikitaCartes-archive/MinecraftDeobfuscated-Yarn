@@ -84,6 +84,7 @@ public class LookTargetUtil {
 	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation) {
 		double d = entity.getEyeY() - 0.3F;
 		ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
+		itemEntity.setThrower(entity.getUuid());
 		float f = 0.3F;
 		Vec3d vec3d = targetLocation.subtract(entity.getPos());
 		vec3d = vec3d.normalize().multiply(0.3F);

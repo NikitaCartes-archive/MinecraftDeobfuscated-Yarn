@@ -267,7 +267,7 @@ public class DebugInfoSender {
 	private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {
 		Packet<?> packet = new CustomPayloadS2CPacket(channel, buf);
 
-		for (PlayerEntity playerEntity : world.toServerWorld().getPlayers()) {
+		for (PlayerEntity playerEntity : world.getPlayers()) {
 			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(packet);
 		}
 	}

@@ -1,10 +1,8 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -30,7 +28,7 @@ public class CoralTreeFeature extends CoralFeature {
 
 		BlockPos blockPos = mutable.toImmutable();
 		int k = random.nextInt(3) + 2;
-		List<Direction> list = Util.copyShuffled(Lists.<Direction>newArrayList(Direction.Type.HORIZONTAL), random);
+		List<Direction> list = Direction.Type.HORIZONTAL.getShuffled(random);
 
 		for (Direction direction : list.subList(0, k)) {
 			mutable.set(blockPos);

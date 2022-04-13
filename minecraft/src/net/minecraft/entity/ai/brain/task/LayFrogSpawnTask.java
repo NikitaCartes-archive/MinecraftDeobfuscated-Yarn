@@ -14,9 +14,9 @@ import net.minecraft.util.math.Direction;
 
 public class LayFrogSpawnTask extends Task<FrogEntity> {
 	private final Block frogSpawn;
-	private final MemoryModuleType<?> field_37441;
+	private final MemoryModuleType<?> triggerMemory;
 
-	public LayFrogSpawnTask(Block frogSpawn, MemoryModuleType<?> memoryModuleType) {
+	public LayFrogSpawnTask(Block frogSpawn, MemoryModuleType<?> triggerMemory) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.ATTACK_TARGET,
@@ -28,7 +28,7 @@ public class LayFrogSpawnTask extends Task<FrogEntity> {
 			)
 		);
 		this.frogSpawn = frogSpawn;
-		this.field_37441 = memoryModuleType;
+		this.triggerMemory = triggerMemory;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, FrogEntity frogEntity) {
@@ -45,7 +45,7 @@ public class LayFrogSpawnTask extends Task<FrogEntity> {
 				if (serverWorld.getBlockState(blockPos3).isAir()) {
 					serverWorld.setBlockState(blockPos3, this.frogSpawn.getDefaultState(), Block.NOTIFY_ALL);
 					serverWorld.playSoundFromEntity(null, frogEntity, SoundEvents.ENTITY_FROG_LAY_SPAWN, SoundCategory.BLOCKS, 1.0F, 1.0F);
-					frogEntity.getBrain().forget(this.field_37441);
+					frogEntity.getBrain().forget(this.triggerMemory);
 					return;
 				}
 			}

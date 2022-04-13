@@ -7,13 +7,11 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -52,7 +50,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.StriderEntity;
@@ -102,6 +100,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -119,7 +118,6 @@ import org.slf4j.Logger;
 
 public abstract class PlayerEntity extends LivingEntity {
 	private static final Logger field_38197 = LogUtils.getLogger();
-	public static final String OFFLINE_PLAYER_UUID_PREFIX = "OfflinePlayer:";
 	public static final int field_30643 = 16;
 	public static final int field_30644 = 20;
 	public static final int field_30645 = 100;
@@ -184,7 +182,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile profile) {
 		super(EntityType.PLAYER, world);
-		this.setUuid(getUuidFromProfile(profile));
+		this.setUuid(DynamicSerializableUuid.getUuidFromProfile(profile));
 		this.gameProfile = profile;
 		this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
 		this.currentScreenHandler = this.playerScreenHandler;
@@ -768,7 +766,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setUuid(getUuidFromProfile(this.gameProfile));
+		this.setUuid(DynamicSerializableUuid.getUuidFromProfile(this.gameProfile));
 		NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
 		this.inventory.readNbt(nbtList);
 		this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
@@ -992,7 +990,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void openJigsawScreen(JigsawBlockEntity jigsaw) {
 	}
 
-	public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
+	public void openHorseInventory(AbstractHorseEntity horse, Inventory inventory) {
 	}
 
 	public OptionalInt openHandledScreen(@Nullable NamedScreenHandlerFactory factory) {
@@ -1638,7 +1636,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					this.increaseStat(Stats.BOAT_ONE_CM, i);
 				} else if (entity instanceof PigEntity) {
 					this.increaseStat(Stats.PIG_ONE_CM, i);
-				} else if (entity instanceof HorseBaseEntity) {
+				} else if (entity instanceof AbstractHorseEntity) {
 					this.increaseStat(Stats.HORSE_ONE_CM, i);
 				} else if (entity instanceof StriderEntity) {
 					this.increaseStat(Stats.STRIDER_ONE_CM, i);
@@ -1987,19 +1985,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public float getAbsorptionAmount() {
 		return this.getDataTracker().get(ABSORPTION_AMOUNT);
-	}
-
-	public static UUID getUuidFromProfile(GameProfile profile) {
-		UUID uUID = profile.getId();
-		if (uUID == null) {
-			uUID = getOfflinePlayerUuid(profile.getName());
-		}
-
-		return uUID;
-	}
-
-	public static UUID getOfflinePlayerUuid(String nickname) {
-		return UUID.nameUUIDFromBytes(("OfflinePlayer:" + nickname).getBytes(StandardCharsets.UTF_8));
 	}
 
 	public boolean isPartVisible(PlayerModelPart modelPart) {

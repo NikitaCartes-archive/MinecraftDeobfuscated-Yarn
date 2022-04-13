@@ -18,7 +18,7 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 	public IronGolemEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new IronGolemEntityModel<>(context.getPart(EntityModelLayers.IRON_GOLEM)), 0.7F);
 		this.addFeature(new IronGolemCrackFeatureRenderer(this));
-		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
+		this.addFeature(new IronGolemFlowerFeatureRenderer(this, context.getBlockRenderManager()));
 	}
 
 	public Identifier getTexture(IronGolemEntity ironGolemEntity) {

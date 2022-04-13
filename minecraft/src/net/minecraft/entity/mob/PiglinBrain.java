@@ -126,8 +126,8 @@ public class PiglinBrain {
 		return brain;
 	}
 
-	protected static void setHuntedRecently(PiglinEntity piglin) {
-		int i = HUNT_MEMORY_DURATION.get(piglin.world.random);
+	protected static void setHuntedRecently(PiglinEntity piglin, AbstractRandom random) {
+		int i = HUNT_MEMORY_DURATION.get(random);
 		piglin.getBrain().remember(MemoryModuleType.HUNTED_RECENTLY, true, (long)i);
 	}
 
@@ -423,12 +423,13 @@ public class PiglinBrain {
 
 	private static List<ItemStack> getBarteredItem(PiglinEntity piglin) {
 		LootTable lootTable = piglin.world.getServer().getLootManager().getTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
-		return lootTable.generateLoot(
+		List<ItemStack> list = lootTable.generateLoot(
 			new LootContext.Builder((ServerWorld)piglin.world)
 				.parameter(LootContextParameters.THIS_ENTITY, piglin)
 				.random(piglin.world.random)
 				.build(LootContextTypes.BARTER)
 		);
+		return list;
 	}
 
 	private static boolean isHuntingTarget(LivingEntity piglin, LivingEntity target) {
@@ -471,7 +472,7 @@ public class PiglinBrain {
 	}
 
 	private static boolean isPreferredAttackTarget(PiglinEntity piglin, LivingEntity target) {
-		return getPreferredTarget(piglin).filter(livingEntity2 -> livingEntity2 == target).isPresent();
+		return getPreferredTarget(piglin).filter(preferredTarget -> preferredTarget == target).isPresent();
 	}
 
 	private static boolean getNearestZombifiedPiglin(PiglinEntity piglin) {
@@ -513,16 +514,13 @@ public class PiglinBrain {
 
 	public static void onGuardedBlockInteracted(PlayerEntity player, boolean blockOpen) {
 		List<PiglinEntity> list = player.world.getNonSpectatingEntities(PiglinEntity.class, player.getBoundingBox().expand(16.0));
-		list.stream()
-			.filter(PiglinBrain::hasIdleActivity)
-			.filter(piglinEntity -> !blockOpen || LookTargetUtil.isVisibleInMemory(piglinEntity, player))
-			.forEach(piglin -> {
-				if (piglin.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
-					becomeAngryWithPlayer(piglin, player);
-				} else {
-					becomeAngryWith(piglin, player);
-				}
-			});
+		list.stream().filter(PiglinBrain::hasIdleActivity).filter(piglin -> !blockOpen || LookTargetUtil.isVisibleInMemory(piglin, player)).forEach(piglin -> {
+			if (piglin.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
+				becomeAngryWithPlayer(piglin, player);
+			} else {
+				becomeAngryWith(piglin, player);
+			}
+		});
 	}
 
 	public static ActionResult playerInteract(PiglinEntity piglin, PlayerEntity player, Hand hand) {
@@ -556,8 +554,8 @@ public class PiglinBrain {
 				brain.remember(MemoryModuleType.ADMIRING_DISABLED, true, 400L);
 			}
 
-			getAvoiding(piglin).ifPresent(livingEntity2 -> {
-				if (livingEntity2.getType() != attacker.getType()) {
+			getAvoiding(piglin).ifPresent(avoiding -> {
+				if (avoiding.getType() != attacker.getType()) {
 					brain.forget(MemoryModuleType.AVOID_TARGET);
 				}
 			});
@@ -659,18 +657,15 @@ public class PiglinBrain {
 	}
 
 	public static void angerAtCloserTargets(AbstractPiglinEntity piglin, LivingEntity target) {
-		getNearbyPiglins(piglin).forEach(abstractPiglinEntity -> {
-			if (target.getType() != EntityType.HOGLIN || abstractPiglinEntity.canHunt() && ((HoglinEntity)target).canBeHunted()) {
-				angerAtIfCloser(abstractPiglinEntity, target);
+		getNearbyPiglins(piglin).forEach(nearbyPiglin -> {
+			if (target.getType() != EntityType.HOGLIN || nearbyPiglin.canHunt() && ((HoglinEntity)target).canBeHunted()) {
+				angerAtIfCloser(nearbyPiglin, target);
 			}
 		});
 	}
 
 	protected static void angerNearbyPiglins(AbstractPiglinEntity piglin) {
-		getNearbyPiglins(piglin)
-			.forEach(
-				abstractPiglinEntity -> getNearestDetectedPlayer(abstractPiglinEntity).ifPresent(playerEntity -> becomeAngryWith(abstractPiglinEntity, playerEntity))
-			);
+		getNearbyPiglins(piglin).forEach(nearbyPiglin -> getNearestDetectedPlayer(nearbyPiglin).ifPresent(player -> becomeAngryWith(nearbyPiglin, player)));
 	}
 
 	public static void rememberGroupHunting(PiglinEntity piglin) {
@@ -727,7 +722,7 @@ public class PiglinBrain {
 	private static void groupRunAwayFrom(PiglinEntity piglin, LivingEntity target) {
 		getNearbyVisiblePiglins(piglin)
 			.stream()
-			.filter(abstractPiglinEntity -> abstractPiglinEntity instanceof PiglinEntity)
+			.filter(nearbyVisiblePiglin -> nearbyVisiblePiglin instanceof PiglinEntity)
 			.forEach(piglinx -> runAwayFromClosestTarget((PiglinEntity)piglinx, target));
 	}
 

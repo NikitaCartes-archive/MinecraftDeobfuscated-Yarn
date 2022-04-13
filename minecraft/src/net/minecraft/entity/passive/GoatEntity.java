@@ -143,7 +143,7 @@ public class GoatEntity extends AnimalEntity {
 	public GoatEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		GoatEntity goatEntity = EntityType.GOAT.create(serverWorld);
 		if (goatEntity != null) {
-			GoatBrain.resetLongJumpCooldown(goatEntity);
+			GoatBrain.resetLongJumpCooldown(goatEntity, serverWorld.getRandom());
 			boolean bl = passiveEntity instanceof GoatEntity && ((GoatEntity)passiveEntity).isScreaming();
 			goatEntity.setScreaming(bl || serverWorld.getRandom().nextDouble() < 0.02);
 		}
@@ -207,8 +207,9 @@ public class GoatEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		GoatBrain.resetLongJumpCooldown(this);
-		this.setScreaming(world.getRandom().nextDouble() < 0.02);
+		AbstractRandom abstractRandom = world.getRandom();
+		GoatBrain.resetLongJumpCooldown(this, abstractRandom);
+		this.setScreaming(abstractRandom.nextDouble() < 0.02);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 

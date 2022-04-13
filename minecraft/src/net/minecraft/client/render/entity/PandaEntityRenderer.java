@@ -28,7 +28,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 	public PandaEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new PandaEntityModel<>(context.getPart(EntityModelLayers.PANDA)), 0.9F);
-		this.addFeature(new PandaHeldItemFeatureRenderer(this));
+		this.addFeature(new PandaHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
 	}
 
 	public Identifier getTexture(PandaEntity pandaEntity) {

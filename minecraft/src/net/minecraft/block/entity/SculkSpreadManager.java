@@ -9,6 +9,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -188,12 +189,12 @@ public class SculkSpreadManager {
 	}
 
 	public static class Cursor {
-		private static final List<Vec3i> OFFSETS = Util.make(
-			new ArrayList(18),
-			offsets -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1))
+		private static final ObjectArrayList<Vec3i> OFFSETS = Util.make(
+			new ObjectArrayList<>(18),
+			objectArrayList -> BlockPos.stream(new BlockPos(-1, -1, -1), new BlockPos(1, 1, 1))
 					.filter(pos -> (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) && !pos.equals(BlockPos.ORIGIN))
 					.map(BlockPos::toImmutable)
-					.forEach(offsets::add)
+					.forEach(objectArrayList::add)
 		);
 		public static final int field_37622 = 1;
 		private BlockPos pos;

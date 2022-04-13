@@ -37,6 +37,10 @@ public class StatusEffect {
 		return Registry.STATUS_EFFECT.getRawId(type);
 	}
 
+	public static int method_43257(@Nullable StatusEffect statusEffect) {
+		return Registry.STATUS_EFFECT.getRawId(statusEffect);
+	}
+
 	protected StatusEffect(StatusEffectCategory statusEffectCategory, int color) {
 		this.category = statusEffectCategory;
 		this.color = color;

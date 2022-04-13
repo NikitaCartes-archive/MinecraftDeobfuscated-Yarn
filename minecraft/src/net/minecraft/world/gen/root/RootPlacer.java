@@ -1,15 +1,17 @@
 package net.minecraft.world.gen.root;
 
-import com.mojang.datafixers.Products.P1;
+import com.mojang.datafixers.Products.P3;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
@@ -18,24 +20,39 @@ import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public abstract class RootPlacer {
 	public static final Codec<RootPlacer> TYPE_CODEC = Registry.ROOT_PLACER_TYPE.getCodec().dispatch(RootPlacer::getType, RootPlacerType::getCodec);
+	protected final IntProvider trunkOffsetY;
 	protected final BlockStateProvider rootProvider;
+	protected final Optional<AboveRootPlacement> aboveRootPlacement;
 
-	protected static <P extends RootPlacer> P1<Mu<P>, BlockStateProvider> method_43182(Instance<P> instance) {
-		return instance.group(BlockStateProvider.TYPE_CODEC.fieldOf("root_provider").forGetter(rootPlacer -> rootPlacer.rootProvider));
+	protected static <P extends RootPlacer> P3<Mu<P>, IntProvider, BlockStateProvider, Optional<AboveRootPlacement>> method_43182(Instance<P> instance) {
+		return instance.group(
+			IntProvider.VALUE_CODEC.fieldOf("trunk_offset_y").forGetter(rootPlacer -> rootPlacer.trunkOffsetY),
+			BlockStateProvider.TYPE_CODEC.fieldOf("root_provider").forGetter(rootPlacer -> rootPlacer.rootProvider),
+			AboveRootPlacement.CODEC.optionalFieldOf("above_root_placement").forGetter(rootPlacer -> rootPlacer.aboveRootPlacement)
+		);
 	}
 
-	public RootPlacer(BlockStateProvider rootProvider) {
+	public RootPlacer(IntProvider trunkOffsetY, BlockStateProvider rootProvider, Optional<AboveRootPlacement> aboveRootPlacement) {
+		this.trunkOffsetY = trunkOffsetY;
 		this.rootProvider = rootProvider;
+		this.aboveRootPlacement = aboveRootPlacement;
 	}
 
 	protected abstract RootPlacerType<?> getType();
 
-	public abstract Optional<BlockPos> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config
+	public abstract boolean generate(
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	);
 
 	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
 		replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
+		if (this.aboveRootPlacement.isPresent()) {
+			AboveRootPlacement aboveRootPlacement = (AboveRootPlacement)this.aboveRootPlacement.get();
+			BlockPos blockPos = pos.up();
+			if (random.nextFloat() < aboveRootPlacement.aboveRootPlacementChance() && world.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir)) {
+				replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().getBlockState(random, blockPos)));
+			}
+		}
 	}
 
 	protected BlockState applyWaterlogging(TestableWorld world, BlockPos pos, BlockState state) {
@@ -45,5 +62,9 @@ public abstract class RootPlacer {
 		} else {
 			return state;
 		}
+	}
+
+	public BlockPos trunkOffset(BlockPos pos, AbstractRandom random) {
+		return pos.up(this.trunkOffsetY.get(random));
 	}
 }

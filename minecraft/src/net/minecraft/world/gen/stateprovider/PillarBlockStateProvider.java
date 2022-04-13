@@ -27,8 +27,8 @@ public class PillarBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
-		Direction.Axis axis = Direction.Axis.pickRandomAxis(abstractRandom);
+	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+		Direction.Axis axis = Direction.Axis.pickRandomAxis(random);
 		return this.block.getDefaultState().with(PillarBlock.AXIS, axis);
 	}
 }

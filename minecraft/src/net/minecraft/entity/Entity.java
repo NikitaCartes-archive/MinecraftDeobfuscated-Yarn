@@ -220,7 +220,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * For example: {@code horizontalSpeed = velocity.horizontalSpeed() * FRICTION_RATE}
 	 */
 	public static final float DEFAULT_FRICTION = 0.6F;
-	public static final float field_29974 = 1.8F;
+	public static final float MIN_RISING_BUBBLE_COLUMN_SPEED = 1.8F;
 	public float prevHorizontalSpeed;
 	public float horizontalSpeed;
 	public float distanceTraveled;
@@ -427,6 +427,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public boolean isInRange(Entity entity, double radius) {
 		return this.getPos().isInRange(entity.getPos(), radius);
+	}
+
+	public boolean isInRange(Entity entity, double horizontalRadius, double verticalRadius) {
+		double d = entity.getX() - this.getX();
+		double e = entity.getY() - this.getY();
+		double f = entity.getZ() - this.getZ();
+		return MathHelper.squaredHypot(d, f) < MathHelper.square(horizontalRadius) && MathHelper.square(e) < MathHelper.square(verticalRadius);
 	}
 
 	protected void setRotation(float yaw, float pitch) {
@@ -693,7 +700,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					double f = vec3d.y;
 					double g = vec3d.z;
 					this.speed = this.speed + (float)(vec3d.length() * 0.6);
-					if (!blockState.isIn(BlockTags.CLIMBABLE) && !blockState.isOf(Blocks.POWDER_SNOW)) {
+					boolean bl3 = blockState.isIn(BlockTags.CLIMBABLE) || blockState.isOf(Blocks.POWDER_SNOW);
+					if (!bl3) {
 						f = 0.0;
 					}
 
@@ -719,7 +727,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								this.playStepSound(blockPos, blockState);
 							}
 
-							if (moveEffect.emitsGameEvents()) {
+							if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
 								this.emitGameEvent(GameEvent.STEP);
 							}
 						}
@@ -785,9 +793,38 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	/**
+	 * {@return the landing position}
+	 * 
+	 * @implNote Landing position is the entity's position, with {@code 0.2} subtracted
+	 * from the Y coordinate. This means that, for example, if a player is on a carpet on
+	 * a soul soil, the soul soil's position would be returned.
+	 * 
+	 * @see #getSteppingPos()
+	 * @see #getLandingBlockState()
+	 */
+	@Deprecated
 	public BlockPos getLandingPos() {
+		return this.getPosWithYOffset(0.2F);
+	}
+
+	/**
+	 * {@return the stepping position}
+	 * 
+	 * @implNote Stepping position is the entity's position, with {@code 1e-05} subtracted
+	 * from the Y coordinate. This means that, for example, if a player is on a carpet on
+	 * a soul soil, the carpet's position would be returned.
+	 * 
+	 * @see #getLandingPos()
+	 * @see #getSteppingBlockState()
+	 */
+	public BlockPos getSteppingPos() {
+		return this.getPosWithYOffset(1.0E-5F);
+	}
+
+	private BlockPos getPosWithYOffset(float offset) {
 		int i = MathHelper.floor(this.pos.x);
-		int j = MathHelper.floor(this.pos.y - 0.2F);
+		int j = MathHelper.floor(this.pos.y - (double)offset);
 		int k = MathHelper.floor(this.pos.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
 		if (this.world.getBlockState(blockPos).isAir()) {
@@ -1225,8 +1262,31 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.emitGameEvent(GameEvent.SPLASH);
 	}
 
+	/**
+	 * {@return the block state at the landing position}
+	 * 
+	 * @implNote Landing position is the entity's position, with {@code 0.2} subtracted
+	 * from the Y coordinate. This means that, for example, if a player is on a carpet on
+	 * a soul soil, the soul soil's position would be returned.
+	 * 
+	 * @see #getLandingPos()
+	 */
+	@Deprecated
 	protected BlockState getLandingBlockState() {
 		return this.world.getBlockState(this.getLandingPos());
+	}
+
+	/**
+	 * {@return the block state at the stepping position}
+	 * 
+	 * @implNote Stepping position is the entity's position, with {@code 1e-05} subtracted
+	 * from the Y coordinate. This means that, for example, if a player is on a carpet on
+	 * a soul soil, the carpet's position would be returned.
+	 * 
+	 * @see #getSteppingPos()
+	 */
+	public BlockState getSteppingBlockState() {
+		return this.world.getBlockState(this.getSteppingPos());
 	}
 
 	public boolean shouldSpawnSprintingParticles() {
@@ -1382,11 +1442,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					e *= g;
 					d *= 0.05F;
 					e *= 0.05F;
-					if (!this.hasPassengers()) {
+					if (!this.hasPassengers() && this.isPushable()) {
 						this.addVelocity(-d, 0.0, -e);
 					}
 
-					if (!entity.hasPassengers()) {
+					if (!entity.hasPassengers() && entity.isPushable()) {
 						entity.addVelocity(d, 0.0, e);
 					}
 				}

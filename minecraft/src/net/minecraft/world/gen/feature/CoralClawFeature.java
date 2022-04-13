@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +22,7 @@ public class CoralClawFeature extends CoralFeature {
 		} else {
 			Direction direction = Direction.Type.HORIZONTAL.random(random);
 			int i = random.nextInt(2) + 2;
-			List<Direction> list = Util.copyShuffled(List.of(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise()), random);
+			List<Direction> list = Util.copyShuffled(Stream.of(direction, direction.rotateYClockwise(), direction.rotateYCounterclockwise()), random);
 
 			for (Direction direction2 : list.subList(0, i)) {
 				BlockPos.Mutable mutable = pos.mutableCopy();

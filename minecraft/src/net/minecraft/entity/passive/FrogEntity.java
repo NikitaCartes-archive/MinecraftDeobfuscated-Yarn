@@ -254,7 +254,7 @@ public class FrogEntity extends AnimalEntity {
 	public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
 		FrogEntity frogEntity = EntityType.FROG.create(world);
 		if (frogEntity != null) {
-			FrogBrain.coolDownLongJump(frogEntity);
+			FrogBrain.coolDownLongJump(frogEntity, world.getRandom());
 		}
 
 		return frogEntity;
@@ -305,7 +305,7 @@ public class FrogEntity extends AnimalEntity {
 			this.setVariant(FrogVariant.TEMPERATE);
 		}
 
-		FrogBrain.coolDownLongJump(this);
+		FrogBrain.coolDownLongJump(this, world.getRandom());
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 

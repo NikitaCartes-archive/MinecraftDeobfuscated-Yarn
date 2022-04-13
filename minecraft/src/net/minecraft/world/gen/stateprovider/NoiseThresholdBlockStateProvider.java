@@ -53,12 +53,12 @@ public class NoiseThresholdBlockStateProvider extends AbstractNoiseBlockStatePro
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
 		double d = this.getNoiseValue(pos, (double)this.scale);
 		if (d < (double)this.threshold) {
-			return Util.getRandom(this.lowStates, abstractRandom);
+			return Util.getRandom(this.lowStates, random);
 		} else {
-			return abstractRandom.nextFloat() < this.highChance ? Util.getRandom(this.highStates, abstractRandom) : this.defaultState;
+			return random.nextFloat() < this.highChance ? Util.getRandom(this.highStates, random) : this.defaultState;
 		}
 	}
 }

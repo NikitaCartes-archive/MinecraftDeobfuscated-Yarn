@@ -2,6 +2,7 @@ package net.minecraft.structure;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.block.Block;
@@ -154,20 +155,20 @@ public class OceanMonumentGenerator {
 			this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
 			this.field_14466.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
 			this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
-			List<OceanMonumentGenerator.PieceSetting> list = Lists.<OceanMonumentGenerator.PieceSetting>newArrayList();
+			ObjectArrayList<OceanMonumentGenerator.PieceSetting> objectArrayList = new ObjectArrayList<>();
 
 			for (OceanMonumentGenerator.PieceSetting pieceSetting4 : pieceSettings) {
 				if (pieceSetting4 != null) {
 					pieceSetting4.checkNeighborStates();
-					list.add(pieceSetting4);
+					objectArrayList.add(pieceSetting4);
 				}
 			}
 
 			pieceSetting.checkNeighborStates();
-			Util.shuffle(list, random);
+			Util.shuffle(objectArrayList, random);
 			int q = 1;
 
-			for (OceanMonumentGenerator.PieceSetting pieceSetting5 : list) {
+			for (OceanMonumentGenerator.PieceSetting pieceSetting5 : objectArrayList) {
 				int r = 0;
 				int m = 0;
 
@@ -188,10 +189,10 @@ public class OceanMonumentGenerator {
 				}
 			}
 
-			list.add(pieceSetting);
-			list.add(pieceSetting2);
-			list.add(pieceSetting3);
-			return list;
+			objectArrayList.add(pieceSetting);
+			objectArrayList.add(pieceSetting2);
+			objectArrayList.add(pieceSetting3);
+			return objectArrayList;
 		}
 
 		@Override

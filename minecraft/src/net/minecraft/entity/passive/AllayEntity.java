@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -48,12 +47,11 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 
 public class AllayEntity extends PathAwareEntity implements InventoryOwner, GameEventListener {
 	private static final boolean field_38404 = false;
 	private static final int field_38405 = 16;
-	private static final Vec3i field_38399 = new Vec3i(1, 1, 1);
+	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS
 	);
@@ -115,26 +113,28 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.isTouchingWater()) {
-			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
-			this.setVelocity(this.getVelocity().multiply(0.8F));
-		} else if (this.isInLava()) {
-			this.updateVelocity(0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
-			this.setVelocity(this.getVelocity().multiply(0.5));
-		} else {
-			float f;
-			if (this.onGround) {
-				f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
+		if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+			if (this.isTouchingWater()) {
+				this.updateVelocity(0.02F, movementInput);
+				this.move(MovementType.SELF, this.getVelocity());
+				this.setVelocity(this.getVelocity().multiply(0.8F));
+			} else if (this.isInLava()) {
+				this.updateVelocity(0.02F, movementInput);
+				this.move(MovementType.SELF, this.getVelocity());
+				this.setVelocity(this.getVelocity().multiply(0.5));
 			} else {
-				f = 0.91F;
-			}
+				float f;
+				if (this.onGround) {
+					f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
+				} else {
+					f = 0.91F;
+				}
 
-			float g = MathHelper.magnitude(0.6F) * MathHelper.magnitude(0.91F) / MathHelper.magnitude(f);
-			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, movementInput);
-			this.move(MovementType.SELF, this.getVelocity());
-			this.setVelocity(this.getVelocity().multiply((double)f));
+				float g = MathHelper.magnitude(0.6F) * MathHelper.magnitude(0.91F) / MathHelper.magnitude(f);
+				this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, movementInput);
+				this.move(MovementType.SELF, this.getVelocity());
+				this.setVelocity(this.getVelocity().multiply((double)f));
+			}
 		}
 
 		this.updateLimbs(this, false);
@@ -196,7 +196,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		this.getBrain().tick((ServerWorld)this.world, this);
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("allayActivityUpdate");
-		AllayBrain.resetIdleActivities(this);
+		AllayBrain.updateActivities(this);
 		this.world.getProfiler().pop();
 		super.mobTick();
 	}
@@ -204,6 +204,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
+		if (!this.world.isClient && this.isAlive() && this.age % 10 == 0) {
+			this.heal(1.0F);
+		}
 	}
 
 	@Override
@@ -253,7 +256,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 
 	@Override
 	protected Vec3i getItemPickUpRangeExpander() {
-		return field_38399;
+		return ITEM_PICKUP_RANGE_EXPANDER;
 	}
 
 	@Override
@@ -312,7 +315,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	}
 
 	@Override
-	public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
+	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
 		if (event != GameEvent.NOTE_BLOCK_PLAY) {
 			return false;
 		} else {

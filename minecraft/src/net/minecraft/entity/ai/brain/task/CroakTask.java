@@ -8,8 +8,8 @@ import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class CroakTask extends Task<FrogEntity> {
-	private static final int field_37424 = 60;
-	private static final int field_37425 = 100;
+	private static final int MAX_RUN_TICK = 60;
+	private static final int RUN_TIME = 100;
 	private int runningTicks;
 
 	public CroakTask() {

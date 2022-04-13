@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.toast.SystemToast;
@@ -35,6 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.SaveProperties;
@@ -165,13 +167,42 @@ public class IntegratedServerLoader {
 			boolean bl = saveProperties.getGeneratorOptions().isLegacyCustomizedType();
 			boolean bl2 = saveProperties.getLifecycle() != Lifecycle.stable();
 			if (!canShowBackupPrompt || !bl && !bl2) {
-				this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+				this.client.getResourcePackProvider().loadServerPack(session).thenApply(void_ -> true).exceptionallyComposeAsync(throwable -> {
+					LOGGER.warn("Failed to load pack: ", throwable);
+					return this.showPackLoadFailureScreen();
+				}, this.client).thenAcceptAsync(proceed -> {
+					if (proceed) {
+						this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+					} else {
+						saveLoader.close();
+						close(session, levelName);
+						this.client.getResourcePackProvider().clear().thenRunAsync(() -> this.client.setScreen(parent), this.client);
+					}
+				}, this.client).exceptionally(throwable -> {
+					this.client.setCrashReportSupplier(() -> CrashReport.create(throwable, "Load world"));
+					return null;
+				});
 			} else {
 				this.showBackupPromptScreen(parent, levelName, bl, () -> this.start(parent, levelName, safeMode, false));
 				saveLoader.close();
 				close(session, levelName);
 			}
 		}
+	}
+
+	private CompletableFuture<Boolean> showPackLoadFailureScreen() {
+		CompletableFuture<Boolean> completableFuture = new CompletableFuture();
+		this.client
+			.setScreen(
+				new ConfirmScreen(
+					completableFuture::complete,
+					new TranslatableText("multiplayer.texturePrompt.failure.line1"),
+					new TranslatableText("multiplayer.texturePrompt.failure.line2"),
+					ScreenTexts.PROCEED,
+					ScreenTexts.CANCEL
+				)
+			);
+		return completableFuture;
 	}
 
 	private static void close(LevelStorage.Session session, String levelName) {

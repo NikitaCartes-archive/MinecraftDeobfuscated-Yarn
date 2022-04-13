@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import java.util.Collections;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -197,20 +197,20 @@ public class Structure {
 		return this.getInfosForBlock(pos, placementData, block, true);
 	}
 
-	public List<Structure.StructureBlockInfo> getInfosForBlock(BlockPos pos, StructurePlacementData placementData, Block block, boolean transformed) {
-		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
+	public ObjectArrayList<Structure.StructureBlockInfo> getInfosForBlock(BlockPos pos, StructurePlacementData placementData, Block block, boolean transformed) {
+		ObjectArrayList<Structure.StructureBlockInfo> objectArrayList = new ObjectArrayList<>();
 		BlockBox blockBox = placementData.getBoundingBox();
 		if (this.blockInfoLists.isEmpty()) {
-			return Collections.emptyList();
+			return objectArrayList;
 		} else {
 			for (Structure.StructureBlockInfo structureBlockInfo : placementData.getRandomBlockInfos(this.blockInfoLists, pos).getAllOf(block)) {
 				BlockPos blockPos = transformed ? transform(placementData, structureBlockInfo.pos).add(pos) : structureBlockInfo.pos;
 				if (blockBox == null || blockBox.contains(blockPos)) {
-					list.add(new Structure.StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
+					objectArrayList.add(new Structure.StructureBlockInfo(blockPos, structureBlockInfo.state.rotate(placementData.getRotation()), structureBlockInfo.nbt));
 				}
 			}
 
-			return list;
+			return objectArrayList;
 		}
 	}
 

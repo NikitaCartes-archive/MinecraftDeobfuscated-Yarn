@@ -5,10 +5,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.VibrationParticleEffect;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.GameEventTags;
@@ -94,10 +95,10 @@ public class SculkSensorListener implements GameEventListener {
 	}
 
 	@Override
-	public boolean listen(ServerWorld world, GameEvent event, @Nullable Entity entity, Vec3d pos) {
+	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
 		if (this.vibration != null) {
 			return false;
-		} else if (!this.callback.canAccept(event, entity)) {
+		} else if (!this.callback.canAccept(event, emitter)) {
 			return false;
 		} else {
 			Optional<Vec3d> optional = this.positionSource.getPos(world);
@@ -105,21 +106,21 @@ public class SculkSensorListener implements GameEventListener {
 				return false;
 			} else {
 				Vec3d vec3d = (Vec3d)optional.get();
-				if (!this.callback.accepts(world, this, new BlockPos(pos), event, entity)) {
+				if (!this.callback.accepts(world, this, new BlockPos(pos), event, emitter)) {
 					return false;
 				} else if (isOccluded(world, pos, vec3d)) {
 					return false;
 				} else {
-					this.listen(world, event, entity, pos, vec3d);
+					this.listen(world, event, emitter, pos, vec3d);
 					return true;
 				}
 			}
 		}
 	}
 
-	private void listen(ServerWorld world, GameEvent gameEvent, @Nullable Entity entity, Vec3d start, Vec3d end) {
+	private void listen(ServerWorld world, GameEvent gameEvent, GameEvent.Emitter emitter, Vec3d start, Vec3d end) {
 		this.distance = MathHelper.floor(start.distanceTo(end));
-		this.vibration = new SculkSensorListener.Vibration(gameEvent, this.distance, start, entity);
+		this.vibration = new SculkSensorListener.Vibration(gameEvent, this.distance, start, emitter.sourceEntity());
 		this.delay = this.distance;
 		world.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), start.x, start.y, start.z, 1, 0.0, 0.0, 0.0, 0.0);
 		this.callback.onListen();
@@ -146,16 +147,21 @@ public class SculkSensorListener implements GameEventListener {
 			return GameEventTags.VIBRATIONS;
 		}
 
-		default boolean canAccept(GameEvent gameEvent, @Nullable Entity entity) {
+		default boolean canAccept(GameEvent gameEvent, GameEvent.Emitter emitter) {
 			if (!gameEvent.isIn(this.getTag())) {
 				return false;
 			} else {
+				Entity entity = emitter.sourceEntity();
 				if (entity != null) {
 					if (entity.isSpectator()) {
 						return false;
 					}
 
 					if (entity.bypassesSteppingEffects() && gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)) {
+						if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+							Criteria.AVOID_VIBRATION.trigger(serverPlayerEntity);
+						}
+
 						return false;
 					}
 
@@ -163,20 +169,19 @@ public class SculkSensorListener implements GameEventListener {
 						return false;
 					}
 
-					if (gameEvent.isIn(GameEventTags.IGNORE_VIBRATIONS_ON_OCCLUDING_BLOCK)) {
-						BlockState blockState = entity.getWorld().getBlockState(entity.getLandingPos());
-						return !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS);
+					if (gameEvent.isIn(GameEventTags.DAMPENABLE_VIBRATIONS)) {
+						return !entity.getSteppingBlockState().isIn(BlockTags.DAMPENS_VIBRATIONS);
 					}
 				}
 
-				return true;
+				return emitter.affectedState() != null ? !emitter.affectedState().isIn(BlockTags.DAMPENS_VIBRATIONS) : true;
 			}
 		}
 
 		/**
 		 * Returns whether the callback wants to accept this event.
 		 */
-		boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity);
+		boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter);
 
 		/**
 		 * Accepts a game event after delay.

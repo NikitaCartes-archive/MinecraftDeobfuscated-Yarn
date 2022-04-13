@@ -41,10 +41,10 @@ public class UpdateAttackTargetTask<E extends MobEntity> extends Task<E> {
 	}
 
 	protected void run(ServerWorld serverWorld, E mobEntity, long l) {
-		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(target -> this.updateAttackTarget(mobEntity, target));
+		((Optional)this.targetGetter.apply(mobEntity)).ifPresent(target -> updateAttackTarget(mobEntity, target));
 	}
 
-	private void updateAttackTarget(E entity, LivingEntity target) {
+	public static <E extends MobEntity> void updateAttackTarget(E entity, LivingEntity target) {
 		entity.getBrain().remember(MemoryModuleType.ATTACK_TARGET, target);
 		entity.getBrain().forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 	}

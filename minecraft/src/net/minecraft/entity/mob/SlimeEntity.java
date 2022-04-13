@@ -316,8 +316,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		int i = this.random.nextInt(3);
-		if (i < 2 && this.random.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {
+		AbstractRandom abstractRandom = world.getRandom();
+		int i = abstractRandom.nextInt(3);
+		if (i < 2 && abstractRandom.nextFloat() < 0.5F * difficulty.getClampedLocalDifficulty()) {
 			i++;
 		}
 

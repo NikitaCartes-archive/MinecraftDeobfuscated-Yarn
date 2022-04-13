@@ -40,6 +40,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.random.AbstractRandom;
 
 public class FrogBrain {
 	private static final float field_37469 = 2.0F;
@@ -53,8 +54,8 @@ public class FrogBrain {
 	private static final float field_37477 = 1.5F;
 	private static final float field_37478 = 1.25F;
 
-	protected static void coolDownLongJump(FrogEntity frog) {
-		frog.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, longJumpCooldownRange.get(frog.world.random));
+	protected static void coolDownLongJump(FrogEntity frog, AbstractRandom random) {
+		frog.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, longJumpCooldownRange.get(random));
 	}
 
 	protected static Brain<?> create(Brain<FrogEntity> brain) {

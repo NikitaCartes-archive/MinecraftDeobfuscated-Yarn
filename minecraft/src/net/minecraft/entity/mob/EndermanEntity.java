@@ -468,7 +468,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
 			if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				world.removeBlock(blockPos, false);
-				world.emitGameEvent(this.enderman, GameEvent.BLOCK_DESTROY, blockPos);
+				world.emitGameEvent(GameEvent.BLOCK_DESTROY, blockPos, GameEvent.Emitter.of(this.enderman, blockState));
 				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
 			}
 		}
@@ -506,7 +506,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
 				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
 					world.setBlockState(blockPos, blockState3, Block.NOTIFY_ALL);
-					world.emitGameEvent(this.enderman, GameEvent.BLOCK_PLACE, blockPos);
+					world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.enderman, blockState3));
 					this.enderman.setCarriedBlock(null);
 				}
 			}

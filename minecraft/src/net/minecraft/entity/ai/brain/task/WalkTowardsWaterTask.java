@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction;
 public class WalkTowardsWaterTask extends Task<PathAwareEntity> {
 	private final int range;
 	private final float speed;
-	private long field_37439;
+	private long walkTowardsWaterTime;
 
 	public WalkTowardsWaterTask(int range, float speed) {
 		super(
@@ -32,7 +32,7 @@ public class WalkTowardsWaterTask extends Task<PathAwareEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		this.field_37439 = l + 40L;
+		this.walkTowardsWaterTime = l + 40L;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -40,7 +40,7 @@ public class WalkTowardsWaterTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		if (l >= this.field_37439) {
+		if (l >= this.walkTowardsWaterTime) {
 			ShapeContext shapeContext = ShapeContext.of(pathAwareEntity);
 			BlockPos blockPos = pathAwareEntity.getBlockPos();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -52,7 +52,7 @@ public class WalkTowardsWaterTask extends Task<PathAwareEntity> {
 					for (Direction direction : Direction.Type.HORIZONTAL) {
 						mutable.set(blockPos2, direction);
 						if (serverWorld.getBlockState(mutable).isAir() && serverWorld.getBlockState(mutable.move(Direction.DOWN)).isOf(Blocks.WATER)) {
-							this.field_37439 = l + 40L;
+							this.walkTowardsWaterTime = l + 40L;
 							LookTargetUtil.walkTowards(pathAwareEntity, blockPos2, this.speed, 0);
 							return;
 						}

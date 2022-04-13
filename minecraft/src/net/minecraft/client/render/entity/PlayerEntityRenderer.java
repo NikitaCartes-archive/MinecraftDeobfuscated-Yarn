@@ -48,11 +48,11 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))
 			)
 		);
-		this.addFeature(new PlayerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new PlayerHeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(ctx, this));
 		this.addFeature(new Deadmau5FeatureRenderer(this));
 		this.addFeature(new CapeFeatureRenderer(this));
-		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new HeadFeatureRenderer<>(this, ctx.getModelLoader(), ctx.getHeldItemRenderer()));
 		this.addFeature(new ElytraFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this, ctx.getModelLoader()));

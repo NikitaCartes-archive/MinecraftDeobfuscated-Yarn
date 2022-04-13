@@ -79,6 +79,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -404,7 +405,7 @@ public abstract class PlayerManager {
 	}
 
 	public ServerPlayerEntity createPlayer(GameProfile profile) {
-		UUID uUID = PlayerEntity.getUuidFromProfile(profile);
+		UUID uUID = DynamicSerializableUuid.getUuidFromProfile(profile);
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
 		for (int i = 0; i < this.players.size(); i++) {

@@ -2,8 +2,10 @@ package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.floatprovider.FloatProvider;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
@@ -25,16 +27,17 @@ public class RavineCarverConfig extends CarverConfig {
 		FloatProvider yScale,
 		YOffset lavaLevel,
 		CarverDebugConfig debugConfig,
+		RegistryEntryList<Block> replaceable,
 		FloatProvider verticalRotation,
 		RavineCarverConfig.Shape shape
 	) {
-		super(probability, y, yScale, lavaLevel, debugConfig);
+		super(probability, y, yScale, lavaLevel, debugConfig, replaceable);
 		this.verticalRotation = verticalRotation;
 		this.shape = shape;
 	}
 
 	public RavineCarverConfig(CarverConfig config, FloatProvider verticalRotation, RavineCarverConfig.Shape shape) {
-		this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, verticalRotation, shape);
+		this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, config.replaceable, verticalRotation, shape);
 	}
 
 	public static class Shape {

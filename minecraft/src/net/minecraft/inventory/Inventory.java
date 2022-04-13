@@ -1,6 +1,7 @@
 package net.minecraft.inventory;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -83,9 +84,13 @@ public interface Inventory extends Clearable {
 	 * Determines whether this inventory contains any of the given candidate items.
 	 */
 	default boolean containsAny(Set<Item> items) {
+		return this.containsAny((Predicate<ItemStack>)(stack -> !stack.isEmpty() && items.contains(stack.getItem())));
+	}
+
+	default boolean containsAny(Predicate<ItemStack> predicate) {
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
-			if (items.contains(itemStack.getItem()) && itemStack.getCount() > 0) {
+			if (predicate.test(itemStack)) {
 				return true;
 			}
 		}

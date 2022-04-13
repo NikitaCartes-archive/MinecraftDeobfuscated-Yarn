@@ -11,6 +11,8 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash.Strategy;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -27,7 +29,6 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -707,13 +708,37 @@ public class Util {
 		};
 	}
 
-	public static <T> List<T> copyShuffled(List<T> list, AbstractRandom random) {
-		List<T> list2 = new ArrayList(list);
-		shuffle(list2, random);
-		return list2;
+	public static <T> List<T> copyShuffled(Stream<T> stream, AbstractRandom random) {
+		ObjectArrayList<T> objectArrayList = (ObjectArrayList<T>)stream.collect(ObjectArrayList.toList());
+		shuffle(objectArrayList, random);
+		return objectArrayList;
 	}
 
-	public static <T> void shuffle(List<T> list, AbstractRandom random) {
+	public static IntArrayList shuffle(IntStream stream, AbstractRandom random) {
+		IntArrayList intArrayList = IntArrayList.wrap(stream.toArray());
+		int i = intArrayList.size();
+
+		for (int j = i; j > 1; j--) {
+			int k = random.nextInt(j);
+			intArrayList.set(j - 1, intArrayList.set(k, intArrayList.getInt(j - 1)));
+		}
+
+		return intArrayList;
+	}
+
+	public static <T> List<T> copyShuffled(T[] array, AbstractRandom random) {
+		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(array);
+		shuffle(objectArrayList, random);
+		return objectArrayList;
+	}
+
+	public static <T> List<T> copyShuffled(ObjectArrayList<T> list, AbstractRandom random) {
+		ObjectArrayList<T> objectArrayList = new ObjectArrayList<>(list);
+		shuffle(objectArrayList, random);
+		return objectArrayList;
+	}
+
+	public static <T> void shuffle(ObjectArrayList<T> list, AbstractRandom random) {
 		int i = list.size();
 
 		for (int j = i; j > 1; j--) {

@@ -6,6 +6,7 @@ import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -229,20 +230,34 @@ import net.minecraft.datafixer.schema.Schema705;
 import net.minecraft.datafixer.schema.Schema808;
 import net.minecraft.datafixer.schema.Schema99;
 import net.minecraft.util.Util;
+import org.slf4j.Logger;
 
 public class Schemas {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
 	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = IdentifierNormalizingSchema::new;
 	private static final DataFixer FIXER = create();
+	public static final int field_38844 = 3088;
 
-	private static DataFixer create() {
-		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
-		build(dataFixerBuilder);
-		return dataFixerBuilder.build(Util.getBootstrapExecutor());
+	private Schemas() {
 	}
 
 	public static DataFixer getFixer() {
 		return FIXER;
+	}
+
+	private static synchronized DataFixer create() {
+		DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
+		build(dataFixerBuilder);
+
+		boolean bl = switch (SharedConstants.dataFixerPhase) {
+			case UNINITIALIZED_OPTIMIZED -> true;
+			case UNINITIALIZED_UNOPTIMIZED -> false;
+			default -> throw new IllegalStateException("Already loaded");
+		};
+		SharedConstants.dataFixerPhase = bl ? DataFixerPhase.INITIALIZED_OPTIMIZED : DataFixerPhase.INITIALIZED_UNOPTIMIZED;
+		LOGGER.info("Building {} datafixer", bl ? "optimized" : "unoptimized");
+		return bl ? dataFixerBuilder.buildOptimized(Util.getBootstrapExecutor()) : dataFixerBuilder.buildUnoptimized();
 	}
 
 	private static void build(DataFixerBuilder builder) {
@@ -285,7 +300,7 @@ public class Schemas {
 			ItemNameFix.create(
 				schema18,
 				"cooked_fished item renamer",
-				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:cooked_fished") ? "minecraft:cooked_fish" : string
+				id -> Objects.equals(IdentifierNormalizingSchema.normalize(id), "minecraft:cooked_fished") ? "minecraft:cooked_fish" : id
 			)
 		);
 		builder.addFixer(new EntityZombieVillagerTypeFix(schema18, false));
@@ -373,14 +388,14 @@ public class Schemas {
 			BlockNameFix.create(
 				schema52,
 				"Colorless shulker block fixer",
-				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
+				id -> Objects.equals(IdentifierNormalizingSchema.normalize(id), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : id
 			)
 		);
 		builder.addFixer(
 			ItemNameFix.create(
 				schema52,
 				"Colorless shulker item fixer",
-				string -> Objects.equals(IdentifierNormalizingSchema.normalize(string), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : string
+				id -> Objects.equals(IdentifierNormalizingSchema.normalize(id), "minecraft:purple_shulker_box") ? "minecraft:shulker_box" : id
 			)
 		);
 		Schema schema53 = builder.addSchema(1475, EMPTY_IDENTIFIER_NORMALIZE);
@@ -850,18 +865,16 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema158, "Added Frog", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema158, "Added Tadpole", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema158, "Added Sculk Shrieker", TypeReferences.BLOCK_ENTITY));
-		Schema schema159 = builder.addSchema(3079, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlendingDataFix(schema159, "Blending Data Fix v3079"));
-		Schema schema160 = builder.addSchema(3081, Schema3081::new);
-		builder.addFixer(new ChoiceTypesFix(schema160, "Added Warden", TypeReferences.ENTITY));
-		Schema schema161 = builder.addSchema(3082, Schema3082::new);
-		builder.addFixer(new ChoiceTypesFix(schema161, "Added Chest Boat", TypeReferences.ENTITY));
-		Schema schema162 = builder.addSchema(3083, Schema3083::new);
-		builder.addFixer(new ChoiceTypesFix(schema162, "Added Allay", TypeReferences.ENTITY));
-		Schema schema163 = builder.addSchema(3084, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema159 = builder.addSchema(3081, Schema3081::new);
+		builder.addFixer(new ChoiceTypesFix(schema159, "Added Warden", TypeReferences.ENTITY));
+		Schema schema160 = builder.addSchema(3082, Schema3082::new);
+		builder.addFixer(new ChoiceTypesFix(schema160, "Added Chest Boat", TypeReferences.ENTITY));
+		Schema schema161 = builder.addSchema(3083, Schema3083::new);
+		builder.addFixer(new ChoiceTypesFix(schema161, "Added Allay", TypeReferences.ENTITY));
+		Schema schema162 = builder.addSchema(3084, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			new GameEventRenamesFix(
-				schema163,
+				schema162,
 				TypeReferences.GAME_EVENT_NAME,
 				ImmutableMap.<String, String>builder()
 					.put("minecraft:block_press", "minecraft:block_activate")
@@ -882,12 +895,10 @@ public class Schemas {
 					.build()
 			)
 		);
-		Schema schema164 = builder.addSchema(3085, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlendingDataFix(schema164, "Blending Data Fix v3085"));
-		Schema schema165 = builder.addSchema(3086, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema163 = builder.addSchema(3086, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			new EntityVariantTypeFix(
-				schema165, "Change cat variant type", TypeReferences.ENTITY, "minecraft:cat", "CatType", Util.make(new Int2ObjectOpenHashMap(), catVariants -> {
+				schema163, "Change cat variant type", TypeReferences.ENTITY, "minecraft:cat", "CatType", Util.make(new Int2ObjectOpenHashMap(), catVariants -> {
 					catVariants.defaultReturnValue("minecraft:tabby");
 					catVariants.put(0, "minecraft:tabby");
 					catVariants.put(1, "minecraft:black");
@@ -918,21 +929,21 @@ public class Schemas {
 			.build();
 		builder.addFixer(
 			new AdvancementCriteriaRenameFix(
-				schema165, "Migrate cat variant advancement", "minecraft:husbandry/complete_catalogue", string -> immutableMap4.getOrDefault(string, string)
+				schema163, "Migrate cat variant advancement", "minecraft:husbandry/complete_catalogue", string -> immutableMap4.getOrDefault(string, string)
 			)
 		);
-		Schema schema166 = builder.addSchema(3087, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema164 = builder.addSchema(3087, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			new EntityVariantTypeFix(
-				schema166, "Change frog variant type", TypeReferences.ENTITY, "minecraft:frog", "Variant", Util.make(new Int2ObjectOpenHashMap(), frogVariants -> {
+				schema164, "Change frog variant type", TypeReferences.ENTITY, "minecraft:frog", "Variant", Util.make(new Int2ObjectOpenHashMap(), frogVariants -> {
 					frogVariants.put(0, "minecraft:temperate");
 					frogVariants.put(1, "minecraft:warm");
 					frogVariants.put(2, "minecraft:cold");
 				})::get
 			)
 		);
-		Schema schema167 = builder.addSchema(3088, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlendingDataFix(schema167, "Blending Data Fix v3088"));
+		Schema schema165 = builder.addSchema(3088, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlendingDataFix(schema165));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

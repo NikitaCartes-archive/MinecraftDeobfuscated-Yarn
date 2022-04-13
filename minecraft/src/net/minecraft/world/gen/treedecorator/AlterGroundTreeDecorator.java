@@ -3,11 +3,7 @@ package net.minecraft.world.gen.treedecorator;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -28,63 +24,58 @@ public class AlterGroundTreeDecorator extends TreeDecorator {
 	}
 
 	@Override
-	public void generate(
-		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
-		AbstractRandom random,
-		List<BlockPos> logPositions,
-		List<BlockPos> leavesPositions,
-		List<BlockPos> rootPositions
-	) {
+	public void generate(TreeDecorator.Generator generator) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
-		if (rootPositions.isEmpty()) {
-			list.addAll(logPositions);
-		} else if (!logPositions.isEmpty() && ((BlockPos)rootPositions.get(0)).getY() == ((BlockPos)logPositions.get(0)).getY()) {
-			list.addAll(logPositions);
-			list.addAll(rootPositions);
+		List<BlockPos> list2 = generator.getRootPositions();
+		List<BlockPos> list3 = generator.getLogPositions();
+		if (list2.isEmpty()) {
+			list.addAll(list3);
+		} else if (!list3.isEmpty() && ((BlockPos)list2.get(0)).getY() == ((BlockPos)list3.get(0)).getY()) {
+			list.addAll(list3);
+			list.addAll(list2);
 		} else {
-			list.addAll(rootPositions);
+			list.addAll(list2);
 		}
 
 		if (!list.isEmpty()) {
 			int i = ((BlockPos)list.get(0)).getY();
 			list.stream().filter(pos -> pos.getY() == i).forEach(pos -> {
-				this.setArea(world, replacer, random, pos.west().north());
-				this.setArea(world, replacer, random, pos.east(2).north());
-				this.setArea(world, replacer, random, pos.west().south(2));
-				this.setArea(world, replacer, random, pos.east(2).south(2));
+				this.setArea(generator, pos.west().north());
+				this.setArea(generator, pos.east(2).north());
+				this.setArea(generator, pos.west().south(2));
+				this.setArea(generator, pos.east(2).south(2));
 
 				for (int ix = 0; ix < 5; ix++) {
-					int j = random.nextInt(64);
+					int j = generator.getRandom().nextInt(64);
 					int k = j % 8;
 					int l = j / 8;
 					if (k == 0 || k == 7 || l == 0 || l == 7) {
-						this.setArea(world, replacer, random, pos.add(-3 + k, 0, -3 + l));
+						this.setArea(generator, pos.add(-3 + k, 0, -3 + l));
 					}
 				}
 			});
 		}
 	}
 
-	private void setArea(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos) {
+	private void setArea(TreeDecorator.Generator generator, BlockPos origin) {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
 				if (Math.abs(i) != 2 || Math.abs(j) != 2) {
-					this.setColumn(world, replacer, random, pos.add(i, 0, j));
+					this.setColumn(generator, origin.add(i, 0, j));
 				}
 			}
 		}
 	}
 
-	private void setColumn(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos) {
+	private void setColumn(TreeDecorator.Generator generator, BlockPos origin) {
 		for (int i = 2; i >= -3; i--) {
-			BlockPos blockPos = pos.up(i);
-			if (Feature.isSoil(world, blockPos)) {
-				replacer.accept(blockPos, this.provider.getBlockState(random, pos));
+			BlockPos blockPos = origin.up(i);
+			if (Feature.isSoil(generator.getWorld(), blockPos)) {
+				generator.replace(blockPos, this.provider.getBlockState(generator.getRandom(), origin));
 				break;
 			}
 
-			if (!Feature.isAir(world, blockPos) && i < 0) {
+			if (!generator.isAir(blockPos) && i < 0) {
 				break;
 			}
 		}

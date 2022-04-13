@@ -513,7 +513,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.getNearestPosition(
 				poiType -> poiType == PointOfInterestType.LIGHTNING_ROD,
-				posx -> posx.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
+				posx -> posx.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
 				pos,
 				128,
 				PointOfInterestStorage.OccupationStatus.ANY
@@ -987,7 +987,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	public void emitGameEvent(@Nullable Entity entity, GameEvent event, Vec3d pos) {
+	public void emitGameEvent(GameEvent event, Vec3d pos, GameEvent.Emitter emitter) {
 		int i = event.getRange();
 		BlockPos blockPos = new BlockPos(pos);
 		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
@@ -1002,7 +1002,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
 				if (chunk != null) {
 					for (int r = k; r <= n; r++) {
-						chunk.getGameEventDispatcher(r).dispatch(event, entity, pos);
+						chunk.getGameEventDispatcher(r).dispatch(event, pos, emitter);
 					}
 				}
 			}

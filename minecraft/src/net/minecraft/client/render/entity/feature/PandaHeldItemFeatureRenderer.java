@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.PandaEntityModel;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -14,8 +14,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-	public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext) {
+	private final HeldItemRenderer field_38903;
+
+	public PandaHeldItemFeatureRenderer(
+		FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext, HeldItemRenderer heldItemRenderer
+	) {
 		super(featureRendererContext);
+		this.field_38903 = heldItemRenderer;
 	}
 
 	public void render(
@@ -32,9 +37,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 
 			matrixStack.push();
 			matrixStack.translate(0.1F, (double)n, (double)m);
-			MinecraftClient.getInstance()
-				.getHeldItemRenderer()
-				.renderItem(pandaEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+			this.field_38903.renderItem(pandaEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}
 	}

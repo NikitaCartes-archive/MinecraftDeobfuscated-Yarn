@@ -4,30 +4,24 @@ import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryEntryList;
+import net.minecraft.world.gen.blockpredicate.BlockPredicate;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.stateprovider.PredicatedStateProvider;
 
 public class MiscConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> ICE_SPIKE = ConfiguredFeatures.register("ice_spike", Feature.ICE_SPIKE);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> ICE_PATCH = ConfiguredFeatures.register(
 		"ice_patch",
-		Feature.ICE_PATCH,
+		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.PACKED_ICE.getDefaultState(),
+			PredicatedStateProvider.of(Blocks.PACKED_ICE),
+			BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.MYCELIUM, Blocks.SNOW_BLOCK, Blocks.ICE)),
 			UniformIntProvider.create(2, 3),
-			1,
-			List.of(
-				Blocks.DIRT.getDefaultState(),
-				Blocks.GRASS_BLOCK.getDefaultState(),
-				Blocks.PODZOL.getDefaultState(),
-				Blocks.COARSE_DIRT.getDefaultState(),
-				Blocks.MYCELIUM.getDefaultState(),
-				Blocks.SNOW_BLOCK.getDefaultState(),
-				Blocks.ICE.getDefaultState()
-			),
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.SNOW_BLOCK)
+			1
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<SingleStateFeatureConfig, ?>> FOREST_ROCK = ConfiguredFeatures.register(
@@ -49,33 +43,27 @@ public class MiscConfiguredFeatures {
 		"disk_clay",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.CLAY.getDefaultState(),
-			UniformIntProvider.create(2, 3),
-			1,
-			List.of(Blocks.DIRT.getDefaultState(), Blocks.CLAY.getDefaultState()),
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
+			PredicatedStateProvider.of(Blocks.CLAY), BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.CLAY)), UniformIntProvider.create(2, 3), 1
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_GRAVEL = ConfiguredFeatures.register(
 		"disk_gravel",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.GRAVEL.getDefaultState(),
-			UniformIntProvider.create(2, 5),
-			2,
-			List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState()),
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
+			PredicatedStateProvider.of(Blocks.GRAVEL), BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK)), UniformIntProvider.create(2, 5), 2
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_SAND = ConfiguredFeatures.register(
 		"disk_sand",
 		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.SAND.getDefaultState(),
+			new PredicatedStateProvider(
+				BlockStateProvider.of(Blocks.SAND),
+				List.of(new PredicatedStateProvider.Rule(BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.AIR), BlockStateProvider.of(Blocks.SANDSTONE)))
+			),
+			BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.GRASS_BLOCK)),
 			UniformIntProvider.create(2, 6),
-			2,
-			List.of(Blocks.DIRT.getDefaultState(), Blocks.GRASS_BLOCK.getDefaultState()),
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER)
+			2
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> FREEZE_TOP_LAYER = ConfiguredFeatures.register(
@@ -83,13 +71,22 @@ public class MiscConfiguredFeatures {
 	);
 	public static final RegistryEntry<ConfiguredFeature<DiskFeatureConfig, ?>> DISK_GRASS = ConfiguredFeatures.register(
 		"disk_grass",
-		Feature.SURFACE_DISK,
+		Feature.DISK,
 		new DiskFeatureConfig(
-			Blocks.GRASS_BLOCK.getDefaultState(),
+			new PredicatedStateProvider(
+				BlockStateProvider.of(Blocks.DIRT),
+				List.of(
+					new PredicatedStateProvider.Rule(
+						BlockPredicate.not(
+							BlockPredicate.eitherOf(BlockPredicate.solid(Direction.UP.getVector()), BlockPredicate.matchingFluids(Direction.UP.getVector(), Fluids.WATER))
+						),
+						BlockStateProvider.of(Blocks.GRASS_BLOCK)
+					)
+				)
+			),
+			BlockPredicate.matchingBlocks(List.of(Blocks.DIRT, Blocks.MUD)),
 			UniformIntProvider.create(2, 6),
-			2,
-			List.of(Blocks.DIRT.getDefaultState(), Blocks.MUD.getDefaultState()),
-			RegistryEntryList.of(Block::getRegistryEntry, Blocks.WATER, Blocks.MUD)
+			2
 		)
 	);
 	public static final RegistryEntry<ConfiguredFeature<DefaultFeatureConfig, ?>> BONUS_CHEST = ConfiguredFeatures.register("bonus_chest", Feature.BONUS_CHEST);

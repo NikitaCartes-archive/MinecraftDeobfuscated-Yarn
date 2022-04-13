@@ -88,7 +88,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
-		if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03F) {
+		if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && world.getRandom().nextFloat() < 0.03F) {
 			this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
 			this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0F;
 		}
@@ -150,9 +150,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
-		if ((double)this.random.nextFloat() > 0.9) {
-			int i = this.random.nextInt(16);
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+		if ((double)random.nextFloat() > 0.9) {
+			int i = random.nextInt(16);
 			if (i < 10) {
 				this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.TRIDENT));
 			} else {

@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -234,7 +235,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void onPress() {
-			BeaconScreen.this.client.getNetworkHandler().sendPacket(new UpdateBeaconC2SPacket(BeaconScreen.this.primaryEffect, BeaconScreen.this.secondaryEffect));
+			BeaconScreen.this.client
+				.getNetworkHandler()
+				.sendPacket(new UpdateBeaconC2SPacket(Optional.ofNullable(BeaconScreen.this.primaryEffect), Optional.ofNullable(BeaconScreen.this.secondaryEffect)));
 			BeaconScreen.this.client.player.closeHandledScreen();
 		}
 

@@ -444,21 +444,22 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		if (this.isBaby()) {
 			return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		} else {
-			Object var7;
-			if (this.random.nextInt(30) == 0) {
+			AbstractRandom abstractRandom = world.getRandom();
+			Object var8;
+			if (abstractRandom.nextInt(30) == 0) {
 				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-				var7 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(this.random), false));
+				var8 = this.initializeRider(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(abstractRandom), false));
 				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 				this.saddle(null);
-			} else if (this.random.nextInt(10) == 0) {
+			} else if (abstractRandom.nextInt(10) == 0) {
 				PassiveEntity passiveEntity = EntityType.STRIDER.create(world.toServerWorld());
 				passiveEntity.setBreedingAge(-24000);
-				var7 = this.initializeRider(world, difficulty, passiveEntity, null);
+				var8 = this.initializeRider(world, difficulty, passiveEntity, null);
 			} else {
-				var7 = new PassiveEntity.PassiveData(0.5F);
+				var8 = new PassiveEntity.PassiveData(0.5F);
 			}
 
-			return super.initialize(world, difficulty, spawnReason, (EntityData)var7, entityNbt);
+			return super.initialize(world, difficulty, spawnReason, (EntityData)var8, entityNbt);
 		}
 	}
 

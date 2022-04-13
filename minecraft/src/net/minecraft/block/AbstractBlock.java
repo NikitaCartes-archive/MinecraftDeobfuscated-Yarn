@@ -258,10 +258,6 @@ public abstract class AbstractBlock {
 		return false;
 	}
 
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.NONE;
-	}
-
 	public float getMaxHorizontalModelOffset() {
 		return 0.25F;
 	}
@@ -546,6 +542,7 @@ public abstract class AbstractBlock {
 		private final AbstractBlock.ContextPredicate blockVisionPredicate;
 		private final AbstractBlock.ContextPredicate postProcessPredicate;
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
+		private final AbstractBlock.OffsetType offsetType;
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
 
@@ -565,6 +562,7 @@ public abstract class AbstractBlock {
 			this.blockVisionPredicate = settings.blockVisionPredicate;
 			this.postProcessPredicate = settings.postProcessPredicate;
 			this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
+			this.offsetType = (AbstractBlock.OffsetType)settings.offsetType.apply(this.asBlockState());
 		}
 
 		public void initShapeCache() {
@@ -740,15 +738,14 @@ public abstract class AbstractBlock {
 		}
 
 		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
-			Block block = this.getBlock();
-			AbstractBlock.OffsetType offsetType = block.getOffsetType();
-			if (offsetType == AbstractBlock.OffsetType.NONE) {
+			if (this.offsetType == AbstractBlock.OffsetType.NONE) {
 				return Vec3d.ZERO;
 			} else {
+				Block block = this.getBlock();
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
 				float f = block.getMaxHorizontalModelOffset();
 				double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-				double e = offsetType == AbstractBlock.OffsetType.XYZ
+				double e = this.offsetType == AbstractBlock.OffsetType.XYZ
 					? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier()
 					: 0.0;
 				double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
@@ -938,6 +935,10 @@ public abstract class AbstractBlock {
 			return this.toolRequired;
 		}
 
+		public AbstractBlock.OffsetType getOffsetType() {
+			return this.offsetType;
+		}
+
 		static final class ShapeCache {
 			private static final Direction[] DIRECTIONS = Direction.values();
 			private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
@@ -968,7 +969,7 @@ public abstract class AbstractBlock {
 				}
 
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
-				if (!this.collisionShape.isEmpty() && block.getOffsetType() != AbstractBlock.OffsetType.NONE) {
+				if (!this.collisionShape.isEmpty() && state.getOffsetType() != AbstractBlock.OffsetType.NONE) {
 					throw new IllegalStateException(
 						String.format("%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registry.BLOCK.getId(block))
 					);
@@ -1033,6 +1034,7 @@ public abstract class AbstractBlock {
 		AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
 		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
 		boolean dynamicBounds;
+		Function<BlockState, AbstractBlock.OffsetType> offsetType = state -> AbstractBlock.OffsetType.NONE;
 
 		private Settings(Material material, MapColor mapColorProvider) {
 			this(material, state -> mapColorProvider);
@@ -1075,6 +1077,7 @@ public abstract class AbstractBlock {
 			settings.opaque = block.settings.opaque;
 			settings.isAir = block.settings.isAir;
 			settings.toolRequired = block.settings.toolRequired;
+			settings.offsetType = block.settings.offsetType;
 			return settings;
 		}
 
@@ -1233,6 +1236,15 @@ public abstract class AbstractBlock {
 
 		public AbstractBlock.Settings resistance(float resistance) {
 			this.resistance = Math.max(0.0F, resistance);
+			return this;
+		}
+
+		public AbstractBlock.Settings offsetType(AbstractBlock.OffsetType offsetType) {
+			return this.offsetType(state -> offsetType);
+		}
+
+		public AbstractBlock.Settings offsetType(Function<BlockState, AbstractBlock.OffsetType> offsetType) {
+			this.offsetType = offsetType;
 			return this;
 		}
 	}

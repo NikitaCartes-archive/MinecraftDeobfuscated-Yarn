@@ -2,7 +2,9 @@ package net.minecraft.world.gen.carver;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.block.Block;
 import net.minecraft.util.math.floatprovider.FloatProvider;
+import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.HeightProvider;
 
@@ -26,11 +28,12 @@ public class CaveCarverConfig extends CarverConfig {
 		FloatProvider yScale,
 		YOffset lavaLevel,
 		CarverDebugConfig debugConfig,
+		RegistryEntryList<Block> replaceable,
 		FloatProvider horizontalRadiusMultiplier,
 		FloatProvider verticalRadiusMultiplier,
 		FloatProvider floorLevel
 	) {
-		super(probability, y, yScale, lavaLevel, debugConfig);
+		super(probability, y, yScale, lavaLevel, debugConfig, replaceable);
 		this.horizontalRadiusMultiplier = horizontalRadiusMultiplier;
 		this.verticalRadiusMultiplier = verticalRadiusMultiplier;
 		this.floorLevel = floorLevel;
@@ -41,15 +44,25 @@ public class CaveCarverConfig extends CarverConfig {
 		HeightProvider y,
 		FloatProvider yScale,
 		YOffset lavaLevel,
-		boolean aquifers,
+		RegistryEntryList<Block> replaceable,
 		FloatProvider horizontalRadiusMultiplier,
 		FloatProvider verticalRadiusMultiplier,
 		FloatProvider floorLevel
 	) {
-		this(probability, y, yScale, lavaLevel, CarverDebugConfig.DEFAULT, horizontalRadiusMultiplier, verticalRadiusMultiplier, floorLevel);
+		this(probability, y, yScale, lavaLevel, CarverDebugConfig.DEFAULT, replaceable, horizontalRadiusMultiplier, verticalRadiusMultiplier, floorLevel);
 	}
 
 	public CaveCarverConfig(CarverConfig config, FloatProvider horizontalRadiusMultiplier, FloatProvider verticalRadiusMultiplier, FloatProvider floorLevel) {
-		this(config.probability, config.y, config.yScale, config.lavaLevel, config.debugConfig, horizontalRadiusMultiplier, verticalRadiusMultiplier, floorLevel);
+		this(
+			config.probability,
+			config.y,
+			config.yScale,
+			config.lavaLevel,
+			config.debugConfig,
+			config.replaceable,
+			horizontalRadiusMultiplier,
+			verticalRadiusMultiplier,
+			floorLevel
+		);
 	}
 }

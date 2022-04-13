@@ -6,19 +6,16 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
 import net.minecraft.tag.TagManagerLoader;
@@ -47,7 +44,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	protected abstract void configure();
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		this.tagBuilders.clear();
 		this.configure();
 		this.tagBuilders
@@ -68,33 +65,9 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 
 						try {
 							String string = GSON.toJson((JsonElement)jsonObject);
-							String string2 = SHA1.hashUnencodedChars(string).toString();
-							if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
-								Files.createDirectories(path.getParent());
-								BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-
-								try {
-									bufferedWriter.write(string);
-								} catch (Throwable var13) {
-									if (bufferedWriter != null) {
-										try {
-											bufferedWriter.close();
-										} catch (Throwable var12) {
-											var13.addSuppressed(var12);
-										}
-									}
-
-									throw var13;
-								}
-
-								if (bufferedWriter != null) {
-									bufferedWriter.close();
-								}
-							}
-
-							cache.updateSha1(path, string2);
-						} catch (IOException var14) {
-							LOGGER.error("Couldn't save tags to {}", path, var14);
+							cache.write(path, string);
+						} catch (IOException var8) {
+							LOGGER.error("Couldn't save tags to {}", path, var8);
 						}
 					}
 				}

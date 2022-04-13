@@ -572,6 +572,20 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.criterion("kill_mob_near_sculk_catalyst", OnKilledCriterion.Conditions.createKillMobNearSculkCatalyst())
 			.build(consumer, "adventure/kill_mob_near_sculk_catalyst");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Blocks.SCULK_SENSOR,
+				new TranslatableText("advancements.adventure.avoid_vibration.title"),
+				new TranslatableText("advancements.adventure.avoid_vibration.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion("avoid_vibration", TickCriterion.Conditions.createAvoidVibration())
+			.build(consumer, "adventure/avoid_vibration");
 	}
 
 	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {

@@ -10,14 +10,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 
 public class LookAtEntityGoal extends Goal {
-	public static final float field_33760 = 0.02F;
+	public static final float DEFAULT_CHANCE = 0.02F;
 	protected final MobEntity mob;
 	@Nullable
 	protected Entity target;
 	protected final float range;
 	private int lookTime;
 	protected final float chance;
-	private final boolean field_33761;
+	private final boolean lookForward;
 	protected final Class<? extends LivingEntity> targetType;
 	protected final TargetPredicate targetPredicate;
 
@@ -29,12 +29,12 @@ public class LookAtEntityGoal extends Goal {
 		this(mob, targetType, range, chance, false);
 	}
 
-	public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean bl) {
+	public LookAtEntityGoal(MobEntity mob, Class<? extends LivingEntity> targetType, float range, float chance, boolean lookForward) {
 		this.mob = mob;
 		this.targetType = targetType;
 		this.range = range;
 		this.chance = chance;
-		this.field_33761 = bl;
+		this.lookForward = lookForward;
 		this.setControls(EnumSet.of(Goal.Control.LOOK));
 		if (targetType == PlayerEntity.class) {
 			this.targetPredicate = TargetPredicate.createNonAttackable()
@@ -95,7 +95,7 @@ public class LookAtEntityGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.target.isAlive()) {
-			double d = this.field_33761 ? this.mob.getEyeY() : this.target.getEyeY();
+			double d = this.lookForward ? this.mob.getEyeY() : this.target.getEyeY();
 			this.mob.getLookControl().lookAt(this.target.getX(), d, this.target.getZ());
 			this.lookTime--;
 		}

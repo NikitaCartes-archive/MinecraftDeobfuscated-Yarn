@@ -56,13 +56,13 @@ public class RandomizedIntBlockStateProvider extends BlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
-		BlockState blockState = this.source.getBlockState(abstractRandom, pos);
+	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
+		BlockState blockState = this.source.getBlockState(random, pos);
 		if (this.property == null || !blockState.contains(this.property)) {
 			this.property = getIntPropertyByName(blockState, this.propertyName);
 		}
 
-		return blockState.with(this.property, Integer.valueOf(this.values.get(abstractRandom)));
+		return blockState.with(this.property, Integer.valueOf(this.values.get(random)));
 	}
 
 	private static IntProperty getIntPropertyByName(BlockState state, String propertyName) {

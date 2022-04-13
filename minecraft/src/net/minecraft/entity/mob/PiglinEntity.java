@@ -196,17 +196,18 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
+		AbstractRandom abstractRandom = world.getRandom();
 		if (spawnReason != SpawnReason.STRUCTURE) {
-			if (world.getRandom().nextFloat() < 0.2F) {
+			if (abstractRandom.nextFloat() < 0.2F) {
 				this.setBaby(true);
 			} else if (this.isAdult()) {
 				this.equipStack(EquipmentSlot.MAINHAND, this.makeInitialWeapon());
 			}
 		}
 
-		PiglinBrain.setHuntedRecently(this);
-		this.initEquipment(difficulty);
-		this.updateEnchantments(difficulty);
+		PiglinBrain.setHuntedRecently(this, world.getRandom());
+		this.initEquipment(abstractRandom, difficulty);
+		this.updateEnchantments(abstractRandom, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
@@ -221,17 +222,17 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
 		if (this.isAdult()) {
-			this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
-			this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
-			this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS));
-			this.equipAtChance(EquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS));
+			this.equipAtChance(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET), random);
+			this.equipAtChance(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE), random);
+			this.equipAtChance(EquipmentSlot.LEGS, new ItemStack(Items.GOLDEN_LEGGINGS), random);
+			this.equipAtChance(EquipmentSlot.FEET, new ItemStack(Items.GOLDEN_BOOTS), random);
 		}
 	}
 
-	private void equipAtChance(EquipmentSlot slot, ItemStack stack) {
-		if (this.world.random.nextFloat() < 0.1F) {
+	private void equipAtChance(EquipmentSlot slot, ItemStack stack, AbstractRandom random) {
+		if (random.nextFloat() < 0.1F) {
 			this.equipStack(slot, stack);
 		}
 	}

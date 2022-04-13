@@ -41,6 +41,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
@@ -54,7 +55,6 @@ import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.entity.passive.FrogEntity;
 import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.GoatEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.OcelotEntity;
@@ -107,7 +107,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.GOAT, GoatEntity.createGoatAttributes().build())
 		.put(EntityType.GUARDIAN, GuardianEntity.createGuardianAttributes().build())
 		.put(EntityType.HOGLIN, HoglinEntity.createHoglinAttributes().build())
-		.put(EntityType.HORSE, HorseBaseEntity.createBaseHorseAttributes().build())
+		.put(EntityType.HORSE, AbstractHorseEntity.createBaseHorseAttributes().build())
 		.put(EntityType.HUSK, ZombieEntity.createZombieAttributes().build())
 		.put(EntityType.ILLUSIONER, IllusionerEntity.createIllusionerAttributes().build())
 		.put(EntityType.IRON_GOLEM, IronGolemEntity.createIronGolemAttributes().build())

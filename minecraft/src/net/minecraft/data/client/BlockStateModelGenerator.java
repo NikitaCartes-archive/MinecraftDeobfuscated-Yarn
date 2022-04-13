@@ -2450,7 +2450,7 @@ public class BlockStateModelGenerator {
 
 	private static List<BlockStateVariant> buildBlockStateVariants(List<Identifier> modelIds, UnaryOperator<BlockStateVariant> processor) {
 		return (List<BlockStateVariant>)modelIds.stream()
-			.map(identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+			.map(modelId -> BlockStateVariant.create().put(VariantSettings.MODEL, modelId))
 			.map(processor)
 			.collect(Collectors.toList());
 	}
@@ -2898,8 +2898,8 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerSculkShrieker() {
-		Identifier identifier = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, TextureMap.method_42753(false), this.modelCollector);
-		Identifier identifier2 = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, "_can_summon", TextureMap.method_42753(true), this.modelCollector);
+		Identifier identifier = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, TextureMap.sculkShrieker(false), this.modelCollector);
+		Identifier identifier2 = Models.TEMPLATE_SCULK_SHRIEKER.upload(Blocks.SCULK_SHRIEKER, "_can_summon", TextureMap.sculkShrieker(true), this.modelCollector);
 		this.registerParentedItemModel(Blocks.SCULK_SHRIEKER, identifier);
 		this.blockStateCollector
 			.accept(VariantsBlockStateSupplier.create(Blocks.SCULK_SHRIEKER).coordinate(createBooleanModelMap(Properties.CAN_SUMMON, identifier2, identifier)));
@@ -2969,14 +2969,14 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.REPEATER)
-					.coordinate(BlockStateVariantMap.create(Properties.DELAY, Properties.LOCKED, Properties.POWERED).register((integer, boolean_, boolean2) -> {
+					.coordinate(BlockStateVariantMap.create(Properties.DELAY, Properties.LOCKED, Properties.POWERED).register((tick, locked, on) -> {
 						StringBuilder stringBuilder = new StringBuilder();
-						stringBuilder.append('_').append(integer).append("tick");
-						if (boolean2) {
+						stringBuilder.append('_').append(tick).append("tick");
+						if (on) {
 							stringBuilder.append("_on");
 						}
 
-						if (boolean_) {
+						if (locked) {
 							stringBuilder.append("_locked");
 						}
 
@@ -3014,8 +3014,8 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.LAYERS)
 							.register(
-								integer -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, integer < 8 ? ModelIds.getBlockSubModelId(Blocks.SNOW, "_height" + integer * 2) : identifier)
+								height -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, height < 8 ? ModelIds.getBlockSubModelId(Blocks.SNOW, "_height" + height * 2) : identifier)
 							)
 					)
 			);
@@ -3040,8 +3040,8 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.STRUCTURE_BLOCK_MODE)
 							.register(
-								structureBlockMode -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + structureBlockMode.asString(), Models.CUBE_ALL, TextureMap::all))
+								mode -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, this.createSubModel(Blocks.STRUCTURE_BLOCK, "_" + mode.asString(), Models.CUBE_ALL, TextureMap::all))
 							)
 					)
 			);
@@ -3055,8 +3055,8 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.AGE_3)
 							.register(
-								integer -> BlockStateVariant.create()
-										.put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + integer, Models.CROSS, TextureMap::cross))
+								stage -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, this.createSubModel(Blocks.SWEET_BERRY_BUSH, "_stage" + stage, Models.CROSS, TextureMap::cross))
 							)
 					)
 			);

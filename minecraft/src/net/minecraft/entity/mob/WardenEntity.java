@@ -21,6 +21,8 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.WardenAngerManager;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.task.SonicBoomTask;
+import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -68,6 +70,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	private static final Logger field_38138 = LogUtils.getLogger();
 	private static final int field_38139 = 16;
 	private static final int field_38142 = 40;
+	private static final int field_38860 = 200;
 	private static final int field_38143 = 500;
 	private static final float field_38144 = 0.3F;
 	private static final float field_38145 = 1.0F;
@@ -95,6 +98,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	public AnimationState emergingAnimationState = new AnimationState();
 	public AnimationState diggingAnimationState = new AnimationState();
 	public AnimationState attackingAnimationState = new AnimationState();
+	public AnimationState chargingSonicBoomAnimationState = new AnimationState();
 	private final EntityGameEventHandler<SculkSensorListener> gameEventHandler;
 	private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyList());
 
@@ -204,6 +208,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	public boolean tryAttack(Entity target) {
 		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		this.playSound(SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, 10.0F, this.getSoundPitch());
+		SonicBoomTask.cooldown(this, 100);
 		return super.tryAttack(target);
 	}
 
@@ -285,6 +290,8 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 			this.attackingAnimationState.start();
 		} else if (status == EntityStatuses.EARS_TWITCH) {
 			this.field_38162 = 10;
+		} else if (status == EntityStatuses.SONIC_BOOM) {
+			this.chargingSonicBoomAnimationState.start();
 		} else {
 			super.handleStatus(status);
 		}
@@ -462,6 +469,11 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		return (LivingEntity)this.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).orElse(null);
 	}
 
+	@Override
+	public boolean canImmediatelyDespawn(double distanceSquared) {
+		return !this.isPersistent();
+	}
+
 	@Nullable
 	@Override
 	public EntityData initialize(
@@ -478,17 +490,6 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public double squaredAttackRange(LivingEntity target) {
-		return 8.0;
-	}
-
-	@Override
-	public boolean isInAttackRange(LivingEntity entity) {
-		double d = this.squaredDistanceTo(entity.getX(), entity.getY() - (double)(this.getHeight() / 2.0F), entity.getZ());
-		return d <= this.squaredAttackRange(entity);
-	}
-
-	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
 		if (this.world.isClient) {
@@ -500,12 +501,17 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 				if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
 					&& entity instanceof LivingEntity livingEntity
 					&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
-					this.brain.remember(MemoryModuleType.ATTACK_TARGET, livingEntity);
+					this.updateAttackTarget(livingEntity);
 				}
 			}
 
 			return bl;
 		}
+	}
+
+	public void updateAttackTarget(LivingEntity entity) {
+		UpdateAttackTargetTask.updateAttackTarget(this, entity);
+		SonicBoomTask.cooldown(this, 200);
 	}
 
 	@Override
@@ -531,11 +537,11 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
 		if (this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)) {
 			return false;
 		} else {
-			return this.isDiggingOrEmerging() ? false : !(entity instanceof LivingEntity) || this.isValidTarget(entity);
+			return this.isDiggingOrEmerging() ? false : !(emitter.sourceEntity() instanceof LivingEntity) || this.isValidTarget(emitter.sourceEntity());
 		}
 	}
 

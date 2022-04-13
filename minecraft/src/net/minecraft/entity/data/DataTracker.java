@@ -24,8 +24,8 @@ import org.slf4j.Logger;
 public class DataTracker {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<>();
-	private static final int field_33377 = 255;
-	private static final int field_33378 = 254;
+	private static final int END_PACKET_WRITE = 255;
+	private static final int MAX_DATA_VALUE_ID = 254;
 	private final Entity trackedEntity;
 	private final Int2ObjectMap<DataTracker.Entry<?>> entries = new Int2ObjectOpenHashMap<>();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();

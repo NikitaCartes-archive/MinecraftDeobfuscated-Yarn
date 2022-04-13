@@ -6,23 +6,24 @@ import io.netty.util.ResourceLeakDetector.Level;
 import java.time.Duration;
 import javax.annotation.Nullable;
 import net.minecraft.command.TranslatableBuiltInExceptions;
+import net.minecraft.datafixer.DataFixerPhase;
 import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3088;
+	public static final int WORLD_VERSION = 3089;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "22w14a";
+	public static final String VERSION_NAME = "22w15a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 78;
+	public static final int field_29736 = 79;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = true;
@@ -110,6 +111,7 @@ public class SharedConstants {
 	 */
 	public static boolean useChoiceTypeRegistrations = true;
 	public static boolean isDevelopment;
+	public static DataFixerPhase dataFixerPhase = DataFixerPhase.UNINITIALIZED_UNOPTIMIZED;
 	public static final int CHUNK_WIDTH = 16;
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
@@ -174,13 +176,21 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741902;
+		return 1073741903;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {
 		int i = chunkPos.getStartX();
 		int j = chunkPos.getStartZ();
 		return !DEBUG_BIOME_SOURCE ? false : i > 8192 || i < 0 || j > 1024 || j < 0;
+	}
+
+	public static void method_43250() {
+		dataFixerPhase = switch (dataFixerPhase) {
+			case INITIALIZED_UNOPTIMIZED -> throw new IllegalStateException("Tried to enable datafixer optimization after unoptimized initialization");
+			case INITIALIZED_OPTIMIZED -> DataFixerPhase.INITIALIZED_OPTIMIZED;
+			default -> DataFixerPhase.UNINITIALIZED_OPTIMIZED;
+		};
 	}
 
 	static {

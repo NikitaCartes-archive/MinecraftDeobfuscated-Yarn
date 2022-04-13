@@ -3,7 +3,6 @@ package net.minecraft.block.sapling;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -23,8 +22,13 @@ public abstract class SaplingGenerator {
 			return false;
 		} else {
 			ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)registryEntry.value();
-			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NO_REDRAW);
+			BlockState blockState = world.getFluidState(pos).getBlockState();
+			world.setBlockState(pos, blockState, Block.NO_REDRAW);
 			if (configuredFeature.generate(world, chunkGenerator, random, pos)) {
+				if (world.getBlockState(pos) == blockState) {
+					world.updateListeners(pos, state, blockState, Block.NOTIFY_LISTENERS);
+				}
+
 				return true;
 			} else {
 				world.setBlockState(pos, state, Block.NO_REDRAW);

@@ -575,6 +575,7 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addBatsAndMonsters(builder);
 		builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.SLIME, 1, 1, 1));
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.FROG, 10, 2, 5));
+		builder.spawn(SpawnGroup.WATER_AMBIENT, new SpawnSettings.SpawnEntry(EntityType.TROPICAL_FISH, 25, 8, 8));
 		GenerationSettings.Builder builder2 = new GenerationSettings.Builder();
 		DefaultBiomeFeatures.addFossils(builder2);
 		addBasicFeatures(builder2);
@@ -589,7 +590,7 @@ public class OverworldBiomeCreator {
 			.effects(
 				new BiomeEffects.Builder()
 					.waterColor(3832426)
-					.waterFogColor(2302743)
+					.waterFogColor(5077600)
 					.fogColor(12638463)
 					.skyColor(getSkyColor(0.8F))
 					.foliageColor(9285927)

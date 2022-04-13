@@ -648,6 +648,7 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.JUNGLE_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.OAK_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.SPRUCE_SAPLING, 5, 1, 8, 1),
+				new TradeOffers.SellItemFactory(Items.MANGROVE_PROPAGULE, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.RED_DYE, 1, 3, 12, 1),
 				new TradeOffers.SellItemFactory(Items.WHITE_DYE, 1, 3, 12, 1),
 				new TradeOffers.SellItemFactory(Items.BLUE_DYE, 1, 3, 12, 1),

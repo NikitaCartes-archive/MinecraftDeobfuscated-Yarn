@@ -29,7 +29,7 @@ public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule SANDSTONE = block(Blocks.SANDSTONE);
 	private static final MaterialRules.MaterialRule PACKED_ICE = block(Blocks.PACKED_ICE);
 	private static final MaterialRules.MaterialRule SNOW_BLOCK = block(Blocks.SNOW_BLOCK);
-	private static final MaterialRules.MaterialRule field_38808 = block(Blocks.MUD);
+	private static final MaterialRules.MaterialRule MUD = block(Blocks.MUD);
 	private static final MaterialRules.MaterialRule POWDER_SNOW = block(Blocks.POWDER_SNOW);
 	private static final MaterialRules.MaterialRule ICE = block(Blocks.ICE);
 	private static final MaterialRules.MaterialRule WATER = block(Blocks.WATER);
@@ -119,6 +119,7 @@ public class VanillaSurfaceRules {
 					materialRule3
 				)
 			),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MANGROVE_SWAMP), MUD),
 			DIRT
 		);
 		MaterialRules.MaterialRule materialRule8 = MaterialRules.sequence(
@@ -159,7 +160,7 @@ public class VanillaSurfaceRules {
 				MaterialRules.sequence(MaterialRules.condition(surfaceNoiseThreshold(1.75), COARSE_DIRT), MaterialRules.condition(surfaceNoiseThreshold(-0.95), PODZOL))
 			),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.ICE_SPIKES), MaterialRules.condition(materialCondition9, SNOW_BLOCK)),
-			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MANGROVE_SWAMP), field_38808),
+			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MANGROVE_SWAMP), MUD),
 			MaterialRules.condition(MaterialRules.biome(BiomeKeys.MUSHROOM_FIELDS), MYCELIUM),
 			materialRule
 		);

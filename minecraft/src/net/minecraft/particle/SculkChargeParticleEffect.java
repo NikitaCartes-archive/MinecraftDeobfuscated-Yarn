@@ -14,6 +14,7 @@ public record SculkChargeParticleEffect(float roll) implements ParticleEffect {
 	);
 	public static final ParticleEffect.Factory<SculkChargeParticleEffect> FACTORY = new ParticleEffect.Factory<SculkChargeParticleEffect>() {
 		public SculkChargeParticleEffect read(ParticleType<SculkChargeParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
+			stringReader.expect(' ');
 			float f = stringReader.readFloat();
 			return new SculkChargeParticleEffect(f);
 		}

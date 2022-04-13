@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Map.Entry;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -31,7 +31,7 @@ public class WorldgenProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		Path path = this.generator.getOutput();
 		DynamicRegistryManager dynamicRegistryManager = (DynamicRegistryManager)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
@@ -39,13 +39,13 @@ public class WorldgenProvider implements DataProvider {
 	}
 
 	private static <T> void writeRegistryEntries(
-		DataCache cache, Path path, DynamicRegistryManager registryManager, DynamicOps<JsonElement> json, DynamicRegistryManager.Info<T> info
+		DataWriter cache, Path path, DynamicRegistryManager registryManager, DynamicOps<JsonElement> json, DynamicRegistryManager.Info<T> info
 	) {
 		writeRegistryEntries(path, cache, json, info.registry(), registryManager.getManaged(info.registry()), info.entryCodec());
 	}
 
 	private static <E, T extends Registry<E>> void writeRegistryEntries(
-		Path path, DataCache cache, DynamicOps<JsonElement> json, RegistryKey<? extends T> registryKey, T registry, Encoder<E> encoder
+		Path path, DataWriter cache, DynamicOps<JsonElement> json, RegistryKey<? extends T> registryKey, T registry, Encoder<E> encoder
 	) {
 		for (Entry<RegistryKey<E>, E> entry : registry.getEntrySet()) {
 			Path path2 = getPath(path, registryKey.getValue(), ((RegistryKey)entry.getKey()).getValue());
@@ -53,7 +53,7 @@ public class WorldgenProvider implements DataProvider {
 		}
 	}
 
-	private static <E> void writeToPath(Path path, DataCache cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
+	private static <E> void writeToPath(Path path, DataWriter cache, DynamicOps<JsonElement> json, Encoder<E> encoder, E value) {
 		try {
 			Optional<JsonElement> optional = encoder.encodeStart(json, value).resultOrPartial(string -> LOGGER.error("Couldn't serialize element {}: {}", path, string));
 			if (optional.isPresent()) {

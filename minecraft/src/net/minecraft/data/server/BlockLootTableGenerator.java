@@ -521,18 +521,13 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootTable.Builder mangroveLeavesDrop(Block leaves) {
-		return dropsWithShears(leaves)
-			.pool(
-				LootPool.builder()
-					.rolls(ConstantLootNumberProvider.create(1.0F))
-					.conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
-					.with(
-						((LeafEntry.Builder)applyExplosionDecay(
-								Blocks.MANGROVE_LEAVES, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
-							))
-							.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, LEAVES_STICK_DROP_CHANCE))
-					)
-			);
+		return dropsWithSilkTouchOrShears(
+			leaves,
+			((LeafEntry.Builder)applyExplosionDecay(
+					Blocks.MANGROVE_LEAVES, ItemEntry.builder(Items.STICK).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 2.0F)))
+				))
+				.conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, LEAVES_STICK_DROP_CHANCE))
+		);
 	}
 
 	private static LootTable.Builder cropDrops(Block crop, Item product, Item seeds, LootCondition.Builder condition) {

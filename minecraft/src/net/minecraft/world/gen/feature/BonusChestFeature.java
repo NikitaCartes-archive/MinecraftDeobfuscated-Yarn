@@ -1,8 +1,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.List;
-import java.util.stream.Collectors;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.stream.IntStream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,16 +27,12 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 		AbstractRandom abstractRandom = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		ChunkPos chunkPos = new ChunkPos(context.getOrigin());
-		List<Integer> list = Util.copyShuffled(
-			(List<Integer>)IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList()), abstractRandom
-		);
-		List<Integer> list2 = Util.copyShuffled(
-			(List<Integer>)IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()).boxed().collect(Collectors.toList()), abstractRandom
-		);
+		IntArrayList intArrayList = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()), abstractRandom);
+		IntArrayList intArrayList2 = Util.shuffle(IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()), abstractRandom);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (Integer integer : list) {
-			for (Integer integer2 : list2) {
+		for (Integer integer : intArrayList) {
+			for (Integer integer2 : intArrayList2) {
 				mutable.set(integer, 0, integer2);
 				BlockPos blockPos = structureWorldAccess.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable);
 				if (structureWorldAccess.isAir(blockPos) || structureWorldAccess.getBlockState(blockPos).getCollisionShape(structureWorldAccess, blockPos).isEmpty()) {

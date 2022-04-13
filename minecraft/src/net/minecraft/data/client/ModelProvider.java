@@ -16,9 +16,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import net.minecraft.block.Block;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -34,7 +34,7 @@ public class ModelProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		Path path = this.generator.getOutput();
 		Map<Block, BlockStateSupplier> map = Maps.<Block, BlockStateSupplier>newHashMap();
 		Consumer<BlockStateSupplier> consumer = blockStateSupplier -> {
@@ -77,7 +77,7 @@ public class ModelProvider implements DataProvider {
 		}
 	}
 
-	private <T> void writeJsons(DataCache cache, Path root, Map<T, ? extends Supplier<JsonElement>> jsons, BiFunction<Path, T, Path> locator) {
+	private <T> void writeJsons(DataWriter cache, Path root, Map<T, ? extends Supplier<JsonElement>> jsons, BiFunction<Path, T, Path> locator) {
 		jsons.forEach((object, supplier) -> {
 			Path path2 = (Path)locator.apply(root, object);
 

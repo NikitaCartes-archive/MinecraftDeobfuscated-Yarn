@@ -7,7 +7,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
@@ -41,15 +41,15 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		serverWorld.spawnEntityAndPassengers(skeletonEntity);
 
 		for (int i = 0; i < 3; i++) {
-			HorseBaseEntity horseBaseEntity = this.getHorse(localDifficulty);
-			SkeletonEntity skeletonEntity2 = this.getSkeleton(localDifficulty, horseBaseEntity);
-			skeletonEntity2.startRiding(horseBaseEntity);
-			horseBaseEntity.addVelocity(this.skeletonHorse.getRandom().nextGaussian() * 0.5, 0.0, this.skeletonHorse.getRandom().nextGaussian() * 0.5);
-			serverWorld.spawnEntityAndPassengers(horseBaseEntity);
+			AbstractHorseEntity abstractHorseEntity = this.getHorse(localDifficulty);
+			SkeletonEntity skeletonEntity2 = this.getSkeleton(localDifficulty, abstractHorseEntity);
+			skeletonEntity2.startRiding(abstractHorseEntity);
+			abstractHorseEntity.addVelocity(this.skeletonHorse.getRandom().nextGaussian() * 0.5, 0.0, this.skeletonHorse.getRandom().nextGaussian() * 0.5);
+			serverWorld.spawnEntityAndPassengers(abstractHorseEntity);
 		}
 	}
 
-	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
+	private AbstractHorseEntity getHorse(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
 		skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
@@ -60,7 +60,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		return skeletonHorseEntity;
 	}
 
-	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
+	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, AbstractHorseEntity vehicle) {
 		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
 		skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
 		skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());

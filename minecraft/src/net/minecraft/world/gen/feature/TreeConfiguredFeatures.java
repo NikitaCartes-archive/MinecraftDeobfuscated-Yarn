@@ -29,6 +29,8 @@ import net.minecraft.world.gen.foliage.MegaPineFoliagePlacer;
 import net.minecraft.world.gen.foliage.PineFoliagePlacer;
 import net.minecraft.world.gen.foliage.RandomSpreadFoliagePlacer;
 import net.minecraft.world.gen.foliage.SpruceFoliagePlacer;
+import net.minecraft.world.gen.root.AboveRootPlacement;
+import net.minecraft.world.gen.root.MangroveRootPlacement;
 import net.minecraft.world.gen.root.MangroveRootPlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
@@ -114,6 +116,7 @@ public class TreeConfiguredFeatures {
 		)
 	);
 	private static final BeehiveTreeDecorator BEES_0002 = new BeehiveTreeDecorator(0.002F);
+	private static final BeehiveTreeDecorator BEES_001 = new BeehiveTreeDecorator(0.01F);
 	private static final BeehiveTreeDecorator BEES_002 = new BeehiveTreeDecorator(0.02F);
 	private static final BeehiveTreeDecorator BEES_005 = new BeehiveTreeDecorator(0.05F);
 	private static final BeehiveTreeDecorator BEES = new BeehiveTreeDecorator(1.0F);
@@ -279,17 +282,20 @@ public class TreeConfiguredFeatures {
 				new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 70),
 				Optional.of(
 					new MangroveRootPlacer(
-						BlockStateProvider.of(Blocks.MANGROVE_ROOTS),
-						Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH),
-						RegistryEntryList.of(Block::getRegistryEntry, Blocks.MUD),
-						BlockStateProvider.of(Blocks.MUDDY_MANGROVE_ROOTS),
-						8,
-						15,
 						UniformIntProvider.create(1, 3),
-						0.2F
+						BlockStateProvider.of(Blocks.MANGROVE_ROOTS),
+						Optional.of(new AboveRootPlacement(BlockStateProvider.of(Blocks.MOSS_CARPET), 0.5F)),
+						new MangroveRootPlacement(
+							Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH),
+							RegistryEntryList.of(Block::getRegistryEntry, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS),
+							BlockStateProvider.of(Blocks.MUDDY_MANGROVE_ROOTS),
+							8,
+							15,
+							0.2F
+						)
 					)
 				),
-				new TwoLayersFeatureSize(1, 0, 2)
+				new TwoLayersFeatureSize(2, 0, 2)
 			)
 			.decorators(
 				List.of(
@@ -306,7 +312,7 @@ public class TreeConfiguredFeatures {
 						2,
 						List.of(Direction.DOWN)
 					),
-					BEES_005
+					BEES_001
 				)
 			)
 			.ignoreVines()
@@ -330,17 +336,20 @@ public class TreeConfiguredFeatures {
 				new RandomSpreadFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), ConstantIntProvider.create(2), 70),
 				Optional.of(
 					new MangroveRootPlacer(
-						BlockStateProvider.of(Blocks.MANGROVE_ROOTS),
-						Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH),
-						RegistryEntryList.of(Block::getRegistryEntry, Blocks.MUD),
-						BlockStateProvider.of(Blocks.MUDDY_MANGROVE_ROOTS),
-						8,
-						15,
 						UniformIntProvider.create(3, 7),
-						0.2F
+						BlockStateProvider.of(Blocks.MANGROVE_ROOTS),
+						Optional.of(new AboveRootPlacement(BlockStateProvider.of(Blocks.MOSS_CARPET), 0.5F)),
+						new MangroveRootPlacement(
+							Registry.BLOCK.getOrCreateEntryList(BlockTags.MANGROVE_ROOTS_CAN_GROW_THROUGH),
+							RegistryEntryList.of(Block::getRegistryEntry, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS),
+							BlockStateProvider.of(Blocks.MUDDY_MANGROVE_ROOTS),
+							8,
+							15,
+							0.2F
+						)
 					)
 				),
-				new TwoLayersFeatureSize(1, 0, 3)
+				new TwoLayersFeatureSize(3, 0, 2)
 			)
 			.decorators(
 				List.of(
@@ -357,7 +366,7 @@ public class TreeConfiguredFeatures {
 						2,
 						List.of(Direction.DOWN)
 					),
-					BEES_005
+					BEES_001
 				)
 			)
 			.ignoreVines()

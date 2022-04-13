@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -73,7 +74,7 @@ public class EnderDragonFight {
 		.setDragonMusic(true)
 		.setThickenFog(true);
 	private final ServerWorld world;
-	private final List<Integer> gateways = Lists.<Integer>newArrayList();
+	private final ObjectArrayList<Integer> gateways = new ObjectArrayList<>();
 	private final BlockPattern endPortalPattern;
 	private int dragonSeenTimer;
 	private int endCrystalsAlive;
@@ -382,7 +383,7 @@ public class EnderDragonFight {
 
 	private void generateNewEndGateway() {
 		if (!this.gateways.isEmpty()) {
-			int i = (Integer)this.gateways.remove(this.gateways.size() - 1);
+			int i = this.gateways.remove(this.gateways.size() - 1);
 			int j = MathHelper.floor(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
 			int k = MathHelper.floor(96.0 * Math.sin(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
 			this.generateEndGateway(new BlockPos(j, 75, k));

@@ -32,6 +32,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -198,13 +199,14 @@ public class VexEntity extends HostileEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		this.initEquipment(difficulty);
-		this.updateEnchantments(difficulty);
+		AbstractRandom abstractRandom = world.getRandom();
+		this.initEquipment(abstractRandom, difficulty);
+		this.updateEnchantments(abstractRandom, difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
 		this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
 	}

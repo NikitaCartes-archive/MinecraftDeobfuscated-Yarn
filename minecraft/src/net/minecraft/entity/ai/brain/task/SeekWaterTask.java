@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 public class SeekWaterTask extends Task<PathAwareEntity> {
 	private final int range;
 	private final float speed;
-	private long field_33759;
+	private long seekWaterTime;
 
 	public SeekWaterTask(int range, float speed) {
 		super(
@@ -31,7 +31,7 @@ public class SeekWaterTask extends Task<PathAwareEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		this.field_33759 = l + 20L + 2L;
+		this.seekWaterTime = l + 20L + 2L;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
@@ -39,7 +39,7 @@ public class SeekWaterTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		if (l >= this.field_33759) {
+		if (l >= this.seekWaterTime) {
 			BlockPos blockPos = null;
 			BlockPos blockPos2 = null;
 			BlockPos blockPos3 = pathAwareEntity.getBlockPos();
@@ -66,7 +66,7 @@ public class SeekWaterTask extends Task<PathAwareEntity> {
 			}
 
 			if (blockPos != null) {
-				this.field_33759 = l + 40L;
+				this.seekWaterTime = l + 40L;
 				LookTargetUtil.walkTowards(pathAwareEntity, blockPos, this.speed, 0);
 			}
 		}

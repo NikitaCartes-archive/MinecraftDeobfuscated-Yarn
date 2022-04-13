@@ -1,6 +1,7 @@
 package net.minecraft.entity.decoration;
 
 import com.mojang.logging.LogUtils;
+import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
@@ -180,12 +181,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public int getWidthPixels() {
-		return 12;
+		return this.containsMap() ? 16 : 12;
 	}
 
 	@Override
 	public int getHeightPixels() {
-		return 12;
+		return this.containsMap() ? 16 : 12;
 	}
 
 	@Override
@@ -243,20 +244,35 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		}
 	}
 
-	private void removeFromFrame(ItemStack map) {
-		if (map.isOf(Items.FILLED_MAP)) {
-			MapState mapState = FilledMapItem.getOrCreateMapState(map, this.world);
+	private void removeFromFrame(ItemStack itemStack) {
+		this.getMapId().ifPresent(i -> {
+			MapState mapState = FilledMapItem.getMapState(i, this.world);
 			if (mapState != null) {
 				mapState.removeFrame(this.attachmentPos, this.getId());
 				mapState.setDirty(true);
 			}
-		}
-
-		map.setHolder(null);
+		});
+		itemStack.setHolder(null);
 	}
 
 	public ItemStack getHeldItemStack() {
 		return this.getDataTracker().get(ITEM_STACK);
+	}
+
+	public OptionalInt getMapId() {
+		ItemStack itemStack = this.getHeldItemStack();
+		if (itemStack.isOf(Items.FILLED_MAP)) {
+			Integer integer = FilledMapItem.getMapId(itemStack);
+			if (integer != null) {
+				return OptionalInt.of(integer);
+			}
+		}
+
+		return OptionalInt.empty();
+	}
+
+	public boolean containsMap() {
+		return this.getMapId().isPresent();
 	}
 
 	public void setHeldItemStack(ItemStack stack) {
@@ -267,9 +283,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (!value.isEmpty()) {
 			value = value.copy();
 			value.setCount(1);
-			value.setHolder(this);
 		}
 
+		this.setAsStackHolder(value);
 		this.getDataTracker().set(ITEM_STACK, value);
 		if (!value.isEmpty()) {
 			this.playSound(this.getAddItemSound(), 1.0F, 1.0F);
@@ -303,11 +319,16 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
 		if (data.equals(ITEM_STACK)) {
-			ItemStack itemStack = this.getHeldItemStack();
-			if (!itemStack.isEmpty() && itemStack.getFrame() != this) {
-				itemStack.setHolder(this);
-			}
+			this.setAsStackHolder(this.getHeldItemStack());
 		}
+	}
+
+	private void setAsStackHolder(ItemStack stack) {
+		if (!stack.isEmpty() && stack.getFrame() != this) {
+			stack.setHolder(this);
+		}
+
+		this.updateAttachmentPosition();
 	}
 
 	public int getRotation() {

@@ -23,10 +23,10 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ArrowEntity extends PersistentProjectileEntity {
-	private static final int field_30660 = 600;
-	private static final int field_30658 = -1;
+	private static final int MAX_POTION_DURATION_TICKS = 600;
+	private static final int NO_POTION_COLOR = -1;
 	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final byte field_30659 = 0;
+	private static final byte PARTICLE_EFFECT_STATUS = 0;
 	private Potion potion = Potions.EMPTY;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean colorSet;

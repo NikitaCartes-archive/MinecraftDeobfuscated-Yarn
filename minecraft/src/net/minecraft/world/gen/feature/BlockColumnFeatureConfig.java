@@ -3,8 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -27,7 +25,7 @@ public record BlockColumnFeatureConfig(List<BlockColumnFeatureConfig.Layer> laye
 	}
 
 	public static BlockColumnFeatureConfig create(IntProvider height, BlockStateProvider state) {
-		return new BlockColumnFeatureConfig(List.of(createLayer(height, state)), Direction.UP, BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN), false);
+		return new BlockColumnFeatureConfig(List.of(createLayer(height, state)), Direction.UP, BlockPredicate.IS_AIR, false);
 	}
 
 	public static record Layer(IntProvider height, BlockStateProvider state) {

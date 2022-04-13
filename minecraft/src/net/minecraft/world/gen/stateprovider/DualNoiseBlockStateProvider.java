@@ -53,7 +53,7 @@ public class DualNoiseBlockStateProvider extends NoiseBlockStateProvider {
 	}
 
 	@Override
-	public BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos) {
+	public BlockState getBlockState(AbstractRandom random, BlockPos pos) {
 		double d = this.getSlowNoiseValue(pos);
 		int i = (int)MathHelper.clampedLerpFromProgress(
 			d, -1.0, 1.0, (double)((Integer)this.variety.minInclusive()).intValue(), (double)((Integer)this.variety.maxInclusive() + 1)

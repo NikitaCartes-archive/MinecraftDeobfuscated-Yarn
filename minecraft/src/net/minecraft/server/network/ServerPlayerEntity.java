@@ -32,7 +32,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.ItemCooldownManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -1017,7 +1017,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void openHorseInventory(HorseBaseEntity horse, Inventory inventory) {
+	public void openHorseInventory(AbstractHorseEntity horse, Inventory inventory) {
 		if (this.currentScreenHandler != this.playerScreenHandler) {
 			this.closeHandledScreen();
 		}
@@ -1657,5 +1657,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public boolean allowsServerListing() {
 		return this.allowServerListing;
+	}
+
+	@Override
+	public void triggerItemPickedUpByEntityCriteria(ItemEntity item) {
+		super.triggerItemPickedUpByEntityCriteria(item);
+		Entity entity = item.getThrower() != null ? this.getWorld().getEntity(item.getThrower()) : null;
+		if (entity != null) {
+			Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.trigger(this, item.getStack(), entity);
+		}
 	}
 }

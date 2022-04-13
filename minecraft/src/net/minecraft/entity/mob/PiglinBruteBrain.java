@@ -132,13 +132,13 @@ public class PiglinBruteBrain {
 		if (optional.isPresent() && Sensor.testAttackableTargetPredicateIgnoreVisibility(piglin, (LivingEntity)optional.get())) {
 			return optional;
 		} else {
-			Optional<? extends LivingEntity> optional2 = method_30249(piglin, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
+			Optional<? extends LivingEntity> optional2 = getTargetIfInRange(piglin, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER);
 			return optional2.isPresent() ? optional2 : piglin.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_VISIBLE_NEMESIS);
 		}
 	}
 
-	private static Optional<? extends LivingEntity> method_30249(AbstractPiglinEntity piglin, MemoryModuleType<? extends LivingEntity> memoryModuleType) {
-		return piglin.getBrain().getOptionalMemory(memoryModuleType).filter(livingEntity -> livingEntity.isInRange(piglin, 12.0));
+	private static Optional<? extends LivingEntity> getTargetIfInRange(AbstractPiglinEntity piglin, MemoryModuleType<? extends LivingEntity> targetMemoryModule) {
+		return piglin.getBrain().getOptionalMemory(targetMemoryModule).filter(target -> target.isInRange(piglin, 12.0));
 	}
 
 	protected static void tryRevenge(PiglinBruteEntity piglinBrute, LivingEntity target) {

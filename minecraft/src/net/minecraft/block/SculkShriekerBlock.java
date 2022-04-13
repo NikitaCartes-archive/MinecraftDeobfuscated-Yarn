@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -60,10 +61,11 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-		super.onStateReplaced(state, world, pos, newState, moved);
 		if (world instanceof ServerWorld serverWorld && (Boolean)state.get(SHRIEKING) && !state.isOf(newState.getBlock())) {
 			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.warn(serverWorld));
 		}
+
+		super.onStateReplaced(state, world, pos, newState, moved);
 	}
 
 	@Override
@@ -109,6 +111,12 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	}
+
+	@Nullable
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER));
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package net.minecraft.screen;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.effect.StatusEffect;
@@ -141,10 +142,10 @@ public class BeaconScreenHandler extends ScreenHandler {
 		return StatusEffect.byRawId(this.propertyDelegate.get(2));
 	}
 
-	public void setEffects(StatusEffect statusEffect, StatusEffect statusEffect2) {
+	public void setEffects(Optional<StatusEffect> primary, Optional<StatusEffect> secondary) {
 		if (this.paymentSlot.hasStack()) {
-			this.propertyDelegate.set(1, StatusEffect.getRawId(statusEffect));
-			this.propertyDelegate.set(2, StatusEffect.getRawId(statusEffect2));
+			this.propertyDelegate.set(1, (Integer)primary.map(StatusEffect::getRawId).orElse(-1));
+			this.propertyDelegate.set(2, (Integer)secondary.map(StatusEffect::getRawId).orElse(-1));
 			this.paymentSlot.takeStack(1);
 			this.context.run(World::markDirty);
 		}

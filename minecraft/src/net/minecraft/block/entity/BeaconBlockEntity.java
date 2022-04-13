@@ -63,16 +63,12 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
 		public int get(int index) {
-			switch (index) {
-				case 0:
-					return BeaconBlockEntity.this.level;
-				case 1:
-					return StatusEffect.getRawId(BeaconBlockEntity.this.primary);
-				case 2:
-					return StatusEffect.getRawId(BeaconBlockEntity.this.secondary);
-				default:
-					return 0;
-			}
+			return switch (index) {
+				case 0 -> BeaconBlockEntity.this.level;
+				case 1 -> StatusEffect.method_43257(BeaconBlockEntity.this.primary);
+				case 2 -> StatusEffect.method_43257(BeaconBlockEntity.this.secondary);
+				default -> 0;
+			};
 		}
 
 		@Override
@@ -284,8 +280,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
-		nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+		nbt.putInt("Primary", StatusEffect.method_43257(this.primary));
+		nbt.putInt("Secondary", StatusEffect.method_43257(this.secondary));
 		nbt.putInt("Levels", this.level);
 		if (this.customName != null) {
 			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));

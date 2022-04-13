@@ -8,6 +8,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.dynamic.Range;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.BiasedToBottomIntProvider;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.RegistryEntry;
@@ -82,7 +83,7 @@ public class VegetationConfiguredFeatures {
 				new SimpleBlockFeatureConfig(
 					new WeightedBlockStateProvider(DataPool.<BlockState>builder().add(Blocks.GRASS.getDefaultState(), 3).add(Blocks.FERN.getDefaultState(), 1))
 				),
-				BlockPredicate.bothOf(BlockPredicate.IS_AIR, BlockPredicate.not(BlockPredicate.matchingBlock(Blocks.PODZOL, new BlockPos(0, -1, 0))))
+				BlockPredicate.bothOf(BlockPredicate.IS_AIR, BlockPredicate.not(BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.PODZOL)))
 			)
 		)
 	);
@@ -102,7 +103,7 @@ public class VegetationConfiguredFeatures {
 			PlacedFeatures.createEntry(
 				Feature.SIMPLE_BLOCK,
 				new SimpleBlockFeatureConfig(BlockStateProvider.of(Blocks.MELON)),
-				BlockPredicate.bothOf(BlockPredicate.replaceable(), BlockPredicate.matchingBlock(Blocks.GRASS_BLOCK, new BlockPos(0, -1, 0)))
+				BlockPredicate.bothOf(BlockPredicate.replaceable(), BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.GRASS_BLOCK))
 			)
 		)
 	);
@@ -145,13 +146,13 @@ public class VegetationConfiguredFeatures {
 				BlockColumnFeatureConfig.create(BiasedToBottomIntProvider.create(2, 4), BlockStateProvider.of(Blocks.SUGAR_CANE)),
 				BlockFilterPlacementModifier.of(
 					BlockPredicate.allOf(
-						BlockPredicate.matchingBlock(Blocks.AIR, BlockPos.ORIGIN),
+						BlockPredicate.IS_AIR,
 						BlockPredicate.wouldSurvive(Blocks.SUGAR_CANE.getDefaultState(), BlockPos.ORIGIN),
 						BlockPredicate.anyOf(
-							BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(1, -1, 0)),
-							BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(-1, -1, 0)),
-							BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(0, -1, 1)),
-							BlockPredicate.matchingFluids(List.of(Fluids.WATER, Fluids.FLOWING_WATER), new BlockPos(0, -1, -1))
+							BlockPredicate.matchingFluids(new BlockPos(1, -1, 0), Fluids.WATER, Fluids.FLOWING_WATER),
+							BlockPredicate.matchingFluids(new BlockPos(-1, -1, 0), Fluids.WATER, Fluids.FLOWING_WATER),
+							BlockPredicate.matchingFluids(new BlockPos(0, -1, 1), Fluids.WATER, Fluids.FLOWING_WATER),
+							BlockPredicate.matchingFluids(new BlockPos(0, -1, -1), Fluids.WATER, Fluids.FLOWING_WATER)
 						)
 					)
 				)
@@ -424,7 +425,7 @@ public class VegetationConfiguredFeatures {
 	public static final RegistryEntry<ConfiguredFeature<RandomFeatureConfig, ?>> MANGROVE_VEGETATION = ConfiguredFeatures.register(
 		"mangrove_vegetation",
 		Feature.RANDOM_SELECTOR,
-		new RandomFeatureConfig(List.of(new RandomFeatureEntry(TreePlacedFeatures.TALL_MANGROVE_CHECKED, 0.75F)), TreePlacedFeatures.MANGROVE_CHECKED)
+		new RandomFeatureConfig(List.of(new RandomFeatureEntry(TreePlacedFeatures.TALL_MANGROVE_CHECKED, 0.85F)), TreePlacedFeatures.MANGROVE_CHECKED)
 	);
 
 	private static RandomPatchFeatureConfig createRandomPatchFeatureConfig(BlockStateProvider block, int tries) {

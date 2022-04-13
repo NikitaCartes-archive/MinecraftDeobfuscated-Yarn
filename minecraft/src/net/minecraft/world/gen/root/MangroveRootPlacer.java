@@ -6,15 +6,11 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryCodecs;
-import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
@@ -25,81 +21,52 @@ public class MangroveRootPlacer extends RootPlacer {
 	public static final int field_38770 = 15;
 	public static final Codec<MangroveRootPlacer> CODEC = RecordCodecBuilder.create(
 		instance -> method_43182(instance)
-				.<RegistryEntryList<Block>, RegistryEntryList<Block>, BlockStateProvider, int, int, IntProvider, float>and(
-					instance.group(
-						RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("can_grow_through").forGetter(rootPlacer -> rootPlacer.canGrowThrough),
-						RegistryCodecs.entryList(Registry.BLOCK_KEY).fieldOf("muddy_roots_in").forGetter(rootPlacer -> rootPlacer.muddyRootsIn),
-						BlockStateProvider.TYPE_CODEC.fieldOf("muddy_roots_provider").forGetter(rootPlacer -> rootPlacer.muddyRootsProvider),
-						Codec.intRange(1, 12).fieldOf("max_root_width").forGetter(rootPlacer -> rootPlacer.maxRootWidth),
-						Codec.intRange(1, 64).fieldOf("max_root_length").forGetter(rootPlacer -> rootPlacer.maxRootLength),
-						IntProvider.VALUE_CODEC.fieldOf("y_offset").forGetter(rootPlacer -> rootPlacer.yOffset),
-						Codec.floatRange(0.0F, 1.0F).fieldOf("random_skew_chance").forGetter(rootPlacer -> rootPlacer.randomSkewChance)
-					)
-				)
+				.and(MangroveRootPlacement.CODEC.fieldOf("mangrove_root_placement").forGetter(rootPlacer -> rootPlacer.mangroveRootPlacement))
 				.apply(instance, MangroveRootPlacer::new)
 	);
-	private final RegistryEntryList<Block> canGrowThrough;
-	private final RegistryEntryList<Block> muddyRootsIn;
-	private final BlockStateProvider muddyRootsProvider;
-	private final int maxRootWidth;
-	private final int maxRootLength;
-	private final IntProvider yOffset;
-	private final float randomSkewChance;
+	private final MangroveRootPlacement mangroveRootPlacement;
 
 	public MangroveRootPlacer(
-		BlockStateProvider rootProvider,
-		RegistryEntryList<Block> canGrowThrough,
-		RegistryEntryList<Block> muddyRootsIn,
-		BlockStateProvider muddyRootsProvider,
-		int maxRootWidth,
-		int maxRootLength,
-		IntProvider yOffset,
-		float randomSkewChance
+		IntProvider trunkOffsetY, BlockStateProvider rootProvider, Optional<AboveRootPlacement> aboveRootPlacement, MangroveRootPlacement mangroveRootPlacement
 	) {
-		super(rootProvider);
-		this.canGrowThrough = canGrowThrough;
-		this.muddyRootsIn = muddyRootsIn;
-		this.muddyRootsProvider = muddyRootsProvider;
-		this.maxRootWidth = maxRootWidth;
-		this.maxRootLength = maxRootLength;
-		this.yOffset = yOffset;
-		this.randomSkewChance = randomSkewChance;
+		super(trunkOffsetY, rootProvider, aboveRootPlacement);
+		this.mangroveRootPlacement = mangroveRootPlacement;
 	}
 
 	@Override
-	public Optional<BlockPos> generate(
-		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config
+	public boolean generate(
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	) {
-		BlockPos blockPos = pos.add(0, this.yOffset.get(random), 0);
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
-		if (!this.canGrowThrough(world, blockPos)) {
-			return Optional.empty();
+		if (!this.canGrowThrough(world, trunkPos)) {
+			return false;
 		} else {
-			list.add(blockPos.down());
+			list.add(trunkPos.down());
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				BlockPos blockPos2 = blockPos.offset(direction);
+				BlockPos blockPos = trunkPos.offset(direction);
 				List<BlockPos> list2 = Lists.<BlockPos>newArrayList();
-				if (!this.canGrow(world, random, blockPos2, direction, blockPos, list2, 0)) {
-					return Optional.empty();
+				if (!this.canGrow(world, random, blockPos, direction, trunkPos, list2, 0)) {
+					return false;
 				}
 
 				list.addAll(list2);
-				list.add(blockPos.offset(direction));
+				list.add(trunkPos.offset(direction));
 			}
 
-			for (BlockPos blockPos3 : list) {
-				this.placeRoots(world, replacer, random, blockPos3, config);
+			for (BlockPos blockPos2 : list) {
+				this.placeRoots(world, replacer, random, blockPos2, config);
 			}
 
-			return Optional.of(blockPos);
+			return true;
 		}
 	}
 
 	private boolean canGrow(
 		TestableWorld world, AbstractRandom random, BlockPos pos, Direction direction, BlockPos origin, List<BlockPos> offshootPositions, int rootLength
 	) {
-		if (rootLength != this.maxRootLength && offshootPositions.size() <= this.maxRootLength) {
+		int i = this.mangroveRootPlacement.maxRootLength();
+		if (rootLength != i && offshootPositions.size() <= i) {
 			for (BlockPos blockPos : this.getOffshootPositions(pos, direction, random, origin)) {
 				if (this.canGrowThrough(world, blockPos)) {
 					offshootPositions.add(blockPos);
@@ -119,11 +86,13 @@ public class MangroveRootPlacer extends RootPlacer {
 		BlockPos blockPos = pos.down();
 		BlockPos blockPos2 = pos.offset(direction);
 		int i = pos.getManhattanDistance(origin);
-		if (i > this.maxRootWidth - 3 && i <= this.maxRootWidth) {
-			return random.nextFloat() < this.randomSkewChance ? List.of(blockPos, blockPos2.down()) : List.of(blockPos);
-		} else if (i > this.maxRootWidth) {
+		int j = this.mangroveRootPlacement.maxRootWidth();
+		float f = this.mangroveRootPlacement.randomSkewChance();
+		if (i > j - 3 && i <= j) {
+			return random.nextFloat() < f ? List.of(blockPos, blockPos2.down()) : List.of(blockPos);
+		} else if (i > j) {
 			return List.of(blockPos);
-		} else if (random.nextFloat() < this.randomSkewChance) {
+		} else if (random.nextFloat() < f) {
 			return List.of(blockPos);
 		} else {
 			return random.nextBoolean() ? List.of(blockPos2) : List.of(blockPos);
@@ -131,13 +100,13 @@ public class MangroveRootPlacer extends RootPlacer {
 	}
 
 	protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
-		return TreeFeature.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(this.canGrowThrough));
+		return TreeFeature.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.canGrowThrough()));
 	}
 
 	@Override
 	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
-		if (world.testBlockState(pos, state -> state.isIn(this.muddyRootsIn))) {
-			BlockState blockState = this.muddyRootsProvider.getBlockState(random, pos);
+		if (world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.muddyRootsIn()))) {
+			BlockState blockState = this.mangroveRootPlacement.muddyRootsProvider().getBlockState(random, pos);
 			replacer.accept(pos, this.applyWaterlogging(world, pos, blockState));
 		} else {
 			super.placeRoots(world, replacer, random, pos, config);

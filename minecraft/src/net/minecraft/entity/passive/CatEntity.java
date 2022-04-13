@@ -359,7 +359,10 @@ public class CatEntity extends TameableEntity {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		boolean bl = world.getMoonSize() > 0.9F;
 		TagKey<CatVariant> tagKey = bl ? CatVariantTags.FULL_MOON_SPAWNS : CatVariantTags.DEFAULT_SPAWNS;
-		Registry.CAT_VARIANT.getEntryList(tagKey).flatMap(list -> list.getRandom(this.random)).ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
+		Registry.CAT_VARIANT
+			.getEntryList(tagKey)
+			.flatMap(list -> list.getRandom(world.getRandom()))
+			.ifPresent(variant -> this.setVariant((CatVariant)variant.value()));
 		ServerWorld serverWorld = world.toServerWorld();
 		if (serverWorld.getStructureAccessor().getStructureContaining(this.getBlockPos(), ConfiguredStructureFeatureTags.CATS_SPAWN_AS_BLACK).hasChildren()) {
 			this.setVariant(CatVariant.ALL_BLACK);

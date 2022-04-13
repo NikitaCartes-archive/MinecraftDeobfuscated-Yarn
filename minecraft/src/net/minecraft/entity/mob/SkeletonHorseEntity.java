@@ -7,7 +7,7 @@ import net.minecraft.entity.ai.goal.SkeletonHorseTrapTriggerGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,9 +19,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
-public class SkeletonHorseEntity extends HorseBaseEntity {
+public class SkeletonHorseEntity extends AbstractHorseEntity {
 	private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
 	private static final int DESPAWN_AGE = 18000;
 	private boolean trapped;
@@ -36,8 +37,8 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
+	protected void initAttributes(AbstractRandom random) {
+		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus(random));
 	}
 
 	@Override

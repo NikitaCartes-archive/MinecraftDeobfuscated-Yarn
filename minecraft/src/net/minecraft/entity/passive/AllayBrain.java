@@ -85,7 +85,7 @@ public class AllayBrain {
 		);
 	}
 
-	public static void resetIdleActivities(AllayEntity allay) {
+	public static void updateActivities(AllayEntity allay) {
 		allay.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
 	}
 

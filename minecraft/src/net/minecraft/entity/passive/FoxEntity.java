@@ -227,16 +227,16 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
-		if (this.random.nextFloat() < 0.2F) {
-			float f = this.random.nextFloat();
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+		if (random.nextFloat() < 0.2F) {
+			float f = random.nextFloat();
 			ItemStack itemStack;
 			if (f < 0.05F) {
 				itemStack = new ItemStack(Items.EMERALD);
 			} else if (f < 0.2F) {
 				itemStack = new ItemStack(Items.EGG);
 			} else if (f < 0.4F) {
-				itemStack = this.random.nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE);
+				itemStack = random.nextBoolean() ? new ItemStack(Items.RABBIT_FOOT) : new ItemStack(Items.RABBIT_HIDE);
 			} else if (f < 0.6F) {
 				itemStack = new ItemStack(Items.WHEAT);
 			} else if (f < 0.8F) {
@@ -301,9 +301,9 @@ public class FoxEntity extends AnimalEntity {
 		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(registryEntry);
 		boolean bl = false;
-		if (entityData instanceof FoxEntity.FoxData) {
-			type = ((FoxEntity.FoxData)entityData).type;
-			if (((FoxEntity.FoxData)entityData).getSpawnedCount() >= 2) {
+		if (entityData instanceof FoxEntity.FoxData foxData) {
+			type = foxData.type;
+			if (foxData.getSpawnedCount() >= 2) {
 				bl = true;
 			}
 		} else {
@@ -319,7 +319,7 @@ public class FoxEntity extends AnimalEntity {
 			this.addTypeSpecificGoals();
 		}
 
-		this.initEquipment(difficulty);
+		this.initEquipment(world.getRandom(), difficulty);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 

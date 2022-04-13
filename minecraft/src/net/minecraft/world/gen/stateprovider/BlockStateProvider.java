@@ -43,5 +43,5 @@ public abstract class BlockStateProvider {
 	/**
 	 * {@return a provided block state}
 	 */
-	public abstract BlockState getBlockState(AbstractRandom abstractRandom, BlockPos pos);
+	public abstract BlockState getBlockState(AbstractRandom random, BlockPos pos);
 }

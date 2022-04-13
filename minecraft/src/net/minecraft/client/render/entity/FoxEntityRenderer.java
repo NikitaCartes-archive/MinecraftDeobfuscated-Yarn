@@ -20,7 +20,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxEntityMod
 
 	public FoxEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new FoxEntityModel<>(context.getPart(EntityModelLayers.FOX)), 0.4F);
-		this.addFeature(new FoxHeldItemFeatureRenderer(this));
+		this.addFeature(new FoxHeldItemFeatureRenderer(this, context.getHeldItemRenderer()));
 	}
 
 	protected void setupTransforms(FoxEntity foxEntity, MatrixStack matrixStack, float f, float g, float h) {

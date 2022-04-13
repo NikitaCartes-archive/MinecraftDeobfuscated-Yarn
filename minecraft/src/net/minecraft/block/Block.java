@@ -521,7 +521,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 			PiglinBrain.onGuardedBlockInteracted(player, false);
 		}
 
-		world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
+		world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
 	}
 
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {

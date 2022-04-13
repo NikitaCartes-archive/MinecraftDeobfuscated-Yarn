@@ -32,10 +32,10 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 	};
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty HANGING = Properties.HANGING;
-	private static final float field_38749 = 0.75F;
+	private static final float field_38749 = 0.85F;
 
 	public PropaguleBlock(AbstractBlock.Settings settings) {
-		super(new MangroveSaplingGenerator(0.75F), settings);
+		super(new MangroveSaplingGenerator(0.85F), settings);
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -75,11 +75,6 @@ public class PropaguleBlock extends SaplingBlock implements Waterloggable {
 		}
 
 		return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
-	}
-
-	@Override
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.XZ;
 	}
 
 	@Override

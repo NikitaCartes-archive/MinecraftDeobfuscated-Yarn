@@ -131,11 +131,6 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	}
 
 	@Override
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.XYZ;
-	}
-
-	@Override
 	public float getVerticalModelOffsetMultiplier() {
 		return 0.1F;
 	}

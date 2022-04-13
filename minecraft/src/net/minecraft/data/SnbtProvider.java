@@ -5,12 +5,9 @@ import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.minecraft.data.dev.NbtProvider;
@@ -48,7 +45,7 @@ public class SnbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) throws IOException {
+	public void run(DataWriter cache) throws IOException {
 		Path path = this.root.getOutput();
 		List<CompletableFuture<SnbtProvider.CompressedData>> list = Lists.<CompletableFuture<SnbtProvider.CompressedData>>newArrayList();
 
@@ -128,46 +125,23 @@ public class SnbtProvider implements DataProvider {
 		}
 	}
 
-	private void write(DataCache cache, SnbtProvider.CompressedData data, Path root) {
+	private void write(DataWriter cache, SnbtProvider.CompressedData data, Path root) {
 		if (data.snbtContent != null) {
 			Path path = DEBUG_OUTPUT_DIRECTORY.resolve(data.name + ".snbt");
 
 			try {
 				NbtProvider.writeTo(path, data.snbtContent);
-			} catch (IOException var9) {
-				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var9);
+			} catch (IOException var7) {
+				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var7);
 			}
 		}
 
 		Path path = root.resolve(data.name + ".nbt");
 
 		try {
-			if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
-				Files.createDirectories(path.getParent());
-				OutputStream outputStream = Files.newOutputStream(path);
-
-				try {
-					outputStream.write(data.bytes);
-				} catch (Throwable var10) {
-					if (outputStream != null) {
-						try {
-							outputStream.close();
-						} catch (Throwable var8) {
-							var10.addSuppressed(var8);
-						}
-					}
-
-					throw var10;
-				}
-
-				if (outputStream != null) {
-					outputStream.close();
-				}
-			}
-
-			cache.updateSha1(path, data.sha1);
-		} catch (IOException var11) {
-			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var11);
+			cache.write(path, data.bytes, data.sha1);
+		} catch (IOException var6) {
+			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var6);
 		}
 	}
 

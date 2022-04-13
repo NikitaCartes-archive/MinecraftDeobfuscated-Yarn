@@ -82,11 +82,11 @@ import org.slf4j.Logger;
  * <p>Slider option callbacks allow "modifiers" to be applied. The "slider progress value"
  * is the value used to calculate the slider's progress and must be linear. The real value,
  * simply called "value" in {@code withModifier} methods, is the value used in
- * {#link #getValue()} and passed to {@link #textGetter}.
+ * {@link #getValue()} and passed to {@link #textGetter}.
  * 
  * <h2 id="text">Text</h2>
  * Options themselves have names; the translation key of the option needs to be passed when
- * constructing this class, This corresponds to {@link #text}. Options also have the
+ * constructing this class. This corresponds to {@link #text}. Options also have the
  * rendered text, composed of the option name and the value; the code obtains the value using
  * the {@code valueTextGetter} in the constructor. The getter takes the option's name and the
  * current value, and returns the text. Several static methods in {@link GameOptions} can
@@ -205,7 +205,7 @@ public final class SimpleOption<T> {
 	 * {@return the getter for the {@code valueTextGetter} parameter of the constructor
 	 * to use the value's text as the option's rendered text}
 	 * 
-	 * @apiNote This requires the value to be an enum extending {@link TranslatableOption}.
+	 * @apiNote This requires the value to be an enum implementing {@link TranslatableOption}.
 	 */
 	public static <T extends TranslatableOption> SimpleOption.ValueTextGetter<T> enumValueText() {
 		return (optionText, value) -> value.getText();

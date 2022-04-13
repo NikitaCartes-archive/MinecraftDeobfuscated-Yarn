@@ -114,7 +114,7 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 
 	static class RetryMarker {
 		private static final int MIN_DELAY = 40;
-		private static final int field_30102 = 80;
+		private static final int MAX_EXTRA_DELAY = 80;
 		private static final int ATTEMPT_DURATION = 400;
 		private final AbstractRandom random;
 		private long previousAttemptAt;

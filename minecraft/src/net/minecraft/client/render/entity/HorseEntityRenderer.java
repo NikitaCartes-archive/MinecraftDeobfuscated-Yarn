@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
-public final class HorseEntityRenderer extends HorseBaseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
+public final class HorseEntityRenderer extends AbstractHorseEntityRenderer<HorseEntity, HorseEntityModel<HorseEntity>> {
 	private static final Map<HorseColor, Identifier> TEXTURES = Util.make(Maps.newEnumMap(HorseColor.class), enumMap -> {
 		enumMap.put(HorseColor.WHITE, new Identifier("textures/entity/horse/horse_white.png"));
 		enumMap.put(HorseColor.CREAMY, new Identifier("textures/entity/horse/horse_creamy.png"));

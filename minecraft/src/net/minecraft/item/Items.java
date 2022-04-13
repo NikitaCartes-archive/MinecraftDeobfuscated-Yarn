@@ -272,7 +272,6 @@ public class Items {
 	public static final Item PURPUR_PILLAR = register(Blocks.PURPUR_PILLAR, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PURPUR_STAIRS = register(Blocks.PURPUR_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPAWNER = register(new BlockItem(Blocks.SPAWNER, new Item.Settings().rarity(Rarity.EPIC)));
-	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CHEST = register(Blocks.CHEST, ItemGroup.DECORATIONS);
 	public static final Item CRAFTING_TABLE = register(Blocks.CRAFTING_TABLE, ItemGroup.DECORATIONS);
 	public static final Item FARMLAND = register(Blocks.FARMLAND, ItemGroup.DECORATIONS);
@@ -357,9 +356,13 @@ public class Items {
 	public static final Item SANDSTONE_STAIRS = register(Blocks.SANDSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item ENDER_CHEST = register(Blocks.ENDER_CHEST, ItemGroup.DECORATIONS);
 	public static final Item EMERALD_BLOCK = register(Blocks.EMERALD_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item OAK_STAIRS = register(Blocks.OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SPRUCE_STAIRS = register(Blocks.SPRUCE_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item BIRCH_STAIRS = register(Blocks.BIRCH_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item JUNGLE_STAIRS = register(Blocks.JUNGLE_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item ACACIA_STAIRS = register(Blocks.ACACIA_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item DARK_OAK_STAIRS = register(Blocks.DARK_OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
+	public static final Item MANGROVE_STAIRS = register(Blocks.MANGROVE_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CRIMSON_STAIRS = register(Blocks.CRIMSON_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WARPED_STAIRS = register(Blocks.WARPED_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item COMMAND_BLOCK = register(new CommandBlockItem(Blocks.COMMAND_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
@@ -431,9 +434,6 @@ public class Items {
 	public static final Item BLACK_CARPET = register(Blocks.BLACK_CARPET, ItemGroup.DECORATIONS);
 	public static final Item TERRACOTTA = register(Blocks.TERRACOTTA, ItemGroup.BUILDING_BLOCKS);
 	public static final Item PACKED_ICE = register(Blocks.PACKED_ICE, ItemGroup.BUILDING_BLOCKS);
-	public static final Item ACACIA_STAIRS = register(Blocks.ACACIA_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item DARK_OAK_STAIRS = register(Blocks.DARK_OAK_STAIRS, ItemGroup.BUILDING_BLOCKS);
-	public static final Item MANGROVE_STAIRS = register(Blocks.MANGROVE_STAIRS, ItemGroup.BUILDING_BLOCKS);
 	public static final Item DIRT_PATH = register(Blocks.DIRT_PATH, ItemGroup.DECORATIONS);
 	public static final Item SUNFLOWER = register(new TallBlockItem(Blocks.SUNFLOWER, new Item.Settings().group(ItemGroup.DECORATIONS)));
 	public static final Item LILAC = register(new TallBlockItem(Blocks.LILAC, new Item.Settings().group(ItemGroup.DECORATIONS)));
@@ -1041,6 +1041,7 @@ public class Items {
 	public static final Item SLIME_BALL = register("slime_ball", new Item(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item EGG = register("egg", new EggItem(new Item.Settings().maxCount(16).group(ItemGroup.MATERIALS)));
 	public static final Item COMPASS = register("compass", new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
+	public static final Item RECOVERY_COMPASS = register("recovery_compass", new Item(new Item.Settings().group(ItemGroup.TOOLS)));
 	public static final Item BUNDLE = register(
 		"bundle", new BundleItem(new Item.Settings().maxCount(1).group((ItemGroup)createEmptyOptional(ItemGroup.TOOLS).orElse(null)))
 	);
@@ -1621,7 +1622,6 @@ public class Items {
 	public static final Item PEARLESCENT_FROGLIGHT = register(Blocks.PEARLESCENT_FROGLIGHT, ItemGroup.DECORATIONS);
 	public static final Item FROGSPAWN = register(new LilyPadItem(Blocks.FROGSPAWN, new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item ECHO_SHARD = register("echo_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item RECOVERY_COMPASS = register("recovery_compass", new CompassItem(new Item.Settings().group(ItemGroup.TOOLS)));
 
 	private static <T> Optional<T> createEmptyOptional(T of) {
 		return Optional.empty();

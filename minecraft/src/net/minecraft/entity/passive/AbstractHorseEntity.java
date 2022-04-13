@@ -64,16 +64,17 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, RideableInventory, JumpingMount, Saddleable {
+public abstract class AbstractHorseEntity extends AnimalEntity implements InventoryChangedListener, RideableInventory, JumpingMount, Saddleable {
 	public static final int field_30413 = 400;
 	public static final int field_30414 = 499;
 	public static final int field_30415 = 500;
-	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
+	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
 		.ignoreVisibility()
@@ -81,8 +82,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE
 	);
-	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final int TAMED_FLAG = 2;
 	private static final int SADDLED_FLAG = 4;
 	private static final int BRED_FLAG = 8;
@@ -111,7 +112,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	protected boolean playExtraHorseSounds = true;
 	protected int soundTicks;
 
-	protected HorseBaseEntity(EntityType<? extends HorseBaseEntity> entityType, World world) {
+	protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.onChestedStatusChanged();
@@ -121,7 +122,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	protected void initGoals() {
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(1, new HorseBondWithPlayerGoal(this, 1.2));
-		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, HorseBaseEntity.class));
+		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, AbstractHorseEntity.class));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.0));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -569,7 +570,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	protected void walkToParent() {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
 			LivingEntity livingEntity = this.world
-				.getClosestEntity(HorseBaseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0));
+				.getClosestEntity(AbstractHorseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity, 0);
 			}
@@ -820,18 +821,18 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return null;
 	}
 
-	protected void setChildAttributes(PassiveEntity mate, HorseBaseEntity child) {
+	protected void setChildAttributes(PassiveEntity mate, AbstractHorseEntity child) {
 		double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
 			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
-			+ (double)this.getChildHealthBonus();
+			+ (double)this.getChildHealthBonus(this.random);
 		child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
 		double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
 			+ mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
-			+ this.getChildJumpStrengthBonus();
+			+ this.getChildJumpStrengthBonus(this.random);
 		child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
 		double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
 			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-			+ this.getChildMovementSpeedBonus();
+			+ this.getChildMovementSpeedBonus(this.random);
 		child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
 	}
 
@@ -924,16 +925,16 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 	}
 
-	protected float getChildHealthBonus() {
-		return 15.0F + (float)this.random.nextInt(8) + (float)this.random.nextInt(9);
+	protected float getChildHealthBonus(AbstractRandom random) {
+		return 15.0F + (float)random.nextInt(8) + (float)random.nextInt(9);
 	}
 
-	protected double getChildJumpStrengthBonus() {
-		return 0.4F + this.random.nextDouble() * 0.2 + this.random.nextDouble() * 0.2 + this.random.nextDouble() * 0.2;
+	protected double getChildJumpStrengthBonus(AbstractRandom random) {
+		return 0.4F + random.nextDouble() * 0.2 + random.nextDouble() * 0.2 + random.nextDouble() * 0.2;
 	}
 
-	protected double getChildMovementSpeedBonus() {
-		return (0.45F + this.random.nextDouble() * 0.3 + this.random.nextDouble() * 0.3 + this.random.nextDouble() * 0.3) * 0.25;
+	protected double getChildMovementSpeedBonus(AbstractRandom random) {
+		return (0.45F + random.nextDouble() * 0.3 + random.nextDouble() * 0.3 + random.nextDouble() * 0.3) * 0.25;
 	}
 
 	@Override
@@ -983,7 +984,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return new StackReference() {
 			@Override
 			public ItemStack get() {
-				return HorseBaseEntity.this.items.getStack(slot);
+				return AbstractHorseEntity.this.items.getStack(slot);
 			}
 
 			@Override
@@ -991,8 +992,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 				if (!predicate.test(stack)) {
 					return false;
 				} else {
-					HorseBaseEntity.this.items.setStack(slot, stack);
-					HorseBaseEntity.this.updateSaddle();
+					AbstractHorseEntity.this.items.setStack(slot, stack);
+					AbstractHorseEntity.this.updateSaddle();
 					return true;
 				}
 			}
@@ -1082,7 +1083,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 	}
 
-	protected void initAttributes() {
+	protected void initAttributes(AbstractRandom random) {
 	}
 
 	@Nullable
@@ -1094,7 +1095,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			entityData = new PassiveEntity.PassiveData(0.2F);
 		}
 
-		this.initAttributes();
+		this.initAttributes(world.getRandom());
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 

@@ -542,8 +542,9 @@ public class PandaEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		this.setMainGene(PandaEntity.Gene.createRandom(this.random));
-		this.setHiddenGene(PandaEntity.Gene.createRandom(this.random));
+		AbstractRandom abstractRandom = world.getRandom();
+		this.setMainGene(PandaEntity.Gene.createRandom(abstractRandom));
+		this.setHiddenGene(PandaEntity.Gene.createRandom(abstractRandom));
 		this.resetAttributes();
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(0.2F);

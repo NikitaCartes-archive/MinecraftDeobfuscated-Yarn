@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -101,7 +102,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	public static Collection<Direction> shuffle(AbstractRandom random) {
-		return Util.<Direction>copyShuffled(Arrays.asList(values()), random);
+		return Util.<Direction>copyShuffled(values(), random);
 	}
 
 	public static Stream<Direction> stream() {
@@ -505,6 +506,10 @@ public enum Direction implements StringIdentifiable {
 
 		public Stream<Direction> stream() {
 			return Arrays.stream(this.facingArray);
+		}
+
+		public List<Direction> getShuffled(AbstractRandom random) {
+			return Util.copyShuffled(this.facingArray, random);
 		}
 	}
 }

@@ -26,9 +26,9 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -102,7 +102,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(profile);
 			return map.containsKey(Type.SKIN)
 				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
-				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(profile)));
+				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(profile)));
 		} else {
 			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}

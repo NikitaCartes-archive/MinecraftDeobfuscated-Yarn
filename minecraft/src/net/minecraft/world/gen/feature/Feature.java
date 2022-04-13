@@ -68,9 +68,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> FOREST_ROCK = register("forest_rock", new ForestRockFeature(SingleStateFeatureConfig.CODEC));
-	public static final Feature<DiskFeatureConfig> DISK = register("disk", new SimpleDiskFeature(DiskFeatureConfig.CODEC));
-	public static final Feature<DiskFeatureConfig> SURFACE_DISK = register("surface_disk", new SurfaceDiskFeature(DiskFeatureConfig.CODEC));
-	public static final Feature<DiskFeatureConfig> ICE_PATCH = register("ice_patch", new IcePatchFeature(DiskFeatureConfig.CODEC));
+	public static final Feature<DiskFeatureConfig> DISK = register("disk", new DiskFeature(DiskFeatureConfig.CODEC));
 	public static final Feature<LakeFeature.Config> LAKE = register("lake", new LakeFeature(LakeFeature.Config.CODEC));
 	public static final Feature<OreFeatureConfig> ORE = register("ore", new OreFeature(OreFeatureConfig.CODEC));
 	public static final Feature<EndSpikeFeatureConfig> END_SPIKE = register("end_spike", new EndSpikeFeature(EndSpikeFeatureConfig.CODEC));
@@ -163,10 +161,6 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public static boolean isSoil(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, Feature::isSoil);
-	}
-
-	public static boolean isAir(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 
 	public static boolean testAdjacentStates(Function<BlockPos, BlockState> posToState, BlockPos pos, Predicate<BlockState> predicate) {

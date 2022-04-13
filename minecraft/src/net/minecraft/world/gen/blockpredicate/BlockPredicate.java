@@ -17,8 +17,8 @@ import net.minecraft.world.StructureWorldAccess;
 
 public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockPos> {
 	Codec<BlockPredicate> BASE_CODEC = Registry.BLOCK_PREDICATE_TYPE.getCodec().dispatch(BlockPredicate::getType, BlockPredicateType::codec);
-	BlockPredicate IS_AIR = matchingBlock(Blocks.AIR, BlockPos.ORIGIN);
-	BlockPredicate IS_AIR_OR_WATER = matchingBlocks(List.of(Blocks.AIR, Blocks.WATER), BlockPos.ORIGIN);
+	BlockPredicate IS_AIR = matchingBlocks(Blocks.AIR);
+	BlockPredicate IS_AIR_OR_WATER = matchingBlocks(Blocks.AIR, Blocks.WATER);
 
 	BlockPredicateType<?> getType();
 
@@ -46,32 +46,40 @@ public interface BlockPredicate extends BiPredicate<StructureWorldAccess, BlockP
 		return anyOf(List.of(first, second));
 	}
 
-	static BlockPredicate matchingBlocks(List<Block> blocks, Vec3i offset) {
+	static BlockPredicate matchingBlocks(Vec3i offset, List<Block> blocks) {
 		return new MatchingBlocksBlockPredicate(offset, RegistryEntryList.of(Block::getRegistryEntry, blocks));
 	}
 
 	static BlockPredicate matchingBlocks(List<Block> blocks) {
-		return matchingBlocks(blocks, Vec3i.ZERO);
+		return matchingBlocks(Vec3i.ZERO, blocks);
 	}
 
-	static BlockPredicate matchingBlock(Block block, Vec3i offset) {
-		return matchingBlocks(List.of(block), offset);
+	static BlockPredicate matchingBlocks(Vec3i offset, Block... blocks) {
+		return matchingBlocks(offset, List.of(blocks));
 	}
 
-	static BlockPredicate matchingBlockTag(TagKey<Block> tag, Vec3i offset) {
+	static BlockPredicate matchingBlocks(Block... blocks) {
+		return matchingBlocks(Vec3i.ZERO, blocks);
+	}
+
+	static BlockPredicate matchingBlockTag(Vec3i offset, TagKey<Block> tag) {
 		return new MatchingBlockTagPredicate(offset, tag);
 	}
 
 	static BlockPredicate matchingBlockTag(TagKey<Block> offset) {
-		return matchingBlockTag(offset, Vec3i.ZERO);
+		return matchingBlockTag(Vec3i.ZERO, offset);
 	}
 
-	static BlockPredicate matchingFluids(List<Fluid> fluids, Vec3i offset) {
+	static BlockPredicate matchingFluids(Vec3i offset, List<Fluid> fluids) {
 		return new MatchingFluidsBlockPredicate(offset, RegistryEntryList.of(Fluid::getRegistryEntry, fluids));
 	}
 
-	static BlockPredicate matchingFluid(Fluid fluid, Vec3i offset) {
-		return matchingFluids(List.of(fluid), offset);
+	static BlockPredicate matchingFluids(Vec3i offset, Fluid... fluids) {
+		return matchingFluids(offset, List.of(fluids));
+	}
+
+	static BlockPredicate matchingFluids(Fluid... fluids) {
+		return matchingFluids(Vec3i.ZERO, fluids);
 	}
 
 	static BlockPredicate not(BlockPredicate predicate) {

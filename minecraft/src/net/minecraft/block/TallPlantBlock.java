@@ -121,11 +121,6 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public AbstractBlock.OffsetType getOffsetType() {
-		return AbstractBlock.OffsetType.XZ;
-	}
-
-	@Override
 	public long getRenderingSeed(BlockState state, BlockPos pos) {
 		return MathHelper.hashCode(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
 	}

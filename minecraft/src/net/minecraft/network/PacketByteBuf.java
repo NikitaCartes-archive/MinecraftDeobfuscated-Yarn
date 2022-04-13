@@ -833,7 +833,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #MAX_TEXT_LENGTH
 	 */
 	public Text readText() {
-		return Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
+		Text text = Text.Serializer.fromJson(this.readString(MAX_TEXT_LENGTH));
+		if (text == null) {
+			throw new DecoderException("Received unexpected null component");
+		} else {
+			return text;
+		}
 	}
 
 	/**

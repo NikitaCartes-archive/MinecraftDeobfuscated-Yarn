@@ -6,7 +6,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -16,9 +16,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.World;
 
-public class ZombieHorseEntity extends HorseBaseEntity {
+public class ZombieHorseEntity extends AbstractHorseEntity {
 	public ZombieHorseEntity(EntityType<? extends ZombieHorseEntity> entityType, World world) {
 		super(entityType, world);
 	}
@@ -28,8 +29,8 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void initAttributes() {
-		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
+	protected void initAttributes(AbstractRandom random) {
+		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus(random));
 	}
 
 	@Override

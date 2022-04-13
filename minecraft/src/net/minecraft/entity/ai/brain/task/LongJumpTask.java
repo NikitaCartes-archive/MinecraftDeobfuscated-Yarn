@@ -36,7 +36,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 	private static final int TARGET_RETAIN_TIME = 40;
 	protected static final int PATHING_DISTANCE = 8;
 	private static final int RUN_TIME = 200;
-	private static final List<Integer> field_37431 = Lists.<Integer>newArrayList(65, 70, 75, 80);
+	private static final List<Integer> RAM_RANGES = Lists.<Integer>newArrayList(65, 70, 75, 80);
 	private final UniformIntProvider cooldownRange;
 	protected final int verticalRange;
 	protected final int horizontalRange;
@@ -185,7 +185,7 @@ public class LongJumpTask<E extends MobEntity> extends Task<E> {
 
 	@Nullable
 	protected Vec3d getRammingVelocity(MobEntity entity, Vec3d pos) {
-		List<Integer> list = Lists.<Integer>newArrayList(field_37431);
+		List<Integer> list = Lists.<Integer>newArrayList(RAM_RANGES);
 		Collections.shuffle(list);
 
 		for (int i : list) {

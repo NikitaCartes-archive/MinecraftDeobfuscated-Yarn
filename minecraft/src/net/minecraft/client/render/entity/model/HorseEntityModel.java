@@ -9,11 +9,11 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> {
+public class HorseEntityModel<T extends AbstractHorseEntity> extends AnimalModel<T> {
 	private static final float EATING_GRASS_ANIMATION_HEAD_BASE_PITCH = 2.1816616F;
 	private static final float ANGRY_ANIMATION_FRONT_LEG_PITCH_MULTIPLIER = (float) (Math.PI / 3);
 	private static final float ANGRY_ANIMATION_BODY_PITCH_MULTIPLIER = (float) (Math.PI / 4);
@@ -205,9 +205,9 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		return modelData;
 	}
 
-	public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {
-		boolean bl = horseBaseEntity.isSaddled();
-		boolean bl2 = horseBaseEntity.hasPassengers();
+	public void setAngles(T abstractHorseEntity, float f, float g, float h, float i, float j) {
+		boolean bl = abstractHorseEntity.isSaddled();
+		boolean bl2 = abstractHorseEntity.hasPassengers();
 
 		for (ModelPart modelPart : this.saddle) {
 			modelPart.visible = bl;
@@ -240,11 +240,11 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		);
 	}
 
-	public void animateModel(T horseBaseEntity, float f, float g, float h) {
-		super.animateModel(horseBaseEntity, f, g, h);
-		float i = MathHelper.lerpAngle(horseBaseEntity.prevBodyYaw, horseBaseEntity.bodyYaw, h);
-		float j = MathHelper.lerpAngle(horseBaseEntity.prevHeadYaw, horseBaseEntity.headYaw, h);
-		float k = MathHelper.lerp(h, horseBaseEntity.prevPitch, horseBaseEntity.getPitch());
+	public void animateModel(T abstractHorseEntity, float f, float g, float h) {
+		super.animateModel(abstractHorseEntity, f, g, h);
+		float i = MathHelper.lerpAngle(abstractHorseEntity.prevBodyYaw, abstractHorseEntity.bodyYaw, h);
+		float j = MathHelper.lerpAngle(abstractHorseEntity.prevHeadYaw, abstractHorseEntity.headYaw, h);
+		float k = MathHelper.lerp(h, abstractHorseEntity.prevPitch, abstractHorseEntity.getPitch());
 		float l = j - i;
 		float m = k * (float) (Math.PI / 180.0);
 		if (l > 20.0F) {
@@ -259,18 +259,18 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 			m += MathHelper.cos(f * 0.4F) * 0.15F * g;
 		}
 
-		float n = horseBaseEntity.getEatingGrassAnimationProgress(h);
-		float o = horseBaseEntity.getAngryAnimationProgress(h);
+		float n = abstractHorseEntity.getEatingGrassAnimationProgress(h);
+		float o = abstractHorseEntity.getAngryAnimationProgress(h);
 		float p = 1.0F - o;
-		float q = horseBaseEntity.getEatingAnimationProgress(h);
-		boolean bl = horseBaseEntity.tailWagTicks != 0;
-		float r = (float)horseBaseEntity.age + h;
+		float q = abstractHorseEntity.getEatingAnimationProgress(h);
+		boolean bl = abstractHorseEntity.tailWagTicks != 0;
+		float r = (float)abstractHorseEntity.age + h;
 		this.head.pivotY = 4.0F;
 		this.head.pivotZ = -12.0F;
 		this.body.pitch = 0.0F;
 		this.head.pitch = (float) (Math.PI / 6) + m;
 		this.head.yaw = l * (float) (Math.PI / 180.0);
-		float s = horseBaseEntity.isTouchingWater() ? 0.2F : 1.0F;
+		float s = abstractHorseEntity.isTouchingWater() ? 0.2F : 1.0F;
 		float t = MathHelper.cos(s * f * 0.6662F + (float) Math.PI);
 		float u = t * 0.8F * g;
 		float v = (1.0F - Math.max(o, n)) * ((float) (Math.PI / 6) + m + q * MathHelper.sin(r) * 0.05F);
@@ -312,7 +312,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends AnimalModel<T> 
 		this.leftFrontBabyLeg.pivotY = this.leftFrontLeg.pivotY;
 		this.leftFrontBabyLeg.pivotZ = this.leftFrontLeg.pivotZ;
 		this.leftFrontBabyLeg.pitch = this.leftFrontLeg.pitch;
-		boolean bl2 = horseBaseEntity.isBaby();
+		boolean bl2 = abstractHorseEntity.isBaby();
 		this.rightHindLeg.visible = !bl2;
 		this.leftHindLeg.visible = !bl2;
 		this.rightFrontLeg.visible = !bl2;

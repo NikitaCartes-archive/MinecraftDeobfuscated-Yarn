@@ -19,7 +19,6 @@ import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.NbtScanner;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
@@ -99,10 +98,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 					.forEach(
 						chunkPosx -> {
 							SelectiveNbtCollector selectiveNbtCollector = new SelectiveNbtCollector(
-								new NbtScanQuery("Level", NbtInt.TYPE, "DataVersion"),
-								new NbtScanQuery(NbtInt.TYPE, "DataVersion"),
-								new NbtScanQuery("Level", "blending_data", NbtString.TYPE, "old_noise"),
-								new NbtScanQuery(NbtCompound.TYPE, "blending_data")
+								new NbtScanQuery(NbtInt.TYPE, "DataVersion"), new NbtScanQuery(NbtCompound.TYPE, "blending_data")
 							);
 							this.scanChunk(chunkPosx, selectiveNbtCollector).join();
 							if (selectiveNbtCollector.getRoot() instanceof NbtCompound nbtCompound) {
@@ -118,19 +114,9 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	private boolean needsBlending(NbtCompound nbt) {
-		if (nbt.contains("Level", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("Level");
-			if (nbtCompound.contains("blending_data", NbtElement.COMPOUND_TYPE) || nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-				nbt = nbtCompound;
-			}
-		}
-
-		if (nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)) {
-			NbtCompound nbtCompound = nbt.getCompound("blending_data");
-			return nbtCompound.contains("old_noise", NbtElement.NUMBER_TYPE) ? nbtCompound.getBoolean("old_noise") : true;
-		} else {
-			return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") < 2832 : true;
-		}
+		return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) && nbt.getInt("DataVersion") >= 3088
+			? nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)
+			: true;
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {

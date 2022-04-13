@@ -21,6 +21,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -67,12 +68,12 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void initEquipment(LocalDifficulty difficulty) {
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
 		this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 	}
 
 	@Override
-	protected void updateEnchantments(LocalDifficulty difficulty) {
+	protected void updateEnchantments(AbstractRandom random, LocalDifficulty localDifficulty) {
 	}
 
 	@Nullable

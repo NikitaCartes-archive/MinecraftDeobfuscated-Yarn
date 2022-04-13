@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.SkullBlockEntityModel;
@@ -14,6 +13,7 @@ import net.minecraft.client.render.block.entity.SkullBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
@@ -35,17 +35,21 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	private final float scaleY;
 	private final float scaleZ;
 	private final Map<SkullBlock.SkullType, SkullBlockEntityModel> headModels;
+	private final HeldItemRenderer heldItemRenderer;
 
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader) {
-		this(context, loader, 1.0F, 1.0F, 1.0F);
+	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader, HeldItemRenderer heldItemRenderer) {
+		this(context, loader, 1.0F, 1.0F, 1.0F, heldItemRenderer);
 	}
 
-	public HeadFeatureRenderer(FeatureRendererContext<T, M> context, EntityModelLoader loader, float scaleX, float scaleY, float scaleZ) {
+	public HeadFeatureRenderer(
+		FeatureRendererContext<T, M> context, EntityModelLoader loader, float scaleX, float scaleY, float scaleZ, HeldItemRenderer heldItemRenderer
+	) {
 		super(context);
 		this.scaleX = scaleX;
 		this.scaleY = scaleY;
 		this.scaleZ = scaleZ;
 		this.headModels = SkullBlockEntityRenderer.getModels(loader);
+		this.heldItemRenderer = heldItemRenderer;
 	}
 
 	public void render(
@@ -88,9 +92,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				translate(matrixStack, bl);
-				MinecraftClient.getInstance()
-					.getHeldItemRenderer()
-					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
+				this.heldItemRenderer.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

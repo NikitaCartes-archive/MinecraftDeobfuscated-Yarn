@@ -1,10 +1,12 @@
 package net.minecraft.world.gen.carver;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
 import net.minecraft.util.math.floatprovider.TrapezoidFloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.heightprovider.UniformHeightProvider;
@@ -20,6 +22,7 @@ public class ConfiguredCarvers {
 					UniformFloatProvider.create(0.1F, 0.9F),
 					YOffset.aboveBottom(8),
 					CarverDebugConfig.create(false, Blocks.CRIMSON_BUTTON.getDefaultState()),
+					Registry.BLOCK.getOrCreateEntryList(BlockTags.OVERWORLD_CARVER_REPLACEABLES),
 					UniformFloatProvider.create(0.7F, 1.4F),
 					UniformFloatProvider.create(0.8F, 1.3F),
 					UniformFloatProvider.create(-1.0F, -0.4F)
@@ -36,6 +39,7 @@ public class ConfiguredCarvers {
 					UniformFloatProvider.create(0.1F, 0.9F),
 					YOffset.aboveBottom(8),
 					CarverDebugConfig.create(false, Blocks.OAK_BUTTON.getDefaultState()),
+					Registry.BLOCK.getOrCreateEntryList(BlockTags.OVERWORLD_CARVER_REPLACEABLES),
 					UniformFloatProvider.create(0.7F, 1.4F),
 					UniformFloatProvider.create(0.8F, 1.3F),
 					UniformFloatProvider.create(-1.0F, -0.4F)
@@ -52,6 +56,7 @@ public class ConfiguredCarvers {
 					ConstantFloatProvider.create(3.0F),
 					YOffset.aboveBottom(8),
 					CarverDebugConfig.create(false, Blocks.WARPED_BUTTON.getDefaultState()),
+					Registry.BLOCK.getOrCreateEntryList(BlockTags.OVERWORLD_CARVER_REPLACEABLES),
 					UniformFloatProvider.create(-0.125F, 0.125F),
 					new RavineCarverConfig.Shape(
 						UniformFloatProvider.create(0.75F, 1.0F), TrapezoidFloatProvider.create(0.0F, 6.0F, 2.0F), 3, UniformFloatProvider.create(0.75F, 1.0F), 1.0F, 0.0F
@@ -68,7 +73,7 @@ public class ConfiguredCarvers {
 					UniformHeightProvider.create(YOffset.fixed(0), YOffset.belowTop(1)),
 					ConstantFloatProvider.create(0.5F),
 					YOffset.aboveBottom(10),
-					false,
+					Registry.BLOCK.getOrCreateEntryList(BlockTags.NETHER_CARVER_REPLACEABLES),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(1.0F),
 					ConstantFloatProvider.create(-0.7F)

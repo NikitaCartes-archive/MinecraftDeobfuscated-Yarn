@@ -671,8 +671,8 @@ public abstract class MobEntity extends LivingEntity {
 	public boolean prefersNewDamageableItem(ItemStack newStack, ItemStack oldStack) {
 		if (newStack.getDamage() >= oldStack.getDamage() && (!newStack.hasNbt() || oldStack.hasNbt())) {
 			return newStack.hasNbt() && oldStack.hasNbt()
-				? newStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
-					&& !oldStack.getNbt().getKeys().stream().anyMatch(string -> !string.equals("Damage"))
+				? newStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage"))
+					&& !oldStack.getNbt().getKeys().stream().anyMatch(key -> !key.equals("Damage"))
 				: false;
 		} else {
 			return true;
@@ -948,19 +948,19 @@ public abstract class MobEntity extends LivingEntity {
 		};
 	}
 
-	protected void initEquipment(LocalDifficulty difficulty) {
-		if (this.random.nextFloat() < 0.15F * difficulty.getClampedLocalDifficulty()) {
-			int i = this.random.nextInt(2);
+	protected void initEquipment(AbstractRandom random, LocalDifficulty localDifficulty) {
+		if (random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
+			int i = random.nextInt(2);
 			float f = this.world.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
-			if (this.random.nextFloat() < 0.095F) {
+			if (random.nextFloat() < 0.095F) {
 				i++;
 			}
 
-			if (this.random.nextFloat() < 0.095F) {
+			if (random.nextFloat() < 0.095F) {
 				i++;
 			}
 
-			if (this.random.nextFloat() < 0.095F) {
+			if (random.nextFloat() < 0.095F) {
 				i++;
 			}
 
@@ -969,7 +969,7 @@ public abstract class MobEntity extends LivingEntity {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
 					ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-					if (!bl && this.random.nextFloat() < f) {
+					if (!bl && random.nextFloat() < f) {
 						break;
 					}
 
@@ -1041,29 +1041,27 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	protected void updateEnchantments(LocalDifficulty difficulty) {
-		float f = difficulty.getClampedLocalDifficulty();
-		this.enchantMainHandItem(f);
+	protected void updateEnchantments(AbstractRandom random, LocalDifficulty localDifficulty) {
+		float f = localDifficulty.getClampedLocalDifficulty();
+		this.enchantMainHandItem(random, f);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
-				this.enchantEquipment(f, equipmentSlot);
+				this.enchantEquipment(random, f, equipmentSlot);
 			}
 		}
 	}
 
-	protected void enchantMainHandItem(float power) {
-		if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25F * power) {
-			this.equipStack(
-				EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + power * (float)this.random.nextInt(18)), false)
-			);
+	protected void enchantMainHandItem(AbstractRandom random, float power) {
+		if (!this.getMainHandStack().isEmpty() && random.nextFloat() < 0.25F * power) {
+			this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(random, this.getMainHandStack(), (int)(5.0F + power * (float)random.nextInt(18)), false));
 		}
 	}
 
-	protected void enchantEquipment(float power, EquipmentSlot slot) {
+	protected void enchantEquipment(AbstractRandom random, float power, EquipmentSlot slot) {
 		ItemStack itemStack = this.getEquippedStack(slot);
-		if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * power) {
-			this.equipStack(slot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + power * (float)this.random.nextInt(18)), false));
+		if (!itemStack.isEmpty() && random.nextFloat() < 0.5F * power) {
+			this.equipStack(slot, EnchantmentHelper.enchant(random, itemStack, (int)(5.0F + power * (float)random.nextInt(18)), false));
 		}
 	}
 
@@ -1071,9 +1069,12 @@ public abstract class MobEntity extends LivingEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
+		AbstractRandom abstractRandom = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
-			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
-		if (this.random.nextFloat() < 0.05F) {
+			.addPersistentModifier(
+				new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE)
+			);
+		if (abstractRandom.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);
 		} else {
 			this.setLeftHanded(false);

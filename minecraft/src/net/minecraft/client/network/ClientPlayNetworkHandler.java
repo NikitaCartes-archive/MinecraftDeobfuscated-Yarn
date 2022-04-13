@@ -7,12 +7,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,8 +96,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -230,7 +226,6 @@ import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -298,7 +293,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private int simulationDistance = 3;
-	private final AbstractRandom random = AbstractRandom.createAtomic();
+	private final AbstractRandom random = AbstractRandom.createBlocking();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final UUID sessionId = UUID.randomUUID();
@@ -975,13 +970,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onOpenHorseScreen(OpenHorseScreenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Entity entity = this.world.getEntityById(packet.getHorseId());
-		if (entity instanceof HorseBaseEntity) {
+		if (entity instanceof AbstractHorseEntity) {
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			HorseBaseEntity horseBaseEntity = (HorseBaseEntity)entity;
+			AbstractHorseEntity abstractHorseEntity = (AbstractHorseEntity)entity;
 			SimpleInventory simpleInventory = new SimpleInventory(packet.getSlotCount());
-			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, horseBaseEntity);
+			HorseScreenHandler horseScreenHandler = new HorseScreenHandler(packet.getSyncId(), clientPlayerEntity.getInventory(), simpleInventory, abstractHorseEntity);
 			clientPlayerEntity.currentScreenHandler = horseScreenHandler;
-			this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), horseBaseEntity));
+			this.client.setScreen(new HorseScreen(horseScreenHandler, clientPlayerEntity.getInventory(), abstractHorseEntity));
 		}
 	}
 
@@ -1609,79 +1604,64 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onResourcePackSend(ResourcePackSendS2CPacket packet) {
-		String string = packet.getURL();
-		String string2 = packet.getSHA1();
-		boolean bl = packet.isRequired();
-		if (this.validateResourcePackUrl(string)) {
-			if (string.startsWith("level://")) {
-				try {
-					String string3 = URLDecoder.decode(string.substring("level://".length()), StandardCharsets.UTF_8.toString());
-					File file = new File(this.client.runDirectory, "saves");
-					File file2 = new File(file, string3);
-					if (file2.isFile()) {
-						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-						CompletableFuture<?> completableFuture = this.client.getResourcePackProvider().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
-						this.feedbackAfterDownload(completableFuture);
-						return;
-					}
-				} catch (UnsupportedEncodingException var9) {
+		URL uRL = resolveUrl(packet.getURL());
+		if (uRL == null) {
+			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
+		} else {
+			String string = packet.getSHA1();
+			boolean bl = packet.isRequired();
+			ServerInfo serverInfo = this.client.getCurrentServerEntry();
+			if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
+				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
+				this.feedbackAfterDownload(this.client.getResourcePackProvider().download(uRL, string, true));
+			} else if (serverInfo != null
+				&& serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT
+				&& (!bl || serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
+				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
+				if (bl) {
+					this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
 				}
-
-				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
 			} else {
-				ServerInfo serverInfo = this.client.getCurrentServerEntry();
-				if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
-					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-					this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
-				} else if (serverInfo != null
-					&& serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.PROMPT
-					&& (!bl || serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
-					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
-					if (bl) {
-						this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
-					}
-				} else {
-					this.client
-						.execute(
-							() -> this.client
-									.setScreen(
-										new ConfirmScreen(
-											enabled -> {
-												this.client.setScreen(null);
-												ServerInfo serverInfox = this.client.getCurrentServerEntry();
-												if (enabled) {
-													if (serverInfox != null) {
-														serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
-													}
-
-													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-													this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2, true));
-												} else {
-													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
-													if (bl) {
-														this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
-													} else if (serverInfox != null) {
-														serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
-													}
-												}
-
+				this.client
+					.execute(
+						() -> this.client
+								.setScreen(
+									new ConfirmScreen(
+										enabled -> {
+											this.client.setScreen(null);
+											ServerInfo serverInfox = this.client.getCurrentServerEntry();
+											if (enabled) {
 												if (serverInfox != null) {
-													ServerList.updateServerListEntry(serverInfox);
+													serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
 												}
-											},
-											bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"),
-											getServerResourcePackPrompt(
-												(Text)(bl
-													? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD})
-													: new TranslatableText("multiplayer.texturePrompt.line2")),
-												packet.getPrompt()
-											),
-											bl ? ScreenTexts.PROCEED : ScreenTexts.YES,
-											(Text)(bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)
-										)
+
+												this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
+												this.feedbackAfterDownload(this.client.getResourcePackProvider().download(uRL, string, true));
+											} else {
+												this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
+												if (bl) {
+													this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
+												} else if (serverInfox != null) {
+													serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
+												}
+											}
+
+											if (serverInfox != null) {
+												ServerList.updateServerListEntry(serverInfox);
+											}
+										},
+										bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"),
+										getServerResourcePackPrompt(
+											(Text)(bl
+												? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(new Formatting[]{Formatting.YELLOW, Formatting.BOLD})
+												: new TranslatableText("multiplayer.texturePrompt.line2")),
+											packet.getPrompt()
+										),
+										bl ? ScreenTexts.PROCEED : ScreenTexts.YES,
+										(Text)(bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)
 									)
-						);
-				}
+								)
+					);
 			}
 		}
 	}
@@ -1690,21 +1670,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return (Text)(customPrompt == null ? defaultPrompt : new TranslatableText("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt));
 	}
 
-	private boolean validateResourcePackUrl(String url) {
+	@Nullable
+	private static URL resolveUrl(String url) {
 		try {
-			URI uRI = new URI(url);
-			String string = uRI.getScheme();
-			boolean bl = "level".equals(string);
-			if (!"http".equals(string) && !"https".equals(string) && !bl) {
-				throw new URISyntaxException(url, "Wrong protocol");
-			} else if (!bl || !url.contains("..") && url.endsWith("/resources.zip")) {
-				return true;
-			} else {
-				throw new URISyntaxException(url, "Invalid levelstorage resourcepack path");
-			}
-		} catch (URISyntaxException var5) {
-			this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
-			return false;
+			URL uRL = new URL(url);
+			String string = uRL.getProtocol();
+			return !"http".equals(string) && !"https".equals(string) ? null : uRL;
+		} catch (MalformedURLException var3) {
+			return null;
 		}
 	}
 

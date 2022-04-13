@@ -1,53 +1,26 @@
 package net.minecraft.client.tutorial;
 
-import com.google.common.collect.Sets;
-import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 6000;
-	private static final Set<Block> TREE_BLOCKS = Sets.<Block>newHashSet(
-		Blocks.OAK_LOG,
-		Blocks.SPRUCE_LOG,
-		Blocks.BIRCH_LOG,
-		Blocks.JUNGLE_LOG,
-		Blocks.ACACIA_LOG,
-		Blocks.DARK_OAK_LOG,
-		Blocks.WARPED_STEM,
-		Blocks.CRIMSON_STEM,
-		Blocks.OAK_WOOD,
-		Blocks.SPRUCE_WOOD,
-		Blocks.BIRCH_WOOD,
-		Blocks.JUNGLE_WOOD,
-		Blocks.ACACIA_WOOD,
-		Blocks.DARK_OAK_WOOD,
-		Blocks.WARPED_HYPHAE,
-		Blocks.CRIMSON_HYPHAE,
-		Blocks.OAK_LEAVES,
-		Blocks.SPRUCE_LEAVES,
-		Blocks.BIRCH_LEAVES,
-		Blocks.JUNGLE_LEAVES,
-		Blocks.ACACIA_LEAVES,
-		Blocks.DARK_OAK_LEAVES,
-		Blocks.NETHER_WART_BLOCK,
-		Blocks.WARPED_WART_BLOCK,
-		Blocks.AZALEA_LEAVES,
-		Blocks.FLOWERING_AZALEA_LEAVES
-	);
 	private static final Text TITLE = new TranslatableText("tutorial.find_tree.title");
 	private static final Text DESCRIPTION = new TranslatableText("tutorial.find_tree.description");
 	private final TutorialManager manager;
@@ -66,18 +39,9 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 		} else {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
-				if (clientPlayerEntity != null) {
-					for (Block block : TREE_BLOCKS) {
-						if (clientPlayerEntity.getInventory().contains(new ItemStack(block))) {
-							this.manager.setStep(TutorialStep.CRAFT_PLANKS);
-							return;
-						}
-					}
-
-					if (hasBrokenTreeBlocks(clientPlayerEntity)) {
-						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
-						return;
-					}
+				if (clientPlayerEntity != null && (hasItem(clientPlayerEntity) || hasBrokenTreeBlocks(clientPlayerEntity))) {
+					this.manager.setStep(TutorialStep.CRAFT_PLANKS);
+					return;
 				}
 			}
 
@@ -100,7 +64,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	public void onTarget(ClientWorld world, HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockState blockState = world.getBlockState(((BlockHitResult)hitResult).getBlockPos());
-			if (TREE_BLOCKS.contains(blockState.getBlock())) {
+			if (blockState.isIn(BlockTags.COMPLETES_FIND_TREE_TUTORIAL)) {
 				this.manager.setStep(TutorialStep.PUNCH_TREE);
 			}
 		}
@@ -108,16 +72,18 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 
 	@Override
 	public void onSlotUpdate(ItemStack stack) {
-		for (Block block : TREE_BLOCKS) {
-			if (stack.isOf(block.asItem())) {
-				this.manager.setStep(TutorialStep.CRAFT_PLANKS);
-				return;
-			}
+		if (stack.isIn(ItemTags.COMPLETES_FIND_TREE_TUTORIAL)) {
+			this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 		}
 	}
 
+	private static boolean hasItem(ClientPlayerEntity player) {
+		return player.getInventory().containsAny(stack -> stack.isIn(ItemTags.COMPLETES_FIND_TREE_TUTORIAL));
+	}
+
 	public static boolean hasBrokenTreeBlocks(ClientPlayerEntity player) {
-		for (Block block : TREE_BLOCKS) {
+		for (RegistryEntry<Block> registryEntry : Registry.BLOCK.iterateEntries(BlockTags.COMPLETES_FIND_TREE_TUTORIAL)) {
+			Block block = registryEntry.value();
 			if (player.getStatHandler().getStat(Stats.MINED.getOrCreateStat(block)) > 0) {
 				return true;
 			}

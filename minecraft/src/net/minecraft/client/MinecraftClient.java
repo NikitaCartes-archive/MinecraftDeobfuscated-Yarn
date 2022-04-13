@@ -117,7 +117,6 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
-import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
@@ -316,7 +315,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public final WorldRenderer worldRenderer;
 	private final EntityRenderDispatcher entityRenderDispatcher;
 	private final ItemRenderer itemRenderer;
-	private final HeldItemRenderer heldItemRenderer;
 	public final ParticleManager particleManager;
 	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
@@ -571,22 +569,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.bakedModelManager);
 		this.entityModelLoader = new EntityModelLoader();
 		this.resourceManager.registerReloader(this.entityModelLoader);
-		this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(this.textRenderer, this.entityModelLoader, this::getBlockRenderManager);
+		this.blockEntityRenderDispatcher = new BlockEntityRenderDispatcher(
+			this.textRenderer, this.entityModelLoader, this::getBlockRenderManager, this::getItemRenderer, this::getEntityRenderDispatcher
+		);
 		this.resourceManager.registerReloader(this.blockEntityRenderDispatcher);
 		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
 		this.resourceManager.registerReloader(builtinModelItemRenderer);
 		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
-		this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.textRenderer, this.options, this.entityModelLoader);
-		this.resourceManager.registerReloader(this.entityRenderDispatcher);
-		this.heldItemRenderer = new HeldItemRenderer(this);
 		this.resourceManager.registerReloader(this.itemRenderer);
 		this.bufferBuilders = new BufferBuilderStorage();
-		this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
-		this.resourceManager.registerReloader(this.gameRenderer);
 		this.socialInteractionsManager = new SocialInteractionsManager(this, this.userApiService);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), builtinModelItemRenderer, this.blockColors);
 		this.resourceManager.registerReloader(this.blockRenderManager);
-		this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
+		this.entityRenderDispatcher = new EntityRenderDispatcher(
+			this, this.textureManager, this.itemRenderer, this.blockRenderManager, this.textRenderer, this.options, this.entityModelLoader
+		);
+		this.resourceManager.registerReloader(this.entityRenderDispatcher);
+		this.gameRenderer = new GameRenderer(this, this.entityRenderDispatcher.getHeldItemRenderer(), this.resourceManager, this.bufferBuilders);
+		this.resourceManager.registerReloader(this.gameRenderer);
+		this.worldRenderer = new WorldRenderer(this, this.entityRenderDispatcher, this.blockEntityRenderDispatcher, this.bufferBuilders);
 		this.resourceManager.registerReloader(this.worldRenderer);
 		this.initializeSearchableContainers();
 		this.resourceManager.registerReloader(this.searchManager);
@@ -599,7 +600,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.videoWarningManager = new VideoWarningManager();
 		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
-		this.inGameHud = new InGameHud(this);
+		this.inGameHud = new InGameHud(this, this.itemRenderer);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
 		if (this.framebuffer.textureWidth != this.window.getFramebufferWidth() || this.framebuffer.textureHeight != this.window.getFramebufferHeight()) {
@@ -2503,10 +2504,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public ItemRenderer getItemRenderer() {
 		return this.itemRenderer;
-	}
-
-	public HeldItemRenderer getHeldItemRenderer() {
-		return this.heldItemRenderer;
 	}
 
 	public <T> SearchableContainer<T> getSearchableContainer(SearchManager.Key<T> key) {

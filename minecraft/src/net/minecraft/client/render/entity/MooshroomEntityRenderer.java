@@ -20,7 +20,7 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 
 	public MooshroomEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new CowEntityModel<>(context.getPart(EntityModelLayers.MOOSHROOM)), 0.7F);
-		this.addFeature(new MooshroomMushroomFeatureRenderer<>(this));
+		this.addFeature(new MooshroomMushroomFeatureRenderer<>(this, context.getBlockRenderManager()));
 	}
 
 	public Identifier getTexture(MooshroomEntity mooshroomEntity) {

@@ -233,10 +233,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 	private final float[] field_20794 = new float[1024];
 	private final float[] field_20795 = new float[1024];
 
-	public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilders) {
+	public WorldRenderer(
+		MinecraftClient client,
+		EntityRenderDispatcher entityRenderDispatcher,
+		BlockEntityRenderDispatcher blockEntityRenderDispatcher,
+		BufferBuilderStorage bufferBuilders
+	) {
 		this.client = client;
-		this.entityRenderDispatcher = client.getEntityRenderDispatcher();
-		this.blockEntityRenderDispatcher = client.getBlockEntityRenderDispatcher();
+		this.entityRenderDispatcher = entityRenderDispatcher;
+		this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
 		this.bufferBuilders = bufferBuilders;
 
 		for (int i = 0; i < 32; i++) {

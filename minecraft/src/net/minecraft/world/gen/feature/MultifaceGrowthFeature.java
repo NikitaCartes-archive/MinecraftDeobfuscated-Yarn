@@ -2,11 +2,9 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
-import java.util.stream.Collectors;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -27,7 +25,7 @@ public class MultifaceGrowthFeature extends Feature<MultifaceGrowthFeatureConfig
 		if (!isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
 			return false;
 		} else {
-			List<Direction> list = shuffleDirections(multifaceGrowthFeatureConfig, abstractRandom);
+			List<Direction> list = multifaceGrowthFeatureConfig.shuffleDirections(abstractRandom);
 			if (generate(structureWorldAccess, blockPos, structureWorldAccess.getBlockState(blockPos), multifaceGrowthFeatureConfig, abstractRandom, list)) {
 				return true;
 			} else {
@@ -35,7 +33,7 @@ public class MultifaceGrowthFeature extends Feature<MultifaceGrowthFeatureConfig
 
 				for (Direction direction : list) {
 					mutable.set(blockPos);
-					List<Direction> list2 = shuffleDirections(multifaceGrowthFeatureConfig, abstractRandom, direction.getOpposite());
+					List<Direction> list2 = multifaceGrowthFeatureConfig.shuffleDirections(abstractRandom, direction.getOpposite());
 
 					for (int i = 0; i < multifaceGrowthFeatureConfig.searchRange; i++) {
 						mutable.set(blockPos, direction);
@@ -56,7 +54,7 @@ public class MultifaceGrowthFeature extends Feature<MultifaceGrowthFeatureConfig
 	}
 
 	public static boolean generate(
-		StructureWorldAccess world, BlockPos pos, BlockState state, MultifaceGrowthFeatureConfig config, AbstractRandom abstractRandom, List<Direction> directions
+		StructureWorldAccess world, BlockPos pos, BlockState state, MultifaceGrowthFeatureConfig config, AbstractRandom random, List<Direction> directions
 	) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
@@ -70,8 +68,8 @@ public class MultifaceGrowthFeature extends Feature<MultifaceGrowthFeatureConfig
 
 				world.setBlockState(pos, blockState2, Block.NOTIFY_ALL);
 				world.getChunk(pos).markBlockForPostProcessing(pos);
-				if (abstractRandom.nextFloat() < config.spreadChance) {
-					config.lichen.getGrower().grow(blockState2, world, pos, direction, abstractRandom, true);
+				if (random.nextFloat() < config.spreadChance) {
+					config.lichen.getGrower().grow(blockState2, world, pos, direction, random, true);
 				}
 
 				return true;
@@ -79,14 +77,6 @@ public class MultifaceGrowthFeature extends Feature<MultifaceGrowthFeatureConfig
 		}
 
 		return false;
-	}
-
-	public static List<Direction> shuffleDirections(MultifaceGrowthFeatureConfig config, AbstractRandom abstractRandom) {
-		return Util.copyShuffled(config.directions, abstractRandom);
-	}
-
-	public static List<Direction> shuffleDirections(MultifaceGrowthFeatureConfig config, AbstractRandom abstractRandom, Direction excluded) {
-		return Util.copyShuffled((List<Direction>)config.directions.stream().filter(direction -> direction != excluded).collect(Collectors.toList()), abstractRandom);
 	}
 
 	private static boolean isAirOrWater(BlockState state) {

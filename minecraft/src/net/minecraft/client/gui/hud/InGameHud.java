@@ -138,9 +138,9 @@ public class InGameHud extends DrawableHelper {
 	private final Map<MessageType, List<ClientChatListener>> listeners = Maps.<MessageType, List<ClientChatListener>>newHashMap();
 	private float spyglassScale;
 
-	public InGameHud(MinecraftClient client) {
+	public InGameHud(MinecraftClient client, ItemRenderer itemRenderer) {
 		this.client = client;
-		this.itemRenderer = client.getItemRenderer();
+		this.itemRenderer = itemRenderer;
 		this.debugHud = new DebugHud(client);
 		this.spectatorHud = new SpectatorHud(client);
 		this.chatHud = new ChatHud(client);

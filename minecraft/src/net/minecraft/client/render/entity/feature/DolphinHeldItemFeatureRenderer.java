@@ -2,9 +2,9 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.DolphinEntityModel;
+import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.DolphinEntity;
@@ -14,8 +14,13 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-	public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext) {
+	private final HeldItemRenderer field_38898;
+
+	public DolphinHeldItemFeatureRenderer(
+		FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext, HeldItemRenderer heldItemRenderer
+	) {
 		super(featureRendererContext);
+		this.field_38898 = heldItemRenderer;
 	}
 
 	public void render(
@@ -42,9 +47,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 		}
 
 		ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-		MinecraftClient.getInstance()
-			.getHeldItemRenderer()
-			.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+		this.field_38898.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

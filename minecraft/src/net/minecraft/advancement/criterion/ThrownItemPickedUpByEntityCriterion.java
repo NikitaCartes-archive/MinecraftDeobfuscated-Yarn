@@ -1,6 +1,7 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -12,11 +13,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<ThrownItemPickedUpByEntityCriterion.Conditions> {
-	static final Identifier ID = new Identifier("thrown_item_picked_up_by_entity");
+	private final Identifier id;
+
+	public ThrownItemPickedUpByEntityCriterion(Identifier id) {
+		this.id = id;
+	}
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return this.id;
 	}
 
 	protected ThrownItemPickedUpByEntityCriterion.Conditions conditionsFromJson(
@@ -24,10 +29,10 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new ThrownItemPickedUpByEntityCriterion.Conditions(extended, itemPredicate, extended2);
+		return new ThrownItemPickedUpByEntityCriterion.Conditions(this.id, extended, itemPredicate, extended2);
 	}
 
-	public void trigger(ServerPlayerEntity player, ItemStack stack, Entity entity) {
+	public void trigger(ServerPlayerEntity player, ItemStack stack, @Nullable Entity entity) {
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, entity);
 		this.trigger(player, conditions -> conditions.test(player, stack, lootContext));
 	}
@@ -36,16 +41,22 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		private final ItemPredicate item;
 		private final EntityPredicate.Extended entity;
 
-		public Conditions(EntityPredicate.Extended player, ItemPredicate item, EntityPredicate.Extended entity) {
-			super(ThrownItemPickedUpByEntityCriterion.ID, player);
+		public Conditions(Identifier id, EntityPredicate.Extended player, ItemPredicate item, EntityPredicate.Extended entity) {
+			super(id, player);
 			this.item = item;
 			this.entity = entity;
 		}
 
-		public static ThrownItemPickedUpByEntityCriterion.Conditions create(
-			EntityPredicate.Extended player, ItemPredicate.Builder item, EntityPredicate.Extended entity
+		public static ThrownItemPickedUpByEntityCriterion.Conditions createThrownItemPickedUpByEntity(
+			EntityPredicate.Extended player, ItemPredicate item, EntityPredicate.Extended entity
 		) {
-			return new ThrownItemPickedUpByEntityCriterion.Conditions(player, item.build(), entity);
+			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.getId(), player, item, entity);
+		}
+
+		public static ThrownItemPickedUpByEntityCriterion.Conditions createThrownItemPickedUpByPlayer(
+			EntityPredicate.Extended player, ItemPredicate item, EntityPredicate.Extended entity
+		) {
+			return new ThrownItemPickedUpByEntityCriterion.Conditions(Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.getId(), player, item, entity);
 		}
 
 		public boolean test(ServerPlayerEntity player, ItemStack stack, LootContext entityContext) {

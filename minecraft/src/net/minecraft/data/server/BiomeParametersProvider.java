@@ -10,9 +10,9 @@ import com.mojang.serialization.JsonOps;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
-import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
@@ -31,7 +31,7 @@ public class BiomeParametersProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache cache) {
+	public void run(DataWriter cache) {
 		Path path = this.dataGenerator.getOutput();
 		DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
 		DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
@@ -42,12 +42,12 @@ public class BiomeParametersProvider implements DataProvider {
 		});
 	}
 
-	private static <E> void method_42030(Path path, DataCache dataCache, DynamicOps<JsonElement> dynamicOps, Encoder<E> encoder, E object) {
+	private static <E> void method_42030(Path path, DataWriter dataWriter, DynamicOps<JsonElement> dynamicOps, Encoder<E> encoder, E object) {
 		try {
 			Optional<JsonElement> optional = encoder.encodeStart(dynamicOps, object)
 				.resultOrPartial(string -> LOGGER.error("Couldn't serialize element {}: {}", path, string));
 			if (optional.isPresent()) {
-				DataProvider.writeToPath(GSON, dataCache, (JsonElement)optional.get(), path);
+				DataProvider.writeToPath(GSON, dataWriter, (JsonElement)optional.get(), path);
 			}
 		} catch (IOException var6) {
 			LOGGER.error("Couldn't save element {}", path, var6);

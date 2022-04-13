@@ -3,9 +3,9 @@ package net.minecraft.client.render.entity.feature;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.model.EndermanEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -13,8 +13,13 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-	public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext) {
+	private final BlockRenderManager field_38895;
+
+	public EndermanBlockFeatureRenderer(
+		FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext, BlockRenderManager blockRenderManager
+	) {
 		super(featureRendererContext);
+		this.field_38895 = blockRenderManager;
 	}
 
 	public void render(
@@ -39,7 +44,7 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 			float m = 0.5F;
 			matrixStack.scale(-0.5F, -0.5F, 0.5F);
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-			MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+			this.field_38895.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
 		}
 	}

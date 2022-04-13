@@ -57,7 +57,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	private static final ImmutableMap<EntityPose, ImmutableList<Integer>> DISMOUNT_FREE_Y_SPACES_NEEDED = ImmutableMap.of(
 		EntityPose.STANDING, ImmutableList.of(0, 1, -1), EntityPose.CROUCHING, ImmutableList.of(0, 1, -1), EntityPose.SWIMMING, ImmutableList.of(0, 1)
 	);
-	protected static final float field_30694 = 0.95F;
+	protected static final float VELOCITY_SLOWDOWN_MULTIPLIER = 0.95F;
 	private boolean yawFlipped;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), map -> {
 		Vec3i vec3i = Direction.WEST.getVector();

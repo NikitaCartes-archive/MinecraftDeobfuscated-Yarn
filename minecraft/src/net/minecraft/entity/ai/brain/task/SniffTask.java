@@ -10,7 +10,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 
 public class SniffTask<E extends WardenEntity> extends Task<E> {
-	private static final double field_38708 = 6.0;
+	private static final double HORIZONTAL_RADIUS = 6.0;
+	private static final double VERTICAL_RADIUS = 20.0;
 
 	public SniffTask(int i) {
 		super(
@@ -45,7 +46,7 @@ public class SniffTask<E extends WardenEntity> extends Task<E> {
 
 		wardenEntity.getBrain().forget(MemoryModuleType.IS_SNIFFING);
 		wardenEntity.getBrain().getOptionalMemory(MemoryModuleType.NEAREST_ATTACKABLE).filter(wardenEntity::isValidTarget).ifPresent(livingEntity -> {
-			if (wardenEntity.isInRange(livingEntity, 6.0)) {
+			if (wardenEntity.isInRange(livingEntity, 6.0, 20.0)) {
 				wardenEntity.increaseAngerAt(livingEntity);
 			}
 

@@ -28,9 +28,9 @@ public class MinecraftVersion implements GameVersion {
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "22w14a";
+		this.name = "22w15a";
 		this.stable = false;
-		this.saveVersion = new SaveVersion(3088, "main");
+		this.saveVersion = new SaveVersion(3089, "main");
 		this.protocolVersion = SharedConstants.getProtocolVersion();
 		this.resourcePackVersion = 9;
 		this.dataPackVersion = 10;

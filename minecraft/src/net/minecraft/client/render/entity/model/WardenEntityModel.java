@@ -120,6 +120,7 @@ public class WardenEntityModel<T extends WardenEntity> extends SinglePartEntityM
 		this.setHeadAndBodyAngles(h);
 		this.setTendrilPitches(wardenEntity, h, k);
 		this.runAnimation(wardenEntity.attackingAnimationState, WardenAnimations.ATTACKING, l);
+		this.runAnimation(wardenEntity.chargingSonicBoomAnimationState, WardenAnimations.CHARGING_SONIC_BOOM, l);
 		this.runAnimation(wardenEntity.diggingAnimationState, WardenAnimations.DIGGING, l);
 		this.runAnimation(wardenEntity.emergingAnimationState, WardenAnimations.EMERGING, l);
 		this.runAnimation(wardenEntity.roaringAnimationState, WardenAnimations.ROARING, l);

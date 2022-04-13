@@ -11,11 +11,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.DynamicSerializableUuid;
 
 @Environment(EnvType.CLIENT)
 public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCommand {
@@ -30,7 +30,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 		if (map.containsKey(Type.SKIN)) {
 			this.skinId = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 		} else {
-			this.skinId = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
+			this.skinId = DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
 		}
 
 		this.name = new LiteralText(gameProfile.getName());

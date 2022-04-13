@@ -18,7 +18,7 @@ import net.minecraft.world.chunk.ChunkCache;
 
 public class WaterPathNodeMaker extends PathNodeMaker {
 	private final boolean canJumpOutOfWater;
-	private final Long2ObjectMap<PathNodeType> field_34767 = new Long2ObjectOpenHashMap<>();
+	private final Long2ObjectMap<PathNodeType> nodePosToType = new Long2ObjectOpenHashMap<>();
 
 	public WaterPathNodeMaker(boolean canJumpOutOfWater) {
 		this.canJumpOutOfWater = canJumpOutOfWater;
@@ -27,13 +27,13 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	@Override
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
 		super.init(cachedWorld, entity);
-		this.field_34767.clear();
+		this.nodePosToType.clear();
 	}
 
 	@Override
 	public void clear() {
 		super.clear();
-		this.field_34767.clear();
+		this.nodePosToType.clear();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		for (Direction direction : Direction.values()) {
 			PathNode pathNode = this.getNode(node.x + direction.getOffsetX(), node.y + direction.getOffsetY(), node.z + direction.getOffsetZ());
 			map.put(direction, pathNode);
-			if (this.method_38487(pathNode)) {
+			if (this.hasNotVisited(pathNode)) {
 				successors[i++] = pathNode;
 			}
 		}
@@ -76,19 +76,19 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		return i;
 	}
 
-	protected boolean method_38487(@Nullable PathNode pathNode) {
+	protected boolean hasNotVisited(@Nullable PathNode pathNode) {
 		return pathNode != null && !pathNode.visited;
 	}
 
 	protected boolean method_38488(@Nullable PathNode pathNode, @Nullable PathNode pathNode2, @Nullable PathNode pathNode3) {
-		return this.method_38487(pathNode) && pathNode2 != null && pathNode2.penalty >= 0.0F && pathNode3 != null && pathNode3.penalty >= 0.0F;
+		return this.hasNotVisited(pathNode) && pathNode2 != null && pathNode2.penalty >= 0.0F && pathNode3 != null && pathNode3.penalty >= 0.0F;
 	}
 
 	@Nullable
 	@Override
 	protected PathNode getNode(int x, int y, int z) {
 		PathNode pathNode = null;
-		PathNodeType pathNodeType = this.method_38489(x, y, z);
+		PathNodeType pathNodeType = this.addPathNodePos(x, y, z);
 		if (this.canJumpOutOfWater && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) {
 			float f = this.entity.getPathfindingPenalty(pathNodeType);
 			if (f >= 0.0F) {
@@ -104,9 +104,9 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		return pathNode;
 	}
 
-	protected PathNodeType method_38489(int i, int j, int k) {
-		return this.field_34767
-			.computeIfAbsent(BlockPos.asLong(i, j, k), (Long2ObjectFunction<? extends PathNodeType>)(l -> this.getDefaultNodeType(this.cachedWorld, i, j, k)));
+	protected PathNodeType addPathNodePos(int x, int y, int z) {
+		return this.nodePosToType
+			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(l -> this.getDefaultNodeType(this.cachedWorld, x, y, z)));
 	}
 
 	@Override
