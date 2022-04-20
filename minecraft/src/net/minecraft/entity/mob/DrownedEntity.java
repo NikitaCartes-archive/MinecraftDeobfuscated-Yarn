@@ -90,7 +90,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && world.getRandom().nextFloat() < 0.03F) {
 			this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
-			this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0F;
+			this.updateDropChances(EquipmentSlot.OFFHAND);
 		}
 
 		return entityData;

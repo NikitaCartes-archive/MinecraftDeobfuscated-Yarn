@@ -11,7 +11,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -62,7 +61,7 @@ public class DebugStickItem extends Item {
 			Collection<Property<?>> collection = stateManager.getProperties();
 			String string = Registry.BLOCK.getId(block).toString();
 			if (collection.isEmpty()) {
-				sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
+				sendMessage(player, Text.method_43469(this.getTranslationKey() + ".empty", string));
 				return false;
 			} else {
 				NbtCompound nbtCompound = stack.getOrCreateSubNbt("DebugProperty");
@@ -75,12 +74,12 @@ public class DebugStickItem extends Item {
 
 					BlockState blockState = cycle(state, property, player.shouldCancelInteraction());
 					world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
+					sendMessage(player, Text.method_43469(this.getTranslationKey() + ".update", property.getName(), getValueString(blockState, property)));
 				} else {
 					property = cycle(collection, property, player.shouldCancelInteraction());
 					String string3 = property.getName();
 					nbtCompound.putString(string, string3);
-					sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
+					sendMessage(player, Text.method_43469(this.getTranslationKey() + ".select", string3, getValueString(state, property)));
 				}
 
 				return true;

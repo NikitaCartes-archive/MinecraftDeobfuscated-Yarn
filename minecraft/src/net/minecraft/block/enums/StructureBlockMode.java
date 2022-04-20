@@ -1,7 +1,6 @@
 package net.minecraft.block.enums;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.StringIdentifiable;
 
 public enum StructureBlockMode implements StringIdentifiable {
@@ -15,7 +14,7 @@ public enum StructureBlockMode implements StringIdentifiable {
 
 	private StructureBlockMode(String name) {
 		this.name = name;
-		this.text = new TranslatableText("structure_block.mode_info." + name);
+		this.text = Text.method_43471("structure_block.mode_info." + name);
 	}
 
 	@Override

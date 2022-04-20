@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class WorldCreationTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(new TranslatableText("mco.create.world.wait"));
+		this.setTitle(Text.method_43471("mco.create.world.wait"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		try {

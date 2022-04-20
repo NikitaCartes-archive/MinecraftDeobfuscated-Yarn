@@ -36,9 +36,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -49,8 +47,8 @@ import org.slf4j.Logger;
 public class PackScreen extends Screen {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32395 = 200;
-	private static final Text DROP_INFO = new TranslatableText("pack.dropInfo").formatted(Formatting.GRAY);
-	static final Text FOLDER_INFO = new TranslatableText("pack.folderInfo");
+	private static final Text DROP_INFO = Text.method_43471("pack.dropInfo").formatted(Formatting.GRAY);
+	static final Text FOLDER_INFO = Text.method_43471("pack.folderInfo");
 	private static final int field_32396 = 20;
 	private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
 	private final ResourcePackOrganizer organizer;
@@ -98,7 +96,7 @@ public class PackScreen extends Screen {
 				this.height - 48,
 				150,
 				20,
-				new TranslatableText("pack.openFolder"),
+				Text.method_43471("pack.openFolder"),
 				button -> Util.getOperatingSystem().open(this.file),
 				new ButtonWidget.TooltipSupplier() {
 					@Override
@@ -113,10 +111,10 @@ public class PackScreen extends Screen {
 				}
 			)
 		);
-		this.availablePackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.available.title"));
+		this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.method_43471("pack.available.title"));
 		this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
 		this.addSelectableChild(this.availablePackList);
-		this.selectedPackList = new PackListWidget(this.client, 200, this.height, new TranslatableText("pack.selected.title"));
+		this.selectedPackList = new PackListWidget(this.client, 200, this.height, Text.method_43471("pack.selected.title"));
 		this.selectedPackList.setLeftPos(this.width / 2 + 4);
 		this.addSelectableChild(this.selectedPackList);
 		this.refresh();
@@ -218,7 +216,7 @@ public class PackScreen extends Screen {
 			}
 
 			this.client.setScreen(this);
-		}, new TranslatableText("pack.dropConfirm"), new LiteralText(string)));
+		}, Text.method_43471("pack.dropConfirm"), Text.method_43470(string)));
 	}
 
 	private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {

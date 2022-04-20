@@ -6,7 +6,6 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class DisconnectedScreen extends Screen {
@@ -36,7 +35,7 @@ public class DisconnectedScreen extends Screen {
 				Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30),
 				200,
 				20,
-				new TranslatableText("gui.toMenu"),
+				Text.method_43471("gui.toMenu"),
 				button -> this.client.setScreen(this.parent)
 			)
 		);

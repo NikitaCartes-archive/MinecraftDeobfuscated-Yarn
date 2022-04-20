@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.AbstractRandom;
 
@@ -20,7 +19,7 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 
 	public WeightedSoundSet(Identifier id, @Nullable String subtitle) {
 		this.id = id;
-		this.subtitle = subtitle == null ? null : new TranslatableText(subtitle);
+		this.subtitle = subtitle == null ? null : Text.method_43471(subtitle);
 	}
 
 	@Override

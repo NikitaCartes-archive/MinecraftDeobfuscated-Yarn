@@ -12,7 +12,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
@@ -33,7 +32,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 			this.skinId = DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
 		}
 
-		this.name = new LiteralText(gameProfile.getName());
+		this.name = Text.method_43470(gameProfile.getName());
 	}
 
 	@Override

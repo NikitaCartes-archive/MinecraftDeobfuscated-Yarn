@@ -8,7 +8,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -57,7 +56,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 
 	@Override
 	protected Text getContainerName() {
-		return new TranslatableText("container.dispenser");
+		return Text.method_43471("container.dispenser");
 	}
 
 	@Override

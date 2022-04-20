@@ -49,31 +49,6 @@ public class GlowParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class AllayDustFactory implements ParticleFactory<DefaultParticleType> {
-		private static final double field_38459 = 0.01;
-		private final SpriteProvider spriteProvider;
-
-		public AllayDustFactory(SpriteProvider spriteProvider) {
-			this.spriteProvider = spriteProvider;
-		}
-
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			GlowParticle glowParticle = new GlowParticle(clientWorld, d, e, f, 0.0, 0.0, 0.0, this.spriteProvider);
-			if (clientWorld.random.nextBoolean()) {
-				glowParticle.setColor(0.39F, 0.98F, 1.0F);
-			} else {
-				glowParticle.setColor(0.13F, 0.81F, 1.0F);
-			}
-
-			glowParticle.setVelocity(g * 0.01, h * 0.01, i * 0.01);
-			int j = 20;
-			int k = 40;
-			glowParticle.setMaxAge(clientWorld.random.nextBetweenExclusive(20, 40));
-			return glowParticle;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static class ElectricSparkFactory implements ParticleFactory<DefaultParticleType> {
 		private final double field_29570 = 0.25;
 		private final SpriteProvider spriteProvider;

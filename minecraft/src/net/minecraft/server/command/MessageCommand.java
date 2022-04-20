@@ -11,7 +11,6 @@ import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 
@@ -39,21 +38,18 @@ public class MessageCommand {
 		Consumer<Text> consumer;
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 			consumer = playerName -> serverPlayerEntity.sendSystemMessage(
-					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
-					serverPlayerEntity.getUuid()
+					Text.method_43469("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), serverPlayerEntity.getUuid()
 				);
 		} else {
 			consumer = playerName -> source.sendFeedback(
-					new TranslatableText("commands.message.display.outgoing", playerName, message).formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}), false
+					Text.method_43469("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), false
 				);
 		}
 
 		for(ServerPlayerEntity serverPlayerEntity2 : targets) {
 			consumer.accept(serverPlayerEntity2.getDisplayName());
 			serverPlayerEntity2.sendSystemMessage(
-				new TranslatableText("commands.message.display.incoming", source.getDisplayName(), message)
-					.formatted(new Formatting[]{Formatting.GRAY, Formatting.ITALIC}),
-				uUID
+				Text.method_43469("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID
 			);
 		}
 

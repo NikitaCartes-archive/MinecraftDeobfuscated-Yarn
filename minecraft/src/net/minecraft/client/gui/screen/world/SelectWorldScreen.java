@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.mojang.logging.LogUtils;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,7 +12,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -28,7 +29,7 @@ public class SelectWorldScreen extends Screen {
 	private WorldListWidget levelList;
 
 	public SelectWorldScreen(Screen parent) {
-		super(new TranslatableText("selectWorld.title"));
+		super(Text.method_43471("selectWorld.title"));
 		this.parent = parent;
 	}
 
@@ -45,9 +46,9 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, new TranslatableText("selectWorld.search"));
-		this.searchBox.setChangedListener(search -> this.levelList.filter(() -> search, false));
-		this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
+		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.method_43471("selectWorld.search"));
+		this.searchBox.setChangedListener(search -> this.levelList.filter(search));
+		this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.method_43450(), this.levelList);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.levelList);
 		this.selectButton = this.addDrawableChild(
@@ -56,13 +57,13 @@ public class SelectWorldScreen extends Screen {
 				this.height - 52,
 				150,
 				20,
-				new TranslatableText("selectWorld.select"),
+				Text.method_43471("selectWorld.select"),
 				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)
 			)
 		);
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)
+				this.width / 2 + 4, this.height - 52, 150, 20, Text.method_43471("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)
 			)
 		);
 		this.editButton = this.addDrawableChild(
@@ -71,7 +72,7 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				new TranslatableText("selectWorld.edit"),
+				Text.method_43471("selectWorld.edit"),
 				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)
 			)
 		);
@@ -81,7 +82,7 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				new TranslatableText("selectWorld.delete"),
+				Text.method_43471("selectWorld.delete"),
 				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)
 			)
 		);
@@ -91,7 +92,7 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				new TranslatableText("selectWorld.recreate"),
+				Text.method_43471("selectWorld.recreate"),
 				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)
 			)
 		);
@@ -141,7 +142,11 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	public void removed() {
 		if (this.levelList != null) {
-			this.levelList.children().forEach(WorldListWidget.Entry::close);
+			this.levelList.children().forEach(WorldListWidget.class_7414::close);
 		}
+	}
+
+	public Supplier<String> method_43450() {
+		return () -> this.searchBox.getText();
 	}
 }

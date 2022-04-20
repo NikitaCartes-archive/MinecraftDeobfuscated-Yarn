@@ -7,7 +7,7 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -18,35 +18,35 @@ public class DemoScreen extends Screen {
 	private MultilineText fullWrappedText = MultilineText.EMPTY;
 
 	public DemoScreen() {
-		super(new TranslatableText("demo.help.title"));
+		super(Text.method_43471("demo.help.title"));
 	}
 
 	@Override
 	protected void init() {
 		int i = -16;
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.buy"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20, Text.method_43471("demo.help.buy"), button -> {
 			button.active = false;
 			Util.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, new TranslatableText("demo.help.later"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20, Text.method_43471("demo.help.later"), button -> {
 			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
 		}));
 		GameOptions gameOptions = this.client.options;
 		this.movementText = MultilineText.create(
 			this.textRenderer,
-			new TranslatableText(
+			Text.method_43469(
 				"demo.help.movementShort",
 				gameOptions.forwardKey.getBoundKeyLocalizedText(),
 				gameOptions.leftKey.getBoundKeyLocalizedText(),
 				gameOptions.backKey.getBoundKeyLocalizedText(),
 				gameOptions.rightKey.getBoundKeyLocalizedText()
 			),
-			new TranslatableText("demo.help.movementMouse"),
-			new TranslatableText("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()),
-			new TranslatableText("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText())
+			Text.method_43471("demo.help.movementMouse"),
+			Text.method_43469("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()),
+			Text.method_43469("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText())
 		);
-		this.fullWrappedText = MultilineText.create(this.textRenderer, new TranslatableText("demo.help.fullWrapped"), 218);
+		this.fullWrappedText = MultilineText.create(this.textRenderer, Text.method_43471("demo.help.fullWrapped"), 218);
 	}
 
 	@Override

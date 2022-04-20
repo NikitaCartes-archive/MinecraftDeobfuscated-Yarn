@@ -5,14 +5,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class RconCommandOutput implements CommandOutput {
 	private static final String RCON_NAME = "Rcon";
-	private static final Text RCON_NAME_TEXT = new LiteralText("Rcon");
+	private static final Text RCON_NAME_TEXT = Text.method_43470("Rcon");
 	private final StringBuffer buffer = new StringBuffer();
 	private final MinecraftServer server;
 

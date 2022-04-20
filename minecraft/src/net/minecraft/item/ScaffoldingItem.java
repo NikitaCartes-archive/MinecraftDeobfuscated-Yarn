@@ -7,7 +7,7 @@ import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -45,7 +45,7 @@ public class ScaffoldingItem extends BlockItem {
 					int j = world.getTopY();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						((ServerPlayerEntity)playerEntity)
-							.sendMessage(new TranslatableText("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID);
+							.sendMessage(Text.method_43469("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID);
 					}
 					break;
 				}

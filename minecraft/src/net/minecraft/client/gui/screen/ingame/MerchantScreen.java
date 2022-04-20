@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -10,9 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.screen.MerchantScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.TradeOffer;
@@ -40,9 +39,9 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final int SCROLLBAR_AREA_HEIGHT = 139;
 	private static final int SCROLLBAR_OFFSET_Y = 18;
 	private static final int SCROLLBAR_OFFSET_X = 94;
-	private static final Text TRADES_TEXT = new TranslatableText("merchant.trades");
-	private static final Text SEPARATOR_TEXT = new LiteralText(" - ");
-	private static final Text DEPRECATED_TEXT = new TranslatableText("merchant.deprecated");
+	private static final Text TRADES_TEXT = Text.method_43471("merchant.trades");
+	private static final Text SEPARATOR_TEXT = Text.method_43470(" - ");
+	private static final Text DEPRECATED_TEXT = Text.method_43471("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
 	int indexStartOffset;
@@ -82,7 +81,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
 		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
-			Text text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(new TranslatableText("merchant.level." + i));
+			Text text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(Text.method_43471("merchant.level." + i));
 			int j = this.textRenderer.getWidth(text);
 			int k = 49 + this.backgroundWidth / 2 - j / 2;
 			this.textRenderer.draw(matrices, text, (float)k, 6.0F, 4210752);
@@ -300,7 +299,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		final int index;
 
 		public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
-			super(x, y, 89, 20, LiteralText.EMPTY, onPress);
+			super(x, y, 89, 20, ScreenTexts.field_39003, onPress);
 			this.index = index;
 			this.visible = false;
 		}

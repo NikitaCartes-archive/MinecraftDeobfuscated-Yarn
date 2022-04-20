@@ -6,7 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class WardenSpawnTrackerCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -34,11 +34,9 @@ public class WardenSpawnTrackerCommand {
 		}
 
 		if (players.size() == 1) {
-			source.sendFeedback(
-				new TranslatableText("commands.warden_spawn_tracker.set.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
-			);
+			source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
+			source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
 		}
 
 		return players.size();
@@ -51,10 +49,10 @@ public class WardenSpawnTrackerCommand {
 
 		if (players.size() == 1) {
 			source.sendFeedback(
-				new TranslatableText("commands.warden_spawn_tracker.clear.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
+				Text.method_43469("commands.warden_spawn_tracker.clear.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
+			source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
 		}
 
 		return players.size();

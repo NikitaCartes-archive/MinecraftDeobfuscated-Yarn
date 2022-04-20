@@ -11,18 +11,16 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.CommandBlockExecutor;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen extends Screen {
-	private static final Text SET_COMMAND_TEXT = new TranslatableText("advMode.setCommand");
-	private static final Text COMMAND_TEXT = new TranslatableText("advMode.command");
-	private static final Text PREVIOUS_OUTPUT_TEXT = new TranslatableText("advMode.previousOutput");
+	private static final Text SET_COMMAND_TEXT = Text.method_43471("advMode.setCommand");
+	private static final Text COMMAND_TEXT = Text.method_43471("advMode.command");
+	private static final Text PREVIOUS_OUTPUT_TEXT = Text.method_43471("advMode.previousOutput");
 	protected TextFieldWidget consoleCommandTextField;
 	protected TextFieldWidget previousOutputTextField;
 	protected ButtonWidget doneButton;
@@ -54,16 +52,16 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		);
 		boolean bl = this.getCommandExecutor().isTrackingOutput();
 		this.toggleTrackingOutputButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X"))
+			CyclingButtonWidget.onOffBuilder(Text.method_43470("O"), Text.method_43470("X"))
 				.initially(bl)
 				.omitKeyText()
-				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (button, trackOutput) -> {
+				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.method_43471("advMode.trackOutput"), (button, trackOutput) -> {
 					CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 					commandBlockExecutor.setTrackOutput(trackOutput);
 					this.setPreviousOutputText(trackOutput);
 				})
 		);
-		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, new TranslatableText("advMode.command")) {
+		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, Text.method_43471("advMode.command")) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.getNarration());
@@ -73,7 +71,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.addSelectableChild(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(
-			this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, new TranslatableText("advMode.previousOutput")
+			this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, Text.method_43471("advMode.previousOutput")
 		);
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setEditable(false);

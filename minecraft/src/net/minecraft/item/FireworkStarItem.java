@@ -4,10 +4,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -27,23 +25,23 @@ public class FireworkStarItem extends Item {
 
 	public static void appendFireworkTooltip(NbtCompound nbt, List<Text> tooltip) {
 		FireworkRocketItem.Type type = FireworkRocketItem.Type.byId(nbt.getByte("Type"));
-		tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
+		tooltip.add(Text.method_43471("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
 		int[] is = nbt.getIntArray("Colors");
 		if (is.length > 0) {
-			tooltip.add(appendColors(new LiteralText("").formatted(Formatting.GRAY), is));
+			tooltip.add(appendColors(Text.method_43473().formatted(Formatting.GRAY), is));
 		}
 
 		int[] js = nbt.getIntArray("FadeColors");
 		if (js.length > 0) {
-			tooltip.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
+			tooltip.add(appendColors(Text.method_43471("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
 		}
 
 		if (nbt.getBoolean("Trail")) {
-			tooltip.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
+			tooltip.add(Text.method_43471("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
 		}
 
 		if (nbt.getBoolean("Flicker")) {
-			tooltip.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
+			tooltip.add(Text.method_43471("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
 		}
 	}
 
@@ -62,7 +60,7 @@ public class FireworkStarItem extends Item {
 	private static Text getColorText(int color) {
 		DyeColor dyeColor = DyeColor.byFireworkColor(color);
 		return dyeColor == null
-			? new TranslatableText("item.minecraft.firework_star.custom_color")
-			: new TranslatableText("item.minecraft.firework_star." + dyeColor.getName());
+			? Text.method_43471("item.minecraft.firework_star.custom_color")
+			: Text.method_43471("item.minecraft.firework_star." + dyeColor.getName());
 	}
 }

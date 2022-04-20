@@ -24,16 +24,16 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.NbtPath> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
 	public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("arguments.nbtpath.node.invalid")
+		Text.method_43471("arguments.nbtpath.node.invalid")
 	);
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		path -> new TranslatableText("arguments.nbtpath.nothing_found", path)
+		path -> Text.method_43469("arguments.nbtpath.nothing_found", path)
 	);
 	private static final char LEFT_SQUARE_BRACKET = '[';
 	private static final char RIGHT_SQUARE_BRACKET = ']';

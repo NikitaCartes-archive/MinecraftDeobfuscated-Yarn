@@ -11,9 +11,9 @@ public class ShaderParseException extends IOException {
 	private final List<ShaderParseException.JsonStackTrace> traces = Lists.<ShaderParseException.JsonStackTrace>newArrayList();
 	private final String message;
 
-	public ShaderParseException(String message) {
+	public ShaderParseException(String string) {
 		this.traces.add(new ShaderParseException.JsonStackTrace());
-		this.message = message;
+		this.message = string;
 	}
 
 	public ShaderParseException(String message, Throwable cause) {

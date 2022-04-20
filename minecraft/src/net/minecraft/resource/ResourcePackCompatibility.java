@@ -3,7 +3,6 @@ package net.minecraft.resource;
 import net.minecraft.SharedConstants;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum ResourcePackCompatibility {
@@ -15,8 +14,8 @@ public enum ResourcePackCompatibility {
 	private final Text confirmMessage;
 
 	private ResourcePackCompatibility(String translationSuffix) {
-		this.notification = new TranslatableText("pack.incompatible." + translationSuffix).formatted(Formatting.GRAY);
-		this.confirmMessage = new TranslatableText("pack.incompatible.confirm." + translationSuffix);
+		this.notification = Text.method_43471("pack.incompatible." + translationSuffix).formatted(Formatting.GRAY);
+		this.confirmMessage = Text.method_43471("pack.incompatible.confirm." + translationSuffix);
 	}
 
 	public boolean isCompatible() {

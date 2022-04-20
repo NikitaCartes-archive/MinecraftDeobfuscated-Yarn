@@ -8,7 +8,6 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
 
 @Environment(EnvType.CLIENT)
@@ -28,8 +27,8 @@ public class BundleTutorial {
 			this.manager.remove(this.toast);
 		}
 
-		Text text = new TranslatableText("tutorial.bundleInsert.title");
-		Text text2 = new TranslatableText("tutorial.bundleInsert.description");
+		Text text = Text.method_43471("tutorial.bundleInsert.title");
+		Text text2 = Text.method_43471("tutorial.bundleInsert.description");
 		this.toast = new TutorialToast(TutorialToast.Type.RIGHT_CLICK, text, text2, true);
 		this.manager.add(this.toast, 160);
 	}

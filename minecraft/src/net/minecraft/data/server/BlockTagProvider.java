@@ -1349,6 +1349,8 @@ public class BlockTagProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.RABBITS_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.SAND);
 		this.getOrCreateTagBuilder(BlockTags.FOXES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.WOLVES_SPAWNABLE_ON).add(Blocks.GRASS_BLOCK, Blocks.SNOW, Blocks.SNOW_BLOCK);
+		this.getOrCreateTagBuilder(BlockTags.FROGS_SPAWNABLE_ON)
+			.add(Blocks.GRASS_BLOCK, Blocks.MUD, Blocks.MANGROVE_ROOTS, Blocks.MUDDY_MANGROVE_ROOTS, Blocks.MOSS_CARPET);
 		this.getOrCreateTagBuilder(BlockTags.TERRACOTTA)
 			.add(
 				Blocks.TERRACOTTA,

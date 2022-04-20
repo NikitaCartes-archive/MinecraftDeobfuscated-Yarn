@@ -12,10 +12,12 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Util;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkCache;
 
@@ -48,10 +50,10 @@ public abstract class EntityNavigation {
 	private final PathNodeNavigator pathNodeNavigator;
 	private boolean nearPathStartPos;
 
-	public EntityNavigation(MobEntity mob, World world) {
-		this.entity = mob;
+	public EntityNavigation(MobEntity mobEntity, World world) {
+		this.entity = mobEntity;
 		this.world = world;
-		int i = MathHelper.floor(mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
+		int i = MathHelper.floor(mobEntity.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 16.0);
 		this.pathNodeNavigator = this.createPathNodeNavigator(i);
 	}
 
@@ -342,6 +344,12 @@ public abstract class EntityNavigation {
 
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
 		return false;
+	}
+
+	protected static boolean method_43394(MobEntity mobEntity, Vec3d vec3d, Vec3d vec3d2) {
+		Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)mobEntity.getHeight() * 0.5, vec3d2.z);
+		return mobEntity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mobEntity)).getType()
+			== HitResult.Type.MISS;
 	}
 
 	public boolean isValidPosition(BlockPos pos) {

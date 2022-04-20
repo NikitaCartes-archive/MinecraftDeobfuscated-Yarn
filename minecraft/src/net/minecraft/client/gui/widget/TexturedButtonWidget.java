@@ -3,9 +3,9 @@ package net.minecraft.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -39,7 +39,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 		int textureHeight,
 		ButtonWidget.PressAction pressAction
 	) {
-		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, LiteralText.EMPTY);
+		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, ScreenTexts.field_39003);
 	}
 
 	public TexturedButtonWidget(

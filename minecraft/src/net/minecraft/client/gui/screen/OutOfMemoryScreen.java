@@ -5,27 +5,27 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class OutOfMemoryScreen extends Screen {
 	private MultilineText message = MultilineText.EMPTY;
 
 	public OutOfMemoryScreen() {
-		super(new TranslatableText("outOfMemory.error"));
+		super(Text.method_43471("outOfMemory.error"));
 	}
 
 	@Override
 	protected void init() {
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("gui.toTitle"), button -> this.client.setScreen(new TitleScreen())
+				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, Text.method_43471("gui.toTitle"), button -> this.client.setScreen(new TitleScreen())
 			)
 		);
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop())
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, Text.method_43471("menu.quit"), button -> this.client.scheduleStop())
 		);
-		this.message = MultilineText.create(this.textRenderer, new TranslatableText("outOfMemory.message"), 295);
+		this.message = MultilineText.create(this.textRenderer, Text.method_43471("outOfMemory.message"), 295);
 	}
 
 	@Override

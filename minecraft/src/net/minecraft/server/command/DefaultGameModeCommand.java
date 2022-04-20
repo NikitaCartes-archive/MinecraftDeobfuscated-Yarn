@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
@@ -33,7 +33,7 @@ public class DefaultGameModeCommand {
 			}
 		}
 
-		source.sendFeedback(new TranslatableText("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
+		source.sendFeedback(Text.method_43469("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
 		return i;
 	}
 }

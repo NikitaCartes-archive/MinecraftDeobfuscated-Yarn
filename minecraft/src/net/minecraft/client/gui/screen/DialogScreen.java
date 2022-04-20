@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -27,7 +26,7 @@ public class DialogScreen extends Screen {
 	public DialogScreen(Text title, List<Text> messages, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
 		super(title);
 		this.message = StringVisitable.concat(messages);
-		this.narrationMessage = ScreenTexts.joinSentences(title, Texts.join(messages, LiteralText.EMPTY));
+		this.narrationMessage = ScreenTexts.joinSentences(title, Texts.join(messages, ScreenTexts.field_39003));
 		this.choiceButtons = choiceButtons;
 	}
 

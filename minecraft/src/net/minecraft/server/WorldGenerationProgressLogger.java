@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import com.mojang.logging.LogUtils;
 import javax.annotation.Nullable;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +36,7 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 		int i = this.getProgressPercentage();
 		if (Util.getMeasuringTimeMs() > this.nextMessageTime) {
 			this.nextMessageTime += 500L;
-			LOGGER.info(new TranslatableText("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
+			LOGGER.info(Text.method_43469("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
 		}
 	}
 

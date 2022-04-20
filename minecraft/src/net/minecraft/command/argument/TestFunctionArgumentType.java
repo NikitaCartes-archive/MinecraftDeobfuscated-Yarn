@@ -17,7 +17,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("techtests.piston", "techtests");
@@ -28,7 +28,7 @@ public class TestFunctionArgumentType implements ArgumentType<TestFunction> {
 		if (optional.isPresent()) {
 			return (TestFunction)optional.get();
 		} else {
-			Message message = new LiteralText("No such test: " + string);
+			Message message = Text.method_43470("No such test: " + string);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
 		}
 	}

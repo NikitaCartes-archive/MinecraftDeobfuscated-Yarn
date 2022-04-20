@@ -11,12 +11,11 @@ import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class AddServerScreen extends Screen {
-	private static final Text ENTER_NAME_TEXT = new TranslatableText("addServer.enterName");
-	private static final Text ENTER_IP_TEXT = new TranslatableText("addServer.enterIp");
+	private static final Text ENTER_NAME_TEXT = Text.method_43471("addServer.enterName");
+	private static final Text ENTER_IP_TEXT = Text.method_43471("addServer.enterIp");
 	private ButtonWidget addButton;
 	private final BooleanConsumer callback;
 	private final ServerInfo server;
@@ -25,7 +24,7 @@ public class AddServerScreen extends Screen {
 	private final Screen parent;
 
 	public AddServerScreen(Screen parent, BooleanConsumer callback, ServerInfo server) {
-		super(new TranslatableText("addServer.title"));
+		super(Text.method_43471("addServer.title"));
 		this.parent = parent;
 		this.callback = callback;
 		this.server = server;
@@ -40,12 +39,12 @@ public class AddServerScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, new TranslatableText("addServer.enterName"));
+		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, Text.method_43471("addServer.enterName"));
 		this.serverNameField.setTextFieldFocused(true);
 		this.serverNameField.setText(this.server.name);
 		this.serverNameField.setChangedListener(serverName -> this.updateAddButton());
 		this.addSelectableChild(this.serverNameField);
-		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, new TranslatableText("addServer.enterIp"));
+		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 106, 200, 20, Text.method_43471("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.server.address);
 		this.addressField.setChangedListener(address -> this.updateAddButton());
@@ -59,12 +58,12 @@ public class AddServerScreen extends Screen {
 					this.height / 4 + 72,
 					200,
 					20,
-					new TranslatableText("addServer.resourcePack"),
+					Text.method_43471("addServer.resourcePack"),
 					(button, resourcePackPolicy) -> this.server.setResourcePackPolicy(resourcePackPolicy)
 				)
 		);
 		this.addButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), button -> this.addAndClose())
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, Text.method_43471("addServer.add"), button -> this.addAndClose())
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, button -> this.callback.accept(false)));
 		this.updateAddButton();

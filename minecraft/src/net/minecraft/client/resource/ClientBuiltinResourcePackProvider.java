@@ -41,7 +41,6 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
@@ -54,7 +53,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(
-		new TranslatableText("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
+		Text.method_43471("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
 	);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
@@ -64,7 +63,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final String SERVER = "server";
 	private static final String PROGRAMER_ART_ID = "programer_art";
 	private static final String PROGRAMMER_ART_NAME = "Programmer Art";
-	private static final Text APPLYING_PACK_TEXT = new TranslatableText("multiplayer.applyingPack");
+	private static final Text APPLYING_PACK_TEXT = Text.method_43471("multiplayer.applyingPack");
 	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -163,14 +162,14 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 												} else {
 													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
 													if (clientPlayNetworkHandler != null) {
-														clientPlayNetworkHandler.getConnection().disconnect(new TranslatableText("connect.aborted"));
+														clientPlayNetworkHandler.getConnection().disconnect(Text.method_43471("connect.aborted"));
 													}
 												}
 											},
-											new TranslatableText("multiplayer.texturePrompt.failure.line1"),
-											new TranslatableText("multiplayer.texturePrompt.failure.line2"),
+											Text.method_43471("multiplayer.texturePrompt.failure.line1"),
+											Text.method_43471("multiplayer.texturePrompt.failure.line2"),
 											ScreenTexts.PROCEED,
-											new TranslatableText("menu.disconnect")
+											Text.method_43471("menu.disconnect")
 										)
 									)
 							);
@@ -273,7 +272,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			"server",
 			true,
 			() -> new ZipResourcePack(packZip),
-			new TranslatableText("resourcePack.server.name"),
+			Text.method_43471("resourcePack.server.name"),
 			packResourceMetadata.getDescription(),
 			ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES),
 			ResourcePackProfile.InsertionPosition.TOP,

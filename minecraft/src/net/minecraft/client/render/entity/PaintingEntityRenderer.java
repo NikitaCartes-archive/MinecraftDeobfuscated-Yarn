@@ -30,7 +30,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 	public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
-		PaintingMotive paintingMotive = paintingEntity.motive;
+		PaintingMotive paintingMotive = paintingEntity.method_43404().value();
 		float h = 0.0625F;
 		matrixStack.scale(0.0625F, 0.0625F, 0.0625F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));

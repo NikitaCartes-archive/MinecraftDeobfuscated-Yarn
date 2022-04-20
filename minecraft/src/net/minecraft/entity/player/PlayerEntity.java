@@ -89,11 +89,9 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.ClickType;
@@ -1833,7 +1831,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public Text getName() {
-		return new LiteralText(this.gameProfile.getName());
+		return Text.method_43470(this.gameProfile.getName());
 	}
 
 	public EnderChestInventory getEnderChestInventory() {
@@ -2184,11 +2182,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	 */
 	public static enum SleepFailureReason {
 		NOT_POSSIBLE_HERE,
-		NOT_POSSIBLE_NOW(new TranslatableText("block.minecraft.bed.no_sleep")),
-		TOO_FAR_AWAY(new TranslatableText("block.minecraft.bed.too_far_away")),
-		OBSTRUCTED(new TranslatableText("block.minecraft.bed.obstructed")),
+		NOT_POSSIBLE_NOW(Text.method_43471("block.minecraft.bed.no_sleep")),
+		TOO_FAR_AWAY(Text.method_43471("block.minecraft.bed.too_far_away")),
+		OBSTRUCTED(Text.method_43471("block.minecraft.bed.obstructed")),
 		OTHER_PROBLEM,
-		NOT_SAFE(new TranslatableText("block.minecraft.bed.not_safe"));
+		NOT_SAFE(Text.method_43471("block.minecraft.bed.not_safe"));
 
 		@Nullable
 		private final Text message;

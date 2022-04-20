@@ -9,13 +9,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.entity.EntityType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:pig", "cow");
-	public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("entity.notFound", id));
+	public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("entity.notFound", id));
 
 	public static EntitySummonArgumentType entitySummon() {
 		return new EntitySummonArgumentType();

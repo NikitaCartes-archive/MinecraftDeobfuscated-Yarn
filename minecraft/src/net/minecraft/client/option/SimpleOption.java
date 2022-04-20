@@ -29,7 +29,6 @@ import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -172,7 +171,7 @@ public final class SimpleOption<T> {
 		T defaultValue,
 		Consumer<T> changeCallback
 	) {
-		this.text = new TranslatableText(key);
+		this.text = Text.method_43471(key);
 		this.tooltipFactoryGetter = tooltipFactoryGetter;
 		this.textGetter = value -> valueTextGetter.toString(this.text, (T)value);
 		this.callbacks = callbacks;

@@ -9,7 +9,6 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
 
@@ -216,8 +215,8 @@ public class DamageSource {
 		String string = "death.attack." + this.name;
 		String string2 = string + ".player";
 		return livingEntity != null
-			? new TranslatableText(string2, entity.getDisplayName(), livingEntity.getDisplayName())
-			: new TranslatableText(string, entity.getDisplayName());
+			? Text.method_43469(string2, entity.getDisplayName(), livingEntity.getDisplayName())
+			: Text.method_43469(string, entity.getDisplayName());
 	}
 
 	public boolean isFire() {

@@ -4,13 +4,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 600;
-	private static final Text TITLE = new TranslatableText("tutorial.open_inventory.title");
-	private static final Text DESCRIPTION = new TranslatableText("tutorial.open_inventory.description", TutorialManager.keyToText("inventory"));
+	private static final Text TITLE = Text.method_43471("tutorial.open_inventory.title");
+	private static final Text DESCRIPTION = Text.method_43469("tutorial.open_inventory.description", TutorialManager.keyToText("inventory"));
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

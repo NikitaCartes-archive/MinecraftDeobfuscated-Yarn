@@ -14,7 +14,6 @@ import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -22,8 +21,8 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	private static final Ordering<PlayerListEntry> ORDERING = Ordering.from(
 		(a, b) -> ComparisonChain.start().compare(a.getProfile().getId(), b.getProfile().getId()).result()
 	);
-	private static final Text TELEPORT_TEXT = new TranslatableText("spectatorMenu.teleport");
-	private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.teleport.prompt");
+	private static final Text TELEPORT_TEXT = Text.method_43471("spectatorMenu.teleport");
+	private static final Text PROMPT_TEXT = Text.method_43471("spectatorMenu.teleport.prompt");
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {

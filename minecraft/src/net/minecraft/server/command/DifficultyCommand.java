@@ -6,12 +6,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
 	private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		difficulty -> new TranslatableText("commands.difficulty.failure", difficulty)
+		difficulty -> Text.method_43469("commands.difficulty.failure", difficulty)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -23,7 +23,7 @@ public class DifficultyCommand {
 
 		dispatcher.register(literalArgumentBuilder.requires(source -> source.hasPermissionLevel(2)).executes(context -> {
 			Difficulty difficultyxx = context.getSource().getWorld().getDifficulty();
-			context.getSource().sendFeedback(new TranslatableText("commands.difficulty.query", difficultyxx.getTranslatableName()), false);
+			context.getSource().sendFeedback(Text.method_43469("commands.difficulty.query", difficultyxx.getTranslatableName()), false);
 			return difficultyxx.getId();
 		}));
 	}
@@ -34,7 +34,7 @@ public class DifficultyCommand {
 			throw FAILURE_EXCEPTION.create(difficulty.getName());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);
-			source.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
+			source.sendFeedback(Text.method_43469("commands.difficulty.success", difficulty.getTranslatableName()), true);
 			return 0;
 		}
 	}

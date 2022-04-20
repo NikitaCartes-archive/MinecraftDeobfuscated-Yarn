@@ -11,7 +11,7 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> extends EntryListWidget<E> {
@@ -55,7 +55,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 			}
 		}
 
-		builder.put(NarrationPart.USAGE, new TranslatableText("narration.component_list.usage"));
+		builder.put(NarrationPart.USAGE, Text.method_43471("narration.component_list.usage"));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -98,9 +98,9 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 				}
 
 				if (list.size() > 1) {
-					builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
+					builder.put(NarrationPart.POSITION, Text.method_43469("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
 					if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-						builder.put(NarrationPart.USAGE, new TranslatableText("narration.component_list.usage"));
+						builder.put(NarrationPart.USAGE, Text.method_43471("narration.component_list.usage"));
 					}
 				}
 

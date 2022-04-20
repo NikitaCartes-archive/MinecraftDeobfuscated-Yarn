@@ -14,7 +14,6 @@ import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.realms.util.Errable;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Screen parent;
-	private volatile Text title = LiteralText.EMPTY;
+	private volatile Text title = ScreenTexts.field_39003;
 	@Nullable
 	private volatile Text errorMessage;
 	private volatile boolean aborted;

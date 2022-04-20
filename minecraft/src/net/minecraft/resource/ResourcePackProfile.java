@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -68,7 +67,7 @@ public class ResourcePackProfile {
 				}
 
 				var8 = profileFactory.create(
-					name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource
+					name, Text.method_43470(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource
 				);
 			}
 
@@ -123,11 +122,11 @@ public class ResourcePackProfile {
 	}
 
 	public Text getInformationText(boolean enabled) {
-		return Texts.bracketed(this.source.decorate(new LiteralText(this.name)))
+		return Texts.bracketed(this.source.decorate(Text.method_43470(this.name)))
 			.styled(
 				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("").append(this.displayName).append("\n").append(this.description)))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43473().append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 

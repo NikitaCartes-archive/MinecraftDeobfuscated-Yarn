@@ -5,11 +5,10 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RootSpectatorCommandGroup implements SpectatorMenuCommandGroup {
-	private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.root.prompt");
+	private static final Text PROMPT_TEXT = Text.method_43471("spectatorMenu.root.prompt");
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public RootSpectatorCommandGroup() {

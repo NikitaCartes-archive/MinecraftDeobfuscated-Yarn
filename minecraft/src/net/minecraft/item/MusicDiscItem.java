@@ -13,7 +13,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -65,7 +64,7 @@ public class MusicDiscItem extends Item {
 	}
 
 	public MutableText getDescription() {
-		return new TranslatableText(this.getTranslationKey() + ".desc");
+		return Text.method_43471(this.getTranslationKey() + ".desc");
 	}
 
 	@Nullable

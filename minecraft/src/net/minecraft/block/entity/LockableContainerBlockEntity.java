@@ -13,7 +13,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 
@@ -71,7 +70,7 @@ public abstract class LockableContainerBlockEntity extends BlockEntity implement
 
 	public static boolean checkUnlocked(PlayerEntity player, ContainerLock lock, Text containerName) {
 		if (!player.isSpectator() && !lock.canOpen(player.getMainHandStack())) {
-			player.sendMessage(new TranslatableText("container.isLocked", containerName), true);
+			player.sendMessage(Text.method_43469("container.isLocked", containerName), true);
 			player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			return false;
 		} else {

@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
@@ -20,11 +21,9 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -48,11 +47,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	final List<OrderedText> hideTooltip;
 	final List<OrderedText> showTooltip;
 	float timeCounter;
-	private static final Text HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
-	private static final Text BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
-	private static final Text OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
-	private static final Text HIDDEN_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
-	private static final Text BLOCKED_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+	private static final Text HIDDEN_TEXT = Text.method_43471("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
+	private static final Text BLOCKED_TEXT = Text.method_43471("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
+	private static final Text OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
+	private static final Text HIDDEN_OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
+	private static final Text BLOCKED_OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
 	private static final int field_32420 = 24;
 	private static final int field_32421 = 4;
 	private static final int field_32422 = 20;
@@ -69,8 +68,8 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		this.uuid = uuid;
 		this.name = name;
 		this.skinTexture = skinTexture;
-		this.hideText = new TranslatableText("gui.socialInteractions.tooltip.hide", name);
-		this.showText = new TranslatableText("gui.socialInteractions.tooltip.show", name);
+		this.hideText = Text.method_43469("gui.socialInteractions.tooltip.hide", name);
+		this.showText = Text.method_43469("gui.socialInteractions.tooltip.show", name);
 		this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
 		this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
@@ -88,7 +87,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				256,
 				button -> {
 					socialInteractionsManager.hidePlayer(uuid);
-					this.onButtonClick(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
+					this.onButtonClick(true, Text.method_43469("gui.socialInteractions.hidden_in_chat", name));
 				},
 				new ButtonWidget.TooltipSupplier() {
 					@Override
@@ -106,7 +105,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 						consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
 					}
 				},
-				new TranslatableText("gui.socialInteractions.hide")
+				Text.method_43471("gui.socialInteractions.hide")
 			) {
 				@Override
 				protected MutableText getNarrationMessage() {
@@ -126,7 +125,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				256,
 				button -> {
 					socialInteractionsManager.showPlayer(uuid);
-					this.onButtonClick(false, new TranslatableText("gui.socialInteractions.shown_in_chat", name));
+					this.onButtonClick(false, Text.method_43469("gui.socialInteractions.shown_in_chat", name));
 				},
 				new ButtonWidget.TooltipSupplier() {
 					@Override
@@ -144,7 +143,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 						consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
 					}
 				},
-				new TranslatableText("gui.socialInteractions.show")
+				Text.method_43471("gui.socialInteractions.show")
 			) {
 				@Override
 				protected MutableText getNarrationMessage() {
@@ -166,7 +165,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		int k = i + 24 + 4;
 		Text text = this.getStatusText();
 		int l;
-		if (text == LiteralText.EMPTY) {
+		if (text == ScreenTexts.field_39003) {
 			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
 			l = y + (entryHeight - 9) / 2;
 		} else {
@@ -230,9 +229,9 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 	MutableText getNarrationMessage(MutableText text) {
 		Text text2 = this.getStatusText();
-		return text2 == LiteralText.EMPTY
-			? new LiteralText(this.name).append(", ").append(text)
-			: new LiteralText(this.name).append(", ").append(text2).append(", ").append(text);
+		return text2 == ScreenTexts.field_39003
+			? Text.method_43470(this.name).append(", ").append(text)
+			: Text.method_43470(this.name).append(", ").append(text2).append(", ").append(text);
 	}
 
 	private Text getStatusText() {
@@ -247,7 +246,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		} else if (bl) {
 			return HIDDEN_TEXT;
 		} else {
-			return this.offline ? OFFLINE_TEXT : LiteralText.EMPTY;
+			return this.offline ? OFFLINE_TEXT : ScreenTexts.field_39003;
 		}
 	}
 

@@ -13,11 +13,9 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
@@ -25,8 +23,8 @@ import net.minecraft.util.Language;
 @Environment(EnvType.CLIENT)
 public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget.ResourcePackEntry> {
 	static final Identifier RESOURCE_PACKS_TEXTURE = new Identifier("textures/gui/resource_packs.png");
-	static final Text INCOMPATIBLE = new TranslatableText("pack.incompatible");
-	static final Text INCOMPATIBLE_CONFIRM = new TranslatableText("pack.incompatible.confirm.title");
+	static final Text INCOMPATIBLE = Text.method_43471("pack.incompatible");
+	static final Text INCOMPATIBLE_CONFIRM = Text.method_43471("pack.incompatible.confirm.title");
 	private final Text title;
 
 	public PackListWidget(MinecraftClient client, int width, int height, Text title) {
@@ -38,7 +36,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 	@Override
 	protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
-		Text text = new LiteralText("").append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
+		Text text = Text.method_43473().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
 		this.client
 			.textRenderer
 			.draw(matrices, text, (float)(x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, y), 16777215);
@@ -103,7 +101,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 		@Override
 		public Text getNarration() {
-			return new TranslatableText("narrator.select", this.pack.getDisplayName());
+			return Text.method_43469("narrator.select", this.pack.getDisplayName());
 		}
 
 		@Override

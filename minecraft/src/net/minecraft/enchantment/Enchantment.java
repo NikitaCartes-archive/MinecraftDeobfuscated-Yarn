@@ -11,7 +11,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -105,7 +104,7 @@ public abstract class Enchantment {
 	}
 
 	public Text getName(int level) {
-		MutableText mutableText = new TranslatableText(this.getTranslationKey());
+		MutableText mutableText = Text.method_43471(this.getTranslationKey());
 		if (this.isCursed()) {
 			mutableText.formatted(Formatting.RED);
 		} else {
@@ -113,7 +112,7 @@ public abstract class Enchantment {
 		}
 
 		if (level != 1 || this.getMaxLevel() != 1) {
-			mutableText.append(" ").append(new TranslatableText("enchantment.level." + level));
+			mutableText.append(" ").append(Text.method_43471("enchantment.level." + level));
 		}
 
 		return mutableText;

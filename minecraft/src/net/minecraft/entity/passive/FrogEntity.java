@@ -28,7 +28,6 @@ import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -55,6 +54,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.BlockView;
@@ -62,6 +62,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 
 public class FrogEntity extends AnimalEntity {
@@ -384,6 +385,12 @@ public class FrogEntity extends AnimalEntity {
 		return SLIME_BALL.test(stack);
 	}
 
+	public static boolean method_43398(
+		EntityType<? extends AnimalEntity> entityType, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, AbstractRandom abstractRandom
+	) {
+		return worldAccess.getBlockState(blockPos.down()).isIn(BlockTags.FROGS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(worldAccess, blockPos);
+	}
+
 	class FrogLookControl extends LookControl {
 		FrogLookControl(MobEntity entity) {
 			super(entity);
@@ -395,7 +402,7 @@ public class FrogEntity extends AnimalEntity {
 		}
 	}
 
-	static class FrogSwimNavigation extends SwimNavigation {
+	static class FrogSwimNavigation extends AxolotlSwimNavigation {
 		FrogSwimNavigation(FrogEntity frog, World world) {
 			super(frog, world);
 		}
@@ -403,17 +410,8 @@ public class FrogEntity extends AnimalEntity {
 		@Override
 		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new FrogEntity.FrogSwimPathNodeMaker(true);
+			this.nodeMaker.setCanEnterOpenDoors(true);
 			return new PathNodeNavigator(this.nodeMaker, range);
-		}
-
-		@Override
-		protected boolean isAtValidPosition() {
-			return true;
-		}
-
-		@Override
-		public boolean isValidPosition(BlockPos pos) {
-			return !this.world.getBlockState(pos.down()).isAir();
 		}
 	}
 

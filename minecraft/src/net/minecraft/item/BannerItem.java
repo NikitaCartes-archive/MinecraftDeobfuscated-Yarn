@@ -10,7 +10,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -35,7 +34,7 @@ public class BannerItem extends WallStandingBlockItem {
 				DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));
 				BannerPattern bannerPattern = BannerPattern.byId(nbtCompound2.getString("Pattern"));
 				if (bannerPattern != null) {
-					tooltip.add(new TranslatableText("block.minecraft.banner." + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
+					tooltip.add(Text.method_43471("block.minecraft.banner." + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
 				}
 			}
 		}

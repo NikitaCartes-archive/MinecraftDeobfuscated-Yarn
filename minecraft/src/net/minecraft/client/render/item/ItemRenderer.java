@@ -429,7 +429,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		buffer.vertex((double)(x + width), (double)(y + height), 0.0).color(red, green, blue, alpha).next();
 		buffer.vertex((double)(x + width), (double)(y + 0), 0.0).color(red, green, blue, alpha).next();
 		buffer.end();
-		BufferRenderer.draw(buffer);
+		BufferRenderer.method_43433(buffer);
 	}
 
 	@Override

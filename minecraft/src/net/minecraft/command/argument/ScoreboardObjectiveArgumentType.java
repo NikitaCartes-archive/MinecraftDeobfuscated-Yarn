@@ -14,15 +14,15 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "*", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("arguments.objective.notFound", name)
+		name -> Text.method_43469("arguments.objective.notFound", name)
 	);
 	private static final DynamicCommandExceptionType READONLY_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("arguments.objective.readonly", name)
+		name -> Text.method_43469("arguments.objective.readonly", name)
 	);
 
 	public static ScoreboardObjectiveArgumentType scoreboardObjective() {

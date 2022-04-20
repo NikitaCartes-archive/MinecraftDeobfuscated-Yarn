@@ -24,7 +24,7 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potions;
 import net.minecraft.tag.ConfiguredStructureFeatureTags;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
@@ -391,6 +391,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 								.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(20.0F, 39.0F)).allowTreasureEnchantments())
 						)
 						.with(ItemEntry.builder(Items.ECHO_SHARD).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
+						.with(ItemEntry.builder(Items.DISC_FRAGMENT_5).weight(4).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(
 							ItemEntry.builder(Items.POTION)
 								.weight(5)
@@ -652,7 +653,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(new TranslatableText("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
 						)
 				)
 				.pool(
@@ -890,7 +891,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(new TranslatableText("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
 						)
 				)
 		);
@@ -922,7 +923,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(new TranslatableText("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
 						)
 				)
 		);

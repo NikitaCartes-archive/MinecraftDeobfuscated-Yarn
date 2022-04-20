@@ -22,7 +22,6 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -85,7 +84,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Override
 	protected Text getContainerName() {
-		return new TranslatableText("container.hopper");
+		return Text.method_43471("container.hopper");
 	}
 
 	public static void serverTick(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity) {

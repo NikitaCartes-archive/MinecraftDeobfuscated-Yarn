@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import java.util.Optional;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
@@ -34,7 +35,12 @@ public class DecorationItem extends Item {
 			World world = context.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
 			if (this.entityType == EntityType.PAINTING) {
-				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
+				Optional<PaintingEntity> optional = PaintingEntity.method_43401(world, blockPos2, direction);
+				if (optional.isEmpty()) {
+					return ActionResult.CONSUME;
+				}
+
+				abstractDecorationEntity = (AbstractDecorationEntity)optional.get();
 			} else if (this.entityType == EntityType.ITEM_FRAME) {
 				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
 			} else {

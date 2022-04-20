@@ -12,12 +12,12 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 
 public abstract class NumberRange<T extends Number> {
-	public static final SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(new TranslatableText("argument.range.empty"));
-	public static final SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(new TranslatableText("argument.range.swapped"));
+	public static final SimpleCommandExceptionType EXCEPTION_EMPTY = new SimpleCommandExceptionType(Text.method_43471("argument.range.empty"));
+	public static final SimpleCommandExceptionType EXCEPTION_SWAPPED = new SimpleCommandExceptionType(Text.method_43471("argument.range.swapped"));
 	@Nullable
 	protected final T min;
 	@Nullable

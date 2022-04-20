@@ -188,6 +188,7 @@ public class ItemModelGenerator {
 		this.register(Items.MINECART, Models.GENERATED);
 		this.register(Items.MOJANG_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.MUSHROOM_STEW, Models.GENERATED);
+		this.register(Items.DISC_FRAGMENT_5, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_11, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_13, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_BLOCKS, Models.GENERATED);
@@ -202,6 +203,7 @@ public class ItemModelGenerator {
 		this.register(Items.MUSIC_DISC_WAIT, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_WARD, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_OTHERSIDE, Models.GENERATED);
+		this.register(Items.MUSIC_DISC_5, Models.GENERATED);
 		this.register(Items.MUTTON, Models.GENERATED);
 		this.register(Items.NAME_TAG, Models.GENERATED);
 		this.register(Items.NAUTILUS_SHELL, Models.GENERATED);

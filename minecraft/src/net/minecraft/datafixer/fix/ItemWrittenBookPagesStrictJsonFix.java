@@ -10,8 +10,8 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import java.util.stream.Stream;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								try {
 									text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
 									if (text == null) {
-										text = LiteralText.EMPTY;
+										text = ScreenTexts.field_39003;
 									}
 								} catch (Exception var6) {
 								}
@@ -53,13 +53,13 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								}
 
 								if (text == null) {
-									text = new LiteralText(string);
+									text = Text.method_43470(string);
 								}
 							} else {
-								text = new LiteralText(string);
+								text = Text.method_43470(string);
 							}
 						} else {
-							text = LiteralText.EMPTY;
+							text = ScreenTexts.field_39003;
 						}
 
 						return dynamicxx.createString(Text.Serializer.toJson(text));

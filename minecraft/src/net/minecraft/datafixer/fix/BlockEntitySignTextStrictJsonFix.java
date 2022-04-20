@@ -12,8 +12,8 @@ import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import java.lang.reflect.Type;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
@@ -23,7 +23,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer<Text>() {
 		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
-				return new LiteralText(jsonElement.getAsString());
+				return Text.method_43470(jsonElement.getAsString());
 			} else if (jsonElement.isJsonArray()) {
 				JsonArray jsonArray = jsonElement.getAsJsonArray();
 				MutableText mutableText = null;
@@ -56,7 +56,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				try {
 					text = JsonHelper.deserialize(GSON, string, Text.class, true);
 					if (text == null) {
-						text = LiteralText.EMPTY;
+						text = ScreenTexts.field_39003;
 					}
 				} catch (Exception var8) {
 				}
@@ -76,13 +76,13 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				}
 
 				if (text == null) {
-					text = new LiteralText(string);
+					text = Text.method_43470(string);
 				}
 			} else {
-				text = new LiteralText(string);
+				text = Text.method_43470(string);
 			}
 		} else {
-			text = LiteralText.EMPTY;
+			text = ScreenTexts.field_39003;
 		}
 
 		return dynamic.set(lineName, dynamic.createString(Text.Serializer.toJson(text)));

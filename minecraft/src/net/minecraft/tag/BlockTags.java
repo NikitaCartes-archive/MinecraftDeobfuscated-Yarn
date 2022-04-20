@@ -146,6 +146,7 @@ public final class BlockTags {
 	public static final TagKey<Block> RABBITS_SPAWNABLE_ON = of("rabbits_spawnable_on");
 	public static final TagKey<Block> FOXES_SPAWNABLE_ON = of("foxes_spawnable_on");
 	public static final TagKey<Block> WOLVES_SPAWNABLE_ON = of("wolves_spawnable_on");
+	public static final TagKey<Block> FROGS_SPAWNABLE_ON = of("frogs_spawnable_on");
 	public static final TagKey<Block> AZALEA_GROWS_ON = of("azalea_grows_on");
 	public static final TagKey<Block> REPLACEABLE_PLANTS = of("replaceable_plants");
 	public static final TagKey<Block> CONVERTABLE_TO_MUD = of("convertable_to_mud");

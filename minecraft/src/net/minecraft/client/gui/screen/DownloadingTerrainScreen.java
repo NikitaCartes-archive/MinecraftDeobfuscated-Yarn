@@ -5,12 +5,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
-	private static final Text TEXT = new TranslatableText("multiplayer.downloadingTerrain");
+	private static final Text TEXT = Text.method_43471("multiplayer.downloadingTerrain");
 	private static final long MIN_LOAD_TIME_MS = 2000L;
 	private boolean ready = false;
 	private boolean closeOnNextTick = false;

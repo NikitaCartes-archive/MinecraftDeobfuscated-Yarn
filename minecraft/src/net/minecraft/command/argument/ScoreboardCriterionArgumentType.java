@@ -17,13 +17,13 @@ import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.Registry;
 
 public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardCriterion> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar.baz", "minecraft:foo");
 	public static final DynamicCommandExceptionType INVALID_CRITERION_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("argument.criteria.invalid", name)
+		name -> Text.method_43469("argument.criteria.invalid", name)
 	);
 
 	private ScoreboardCriterionArgumentType() {

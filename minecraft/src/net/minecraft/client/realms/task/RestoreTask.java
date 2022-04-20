@@ -9,7 +9,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsGenericErrorScreen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -26,7 +26,7 @@ public class RestoreTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(new TranslatableText("mco.backup.restoring"));
+		this.setTitle(Text.method_43471("mco.backup.restoring"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 		int i = 0;
 

@@ -90,7 +90,7 @@ public abstract class DrawableHelper {
 		bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, j, f).next();
 		bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, j, f).next();
 		bufferBuilder.end();
-		BufferRenderer.draw(bufferBuilder);
+		BufferRenderer.method_43433(bufferBuilder);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
@@ -283,7 +283,7 @@ public abstract class DrawableHelper {
 		bufferBuilder.vertex(matrix, (float)x1, (float)y0, (float)z).texture(u1, v0).next();
 		bufferBuilder.vertex(matrix, (float)x0, (float)y0, (float)z).texture(u0, v0).next();
 		bufferBuilder.end();
-		BufferRenderer.draw(bufferBuilder);
+		BufferRenderer.method_43433(bufferBuilder);
 	}
 
 	public int getZOffset() {

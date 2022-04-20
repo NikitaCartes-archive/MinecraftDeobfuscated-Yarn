@@ -13,10 +13,10 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class OpCommand {
-	private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.op.failed"));
+	private static final SimpleCommandExceptionType ALREADY_OPPED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.op.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -49,7 +49,7 @@ public class OpCommand {
 			if (!playerManager.isOperator(gameProfile)) {
 				playerManager.addToOperators(gameProfile);
 				++i;
-				source.sendFeedback(new TranslatableText("commands.op.success", ((GameProfile)targets.iterator().next()).getName()), true);
+				source.sendFeedback(Text.method_43469("commands.op.success", ((GameProfile)targets.iterator().next()).getName()), true);
 			}
 		}
 

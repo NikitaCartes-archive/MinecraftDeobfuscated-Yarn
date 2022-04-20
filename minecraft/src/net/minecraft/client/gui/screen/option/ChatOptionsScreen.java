@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ChatOptionsScreen extends SimpleOptionsScreen {
@@ -13,7 +13,7 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 		super(
 			parent,
 			options,
-			new TranslatableText("options.chat.title"),
+			Text.method_43471("options.chat.title"),
 			new SimpleOption[]{
 				options.getChatVisibility(),
 				options.getChatColors(),

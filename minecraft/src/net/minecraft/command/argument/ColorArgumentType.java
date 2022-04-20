@@ -12,13 +12,13 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class ColorArgumentType implements ArgumentType<Formatting> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
 	public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
-		color -> new TranslatableText("argument.color.invalid", color)
+		color -> Text.method_43469("argument.color.invalid", color)
 	);
 
 	private ColorArgumentType() {

@@ -10,15 +10,14 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 1200;
-	private static final Text TITLE = new TranslatableText("tutorial.craft_planks.title");
-	private static final Text DESCRIPTION = new TranslatableText("tutorial.craft_planks.description");
+	private static final Text TITLE = Text.method_43471("tutorial.craft_planks.title");
+	private static final Text DESCRIPTION = Text.method_43471("tutorial.craft_planks.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

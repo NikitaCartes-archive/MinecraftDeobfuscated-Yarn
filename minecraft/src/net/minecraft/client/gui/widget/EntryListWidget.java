@@ -25,7 +25,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -565,7 +565,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (list.size() > 1) {
 			int i = list.indexOf(entry);
 			if (i != -1) {
-				builder.put(NarrationPart.POSITION, new TranslatableText("narrator.position.list", i + 1, list.size()));
+				builder.put(NarrationPart.POSITION, Text.method_43469("narrator.position.list", i + 1, list.size()));
 			}
 		}
 	}

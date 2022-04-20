@@ -634,6 +634,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.build(false)
 	);
+	private static final ImmutableList<RenderLayer> field_39002 = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	private final VertexFormat vertexFormat;
 	private final VertexFormat.DrawMode drawMode;
 	private final int expectedBufferSize;
@@ -932,7 +933,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 			buffer.end();
 			this.startDrawing();
-			BufferRenderer.draw(buffer);
+			BufferRenderer.method_43433(buffer);
 			this.endDrawing();
 		}
 	}
@@ -943,7 +944,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static List<RenderLayer> getBlockLayers() {
-		return ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
+		return field_39002;
 	}
 
 	public int getExpectedBufferSize() {
