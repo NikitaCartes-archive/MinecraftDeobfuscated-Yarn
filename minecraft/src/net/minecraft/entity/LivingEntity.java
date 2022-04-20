@@ -2611,7 +2611,7 @@ public abstract class LivingEntity extends Entity {
 
 		if (this.isLogicalSideForUpdatingMovement()) {
 			this.bodyTrackingIncrements = 0;
-			this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
+			this.method_43391(this.getX(), this.getY(), this.getZ());
 		}
 
 		if (this.bodyTrackingIncrements > 0) {
@@ -3496,7 +3496,7 @@ public abstract class LivingEntity extends Entity {
 		double f = packet.getZ();
 		float g = packet.getYaw();
 		float h = packet.getPitch();
-		this.updateTrackedPosition(d, e, f);
+		this.method_43391(d, e, f);
 		this.bodyYaw = packet.getHeadYaw();
 		this.headYaw = packet.getHeadYaw();
 		this.prevBodyYaw = this.bodyYaw;

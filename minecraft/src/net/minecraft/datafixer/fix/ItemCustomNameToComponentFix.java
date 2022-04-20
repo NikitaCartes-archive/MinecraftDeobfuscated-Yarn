@@ -9,9 +9,7 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class ItemCustomNameToComponentFix extends DataFix {
 	public ItemCustomNameToComponentFix(Schema outputSchema, boolean changesType) {
@@ -24,11 +22,11 @@ public class ItemCustomNameToComponentFix extends DataFix {
 			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
 			Optional<String> optional2 = dynamic2.get("Name").asString().result();
 			if (optional2.isPresent()) {
-				dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new LiteralText((String)optional2.get()))));
+				dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.method_43470((String)optional2.get()))));
 			} else {
 				Optional<String> optional3 = dynamic2.get("LocName").asString().result();
 				if (optional3.isPresent()) {
-					dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(new TranslatableText((String)optional3.get()))));
+					dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.method_43471((String)optional3.get()))));
 					dynamic2 = dynamic2.remove("LocName");
 				}
 			}

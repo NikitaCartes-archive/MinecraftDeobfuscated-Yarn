@@ -29,6 +29,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
@@ -171,8 +172,10 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	}
 
 	private static void trySpawnWarden(ServerWorld world, BlockPos pos) {
-		LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, pos, 20, 5, 6)
-			.ifPresent(entity -> entity.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0F, 1.0F));
+		if (world.getGameRules().getBoolean(GameRules.DO_WARDEN_SPAWNING)) {
+			LargeEntitySpawnHelper.trySpawnAt(EntityType.WARDEN, SpawnReason.TRIGGERED, world, pos, 20, 5, 6)
+				.ifPresent(entity -> entity.playSound(SoundEvents.ENTITY_WARDEN_AGITATED, 5.0F, 1.0F));
+		}
 	}
 
 	@Override

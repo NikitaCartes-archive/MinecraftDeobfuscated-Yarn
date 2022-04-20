@@ -3,14 +3,13 @@ package net.minecraft.client.realms.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public enum RealmsWorldGeneratorType {
-	DEFAULT(0, new TranslatableText("generator.default")),
-	FLAT(1, new TranslatableText("generator.flat")),
-	LARGE_BIOMES(2, new TranslatableText("generator.large_biomes")),
-	AMPLIFIED(3, new TranslatableText("generator.amplified"));
+	DEFAULT(0, Text.method_43471("generator.default")),
+	FLAT(1, Text.method_43471("generator.flat")),
+	LARGE_BIOMES(2, Text.method_43471("generator.large_biomes")),
+	AMPLIFIED(3, Text.method_43471("generator.amplified"));
 
 	private final int id;
 	private final Text text;

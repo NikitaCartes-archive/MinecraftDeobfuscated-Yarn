@@ -12,7 +12,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
@@ -21,8 +20,8 @@ import net.minecraft.util.registry.RegistryEntry;
 @Environment(EnvType.CLIENT)
 public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 6000;
-	private static final Text TITLE = new TranslatableText("tutorial.find_tree.title");
-	private static final Text DESCRIPTION = new TranslatableText("tutorial.find_tree.description");
+	private static final Text TITLE = Text.method_43471("tutorial.find_tree.title");
+	private static final Text DESCRIPTION = Text.method_43471("tutorial.find_tree.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

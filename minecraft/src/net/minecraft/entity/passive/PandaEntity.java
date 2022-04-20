@@ -522,7 +522,7 @@ public class PandaEntity extends AnimalEntity {
 			this.triggerItemPickedUpByEntityCriteria(item);
 			ItemStack itemStack = item.getStack();
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack);
-			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
+			this.updateDropChances(EquipmentSlot.MAINHAND);
 			this.sendPickup(item, itemStack.getCount());
 			item.discard();
 		}

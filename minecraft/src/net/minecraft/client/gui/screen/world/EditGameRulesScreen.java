@@ -28,10 +28,8 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameRules;
 
@@ -46,7 +44,7 @@ public class EditGameRulesScreen extends Screen {
 	private final GameRules gameRules;
 
 	public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
-		super(new TranslatableText("editGamerule.title"));
+		super(Text.method_43471("editGamerule.title"));
 		this.gameRules = gameRules;
 		this.ruleSaver = ruleSaveConsumer;
 	}
@@ -249,17 +247,17 @@ public class EditGameRulesScreen extends Screen {
 				}
 
 				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
-					Text text = new TranslatableText(key.getTranslationKey());
-					Text text2 = new LiteralText(key.getName()).formatted(Formatting.YELLOW);
+					Text text = Text.method_43471(key.getTranslationKey());
+					Text text2 = Text.method_43470(key.getName()).formatted(Formatting.YELLOW);
 					T rule = gameRules.get(key);
 					String string = rule.serialize();
-					Text text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
+					Text text3 = Text.method_43469("editGamerule.default", Text.method_43470(string)).formatted(Formatting.GRAY);
 					String string2 = key.getTranslationKey() + ".description";
 					List<OrderedText> list;
 					String string3;
 					if (I18n.hasTranslation(string2)) {
 						Builder<OrderedText> builder = ImmutableList.<OrderedText>builder().add(text2.asOrderedText());
-						Text text4 = new TranslatableText(string2);
+						Text text4 = Text.method_43471(string2);
 						EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(builder::add);
 						list = builder.add(text3.asOrderedText()).build();
 						string3 = text4.getString() + "\n" + text3.getString();
@@ -278,7 +276,7 @@ public class EditGameRulesScreen extends Screen {
 					entry -> {
 						this.addEntry(
 							EditGameRulesScreen.this.new RuleCategoryWidget(
-								new TranslatableText(((GameRules.Category)entry.getKey()).getCategory()).formatted(new Formatting[]{Formatting.BOLD, Formatting.YELLOW})
+								Text.method_43471(((GameRules.Category)entry.getKey()).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)
 							)
 						);
 						((Map)entry.getValue())

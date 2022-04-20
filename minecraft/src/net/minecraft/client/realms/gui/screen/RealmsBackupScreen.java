@@ -24,7 +24,6 @@ import net.minecraft.client.realms.task.RestoreTask;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -34,10 +33,10 @@ public class RealmsBackupScreen extends RealmsScreen {
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
 	static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
-	static final Text RESTORE_TEXT = new TranslatableText("mco.backup.button.restore");
-	static final Text CHANGES_TOOLTIP = new TranslatableText("mco.backup.changes.tooltip");
-	private static final Text BACKUPS_TEXT = new TranslatableText("mco.configure.world.backup");
-	private static final Text NO_BACKUPS_TEXT = new TranslatableText("mco.backup.nobackups");
+	static final Text RESTORE_TEXT = Text.method_43471("mco.backup.button.restore");
+	static final Text CHANGES_TOOLTIP = Text.method_43471("mco.backup.changes.tooltip");
+	private static final Text BACKUPS_TEXT = Text.method_43471("mco.configure.world.backup");
+	private static final Text NO_BACKUPS_TEXT = Text.method_43471("mco.backup.nobackups");
 	static int lastScrollPosition = -1;
 	private final RealmsConfigureWorldScreen parent;
 	List<Backup> backups = Collections.emptyList();
@@ -54,7 +53,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private static final String UPLOADED = "Uploaded";
 
 	public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {
-		super(new TranslatableText("mco.configure.world.backup"));
+		super(Text.method_43471("mco.configure.world.backup"));
 		this.parent = parent;
 		this.serverData = serverData;
 		this.slotId = slotId;
@@ -91,17 +90,15 @@ public class RealmsBackupScreen extends RealmsScreen {
 			}
 		}).start();
 		this.downloadButton = this.addDrawableChild(
-			new ButtonWidget(this.width - 135, row(1), 120, 20, new TranslatableText("mco.backup.button.download"), button -> this.downloadClicked())
+			new ButtonWidget(this.width - 135, row(1), 120, 20, Text.method_43471("mco.backup.button.download"), button -> this.downloadClicked())
 		);
 		this.restoreButton = this.addDrawableChild(
-			new ButtonWidget(this.width - 135, row(3), 120, 20, new TranslatableText("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup))
+			new ButtonWidget(this.width - 135, row(3), 120, 20, Text.method_43471("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup))
 		);
-		this.changesButton = this.addDrawableChild(
-			new ButtonWidget(this.width - 135, row(5), 120, 20, new TranslatableText("mco.backup.changes.tooltip"), button -> {
-				this.client.setScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
-				this.selectedBackup = -1;
-			})
-		);
+		this.changesButton = this.addDrawableChild(new ButtonWidget(this.width - 135, row(5), 120, 20, Text.method_43471("mco.backup.changes.tooltip"), button -> {
+			this.client.setScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
+			this.selectedBackup = -1;
+		}));
 		this.addDrawableChild(new ButtonWidget(this.width - 100, this.height - 35, 85, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
 		this.addSelectableChild(this.backupObjectSelectionList);
 		this.focusOn(this.backupObjectSelectionList);
@@ -167,8 +164,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 			Date date = ((Backup)this.backups.get(selectedBackup)).lastModifiedDate;
 			String string = DateFormat.getDateTimeInstance(3, 3).format(date);
 			String string2 = RealmsUtil.convertToAgePresentation(date);
-			Text text = new TranslatableText("mco.configure.world.restore.question.line1", string, string2);
-			Text text2 = new TranslatableText("mco.configure.world.restore.question.line2");
+			Text text = Text.method_43469("mco.configure.world.restore.question.line1", string, string2);
+			Text text2 = Text.method_43471("mco.configure.world.restore.question.line2");
 			this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 				if (confirmed) {
 					this.restore();
@@ -181,8 +178,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 	}
 
 	private void downloadClicked() {
-		Text text = new TranslatableText("mco.configure.world.restore.download.question.line1");
-		Text text2 = new TranslatableText("mco.configure.world.restore.download.question.line2");
+		Text text = Text.method_43471("mco.configure.world.restore.download.question.line1");
+		Text text2 = Text.method_43471("mco.configure.world.restore.download.question.line2");
 		this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 			if (confirmed) {
 				this.downloadWorldData();
@@ -397,7 +394,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 		@Override
 		public Text getNarration() {
-			return new TranslatableText("narrator.select", this.mBackup.lastModifiedDate.toString());
+			return Text.method_43469("narrator.select", this.mBackup.lastModifiedDate.toString());
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package net.minecraft.util;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public interface TranslatableOption {
 	int getId();
@@ -9,6 +8,6 @@ public interface TranslatableOption {
 	String getTranslationKey();
 
 	default Text getText() {
-		return new TranslatableText(this.getTranslationKey());
+		return Text.method_43471(this.getTranslationKey());
 	}
 }

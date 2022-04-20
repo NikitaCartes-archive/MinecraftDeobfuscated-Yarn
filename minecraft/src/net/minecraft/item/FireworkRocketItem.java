@@ -12,9 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -87,7 +85,7 @@ public class FireworkRocketItem extends Item {
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("Flight", NbtElement.NUMBER_TYPE)) {
 				tooltip.add(
-					new TranslatableText("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
+					Text.method_43471("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
 				);
 			}
 
@@ -99,7 +97,7 @@ public class FireworkRocketItem extends Item {
 					FireworkStarItem.appendFireworkTooltip(nbtCompound2, list);
 					if (!list.isEmpty()) {
 						for (int j = 1; j < list.size(); j++) {
-							list.set(j, new LiteralText("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
+							list.set(j, Text.method_43470("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
 						}
 
 						tooltip.addAll(list);

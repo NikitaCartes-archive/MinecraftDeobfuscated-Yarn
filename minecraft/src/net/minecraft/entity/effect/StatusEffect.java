@@ -16,7 +16,6 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
@@ -126,7 +125,7 @@ public class StatusEffect {
 	}
 
 	public Text getName() {
-		return new TranslatableText(this.getTranslationKey());
+		return Text.method_43471(this.getTranslationKey());
 	}
 
 	public StatusEffectCategory getCategory() {

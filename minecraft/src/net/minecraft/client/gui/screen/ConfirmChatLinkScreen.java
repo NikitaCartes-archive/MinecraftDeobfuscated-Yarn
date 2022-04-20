@@ -5,20 +5,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmChatLinkScreen extends ConfirmScreen {
-	private static final Text COPY = new TranslatableText("chat.copy");
-	private static final Text WARNING = new TranslatableText("chat.link.warning");
+	private static final Text COPY = Text.method_43471("chat.copy");
+	private static final Text WARNING = Text.method_43471("chat.link.warning");
 	private final String link;
 	private final boolean drawWarning;
 
 	public ConfirmChatLinkScreen(BooleanConsumer callback, String link, boolean trusted) {
-		super(callback, new TranslatableText(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), new LiteralText(link));
-		this.yesTranslated = (Text)(trusted ? new TranslatableText("chat.link.open") : ScreenTexts.YES);
+		super(callback, Text.method_43471(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), Text.method_43470(link));
+		this.yesTranslated = (Text)(trusted ? Text.method_43471("chat.link.open") : ScreenTexts.YES);
 		this.noTranslated = trusted ? ScreenTexts.CANCEL : ScreenTexts.NO;
 		this.drawWarning = !trusted;
 		this.link = link;

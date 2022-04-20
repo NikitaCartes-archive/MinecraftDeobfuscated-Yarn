@@ -10,7 +10,7 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -31,7 +31,7 @@ public class OpenServerTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(new TranslatableText("mco.configure.world.opening"));
+		this.setTitle(Text.method_43471("mco.configure.world.opening"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		for (int i = 0; i < 25; i++) {

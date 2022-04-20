@@ -8,14 +8,13 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -26,9 +25,9 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
 	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
 	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
-	private static final Text ACTIVE_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.active");
-	private static final Text MINIGAME_TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip.minigame");
-	private static final Text TOOLTIP = new TranslatableText("mco.configure.world.slot.tooltip");
+	private static final Text ACTIVE_TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip.active");
+	private static final Text MINIGAME_TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip.minigame");
+	private static final Text TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip");
 	private final Supplier<RealmsServer> serverDataProvider;
 	private final Consumer<Text> tooltipSetter;
 	private final int slotIndex;
@@ -39,7 +38,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	public RealmsWorldSlotButton(
 		int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<Text> tooltipSetter, int id, ButtonWidget.PressAction action
 	) {
-		super(x, y, width, height, LiteralText.EMPTY, action);
+		super(x, y, width, height, ScreenTexts.field_39003, action);
 		this.serverDataProvider = serverDataProvider;
 		this.slotIndex = id;
 		this.tooltipSetter = tooltipSetter;
@@ -102,17 +101,17 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 
 	private Pair<Text, Text> getActionPromptAndMessage(RealmsServer server, String text, boolean empty, boolean minigame, RealmsWorldSlotButton.Action action) {
 		if (action == RealmsWorldSlotButton.Action.NOTHING) {
-			return Pair.of(null, new LiteralText(text));
+			return Pair.of(null, Text.method_43470(text));
 		} else {
 			Text text2;
 			if (minigame) {
 				if (empty) {
-					text2 = LiteralText.EMPTY;
+					text2 = ScreenTexts.field_39003;
 				} else {
-					text2 = new LiteralText(" ").append(text).append(" ").append(server.minigameName);
+					text2 = Text.method_43470(" ").append(text).append(" ").append(server.minigameName);
 				}
 			} else {
-				text2 = new LiteralText(" ").append(text);
+				text2 = Text.method_43470(" ").append(text);
 			}
 
 			Text text3;

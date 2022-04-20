@@ -20,7 +20,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -325,7 +324,7 @@ public class ItemEntity extends Entity {
 	@Override
 	public Text getName() {
 		Text text = this.getCustomName();
-		return (Text)(text != null ? text : new TranslatableText(this.getStack().getTranslationKey()));
+		return (Text)(text != null ? text : Text.method_43471(this.getStack().getTranslationKey()));
 	}
 
 	@Override

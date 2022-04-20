@@ -21,6 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_7422;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -258,7 +259,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
 	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private EntityChangeListener changeListener = EntityChangeListener.NONE;
-	private Vec3d trackedPosition;
+	private final class_7422 field_38931 = new class_7422();
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	private int netherPortalCooldown;
@@ -290,7 +291,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
 		this.chunkPos = ChunkPos.ORIGIN;
-		this.trackedPosition = Vec3d.ZERO;
 		this.dataTracker = new DataTracker(this);
 		this.dataTracker.startTracking(FLAGS, (byte)0);
 		this.dataTracker.startTracking(AIR, this.getMaxAir());
@@ -333,16 +333,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void updateTrackedPosition(double x, double y, double z) {
-		this.updateTrackedPosition(new Vec3d(x, y, z));
+	public void method_43391(double d, double e, double f) {
+		this.field_38931.method_43494(new Vec3d(d, e, f));
 	}
 
-	public void updateTrackedPosition(Vec3d pos) {
-		this.trackedPosition = pos;
-	}
-
-	public Vec3d getTrackedPosition() {
-		return this.trackedPosition;
+	public class_7422 method_43389() {
+		return this.field_38931;
 	}
 
 	public EntityType<?> getType() {
@@ -3144,6 +3140,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.pos;
 	}
 
+	public Vec3d method_43390() {
+		return this.getPos();
+	}
+
 	@Override
 	public BlockPos getBlockPos() {
 		return this.blockPos;
@@ -3255,7 +3255,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();
-		this.updateTrackedPosition(d, e, f);
+		this.method_43391(d, e, f);
 		this.refreshPositionAfterTeleport(d, e, f);
 		this.setPitch(packet.getPitch());
 		this.setYaw(packet.getYaw());

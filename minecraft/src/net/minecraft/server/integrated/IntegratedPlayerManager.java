@@ -8,7 +8,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.WorldSaveHandler;
 
@@ -33,7 +32,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 	@Override
 	public Text checkCanJoin(SocketAddress address, GameProfile profile) {
 		return (Text)(profile.getName().equalsIgnoreCase(this.getServer().getSinglePlayerName()) && this.getPlayer(profile.getName()) != null
-			? new TranslatableText("multiplayer.disconnect.name_taken")
+			? Text.method_43471("multiplayer.disconnect.name_taken")
 			: super.checkCanJoin(address, profile));
 	}
 

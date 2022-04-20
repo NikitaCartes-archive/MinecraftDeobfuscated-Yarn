@@ -18,7 +18,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.StructureTypeKeys;
@@ -28,8 +28,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.END_STONE,
-				new TranslatableText("advancements.end.root.title"),
-				new TranslatableText("advancements.end.root.description"),
+				Text.method_43471("advancements.end.root.title"),
+				Text.method_43471("advancements.end.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/end.png"),
 				AdvancementFrame.TASK,
 				false,
@@ -42,8 +42,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement)
 			.display(
 				Blocks.DRAGON_HEAD,
-				new TranslatableText("advancements.end.kill_dragon.title"),
-				new TranslatableText("advancements.end.kill_dragon.description"),
+				Text.method_43471("advancements.end.kill_dragon.title"),
+				Text.method_43471("advancements.end.kill_dragon.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -56,8 +56,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.ENDER_PEARL,
-				new TranslatableText("advancements.end.enter_end_gateway.title"),
-				new TranslatableText("advancements.end.enter_end_gateway.description"),
+				Text.method_43471("advancements.end.enter_end_gateway.title"),
+				Text.method_43471("advancements.end.enter_end_gateway.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -70,8 +70,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.END_CRYSTAL,
-				new TranslatableText("advancements.end.respawn_dragon.title"),
-				new TranslatableText("advancements.end.respawn_dragon.description"),
+				Text.method_43471("advancements.end.respawn_dragon.title"),
+				Text.method_43471("advancements.end.respawn_dragon.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -84,8 +84,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement3)
 			.display(
 				Blocks.PURPUR_BLOCK,
-				new TranslatableText("advancements.end.find_end_city.title"),
-				new TranslatableText("advancements.end.find_end_city.description"),
+				Text.method_43471("advancements.end.find_end_city.title"),
+				Text.method_43471("advancements.end.find_end_city.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -98,8 +98,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Items.DRAGON_BREATH,
-				new TranslatableText("advancements.end.dragon_breath.title"),
-				new TranslatableText("advancements.end.dragon_breath.description"),
+				Text.method_43471("advancements.end.dragon_breath.title"),
+				Text.method_43471("advancements.end.dragon_breath.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -112,8 +112,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement4)
 			.display(
 				Items.SHULKER_SHELL,
-				new TranslatableText("advancements.end.levitate.title"),
-				new TranslatableText("advancements.end.levitate.description"),
+				Text.method_43471("advancements.end.levitate.title"),
+				Text.method_43471("advancements.end.levitate.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -127,8 +127,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement4)
 			.display(
 				Items.ELYTRA,
-				new TranslatableText("advancements.end.elytra.title"),
-				new TranslatableText("advancements.end.elytra.description"),
+				Text.method_43471("advancements.end.elytra.title"),
+				Text.method_43471("advancements.end.elytra.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -141,8 +141,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement
 			.parent(advancement2)
 			.display(
 				Blocks.DRAGON_EGG,
-				new TranslatableText("advancements.end.dragon_egg.title"),
-				new TranslatableText("advancements.end.dragon_egg.description"),
+				Text.method_43471("advancements.end.dragon_egg.title"),
+				Text.method_43471("advancements.end.dragon_egg.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,

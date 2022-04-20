@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class SetIdleTimeoutCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -20,7 +20,7 @@ public class SetIdleTimeoutCommand {
 
 	private static int execute(ServerCommandSource source, int minutes) {
 		source.getServer().setPlayerIdleTimeout(minutes);
-		source.sendFeedback(new TranslatableText("commands.setidletimeout.success", minutes), true);
+		source.sendFeedback(Text.method_43469("commands.setidletimeout.success", minutes), true);
 		return minutes;
 	}
 }

@@ -56,12 +56,12 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			)) {
 				PathNodeType pathNodeType2 = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
 				if (this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0F) {
-					return super.getNode(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
+					return super.method_43415(blockPos2);
 				}
 			}
 		}
 
-		return super.getNode(blockPos.getX(), i, blockPos.getZ());
+		return super.method_43415(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
 	}
 
 	@Override

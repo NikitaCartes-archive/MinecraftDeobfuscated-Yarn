@@ -17,7 +17,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
@@ -33,7 +33,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	private boolean mouseDown;
 
 	public InventoryScreen(PlayerEntity player) {
-		super(player.playerScreenHandler, player.getInventory(), new TranslatableText("container.crafting"));
+		super(player.playerScreenHandler, player.getInventory(), Text.method_43471("container.crafting"));
 		this.passEvents = true;
 		this.titleX = 97;
 	}

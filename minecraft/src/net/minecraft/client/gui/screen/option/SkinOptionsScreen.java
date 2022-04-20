@@ -9,12 +9,12 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SkinOptionsScreen extends GameOptionsScreen {
 	public SkinOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, new TranslatableText("options.skinCustomisation.title"));
+		super(parent, gameOptions, Text.method_43471("options.skinCustomisation.title"));
 	}
 
 	@Override

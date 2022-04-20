@@ -36,19 +36,23 @@ public class LargeEntitySpawnHelper {
 	}
 
 	private static boolean findSpawnPos(ServerWorld serverWorld, int i, BlockPos.Mutable mutable) {
-		BlockState blockState = serverWorld.getBlockState(mutable);
+		if (!serverWorld.getWorldBorder().contains(mutable)) {
+			return false;
+		} else {
+			BlockState blockState = serverWorld.getBlockState(mutable);
 
-		for (int j = i; j >= -i; j--) {
-			mutable.move(Direction.DOWN);
-			BlockState blockState2 = serverWorld.getBlockState(mutable);
-			if ((blockState.isAir() || blockState.getMaterial().isLiquid()) && blockState2.getMaterial().blocksLight()) {
-				mutable.move(Direction.UP);
-				return true;
+			for (int j = i; j >= -i; j--) {
+				mutable.move(Direction.DOWN);
+				BlockState blockState2 = serverWorld.getBlockState(mutable);
+				if ((blockState.isAir() || blockState.getMaterial().isLiquid()) && blockState2.getMaterial().blocksLight()) {
+					mutable.move(Direction.UP);
+					return true;
+				}
+
+				blockState = blockState2;
 			}
 
-			blockState = blockState2;
+			return false;
 		}
-
-		return false;
 	}
 }

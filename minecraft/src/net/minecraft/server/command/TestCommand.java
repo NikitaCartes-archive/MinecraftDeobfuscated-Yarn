@@ -38,7 +38,6 @@ import net.minecraft.test.TestSet;
 import net.minecraft.test.TestUtil;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.BlockRotation;
@@ -251,22 +250,22 @@ public class TestCommand {
 		}
 
 		if (!optional.isPresent()) {
-			source.sendError(new LiteralText("Can't find a structure block that contains the targeted pos " + blockPos));
+			source.sendError(Text.method_43470("Can't find a structure block that contains the targeted pos " + blockPos));
 			return 0;
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity((BlockPos)optional.get());
 			BlockPos blockPos2 = blockPos.subtract((Vec3i)optional.get());
 			String string = blockPos2.getX() + ", " + blockPos2.getY() + ", " + blockPos2.getZ();
 			String string2 = structureBlockBlockEntity.getStructurePath();
-			Text text = new LiteralText(string)
+			Text text = Text.method_43470(string)
 				.setStyle(
 					Style.EMPTY
 						.withBold(true)
 						.withColor(Formatting.GREEN)
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText("Click to copy to clipboard")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470("Click to copy to clipboard")))
 						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
-			source.sendFeedback(new LiteralText("Position relative to " + string2 + ": ").append(text), false);
+			source.sendFeedback(Text.method_43470("Position relative to " + string2 + ": ").append(text), false);
 			DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
 			return 1;
 		}
@@ -414,7 +413,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerCommandSource source, String message) {
-		source.sendFeedback(new LiteralText(message), false);
+		source.sendFeedback(Text.method_43470(message), false);
 	}
 
 	private static int executeExport(ServerCommandSource source) {
@@ -492,7 +491,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(new LiteralText(formatting + message), Util.NIL_UUID));
+		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(Text.method_43470(formatting + message), Util.NIL_UUID));
 	}
 
 	static class Listener implements TestListener {

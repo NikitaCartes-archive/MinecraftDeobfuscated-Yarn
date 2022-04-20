@@ -512,6 +512,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		@Override
 		protected PathNodeNavigator createPathNodeNavigator(int range) {
 			this.nodeMaker = new LandPathNodeMaker();
+			this.nodeMaker.setCanEnterOpenDoors(true);
 			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 

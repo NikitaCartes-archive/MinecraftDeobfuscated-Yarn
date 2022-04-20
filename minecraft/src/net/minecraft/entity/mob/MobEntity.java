@@ -116,6 +116,7 @@ public abstract class MobEntity extends LivingEntity {
 	public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25F;
 	public static final String LEASH_KEY = "Leash";
 	public static final float DEFAULT_DROP_CHANCE = 0.085F;
+	public static final int field_38932 = 2;
 	public static final int field_35039 = 2;
 	public int ambientSoundChance;
 	protected int experiencePoints;
@@ -1072,7 +1073,7 @@ public abstract class MobEntity extends LivingEntity {
 		AbstractRandom abstractRandom = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
-				new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE)
+				new EntityAttributeModifier("Random spawn bonus", abstractRandom.method_43385(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
 			);
 		if (abstractRandom.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);

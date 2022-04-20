@@ -1,25 +1,23 @@
 package net.minecraft.text;
 
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import net.minecraft.class_7417;
+import net.minecraft.class_7420;
 
-public class KeybindText extends BaseText {
-	private static Function<String, Supplier<Text>> translator = key -> () -> new LiteralText(key);
+public class KeybindText implements class_7417 {
 	private final String key;
+	@Nullable
 	private Supplier<Text> translated;
 
 	public KeybindText(String key) {
 		this.key = key;
 	}
 
-	public static void setTranslator(Function<String, Supplier<Text>> translator) {
-		KeybindText.translator = translator;
-	}
-
 	private Text getTranslated() {
 		if (this.translated == null) {
-			this.translated = (Supplier<Text>)translator.apply(this.key);
+			this.translated = (Supplier<Text>)class_7420.field_39013.apply(this.key);
 		}
 
 		return (Text)this.translated.get();
@@ -31,26 +29,28 @@ public class KeybindText extends BaseText {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
-		return this.getTranslated().visit(visitor, style);
+	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+		return this.getTranslated().visit(styledVisitor, style);
 	}
 
-	public KeybindText copy() {
-		return new KeybindText(this.key);
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
 		} else {
-			return !(object instanceof KeybindText keybindText) ? false : this.key.equals(keybindText.key) && super.equals(object);
+			if (object instanceof KeybindText keybindText && this.key.equals(keybindText.key)) {
+				return true;
+			}
+
+			return false;
 		}
 	}
 
-	@Override
+	public int hashCode() {
+		return this.key.hashCode();
+	}
+
 	public String toString() {
-		return "KeybindComponent{keybind='" + this.key + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
+		return "keybind{" + this.key + "}";
 	}
 
 	public String getKey() {

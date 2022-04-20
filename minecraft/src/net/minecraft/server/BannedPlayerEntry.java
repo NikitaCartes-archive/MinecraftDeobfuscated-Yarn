@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class BannedPlayerEntry extends BanEntry<GameProfile> {
@@ -34,7 +33,7 @@ public class BannedPlayerEntry extends BanEntry<GameProfile> {
 	@Override
 	public Text toText() {
 		GameProfile gameProfile = this.getKey();
-		return new LiteralText(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
+		return Text.method_43470(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
 	}
 
 	private static GameProfile profileFromJson(JsonObject json) {

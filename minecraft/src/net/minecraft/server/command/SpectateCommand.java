@@ -8,13 +8,13 @@ import javax.annotation.Nullable;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class SpectateCommand {
-	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.spectate.self"));
+	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.spectate.self"));
 	private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(
-		playerName -> new TranslatableText("commands.spectate.not_spectator", playerName)
+		playerName -> Text.method_43469("commands.spectate.not_spectator", playerName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -41,9 +41,9 @@ public class SpectateCommand {
 		} else {
 			player.setCameraEntity(entity);
 			if (entity != null) {
-				source.sendFeedback(new TranslatableText("commands.spectate.success.started", entity.getDisplayName()), false);
+				source.sendFeedback(Text.method_43469("commands.spectate.success.started", entity.getDisplayName()), false);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.spectate.success.stopped"), false);
+				source.sendFeedback(Text.method_43471("commands.spectate.success.stopped"), false);
 			}
 
 			return 1;

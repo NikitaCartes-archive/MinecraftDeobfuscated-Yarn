@@ -7,7 +7,7 @@ import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.gui.screen.RealmsConfigureWorldScreen;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -25,7 +25,7 @@ public class SwitchMinigameTask extends LongRunningTask {
 
 	public void run() {
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
-		this.setTitle(new TranslatableText("mco.minigame.world.starting.screen.title"));
+		this.setTitle(Text.method_43471("mco.minigame.world.starting.screen.title"));
 
 		for (int i = 0; i < 25; i++) {
 			try {

@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class EntityCustomNameToTextFix extends DataFix {
@@ -31,6 +30,6 @@ public class EntityCustomNameToTextFix extends DataFix {
 
 	public static Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
 		String string = dynamic.get("CustomName").asString("");
-		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(new LiteralText(string))));
+		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.method_43470(string))));
 	}
 }

@@ -22,9 +22,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -371,13 +369,13 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		List<ItemStack> list = getProjectiles(stack);
 		if (isCharged(stack) && !list.isEmpty()) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			tooltip.add(new TranslatableText("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
+			tooltip.add(Text.method_43471("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
 			if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
 				List<Text> list2 = Lists.<Text>newArrayList();
 				Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);
 				if (!list2.isEmpty()) {
 					for (int i = 0; i < list2.size(); i++) {
-						list2.set(i, new LiteralText("  ").append((Text)list2.get(i)).formatted(Formatting.GRAY));
+						list2.set(i, Text.method_43470("  ").append((Text)list2.get(i)).formatted(Formatting.GRAY));
 					}
 
 					tooltip.addAll(list2);

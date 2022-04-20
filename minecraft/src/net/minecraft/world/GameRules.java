@@ -164,6 +164,9 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.BooleanRule> DO_TRADER_SPAWNING = register(
 		"doTraderSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);
+	public static final GameRules.Key<GameRules.BooleanRule> DO_WARDEN_SPAWNING = register(
+		"doWardenSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
+	);
 	public static final GameRules.Key<GameRules.BooleanRule> FORGIVE_DEAD_PLAYERS = register(
 		"forgiveDeadPlayers", GameRules.Category.MOBS, GameRules.BooleanRule.create(true)
 	);

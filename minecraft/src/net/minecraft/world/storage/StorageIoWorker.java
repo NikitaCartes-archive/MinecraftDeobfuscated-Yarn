@@ -9,9 +9,9 @@ import java.nio.file.Path;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -127,30 +127,15 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 		}).thenCompose(Function.identity());
 	}
 
-	@Nullable
-	public NbtCompound getNbt(ChunkPos pos) throws IOException {
-		CompletableFuture<NbtCompound> completableFuture = this.readChunkData(pos);
-
-		try {
-			return (NbtCompound)completableFuture.join();
-		} catch (CompletionException var4) {
-			if (var4.getCause() instanceof IOException) {
-				throw (IOException)var4.getCause();
-			} else {
-				throw var4;
-			}
-		}
-	}
-
-	protected CompletableFuture<NbtCompound> readChunkData(ChunkPos pos) {
+	public CompletableFuture<Optional<NbtCompound>> readChunkData(ChunkPos pos) {
 		return this.run(() -> {
 			StorageIoWorker.Result result = (StorageIoWorker.Result)this.results.get(pos);
 			if (result != null) {
-				return Either.left(result.nbt);
+				return Either.left(Optional.ofNullable(result.nbt));
 			} else {
 				try {
 					NbtCompound nbtCompound = this.storage.getTagAt(pos);
-					return Either.left(nbtCompound);
+					return Either.left(Optional.ofNullable(nbtCompound));
 				} catch (Exception var4) {
 					LOGGER.warn("Failed to read chunk {}", pos, var4);
 					return Either.right(var4);

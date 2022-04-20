@@ -13,16 +13,16 @@ import java.util.Collections;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class CommandFunctionArgumentType implements ArgumentType<CommandFunctionArgumentType.FunctionArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "#foo");
 	private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("arguments.function.tag.unknown", id)
+		id -> Text.method_43469("arguments.function.tag.unknown", id)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("arguments.function.unknown", id)
+		id -> Text.method_43469("arguments.function.unknown", id)
 	);
 
 	public static CommandFunctionArgumentType commandFunction() {

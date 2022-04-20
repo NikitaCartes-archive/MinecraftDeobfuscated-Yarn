@@ -7,10 +7,10 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ALLAY_AMBIENT_WITH_ITEM = register("entity.allay.ambient_with_item");
 	public static final SoundEvent ENTITY_ALLAY_AMBIENT_WITHOUT_ITEM = register("entity.allay.ambient_without_item");
 	public static final SoundEvent ENTITY_ALLAY_DEATH = register("entity.allay.death");
-	public static final SoundEvent ENTITY_ALLAY_FLAP = register("entity.allay.flap");
 	public static final SoundEvent ENTITY_ALLAY_HURT = register("entity.allay.hurt");
 	public static final SoundEvent ENTITY_ALLAY_ITEM_GIVEN = register("entity.allay.item_given");
 	public static final SoundEvent ENTITY_ALLAY_ITEM_TAKEN = register("entity.allay.item_taken");
+	public static final SoundEvent ENTITY_ALLAY_ITEM_THROWN = register("entity.allay.item_thrown");
 	public static final SoundEvent AMBIENT_CAVE = register("ambient.cave");
 	public static final SoundEvent AMBIENT_BASALT_DELTAS_ADDITIONS = register("ambient.basalt_deltas.additions");
 	public static final SoundEvent AMBIENT_BASALT_DELTAS_LOOP = register("ambient.basalt_deltas.loop");
@@ -672,6 +672,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_MULE_HURT = register("entity.mule.hurt");
 	public static final SoundEvent MUSIC_CREATIVE = register("music.creative");
 	public static final SoundEvent MUSIC_CREDITS = register("music.credits");
+	public static final SoundEvent MUSIC_DISC_5 = register("music_disc.5");
 	public static final SoundEvent MUSIC_DISC_11 = register("music_disc.11");
 	public static final SoundEvent MUSIC_DISC_13 = register("music_disc.13");
 	public static final SoundEvent MUSIC_DISC_BLOCKS = register("music_disc.blocks");
@@ -697,6 +698,9 @@ public class SoundEvents {
 	public static final SoundEvent MUSIC_OVERWORLD_GROVE = register("music.overworld.grove");
 	public static final SoundEvent MUSIC_OVERWORLD_JAGGED_PEAKS = register("music.overworld.jagged_peaks");
 	public static final SoundEvent MUSIC_OVERWORLD_LUSH_CAVES = register("music.overworld.lush_caves");
+	public static final SoundEvent MUSIC_OVERWORLD_SWAMP = register("music.overworld.swamp");
+	public static final SoundEvent MUSIC_OVERWORLD_JUNGLE_AND_FOREST = register("music.overworld.jungle_and_forest");
+	public static final SoundEvent MUSIC_OVERWORLD_OLD_GROWTH_TAIGA = register("music.overworld.old_growth_taiga");
 	public static final SoundEvent MUSIC_OVERWORLD_MEADOW = register("music.overworld.meadow");
 	public static final SoundEvent MUSIC_NETHER_NETHER_WASTES = register("music.nether.nether_wastes");
 	public static final SoundEvent MUSIC_OVERWORLD_FROZEN_PEAKS = register("music.overworld.frozen_peaks");
@@ -1118,11 +1122,9 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PLACE = register("block.sweet_berry_bush.place");
 	public static final SoundEvent BLOCK_SWEET_BERRY_BUSH_PICK_BERRIES = register("block.sweet_berry_bush.pick_berries");
 	public static final SoundEvent ENTITY_TADPOLE_DEATH = register("entity.tadpole.death");
-	public static final SoundEvent ENTITY_TADPOLE_EAT = register("entity.tadpole.eat");
 	public static final SoundEvent ENTITY_TADPOLE_FLOP = register("entity.tadpole.flop");
 	public static final SoundEvent ENTITY_TADPOLE_GROW_UP = register("entity.tadpole.grow_up");
 	public static final SoundEvent ENTITY_TADPOLE_HURT = register("entity.tadpole.hurt");
-	public static final SoundEvent ENTITY_TADPOLE_STEP = register("entity.tadpole.step");
 	public static final SoundEvent ENCHANT_THORNS_HIT = register("enchant.thorns.hit");
 	public static final SoundEvent ENTITY_TNT_PRIMED = register("entity.tnt.primed");
 	public static final SoundEvent ITEM_TOTEM_USE = register("item.totem.use");

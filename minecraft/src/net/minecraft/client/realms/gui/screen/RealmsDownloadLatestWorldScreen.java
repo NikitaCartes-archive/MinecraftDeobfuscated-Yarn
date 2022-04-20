@@ -25,9 +25,7 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -45,7 +43,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private final RealmsDownloadLatestWorldScreen.DownloadStatus downloadStatus;
 	@Nullable
 	private volatile Text downloadError;
-	private volatile Text status = new TranslatableText("mco.download.preparing");
+	private volatile Text status = Text.method_43471("mco.download.preparing");
 	@Nullable
 	private volatile String progress;
 	private volatile boolean cancelled;
@@ -70,7 +68,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		this.worldName = worldName;
 		this.worldDownload = worldDownload;
 		this.downloadStatus = new RealmsDownloadLatestWorldScreen.DownloadStatus();
-		this.downloadTitle = new TranslatableText("mco.download.title");
+		this.downloadTitle = Text.method_43471("mco.download.title");
 		this.narrationRateLimiter = RateLimiter.create(0.1F);
 	}
 
@@ -87,8 +85,8 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private void checkDownloadSize() {
 		if (!this.finished) {
 			if (!this.checked && this.getContentLength(this.worldDownload.downloadLink) >= 5368709120L) {
-				Text text = new TranslatableText("mco.download.confirmation.line1", SizeUnit.getUserFriendlyString(5368709120L));
-				Text text2 = new TranslatableText("mco.download.confirmation.line2");
+				Text text = Text.method_43469("mco.download.confirmation.line1", SizeUnit.getUserFriendlyString(5368709120L));
+				Text text2 = Text.method_43471("mco.download.confirmation.line2");
 				this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
 					this.checked = true;
 					this.client.setScreen(this);
@@ -120,8 +118,8 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		list.add(this.downloadTitle);
 		list.add(this.status);
 		if (this.progress != null) {
-			list.add(new LiteralText(this.progress + "%"));
-			list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
+			list.add(Text.method_43470(this.progress + "%"));
+			list.add(Text.method_43470(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
 		}
 
 		if (this.downloadError != null) {
@@ -236,7 +234,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			try {
 				try {
 					if (!DOWNLOAD_LOCK.tryLock(1L, TimeUnit.SECONDS)) {
-						this.status = new TranslatableText("mco.download.failed");
+						this.status = Text.method_43471("mco.download.failed");
 						return;
 					}
 
@@ -245,7 +243,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 						return;
 					}
 
-					this.status = new TranslatableText("mco.download.downloading", this.worldName);
+					this.status = Text.method_43469("mco.download.downloading", this.worldName);
 					FileDownload fileDownload = new FileDownload();
 					fileDownload.contentLength(this.worldDownload.downloadLink);
 					fileDownload.downloadWorld(this.worldDownload, this.worldName, this.downloadStatus, this.client.getLevelStorage());
@@ -253,14 +251,14 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					while (!fileDownload.isFinished()) {
 						if (fileDownload.isError()) {
 							fileDownload.cancel();
-							this.downloadError = new TranslatableText("mco.download.failed");
+							this.downloadError = Text.method_43471("mco.download.failed");
 							this.cancelButton.setMessage(ScreenTexts.DONE);
 							return;
 						}
 
 						if (fileDownload.isExtracting()) {
 							if (!this.extracting) {
-								this.status = new TranslatableText("mco.download.extracting");
+								this.status = Text.method_43471("mco.download.extracting");
 							}
 
 							this.extracting = true;
@@ -280,13 +278,13 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					}
 
 					this.finished = true;
-					this.status = new TranslatableText("mco.download.done");
+					this.status = Text.method_43471("mco.download.done");
 					this.cancelButton.setMessage(ScreenTexts.DONE);
 					return;
 				} catch (InterruptedException var9) {
 					LOGGER.error("Could not acquire upload lock");
 				} catch (Exception var10) {
-					this.downloadError = new TranslatableText("mco.download.failed");
+					this.downloadError = Text.method_43471("mco.download.failed");
 					var10.printStackTrace();
 				}
 			} finally {
@@ -302,7 +300,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	}
 
 	private void downloadCancelled() {
-		this.status = new TranslatableText("mco.download.cancelled");
+		this.status = Text.method_43471("mco.download.cancelled");
 	}
 
 	@Environment(EnvType.CLIENT)

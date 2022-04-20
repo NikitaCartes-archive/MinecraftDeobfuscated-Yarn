@@ -10,11 +10,12 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
+import net.minecraft.class_7417;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
-public class TranslatableText extends BaseText implements ParsableText {
+public class TranslatableText implements class_7417 {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 	private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
 	private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
@@ -115,16 +116,12 @@ public class TranslatableText extends BaseText implements ParsableText {
 		}
 	}
 
-	public TranslatableText copy() {
-		return new TranslatableText(this.key, this.args);
-	}
-
 	@Override
-	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> visitor, Style style) {
+	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 		this.updateTranslations();
 
 		for (StringVisitable stringVisitable : this.translations) {
-			Optional<T> optional = stringVisitable.visit(visitor, style);
+			Optional<T> optional = stringVisitable.visit(styledVisitor, style);
 			if (optional.isPresent()) {
 				return optional;
 			}
@@ -148,50 +145,41 @@ public class TranslatableText extends BaseText implements ParsableText {
 	}
 
 	@Override
-	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+	public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
 		Object[] objects = new Object[this.args.length];
 
-		for (int i = 0; i < objects.length; i++) {
-			Object object = this.args[i];
+		for (int j = 0; j < objects.length; j++) {
+			Object object = this.args[j];
 			if (object instanceof Text) {
-				objects[i] = Texts.parse(source, (Text)object, sender, depth);
+				objects[j] = Texts.parse(serverCommandSource, (Text)object, entity, i);
 			} else {
-				objects[i] = object;
+				objects[j] = object;
 			}
 		}
 
-		return new TranslatableText(this.key, objects);
+		return MutableText.method_43477(new TranslatableText(this.key, objects));
 	}
 
-	@Override
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
 		} else {
-			return !(object instanceof TranslatableText translatableText)
-				? false
-				: Arrays.equals(this.args, translatableText.args) && this.key.equals(translatableText.key) && super.equals(object);
+			if (object instanceof TranslatableText translatableText && this.key.equals(translatableText.key) && Arrays.equals(this.args, translatableText.args)) {
+				return true;
+			}
+
+			return false;
 		}
 	}
 
-	@Override
 	public int hashCode() {
 		int i = super.hashCode();
 		i = 31 * i + this.key.hashCode();
 		return 31 * i + Arrays.hashCode(this.args);
 	}
 
-	@Override
 	public String toString() {
-		return "TranslatableComponent{key='"
-			+ this.key
-			+ "', args="
-			+ Arrays.toString(this.args)
-			+ ", siblings="
-			+ this.siblings
-			+ ", style="
-			+ this.getStyle()
-			+ "}";
+		return "translation{key='" + this.key + "', args=" + Arrays.toString(this.args) + "}";
 	}
 
 	public String getKey() {

@@ -1,7 +1,6 @@
 package net.minecraft.resource;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public interface ResourcePackSource {
@@ -17,7 +16,7 @@ public interface ResourcePackSource {
 	}
 
 	static ResourcePackSource nameAndSource(String source) {
-		Text text = new TranslatableText(source);
-		return name -> new TranslatableText("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
+		Text text = Text.method_43471(source);
+		return name -> Text.method_43469("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
 	}
 }

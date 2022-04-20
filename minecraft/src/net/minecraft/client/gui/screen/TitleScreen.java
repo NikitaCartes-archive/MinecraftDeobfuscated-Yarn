@@ -38,9 +38,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -56,7 +54,7 @@ import org.slf4j.Logger;
 public class TitleScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String DEMO_WORLD_NAME = "Demo_World";
-	public static final Text COPYRIGHT = new LiteralText("Copyright Mojang AB. Do not distribute!");
+	public static final Text COPYRIGHT = Text.method_43470("Copyright Mojang AB. Do not distribute!");
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -80,7 +78,7 @@ public class TitleScreen extends Screen {
 	}
 
 	public TitleScreen(boolean doBackgroundFade) {
-		super(new TranslatableText("narrator.screen.title"));
+		super(Text.method_43471("narrator.screen.title"));
 		this.doBackgroundFade = doBackgroundFade;
 		this.isMinceraft = (double)AbstractRandom.createAtomic().nextFloat() < 1.0E-4;
 		this.realms = RealmsClient.createRealmsClient();
@@ -162,20 +160,15 @@ public class TitleScreen extends Screen {
 				256,
 				256,
 				button -> this.client.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
-				new TranslatableText("narrator.button.language")
+				Text.method_43471("narrator.button.language")
 			)
 		);
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 100,
-				l + 72 + 12,
-				98,
-				20,
-				new TranslatableText("menu.options"),
-				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
+				this.width / 2 - 100, l + 72 + 12, 98, 20, Text.method_43471("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, Text.method_43471("menu.quit"), button -> this.client.scheduleStop()));
 		this.addDrawableChild(
 			new TexturedButtonWidget(
 				this.width / 2 + 104,
@@ -189,7 +182,7 @@ public class TitleScreen extends Screen {
 				32,
 				64,
 				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)),
-				new TranslatableText("narrator.button.accessibility")
+				Text.method_43471("narrator.button.accessibility")
 			)
 		);
 		this.addDrawableChild(
@@ -211,7 +204,7 @@ public class TitleScreen extends Screen {
 				? this.deprecationNotice.realmsSubscriptionFuture
 				: CompletableFuture.supplyAsync(this::fetchRealmsSubscribed, Util.getMainWorkerExecutor());
 			this.deprecationNotice = new TitleScreen.DeprecationNotice(
-				MultilineText.create(this.textRenderer, new TranslatableText("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture
+				MultilineText.create(this.textRenderer, Text.method_43471("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture
 			);
 		}
 	}
@@ -230,13 +223,13 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsNormal(int y, int spacingY) {
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
+			new ButtonWidget(this.width / 2 - 100, y, 200, 20, Text.method_43471("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
 		);
 		boolean bl = this.client.isMultiplayerEnabled();
 		ButtonWidget.TooltipSupplier tooltipSupplier = bl
 			? ButtonWidget.EMPTY
 			: new ButtonWidget.TooltipSupplier() {
-				private final Text MULTIPLAYER_DISABLED_TEXT = new TranslatableText("title.multiplayer.disabled");
+				private final Text MULTIPLAYER_DISABLED_TEXT = Text.method_43471("title.multiplayer.disabled");
 
 				@Override
 				public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -252,12 +245,12 @@ public class TitleScreen extends Screen {
 					consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
 				}
 			};
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.multiplayer"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, Text.method_43471("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.setScreen(screen);
 		}, tooltipSupplier)).active = bl;
 		this.addDrawableChild(
-				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, new TranslatableText("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
+				new ButtonWidget(this.width / 2 - 100, y + spacingY * 2, 200, 20, Text.method_43471("menu.online"), button -> this.switchToRealms(), tooltipSupplier)
 			)
 			.active = bl;
 	}
@@ -270,7 +263,7 @@ public class TitleScreen extends Screen {
 				y,
 				200,
 				20,
-				new TranslatableText("menu.playdemo"),
+				Text.method_43471("menu.playdemo"),
 				button -> {
 					if (bl) {
 						this.client.method_41735().start(this, "Demo_World");
@@ -289,7 +282,7 @@ public class TitleScreen extends Screen {
 				y + spacingY * 1,
 				200,
 				20,
-				new TranslatableText("menu.resetdemo"),
+				Text.method_43471("menu.resetdemo"),
 				button -> {
 					LevelStorage levelStorage = this.client.getLevelStorage();
 
@@ -300,9 +293,9 @@ public class TitleScreen extends Screen {
 								.setScreen(
 									new ConfirmScreen(
 										this::onDemoDeletionConfirmed,
-										new TranslatableText("selectWorld.deleteQuestion"),
-										new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()),
-										new TranslatableText("selectWorld.deleteButton"),
+										Text.method_43471("selectWorld.deleteQuestion"),
+										Text.method_43469("selectWorld.deleteWarning", levelSummary.getDisplayName()),
+										Text.method_43471("selectWorld.deleteButton"),
 										ScreenTexts.CANCEL
 									)
 								);

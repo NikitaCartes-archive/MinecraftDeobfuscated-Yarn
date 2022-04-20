@@ -2,14 +2,15 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gl.VertexBuffer;
 
 @Environment(EnvType.CLIENT)
 public class VertexFormat {
@@ -17,9 +18,8 @@ public class VertexFormat {
 	private final ImmutableMap<String, VertexFormatElement> elementMap;
 	private final IntList offsets = new IntArrayList();
 	private final int size;
-	private int vertexArray;
-	private int vertexBuffer;
-	private int elementBuffer;
+	@Nullable
+	private VertexBuffer field_38984;
 
 	public VertexFormat(ImmutableMap<String, VertexFormatElement> elementMap) {
 		this.elementMap = elementMap;
@@ -106,28 +106,13 @@ public class VertexFormat {
 		}
 	}
 
-	public int getVertexArray() {
-		if (this.vertexArray == 0) {
-			this.vertexArray = GlStateManager._glGenVertexArrays();
+	public VertexBuffer method_43446() {
+		VertexBuffer vertexBuffer = this.field_38984;
+		if (vertexBuffer == null) {
+			this.field_38984 = vertexBuffer = new VertexBuffer();
 		}
 
-		return this.vertexArray;
-	}
-
-	public int getVertexBuffer() {
-		if (this.vertexBuffer == 0) {
-			this.vertexBuffer = GlStateManager._glGenBuffers();
-		}
-
-		return this.vertexBuffer;
-	}
-
-	public int getElementBuffer() {
-		if (this.elementBuffer == 0) {
-			this.elementBuffer = GlStateManager._glGenBuffers();
-		}
-
-		return this.elementBuffer;
+		return vertexBuffer;
 	}
 
 	@Environment(EnvType.CLIENT)

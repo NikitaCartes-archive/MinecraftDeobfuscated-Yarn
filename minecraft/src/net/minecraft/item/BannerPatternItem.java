@@ -6,7 +6,6 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
@@ -28,6 +27,6 @@ public class BannerPatternItem extends Item {
 	}
 
 	public MutableText getDescription() {
-		return new TranslatableText(this.getTranslationKey() + ".desc");
+		return Text.method_43471(this.getTranslationKey() + ".desc");
 	}
 }

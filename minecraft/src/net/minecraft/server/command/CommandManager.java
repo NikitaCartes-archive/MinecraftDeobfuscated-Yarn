@@ -42,11 +42,9 @@ import net.minecraft.server.dedicated.command.WhitelistCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
@@ -169,7 +167,7 @@ public class CommandManager {
 			commandSource.sendError(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
-				MutableText mutableText = new LiteralText("")
+				MutableText mutableText = Text.method_43473()
 					.formatted(Formatting.GRAY)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
 				if (i > 10) {
@@ -178,17 +176,17 @@ public class CommandManager {
 
 				mutableText.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					Text text = new LiteralText(var14.getInput().substring(i)).formatted(new Formatting[]{Formatting.RED, Formatting.UNDERLINE});
+					Text text = Text.method_43470(var14.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
 					mutableText.append(text);
 				}
 
-				mutableText.append(new TranslatableText("command.context.here").formatted(new Formatting[]{Formatting.RED, Formatting.ITALIC}));
+				mutableText.append(Text.method_43471("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
 				commandSource.sendError(mutableText);
 			}
 
 			return 0;
 		} catch (Exception var15) {
-			MutableText mutableText2 = new LiteralText(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
+			MutableText mutableText2 = Text.method_43470(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.error("Command exception: {}", command, var15);
 				StackTraceElement[] stackTraceElements = var15.getStackTrace();
@@ -203,11 +201,9 @@ public class CommandManager {
 				}
 			}
 
-			commandSource.sendError(
-				new TranslatableText("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2)))
-			);
+			commandSource.sendError(Text.method_43471("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
 			if (SharedConstants.isDevelopment) {
-				commandSource.sendError(new LiteralText(Util.getInnermostMessage(var15)));
+				commandSource.sendError(Text.method_43470(Util.getInnermostMessage(var15)));
 				LOGGER.error("'{}' threw an exception", command, var15);
 			}
 

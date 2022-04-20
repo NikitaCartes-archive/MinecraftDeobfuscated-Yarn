@@ -8,7 +8,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 public class MeCommand {
@@ -52,6 +51,6 @@ public class MeCommand {
 	}
 
 	private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
-		return new TranslatableText("chat.type.emote", context.getSource().getDisplayName(), arg);
+		return Text.method_43469("chat.type.emote", context.getSource().getDisplayName(), arg);
 	}
 }

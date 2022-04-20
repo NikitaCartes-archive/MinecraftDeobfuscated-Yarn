@@ -12,14 +12,14 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemPredicateArgumentType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class ClearCommand {
 	private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(
-		playerName -> new TranslatableText("clear.failed.single", playerName)
+		playerName -> Text.method_43469("clear.failed.single", playerName)
 	);
 	private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(
-		playerCount -> new TranslatableText("clear.failed.multiple", playerCount)
+		playerCount -> Text.method_43469("clear.failed.multiple", playerCount)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -71,14 +71,14 @@ public class ClearCommand {
 		} else {
 			if (maxCount == 0) {
 				if (targets.size() == 1) {
-					source.sendFeedback(new TranslatableText("commands.clear.test.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+					source.sendFeedback(Text.method_43469("commands.clear.test.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
 				} else {
-					source.sendFeedback(new TranslatableText("commands.clear.test.multiple", i, targets.size()), true);
+					source.sendFeedback(Text.method_43469("commands.clear.test.multiple", i, targets.size()), true);
 				}
 			} else if (targets.size() == 1) {
-				source.sendFeedback(new TranslatableText("commands.clear.success.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(Text.method_43469("commands.clear.success.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.clear.success.multiple", i, targets.size()), true);
+				source.sendFeedback(Text.method_43469("commands.clear.success.multiple", i, targets.size()), true);
 			}
 
 			return i;

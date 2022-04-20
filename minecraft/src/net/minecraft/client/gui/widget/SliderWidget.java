@@ -10,7 +10,6 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -30,7 +29,7 @@ public abstract class SliderWidget extends ClickableWidget {
 
 	@Override
 	protected MutableText getNarrationMessage() {
-		return new TranslatableText("gui.narrate.slider", this.getMessage());
+		return Text.method_43469("gui.narrate.slider", this.getMessage());
 	}
 
 	@Override
@@ -38,9 +37,9 @@ public abstract class SliderWidget extends ClickableWidget {
 		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
 		if (this.active) {
 			if (this.isFocused()) {
-				builder.put(NarrationPart.USAGE, new TranslatableText("narration.slider.usage.focused"));
+				builder.put(NarrationPart.USAGE, Text.method_43471("narration.slider.usage.focused"));
 			} else {
-				builder.put(NarrationPart.USAGE, new TranslatableText("narration.slider.usage.hovered"));
+				builder.put(NarrationPart.USAGE, Text.method_43471("narration.slider.usage.hovered"));
 			}
 		}
 	}

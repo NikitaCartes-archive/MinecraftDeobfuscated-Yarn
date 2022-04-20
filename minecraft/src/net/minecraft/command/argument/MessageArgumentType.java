@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
@@ -56,7 +55,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 		public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && canUseSelectors) {
-				MutableText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
+				MutableText mutableText = Text.method_43470(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
@@ -78,7 +77,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 				return mutableText;
 			} else {
-				return new LiteralText(this.contents);
+				return Text.method_43470(this.contents);
 			}
 		}
 

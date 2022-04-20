@@ -5,7 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import java.util.Collection;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class KillCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -26,9 +26,9 @@ public class KillCommand {
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(new TranslatableText("commands.kill.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
+			source.sendFeedback(Text.method_43469("commands.kill.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.kill.success.multiple", targets.size()), true);
+			source.sendFeedback(Text.method_43469("commands.kill.success.multiple", targets.size()), true);
 		}
 
 		return targets.size();

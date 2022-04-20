@@ -14,15 +14,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class EffectCommand {
-	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.effect.give.failed"));
+	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.effect.give.failed"));
 	private static final SimpleCommandExceptionType CLEAR_EVERYTHING_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.effect.clear.everything.failed")
+		Text.method_43471("commands.effect.clear.everything.failed")
 	);
 	private static final SimpleCommandExceptionType CLEAR_SPECIFIC_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.effect.clear.specific.failed")
+		Text.method_43471("commands.effect.clear.specific.failed")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -137,10 +137,10 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					new TranslatableText("commands.effect.give.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
+					Text.method_43469("commands.effect.give.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
 				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.effect.give.success.multiple", effect.getName(), targets.size(), j / 20), true);
+				source.sendFeedback(Text.method_43469("commands.effect.give.success.multiple", effect.getName(), targets.size(), j / 20), true);
 			}
 
 			return i;
@@ -160,9 +160,9 @@ public class EffectCommand {
 			throw CLEAR_EVERYTHING_FAILED_EXCEPTION.create();
 		} else {
 			if (targets.size() == 1) {
-				source.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(Text.method_43469("commands.effect.clear.everything.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.effect.clear.everything.success.multiple", targets.size()), true);
+				source.sendFeedback(Text.method_43469("commands.effect.clear.everything.success.multiple", targets.size()), true);
 			}
 
 			return i;
@@ -183,10 +183,10 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					new TranslatableText("commands.effect.clear.specific.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
+					Text.method_43469("commands.effect.clear.specific.success.single", effect.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.effect.clear.specific.success.multiple", effect.getName(), targets.size()), true);
+				source.sendFeedback(Text.method_43469("commands.effect.clear.specific.success.multiple", effect.getName(), targets.size()), true);
 			}
 
 			return i;

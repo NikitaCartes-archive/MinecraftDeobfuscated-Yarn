@@ -41,7 +41,6 @@ import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -126,7 +125,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext context) {
-		this.disconnect(new TranslatableText("disconnect.endOfStream"));
+		this.disconnect(Text.method_43471("disconnect.endOfStream"));
 	}
 
 	@Override
@@ -139,9 +138,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			if (this.channel.isOpen()) {
 				if (ex instanceof TimeoutException) {
 					LOGGER.debug("Timeout", ex);
-					this.disconnect(new TranslatableText("disconnect.timeout"));
+					this.disconnect(Text.method_43471("disconnect.timeout"));
 				} else {
-					Text text = new TranslatableText("disconnect.genericReason", "Internal Exception: " + ex);
+					Text text = Text.method_43469("disconnect.genericReason", "Internal Exception: " + ex);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", ex);
 						NetworkState networkState = this.getState();
@@ -163,10 +162,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				handlePacket(packet, this.packetListener);
 			} catch (OffThreadException var4) {
 			} catch (RejectedExecutionException var5) {
-				this.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
+				this.disconnect(Text.method_43471("multiplayer.disconnect.server_shutdown"));
 			} catch (ClassCastException var6) {
 				LOGGER.error("Received {} that couldn't be processed", packet.getClass(), var6);
-				this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_packet"));
+				this.disconnect(Text.method_43471("multiplayer.disconnect.invalid_packet"));
 			}
 
 			this.packetsReceivedCounter++;
@@ -439,7 +438,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				if (this.getDisconnectReason() != null) {
 					this.getPacketListener().onDisconnected(this.getDisconnectReason());
 				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().onDisconnected(new TranslatableText("multiplayer.disconnect.generic"));
+					this.getPacketListener().onDisconnected(Text.method_43471("multiplayer.disconnect.generic"));
 				}
 			}
 		}

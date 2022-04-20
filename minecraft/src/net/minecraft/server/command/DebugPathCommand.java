@@ -9,13 +9,13 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.DebugInfoSender;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class DebugPathCommand {
-	private static final SimpleCommandExceptionType SOURCE_NOT_MOB_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Source is not a mob"));
-	private static final SimpleCommandExceptionType PATH_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Path not found"));
-	private static final SimpleCommandExceptionType TARGET_NOT_REACHED_EXCEPTION = new SimpleCommandExceptionType(new LiteralText("Target not reached"));
+	private static final SimpleCommandExceptionType SOURCE_NOT_MOB_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Source is not a mob"));
+	private static final SimpleCommandExceptionType PATH_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Path not found"));
+	private static final SimpleCommandExceptionType TARGET_NOT_REACHED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Target not reached"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -40,7 +40,7 @@ public class DebugPathCommand {
 			} else if (!path.reachesTarget()) {
 				throw TARGET_NOT_REACHED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(new LiteralText("Made path"), true);
+				source.sendFeedback(Text.method_43470("Made path"), true);
 				return 1;
 			}
 		}

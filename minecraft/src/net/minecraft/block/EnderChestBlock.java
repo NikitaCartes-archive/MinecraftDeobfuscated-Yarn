@@ -23,7 +23,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -41,7 +40,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	private static final Text CONTAINER_NAME = new TranslatableText("container.enderchest");
+	private static final Text CONTAINER_NAME = Text.method_43471("container.enderchest");
 
 	protected EnderChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.ENDER_CHEST);

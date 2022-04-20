@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.command.argument.RegistryPredicateArgumentType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -13,7 +13,7 @@ import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
 	private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locatebiome.notFound", id)
+		id -> Text.method_43469("commands.locatebiome.notFound", id)
 	);
 	private static final int RADIUS = 6400;
 	private static final int HORIZONTAL_BLOCK_CHECK_INTERVAL = 32;

@@ -27,11 +27,8 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.control.YawAdjustingLookControl;
-import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -350,7 +347,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 
 	@Override
 	protected EntityNavigation createNavigation(World world) {
-		return new AxolotlEntity.AxolotlSwimNavigation(this, world);
+		return new AxolotlSwimNavigation(this, world);
 	}
 
 	@Override
@@ -596,28 +593,6 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 			if (!this.axolotl.isPlayingDead()) {
 				super.tick();
 			}
-		}
-	}
-
-	static class AxolotlSwimNavigation extends SwimNavigation {
-		AxolotlSwimNavigation(AxolotlEntity axolotl, World world) {
-			super(axolotl, world);
-		}
-
-		@Override
-		protected boolean isAtValidPosition() {
-			return true;
-		}
-
-		@Override
-		protected PathNodeNavigator createPathNodeNavigator(int range) {
-			this.nodeMaker = new AmphibiousPathNodeMaker(false);
-			return new PathNodeNavigator(this.nodeMaker, range);
-		}
-
-		@Override
-		public boolean isValidPosition(BlockPos pos) {
-			return !this.world.getBlockState(pos.down()).isAir();
 		}
 	}
 

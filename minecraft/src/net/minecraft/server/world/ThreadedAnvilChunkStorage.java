@@ -564,35 +564,48 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {
-		return CompletableFuture.supplyAsync(() -> {
-			try {
-				this.world.getProfiler().visit("chunkLoad");
-				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
-				if (nbtCompound != null) {
-					boolean bl = nbtCompound.contains("Status", NbtElement.STRING_TYPE);
-					if (bl) {
-						Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, nbtCompound);
-						this.mark(pos, chunk.getStatus().getChunkType());
-						return Either.left(chunk);
-					}
-
+		return this.method_43383(pos).thenApply(optional -> optional.filter(nbtCompound -> {
+				boolean bl = method_43380(nbtCompound);
+				if (!bl) {
 					LOGGER.error("Chunk file at {} is missing level data, skipping", pos);
 				}
-			} catch (CrashException var5) {
-				Throwable throwable = var5.getCause();
-				if (!(throwable instanceof IOException)) {
-					this.markAsProtoChunk(pos);
-					throw var5;
-				}
 
-				LOGGER.error("Couldn't load chunk {}", pos, throwable);
-			} catch (Exception var6) {
-				LOGGER.error("Couldn't load chunk {}", pos, var6);
+				return bl;
+			})).thenApplyAsync(optional -> {
+			this.world.getProfiler().visit("chunkLoad");
+			if (optional.isPresent()) {
+				Chunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)optional.get());
+				this.mark(pos, chunk.getStatus().getChunkType());
+				return Either.left(chunk);
+			} else {
+				return Either.left(this.method_43382(pos));
+			}
+		}, this.mainThreadExecutor).exceptionallyAsync(throwable -> this.method_43376(throwable, pos), this.mainThreadExecutor);
+	}
+
+	private static boolean method_43380(NbtCompound nbtCompound) {
+		return nbtCompound.contains("Status", NbtElement.STRING_TYPE);
+	}
+
+	private Either<Chunk, ChunkHolder.Unloaded> method_43376(Throwable throwable, ChunkPos chunkPos) {
+		if (throwable instanceof CrashException crashException) {
+			Throwable throwable2 = crashException.getCause();
+			if (!(throwable2 instanceof IOException)) {
+				this.markAsProtoChunk(chunkPos);
+				throw crashException;
 			}
 
-			this.markAsProtoChunk(pos);
-			return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null));
-		}, this.mainThreadExecutor);
+			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable2);
+		} else if (throwable instanceof IOException) {
+			LOGGER.error("Couldn't load chunk {}", chunkPos, throwable);
+		}
+
+		return Either.left(this.method_43382(chunkPos));
+	}
+
+	private Chunk method_43382(ChunkPos chunkPos) {
+		this.markAsProtoChunk(chunkPos);
+		return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null);
 	}
 
 	private void markAsProtoChunk(ChunkPos pos) {
@@ -792,7 +805,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		} else {
 			NbtCompound nbtCompound;
 			try {
-				nbtCompound = this.getUpdatedChunkNbt(pos);
+				nbtCompound = (NbtCompound)((Optional)this.method_43383(pos).join()).orElse(null);
 				if (nbtCompound == null) {
 					this.markAsProtoChunk(pos);
 					return false;
@@ -921,12 +934,12 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	@Nullable
-	private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
-		NbtCompound nbtCompound = this.getNbt(pos);
-		return nbtCompound == null
-			? null
-			: this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
+	private CompletableFuture<Optional<NbtCompound>> method_43383(ChunkPos chunkPos) {
+		return this.getNbt(chunkPos).thenApplyAsync(optional -> optional.map(this::method_43381), Util.getMainWorkerExecutor());
+	}
+
+	private NbtCompound method_43381(NbtCompound nbtCompound) {
+		return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
 	}
 
 	boolean shouldTick(ChunkPos pos) {

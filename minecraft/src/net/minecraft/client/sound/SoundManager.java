@@ -17,13 +17,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
@@ -113,11 +112,8 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		if (SharedConstants.isDevelopment) {
 			for (Identifier identifier : this.sounds.keySet()) {
 				WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-				if (weightedSoundSet.getSubtitle() instanceof TranslatableText) {
-					String string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey();
-					if (!I18n.hasTranslation(string) && Registry.SOUND_EVENT.containsId(identifier)) {
-						LOGGER.error("Missing subtitle {} for sound event: {}", string, identifier);
-					}
+				if (!Texts.method_43476(weightedSoundSet.getSubtitle()) && Registry.SOUND_EVENT.containsId(identifier)) {
+					LOGGER.error("Missing subtitle {} for sound event: {}", weightedSoundSet.getSubtitle(), identifier);
 				}
 			}
 		}

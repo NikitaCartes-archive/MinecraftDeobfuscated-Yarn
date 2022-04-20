@@ -23,8 +23,7 @@ import net.minecraft.client.realms.gui.screen.RealmsLongConfirmationScreen;
 import net.minecraft.client.realms.gui.screen.RealmsLongRunningMcoTaskScreen;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsTermsScreen;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -43,7 +42,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(new TranslatableText("mco.connect.connecting"));
+		this.setTitle(Text.method_43471("mco.connect.connecting"));
 
 		RealmsServerAddress realmsServerAddress;
 		try {
@@ -61,9 +60,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					setScreen(
 						(Screen)(bl
 							? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
-							: new RealmsGenericErrorScreen(
-								new TranslatableText("mco.brokenworld.nonowner.title"), new TranslatableText("mco.brokenworld.nonowner.error"), this.lastScreen
-							))
+							: new RealmsGenericErrorScreen(Text.method_43471("mco.brokenworld.nonowner.title"), Text.method_43471("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
 				default:
@@ -72,7 +69,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					return;
 			}
 		} catch (TimeoutException var6) {
-			this.error(new TranslatableText("mco.errorMessage.connectionFailure"));
+			this.error(Text.method_43471("mco.errorMessage.connectionFailure"));
 			return;
 		} catch (Exception var7) {
 			field_36356.error("Couldn't connect to world", (Throwable)var7);
@@ -118,7 +115,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getResourcePackProvider().clear();
 						field_36356.error("Failed to download resource pack from {}", address, throwable);
-						setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
+						setScreen(new RealmsGenericErrorScreen(Text.method_43470("Failed to download resource pack!"), this.lastScreen));
 						return null;
 					});
 					return;
@@ -134,8 +131,8 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		return new RealmsLongConfirmationScreen(
 			booleanConsumer,
 			RealmsLongConfirmationScreen.Type.INFO,
-			new TranslatableText("mco.configure.world.resourcepack.question.line1"),
-			new TranslatableText("mco.configure.world.resourcepack.question.line2"),
+			Text.method_43471("mco.configure.world.resourcepack.question.line1"),
+			Text.method_43471("mco.configure.world.resourcepack.question.line2"),
 			true
 		);
 	}

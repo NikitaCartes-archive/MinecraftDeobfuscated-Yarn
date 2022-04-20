@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import net.minecraft.class_7422;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -45,9 +46,6 @@ public class EntityTrackerEntry {
 	private final int tickInterval;
 	private final boolean alwaysUpdateVelocity;
 	private final Consumer<Packet<?>> receiver;
-	private long lastX;
-	private long lastY;
-	private long lastZ;
 	private int lastYaw;
 	private int lastPitch;
 	private int lastHeadPitch;
@@ -64,7 +62,7 @@ public class EntityTrackerEntry {
 		this.entity = entity;
 		this.tickInterval = tickInterval;
 		this.alwaysUpdateVelocity = alwaysUpdateVelocity;
-		this.storeEncodedCoordinates();
+		entity.method_43389().method_43494(entity.method_43390());
 		this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
@@ -78,8 +76,7 @@ public class EntityTrackerEntry {
 			this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
 		}
 
-		if (this.entity instanceof ItemFrameEntity && this.trackingTick % 10 == 0) {
-			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
+		if (this.entity instanceof ItemFrameEntity itemFrameEntity && this.trackingTick % 10 == 0) {
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
 				Integer integer = FilledMapItem.getMapId(itemStack);
@@ -99,6 +96,7 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.trackingTick % this.tickInterval == 0 || this.entity.velocityDirty || this.entity.getDataTracker().isDirty()) {
+			class_7422 lv = this.entity.method_43389();
 			if (this.entity.hasVehicle()) {
 				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
@@ -109,22 +107,22 @@ public class EntityTrackerEntry {
 					this.lastPitch = j;
 				}
 
-				this.storeEncodedCoordinates();
+				lv.method_43494(this.entity.method_43390());
 				this.syncEntityData();
 				this.hadVehicle = true;
 			} else {
 				this.updatesWithoutVehicle++;
 				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
-				Vec3d vec3d = this.entity.getPos().subtract(this.getLastPos());
-				boolean bl2 = vec3d.lengthSquared() >= 7.6293945E-6F;
+				Vec3d vec3d = this.entity.method_43390();
+				boolean bl2 = lv.method_43493(vec3d).lengthSquared() >= 7.6293945E-6F;
 				Packet<?> packet2 = null;
 				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
 				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
-					long l = EntityS2CPacket.encodePacketCoordinate(vec3d.x);
-					long m = EntityS2CPacket.encodePacketCoordinate(vec3d.y);
-					long n = EntityS2CPacket.encodePacketCoordinate(vec3d.z);
+					long l = lv.method_43490(vec3d);
+					long m = lv.method_43491(vec3d);
+					long n = lv.method_43492(vec3d);
 					boolean bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
 					if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
 						this.lastOnGround = this.entity.isOnGround();
@@ -159,7 +157,7 @@ public class EntityTrackerEntry {
 
 				this.syncEntityData();
 				if (bl3) {
-					this.storeEncodedCoordinates();
+					lv.method_43494(vec3d);
 				}
 
 				if (bl4) {
@@ -276,22 +274,6 @@ public class EntityTrackerEntry {
 
 			set.clear();
 		}
-	}
-
-	/**
-	 * Stores the tracked entity's current coordinates encoded as lastX/Y/Z
-	 */
-	private void storeEncodedCoordinates() {
-		this.lastX = EntityS2CPacket.encodePacketCoordinate(this.entity.getX());
-		this.lastY = EntityS2CPacket.encodePacketCoordinate(this.entity.getY());
-		this.lastZ = EntityS2CPacket.encodePacketCoordinate(this.entity.getZ());
-	}
-
-	/**
-	 * Decodes lastX/Y/Z into a position vector
-	 */
-	private Vec3d getLastPos() {
-		return EntityS2CPacket.decodePacketCoordinates(this.lastX, this.lastY, this.lastZ);
 	}
 
 	/**

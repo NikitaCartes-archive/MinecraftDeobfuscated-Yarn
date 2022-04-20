@@ -8,13 +8,13 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class AngleArgumentType implements ArgumentType<AngleArgumentType.Angle> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0", "~", "~-5");
-	public static final SimpleCommandExceptionType INCOMPLETE_ANGLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.angle.incomplete"));
-	public static final SimpleCommandExceptionType INVALID_ANGLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.angle.invalid"));
+	public static final SimpleCommandExceptionType INCOMPLETE_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.angle.incomplete"));
+	public static final SimpleCommandExceptionType INVALID_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.angle.invalid"));
 
 	public static AngleArgumentType angle() {
 		return new AngleArgumentType();

@@ -4,14 +4,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class Realms32BitWarningScreen extends WarningScreen {
-	private static final Text HEADER = new TranslatableText("title.32bit.deprecation.realms.header").formatted(Formatting.BOLD);
-	private static final Text MESSAGE = new TranslatableText("title.32bit.deprecation.realms");
-	private static final Text CHECK_MESSAGE = new TranslatableText("title.32bit.deprecation.realms.check");
+	private static final Text HEADER = Text.method_43471("title.32bit.deprecation.realms.header").formatted(Formatting.BOLD);
+	private static final Text MESSAGE = Text.method_43471("title.32bit.deprecation.realms");
+	private static final Text CHECK_MESSAGE = Text.method_43471("title.32bit.deprecation.realms.check");
 	private static final Text NARRATED_TEXT = HEADER.shallowCopy().append("\n").append(MESSAGE);
 
 	public Realms32BitWarningScreen(Screen parent) {

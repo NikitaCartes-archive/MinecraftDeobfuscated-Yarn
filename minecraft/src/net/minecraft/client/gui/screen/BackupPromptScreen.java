@@ -7,7 +7,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -39,7 +38,7 @@ public class BackupPromptScreen extends Screen {
 				100 + i,
 				150,
 				20,
-				new TranslatableText("selectWorld.backupJoinConfirmButton"),
+				Text.method_43471("selectWorld.backupJoinConfirmButton"),
 				button -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked())
 			)
 		);
@@ -49,12 +48,12 @@ public class BackupPromptScreen extends Screen {
 				100 + i,
 				150,
 				20,
-				new TranslatableText("selectWorld.backupJoinSkipButton"),
+				Text.method_43471("selectWorld.backupJoinSkipButton"),
 				button -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
 			)
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 80, 124 + i, 150, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
-		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, new TranslatableText("selectWorld.backupEraseCache"), false);
+		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, Text.method_43471("selectWorld.backupEraseCache"), false);
 		if (this.showEraseCacheCheckbox) {
 			this.addDrawableChild(this.eraseCacheCheckbox);
 		}

@@ -14,15 +14,14 @@ import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.AbstractRandom;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Text TEAM_TELEPORT_TEXT = new TranslatableText("spectatorMenu.team_teleport");
-	private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.team_teleport.prompt");
+	private static final Text TEAM_TELEPORT_TEXT = Text.method_43471("spectatorMenu.team_teleport");
+	private static final Text PROMPT_TEXT = Text.method_43471("spectatorMenu.team_teleport.prompt");
 	private final List<SpectatorMenuCommand> commands = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeamTeleportSpectatorMenu() {

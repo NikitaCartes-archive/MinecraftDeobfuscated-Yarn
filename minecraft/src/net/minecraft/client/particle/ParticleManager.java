@@ -180,7 +180,6 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
 		this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
 		this.registerFactory(ParticleTypes.SHRIEK, ShriekParticle.Factory::new);
-		this.registerFactory(ParticleTypes.ALLAY_DUST, GlowParticle.AllayDustFactory::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

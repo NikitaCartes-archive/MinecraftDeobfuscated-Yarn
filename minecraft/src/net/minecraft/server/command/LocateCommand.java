@@ -11,7 +11,6 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -21,8 +20,8 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class LocateCommand {
-	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.failed", id));
-	private static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("commands.locate.invalid", id));
+	private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("commands.locate.failed", id));
+	private static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("commands.locate.invalid", id));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -70,13 +69,13 @@ public class LocateCommand {
 			? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos)))
 			: MathHelper.floor(getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
 		String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
-		Text text = Texts.bracketed(new TranslatableText("chat.coordinates", blockPos.getX(), string2, blockPos.getZ()))
+		Text text = Texts.bracketed(Text.method_43469("chat.coordinates", blockPos.getX(), string2, blockPos.getZ()))
 			.styled(
 				style -> style.withColor(Formatting.GREEN)
 						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ()))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableText("chat.coordinates.tooltip")))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43471("chat.coordinates.tooltip")))
 			);
-		source.sendFeedback(new TranslatableText(successMessage, string, text, i), false);
+		source.sendFeedback(Text.method_43469(successMessage, string, text, i), false);
 		return i;
 	}
 

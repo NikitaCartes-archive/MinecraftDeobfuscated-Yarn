@@ -496,7 +496,7 @@ public class FoxEntity extends AnimalEntity {
 			this.spit(this.getEquippedStack(EquipmentSlot.MAINHAND));
 			this.triggerItemPickedUpByEntityCriteria(item);
 			this.equipStack(EquipmentSlot.MAINHAND, itemStack.split(1));
-			this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
+			this.updateDropChances(EquipmentSlot.MAINHAND);
 			this.sendPickup(item, itemStack.getCount());
 			item.discard();
 			this.eatingTime = 0;

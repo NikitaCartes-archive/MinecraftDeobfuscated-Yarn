@@ -234,7 +234,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			if (this.canPickupItem(itemStack)) {
 				this.triggerItemPickedUpByEntityCriteria(item);
 				this.equipStack(EquipmentSlot.MAINHAND, itemStack);
-				this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0F;
+				this.updateDropChances(EquipmentSlot.MAINHAND);
 				this.sendPickup(item, itemStack.getCount());
 				item.discard();
 			}

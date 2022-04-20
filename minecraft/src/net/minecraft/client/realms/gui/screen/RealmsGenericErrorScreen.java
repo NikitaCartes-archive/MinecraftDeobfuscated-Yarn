@@ -10,9 +10,7 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGenericErrorScreen extends RealmsScreen {
@@ -40,18 +38,18 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	private static Pair<Text, Text> getErrorMessages(RealmsServiceException exception) {
 		if (exception.error == null) {
-			return Pair.of(new LiteralText("An error occurred (" + exception.httpResultCode + "):"), new LiteralText(exception.httpResponseText));
+			return Pair.of(Text.method_43470("An error occurred (" + exception.httpResultCode + "):"), Text.method_43470(exception.httpResponseText));
 		} else {
 			String string = "mco.errorMessage." + exception.error.getErrorCode();
 			return Pair.of(
-				new LiteralText("Realms (" + exception.error + "):"),
-				(Text)(I18n.hasTranslation(string) ? new TranslatableText(string) : Text.of(exception.error.getErrorMessage()))
+				Text.method_43470("Realms (" + exception.error + "):"),
+				(Text)(I18n.hasTranslation(string) ? Text.method_43471(string) : Text.of(exception.error.getErrorMessage()))
 			);
 		}
 	}
 
 	private static Pair<Text, Text> getErrorMessages(Text description) {
-		return Pair.of(new LiteralText("An error occurred: "), description);
+		return Pair.of(Text.method_43470("An error occurred: "), description);
 	}
 
 	private static Pair<Text, Text> getErrorMessages(Text title, Text description) {
@@ -60,13 +58,15 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, new LiteralText("Ok"), button -> this.client.setScreen(this.parent)));
+		this.addDrawableChild(
+			new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, Text.method_43470("Ok"), button -> this.client.setScreen(this.parent))
+		);
 		this.description = MultilineText.create(this.textRenderer, this.errorMessages.getSecond(), this.width * 3 / 4);
 	}
 
 	@Override
 	public Text getNarratedTitle() {
-		return new LiteralText("").append(this.errorMessages.getFirst()).append(": ").append(this.errorMessages.getSecond());
+		return Text.method_43473().append(this.errorMessages.getFirst()).append(": ").append(this.errorMessages.getSecond());
 	}
 
 	@Override

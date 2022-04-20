@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
@@ -18,11 +19,9 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.EnchantmentScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -196,25 +195,25 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int m = j + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, (double)mouseX, (double)mouseY) && k > 0 && l >= 0 && enchantment != null) {
 				List<Text> list = Lists.<Text>newArrayList();
-				list.add(new TranslatableText("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
+				list.add(Text.method_43469("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
 				if (!bl) {
-					list.add(LiteralText.EMPTY);
+					list.add(ScreenTexts.field_39003);
 					if (this.client.player.experienceLevel < k) {
-						list.add(new TranslatableText("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.RED));
+						list.add(Text.method_43469("container.enchant.level.requirement", this.handler.enchantmentPower[j]).formatted(Formatting.RED));
 					} else {
 						MutableText mutableText;
 						if (m == 1) {
-							mutableText = new TranslatableText("container.enchant.lapis.one");
+							mutableText = Text.method_43471("container.enchant.lapis.one");
 						} else {
-							mutableText = new TranslatableText("container.enchant.lapis.many", m);
+							mutableText = Text.method_43469("container.enchant.lapis.many", m);
 						}
 
 						list.add(mutableText.formatted(i >= m ? Formatting.GRAY : Formatting.RED));
 						MutableText mutableText2;
 						if (m == 1) {
-							mutableText2 = new TranslatableText("container.enchant.level.one");
+							mutableText2 = Text.method_43471("container.enchant.level.one");
 						} else {
-							mutableText2 = new TranslatableText("container.enchant.level.many", m);
+							mutableText2 = Text.method_43469("container.enchant.level.many", m);
 						}
 
 						list.add(mutableText2.formatted(Formatting.GRAY));

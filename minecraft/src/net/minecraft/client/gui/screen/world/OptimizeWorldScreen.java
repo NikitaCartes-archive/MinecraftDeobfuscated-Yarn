@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.SaveLoader;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.RegistryKey;
@@ -67,7 +67,7 @@ public class OptimizeWorldScreen extends Screen {
 		boolean eraseCache,
 		GeneratorOptions generatorOptions
 	) {
-		super(new TranslatableText("optimizeWorld.title", levelInfo.getLevelName()));
+		super(Text.method_43469("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
 		this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
 	}
@@ -109,12 +109,12 @@ public class OptimizeWorldScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
-			drawTextWithShadow(matrices, this.textRenderer, new TranslatableText("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
 			drawTextWithShadow(
-				matrices, this.textRenderer, new TranslatableText("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880
+				matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880
 			);
 			drawTextWithShadow(
-				matrices, this.textRenderer, new TranslatableText("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880
+				matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880
 			);
 			int m = 0;
 

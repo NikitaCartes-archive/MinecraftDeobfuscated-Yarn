@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -18,7 +18,7 @@ public class SleepingChatScreen extends ChatScreen {
 	protected void init() {
 		super.init();
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, new TranslatableText("multiplayer.stopSleeping"), button -> this.stopSleeping())
+			new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, Text.method_43471("multiplayer.stopSleeping"), button -> this.stopSleeping())
 		);
 	}
 

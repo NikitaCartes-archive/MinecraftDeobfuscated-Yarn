@@ -9,11 +9,10 @@ import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen extends RealmsScreen {
-	private static final Text RESET_SEED_TEXT = new TranslatableText("mco.reset.world.seed");
+	private static final Text RESET_SEED_TEXT = Text.method_43471("mco.reset.world.seed");
 	private final Consumer<ResetWorldInfo> callback;
 	private TextFieldWidget seedEdit;
 	private RealmsWorldGeneratorType generatorType = RealmsWorldGeneratorType.DEFAULT;
@@ -21,7 +20,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private final Text parentTitle;
 
 	public RealmsResetNormalWorldScreen(Consumer<ResetWorldInfo> callback, Text parentTitle) {
-		super(new TranslatableText("mco.reset.world.generate"));
+		super(Text.method_43471("mco.reset.world.generate"));
 		this.callback = callback;
 		this.parentTitle = parentTitle;
 	}
@@ -35,7 +34,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, new TranslatableText("mco.reset.world.seed"));
+		this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.method_43471("mco.reset.world.seed"));
 		this.seedEdit.setMaxLength(32);
 		this.addSelectableChild(this.seedEdit);
 		this.setInitialFocus(this.seedEdit);
@@ -43,11 +42,11 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 			CyclingButtonWidget.<RealmsWorldGeneratorType>builder(RealmsWorldGeneratorType::getText)
 				.values(RealmsWorldGeneratorType.values())
 				.initially(this.generatorType)
-				.build(this.width / 2 - 102, row(4), 205, 20, new TranslatableText("selectWorld.mapType"), (button, generatorType) -> this.generatorType = generatorType)
+				.build(this.width / 2 - 102, row(4), 205, 20, Text.method_43471("selectWorld.mapType"), (button, generatorType) -> this.generatorType = generatorType)
 		);
 		this.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.mapFeatures)
-				.build(this.width / 2 - 102, row(6) - 2, 205, 20, new TranslatableText("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
+				.build(this.width / 2 - 102, row(6) - 2, 205, 20, Text.method_43471("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
 		);
 		this.addDrawableChild(
 			new ButtonWidget(

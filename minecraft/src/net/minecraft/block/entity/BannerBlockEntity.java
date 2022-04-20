@@ -14,7 +14,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
@@ -66,7 +65,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Override
 	public Text getName() {
-		return (Text)(this.customName != null ? this.customName : new TranslatableText("block.minecraft.banner"));
+		return (Text)(this.customName != null ? this.customName : Text.method_43471("block.minecraft.banner"));
 	}
 
 	@Nullable

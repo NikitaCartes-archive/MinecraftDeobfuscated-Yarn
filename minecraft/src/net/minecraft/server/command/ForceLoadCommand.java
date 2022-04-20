@@ -9,7 +9,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.ColumnPosArgumentType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.ColumnPos;
@@ -19,16 +19,14 @@ import net.minecraft.world.World;
 public class ForceLoadCommand {
 	private static final int MAX_CHUNKS = 256;
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> new TranslatableText("commands.forceload.toobig", maxCount, count)
+		(maxCount, count) -> Text.method_43469("commands.forceload.toobig", maxCount, count)
 	);
 	private static final Dynamic2CommandExceptionType QUERY_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(chunkPos, registryKey) -> new TranslatableText("commands.forceload.query.failure", chunkPos, registryKey)
+		(chunkPos, registryKey) -> Text.method_43469("commands.forceload.query.failure", chunkPos, registryKey)
 	);
-	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.forceload.added.failure")
-	);
+	private static final SimpleCommandExceptionType ADDED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.forceload.added.failure"));
 	private static final SimpleCommandExceptionType REMOVED_FAILURE_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.forceload.removed.failure")
+		Text.method_43471("commands.forceload.removed.failure")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -91,7 +89,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			source.sendFeedback(new TranslatableText("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
+			source.sendFeedback(Text.method_43469("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
 			return 1;
 		} else {
 			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, registryKey.getValue());
@@ -106,12 +104,12 @@ public class ForceLoadCommand {
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.single", registryKey.getValue(), string), false);
+				source.sendFeedback(Text.method_43469("commands.forceload.list.single", registryKey.getValue(), string), false);
 			} else {
-				source.sendFeedback(new TranslatableText("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
+				source.sendFeedback(Text.method_43469("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
 			}
 		} else {
-			source.sendError(new TranslatableText("commands.forceload.added.none", registryKey.getValue()));
+			source.sendError(Text.method_43469("commands.forceload.added.none", registryKey.getValue()));
 		}
 
 		return i;
@@ -122,7 +120,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(chunkPos -> serverWorld.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
-		source.sendFeedback(new TranslatableText("commands.forceload.removed.all", registryKey.getValue()), true);
+		source.sendFeedback(Text.method_43469("commands.forceload.removed.all", registryKey.getValue()), true);
 		return 0;
 	}
 
@@ -161,12 +159,12 @@ public class ForceLoadCommand {
 					throw (forceLoaded ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
 					if (r == 1) {
-						source.sendFeedback(new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, registryKey.getValue()), true);
+						source.sendFeedback(Text.method_43469("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, registryKey.getValue()), true);
 					} else {
 						ChunkPos chunkPos2 = new ChunkPos(m, n);
 						ChunkPos chunkPos3 = new ChunkPos(o, p);
 						source.sendFeedback(
-							new TranslatableText("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, registryKey.getValue(), chunkPos2, chunkPos3), true
+							Text.method_43469("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, registryKey.getValue(), chunkPos2, chunkPos3), true
 						);
 					}
 

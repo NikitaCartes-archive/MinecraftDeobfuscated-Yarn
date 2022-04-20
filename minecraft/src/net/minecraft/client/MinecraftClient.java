@@ -46,6 +46,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7420;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -73,6 +74,7 @@ import net.minecraft.client.gui.screen.OutOfMemoryScreen;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -193,10 +195,8 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.KeybindText;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
@@ -297,7 +297,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
+	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.method_43471("multiplayer.socialInteractions.not_available");
 	/**
 	 * A message, in English, displayed in a dialog when a GLFW error is encountered.
 	 * 
@@ -491,7 +491,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			i = 0;
 		}
 
-		KeybindText.setTranslator(KeyBinding::getLocalizedName);
+		class_7420.method_43482(KeyBinding::getLocalizedName);
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
 		this.thread = Thread.currentThread();
@@ -718,7 +718,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.options.write();
 		this.reloadResources(true).thenRun(() -> {
 			ToastManager toastManager = this.getToastManager();
-			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), resourceName);
+			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.method_43471("resourcePack.load_fail"), resourceName);
 		});
 	}
 
@@ -935,7 +935,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			for (ItemStack itemStack : defaultedList) {
 				String string = itemStack.getTranslationKey();
-				String string2 = new TranslatableText(string).getString();
+				String string2 = Text.method_43471(string).getString();
 				if (string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) {
 					LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
 				}
@@ -1307,14 +1307,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.server.stop(true);
 			}
 
-			this.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+			this.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
 		System.gc();
 	}
 
-	public boolean toggleDebugProfiler(Consumer<TranslatableText> chatMessageSender) {
+	public boolean toggleDebugProfiler(Consumer<Text> chatMessageSender) {
 		if (this.recorder.isActive()) {
 			this.stopRecorder();
 			return false;
@@ -1325,16 +1325,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 					this.execute(
 						() -> chatMessageSender.accept(
-								new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
+								Text.method_43469("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
 							)
 					);
 				}
 			};
 			Consumer<Path> consumer2 = path -> {
-				Text text = new LiteralText(path.toString())
+				Text text = Text.method_43470(path.toString())
 					.formatted(Formatting.UNDERLINE)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-				this.execute(() -> chatMessageSender.accept(new TranslatableText("debug.profiling.stop", text)));
+				this.execute(() -> chatMessageSender.accept(Text.method_43469("debug.profiling.stop", text)));
 			};
 			SystemDetails systemDetails = addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
 			Consumer<List<Path>> consumer3 = files -> {
@@ -1798,8 +1798,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (this.world != null) {
 			if (!this.paused) {
 				if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
-					Text text = new TranslatableText("tutorial.socialInteractions.title");
-					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+					Text text = Text.method_43471("tutorial.socialInteractions.title");
+					Text text2 = Text.method_43469("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
 					this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
 					this.tutorialManager.add(this.socialInteractionsToast, 160);
 					this.options.joinedFirstServer = true;
@@ -2035,7 +2035,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void joinWorld(ClientWorld world) {
 		ProgressScreen progressScreen = new ProgressScreen(true);
-		progressScreen.setTitle(new TranslatableText("connect.joining"));
+		progressScreen.setTitle(Text.method_43471("connect.joining"));
 		this.reset(progressScreen);
 		this.world = world;
 		this.setWorld(world);
@@ -2591,7 +2591,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		float k = this.player.prevYaw;
 		this.gameRenderer.setBlockOutlineEnabled(false);
 
-		TranslatableText var12;
+		MutableText var12;
 		try {
 			this.gameRenderer.setRenderingPanorama(true);
 			this.worldRenderer.reloadTransparencyShader();
@@ -2640,13 +2640,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				});
 			}
 
-			Text text = new LiteralText(directory.getName())
+			Text text = Text.method_43470(directory.getName())
 				.formatted(Formatting.UNDERLINE)
 				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
-			return new TranslatableText("screenshot.success", text);
+			return Text.method_43469("screenshot.success", text);
 		} catch (Exception var18) {
 			LOGGER.error("Couldn't save image", (Throwable)var18);
-			var12 = new TranslatableText("screenshot.failure", var18.getMessage());
+			var12 = Text.method_43469("screenshot.failure", var18.getMessage());
 		} finally {
 			this.player.setPitch(f);
 			this.player.setYaw(g);
@@ -2701,13 +2701,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			File file = screenshotRecorder.finish();
 			GlDebugInfo.freeMemory(byteBuffer);
-			Text text = new LiteralText(file.getName())
+			Text text = Text.method_43470(file.getName())
 				.formatted(Formatting.UNDERLINE)
 				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
-			return new TranslatableText("screenshot.success", text);
+			return Text.method_43469("screenshot.success", text);
 		} catch (Exception var15) {
 			LOGGER.warn("Couldn't save screenshot", (Throwable)var15);
-			return new TranslatableText("screenshot.failure", var15.getMessage());
+			return Text.method_43469("screenshot.failure", var15.getMessage());
 		}
 	}
 
@@ -2802,25 +2802,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	@Environment(EnvType.CLIENT)
 	public static enum ChatRestriction {
-		ENABLED(LiteralText.EMPTY) {
+		ENABLED(ScreenTexts.field_39003) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return true;
 			}
 		},
-		DISABLED_BY_OPTIONS(new TranslatableText("chat.disabled.options").formatted(Formatting.RED)) {
+		DISABLED_BY_OPTIONS(Text.method_43471("chat.disabled.options").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return false;
 			}
 		},
-		DISABLED_BY_LAUNCHER(new TranslatableText("chat.disabled.launcher").formatted(Formatting.RED)) {
+		DISABLED_BY_LAUNCHER(Text.method_43471("chat.disabled.launcher").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return singlePlayer;
 			}
 		},
-		DISABLED_BY_PROFILE(new TranslatableText("chat.disabled.profile").formatted(Formatting.RED)) {
+		DISABLED_BY_PROFILE(Text.method_43471("chat.disabled.profile").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return singlePlayer;

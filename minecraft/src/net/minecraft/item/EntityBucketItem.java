@@ -16,7 +16,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -65,15 +64,15 @@ public class EntityBucketItem extends BucketItem {
 
 				for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; j++) {
 					if (i == TropicalFishEntity.COMMON_VARIANTS[j]) {
-						tooltip.add(new TranslatableText(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
+						tooltip.add(Text.method_43471(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
 						return;
 					}
 				}
 
-				tooltip.add(new TranslatableText(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
-				MutableText mutableText = new TranslatableText(string);
+				tooltip.add(Text.method_43471(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+				MutableText mutableText = Text.method_43471(string);
 				if (!string.equals(string2)) {
-					mutableText.append(", ").append(new TranslatableText(string2));
+					mutableText.append(", ").append(Text.method_43471(string2));
 				}
 
 				mutableText.formatted(formattings);

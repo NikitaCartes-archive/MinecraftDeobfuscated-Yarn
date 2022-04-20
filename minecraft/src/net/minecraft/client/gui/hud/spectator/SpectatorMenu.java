@@ -8,10 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
@@ -20,9 +19,9 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
 	private static final int field_32443 = 8;
-	static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
-	static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
-	static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
+	static final Text CLOSE_TEXT = Text.method_43471("spectatorMenu.close");
+	static final Text PREVIOUS_PAGE_TEXT = Text.method_43471("spectatorMenu.previous_page");
+	static final Text NEXT_PAGE_TEXT = Text.method_43471("spectatorMenu.next_page");
 	public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand() {
 		@Override
 		public void use(SpectatorMenu menu) {
@@ -30,7 +29,7 @@ public class SpectatorMenu {
 
 		@Override
 		public Text getName() {
-			return LiteralText.EMPTY;
+			return ScreenTexts.field_39003;
 		}
 
 		@Override

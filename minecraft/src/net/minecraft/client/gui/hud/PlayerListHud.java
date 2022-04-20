@@ -21,7 +21,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -73,7 +72,7 @@ public class PlayerListHud extends DrawableHelper {
 	public Text getPlayerName(PlayerListEntry entry) {
 		return entry.getDisplayName() != null
 			? this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy())
-			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), new LiteralText(entry.getProfile().getName())));
+			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.method_43470(entry.getProfile().getName())));
 	}
 
 	/**

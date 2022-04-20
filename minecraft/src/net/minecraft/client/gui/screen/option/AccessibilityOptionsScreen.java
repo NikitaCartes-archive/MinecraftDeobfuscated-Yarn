@@ -8,7 +8,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -36,7 +36,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	}
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, new TranslatableText("options.accessibility.title"), getOptions(gameOptions));
+		super(parent, gameOptions, Text.method_43471("options.accessibility.title"), getOptions(gameOptions));
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 				this.height - 27,
 				150,
 				20,
-				new TranslatableText("options.accessibility.link"),
+				Text.method_43471("options.accessibility.link"),
 				button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
 						if (openInBrowser) {
 							Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");

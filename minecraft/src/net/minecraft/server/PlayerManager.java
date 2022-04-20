@@ -73,7 +73,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
@@ -200,9 +199,9 @@ public abstract class PlayerManager {
 		this.server.forcePlayerSampleUpdate();
 		MutableText mutableText;
 		if (player.getGameProfile().getName().equalsIgnoreCase(string)) {
-			mutableText = new TranslatableText("multiplayer.player.joined", player.getDisplayName());
+			mutableText = Text.method_43469("multiplayer.player.joined", player.getDisplayName());
 		} else {
-			mutableText = new TranslatableText("multiplayer.player.joined.renamed", player.getDisplayName(), string);
+			mutableText = Text.method_43469("multiplayer.player.joined.renamed", player.getDisplayName(), string);
 		}
 
 		this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
@@ -383,24 +382,24 @@ public abstract class PlayerManager {
 	public Text checkCanJoin(SocketAddress address, GameProfile profile) {
 		if (this.bannedProfiles.contains(profile)) {
 			BannedPlayerEntry bannedPlayerEntry = this.bannedProfiles.get(profile);
-			MutableText mutableText = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
+			MutableText mutableText = Text.method_43469("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
 			if (bannedPlayerEntry.getExpiryDate() != null) {
-				mutableText.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
+				mutableText.append(Text.method_43469("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
 			}
 
 			return mutableText;
 		} else if (!this.isWhitelisted(profile)) {
-			return new TranslatableText("multiplayer.disconnect.not_whitelisted");
+			return Text.method_43471("multiplayer.disconnect.not_whitelisted");
 		} else if (this.bannedIps.isBanned(address)) {
 			BannedIpEntry bannedIpEntry = this.bannedIps.get(address);
-			MutableText mutableText = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
+			MutableText mutableText = Text.method_43469("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
 			if (bannedIpEntry.getExpiryDate() != null) {
-				mutableText.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
+				mutableText.append(Text.method_43469("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
 			}
 
 			return mutableText;
 		} else {
-			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(profile) ? new TranslatableText("multiplayer.disconnect.server_full") : null;
+			return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(profile) ? Text.method_43471("multiplayer.disconnect.server_full") : null;
 		}
 	}
 
@@ -421,7 +420,7 @@ public abstract class PlayerManager {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity3 : list) {
-			serverPlayerEntity3.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
+			serverPlayerEntity3.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.duplicate_login"));
 		}
 
 		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
@@ -760,7 +759,7 @@ public abstract class PlayerManager {
 
 	public void disconnectAllPlayers() {
 		for (int i = 0; i < this.players.size(); i++) {
-			((ServerPlayerEntity)this.players.get(i)).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
+			((ServerPlayerEntity)this.players.get(i)).networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.server_shutdown"));
 		}
 	}
 

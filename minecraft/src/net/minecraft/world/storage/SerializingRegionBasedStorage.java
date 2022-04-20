@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -115,17 +117,19 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	private void loadDataAt(ChunkPos chunkPos) {
-		this.update(chunkPos, NbtOps.INSTANCE, this.loadNbt(chunkPos));
+		Optional<NbtCompound> optional = (Optional<NbtCompound>)this.loadNbt(chunkPos).join();
+		this.update(chunkPos, NbtOps.INSTANCE, (NbtElement)optional.orElse(null));
 	}
 
-	@Nullable
-	private NbtCompound loadNbt(ChunkPos pos) {
-		try {
-			return this.worker.getNbt(pos);
-		} catch (IOException var3) {
-			LOGGER.error("Error reading chunk {} data from disk", pos, var3);
-			return null;
-		}
+	private CompletableFuture<Optional<NbtCompound>> loadNbt(ChunkPos pos) {
+		return this.worker.readChunkData(pos).exceptionally(throwable -> {
+			if (throwable instanceof IOException iOException) {
+				LOGGER.error("Error reading chunk {} data from disk", pos, iOException);
+				return Optional.empty();
+			} else {
+				throw new CompletionException(throwable);
+			}
+		});
 	}
 
 	private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {

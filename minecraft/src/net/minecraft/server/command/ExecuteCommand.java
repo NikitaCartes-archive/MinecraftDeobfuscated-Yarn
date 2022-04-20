@@ -62,20 +62,20 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class ExecuteCommand {
 	private static final int MAX_BLOCKS = 32768;
 	private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> new TranslatableText("commands.execute.blocks.toobig", maxCount, count)
+		(maxCount, count) -> Text.method_43469("commands.execute.blocks.toobig", maxCount, count)
 	);
 	private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.execute.conditional.fail")
+		Text.method_43471("commands.execute.conditional.fail")
 	);
 	private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(
-		count -> new TranslatableText("commands.execute.conditional.fail_count", count)
+		count -> Text.method_43469("commands.execute.conditional.fail_count", count)
 	);
 	private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
 			consumer.onCommandComplete(context, success, result);
@@ -569,7 +569,7 @@ public class ExecuteCommand {
 		return positive ? context -> {
 			int i = condition.test(context);
 			if (i > 0) {
-				context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass_count", i), false);
+				context.getSource().sendFeedback(Text.method_43469("commands.execute.conditional.pass_count", i), false);
 				return i;
 			} else {
 				throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -577,7 +577,7 @@ public class ExecuteCommand {
 		} : context -> {
 			int i = condition.test(context);
 			if (i == 0) {
-				context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+				context.getSource().sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
 				return 1;
 			} else {
 				throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(i);
@@ -628,7 +628,7 @@ public class ExecuteCommand {
 	) {
 		return builder.fork(root, context -> getSourceOrEmptyForConditionFork(context, positive, condition.test(context))).executes(context -> {
 			if (positive == condition.test(context)) {
-				context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+				context.getSource().sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
 				return 1;
 			} else {
 				throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -646,7 +646,7 @@ public class ExecuteCommand {
 	private static int executePositiveBlockCondition(CommandContext<ServerCommandSource> context, boolean masked) throws CommandSyntaxException {
 		OptionalInt optionalInt = testBlocksCondition(context, masked);
 		if (optionalInt.isPresent()) {
-			context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
+			context.getSource().sendFeedback(Text.method_43469("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
 			return optionalInt.getAsInt();
 		} else {
 			throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -658,7 +658,7 @@ public class ExecuteCommand {
 		if (optionalInt.isPresent()) {
 			throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(optionalInt.getAsInt());
 		} else {
-			context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+			context.getSource().sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
 			return 1;
 		}
 	}

@@ -10,7 +10,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -21,7 +20,7 @@ public class GameMenuScreen extends Screen {
 	private final boolean showMenu;
 
 	public GameMenuScreen(boolean showMenu) {
-		super(showMenu ? new TranslatableText("menu.game") : new TranslatableText("menu.paused"));
+		super(showMenu ? Text.method_43471("menu.game") : Text.method_43471("menu.paused"));
 		this.showMenu = showMenu;
 	}
 
@@ -35,7 +34,7 @@ public class GameMenuScreen extends Screen {
 	private void initWidgets() {
 		int i = -16;
 		int j = 98;
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, new TranslatableText("menu.returnToGame"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 24 + -16, 204, 20, Text.method_43471("menu.returnToGame"), button -> {
 			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
 		}));
@@ -45,7 +44,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 48 + -16,
 				98,
 				20,
-				new TranslatableText("gui.advancements"),
+				Text.method_43471("gui.advancements"),
 				button -> this.client.setScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
 			)
 		);
@@ -55,7 +54,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 48 + -16,
 				98,
 				20,
-				new TranslatableText("gui.stats"),
+				Text.method_43471("gui.stats"),
 				button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler()))
 			)
 		);
@@ -66,7 +65,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 72 + -16,
 				98,
 				20,
-				new TranslatableText("menu.sendFeedback"),
+				Text.method_43471("menu.sendFeedback"),
 				button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
 						if (confirmed) {
 							Util.getOperatingSystem().open(string);
@@ -82,7 +81,7 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 72 + -16,
 				98,
 				20,
-				new TranslatableText("menu.reportBugs"),
+				Text.method_43471("menu.reportBugs"),
 				button -> this.client.setScreen(new ConfirmChatLinkScreen(confirmed -> {
 						if (confirmed) {
 							Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
@@ -99,24 +98,24 @@ public class GameMenuScreen extends Screen {
 				this.height / 4 + 96 + -16,
 				98,
 				20,
-				new TranslatableText("menu.options"),
+				Text.method_43471("menu.options"),
 				button -> this.client.setScreen(new OptionsScreen(this, this.client.options))
 			)
 		);
 		ButtonWidget buttonWidget2 = this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, new TranslatableText("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
+				this.width / 2 + 4, this.height / 4 + 96 + -16, 98, 20, Text.method_43471("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))
 			)
 		);
 		buttonWidget2.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
-		Text text = this.client.isInSingleplayer() ? new TranslatableText("menu.returnToMenu") : new TranslatableText("menu.disconnect");
+		Text text = this.client.isInSingleplayer() ? Text.method_43471("menu.returnToMenu") : Text.method_43471("menu.disconnect");
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, this.height / 4 + 120 + -16, 204, 20, text, button -> {
 			boolean bl = this.client.isInSingleplayer();
 			boolean bl2 = this.client.isConnectedToRealms();
 			button.active = false;
 			this.client.world.disconnect();
 			if (bl) {
-				this.client.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+				this.client.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
 			} else {
 				this.client.disconnect();
 			}

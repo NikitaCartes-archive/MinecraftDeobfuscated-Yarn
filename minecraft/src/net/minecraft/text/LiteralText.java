@@ -1,37 +1,20 @@
 package net.minecraft.text;
 
-public class LiteralText extends BaseText {
-	public static final Text EMPTY = new LiteralText("");
-	private final String string;
+import java.util.Optional;
+import net.minecraft.class_7417;
 
-	public LiteralText(String string) {
-		this.string = string;
-	}
-
-	public String getRawString() {
-		return this.string;
+public record LiteralText(String string) implements class_7417 {
+	@Override
+	public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+		return visitor.accept(this.string);
 	}
 
 	@Override
-	public String asString() {
-		return this.string;
+	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+		return styledVisitor.accept(style, this.string);
 	}
 
-	public LiteralText copy() {
-		return new LiteralText(this.string);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (this == object) {
-			return true;
-		} else {
-			return !(object instanceof LiteralText literalText) ? false : this.string.equals(literalText.getRawString()) && super.equals(object);
-		}
-	}
-
-	@Override
 	public String toString() {
-		return "TextComponent{text='" + this.string + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
+		return "literal{" + this.string + "}";
 	}
 }

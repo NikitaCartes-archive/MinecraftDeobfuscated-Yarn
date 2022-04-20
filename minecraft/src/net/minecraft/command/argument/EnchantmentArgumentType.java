@@ -13,14 +13,14 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class EnchantmentArgumentType implements ArgumentType<Enchantment> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
 	public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("enchantment.unknown", id)
+		id -> Text.method_43469("enchantment.unknown", id)
 	);
 
 	public static EnchantmentArgumentType enchantment() {

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
 
 public class StatType<T> implements Iterable<Stat<T>> {
@@ -44,7 +43,7 @@ public class StatType<T> implements Iterable<Stat<T>> {
 
 	public Text getName() {
 		if (this.name == null) {
-			this.name = new TranslatableText(this.getTranslationKey());
+			this.name = Text.method_43471(this.getTranslationKey());
 		}
 
 		return this.name;

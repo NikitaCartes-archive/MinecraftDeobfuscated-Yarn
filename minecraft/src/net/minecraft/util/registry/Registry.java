@@ -21,6 +21,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
+import net.minecraft.class_7408;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -137,7 +138,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final RegistryKey<Registry<Potion>> POTION_KEY = createRegistryKey("potion");
 	public static final RegistryKey<Registry<ParticleType<?>>> PARTICLE_TYPE_KEY = createRegistryKey("particle_type");
 	public static final RegistryKey<Registry<BlockEntityType<?>>> BLOCK_ENTITY_TYPE_KEY = createRegistryKey("block_entity_type");
-	public static final RegistryKey<Registry<PaintingMotive>> MOTIVE_KEY = createRegistryKey("motive");
+	public static final RegistryKey<Registry<PaintingMotive>> MOTIVE_KEY = createRegistryKey("painting_variant");
 	public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT_KEY = createRegistryKey("custom_stat");
 	public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS_KEY = createRegistryKey("chunk_status");
 	public static final RegistryKey<Registry<RuleTestType<?>>> RULE_TEST_KEY = createRegistryKey("rule_test");
@@ -194,7 +195,7 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final DefaultedRegistry<Potion> POTION = create(POTION_KEY, "empty", registry -> Potions.EMPTY);
 	public static final Registry<ParticleType<?>> PARTICLE_TYPE = create(PARTICLE_TYPE_KEY, registry -> ParticleTypes.BLOCK);
 	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = create(BLOCK_ENTITY_TYPE_KEY, registry -> BlockEntityType.FURNACE);
-	public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = create(MOTIVE_KEY, "kebab", registry -> PaintingMotive.KEBAB);
+	public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = create(MOTIVE_KEY, "kebab", class_7408::method_43406);
 	public static final Registry<Identifier> CUSTOM_STAT = create(CUSTOM_STAT_KEY, registry -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create(CHUNK_STATUS_KEY, "empty", registry -> ChunkStatus.EMPTY);
 	public static final Registry<RuleTestType<?>> RULE_TEST = create(RULE_TEST_KEY, registry -> RuleTestType.ALWAYS_TRUE);

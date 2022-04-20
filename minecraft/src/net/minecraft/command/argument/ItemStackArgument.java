@@ -8,13 +8,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.util.registry.RegistryKey;
 
 public class ItemStackArgument implements Predicate<ItemStack> {
 	private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType(
-		(item, maxCount) -> new TranslatableText("arguments.item.overstacked", item, maxCount)
+		(item, maxCount) -> Text.method_43469("arguments.item.overstacked", item, maxCount)
 	);
 	private final RegistryEntry<Item> item;
 	@Nullable

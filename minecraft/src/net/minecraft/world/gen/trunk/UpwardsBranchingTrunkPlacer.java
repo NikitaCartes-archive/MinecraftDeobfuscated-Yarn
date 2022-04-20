@@ -71,7 +71,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 				&& random.nextFloat() < this.placeBranchPerLogProbability) {
 				Direction direction = Direction.Type.HORIZONTAL.random(random);
 				int k = this.extraBranchLength.get(random);
-				int l = k - this.extraBranchLength.get(random) - 1;
+				int l = Math.max(0, k - this.extraBranchLength.get(random) - 1);
 				int m = this.extraBranchSteps.get(random);
 				this.generateExtraBranch(world, replacer, random, height, config, list, mutable, j, direction, l, m);
 			}
@@ -118,7 +118,7 @@ public class UpwardsBranchingTrunkPlacer extends TrunkPlacer {
 			steps--;
 		}
 
-		if (i > 1) {
+		if (i - yOffset > 1) {
 			BlockPos blockPos = new BlockPos(j, i, k);
 			nodes.add(new FoliagePlacer.TreeNode(blockPos, 0, false));
 			nodes.add(new FoliagePlacer.TreeNode(blockPos.down(2), 0, false));

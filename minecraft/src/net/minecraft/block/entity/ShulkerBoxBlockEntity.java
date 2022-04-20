@@ -22,7 +22,6 @@ import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -184,7 +183,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	@Override
 	protected Text getContainerName() {
-		return new TranslatableText("container.shulkerBox");
+		return Text.method_43471("container.shulkerBox");
 	}
 
 	@Override

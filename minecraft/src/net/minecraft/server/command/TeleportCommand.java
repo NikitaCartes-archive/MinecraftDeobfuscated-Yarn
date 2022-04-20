@@ -23,7 +23,7 @@ import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 
 public class TeleportCommand {
 	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("commands.teleport.invalidPosition")
+		Text.method_43471("commands.teleport.invalidPosition")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -165,10 +165,10 @@ public class TeleportCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				new TranslatableText("commands.teleport.success.entity.single", ((Entity)targets.iterator().next()).getDisplayName(), destination.getDisplayName()), true
+				Text.method_43469("commands.teleport.success.entity.single", ((Entity)targets.iterator().next()).getDisplayName(), destination.getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.teleport.success.entity.multiple", targets.size(), destination.getDisplayName()), true);
+			source.sendFeedback(Text.method_43469("commands.teleport.success.entity.multiple", targets.size(), destination.getDisplayName()), true);
 		}
 
 		return targets.size();
@@ -220,7 +220,7 @@ public class TeleportCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				new TranslatableText(
+				Text.method_43469(
 					"commands.teleport.success.location.single",
 					((Entity)targets.iterator().next()).getDisplayName(),
 					formatFloat(vec3d.x),
@@ -231,7 +231,7 @@ public class TeleportCommand {
 			);
 		} else {
 			source.sendFeedback(
-				new TranslatableText("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)), true
+				Text.method_43469("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)), true
 			);
 		}
 

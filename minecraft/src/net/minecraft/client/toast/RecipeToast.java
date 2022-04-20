@@ -10,13 +10,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
 	private static final long DURATION = 5000L;
-	private static final Text TITLE = new TranslatableText("recipe.toast.title");
-	private static final Text DESCRIPTION = new TranslatableText("recipe.toast.description");
+	private static final Text TITLE = Text.method_43471("recipe.toast.title");
+	private static final Text DESCRIPTION = Text.method_43471("recipe.toast.description");
 	private final List<Recipe<?>> recipes = Lists.<Recipe<?>>newArrayList();
 	private long startTime;
 	private boolean justUpdated;

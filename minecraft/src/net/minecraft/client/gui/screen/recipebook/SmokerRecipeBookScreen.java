@@ -6,11 +6,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.item.Item;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(EnvType.CLIENT)
 public class SmokerRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
-	private static final Text TOGGLE_SMOKABLE_RECIPES_TEXT = new TranslatableText("gui.recipebook.toggleRecipes.smokable");
+	private static final Text TOGGLE_SMOKABLE_RECIPES_TEXT = Text.method_43471("gui.recipebook.toggleRecipes.smokable");
 
 	@Override
 	protected Text getToggleCraftableButtonText() {

@@ -26,7 +26,7 @@ import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -34,27 +34,27 @@ import net.minecraft.util.registry.RegistryEntryList;
 import net.minecraft.util.registry.RegistryKey;
 
 public class BlockArgumentParser {
-	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.block.tag.disallowed"));
+	public static final SimpleCommandExceptionType DISALLOWED_TAG_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.block.tag.disallowed"));
 	public static final DynamicCommandExceptionType INVALID_BLOCK_ID_EXCEPTION = new DynamicCommandExceptionType(
-		block -> new TranslatableText("argument.block.id.invalid", block)
+		block -> Text.method_43469("argument.block.id.invalid", block)
 	);
 	public static final Dynamic2CommandExceptionType UNKNOWN_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> new TranslatableText("argument.block.property.unknown", block, property)
+		(block, property) -> Text.method_43469("argument.block.property.unknown", block, property)
 	);
 	public static final Dynamic2CommandExceptionType DUPLICATE_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> new TranslatableText("argument.block.property.duplicate", property, block)
+		(block, property) -> Text.method_43469("argument.block.property.duplicate", property, block)
 	);
 	public static final Dynamic3CommandExceptionType INVALID_PROPERTY_EXCEPTION = new Dynamic3CommandExceptionType(
-		(block, property, value) -> new TranslatableText("argument.block.property.invalid", block, value, property)
+		(block, property, value) -> Text.method_43469("argument.block.property.invalid", block, value, property)
 	);
 	public static final Dynamic2CommandExceptionType EMPTY_PROPERTY_EXCEPTION = new Dynamic2CommandExceptionType(
-		(block, property) -> new TranslatableText("argument.block.property.novalue", block, property)
+		(block, property) -> Text.method_43469("argument.block.property.novalue", block, property)
 	);
 	public static final SimpleCommandExceptionType UNCLOSED_PROPERTIES_EXCEPTION = new SimpleCommandExceptionType(
-		new TranslatableText("argument.block.property.unclosed")
+		Text.method_43471("argument.block.property.unclosed")
 	);
 	public static final DynamicCommandExceptionType UNKNOWN_BLOCK_TAG_EXCEPTION = new DynamicCommandExceptionType(
-		tag -> new TranslatableText("arguments.block.tag.unknown", tag)
+		tag -> Text.method_43469("arguments.block.tag.unknown", tag)
 	);
 	private static final char PROPERTIES_OPENING = '[';
 	private static final char NBT_OPENING = '{';

@@ -36,7 +36,6 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
@@ -44,12 +43,12 @@ import org.lwjgl.glfw.GLFW;
 @Environment(EnvType.CLIENT)
 public class RecipeBookWidget extends DrawableHelper implements Drawable, Element, Selectable, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
-	private static final Text SEARCH_HINT_TEXT = new TranslatableText("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+	private static final Text SEARCH_HINT_TEXT = Text.method_43471("gui.recipebook.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
 	public static final int field_32408 = 147;
 	public static final int field_32409 = 166;
 	private static final int field_32410 = 86;
-	private static final Text TOGGLE_CRAFTABLE_RECIPES_TEXT = new TranslatableText("gui.recipebook.toggleRecipes.craftable");
-	private static final Text TOGGLE_ALL_RECIPES_TEXT = new TranslatableText("gui.recipebook.toggleRecipes.all");
+	private static final Text TOGGLE_CRAFTABLE_RECIPES_TEXT = Text.method_43471("gui.recipebook.toggleRecipes.craftable");
+	private static final Text TOGGLE_ALL_RECIPES_TEXT = Text.method_43471("gui.recipebook.toggleRecipes.all");
 	private int leftOffset;
 	private int parentWidth;
 	private int parentHeight;
@@ -96,7 +95,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
 		this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5, new TranslatableText("itemGroup.search"));
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5, Text.method_43471("itemGroup.search"));
 		this.searchField.setMaxLength(50);
 		this.searchField.setDrawsBackground(false);
 		this.searchField.setVisible(true);

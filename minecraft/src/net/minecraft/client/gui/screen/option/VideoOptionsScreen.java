@@ -20,22 +20,17 @@ import net.minecraft.client.util.Monitor;
 import net.minecraft.client.util.VideoMode;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class VideoOptionsScreen extends GameOptionsScreen {
-	private static final Text GRAPHICS_FABULOUS_TEXT = new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC);
-	private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = new TranslatableText(
-		"options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT
-	);
-	private static final Text GRAPHICS_WARNING_TITLE_TEXT = new TranslatableText("options.graphics.warning.title").formatted(Formatting.RED);
-	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = new TranslatableText("options.graphics.warning.accept");
-	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = new TranslatableText("options.graphics.warning.cancel");
-	private static final Text NEWLINE_TEXT = new LiteralText("\n");
+	private static final Text GRAPHICS_FABULOUS_TEXT = Text.method_43471("options.graphics.fabulous").formatted(Formatting.ITALIC);
+	private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = Text.method_43469("options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT);
+	private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.method_43471("options.graphics.warning.title").formatted(Formatting.RED);
+	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = Text.method_43471("options.graphics.warning.accept");
+	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = Text.method_43471("options.graphics.warning.cancel");
 	private ButtonListWidget list;
 	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
@@ -66,7 +61,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	public VideoOptionsScreen(Screen parent, GameOptions options) {
-		super(parent, options, new TranslatableText("options.videoTitle"));
+		super(parent, options, Text.method_43471("options.videoTitle"));
 		this.warningManager = parent.client.getVideoWarningManager();
 		this.warningManager.reset();
 		if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
@@ -95,11 +90,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			SimpleOption.emptyTooltip(),
 			(text, value) -> {
 				if (monitor == null) {
-					return new TranslatableText("options.fullscreen.unavailable");
+					return Text.method_43471("options.fullscreen.unavailable");
 				} else {
 					return value == -1
-						? GameOptions.getGenericValueText(text, new TranslatableText("options.fullscreen.current"))
-						: GameOptions.getGenericValueText(text, new LiteralText(monitor.getVideoMode(value).toString()));
+						? GameOptions.getGenericValueText(text, Text.method_43471("options.fullscreen.current"))
+						: GameOptions.getGenericValueText(text, Text.method_43470(monitor.getVideoMode(value).toString()));
 				}
 			},
 			new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1),
@@ -140,23 +135,23 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			}
 
 			if (this.warningManager.shouldWarn()) {
-				List<Text> list = Lists.<Text>newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, NEWLINE_TEXT);
+				List<Text> list = Lists.<Text>newArrayList(GRAPHICS_WARNING_MESSAGE_TEXT, ScreenTexts.LINE_BREAK);
 				String string = this.warningManager.getRendererWarning();
 				if (string != null) {
-					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
+					list.add(ScreenTexts.LINE_BREAK);
+					list.add(Text.method_43469("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
 				}
 
 				String string2 = this.warningManager.getVendorWarning();
 				if (string2 != null) {
-					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
+					list.add(ScreenTexts.LINE_BREAK);
+					list.add(Text.method_43469("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
 				}
 
 				String string3 = this.warningManager.getVersionWarning();
 				if (string3 != null) {
-					list.add(NEWLINE_TEXT);
-					list.add(new TranslatableText("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
+					list.add(ScreenTexts.LINE_BREAK);
+					list.add(Text.method_43469("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
 				}
 
 				this.client

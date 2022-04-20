@@ -448,27 +448,53 @@ public class Style {
 	}
 
 	public String toString() {
-		return "Style{ color="
-			+ this.color
-			+ ", bold="
-			+ this.bold
-			+ ", italic="
-			+ this.italic
-			+ ", underlined="
-			+ this.underlined
-			+ ", strikethrough="
-			+ this.strikethrough
-			+ ", obfuscated="
-			+ this.obfuscated
-			+ ", clickEvent="
-			+ this.getClickEvent()
-			+ ", hoverEvent="
-			+ this.getHoverEvent()
-			+ ", insertion="
-			+ this.getInsertion()
-			+ ", font="
-			+ this.getFont()
-			+ "}";
+		final StringBuilder stringBuilder = new StringBuilder("{");
+
+		class class_7418 {
+			private boolean field_39012;
+
+			private void method_43478() {
+				if (this.field_39012) {
+					stringBuilder.append(',');
+				}
+
+				this.field_39012 = true;
+			}
+
+			void method_43479(String string, @Nullable Boolean boolean_) {
+				if (boolean_ != null) {
+					this.method_43478();
+					if (!boolean_) {
+						stringBuilder.append('!');
+					}
+
+					stringBuilder.append(string);
+				}
+			}
+
+			void method_43480(String string, @Nullable Object object) {
+				if (object != null) {
+					this.method_43478();
+					stringBuilder.append(string);
+					stringBuilder.append('=');
+					stringBuilder.append(object);
+				}
+			}
+		}
+
+		class_7418 lv = new class_7418();
+		lv.method_43480("color", this.color);
+		lv.method_43479("bold", this.bold);
+		lv.method_43479("italic", this.italic);
+		lv.method_43479("underlined", this.underlined);
+		lv.method_43479("strikethrough", this.strikethrough);
+		lv.method_43479("obfuscated", this.obfuscated);
+		lv.method_43480("clickEvent", this.clickEvent);
+		lv.method_43480("hoverEvent", this.hoverEvent);
+		lv.method_43480("insertion", this.insertion);
+		lv.method_43480("font", this.font);
+		stringBuilder.append("}");
+		return stringBuilder.toString();
 	}
 
 	public boolean equals(Object o) {

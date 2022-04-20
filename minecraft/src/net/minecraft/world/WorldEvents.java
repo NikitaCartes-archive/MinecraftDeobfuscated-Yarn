@@ -506,5 +506,4 @@ public class WorldEvents {
 	 * <br>Called by {@link net.minecraft.block.SculkShriekerBlock#shriek(net.minecraft.world.World, net.minecraft.block.BlockState, net.minecraft.util.math.BlockPos) SculkShriekerBlock#shriek}
 	 */
 	public static final int SCULK_SHRIEKS = 3007;
-	public static final int field_38421 = 3008;
 }

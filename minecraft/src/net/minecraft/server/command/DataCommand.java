@@ -30,26 +30,26 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 public class DataCommand {
-	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.merge.failed"));
+	private static final SimpleCommandExceptionType MERGE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.data.merge.failed"));
 	private static final DynamicCommandExceptionType GET_INVALID_EXCEPTION = new DynamicCommandExceptionType(
-		path -> new TranslatableText("commands.data.get.invalid", path)
+		path -> Text.method_43469("commands.data.get.invalid", path)
 	);
 	private static final DynamicCommandExceptionType GET_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(
-		path -> new TranslatableText("commands.data.get.unknown", path)
+		path -> Text.method_43469("commands.data.get.unknown", path)
 	);
-	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.data.get.multiple"));
+	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.data.get.multiple"));
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> new TranslatableText("commands.data.modify.expected_list", nbt)
+		nbt -> Text.method_43469("commands.data.modify.expected_list", nbt)
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> new TranslatableText("commands.data.modify.expected_object", nbt)
+		nbt -> Text.method_43469("commands.data.modify.expected_object", nbt)
 	);
 	private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		index -> new TranslatableText("commands.data.modify.invalid_index", index)
+		index -> Text.method_43469("commands.data.modify.invalid_index", index)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(
 		EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY

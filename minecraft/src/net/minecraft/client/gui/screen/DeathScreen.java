@@ -8,10 +8,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
@@ -23,7 +21,7 @@ public class DeathScreen extends Screen {
 	private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 
 	public DeathScreen(@Nullable Text message, boolean isHardcore) {
-		super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
+		super(Text.method_43471(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
 		this.message = message;
 		this.isHardcore = isHardcore;
 	}
@@ -40,7 +38,7 @@ public class DeathScreen extends Screen {
 						this.height / 4 + 72,
 						200,
 						20,
-						this.isHardcore ? new TranslatableText("deathScreen.spectate") : new TranslatableText("deathScreen.respawn"),
+						this.isHardcore ? Text.method_43471("deathScreen.spectate") : Text.method_43471("deathScreen.respawn"),
 						button -> {
 							this.client.player.requestRespawn();
 							this.client.setScreen(null);
@@ -56,17 +54,17 @@ public class DeathScreen extends Screen {
 						this.height / 4 + 96,
 						200,
 						20,
-						new TranslatableText("deathScreen.titleScreen"),
+						Text.method_43471("deathScreen.titleScreen"),
 						button -> {
 							if (this.isHardcore) {
 								this.quitLevel();
 							} else {
 								ConfirmScreen confirmScreen = new ConfirmScreen(
 									this::onConfirmQuit,
-									new TranslatableText("deathScreen.quit.confirm"),
-									LiteralText.EMPTY,
-									new TranslatableText("deathScreen.titleScreen"),
-									new TranslatableText("deathScreen.respawn")
+									Text.method_43471("deathScreen.quit.confirm"),
+									ScreenTexts.field_39003,
+									Text.method_43471("deathScreen.titleScreen"),
+									Text.method_43471("deathScreen.respawn")
 								);
 								this.client.setScreen(confirmScreen);
 								confirmScreen.disableButtons(20);
@@ -80,9 +78,9 @@ public class DeathScreen extends Screen {
 			buttonWidget.active = false;
 		}
 
-		this.scoreText = new TranslatableText("deathScreen.score")
+		this.scoreText = Text.method_43471("deathScreen.score")
 			.append(": ")
-			.append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+			.append(Text.method_43470(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
 	}
 
 	@Override
@@ -104,7 +102,7 @@ public class DeathScreen extends Screen {
 			this.client.world.disconnect();
 		}
 
-		this.client.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+		this.client.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
 		this.client.setScreen(new TitleScreen());
 	}
 

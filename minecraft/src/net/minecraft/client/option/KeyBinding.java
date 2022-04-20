@@ -11,7 +11,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -162,7 +161,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public static Supplier<Text> getLocalizedName(String id) {
 		KeyBinding keyBinding = (KeyBinding)KEYS_BY_ID.get(id);
-		return keyBinding == null ? () -> new TranslatableText(id) : keyBinding::getBoundKeyLocalizedText;
+		return keyBinding == null ? () -> Text.method_43471(id) : keyBinding::getBoundKeyLocalizedText;
 	}
 
 	public boolean equals(KeyBinding other) {

@@ -13,7 +13,7 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
@@ -159,7 +159,7 @@ class StructureTestListener implements TestListener {
 	}
 
 	protected static void sendMessageToAllPlayers(ServerWorld world, Formatting formatting, String message) {
-		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(new LiteralText(message).formatted(formatting), Util.NIL_UUID));
+		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(Text.method_43470(message).formatted(formatting), Util.NIL_UUID));
 	}
 
 	private static void addGameTestMarker(ServerWorld world, BlockPos pos, String message) {

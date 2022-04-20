@@ -10,7 +10,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Dynamic;
 import java.util.Objects;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class TeamDisplayNameFix extends DataFix {
@@ -31,7 +30,7 @@ public class TeamDisplayNameFix extends DataFix {
 							dynamic -> dynamic.update(
 									"DisplayName",
 									dynamic2 -> DataFixUtils.orElse(
-											dynamic2.asString().map(string -> Text.Serializer.toJson(new LiteralText(string))).map(dynamic::createString).result(), dynamic2
+											dynamic2.asString().map(string -> Text.Serializer.toJson(Text.method_43470(string))).map(dynamic::createString).result(), dynamic2
 										)
 								)
 						)

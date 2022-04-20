@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
@@ -24,7 +25,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 	private final StorageIoWorker worker;
 	protected final DataFixer dataFixer;
 	@Nullable
-	private FeatureUpdater featureUpdater;
+	private volatile FeatureUpdater featureUpdater;
 
 	public VersionedChunkStorage(Path directory, DataFixer dataFixer, boolean dsync) {
 		this.dataFixer = dataFixer;
@@ -45,11 +46,8 @@ public class VersionedChunkStorage implements AutoCloseable {
 		if (i < 1493) {
 			nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493);
 			if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(worldKey, (PersistentStateManager)persistentStateManagerFactory.get());
-				}
-
-				nbt = this.featureUpdater.getUpdatedReferences(nbt);
+				FeatureUpdater featureUpdater = this.method_43411(worldKey, persistentStateManagerFactory);
+				nbt = featureUpdater.getUpdatedReferences(nbt);
 			}
 		}
 
@@ -63,6 +61,20 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return nbt;
 	}
 
+	private FeatureUpdater method_43411(RegistryKey<World> registryKey, Supplier<PersistentStateManager> supplier) {
+		FeatureUpdater featureUpdater = this.featureUpdater;
+		if (featureUpdater == null) {
+			synchronized (this) {
+				featureUpdater = this.featureUpdater;
+				if (featureUpdater == null) {
+					this.featureUpdater = featureUpdater = FeatureUpdater.create(registryKey, (PersistentStateManager)supplier.get());
+				}
+			}
+		}
+
+		return featureUpdater;
+	}
+
 	public static void saveContextToNbt(NbtCompound nbt, RegistryKey<World> worldKey, Optional<RegistryKey<Codec<? extends ChunkGenerator>>> generatorCodecKey) {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("dimension", worldKey.getValue().toString());
@@ -74,9 +86,8 @@ public class VersionedChunkStorage implements AutoCloseable {
 		return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") : -1;
 	}
 
-	@Nullable
-	public NbtCompound getNbt(ChunkPos chunkPos) throws IOException {
-		return this.worker.getNbt(chunkPos);
+	public CompletableFuture<Optional<NbtCompound>> getNbt(ChunkPos chunkPos) {
+		return this.worker.readChunkData(chunkPos);
 	}
 
 	public void setNbt(ChunkPos chunkPos, NbtCompound nbt) {

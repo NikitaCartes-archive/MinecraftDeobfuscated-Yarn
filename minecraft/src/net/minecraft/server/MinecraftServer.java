@@ -84,9 +84,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.test.TestManager;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
@@ -677,7 +675,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		try {
 			if (this.setupServer()) {
 				this.timeReference = Util.getMeasuringTimeMs();
-				this.metadata.setDescription(new LiteralText(this.motd));
+				this.metadata.setDescription(Text.method_43470(this.motd));
 				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
 				this.setFavicon(this.metadata);
 
@@ -1498,7 +1496,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
 				if (!whitelist.isAllowed(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
+					serverPlayerEntity.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.not_whitelisted"));
 				}
 			}
 		}
@@ -1522,7 +1520,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public ServerCommandSource getCommandSource() {
 		ServerWorld serverWorld = this.getOverworld();
 		return new ServerCommandSource(
-			this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null
+			this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", Text.method_43470("Server"), this, null
 		);
 	}
 

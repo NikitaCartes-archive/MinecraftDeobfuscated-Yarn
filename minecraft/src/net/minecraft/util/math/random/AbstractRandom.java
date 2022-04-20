@@ -24,6 +24,9 @@ import net.minecraft.world.gen.random.AtomicSimpleRandom;
  * the Java random number generator algorithm.
  */
 public interface AbstractRandom {
+	@Deprecated
+	double field_38930 = 2.297;
+
 	static AbstractRandom createAtomic() {
 		return createAtomic(System.nanoTime());
 	}
@@ -64,6 +67,10 @@ public interface AbstractRandom {
 	double nextDouble();
 
 	double nextGaussian();
+
+	default double method_43385(double d, double e) {
+		return d + e * (this.nextDouble() - this.nextDouble());
+	}
 
 	default void skip(int count) {
 		for (int i = 0; i < count; i++) {

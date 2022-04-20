@@ -15,20 +15,20 @@ import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class IdentifierArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_ADVANCEMENT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("advancement.advancementNotFound", id)
+		id -> Text.method_43469("advancement.advancementNotFound", id)
 	);
-	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("recipe.notFound", id));
+	private static final DynamicCommandExceptionType UNKNOWN_RECIPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("recipe.notFound", id));
 	private static final DynamicCommandExceptionType UNKNOWN_PREDICATE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("predicate.unknown", id)
+		id -> Text.method_43469("predicate.unknown", id)
 	);
 	private static final DynamicCommandExceptionType UNKNOWN_ITEM_MODIFIER_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("item_modifier.unknown", id)
+		id -> Text.method_43469("item_modifier.unknown", id)
 	);
 
 	public static IdentifierArgumentType identifier() {

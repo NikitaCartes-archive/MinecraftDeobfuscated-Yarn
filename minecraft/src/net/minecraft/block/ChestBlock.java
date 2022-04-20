@@ -36,7 +36,6 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -99,7 +98,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 					if (chestBlockEntity.hasCustomName()) {
 						return chestBlockEntity.getDisplayName();
 					} else {
-						return (Text)(chestBlockEntity2.hasCustomName() ? chestBlockEntity2.getDisplayName() : new TranslatableText("container.chestDouble"));
+						return (Text)(chestBlockEntity2.hasCustomName() ? chestBlockEntity2.getDisplayName() : Text.method_43471("container.chestDouble"));
 					}
 				}
 			});

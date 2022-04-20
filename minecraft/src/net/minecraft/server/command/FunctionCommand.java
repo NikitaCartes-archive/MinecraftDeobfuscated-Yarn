@@ -7,7 +7,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
@@ -36,9 +36,9 @@ public class FunctionCommand {
 		}
 
 		if (functions.size() == 1) {
-			source.sendFeedback(new TranslatableText("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
+			source.sendFeedback(Text.method_43469("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.function.success.multiple", i, functions.size()), true);
+			source.sendFeedback(Text.method_43469("commands.function.success.multiple", i, functions.size()), true);
 		}
 
 		return i;

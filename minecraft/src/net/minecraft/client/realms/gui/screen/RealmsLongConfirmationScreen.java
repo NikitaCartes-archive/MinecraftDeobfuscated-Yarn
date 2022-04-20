@@ -7,9 +7,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -35,7 +33,7 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 			this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, row(8), 100, 20, ScreenTexts.YES, button -> this.callback.accept(true)));
 			this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, row(8), 100, 20, ScreenTexts.NO, button -> this.callback.accept(false)));
 		} else {
-			this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, row(8), 100, 20, new TranslatableText("mco.gui.ok"), button -> this.callback.accept(true)));
+			this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, row(8), 100, 20, Text.method_43471("mco.gui.ok"), button -> this.callback.accept(true)));
 		}
 	}
 
@@ -72,7 +70,7 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 		public final Text text;
 
 		private Type(String text, int colorCode) {
-			this.text = new LiteralText(text);
+			this.text = Text.method_43470(text);
 			this.colorCode = colorCode;
 		}
 	}

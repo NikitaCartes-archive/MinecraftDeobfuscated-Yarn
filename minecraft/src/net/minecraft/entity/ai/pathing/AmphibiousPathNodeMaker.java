@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,10 +36,12 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public PathNode getStart() {
-		return this.getNode(
-			MathHelper.floor(this.entity.getBoundingBox().minX),
-			MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
-			MathHelper.floor(this.entity.getBoundingBox().minZ)
+		return this.method_43415(
+			new BlockPos(
+				MathHelper.floor(this.entity.getBoundingBox().minX),
+				MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
+				MathHelper.floor(this.entity.getBoundingBox().minZ)
+			)
 		);
 	}
 
@@ -62,11 +65,11 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
 		PathNode pathNode = this.getPathNode(node.x, node.y + 1, node.z, Math.max(0, j - 1), d, Direction.UP, pathNodeType2);
 		PathNode pathNode2 = this.getPathNode(node.x, node.y - 1, node.z, j, d, Direction.DOWN, pathNodeType2);
-		if (this.isValidAdjacentSuccessor(pathNode, node)) {
+		if (this.method_43413(pathNode, node)) {
 			successors[i++] = pathNode;
 		}
 
-		if (this.isValidAdjacentSuccessor(pathNode2, node) && pathNodeType2 != PathNodeType.TRAPDOOR) {
+		if (this.method_43413(pathNode2, node) && pathNodeType2 != PathNodeType.TRAPDOOR) {
 			successors[i++] = pathNode2;
 		}
 
@@ -78,6 +81,10 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		}
 
 		return i;
+	}
+
+	private boolean method_43413(@Nullable PathNode pathNode, PathNode pathNode2) {
+		return this.isValidAdjacentSuccessor(pathNode, pathNode2) && pathNode.type == PathNodeType.WATER;
 	}
 
 	@Override

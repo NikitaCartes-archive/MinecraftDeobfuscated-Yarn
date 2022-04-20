@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -22,7 +23,6 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroupLoader;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -94,7 +94,7 @@ public class FunctionLoader implements ResourceReloader {
 				map -> {
 					Map<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
-						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null
+						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.field_39003, null, null
 					);
 
 					for (Entry<Identifier, Resource> entry : map.entrySet()) {

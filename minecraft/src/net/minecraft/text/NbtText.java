@@ -4,35 +4,38 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.logging.LogUtils;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.command.EntitySelector;
-import net.minecraft.command.EntitySelectorReader;
-import net.minecraft.command.argument.BlockPosArgumentType;
+import net.minecraft.class_7417;
+import net.minecraft.class_7419;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.command.argument.PosArgument;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
 
-public abstract class NbtText extends BaseText implements ParsableText {
+public class NbtText implements class_7417 {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	protected final boolean interpret;
-	protected final Optional<Text> separator;
-	protected final String rawPath;
+	private final boolean interpret;
+	private final Optional<Text> separator;
+	private final String rawPath;
+	private final class_7419 field_39014;
 	@Nullable
 	protected final NbtPathArgumentType.NbtPath path;
+
+	public NbtText(String rawPath, boolean interpret, Optional<Text> separator, class_7419 arg) {
+		this(rawPath, parsePath(rawPath), interpret, separator, arg);
+	}
+
+	private NbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Optional<Text> separator, class_7419 arg) {
+		this.rawPath = rawPath;
+		this.path = path;
+		this.interpret = interpret;
+		this.separator = separator;
+		this.field_39014 = arg;
+	}
 
 	@Nullable
 	private static NbtPathArgumentType.NbtPath parsePath(String rawPath) {
@@ -43,19 +46,6 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		}
 	}
 
-	public NbtText(String rawPath, boolean interpret, Optional<Text> separator) {
-		this(rawPath, parsePath(rawPath), interpret, separator);
-	}
-
-	protected NbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Optional<Text> separator) {
-		this.rawPath = rawPath;
-		this.path = path;
-		this.interpret = interpret;
-		this.separator = separator;
-	}
-
-	protected abstract Stream<NbtCompound> toNbt(ServerCommandSource source) throws CommandSyntaxException;
-
 	public String getPath() {
 		return this.rawPath;
 	}
@@ -64,10 +54,46 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		return this.interpret;
 	}
 
+	public Optional<Text> method_43484() {
+		return this.separator;
+	}
+
+	public class_7419 method_43485() {
+		return this.field_39014;
+	}
+
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		} else {
+			if (object instanceof NbtText nbtText
+				&& this.field_39014.equals(nbtText.field_39014)
+				&& this.separator.equals(nbtText.separator)
+				&& this.interpret == nbtText.interpret
+				&& this.rawPath.equals(nbtText.rawPath)) {
+				return true;
+			}
+
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		int i = super.hashCode();
+		i = 31 * i + (this.interpret ? 1 : 0);
+		i = 31 * i + this.separator.hashCode();
+		i = 31 * i + this.rawPath.hashCode();
+		return 31 * i + this.field_39014.hashCode();
+	}
+
+	public String toString() {
+		return "nbt{" + this.field_39014 + ", interpreting=" + this.interpret + ", separator=" + this.separator + "}";
+	}
+
 	@Override
-	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-		if (source != null && this.path != null) {
-			Stream<String> stream = this.toNbt(source).flatMap(nbt -> {
+	public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+		if (serverCommandSource != null && this.path != null) {
+			Stream<String> stream = this.field_39014.toNbt(serverCommandSource).flatMap(nbt -> {
 				try {
 					return this.path.get(nbt).stream();
 				} catch (CommandSyntaxException var3) {
@@ -75,210 +101,27 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				}
 			}).map(NbtElement::asString);
 			if (this.interpret) {
-				Text text = DataFixUtils.orElse(Texts.parse(source, this.separator, sender, depth), Texts.DEFAULT_SEPARATOR_TEXT);
+				Text text = DataFixUtils.orElse(Texts.parse(serverCommandSource, this.separator, entity, i), Texts.DEFAULT_SEPARATOR_TEXT);
 				return (MutableText)stream.flatMap(textx -> {
 					try {
 						MutableText mutableText = Text.Serializer.fromJson(textx);
-						return Stream.of(Texts.parse(source, mutableText, sender, depth));
+						return Stream.of(Texts.parse(serverCommandSource, mutableText, entity, i));
 					} catch (Exception var5x) {
 						LOGGER.warn("Failed to parse component: {}", textx, var5x);
 						return Stream.of();
 					}
-				}).reduce((accumulator, current) -> accumulator.append(text).append(current)).orElseGet(() -> new LiteralText(""));
+				}).reduce((accumulator, current) -> accumulator.append(text).append(current)).orElseGet(Text::method_43473);
 			} else {
-				return (MutableText)Texts.parse(source, this.separator, sender, depth)
+				return (MutableText)Texts.parse(serverCommandSource, this.separator, entity, i)
 					.map(
-						textx -> (MutableText)stream.map(string -> new LiteralText(string))
+						textx -> (MutableText)stream.map(Text::method_43470)
 								.reduce((accumulator, current) -> accumulator.append(textx).append(current))
-								.orElseGet(() -> new LiteralText(""))
+								.orElseGet(Text::method_43473)
 					)
-					.orElseGet(() -> new LiteralText((String)stream.collect(Collectors.joining(", "))));
+					.orElseGet(() -> Text.method_43470((String)stream.collect(Collectors.joining(", "))));
 			}
 		} else {
-			return new LiteralText("");
-		}
-	}
-
-	public static class BlockNbtText extends NbtText {
-		private final String rawPos;
-		@Nullable
-		private final PosArgument pos;
-
-		public BlockNbtText(String rawPath, boolean rawJson, String rawPos, Optional<Text> separator) {
-			super(rawPath, rawJson, separator);
-			this.rawPos = rawPos;
-			this.pos = this.parsePos(this.rawPos);
-		}
-
-		@Nullable
-		private PosArgument parsePos(String rawPos) {
-			try {
-				return BlockPosArgumentType.blockPos().parse(new StringReader(rawPos));
-			} catch (CommandSyntaxException var3) {
-				return null;
-			}
-		}
-
-		private BlockNbtText(
-			String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, String rawPos, @Nullable PosArgument pos, Optional<Text> separator
-		) {
-			super(rawPath, path, interpret, separator);
-			this.rawPos = rawPos;
-			this.pos = pos;
-		}
-
-		@Nullable
-		public String getPos() {
-			return this.rawPos;
-		}
-
-		public NbtText.BlockNbtText copy() {
-			return new NbtText.BlockNbtText(this.rawPath, this.path, this.interpret, this.rawPos, this.pos, this.separator);
-		}
-
-		@Override
-		protected Stream<NbtCompound> toNbt(ServerCommandSource source) {
-			if (this.pos != null) {
-				ServerWorld serverWorld = source.getWorld();
-				BlockPos blockPos = this.pos.toAbsoluteBlockPos(source);
-				if (serverWorld.canSetBlock(blockPos)) {
-					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
-					if (blockEntity != null) {
-						return Stream.of(blockEntity.createNbtWithIdentifyingData());
-					}
-				}
-			}
-
-			return Stream.empty();
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else {
-				return !(object instanceof NbtText.BlockNbtText blockNbtText)
-					? false
-					: Objects.equals(this.rawPos, blockNbtText.rawPos) && Objects.equals(this.rawPath, blockNbtText.rawPath) && super.equals(object);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return "BlockPosArgument{pos='" + this.rawPos + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
-		}
-	}
-
-	public static class EntityNbtText extends NbtText {
-		private final String rawSelector;
-		@Nullable
-		private final EntitySelector selector;
-
-		public EntityNbtText(String rawPath, boolean interpret, String rawSelector, Optional<Text> separator) {
-			super(rawPath, interpret, separator);
-			this.rawSelector = rawSelector;
-			this.selector = parseSelector(rawSelector);
-		}
-
-		@Nullable
-		private static EntitySelector parseSelector(String rawSelector) {
-			try {
-				EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(rawSelector));
-				return entitySelectorReader.read();
-			} catch (CommandSyntaxException var2) {
-				return null;
-			}
-		}
-
-		private EntityNbtText(
-			String rawPath,
-			@Nullable NbtPathArgumentType.NbtPath path,
-			boolean interpret,
-			String rawSelector,
-			@Nullable EntitySelector selector,
-			Optional<Text> separator
-		) {
-			super(rawPath, path, interpret, separator);
-			this.rawSelector = rawSelector;
-			this.selector = selector;
-		}
-
-		public String getSelector() {
-			return this.rawSelector;
-		}
-
-		public NbtText.EntityNbtText copy() {
-			return new NbtText.EntityNbtText(this.rawPath, this.path, this.interpret, this.rawSelector, this.selector, this.separator);
-		}
-
-		@Override
-		protected Stream<NbtCompound> toNbt(ServerCommandSource source) throws CommandSyntaxException {
-			if (this.selector != null) {
-				List<? extends Entity> list = this.selector.getEntities(source);
-				return list.stream().map(NbtPredicate::entityToNbt);
-			} else {
-				return Stream.empty();
-			}
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else {
-				return !(object instanceof NbtText.EntityNbtText entityNbtText)
-					? false
-					: Objects.equals(this.rawSelector, entityNbtText.rawSelector) && Objects.equals(this.rawPath, entityNbtText.rawPath) && super.equals(object);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return "EntityNbtComponent{selector='" + this.rawSelector + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
-		}
-	}
-
-	public static class StorageNbtText extends NbtText {
-		private final Identifier id;
-
-		public StorageNbtText(String rawPath, boolean interpret, Identifier id, Optional<Text> separator) {
-			super(rawPath, interpret, separator);
-			this.id = id;
-		}
-
-		public StorageNbtText(String rawPath, @Nullable NbtPathArgumentType.NbtPath path, boolean interpret, Identifier id, Optional<Text> separator) {
-			super(rawPath, path, interpret, separator);
-			this.id = id;
-		}
-
-		public Identifier getId() {
-			return this.id;
-		}
-
-		public NbtText.StorageNbtText copy() {
-			return new NbtText.StorageNbtText(this.rawPath, this.path, this.interpret, this.id, this.separator);
-		}
-
-		@Override
-		protected Stream<NbtCompound> toNbt(ServerCommandSource source) {
-			NbtCompound nbtCompound = source.getServer().getDataCommandStorage().get(this.id);
-			return Stream.of(nbtCompound);
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else {
-				return !(object instanceof NbtText.StorageNbtText storageNbtText)
-					? false
-					: Objects.equals(this.id, storageNbtText.id) && Objects.equals(this.rawPath, storageNbtText.rawPath) && super.equals(object);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return "StorageNbtComponent{id='" + this.id + "'path='" + this.rawPath + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
+			return Text.method_43473();
 		}
 	}
 }

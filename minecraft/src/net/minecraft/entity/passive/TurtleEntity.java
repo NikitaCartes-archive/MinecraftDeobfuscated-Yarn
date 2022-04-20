@@ -24,11 +24,8 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
-import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -626,20 +623,9 @@ public class TurtleEntity extends AnimalEntity {
 		}
 	}
 
-	static class TurtleSwimNavigation extends SwimNavigation {
+	static class TurtleSwimNavigation extends AxolotlSwimNavigation {
 		TurtleSwimNavigation(TurtleEntity owner, World world) {
 			super(owner, world);
-		}
-
-		@Override
-		protected boolean isAtValidPosition() {
-			return true;
-		}
-
-		@Override
-		protected PathNodeNavigator createPathNodeNavigator(int range) {
-			this.nodeMaker = new AmphibiousPathNodeMaker(true);
-			return new PathNodeNavigator(this.nodeMaker, range);
 		}
 
 		@Override

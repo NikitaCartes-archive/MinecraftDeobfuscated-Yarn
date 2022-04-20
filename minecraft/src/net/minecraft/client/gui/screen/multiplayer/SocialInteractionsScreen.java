@@ -22,7 +22,6 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -30,17 +29,17 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
 	protected static final Identifier SOCIAL_INTERACTIONS_TEXTURE = new Identifier("textures/gui/social_interactions.png");
-	private static final Text ALL_TAB_TITLE = new TranslatableText("gui.socialInteractions.tab_all");
-	private static final Text HIDDEN_TAB_TITLE = new TranslatableText("gui.socialInteractions.tab_hidden");
-	private static final Text BLOCKED_TAB_TITLE = new TranslatableText("gui.socialInteractions.tab_blocked");
+	private static final Text ALL_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_all");
+	private static final Text HIDDEN_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_hidden");
+	private static final Text BLOCKED_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_blocked");
 	private static final Text SELECTED_ALL_TAB_TITLE = ALL_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
 	private static final Text SELECTED_HIDDEN_TAB_TITLE = HIDDEN_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
 	private static final Text SELECTED_BLOCKED_TAB_TITLE = BLOCKED_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
-	private static final Text SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-	static final Text EMPTY_SEARCH_TEXT = new TranslatableText("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
-	private static final Text EMPTY_HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
-	private static final Text EMPTY_BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
-	private static final Text BLOCKING_TEXT = new TranslatableText("gui.socialInteractions.blocking_hint");
+	private static final Text SEARCH_TEXT = Text.method_43471("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+	static final Text EMPTY_SEARCH_TEXT = Text.method_43471("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
+	private static final Text EMPTY_HIDDEN_TEXT = Text.method_43471("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
+	private static final Text EMPTY_BLOCKED_TEXT = Text.method_43471("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
+	private static final Text BLOCKING_TEXT = Text.method_43471("gui.socialInteractions.blocking_hint");
 	private static final String BLOCKING_URL = "https://aka.ms/javablocking";
 	private static final int field_32424 = 8;
 	private static final int field_32425 = 16;
@@ -68,7 +67,7 @@ public class SocialInteractionsScreen extends Screen {
 	private Runnable onRendered;
 
 	public SocialInteractionsScreen() {
-		super(new TranslatableText("gui.socialInteractions.title"));
+		super(Text.method_43471("gui.socialInteractions.title"));
 		this.updateServerLabel(MinecraftClient.getInstance());
 	}
 
@@ -113,7 +112,7 @@ public class SocialInteractionsScreen extends Screen {
 		int k = this.playerList.getRowRight();
 		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
 		int m = 64 + 16 * this.method_31360();
-		int n = (this.width - l) / 2;
+		int n = (this.width - l) / 2 + 3;
 		this.allTabButton = this.addDrawableChild(new ButtonWidget(j, 45, i, 20, ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)));
 		this.hiddenTabButton = this.addDrawableChild(
 			new ButtonWidget((j + k - i) / 2 + 1, 45, i, 20, HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
@@ -121,13 +120,6 @@ public class SocialInteractionsScreen extends Screen {
 		this.blockedTabButton = this.addDrawableChild(
 			new ButtonWidget(k - i + 1, 45, i, 20, BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
 		);
-		this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(bl -> {
-				if (bl) {
-					Util.getOperatingSystem().open("https://aka.ms/javablocking");
-				}
-
-				this.client.setScreen(this);
-			}, "https://aka.ms/javablocking", true))));
 		String string = this.searchBox != null ? this.searchBox.getText() : "";
 		this.searchBox = new TextFieldWidget(this.textRenderer, this.method_31362() + 28, 78, 196, 16, SEARCH_TEXT) {
 			@Override
@@ -145,6 +137,13 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
+		this.blockingButton = this.addDrawableChild(new ButtonWidget(n, m, l, 20, BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmChatLinkScreen(bl -> {
+				if (bl) {
+					Util.getOperatingSystem().open("https://aka.ms/javablocking");
+				}
+
+				this.client.setScreen(this);
+			}, "https://aka.ms/javablocking", true))));
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
@@ -286,9 +285,9 @@ public class SocialInteractionsScreen extends Screen {
 			}
 
 			if (i > 1) {
-				this.serverLabel = new TranslatableText("gui.socialInteractions.server_label.multiple", string, i);
+				this.serverLabel = Text.method_43469("gui.socialInteractions.server_label.multiple", string, i);
 			} else {
-				this.serverLabel = new TranslatableText("gui.socialInteractions.server_label.single", string, i);
+				this.serverLabel = Text.method_43469("gui.socialInteractions.server_label.single", string, i);
 			}
 
 			this.playerCount = i;

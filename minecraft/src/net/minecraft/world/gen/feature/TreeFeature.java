@@ -156,9 +156,9 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 				treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(generator));
 			}
 
-			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set2, set3, set4)).map(box -> {
-				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, box, set2, set4);
-				Structure.updateCorner(structureWorldAccess, Block.NOTIFY_ALL, voxelSet, box.getMinX(), box.getMinY(), box.getMinZ());
+			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(blockBox -> {
+				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, blockBox, set2, set4, set);
+				Structure.updateCorner(structureWorldAccess, Block.NOTIFY_ALL, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
 				return true;
 			}).orElse(false);
 		} else {
@@ -166,7 +166,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		}
 	}
 
-	private static VoxelSet placeLogsAndLeaves(WorldAccess world, BlockBox box, Set<BlockPos> trunkPositions, Set<BlockPos> decorationPositions) {
+	private static VoxelSet placeLogsAndLeaves(WorldAccess world, BlockBox box, Set<BlockPos> trunkPositions, Set<BlockPos> decorationPositions, Set<BlockPos> set) {
 		List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
 		VoxelSet voxelSet = new BitSetVoxelSet(box.getBlockCountX(), box.getBlockCountY(), box.getBlockCountZ());
 		int i = 6;
@@ -177,7 +177,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (BlockPos blockPos : Lists.newArrayList(decorationPositions)) {
+		for (BlockPos blockPos : Lists.newArrayList(Sets.union(decorationPositions, set))) {
 			if (box.contains(blockPos)) {
 				voxelSet.set(blockPos.getX() - box.getMinX(), blockPos.getY() - box.getMinY(), blockPos.getZ() - box.getMinZ());
 			}
@@ -204,17 +204,17 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		}
 
 		for (int k = 1; k < 6; k++) {
-			Set<BlockPos> set = (Set<BlockPos>)list.get(k - 1);
-			Set<BlockPos> set2 = (Set<BlockPos>)list.get(k);
+			Set<BlockPos> set2 = (Set<BlockPos>)list.get(k - 1);
+			Set<BlockPos> set3 = (Set<BlockPos>)list.get(k);
 
-			for (BlockPos blockPos2 : set) {
+			for (BlockPos blockPos2 : set2) {
 				if (box.contains(blockPos2)) {
 					voxelSet.set(blockPos2.getX() - box.getMinX(), blockPos2.getY() - box.getMinY(), blockPos2.getZ() - box.getMinZ());
 				}
 
 				for (Direction direction2 : Direction.values()) {
 					mutable.set(blockPos2, direction2);
-					if (!set.contains(mutable) && !set2.contains(mutable)) {
+					if (!set2.contains(mutable) && !set3.contains(mutable)) {
 						BlockState blockState2 = world.getBlockState(mutable);
 						if (blockState2.contains(Properties.DISTANCE_1_7)) {
 							int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
@@ -225,7 +225,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 									voxelSet.set(mutable.getX() - box.getMinX(), mutable.getY() - box.getMinY(), mutable.getZ() - box.getMinZ());
 								}
 
-								set2.add(mutable.toImmutable());
+								set3.add(mutable.toImmutable());
 							}
 						}
 					}

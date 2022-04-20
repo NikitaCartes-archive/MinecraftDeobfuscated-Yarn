@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public abstract class AbstractTeam {
@@ -60,7 +59,7 @@ public abstract class AbstractTeam {
 		}
 
 		public Text getDisplayName() {
-			return new TranslatableText("team.collision." + this.name);
+			return Text.method_43471("team.collision." + this.name);
 		}
 	}
 
@@ -90,7 +89,7 @@ public abstract class AbstractTeam {
 		}
 
 		public Text getDisplayName() {
-			return new TranslatableText("team.visibility." + this.name);
+			return Text.method_43471("team.visibility." + this.name);
 		}
 	}
 }

@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -40,7 +39,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 
 	@Override
 	public Text getNarratedTitle() {
-		return new LiteralText("").append(this.title).append(": ").append(this.reason);
+		return Text.method_43473().append(this.title).append(": ").append(this.reason);
 	}
 
 	@Override

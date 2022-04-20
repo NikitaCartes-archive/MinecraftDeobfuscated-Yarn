@@ -3,9 +3,9 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -100,7 +100,7 @@ public class EnchantingPhrases {
 			stringBuilder.append(Util.getRandom(this.phrases, this.random));
 		}
 
-		return textRenderer.getTextHandler().trimToWidth(new LiteralText(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
+		return textRenderer.getTextHandler().trimToWidth(Text.method_43470(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
 	}
 
 	public void setSeed(long seed) {

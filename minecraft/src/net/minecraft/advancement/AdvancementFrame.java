@@ -1,7 +1,6 @@
 package net.minecraft.advancement;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public enum AdvancementFrame {
@@ -18,7 +17,7 @@ public enum AdvancementFrame {
 		this.id = id;
 		this.textureV = texV;
 		this.titleFormat = titleFormat;
-		this.toastText = new TranslatableText("advancements.toast." + id);
+		this.toastText = Text.method_43471("advancements.toast." + id);
 	}
 
 	public String getId() {

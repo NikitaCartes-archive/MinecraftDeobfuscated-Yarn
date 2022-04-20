@@ -5,10 +5,10 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class SaveOffCommand {
-	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.alreadyOff"));
+	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.save.alreadyOff"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(CommandManager.literal("save-off").requires(source -> source.hasPermissionLevel(4)).executes(context -> {
@@ -25,7 +25,7 @@ public class SaveOffCommand {
 			if (!bl) {
 				throw ALREADY_OFF_EXCEPTION.create();
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableText("commands.save.disabled"), true);
+				serverCommandSource.sendFeedback(Text.method_43471("commands.save.disabled"), true);
 				return 1;
 			}
 		}));

@@ -195,18 +195,19 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			throw new IllegalStateException("Not building!");
 		} else {
 			int i = this.drawMode.getSize(this.vertexCount);
+			int j = !this.hasNoVertexBuffer ? this.vertexCount * this.format.getVertexSize() : 0;
 			VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
 			boolean bl;
 			if (this.sortingPrimitiveCenters != null) {
-				int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
-				this.grow(j);
+				int k = MathHelper.roundUpToMultiple(i * intType.size, 4);
+				this.grow(k);
 				this.writeSortedIndices(intType);
 				bl = false;
-				this.elementOffset += j;
-				this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize() + j;
+				this.elementOffset += k;
+				this.buildStart += j + k;
 			} else {
 				bl = true;
-				this.buildStart = this.buildStart + this.vertexCount * this.format.getVertexSize();
+				this.buildStart += j;
 			}
 
 			this.building = false;
@@ -427,12 +428,28 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			return this.count * this.vertexFormat.getVertexSize();
 		}
 
+		public int method_43429() {
+			return 0;
+		}
+
+		public int method_43430() {
+			return this.getIndexBufferStart();
+		}
+
+		public int method_43431() {
+			return this.hasNoVertexBuffer ? 0 : this.method_43430();
+		}
+
+		public int method_43432() {
+			return this.method_43431() + this.getIndexBufferLength();
+		}
+
 		private int getIndexBufferLength() {
 			return this.hasNoIndexBuffer ? 0 : this.vertexCount * this.elementFormat.size;
 		}
 
 		public int getIndexBufferEnd() {
-			return this.getIndexBufferStart() + this.getIndexBufferLength();
+			return this.method_43432();
 		}
 
 		public boolean hasNoVertexBuffer() {

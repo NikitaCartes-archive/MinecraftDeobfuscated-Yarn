@@ -320,9 +320,9 @@ public interface DispenserBehavior {
 				double f = position.getZ() + (double)((float)direction.getOffsetZ() * 0.3F);
 				World world = pointer.getWorld();
 				AbstractRandom abstractRandom = world.random;
-				double g = abstractRandom.nextGaussian() * 0.05 + (double)direction.getOffsetX();
-				double h = abstractRandom.nextGaussian() * 0.05 + (double)direction.getOffsetY();
-				double i = abstractRandom.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
+				double g = abstractRandom.method_43385((double)direction.getOffsetX(), 0.11485000000000001);
+				double h = abstractRandom.method_43385((double)direction.getOffsetY(), 0.11485000000000001);
+				double i = abstractRandom.method_43385((double)direction.getOffsetZ(), 0.11485000000000001);
 				SmallFireballEntity smallFireballEntity = new SmallFireballEntity(world, d, e, f, g, h, i);
 				world.spawnEntity(Util.make(smallFireballEntity, entity -> entity.setItem(stack)));
 				stack.decrement(1);

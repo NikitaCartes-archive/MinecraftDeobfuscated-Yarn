@@ -39,9 +39,9 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 		ItemEntity itemEntity = new ItemEntity(world, d, e, f, stack);
 		double g = world.random.nextDouble() * 0.1 + 0.2;
 		itemEntity.setVelocity(
-			world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetX() * g,
-			world.random.nextGaussian() * 0.0075F * (double)speed + 0.2F,
-			world.random.nextGaussian() * 0.0075F * (double)speed + (double)side.getOffsetZ() * g
+			world.random.method_43385((double)side.getOffsetX() * g, 0.0172275 * (double)speed),
+			world.random.method_43385(0.2, 0.0172275 * (double)speed),
+			world.random.method_43385((double)side.getOffsetZ() * g, 0.0172275 * (double)speed)
 		);
 		world.spawnEntity(itemEntity);
 	}

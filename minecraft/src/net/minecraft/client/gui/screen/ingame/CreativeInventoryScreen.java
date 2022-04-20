@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -39,9 +40,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -61,7 +60,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private static final int SCROLLBAR_WIDTH = 12;
 	private static final int SCROLLBAR_HEIGHT = 15;
 	static final SimpleInventory INVENTORY = new SimpleInventory(45);
-	private static final Text DELETE_ITEM_SLOT_TEXT = new TranslatableText("inventory.binSlot");
+	private static final Text DELETE_ITEM_SLOT_TEXT = Text.method_43471("inventory.binSlot");
 	private static final int WHITE = 16777215;
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
@@ -77,7 +76,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	private final Set<TagKey<Item>> searchResultTags = new HashSet();
 
 	public CreativeInventoryScreen(PlayerEntity player) {
-		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), LiteralText.EMPTY);
+		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.field_39003);
 		player.currentScreenHandler = this.handler;
 		this.passEvents = true;
 		this.backgroundHeight = 136;
@@ -237,7 +236,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.init();
 			this.client.keyboard.setRepeatEvents(true);
-			this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, 9, new TranslatableText("itemGroup.search"));
+			this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, 9, Text.method_43471("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setDrawsBackground(false);
 			this.searchBox.setVisible(false);
@@ -440,7 +439,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 							itemStack.getOrCreateSubNbt("CustomCreativeLock");
 							Text text = this.client.options.hotbarKeys[j].getBoundKeyLocalizedText();
 							Text text2 = this.client.options.saveToolbarActivatorKey.getBoundKeyLocalizedText();
-							itemStack.setCustomName(new TranslatableText("inventory.hotbarInfo", text2, text));
+							itemStack.setCustomName(Text.method_43469("inventory.hotbarInfo", text2, text));
 							this.handler.itemList.add(itemStack);
 						} else {
 							this.handler.itemList.add(ItemStack.EMPTY);
@@ -616,7 +615,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			this.searchResultTags.forEach(tagKey -> {
 				if (stack.isIn(tagKey)) {
-					list2.add(1, new LiteralText("#" + tagKey.id()).formatted(Formatting.DARK_PURPLE));
+					list2.add(1, Text.method_43470("#" + tagKey.id()).formatted(Formatting.DARK_PURPLE));
 				}
 			});
 			if (itemGroup != null) {
@@ -764,7 +763,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			Text text = client.options.hotbarKeys[index].getBoundKeyLocalizedText();
 			Text text2 = client.options.loadToolbarActivatorKey.getBoundKeyLocalizedText();
-			client.inGameHud.setOverlayMessage(new TranslatableText("inventory.hotbarSaved", text2, text), false);
+			client.inGameHud.setOverlayMessage(Text.method_43469("inventory.hotbarSaved", text2, text), false);
 			hotbarStorage.save();
 		}
 	}

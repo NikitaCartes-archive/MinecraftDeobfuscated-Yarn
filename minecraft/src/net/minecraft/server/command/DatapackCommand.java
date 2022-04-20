@@ -13,18 +13,18 @@ import java.util.stream.Collectors;
 import net.minecraft.command.CommandSource;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
+import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 
 public class DatapackCommand {
 	private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("commands.datapack.unknown", name)
+		name -> Text.method_43469("commands.datapack.unknown", name)
 	);
 	private static final DynamicCommandExceptionType ALREADY_ENABLED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("commands.datapack.enable.failed", name)
+		name -> Text.method_43469("commands.datapack.enable.failed", name)
 	);
 	private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("commands.datapack.disable.failed", name)
+		name -> Text.method_43469("commands.datapack.disable.failed", name)
 	);
 	private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
 			context.getSource().getServer().getDataPackManager().getEnabledNames().stream().map(StringArgumentType::escapeIfRequired), builder
@@ -109,7 +109,7 @@ public class DatapackCommand {
 		ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		packAdder.apply(list, container);
-		source.sendFeedback(new TranslatableText("commands.datapack.modify.enable", container.getInformationText(true)), true);
+		source.sendFeedback(Text.method_43469("commands.datapack.modify.enable", container.getInformationText(true)), true);
 		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
 		return list.size();
 	}
@@ -118,7 +118,7 @@ public class DatapackCommand {
 		ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		list.remove(container);
-		source.sendFeedback(new TranslatableText("commands.datapack.modify.disable", container.getInformationText(true)), true);
+		source.sendFeedback(Text.method_43469("commands.datapack.modify.disable", container.getInformationText(true)), true);
 		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
 		return list.size();
 	}
@@ -136,10 +136,10 @@ public class DatapackCommand {
 			.filter(profile -> !collection.contains(profile))
 			.collect(Collectors.toList());
 		if (list.isEmpty()) {
-			source.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
+			source.sendFeedback(Text.method_43471("commands.datapack.list.available.none"), false);
 		} else {
 			source.sendFeedback(
-				new TranslatableText("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false
+				Text.method_43469("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false
 			);
 		}
 
@@ -151,11 +151,10 @@ public class DatapackCommand {
 		resourcePackManager.scanPacks();
 		Collection<? extends ResourcePackProfile> collection = resourcePackManager.getEnabledProfiles();
 		if (collection.isEmpty()) {
-			source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
+			source.sendFeedback(Text.method_43471("commands.datapack.list.enabled.none"), false);
 		} else {
 			source.sendFeedback(
-				new TranslatableText("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))),
-				false
+				Text.method_43469("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))), false
 			);
 		}
 

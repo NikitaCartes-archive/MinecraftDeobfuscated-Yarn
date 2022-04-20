@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 import net.minecraft.server.chase.ChaseClient;
 import net.minecraft.server.chase.ChaseServer;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
@@ -60,13 +60,13 @@ public class ChaseCommand {
 	private static int stop(ServerCommandSource source) {
 		if (client != null) {
 			client.stop();
-			source.sendFeedback(new LiteralText("You have now stopped chasing"), false);
+			source.sendFeedback(Text.method_43470("You have now stopped chasing"), false);
 			client = null;
 		}
 
 		if (server != null) {
 			server.stop();
-			source.sendFeedback(new LiteralText("You are no longer being chased"), false);
+			source.sendFeedback(Text.method_43470("You are no longer being chased"), false);
 			server = null;
 		}
 
@@ -75,10 +75,10 @@ public class ChaseCommand {
 
 	private static boolean isRunning(ServerCommandSource source) {
 		if (server != null) {
-			source.sendError(new LiteralText("Chase server is already running. Stop it using /chase stop"));
+			source.sendError(Text.method_43470("Chase server is already running. Stop it using /chase stop"));
 			return true;
 		} else if (client != null) {
-			source.sendError(new LiteralText("You are already chasing someone. Stop it using /chase stop"));
+			source.sendError(Text.method_43470("You are already chasing someone. Stop it using /chase stop"));
 			return true;
 		} else {
 			return false;
@@ -93,10 +93,10 @@ public class ChaseCommand {
 
 			try {
 				server.start();
-				source.sendFeedback(new LiteralText("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
+				source.sendFeedback(Text.method_43470("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
 			} catch (IOException var4) {
 				var4.printStackTrace();
-				source.sendError(new LiteralText("Failed to start chase server on port " + port));
+				source.sendError(Text.method_43470("Failed to start chase server on port " + port));
 				server = null;
 			}
 
@@ -111,7 +111,7 @@ public class ChaseCommand {
 			client = new ChaseClient(ip, port, source.getServer());
 			client.start();
 			source.sendFeedback(
-				new LiteralText(
+				Text.method_43470(
 					"You are now chasing "
 						+ ip
 						+ ":"

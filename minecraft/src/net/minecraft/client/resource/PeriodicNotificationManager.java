@@ -24,7 +24,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
@@ -183,8 +183,8 @@ public class PeriodicNotificationManager
 								() -> SystemToast.add(
 										MinecraftClient.getInstance().getToastManager(),
 										SystemToast.Type.PERIODIC_NOTIFICATION,
-										new TranslatableText(entry.title, n),
-										new TranslatableText(entry.message, n)
+										Text.method_43469(entry.title, n),
+										Text.method_43469(entry.message, n)
 									)
 							);
 						return;

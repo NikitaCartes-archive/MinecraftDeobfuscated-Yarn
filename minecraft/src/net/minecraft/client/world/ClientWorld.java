@@ -46,7 +46,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.Util;
@@ -338,7 +338,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void disconnect() {
-		this.networkHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
+		this.networkHandler.getConnection().disconnect(Text.method_43471("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
@@ -591,7 +591,7 @@ public class ClientWorld extends World {
 	@Override
 	public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
 		try {
-			this.worldRenderer.processWorldEvent(player, eventId, pos, data);
+			this.worldRenderer.processWorldEvent(eventId, pos, data);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
 			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");

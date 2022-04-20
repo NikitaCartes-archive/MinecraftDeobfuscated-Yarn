@@ -6,12 +6,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.client.util.NetworkUtils;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class PublishCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.publish.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.publish.failed"));
 	private static final DynamicCommandExceptionType ALREADY_PUBLISHED_EXCEPTION = new DynamicCommandExceptionType(
-		port -> new TranslatableText("commands.publish.alreadyPublished", port)
+		port -> Text.method_43469("commands.publish.alreadyPublished", port)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -32,7 +32,7 @@ public class PublishCommand {
 		} else if (!source.getServer().openToLan(null, false, port)) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(new TranslatableText("commands.publish.success", port), true);
+			source.sendFeedback(Text.method_43469("commands.publish.success", port), true);
 			return port;
 		}
 	}

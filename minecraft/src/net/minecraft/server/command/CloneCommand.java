@@ -19,18 +19,18 @@ import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class CloneCommand {
 	private static final int MAX_BLOCKS = 32768;
-	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.overlap"));
+	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.clone.overlap"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> new TranslatableText("commands.clone.toobig", maxCount, count)
+		(maxCount, count) -> Text.method_43469("commands.clone.toobig", maxCount, count)
 	);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.clone.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.clone.failed"));
 	public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = pos -> !pos.getBlockState().isAir();
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -316,7 +316,7 @@ public class CloneCommand {
 					if (lx == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
-						source.sendFeedback(new TranslatableText("commands.clone.success", lx), true);
+						source.sendFeedback(Text.method_43469("commands.clone.success", lx), true);
 						return lx;
 					}
 				} else {

@@ -123,9 +123,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -221,7 +219,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle()) {
 			if (++this.floatingTicks > 80) {
 				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
-				this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
+				this.disconnect(Text.method_43471("multiplayer.disconnect.flying"));
 				return;
 			}
 		} else {
@@ -240,7 +238,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			if (this.vehicleFloating && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
 				if (++this.vehicleFloatingTicks > 80) {
 					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName().getString());
-					this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
+					this.disconnect(Text.method_43471("multiplayer.disconnect.flying"));
 					return;
 				}
 			} else {
@@ -257,7 +255,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastKeepAliveTime >= 15000L) {
 			if (this.waitingForKeepAlive) {
-				this.disconnect(new TranslatableText("disconnect.timeout"));
+				this.disconnect(Text.method_43471("disconnect.timeout"));
 			} else {
 				this.waitingForKeepAlive = true;
 				this.lastKeepAliveTime = l;
@@ -278,7 +276,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.getLastActionTime() > 0L
 			&& this.server.getPlayerIdleTimeout() > 0
 			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
-			this.disconnect(new TranslatableText("multiplayer.disconnect.idling"));
+			this.disconnect(Text.method_43471("multiplayer.disconnect.idling"));
 		}
 	}
 
@@ -360,7 +358,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onVehicleMove(VehicleMoveC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
-			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_vehicle_movement"));
+			this.disconnect(Text.method_43471("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
 			if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
@@ -489,9 +487,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.method_43471("advMode.notEnabled"), Util.NIL_UUID);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.method_43471("advMode.notAllowed"), Util.NIL_UUID);
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
@@ -533,7 +531,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				commandBlockExecutor.markDirty();
 				if (!StringHelper.isEmpty(string)) {
-					this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", string), Util.NIL_UUID);
+					this.player.sendSystemMessage(Text.method_43469("advMode.setCommand.success", string), Util.NIL_UUID);
 				}
 			}
 		}
@@ -543,9 +541,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notEnabled"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.method_43471("advMode.notEnabled"), Util.NIL_UUID);
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(new TranslatableText("advMode.notAllowed"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.method_43471("advMode.notAllowed"), Util.NIL_UUID);
 		} else {
 			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
@@ -556,7 +554,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 
 				commandBlockExecutor.markDirty();
-				this.player.sendSystemMessage(new TranslatableText("advMode.setCommand.success", packet.getCommand()), Util.NIL_UUID);
+				this.player.sendSystemMessage(Text.method_43469("advMode.setCommand.success", packet.getCommand()), Util.NIL_UUID);
 			}
 		}
 	}
@@ -618,27 +616,27 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					String string = structureBlockBlockEntity.getStructureName();
 					if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
 						if (structureBlockBlockEntity.saveStructure()) {
-							this.player.sendMessage(new TranslatableText("structure_block.save_success", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.save_success", string), false);
 						} else {
-							this.player.sendMessage(new TranslatableText("structure_block.save_failure", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.save_failure", string), false);
 						}
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
-							this.player.sendMessage(new TranslatableText("structure_block.load_not_found", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.load_not_found", string), false);
 						} else if (structureBlockBlockEntity.loadStructure(this.player.getWorld())) {
-							this.player.sendMessage(new TranslatableText("structure_block.load_success", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.load_success", string), false);
 						} else {
-							this.player.sendMessage(new TranslatableText("structure_block.load_prepare", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.load_prepare", string), false);
 						}
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
 						if (structureBlockBlockEntity.detectStructureSize()) {
-							this.player.sendMessage(new TranslatableText("structure_block.size_success", string), false);
+							this.player.sendMessage(Text.method_43469("structure_block.size_success", string), false);
 						} else {
-							this.player.sendMessage(new TranslatableText("structure_block.size_failure"), false);
+							this.player.sendMessage(Text.method_43471("structure_block.size_failure"), false);
 						}
 					}
 				} else {
-					this.player.sendMessage(new TranslatableText("structure_block.invalid_structure_name", packet.getStructureName()), false);
+					this.player.sendMessage(Text.method_43469("structure_block.invalid_structure_name", packet.getStructureName()), false);
 				}
 
 				structureBlockBlockEntity.markDirty();
@@ -727,7 +725,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				itemStack2.setSubNbt("title", NbtString.of(title.getRaw()));
 			}
 
-			this.setTextToBook(pages, string -> Text.Serializer.toJson(new LiteralText(string)), itemStack2);
+			this.setTextToBook(pages, string -> Text.Serializer.toJson(Text.method_43470(string)), itemStack2);
 			this.player.getInventory().setStack(slotId, itemStack2);
 		}
 	}
@@ -784,7 +782,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onPlayerMove(PlayerMoveC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (isMovementInvalid(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0F), packet.getPitch(0.0F))) {
-			this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_player_movement"));
+			this.disconnect(Text.method_43471("multiplayer.disconnect.invalid_player_movement"));
 		} else {
 			ServerWorld serverWorld = this.player.getWorld();
 			if (!this.player.notInAnyWorld) {
@@ -1025,14 +1023,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 						&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 						ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 						if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
-							Text text = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
+							Text text = Text.method_43469("build.tooHigh", i - 1).formatted(Formatting.RED);
 							this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
 						} else if (actionResult.shouldSwingHand()) {
 							this.player.swingHand(hand, true);
 						}
 					}
 				} else {
-					Text text2 = new TranslatableText("build.tooHigh", i - 1).formatted(Formatting.RED);
+					Text text2 = Text.method_43469("build.tooHigh", i - 1).formatted(Formatting.RED);
 					this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
 				}
 
@@ -1079,7 +1077,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
 			LOGGER.info("Disconnecting {} due to resource pack rejection", this.player.getName());
-			this.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
+			this.disconnect(Text.method_43471("multiplayer.requiredTexturePrompt.disconnect"));
 		}
 	}
 
@@ -1102,7 +1100,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.server.forcePlayerSampleUpdate();
 		this.server
 			.getPlayerManager()
-			.broadcast(new TranslatableText("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
+			.broadcast(Text.method_43469("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
 		this.player.getTextStream().onDisconnect();
@@ -1157,7 +1155,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 		for (int i = 0; i < string.length(); i++) {
 			if (!SharedConstants.isValidChar(string.charAt(i))) {
-				this.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+				this.disconnect(Text.method_43471("multiplayer.disconnect.illegal_characters"));
 				return;
 			}
 		}
@@ -1172,7 +1170,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	private void handleMessage(TextStream.Message message) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
+			this.sendPacket(new GameMessageS2CPacket(Text.method_43471("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
 		} else {
 			this.player.updateLastActionTime();
 			String string = message.getRaw();
@@ -1180,8 +1178,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				this.executeCommand(string);
 			} else {
 				String string2 = message.getFiltered();
-				Text text = string2.isEmpty() ? null : new TranslatableText("chat.type.text", this.player.getDisplayName(), string2);
-				Text text2 = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
+				Text text = string2.isEmpty() ? null : Text.method_43469("chat.type.text", this.player.getDisplayName(), string2);
+				Text text2 = Text.method_43469("chat.type.text", this.player.getDisplayName(), string);
 				this.server
 					.getPlayerManager()
 					.broadcast(text2, player -> this.player.shouldFilterMessagesSentTo(player) ? text : text2, MessageType.CHAT, this.player.getUuid());
@@ -1189,7 +1187,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 			this.messageCooldown += 20;
 			if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
-				this.disconnect(new TranslatableText("disconnect.spam"));
+				this.disconnect(Text.method_43471("disconnect.spam"));
 			}
 		}
 	}
@@ -1302,7 +1300,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 								&& entity != ServerPlayNetworkHandler.this.player) {
 								ServerPlayNetworkHandler.this.player.attack(entity);
 							} else {
-								ServerPlayNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
+								ServerPlayNetworkHandler.this.disconnect(Text.method_43471("multiplayer.disconnect.invalid_entity_attacked"));
 								ServerPlayNetworkHandler.LOGGER.warn("Player {} tried to attack an invalid entity", ServerPlayNetworkHandler.this.player.getName().getString());
 							}
 						}
@@ -1455,9 +1453,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			for (int i = 0; i < signText.size(); i++) {
 				TextStream.Message message = (TextStream.Message)signText.get(i);
 				if (this.player.shouldFilterText()) {
-					signBlockEntity.setTextOnRow(i, new LiteralText(message.getFiltered()));
+					signBlockEntity.setTextOnRow(i, Text.method_43470(message.getFiltered()));
 				} else {
-					signBlockEntity.setTextOnRow(i, new LiteralText(message.getRaw()), new LiteralText(message.getFiltered()));
+					signBlockEntity.setTextOnRow(i, Text.method_43470(message.getRaw()), Text.method_43470(message.getFiltered()));
 				}
 			}
 
@@ -1473,7 +1471,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
 			this.waitingForKeepAlive = false;
 		} else if (!this.isHost()) {
-			this.disconnect(new TranslatableText("disconnect.timeout"));
+			this.disconnect(Text.method_43471("disconnect.timeout"));
 		}
 	}
 

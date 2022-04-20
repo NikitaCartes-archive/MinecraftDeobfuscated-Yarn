@@ -13,7 +13,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
 
@@ -25,6 +24,9 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 	private final ModelPart leftArm;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
+	private static final float field_38999 = (float) (Math.PI * 2.0 / 9.0);
+	private static final float field_39000 = (float) (-Math.PI / 4);
+	private static final float field_39001 = (float) (-Math.PI / 3);
 
 	public AllayEntityModel(ModelPart root) {
 		this.root = root.getChild(EntityModelPartNames.ROOT);
@@ -82,30 +84,30 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 	}
 
 	public void setAngles(AllayEntity allayEntity, float f, float g, float h, float i, float j) {
+		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		float k = h * 20.0F * (float) (Math.PI / 180.0) + g;
+		float l = MathHelper.cos(k) * (float) Math.PI * 0.15F;
+		float m = h - (float)allayEntity.age;
+		float n = h * 9.0F * (float) (Math.PI / 180.0);
+		float o = Math.min(g / 0.3F, 1.0F);
+		float p = 1.0F - o;
+		float q = allayEntity.method_43397(m);
 		this.rightWing.pitch = 0.43633232F;
-		this.rightWing.yaw = -0.61086524F + MathHelper.cos(k) * (float) Math.PI * 0.15F;
+		this.rightWing.yaw = -0.61086524F + l;
 		this.leftWing.pitch = 0.43633232F;
-		this.leftWing.yaw = 0.61086524F - MathHelper.cos(k) * (float) Math.PI * 0.15F;
-		if (this.method_42730(g)) {
-			float l = h * 9.0F * (float) (Math.PI / 180.0);
-			this.root.pivotY = 23.5F + MathHelper.cos(l) * 0.25F;
-			this.rightArm.roll = 0.43633232F - MathHelper.cos(l + (float) (Math.PI * 3.0 / 2.0)) * (float) Math.PI * 0.075F;
-			this.leftArm.roll = -0.43633232F + MathHelper.cos(l + (float) (Math.PI * 3.0 / 2.0)) * (float) Math.PI * 0.075F;
-		} else {
-			this.root.pivotY = 23.5F;
-			this.rightArm.roll = 0.43633232F;
-			this.leftArm.roll = -0.43633232F;
-		}
-
-		if (!allayEntity.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
-			this.rightArm.pitch = -1.134464F;
-			this.rightArm.yaw = 0.27925268F;
-			this.rightArm.roll = (float) (-Math.PI / 180.0);
-			this.leftArm.pitch = -1.134464F;
-			this.leftArm.yaw = (float) (-Math.PI / 15);
-			this.leftArm.roll = (float) (Math.PI / 180.0);
-		}
+		this.leftWing.yaw = 0.61086524F - l;
+		float r = o * (float) (Math.PI * 2.0 / 9.0);
+		this.body.pitch = r;
+		float s = MathHelper.lerp(q, r, MathHelper.lerp(o, (float) (-Math.PI / 3), (float) (-Math.PI / 4)));
+		this.root.pivotY = this.root.pivotY + (float)Math.cos((double)n) * 0.25F * p;
+		this.rightArm.pitch = s;
+		this.leftArm.pitch = s;
+		float t = p * (1.0F - q);
+		float u = 0.43633232F - MathHelper.cos(n + (float) (Math.PI * 3.0 / 2.0)) * (float) Math.PI * 0.075F * t;
+		this.leftArm.roll = -u;
+		this.rightArm.roll = u;
+		this.rightArm.yaw = 0.27925268F * q;
+		this.leftArm.yaw = -0.27925268F * q;
 	}
 
 	@Override
@@ -113,24 +115,15 @@ public class AllayEntityModel extends SinglePartEntityModel<AllayEntity> impleme
 		this.root.render(matrices, vertices, light, overlay);
 	}
 
-	public void animateModel(AllayEntity allayEntity, float f, float g, float h) {
-		this.rightArm.pitch = 0.0F;
-		this.rightArm.yaw = 0.0F;
-		this.rightArm.roll = 0.3927F;
-		this.leftArm.pitch = 0.0F;
-		this.leftArm.yaw = 0.0F;
-		this.leftArm.roll = -0.3927F;
-	}
-
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
+		float f = -1.5F;
+		float g = 1.5F;
+		this.root.rotate(matrices);
+		this.body.rotate(matrices);
+		matrices.translate(0.0, -0.09375, 0.09375);
+		matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.rightArm.pitch + 0.43633232F));
 		matrices.scale(0.7F, 0.7F, 0.7F);
-		float f = 1.8F + (this.root.pivotY - 23.5F) / 11.2F;
-		matrices.translate(0.05F, (double)f, 0.2F);
-		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-65.0F));
-	}
-
-	private boolean method_42730(float f) {
-		return f == 0.0F;
+		matrices.translate(0.0625, 0.0, 0.0);
 	}
 }

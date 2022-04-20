@@ -135,7 +135,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
@@ -802,7 +801,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 
 	public Text getName() {
 		if (this.name == null) {
-			this.name = new TranslatableText(this.getTranslationKey());
+			this.name = Text.method_43471(this.getTranslationKey());
 		}
 
 		return this.name;

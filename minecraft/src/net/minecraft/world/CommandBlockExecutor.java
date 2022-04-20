@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -11,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.StringHelper;
@@ -31,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
  */
 public abstract class CommandBlockExecutor implements CommandOutput {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
-	private static final Text DEFAULT_NAME = new LiteralText("@");
+	private static final Text DEFAULT_NAME = Text.method_43470("@");
 	private long lastExecution = -1L;
 	private boolean updateLastExecution = true;
 	private int successCount;
@@ -50,7 +50,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public Text getLastOutput() {
-		return this.lastOutput == null ? LiteralText.EMPTY : this.lastOutput;
+		return this.lastOutput == null ? ScreenTexts.field_39003 : this.lastOutput;
 	}
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
@@ -85,7 +85,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
 			} catch (Throwable var3) {
-				this.lastOutput = new LiteralText(var3.getMessage());
+				this.lastOutput = Text.method_43470(var3.getMessage());
 			}
 		} else {
 			this.lastOutput = null;
@@ -115,7 +115,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
-			this.lastOutput = new LiteralText("#itzlipofutzli");
+			this.lastOutput = Text.method_43470("#itzlipofutzli");
 			this.successCount = 1;
 			return true;
 		} else {
@@ -164,7 +164,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	@Override
 	public void sendSystemMessage(Text message, UUID sender) {
 		if (this.trackOutput) {
-			this.lastOutput = new LiteralText("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
+			this.lastOutput = Text.method_43470("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
 			this.markDirty();
 		}
 	}

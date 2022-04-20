@@ -13,7 +13,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class AdvancementCommand {
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
@@ -229,7 +229,7 @@ public class AdvancementCommand {
 			if (selection.size() == 1) {
 				if (targets.size() == 1) {
 					throw new CommandException(
-						new TranslatableText(
+						Text.method_43469(
 							operation.getCommandPrefix() + ".one.to.one.failure",
 							((Advancement)selection.iterator().next()).toHoverableText(),
 							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
@@ -237,23 +237,23 @@ public class AdvancementCommand {
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableText(operation.getCommandPrefix() + ".one.to.many.failure", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size())
+						Text.method_43469(operation.getCommandPrefix() + ".one.to.many.failure", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size())
 					);
 				}
 			} else if (targets.size() == 1) {
 				throw new CommandException(
-					new TranslatableText(
+					Text.method_43469(
 						operation.getCommandPrefix() + ".many.to.one.failure", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					)
 				);
 			} else {
-				throw new CommandException(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.failure", selection.size(), targets.size()));
+				throw new CommandException(Text.method_43469(operation.getCommandPrefix() + ".many.to.many.failure", selection.size(), targets.size()));
 			}
 		} else {
 			if (selection.size() == 1) {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						new TranslatableText(
+						Text.method_43469(
 							operation.getCommandPrefix() + ".one.to.one.success",
 							((Advancement)selection.iterator().next()).toHoverableText(),
 							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
@@ -262,19 +262,19 @@ public class AdvancementCommand {
 					);
 				} else {
 					source.sendFeedback(
-						new TranslatableText(operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size()),
+						Text.method_43469(operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size()),
 						true
 					);
 				}
 			} else if (targets.size() == 1) {
 				source.sendFeedback(
-					new TranslatableText(
+					Text.method_43469(
 						operation.getCommandPrefix() + ".many.to.one.success", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				source.sendFeedback(new TranslatableText(operation.getCommandPrefix() + ".many.to.many.success", selection.size(), targets.size()), true);
+				source.sendFeedback(Text.method_43469(operation.getCommandPrefix() + ".many.to.many.success", selection.size(), targets.size()), true);
 			}
 
 			return i;
@@ -286,7 +286,7 @@ public class AdvancementCommand {
 	) {
 		int i = 0;
 		if (!advancement.getCriteria().containsKey(criterion)) {
-			throw new CommandException(new TranslatableText("commands.advancement.criterionNotFound", advancement.toHoverableText(), criterion));
+			throw new CommandException(Text.method_43469("commands.advancement.criterionNotFound", advancement.toHoverableText(), criterion));
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : targets) {
 				if (operation.processEachCriterion(serverPlayerEntity, advancement, criterion)) {
@@ -297,7 +297,7 @@ public class AdvancementCommand {
 			if (i == 0) {
 				if (targets.size() == 1) {
 					throw new CommandException(
-						new TranslatableText(
+						Text.method_43469(
 							operation.getCommandPrefix() + ".criterion.to.one.failure",
 							criterion,
 							advancement.toHoverableText(),
@@ -306,13 +306,13 @@ public class AdvancementCommand {
 					);
 				} else {
 					throw new CommandException(
-						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.failure", criterion, advancement.toHoverableText(), targets.size())
+						Text.method_43469(operation.getCommandPrefix() + ".criterion.to.many.failure", criterion, advancement.toHoverableText(), targets.size())
 					);
 				}
 			} else {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						new TranslatableText(
+						Text.method_43469(
 							operation.getCommandPrefix() + ".criterion.to.one.success",
 							criterion,
 							advancement.toHoverableText(),
@@ -322,7 +322,7 @@ public class AdvancementCommand {
 					);
 				} else {
 					source.sendFeedback(
-						new TranslatableText(operation.getCommandPrefix() + ".criterion.to.many.success", criterion, advancement.toHoverableText(), targets.size()), true
+						Text.method_43469(operation.getCommandPrefix() + ".criterion.to.many.success", criterion, advancement.toHoverableText(), targets.size()), true
 					);
 				}
 

@@ -20,7 +20,7 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -31,10 +31,10 @@ import net.minecraft.world.gen.structure.StructureType;
 public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPredicateArgumentType.RegistryPredicate<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012", "#skeletons", "#minecraft:skeletons");
 	private static final DynamicCommandExceptionType INVALID_BIOME_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locatebiome.invalid", id)
+		id -> Text.method_43469("commands.locatebiome.invalid", id)
 	);
 	private static final DynamicCommandExceptionType INVALID_CONFIGURED_STRUCTURE_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.locate.invalid", id)
+		id -> Text.method_43469("commands.locate.invalid", id)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 

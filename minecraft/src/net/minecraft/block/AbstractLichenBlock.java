@@ -75,35 +75,26 @@ public abstract class AbstractLichenBlock extends Block {
 		}
 	}
 
-	@Nullable
 	public static Set<Direction> flagToDirections(byte flag) {
-		if (flag == -1) {
-			return null;
-		} else {
-			Set<Direction> set = EnumSet.noneOf(Direction.class);
+		Set<Direction> set = EnumSet.noneOf(Direction.class);
 
-			for (Direction direction : Direction.values()) {
-				if ((flag & (byte)(1 << direction.ordinal())) > 0) {
-					set.add(direction);
-				}
+		for (Direction direction : Direction.values()) {
+			if ((flag & (byte)(1 << direction.ordinal())) > 0) {
+				set.add(direction);
 			}
-
-			return set;
 		}
+
+		return set;
 	}
 
-	public static byte directionsToFlag(@Nullable Collection<Direction> directions) {
-		if (directions == null) {
-			return -1;
-		} else {
-			byte b = 0;
+	public static byte directionsToFlag(Collection<Direction> directions) {
+		byte b = 0;
 
-			for (Direction direction : directions) {
-				b = (byte)(b | 1 << direction.ordinal());
-			}
-
-			return b;
+		for (Direction direction : directions) {
+			b = (byte)(b | 1 << direction.ordinal());
 		}
+
+		return b;
 	}
 
 	protected boolean canHaveDirection(Direction direction) {

@@ -8,10 +8,9 @@ import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
-	private static final Text REQUEST_HANDLED = new TranslatableText("multiplayer.status.request_handled");
+	private static final Text REQUEST_HANDLED = Text.method_43471("multiplayer.status.request_handled");
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 	private boolean responseSent;

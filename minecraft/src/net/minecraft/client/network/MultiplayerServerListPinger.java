@@ -27,6 +27,7 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConnectScreen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ClientQueryPacketListener;
@@ -36,9 +37,7 @@ import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -48,7 +47,7 @@ import org.slf4j.Logger;
 public class MultiplayerServerListPinger {
 	static final Splitter ZERO_SPLITTER = Splitter.on('\u0000').limit(6);
 	static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+	private static final Text CANNOT_CONNECT_TEXT = Text.method_43471("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
 	public void add(ServerInfo entry, Runnable runnable) throws UnknownHostException {
@@ -60,7 +59,7 @@ public class MultiplayerServerListPinger {
 			final InetSocketAddress inetSocketAddress = (InetSocketAddress)optional.get();
 			final ClientConnection clientConnection = ClientConnection.connect(inetSocketAddress, false);
 			this.clientConnections.add(clientConnection);
-			entry.label = new TranslatableText("multiplayer.status.pinging");
+			entry.label = Text.method_43471("multiplayer.status.pinging");
 			entry.ping = -1L;
 			entry.playerListSummary = null;
 			clientConnection.setPacketListener(
@@ -72,21 +71,21 @@ public class MultiplayerServerListPinger {
 					@Override
 					public void onResponse(QueryResponseS2CPacket packet) {
 						if (this.received) {
-							clientConnection.disconnect(new TranslatableText("multiplayer.status.unrequested"));
+							clientConnection.disconnect(Text.method_43471("multiplayer.status.unrequested"));
 						} else {
 							this.received = true;
 							ServerMetadata serverMetadata = packet.getServerMetadata();
 							if (serverMetadata.getDescription() != null) {
 								entry.label = serverMetadata.getDescription();
 							} else {
-								entry.label = LiteralText.EMPTY;
+								entry.label = ScreenTexts.field_39003;
 							}
 
 							if (serverMetadata.getVersion() != null) {
-								entry.version = new LiteralText(serverMetadata.getVersion().getGameVersion());
+								entry.version = Text.method_43470(serverMetadata.getVersion().getGameVersion());
 								entry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
 							} else {
-								entry.version = new TranslatableText("multiplayer.status.old");
+								entry.version = Text.method_43471("multiplayer.status.old");
 								entry.protocolVersion = 0;
 							}
 
@@ -98,17 +97,17 @@ public class MultiplayerServerListPinger {
 								GameProfile[] gameProfiles = serverMetadata.getPlayers().getSample();
 								if (gameProfiles != null && gameProfiles.length > 0) {
 									for (GameProfile gameProfile : gameProfiles) {
-										list.add(new LiteralText(gameProfile.getName()));
+										list.add(Text.method_43470(gameProfile.getName()));
 									}
 
 									if (gameProfiles.length < serverMetadata.getPlayers().getOnlinePlayerCount()) {
-										list.add(new TranslatableText("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - gameProfiles.length));
+										list.add(Text.method_43469("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - gameProfiles.length));
 									}
 
 									entry.playerListSummary = list;
 								}
 							} else {
-								entry.playerCountLabel = new TranslatableText("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
+								entry.playerCountLabel = Text.method_43471("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
 							}
 
 							String string = null;
@@ -137,7 +136,7 @@ public class MultiplayerServerListPinger {
 						long l = this.startTime;
 						long m = Util.getMeasuringTimeMs();
 						entry.ping = m - l;
-						clientConnection.disconnect(new TranslatableText("multiplayer.status.finished"));
+						clientConnection.disconnect(Text.method_43471("multiplayer.status.finished"));
 					}
 
 					@Override
@@ -167,7 +166,7 @@ public class MultiplayerServerListPinger {
 	void showError(Text error, ServerInfo info) {
 		LOGGER.error("Can't ping {}: {}", info.address, error.getString());
 		info.label = CANNOT_CONNECT_TEXT;
-		info.playerCountLabel = LiteralText.EMPTY;
+		info.playerCountLabel = ScreenTexts.field_39003;
 	}
 
 	void ping(InetSocketAddress address, ServerInfo info) {
@@ -224,8 +223,8 @@ public class MultiplayerServerListPinger {
 								int j = MathHelper.parseInt(strings[4], -1);
 								int k = MathHelper.parseInt(strings[5], -1);
 								info.protocolVersion = -1;
-								info.version = new LiteralText(string2);
-								info.label = new LiteralText(string3);
+								info.version = Text.method_43470(string2);
+								info.label = Text.method_43470(string3);
 								info.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(j, k);
 							}
 						}
@@ -243,8 +242,8 @@ public class MultiplayerServerListPinger {
 	}
 
 	static Text createPlayerCountText(int current, int max) {
-		return new LiteralText(Integer.toString(current))
-			.append(new LiteralText("/").formatted(Formatting.DARK_GRAY))
+		return Text.method_43470(Integer.toString(current))
+			.append(Text.method_43470("/").formatted(Formatting.DARK_GRAY))
 			.append(Integer.toString(max))
 			.formatted(Formatting.GRAY);
 	}
@@ -273,7 +272,7 @@ public class MultiplayerServerListPinger {
 				ClientConnection clientConnection = (ClientConnection)iterator.next();
 				if (clientConnection.isOpen()) {
 					iterator.remove();
-					clientConnection.disconnect(new TranslatableText("multiplayer.status.cancelled"));
+					clientConnection.disconnect(Text.method_43471("multiplayer.status.cancelled"));
 				}
 			}
 		}

@@ -6,10 +6,10 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class SaveAllCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.save.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.save.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -21,13 +21,13 @@ public class SaveAllCommand {
 	}
 
 	private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
-		source.sendFeedback(new TranslatableText("commands.save.saving"), false);
+		source.sendFeedback(Text.method_43471("commands.save.saving"), false);
 		MinecraftServer minecraftServer = source.getServer();
 		boolean bl = minecraftServer.saveAll(true, flush, true);
 		if (!bl) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(new TranslatableText("commands.save.success"), true);
+			source.sendFeedback(Text.method_43471("commands.save.success"), true);
 			return 1;
 		}
 	}

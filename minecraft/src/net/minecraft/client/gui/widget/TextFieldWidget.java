@@ -28,7 +28,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -95,7 +94,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	@Override
 	protected MutableText getNarrationMessage() {
 		Text text = this.getMessage();
-		return new TranslatableText("gui.narrate.editBox", text, this.text);
+		return Text.method_43469("gui.narrate.editBox", text, this.text);
 	}
 
 	public void setText(String text) {
@@ -596,6 +595,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, new TranslatableText("narration.edit_box", this.getText()));
+		builder.put(NarrationPart.TITLE, Text.method_43469("narration.edit_box", this.getText()));
 	}
 }

@@ -3,7 +3,6 @@ package net.minecraft.network;
 import com.mojang.logging.LogUtils;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.slf4j.Logger;
 
 /**
@@ -12,7 +11,7 @@ import org.slf4j.Logger;
  */
 public class RateLimitedConnection extends ClientConnection {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text RATE_LIMIT_EXCEEDED_MESSAGE = new TranslatableText("disconnect.exceeded_packet_rate");
+	private static final Text RATE_LIMIT_EXCEEDED_MESSAGE = Text.method_43471("disconnect.exceeded_packet_rate");
 	private final int rateLimit;
 
 	public RateLimitedConnection(int rateLimit) {

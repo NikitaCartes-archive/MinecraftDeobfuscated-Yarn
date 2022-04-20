@@ -18,7 +18,7 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -28,10 +28,10 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("attribute.unknown", id)
+		id -> Text.method_43469("attribute.unknown", id)
 	);
 	private static final DynamicCommandExceptionType INVALID_CONFIGURED_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("commands.placefeature.invalid", id)
+		id -> Text.method_43469("commands.placefeature.invalid", id)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 

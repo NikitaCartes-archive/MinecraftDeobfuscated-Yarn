@@ -13,13 +13,13 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ChaseCommand;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.RegistryKey;
@@ -174,7 +174,15 @@ public class ChaseClient {
 						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)list.get(0);
 						ServerWorld serverWorld = this.minecraftServer.getOverworld();
 						ServerCommandSource serverCommandSource = new ServerCommandSource(
-							serverPlayerEntity, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "", LiteralText.EMPTY, this.minecraftServer, serverPlayerEntity
+							serverPlayerEntity,
+							Vec3d.of(serverWorld.getSpawnPos()),
+							Vec2f.ZERO,
+							serverWorld,
+							4,
+							"",
+							ScreenTexts.field_39003,
+							this.minecraftServer,
+							serverPlayerEntity
 						);
 						CommandManager commandManager = this.minecraftServer.getCommandManager();
 						commandManager.execute(serverCommandSource, command);

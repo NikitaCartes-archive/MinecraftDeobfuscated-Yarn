@@ -13,12 +13,12 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
 	public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(
-		name -> new TranslatableText("argument.scoreboardDisplaySlot.invalid", name)
+		name -> Text.method_43469("argument.scoreboardDisplaySlot.invalid", name)
 	);
 
 	private ScoreboardSlotArgumentType() {

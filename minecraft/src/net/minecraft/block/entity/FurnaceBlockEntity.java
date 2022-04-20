@@ -6,7 +6,6 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.FurnaceScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
@@ -16,7 +15,7 @@ public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 
 	@Override
 	protected Text getContainerName() {
-		return new TranslatableText("container.furnace");
+		return Text.method_43471("container.furnace");
 	}
 
 	@Override

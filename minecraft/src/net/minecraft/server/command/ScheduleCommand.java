@@ -15,16 +15,16 @@ import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.FunctionTagTimerCallback;
 import net.minecraft.world.timer.FunctionTimerCallback;
 import net.minecraft.world.timer.Timer;
 
 public class ScheduleCommand {
-	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.schedule.same_tick"));
+	private static final SimpleCommandExceptionType SAME_TICK_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.schedule.same_tick"));
 	private static final DynamicCommandExceptionType CLEARED_FAILURE_EXCEPTION = new DynamicCommandExceptionType(
-		eventName -> new TranslatableText("commands.schedule.cleared.failure", eventName)
+		eventName -> Text.method_43469("commands.schedule.cleared.failure", eventName)
 	);
 	private static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(
 			context.getSource().getServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().getEventNames(), builder
@@ -90,7 +90,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-				source.sendFeedback(new TranslatableText("commands.schedule.created.function", identifier, time, l), true);
+				source.sendFeedback(Text.method_43469("commands.schedule.created.function", identifier, time, l), true);
 			}).ifRight(tag -> {
 				String string = "#" + identifier;
 				if (replace) {
@@ -98,7 +98,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-				source.sendFeedback(new TranslatableText("commands.schedule.created.tag", identifier, time, l), true);
+				source.sendFeedback(Text.method_43469("commands.schedule.created.tag", identifier, time, l), true);
 			});
 			return Math.floorMod(l, Integer.MAX_VALUE);
 		}
@@ -109,7 +109,7 @@ public class ScheduleCommand {
 		if (i == 0) {
 			throw CLEARED_FAILURE_EXCEPTION.create(eventName);
 		} else {
-			source.sendFeedback(new TranslatableText("commands.schedule.cleared.success", i, eventName), true);
+			source.sendFeedback(Text.method_43469("commands.schedule.cleared.success", i, eventName), true);
 			return i;
 		}
 	}

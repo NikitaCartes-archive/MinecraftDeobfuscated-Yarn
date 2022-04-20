@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -16,10 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -29,7 +28,7 @@ public class PotionUtil {
 	public static final String CUSTOM_POTION_COLOR_KEY = "CustomPotionColor";
 	public static final String POTION_KEY = "Potion";
 	private static final int DEFAULT_COLOR = 16253176;
-	private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
+	private static final Text NONE_TEXT = Text.method_43471("effect.none").formatted(Formatting.GRAY);
 
 	public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
 		return getPotionEffects(stack.getNbt());
@@ -160,7 +159,7 @@ public class PotionUtil {
 			list.add(NONE_TEXT);
 		} else {
 			for (StatusEffectInstance statusEffectInstance : list2) {
-				MutableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());
+				MutableText mutableText = Text.method_43471(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
 				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
@@ -176,11 +175,11 @@ public class PotionUtil {
 				}
 
 				if (statusEffectInstance.getAmplifier() > 0) {
-					mutableText = new TranslatableText("potion.withAmplifier", mutableText, new TranslatableText("potion.potency." + statusEffectInstance.getAmplifier()));
+					mutableText = Text.method_43469("potion.withAmplifier", mutableText, Text.method_43471("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 
 				if (statusEffectInstance.getDuration() > 20) {
-					mutableText = new TranslatableText("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, durationMultiplier));
+					mutableText = Text.method_43469("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, durationMultiplier));
 				}
 
 				list.add(mutableText.formatted(statusEffect.getCategory().getFormatting()));
@@ -188,8 +187,8 @@ public class PotionUtil {
 		}
 
 		if (!list3.isEmpty()) {
-			list.add(LiteralText.EMPTY);
-			list.add(new TranslatableText("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
+			list.add(ScreenTexts.field_39003);
+			list.add(Text.method_43471("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
 			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list3) {
 				EntityAttributeModifier entityAttributeModifier3 = pair.getSecond();
@@ -204,20 +203,20 @@ public class PotionUtil {
 
 				if (d > 0.0) {
 					list.add(
-						new TranslatableText(
+						Text.method_43469(
 								"attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableText(pair.getFirst().getTranslationKey())
+								Text.method_43471(pair.getFirst().getTranslationKey())
 							)
 							.formatted(Formatting.BLUE)
 					);
 				} else if (d < 0.0) {
 					e *= -1.0;
 					list.add(
-						new TranslatableText(
+						Text.method_43469(
 								"attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
-								new TranslatableText(pair.getFirst().getTranslationKey())
+								Text.method_43471(pair.getFirst().getTranslationKey())
 							)
 							.formatted(Formatting.RED)
 					);

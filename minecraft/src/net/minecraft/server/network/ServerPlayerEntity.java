@@ -19,6 +19,7 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -103,9 +104,7 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -576,8 +575,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						if (!future.isSuccess()) {
 							int i = 256;
 							String string = text.asTruncatedString(256);
-							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
-							Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName())
+							Text text2 = Text.method_43469("death.attack.message_too_long", Text.method_43470(string).formatted(Formatting.YELLOW));
+							Text text3 = Text.method_43469("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 							this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text3));
 						}
@@ -592,7 +591,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), LiteralText.EMPTY));
+			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), ScreenTexts.field_39003));
 		}
 
 		this.dropShoulderEntities();
@@ -877,7 +876,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					Criteria.SLEPT_IN_BED.trigger(this);
 				});
 				if (!this.getWorld().isSleepingEnabled()) {
-					this.sendMessage(new TranslatableText("sleep.not_possible"), true);
+					this.sendMessage(Text.method_43471("sleep.not_possible"), true);
 				}
 
 				((ServerWorld)this.world).updateSleepingPlayers();
@@ -998,7 +997,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.getInventory(), this);
 			if (screenHandler == null) {
 				if (this.isSpectator()) {
-					this.sendMessage(new TranslatableText("container.spectatorCantOpen").formatted(Formatting.RED), true);
+					this.sendMessage(Text.method_43471("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
@@ -1305,10 +1304,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 						if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
 							int i = 256;
 							String string = message.asTruncatedString(256);
-							Text text2 = new LiteralText(string).formatted(Formatting.YELLOW);
+							Text text2 = Text.method_43470(string).formatted(Formatting.YELLOW);
 							this.networkHandler
 								.sendPacket(
-									new GameMessageS2CPacket(new TranslatableText("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
+									new GameMessageS2CPacket(Text.method_43469("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
 								);
 						}
 					}
@@ -1502,7 +1501,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (pos != null) {
 			boolean bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
 			if (sendMessage && !bl) {
-				this.sendSystemMessage(new TranslatableText("block.minecraft.set_spawn"), Util.NIL_UUID);
+				this.sendSystemMessage(Text.method_43471("block.minecraft.set_spawn"), Util.NIL_UUID);
 			}
 
 			this.spawnPointPosition = pos;

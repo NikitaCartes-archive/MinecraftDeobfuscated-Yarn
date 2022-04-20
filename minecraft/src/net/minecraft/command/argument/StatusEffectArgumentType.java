@@ -13,14 +13,14 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class StatusEffectArgumentType implements ArgumentType<StatusEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
 	public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> new TranslatableText("effect.effectNotFound", id)
+		id -> Text.method_43469("effect.effectNotFound", id)
 	);
 
 	public static StatusEffectArgumentType statusEffect() {

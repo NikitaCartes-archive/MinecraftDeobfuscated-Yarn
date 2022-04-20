@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import javax.annotation.Nullable;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.commons.io.FileUtils;
@@ -54,8 +54,8 @@ public class NetworkUtils {
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
 			if (progressListener != null) {
-				progressListener.setTitleAndTask(new TranslatableText("resourcepack.downloading"));
-				progressListener.setTask(new TranslatableText("resourcepack.requesting"));
+				progressListener.setTitleAndTask(Text.method_43471("resourcepack.downloading"));
+				progressListener.setTask(Text.method_43471("resourcepack.requesting"));
 			}
 
 			try {
@@ -76,7 +76,7 @@ public class NetworkUtils {
 				g = (float)httpURLConnection.getContentLength();
 				int j = httpURLConnection.getContentLength();
 				if (progressListener != null) {
-					progressListener.setTask(new TranslatableText("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
+					progressListener.setTask(Text.method_43469("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
 				}
 
 				if (file.exists()) {

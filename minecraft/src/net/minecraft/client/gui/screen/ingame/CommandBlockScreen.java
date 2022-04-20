@@ -6,7 +6,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.network.packet.c2s.play.UpdateCommandBlockC2SPacket;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.CommandBlockExecutor;
 
@@ -41,30 +41,30 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 			CyclingButtonWidget.<CommandBlockBlockEntity.Type>builder(value -> {
 					switch (value) {
 						case SEQUENCE:
-							return new TranslatableText("advMode.mode.sequence");
+							return Text.method_43471("advMode.mode.sequence");
 						case AUTO:
-							return new TranslatableText("advMode.mode.auto");
+							return Text.method_43471("advMode.mode.auto");
 						case REDSTONE:
 						default:
-							return new TranslatableText("advMode.mode.redstone");
+							return Text.method_43471("advMode.mode.redstone");
 					}
 				})
 				.values(CommandBlockBlockEntity.Type.values())
 				.omitKeyText()
 				.initially(this.mode)
-				.build(this.width / 2 - 50 - 100 - 4, 165, 100, 20, new TranslatableText("advMode.mode"), (button, mode) -> this.mode = mode)
+				.build(this.width / 2 - 50 - 100 - 4, 165, 100, 20, Text.method_43471("advMode.mode"), (button, mode) -> this.mode = mode)
 		);
 		this.conditionalModeButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(new TranslatableText("advMode.mode.conditional"), new TranslatableText("advMode.mode.unconditional"))
+			CyclingButtonWidget.onOffBuilder(Text.method_43471("advMode.mode.conditional"), Text.method_43471("advMode.mode.unconditional"))
 				.omitKeyText()
 				.initially(this.conditional)
-				.build(this.width / 2 - 50, 165, 100, 20, new TranslatableText("advMode.type"), (button, conditional) -> this.conditional = conditional)
+				.build(this.width / 2 - 50, 165, 100, 20, Text.method_43471("advMode.type"), (button, conditional) -> this.conditional = conditional)
 		);
 		this.redstoneTriggerButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(new TranslatableText("advMode.mode.autoexec.bat"), new TranslatableText("advMode.mode.redstoneTriggered"))
+			CyclingButtonWidget.onOffBuilder(Text.method_43471("advMode.mode.autoexec.bat"), Text.method_43471("advMode.mode.redstoneTriggered"))
 				.omitKeyText()
 				.initially(this.autoActivate)
-				.build(this.width / 2 + 50 + 4, 165, 100, 20, new TranslatableText("advMode.triggering"), (button, autoActivate) -> this.autoActivate = autoActivate)
+				.build(this.width / 2 + 50 + 4, 165, 100, 20, Text.method_43471("advMode.triggering"), (button, autoActivate) -> this.autoActivate = autoActivate)
 		);
 		this.setButtonsActive(false);
 	}

@@ -14,7 +14,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 
 public class StorageDataObject implements DataCommandObject {
@@ -65,16 +64,16 @@ public class StorageDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackModify() {
-		return new TranslatableText("commands.data.storage.modified", this.id);
+		return Text.method_43469("commands.data.storage.modified", this.id);
 	}
 
 	@Override
 	public Text feedbackQuery(NbtElement element) {
-		return new TranslatableText("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(element));
+		return Text.method_43469("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(element));
 	}
 
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return new TranslatableText("commands.data.storage.get", path, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
+		return Text.method_43469("commands.data.storage.get", path, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

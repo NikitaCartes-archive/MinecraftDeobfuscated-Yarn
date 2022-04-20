@@ -29,9 +29,7 @@ import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Matrix4f;
 import org.lwjgl.glfw.GLFW;
@@ -47,7 +45,7 @@ public class SignEditScreen extends Screen {
 	private final String[] text;
 
 	public SignEditScreen(SignBlockEntity sign, boolean filtered) {
-		super(new TranslatableText("sign.edit"));
+		super(Text.method_43471("sign.edit"));
 		this.text = (String[])IntStream.range(0, 4).mapToObj(row -> sign.getTextOnRow(row, filtered)).map(Text::getString).toArray(String[]::new);
 		this.sign = sign;
 	}
@@ -59,7 +57,7 @@ public class SignEditScreen extends Screen {
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(() -> this.text[this.currentRow], text -> {
 			this.text[this.currentRow] = text;
-			this.sign.setTextOnRow(this.currentRow, new LiteralText(text));
+			this.sign.setTextOnRow(this.currentRow, Text.method_43470(text));
 		}, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), text -> this.client.textRenderer.getWidth(text)
 				<= 90);
 		BlockState blockState = this.sign.getCachedState();
@@ -203,7 +201,7 @@ public class SignEditScreen extends Screen {
 					bufferBuilder.vertex(matrix4f, (float)v, (float)l, 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.vertex(matrix4f, (float)u, (float)l, 0.0F).color(0, 0, 255, 255).next();
 					bufferBuilder.end();
-					BufferRenderer.draw(bufferBuilder);
+					BufferRenderer.method_43433(bufferBuilder);
 					RenderSystem.disableColorLogicOp();
 					RenderSystem.enableTexture();
 				}

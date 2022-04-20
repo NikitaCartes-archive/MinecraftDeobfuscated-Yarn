@@ -7,14 +7,13 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.WarningScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerWarningScreen extends WarningScreen {
-	private static final Text HEADER = new TranslatableText("multiplayerWarning.header").formatted(Formatting.BOLD);
-	private static final Text MESSAGE = new TranslatableText("multiplayerWarning.message");
-	private static final Text CHECK_MESSAGE = new TranslatableText("multiplayerWarning.check");
+	private static final Text HEADER = Text.method_43471("multiplayerWarning.header").formatted(Formatting.BOLD);
+	private static final Text MESSAGE = Text.method_43471("multiplayerWarning.message");
+	private static final Text CHECK_MESSAGE = Text.method_43471("multiplayerWarning.check");
 	private static final Text NARRATED_TEXT = HEADER.shallowCopy().append("\n").append(MESSAGE);
 
 	public MultiplayerWarningScreen(Screen parent) {

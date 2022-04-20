@@ -3,12 +3,12 @@ package net.minecraft.command.argument;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class CoordinateArgument {
 	private static final char TILDE = '~';
-	public static final SimpleCommandExceptionType MISSING_COORDINATE = new SimpleCommandExceptionType(new TranslatableText("argument.pos.missing.double"));
-	public static final SimpleCommandExceptionType MISSING_BLOCK_POSITION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.missing.int"));
+	public static final SimpleCommandExceptionType MISSING_COORDINATE = new SimpleCommandExceptionType(Text.method_43471("argument.pos.missing.double"));
+	public static final SimpleCommandExceptionType MISSING_BLOCK_POSITION = new SimpleCommandExceptionType(Text.method_43471("argument.pos.missing.int"));
 	private final boolean relative;
 	private final double value;
 

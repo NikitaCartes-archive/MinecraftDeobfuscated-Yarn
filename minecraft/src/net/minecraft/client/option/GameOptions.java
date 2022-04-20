@@ -62,11 +62,9 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
@@ -91,19 +89,19 @@ public class GameOptions {
 	private static final Splitter COLON_SPLITTER = Splitter.on(':').limit(2);
 	private static final float field_32151 = 1.0F;
 	public static final String EMPTY_STRING = "";
-	private static final Text DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP = new TranslatableText("options.darkMojangStudiosBackgroundColor.tooltip");
+	private static final Text DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP = Text.method_43471("options.darkMojangStudiosBackgroundColor.tooltip");
 	private final SimpleOption<Boolean> monochromeLogo = SimpleOption.ofBoolean(
 		"options.darkMojangStudiosBackgroundColor", SimpleOption.constantTooltip(DARK_MOJANG_STUDIOS_BACKGROUND_COLOR_TOOLTIP), false
 	);
-	private static final Text HIDE_LIGHTNING_FLASHES_TOOLTIP = new TranslatableText("options.hideLightningFlashes.tooltip");
+	private static final Text HIDE_LIGHTNING_FLASHES_TOOLTIP = Text.method_43471("options.hideLightningFlashes.tooltip");
 	private final SimpleOption<Boolean> hideLightningFlashes = SimpleOption.ofBoolean(
 		"options.hideLightningFlashes", SimpleOption.constantTooltip(HIDE_LIGHTNING_FLASHES_TOOLTIP), false
 	);
 	private final SimpleOption<Double> mouseSensitivity = new SimpleOption<>("options.sensitivity", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		if (value == 0.0) {
-			return getGenericValueText(optionText, new TranslatableText("options.sensitivity.min"));
+			return getGenericValueText(optionText, Text.method_43471("options.sensitivity.min"));
 		} else {
-			return value == 1.0 ? getGenericValueText(optionText, new TranslatableText("options.sensitivity.max")) : getPercentValueText(optionText, 2.0 * value);
+			return value == 1.0 ? getGenericValueText(optionText, Text.method_43471("options.sensitivity.max")) : getPercentValueText(optionText, 2.0 * value);
 		}
 	}, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {
 	});
@@ -125,8 +123,8 @@ public class GameOptions {
 		"options.framerateLimit",
 		SimpleOption.emptyTooltip(),
 		(optionText, value) -> value == 260
-				? getGenericValueText(optionText, new TranslatableText("options.framerateLimit.max"))
-				: getGenericValueText(optionText, new TranslatableText("options.framerate", value)),
+				? getGenericValueText(optionText, Text.method_43471("options.framerateLimit.max"))
+				: getGenericValueText(optionText, Text.method_43469("options.framerate", value)),
 		new SimpleOption.ValidatingIntSliderCallbacks(1, 26).withModifier(value -> value * 10, value -> value / 10),
 		Codec.intRange(10, 260),
 		120,
@@ -162,11 +160,11 @@ public class GameOptions {
 			}
 		}
 	);
-	private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
-	private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText(
-		"options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC)
+	private static final Text FAST_GRAPHICS_TOOLTIP = Text.method_43471("options.graphics.fast.tooltip");
+	private static final Text FABULOUS_GRAPHICS_TOOLTIP = Text.method_43469(
+		"options.graphics.fabulous.tooltip", Text.method_43471("options.graphics.fabulous").formatted(Formatting.ITALIC)
 	);
-	private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
+	private static final Text FANCY_GRAPHICS_TOOLTIP = Text.method_43471("options.graphics.fancy.tooltip");
 	private final SimpleOption<GraphicsMode> graphicsMode = new SimpleOption<>(
 		"options.graphics",
 		clientx -> {
@@ -182,7 +180,7 @@ public class GameOptions {
 			};
 		},
 		(optionText, value) -> {
-			MutableText mutableText = new TranslatableText(value.getTranslationKey());
+			MutableText mutableText = Text.method_43471(value.getTranslationKey());
 			return value == GraphicsMode.FABULOUS ? mutableText.formatted(Formatting.ITALIC) : mutableText;
 		},
 		new SimpleOption.AlternateValuesSupportingCyclingCallbacks<>(
@@ -218,9 +216,9 @@ public class GameOptions {
 		AoMode.MAX,
 		value -> MinecraftClient.getInstance().worldRenderer.reload()
 	);
-	private static final Text NONE_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.none.tooltip");
-	private static final Text BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.byPlayer.tooltip");
-	private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = new TranslatableText("options.prioritizeChunkUpdates.nearby.tooltip");
+	private static final Text NONE_CHUNK_BUILDER_MODE_TOOLTIP = Text.method_43471("options.prioritizeChunkUpdates.none.tooltip");
+	private static final Text BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP = Text.method_43471("options.prioritizeChunkUpdates.byPlayer.tooltip");
+	private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = Text.method_43471("options.prioritizeChunkUpdates.nearby.tooltip");
 	private final SimpleOption<ChunkBuilderMode> chunkBuilderMode = new SimpleOption<>(
 		"options.prioritizeChunkUpdates",
 		clientx -> {
@@ -326,9 +324,7 @@ public class GameOptions {
 	private final SimpleOption<Double> chatDelay = new SimpleOption<>(
 		"options.chat.delay_instant",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> value <= 0.0
-				? new TranslatableText("options.chat.delay_none")
-				: new TranslatableText("options.chat.delay", String.format("%.1f", value)),
+		(optionText, value) -> value <= 0.0 ? Text.method_43471("options.chat.delay_none") : Text.method_43469("options.chat.delay", String.format("%.1f", value)),
 		new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)),
 		Codec.doubleRange(0.0, 6.0),
 		0.0,
@@ -360,12 +356,12 @@ public class GameOptions {
 	public boolean hideBundleTutorial = false;
 	private final SimpleOption<Integer> biomeBlendRadius = new SimpleOption<>("options.biomeBlendRadius", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		int i = value * 2 + 1;
-		return getGenericValueText(optionText, new TranslatableText("options.biomeBlendRadius." + i));
+		return getGenericValueText(optionText, Text.method_43471("options.biomeBlendRadius." + i));
 	}, new SimpleOption.ValidatingIntSliderCallbacks(0, 7), 2, value -> MinecraftClient.getInstance().worldRenderer.reload());
 	private final SimpleOption<Double> mouseWheelSensitivity = new SimpleOption<>(
 		"options.mouseWheelSensitivity",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> getGenericValueText(optionText, new LiteralText(String.format("%.2f", value))),
+		(optionText, value) -> getGenericValueText(optionText, Text.method_43470(String.format("%.2f", value))),
 		new SimpleOption.ValidatingIntSliderCallbacks(-200, 100)
 			.withModifier(GameOptions::toMouseWheelSensitivityValue, GameOptions::toMouseWheelSensitivitySliderProgressValue),
 		Codec.doubleRange(toMouseWheelSensitivityValue(-200), toMouseWheelSensitivityValue(100)),
@@ -401,14 +397,14 @@ public class GameOptions {
 	private final SimpleOption<Boolean> invertYMouse = SimpleOption.ofBoolean("options.invertMouse", false);
 	private final SimpleOption<Boolean> discreteMouseScroll = SimpleOption.ofBoolean("options.discrete_mouse_scroll", false);
 	private final SimpleOption<Boolean> realmsNotifications = SimpleOption.ofBoolean("options.realmsNotifications", true);
-	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = new TranslatableText("options.allowServerListing.tooltip");
+	private static final Text ALLOW_SERVER_LISTING_TOOLTIP = Text.method_43471("options.allowServerListing.tooltip");
 	private final SimpleOption<Boolean> allowServerListing = SimpleOption.ofBoolean(
 		"options.allowServerListing", SimpleOption.constantTooltip(ALLOW_SERVER_LISTING_TOOLTIP), true, value -> this.sendClientSettings()
 	);
 	private final SimpleOption<Boolean> reducedDebugInfo = SimpleOption.ofBoolean("options.reducedDebugInfo", false);
 	private final SimpleOption<Boolean> showSubtitles = SimpleOption.ofBoolean("options.showSubtitles", false);
-	private static final Text DIRECTIONAL_AUDIO_ON_TOOLTIP = new TranslatableText("options.directionalAudio.on.tooltip");
-	private static final Text DIRECTIONAL_AUDIO_OFF_TOOLTIP = new TranslatableText("options.directionalAudio.off.tooltip");
+	private static final Text DIRECTIONAL_AUDIO_ON_TOOLTIP = Text.method_43471("options.directionalAudio.on.tooltip");
+	private static final Text DIRECTIONAL_AUDIO_OFF_TOOLTIP = Text.method_43471("options.directionalAudio.off.tooltip");
 	private final SimpleOption<Boolean> directionalAudio = SimpleOption.ofBoolean("options.directionalAudio", clientx -> {
 		List<OrderedText> list = SimpleOption.wrapLines(clientx, DIRECTIONAL_AUDIO_ON_TOOLTIP);
 		List<OrderedText> list2 = SimpleOption.wrapLines(clientx, DIRECTIONAL_AUDIO_OFF_TOOLTIP);
@@ -422,8 +418,8 @@ public class GameOptions {
 		"options.accessibility.text_background",
 		SimpleOption.emptyTooltip(),
 		(optionText, value) -> value
-				? new TranslatableText("options.accessibility.text_background.chat")
-				: new TranslatableText("options.accessibility.text_background.everywhere"),
+				? Text.method_43471("options.accessibility.text_background.chat")
+				: Text.method_43471("options.accessibility.text_background.everywhere"),
 		SimpleOption.BOOLEAN,
 		true,
 		value -> {
@@ -438,8 +434,8 @@ public class GameOptions {
 		}
 	});
 	private final SimpleOption<Boolean> bobView = SimpleOption.ofBoolean("options.viewBobbing", true);
-	private static final Text TOGGLE_KEY_TEXT = new TranslatableText("options.key.toggle");
-	private static final Text HOLD_KEY_TEXT = new TranslatableText("options.key.hold");
+	private static final Text TOGGLE_KEY_TEXT = Text.method_43471("options.key.toggle");
+	private static final Text HOLD_KEY_TEXT = Text.method_43471("options.key.hold");
 	private final SimpleOption<Boolean> sneakToggled = new SimpleOption<>(
 		"key.sneak", SimpleOption.emptyTooltip(), (optionText, value) -> value ? TOGGLE_KEY_TEXT : HOLD_KEY_TEXT, SimpleOption.BOOLEAN, false, value -> {
 		}
@@ -450,7 +446,7 @@ public class GameOptions {
 	);
 	public boolean skipMultiplayerWarning;
 	public boolean skipRealms32BitWarning;
-	private static final Text HIDE_MATCHED_NAMES_TOOLTIP = new TranslatableText("options.hideMatchedNames.tooltip");
+	private static final Text HIDE_MATCHED_NAMES_TOOLTIP = Text.method_43471("options.hideMatchedNames.tooltip");
 	private final SimpleOption<Boolean> hideMatchedNames = SimpleOption.ofBoolean(
 		"options.hideMatchedNames", SimpleOption.constantTooltip(HIDE_MATCHED_NAMES_TOOLTIP), true
 	);
@@ -657,8 +653,8 @@ public class GameOptions {
 		SimpleOption.emptyTooltip(),
 		(optionText, value) -> {
 			return switch (value) {
-				case 70 -> getGenericValueText(optionText, new TranslatableText("options.fov.min"));
-				case 110 -> getGenericValueText(optionText, new TranslatableText("options.fov.max"));
+				case 70 -> getGenericValueText(optionText, Text.method_43471("options.fov.min"));
+				case 110 -> getGenericValueText(optionText, Text.method_43471("options.fov.max"));
 				default -> getGenericValueText(optionText, value);
 			};
 		},
@@ -667,7 +663,7 @@ public class GameOptions {
 		70,
 		value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate()
 	);
-	private static final Text SCREEN_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.screenEffectScale.tooltip");
+	private static final Text SCREEN_EFFECT_SCALE_TOOLTIP = Text.method_43471("options.screenEffectScale.tooltip");
 	private final SimpleOption<Double> distortionEffectScale = new SimpleOption<>(
 		"options.screenEffectScale",
 		SimpleOption.constantTooltip(SCREEN_EFFECT_SCALE_TOOLTIP),
@@ -677,7 +673,7 @@ public class GameOptions {
 		value -> {
 		}
 	);
-	private static final Text FOV_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.fovEffectScale.tooltip");
+	private static final Text FOV_EFFECT_SCALE_TOOLTIP = Text.method_43471("options.fovEffectScale.tooltip");
 	private final SimpleOption<Double> fovEffectScale = new SimpleOption<>(
 		"options.fovEffectScale",
 		SimpleOption.constantTooltip(FOV_EFFECT_SCALE_TOOLTIP),
@@ -688,7 +684,7 @@ public class GameOptions {
 		value -> {
 		}
 	);
-	private static final Text DARKNESS_EFFECT_SCALE_TOOLTIP = new TranslatableText("options.darknessEffectScale.tooltip");
+	private static final Text DARKNESS_EFFECT_SCALE_TOOLTIP = Text.method_43471("options.darknessEffectScale.tooltip");
 	private final SimpleOption<Double> darknessEffectScale = new SimpleOption<>(
 		"options.darknessEffectScale",
 		SimpleOption.constantTooltip(DARKNESS_EFFECT_SCALE_TOOLTIP),
@@ -701,18 +697,18 @@ public class GameOptions {
 	private final SimpleOption<Double> gamma = new SimpleOption<>("options.gamma", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		int i = (int)(value * 100.0);
 		if (i == 0) {
-			return getGenericValueText(optionText, new TranslatableText("options.gamma.min"));
+			return getGenericValueText(optionText, Text.method_43471("options.gamma.min"));
 		} else if (i == 50) {
-			return getGenericValueText(optionText, new TranslatableText("options.gamma.default"));
+			return getGenericValueText(optionText, Text.method_43471("options.gamma.default"));
 		} else {
-			return i == 100 ? getGenericValueText(optionText, new TranslatableText("options.gamma.max")) : getGenericValueText(optionText, i);
+			return i == 100 ? getGenericValueText(optionText, Text.method_43471("options.gamma.max")) : getGenericValueText(optionText, i);
 		}
 	}, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {
 	});
 	private final SimpleOption<Integer> guiScale = new SimpleOption<>(
 		"options.guiScale",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> (Text)(value == 0 ? new TranslatableText("options.guiScale.auto") : new LiteralText(Integer.toString(value))),
+		(optionText, value) -> value == 0 ? Text.method_43471("options.guiScale.auto") : Text.method_43470(Integer.toString(value)),
 		new SimpleOption.MaxSuppliableIntCallbacks(0, () -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			return !minecraftClient.isRunning() ? 2147483646 : minecraftClient.getWindow().calculateScaleFactor(0, minecraftClient.forcesUnicodeFont());
@@ -733,7 +729,7 @@ public class GameOptions {
 	private final SimpleOption<NarratorMode> narrator = new SimpleOption<>(
 		"options.narrator",
 		SimpleOption.emptyTooltip(),
-		(optionText, value) -> (Text)(NarratorManager.INSTANCE.isActive() ? value.getName() : new TranslatableText("options.narrator.notavailable")),
+		(optionText, value) -> (Text)(NarratorManager.INSTANCE.isActive() ? value.getName() : Text.method_43471("options.narrator.notavailable")),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(NarratorMode.values()), Codec.INT.xmap(NarratorMode::byId, NarratorMode::getId)),
 		NarratorMode.OFF,
 		value -> NarratorManager.INSTANCE.addToast(value)
@@ -744,9 +740,9 @@ public class GameOptions {
 		SimpleOption.emptyTooltip(),
 		(optionText, value) -> {
 			if ("".equals(value)) {
-				return new TranslatableText("options.audioDevice.default");
+				return Text.method_43471("options.audioDevice.default");
 			} else {
-				return value.startsWith("OpenAL Soft on ") ? new LiteralText(value.substring(SoundSystem.OPENAL_SOFT_ON_LENGTH)) : new LiteralText(value);
+				return value.startsWith("OpenAL Soft on ") ? Text.method_43470(value.substring(SoundSystem.OPENAL_SOFT_ON_LENGTH)) : Text.method_43470(value);
 			}
 		},
 		new SimpleOption.LazyCyclingCallbacks<>(
@@ -1013,7 +1009,7 @@ public class GameOptions {
 		this.viewDistance = new SimpleOption<>(
 			"options.renderDistance",
 			SimpleOption.emptyTooltip(),
-			(optionText, value) -> getGenericValueText(optionText, new TranslatableText("options.chunks", value)),
+			(optionText, value) -> getGenericValueText(optionText, Text.method_43469("options.chunks", value)),
 			new SimpleOption.ValidatingIntSliderCallbacks(2, bl2 ? 32 : 16),
 			bl ? 12 : 8,
 			value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate()
@@ -1021,7 +1017,7 @@ public class GameOptions {
 		this.simulationDistance = new SimpleOption<>(
 			"options.simulationDistance",
 			SimpleOption.emptyTooltip(),
-			(optionText, value) -> getGenericValueText(optionText, new TranslatableText("options.chunks", value)),
+			(optionText, value) -> getGenericValueText(optionText, Text.method_43469("options.chunks", value)),
 			new SimpleOption.ValidatingIntSliderCallbacks(5, bl2 ? 32 : 16),
 			bl ? 12 : 8,
 			value -> {
@@ -1534,19 +1530,19 @@ public class GameOptions {
 	}
 
 	private static Text getPixelValueText(Text prefix, int value) {
-		return new TranslatableText("options.pixel_value", prefix, value);
+		return Text.method_43469("options.pixel_value", prefix, value);
 	}
 
 	private static Text getPercentValueText(Text prefix, double value) {
-		return new TranslatableText("options.percent_value", prefix, (int)(value * 100.0));
+		return Text.method_43469("options.percent_value", prefix, (int)(value * 100.0));
 	}
 
 	public static Text getGenericValueText(Text prefix, Text value) {
-		return new TranslatableText("options.generic_value", prefix, value);
+		return Text.method_43469("options.generic_value", prefix, value);
 	}
 
 	public static Text getGenericValueText(Text prefix, int value) {
-		return getGenericValueText(prefix, new LiteralText(Integer.toString(value)));
+		return getGenericValueText(prefix, Text.method_43470(Integer.toString(value)));
 	}
 
 	@Environment(EnvType.CLIENT)

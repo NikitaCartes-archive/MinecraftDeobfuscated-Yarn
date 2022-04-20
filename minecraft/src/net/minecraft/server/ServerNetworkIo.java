@@ -43,7 +43,6 @@ import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.LocalServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
@@ -164,7 +163,7 @@ public class ServerNetworkIo {
 							}
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var7);
-							Text text = new LiteralText("Internal server error");
+							Text text = Text.method_43470("Internal server error");
 							clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
 							clientConnection.disableAutoRead();
 						}

@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Optional;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +26,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
@@ -55,7 +56,7 @@ public class WorldUpdater {
 	private final Object2FloatMap<RegistryKey<World>> dimensionProgress = Object2FloatMaps.synchronize(
 		new Object2FloatOpenCustomHashMap<>(Util.identityHashStrategy())
 	);
-	private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
+	private volatile Text status = Text.method_43471("optimizeWorld.stage.counting");
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
@@ -68,7 +69,7 @@ public class WorldUpdater {
 		this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
 		this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
 			LOGGER.error("Error upgrading world", throwable);
-			this.status = new TranslatableText("optimizeWorld.stage.failed");
+			this.status = Text.method_43471("optimizeWorld.stage.failed");
 			this.done = true;
 		});
 		this.updateThread.start();
@@ -108,7 +109,7 @@ public class WorldUpdater {
 
 			ImmutableMap<RegistryKey<World>, VersionedChunkStorage> immutableMap2 = builder2.build();
 			long l = Util.getMeasuringTimeMs();
-			this.status = new TranslatableText("optimizeWorld.stage.upgrading");
+			this.status = Text.method_43471("optimizeWorld.stage.upgrading");
 
 			while (this.keepUpgradingChunks) {
 				boolean bl = false;
@@ -122,7 +123,7 @@ public class WorldUpdater {
 						boolean bl2 = false;
 
 						try {
-							NbtCompound nbtCompound = versionedChunkStorage.getNbt(chunkPos);
+							NbtCompound nbtCompound = (NbtCompound)((Optional)versionedChunkStorage.getNbt(chunkPos).join()).orElse(null);
 							if (nbtCompound != null) {
 								int i = VersionedChunkStorage.getDataVersion(nbtCompound);
 								ChunkGenerator chunkGenerator = this.generatorOptions.getDimensions().get(GeneratorOptions.toDimensionOptionsKey(registryKey3)).getChunkGenerator();
@@ -156,15 +157,13 @@ public class WorldUpdater {
 									bl2 = true;
 								}
 							}
-						} catch (CrashException var27) {
+						} catch (CompletionException | CrashException var27) {
 							Throwable throwable = var27.getCause();
 							if (!(throwable instanceof IOException)) {
 								throw var27;
 							}
 
 							LOGGER.error("Error upgrading chunk {}", chunkPos, throwable);
-						} catch (IOException var28) {
-							LOGGER.error("Error upgrading chunk {}", chunkPos, var28);
 						}
 
 						if (bl2) {
@@ -187,7 +186,7 @@ public class WorldUpdater {
 				}
 			}
 
-			this.status = new TranslatableText("optimizeWorld.stage.finished");
+			this.status = Text.method_43471("optimizeWorld.stage.finished");
 
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {

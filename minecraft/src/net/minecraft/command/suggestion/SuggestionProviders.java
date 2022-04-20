@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.EntityType;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -32,7 +32,7 @@ public class SuggestionProviders {
 				Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable),
 				builder,
 				EntityType::getId,
-				entityType -> new TranslatableText(Util.createTranslationKey("entity", EntityType.getId(entityType)))
+				entityType -> Text.method_43471(Util.createTranslationKey("entity", EntityType.getId(entityType)))
 			)
 	);
 
