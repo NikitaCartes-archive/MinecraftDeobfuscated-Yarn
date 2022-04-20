@@ -46,7 +46,6 @@ import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.collection.IdList;
@@ -455,7 +454,7 @@ implements ItemConvertible {
     }
 
     public MutableText getName() {
-        return new TranslatableText(this.getTranslationKey());
+        return Text.method_43471(this.getTranslationKey());
     }
 
     /**

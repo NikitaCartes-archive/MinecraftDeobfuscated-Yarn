@@ -49,7 +49,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -339,7 +339,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new ActiveTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(new TranslatableText(Util.createTranslationKey("entity", KILLER_BUNNY)));
+                this.setCustomName(Text.method_43471(Util.createTranslationKey("entity", KILLER_BUNNY)));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, rabbitType);

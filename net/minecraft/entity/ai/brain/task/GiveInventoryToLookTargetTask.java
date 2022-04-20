@@ -20,13 +20,17 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class GiveInventoryToLookTargetTask<E extends LivingEntity>
 extends Task<E> {
     private static final int field_38387 = 3;
-    private static final int field_38388 = 100;
+    private static final int field_38388 = 60;
     private final Function<LivingEntity, Optional<LookTarget>> lookTargetFunction;
     private final float speed;
 
@@ -61,12 +65,12 @@ extends Task<E> {
         LookTarget lookTarget = optional.get();
         double d = lookTarget.getPos().distanceTo(((Entity)entity).getEyePos());
         if (d < 3.0 && !(itemStack = ((InventoryOwner)entity).getInventory().removeStack(0, 1)).isEmpty()) {
-            LookTargetUtil.give(entity, itemStack, GiveInventoryToLookTargetTask.offsetTarget(lookTarget));
+            GiveInventoryToLookTargetTask.method_43393(entity, itemStack, GiveInventoryToLookTargetTask.offsetTarget(lookTarget));
             if (entity instanceof AllayEntity) {
                 AllayEntity allayEntity = (AllayEntity)entity;
                 AllayBrain.getLikedPlayer(allayEntity).ifPresent(player -> this.triggerCriterion(lookTarget, itemStack, (ServerPlayerEntity)player));
             }
-            ((LivingEntity)entity).getBrain().remember(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS, 100);
+            ((LivingEntity)entity).getBrain().remember(MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS, 60);
         }
     }
 
@@ -76,11 +80,25 @@ extends Task<E> {
     }
 
     private boolean hasItemAndTarget(E entity) {
-        return !((InventoryOwner)entity).getInventory().isEmpty() && this.lookTargetFunction.apply((LivingEntity)entity).isPresent();
+        if (((InventoryOwner)entity).getInventory().isEmpty()) {
+            return false;
+        }
+        Optional<LookTarget> optional = this.lookTargetFunction.apply((LivingEntity)entity);
+        return optional.isPresent() && optional.get().isSeenBy((LivingEntity)entity);
     }
 
     private static Vec3d offsetTarget(LookTarget target) {
         return target.getPos().add(0.0, 1.0, 0.0);
+    }
+
+    public static void method_43393(LivingEntity livingEntity, ItemStack itemStack, Vec3d vec3d) {
+        Vec3d vec3d2 = new Vec3d(0.2f, 0.3f, 0.2f);
+        LookTargetUtil.method_43392(livingEntity, itemStack, vec3d, vec3d2, 0.2f);
+        World world = livingEntity.world;
+        if (world.getTime() % 7L == 0L && world.random.nextDouble() < 0.9) {
+            float f = Util.getRandom(AllayEntity.field_38937, world.getRandom()).floatValue();
+            world.playSoundFromEntity(null, livingEntity, SoundEvents.ENTITY_ALLAY_ITEM_THROWN, SoundCategory.NEUTRAL, 1.0f, f);
+        }
     }
 }
 

@@ -31,11 +31,9 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +50,7 @@ extends Screen {
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
-        super(new TranslatableText("editGamerule.title"));
+        super(Text.method_43471("editGamerule.title"));
         this.gameRules = gameRules;
         this.ruleSaver = ruleSaveConsumer;
     }
@@ -127,15 +125,15 @@ extends Screen {
                 private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, RuleWidgetFactory<T> widgetFactory) {
                     Object string3;
                     ImmutableCollection list;
-                    TranslatableText text = new TranslatableText(key.getTranslationKey());
-                    MutableText text2 = new LiteralText(key.getName()).formatted(Formatting.YELLOW);
+                    MutableText text = Text.method_43471(key.getTranslationKey());
+                    MutableText text2 = Text.method_43470(key.getName()).formatted(Formatting.YELLOW);
                     T rule = gameRules.get(key);
                     String string = ((GameRules.Rule)rule).serialize();
-                    MutableText text3 = new TranslatableText("editGamerule.default", new LiteralText(string)).formatted(Formatting.GRAY);
+                    MutableText text3 = Text.method_43469("editGamerule.default", Text.method_43470(string)).formatted(Formatting.GRAY);
                     String string2 = key.getTranslationKey() + ".description";
                     if (I18n.hasTranslation(string2)) {
                         ImmutableCollection.Builder builder = ImmutableList.builder().add(text2.asOrderedText());
-                        TranslatableText text4 = new TranslatableText(string2);
+                        MutableText text4 = Text.method_43471(string2);
                         EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(((ImmutableList.Builder)builder)::add);
                         list = ((ImmutableList.Builder)((ImmutableList.Builder)builder).add(text3.asOrderedText())).build();
                         string3 = text4.getString() + "\n" + text3.getString();
@@ -147,7 +145,7 @@ extends Screen {
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-                this.addEntry(new RuleCategoryWidget(new TranslatableText(((GameRules.Category)((Object)((Object)entry.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
+                this.addEntry(new RuleCategoryWidget(Text.method_43471(((GameRules.Category)((Object)((Object)entry.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
                 ((Map)entry.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(e -> this.addEntry((AbstractRuleWidget)e.getValue()));
             });
         }

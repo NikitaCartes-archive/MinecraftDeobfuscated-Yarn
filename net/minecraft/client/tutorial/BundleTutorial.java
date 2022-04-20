@@ -10,7 +10,8 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ClickType;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,8 @@ public class BundleTutorial {
         if (this.toast != null) {
             this.manager.remove(this.toast);
         }
-        TranslatableText text = new TranslatableText("tutorial.bundleInsert.title");
-        TranslatableText text2 = new TranslatableText("tutorial.bundleInsert.description");
+        MutableText text = Text.method_43471("tutorial.bundleInsert.title");
+        MutableText text2 = Text.method_43471("tutorial.bundleInsert.description");
         this.toast = new TutorialToast(TutorialToast.Type.RIGHT_CLICK, text, text2, true);
         this.manager.add(this.toast, 160);
     }

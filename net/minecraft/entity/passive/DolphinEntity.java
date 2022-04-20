@@ -234,7 +234,7 @@ extends WaterCreatureEntity {
         if (this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty() && this.canPickupItem(itemStack = item.getStack())) {
             this.triggerItemPickedUpByEntityCriteria(item);
             this.equipStack(EquipmentSlot.MAINHAND, itemStack);
-            this.handDropChances[EquipmentSlot.MAINHAND.getEntitySlotId()] = 2.0f;
+            this.updateDropChances(EquipmentSlot.MAINHAND);
             this.sendPickup(item, itemStack.getCount());
             item.discard();
         }

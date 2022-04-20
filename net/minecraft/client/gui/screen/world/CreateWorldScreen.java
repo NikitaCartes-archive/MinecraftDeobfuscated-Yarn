@@ -55,10 +55,8 @@ import net.minecraft.server.SaveLoader;
 import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServerLoader;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
@@ -84,13 +82,13 @@ public class CreateWorldScreen
 extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String TEMP_DIR_PREFIX = "mcworld-";
-    private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
-    private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
-    private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
-    private static final Text ENTER_NAME_TEXT = new TranslatableText("selectWorld.enterName");
-    private static final Text RESULT_FOLDER_TEXT = new TranslatableText("selectWorld.resultFolder");
-    private static final Text ALLOW_COMMANDS_INFO_TEXT = new TranslatableText("selectWorld.allowCommands.info");
-    private static final Text PREPARING_TEXT = new TranslatableText("createWorld.preparing");
+    private static final Text GAME_MODE_TEXT = Text.method_43471("selectWorld.gameMode");
+    private static final Text ENTER_SEED_TEXT = Text.method_43471("selectWorld.enterSeed");
+    private static final Text SEED_INFO_TEXT = Text.method_43471("selectWorld.seedInfo");
+    private static final Text ENTER_NAME_TEXT = Text.method_43471("selectWorld.enterName");
+    private static final Text RESULT_FOLDER_TEXT = Text.method_43471("selectWorld.resultFolder");
+    private static final Text ALLOW_COMMANDS_INFO_TEXT = Text.method_43471("selectWorld.allowCommands.info");
+    private static final Text PREPARING_TEXT = Text.method_43471("createWorld.preparing");
     @Nullable
     private final Screen parent;
     private TextFieldWidget levelNameField;
@@ -162,7 +160,7 @@ extends Screen {
     }
 
     private CreateWorldScreen(@Nullable Screen parent, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
-        super(new TranslatableText("selectWorld.create"));
+        super(Text.method_43471("selectWorld.create"));
         this.parent = parent;
         this.levelName = I18n.translate("selectWorld.newWorld", new Object[0]);
         this.dataPackSettings = dataPackSettings;
@@ -178,11 +176,11 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, (Text)new TranslatableText("selectWorld.enterName")){
+        this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, (Text)Text.method_43471("selectWorld.enterName")){
 
             @Override
             protected MutableText getNarrationMessage() {
-                return ScreenTexts.joinSentences(super.getNarrationMessage(), new TranslatableText("selectWorld.resultFolder")).append(" ").append(CreateWorldScreen.this.saveDirectoryName);
+                return ScreenTexts.joinSentences(super.getNarrationMessage(), Text.method_43471("selectWorld.resultFolder")).append(" ").append(CreateWorldScreen.this.saveDirectoryName);
             }
         };
         this.levelNameField.setText(this.levelName);
@@ -195,23 +193,23 @@ extends Screen {
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
         this.gameModeSwitchButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(button -> ClickableWidget.getNarrationMessage(button.getMessage()).append(ScreenTexts.SENTENCE_SEPARATOR).append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
-        this.difficultyButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (button, difficulty) -> {
+        this.difficultyButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, Text.method_43471("options.difficulty"), (button, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
-        this.enableCheatsButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (button, cheatsEnabled) -> {
+        this.enableCheatsButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.method_43471("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, Text.method_43471("selectWorld.allowCommands"), (button, cheatsEnabled) -> {
             this.tweakedCheats = true;
             this.cheatsEnabled = cheatsEnabled;
         }));
-        this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, new TranslatableText("selectWorld.dataPacks"), button -> this.openPackScreen()));
-        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
+        this.dataPacksButton = this.addDrawableChild(new ButtonWidget(j, 151, 150, 20, Text.method_43471("selectWorld.dataPacks"), button -> this.openPackScreen()));
+        this.gameRulesButton = this.addDrawableChild(new ButtonWidget(i, 185, 150, 20, Text.method_43471("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
             this.client.setScreen(this);
             optionalGameRules.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
         }))));
         this.moreOptionsDialog.init(this, this.client, this.textRenderer);
-        this.moreOptionsButton = this.addDrawableChild(new ButtonWidget(j, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()));
-        this.createLevelButton = this.addDrawableChild(new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), button -> this.createLevel()));
+        this.moreOptionsButton = this.addDrawableChild(new ButtonWidget(j, 185, 150, 20, Text.method_43471("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()));
+        this.createLevelButton = this.addDrawableChild(new ButtonWidget(i, this.height - 28, 150, 20, Text.method_43471("selectWorld.create"), button -> this.createLevel()));
         this.createLevelButton.active = !this.levelName.isEmpty();
         this.addDrawableChild(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, button -> this.onCloseScreen()));
         this.setMoreOptionsOpen();
@@ -225,8 +223,8 @@ extends Screen {
     }
 
     private void updateSettingsLabels() {
-        this.firstGameModeDescriptionLine = new TranslatableText("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
-        this.secondGameModeDescriptionLine = new TranslatableText("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
+        this.firstGameModeDescriptionLine = Text.method_43471("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
+        this.secondGameModeDescriptionLine = Text.method_43471("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
     }
 
     private void updateSaveFolderName() {
@@ -339,7 +337,7 @@ extends Screen {
         if (moreOptionsOpen) {
             this.moreOptionsButton.setMessage(ScreenTexts.DONE);
         } else {
-            this.moreOptionsButton.setMessage(new TranslatableText("selectWorld.moreWorldOptions"));
+            this.moreOptionsButton.setMessage(Text.method_43471("selectWorld.moreWorldOptions"));
         }
         this.gameRulesButton.visible = !moreOptionsOpen;
     }
@@ -380,7 +378,7 @@ extends Screen {
             this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
         } else {
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 47, -6250336);
-            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, new LiteralText("").append(RESULT_FOLDER_TEXT).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.method_43473().append(RESULT_FOLDER_TEXT).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336);
             this.levelNameField.render(matrices, mouseX, mouseY, delta);
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);
@@ -418,7 +416,7 @@ extends Screen {
     private void openPackScreen() {
         Pair<File, ResourcePackManager> pair = this.getScannedPack();
         if (pair != null) {
-            this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), new TranslatableText("dataPack.title")));
+            this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), Text.method_43471("dataPack.title")));
         }
     }
 
@@ -430,7 +428,7 @@ extends Screen {
             this.dataPackSettings = dataPackSettings2;
             return;
         }
-        this.client.send(() -> this.client.setScreen(new MessageScreen(new TranslatableText("dataPack.validation.working"))));
+        this.client.send(() -> this.client.setScreen(new MessageScreen(Text.method_43471("dataPack.validation.working"))));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataPackSettings2);
         ((CompletableFuture)SaveLoading.load(serverConfig, (resourceManager, dataPackSettings) -> {
             GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.method_41884();
@@ -467,7 +465,7 @@ extends Screen {
                         this.dataPackSettings = DataPackSettings.SAFE_MODE;
                         this.client.setScreen(this);
                     }
-                }, new TranslatableText("dataPack.validation.failed"), LiteralText.EMPTY, new TranslatableText("dataPack.validation.back"), new TranslatableText("dataPack.validation.reset"))));
+                }, Text.method_43471("dataPack.validation.failed"), ScreenTexts.field_39003, Text.method_43471("dataPack.validation.back"), Text.method_43471("dataPack.validation.reset"))));
             } else {
                 this.client.send(() -> this.client.setScreen(this));
             }
@@ -603,7 +601,7 @@ extends Screen {
         private Mode(String translationSuffix, GameMode defaultGameMode) {
             this.translationSuffix = translationSuffix;
             this.defaultGameMode = defaultGameMode;
-            this.text = new TranslatableText("selectWorld.gameMode." + translationSuffix);
+            this.text = Text.method_43471("selectWorld.gameMode." + translationSuffix);
         }
 
         public Text asText() {

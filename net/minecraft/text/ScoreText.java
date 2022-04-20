@@ -6,6 +6,7 @@ package net.minecraft.text;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
+import net.minecraft.class_7417;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -15,15 +16,12 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.ParsableText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class ScoreText
-extends BaseText
-implements ParsableText {
+implements class_7417 {
     private static final String SENDER_PLACEHOLDER = "*";
     private final String name;
     @Nullable
@@ -39,14 +37,10 @@ implements ParsableText {
         }
     }
 
-    public ScoreText(String name, String objective) {
-        this(name, ScoreText.parseEntitySelector(name), objective);
-    }
-
-    private ScoreText(String name, @Nullable EntitySelector selector, String objective) {
+    public ScoreText(String name, String string) {
         this.name = name;
-        this.selector = selector;
-        this.objective = objective;
+        this.selector = ScoreText.parseEntitySelector(name);
+        this.objective = string;
     }
 
     public String getName() {
@@ -85,45 +79,38 @@ implements ParsableText {
     }
 
     @Override
-    public ScoreText copy() {
-        return new ScoreText(this.name, this.selector, this.objective);
-    }
-
-    @Override
-    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-        if (source == null) {
-            return new LiteralText("");
+    public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+        if (serverCommandSource == null) {
+            return Text.method_43473();
         }
-        String string = this.getPlayerName(source);
-        String string2 = sender != null && string.equals(SENDER_PLACEHOLDER) ? sender.getEntityName() : string;
-        return new LiteralText(this.getScore(string2, source));
+        String string = this.getPlayerName(serverCommandSource);
+        String string2 = entity != null && string.equals(SENDER_PLACEHOLDER) ? entity.getEntityName() : string;
+        return Text.method_43470(this.getScore(string2, serverCommandSource));
     }
 
-    @Override
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
     public boolean equals(Object object) {
         if (this == object) {
             return true;
         }
-        if (object instanceof ScoreText) {
-            ScoreText scoreText = (ScoreText)object;
-            return this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective) && super.equals(object);
-        }
-        return false;
+        if (!(object instanceof ScoreText)) return false;
+        ScoreText scoreText = (ScoreText)object;
+        if (!this.name.equals(scoreText.name)) return false;
+        if (!this.objective.equals(scoreText.objective)) return false;
+        return true;
     }
 
-    @Override
+    public int hashCode() {
+        int i = this.name.hashCode();
+        i = 31 * i + this.objective.hashCode();
+        return i;
+    }
+
     public String toString() {
-        return "ScoreComponent{name='" + this.name + "'objective='" + this.objective + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
-    }
-
-    @Override
-    public /* synthetic */ BaseText copy() {
-        return this.copy();
-    }
-
-    @Override
-    public /* synthetic */ MutableText copy() {
-        return this.copy();
+        return "score{name='" + this.name + "', objective='" + this.objective + "'}";
     }
 }
 

@@ -12,7 +12,7 @@ import java.util.Collection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class WardenSpawnTrackerCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -24,9 +24,9 @@ public class WardenSpawnTrackerCommand {
             playerEntity.getSculkShriekerWarningManager().setWarningLevel(warningCount);
         }
         if (players.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.set.success.single", players.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.single", players.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
+            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
         }
         return players.size();
     }
@@ -36,9 +36,9 @@ public class WardenSpawnTrackerCommand {
             playerEntity.getSculkShriekerWarningManager().reset();
         }
         if (players.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.clear.success.single", players.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.clear.success.single", players.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
+            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
         }
         return players.size();
     }

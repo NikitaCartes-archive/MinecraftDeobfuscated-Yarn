@@ -8,9 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ProgressListener;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +42,7 @@ implements ProgressListener {
     @Override
     public void setTitleAndTask(Text title) {
         this.title = title;
-        this.setTask(new TranslatableText("progress.working"));
+        this.setTask(Text.method_43471("progress.working"));
     }
 
     @Override
@@ -76,7 +74,7 @@ implements ProgressListener {
             ProgressScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         }
         if (this.task != null && this.progress != 0) {
-            ProgressScreen.drawCenteredText(matrices, this.textRenderer, new LiteralText("").append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
+            ProgressScreen.drawCenteredText(matrices, this.textRenderer, Text.method_43473().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

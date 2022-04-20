@@ -38,7 +38,6 @@ import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -76,7 +75,7 @@ implements ClientLoginPacketListener {
         } catch (NetworkEncryptionException networkEncryptionException) {
             throw new IllegalStateException("Protocol error", networkEncryptionException);
         }
-        this.statusConsumer.accept(new TranslatableText("connect.authorizing"));
+        this.statusConsumer.accept(Text.method_43471("connect.authorizing"));
         NetworkUtils.EXECUTOR.submit(() -> {
             Text text = this.joinServerSession(string);
             if (text != null) {
@@ -87,7 +86,7 @@ implements ClientLoginPacketListener {
                     return;
                 }
             }
-            this.statusConsumer.accept(new TranslatableText("connect.encrypting"));
+            this.statusConsumer.accept(Text.method_43471("connect.encrypting"));
             this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(cipher, cipher2));
         });
     }
@@ -97,13 +96,13 @@ implements ClientLoginPacketListener {
         try {
             this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), serverId);
         } catch (AuthenticationUnavailableException authenticationUnavailableException) {
-            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.serversUnavailable"));
+            return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.serversUnavailable"));
         } catch (InvalidCredentialsException invalidCredentialsException) {
-            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.invalidSession"));
+            return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.invalidSession"));
         } catch (InsufficientPrivilegesException insufficientPrivilegesException) {
-            return new TranslatableText("disconnect.loginFailedInfo", new TranslatableText("disconnect.loginFailedInfo.insufficientPrivileges"));
+            return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.insufficientPrivileges"));
         } catch (AuthenticationException authenticationException) {
-            return new TranslatableText("disconnect.loginFailedInfo", authenticationException.getMessage());
+            return Text.method_43469("disconnect.loginFailedInfo", authenticationException.getMessage());
         }
         return null;
     }
@@ -114,7 +113,7 @@ implements ClientLoginPacketListener {
 
     @Override
     public void onSuccess(LoginSuccessS2CPacket packet) {
-        this.statusConsumer.accept(new TranslatableText("connect.joining"));
+        this.statusConsumer.accept(Text.method_43471("connect.joining"));
         this.profile = packet.getProfile();
         this.connection.setState(NetworkState.PLAY);
         this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.profile, this.client.createTelemetrySender()));
@@ -148,7 +147,7 @@ implements ClientLoginPacketListener {
 
     @Override
     public void onQueryRequest(LoginQueryRequestS2CPacket packet) {
-        this.statusConsumer.accept(new TranslatableText("connect.negotiating"));
+        this.statusConsumer.accept(Text.method_43471("connect.negotiating"));
         this.connection.send(new LoginQueryResponseC2SPacket(packet.getQueryId(), null));
     }
 }

@@ -32,7 +32,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
@@ -102,7 +102,7 @@ implements BlockEntityProvider {
         }
         if (state.get(OCCUPIED).booleanValue()) {
             if (!this.wakeVillager(world, pos)) {
-                player.sendMessage(new TranslatableText("block.minecraft.bed.occupied"), true);
+                player.sendMessage(Text.method_43471("block.minecraft.bed.occupied"), true);
             }
             return ActionResult.SUCCESS;
         }

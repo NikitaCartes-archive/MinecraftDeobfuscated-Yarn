@@ -18,7 +18,6 @@ import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.FunctionLoader;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +31,7 @@ public class CommandFunctionManager {
      * A localized piece of text indicating that calling the debug command to debug
      * functions from within a function is not supported.
      */
-    private static final Text NO_TRACE_IN_FUNCTION_TEXT = new TranslatableText("commands.debug.function.noRecursion");
+    private static final Text NO_TRACE_IN_FUNCTION_TEXT = Text.method_43471("commands.debug.function.noRecursion");
     private static final Identifier TICK_TAG_ID = new Identifier("tick");
     private static final Identifier LOAD_TAG_ID = new Identifier("load");
     final MinecraftServer server;

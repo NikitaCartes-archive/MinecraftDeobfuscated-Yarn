@@ -17,7 +17,7 @@ import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -27,7 +27,7 @@ extends GameOptionsScreen {
     private ClickableWidget directionalAudioButton;
 
     public SoundOptionsScreen(Screen parent, GameOptions options) {
-        super(parent, options, new TranslatableText("options.sounds.title"));
+        super(parent, options, Text.method_43471("options.sounds.title"));
     }
 
     @Override

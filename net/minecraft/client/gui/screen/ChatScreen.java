@@ -16,7 +16,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -32,7 +31,7 @@ import org.lwjgl.glfw.GLFW;
 public class ChatScreen
 extends Screen {
     public static final double SHIFT_SCROLL_AMOUNT = 7.0;
-    private static final Text USAGE_TEXT = new TranslatableText("chat_screen.usage");
+    private static final Text USAGE_TEXT = Text.method_43471("chat_screen.usage");
     private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
@@ -40,7 +39,7 @@ extends Screen {
     CommandSuggestor commandSuggestor;
 
     public ChatScreen(String originalChatText) {
-        super(new TranslatableText("chat_screen.title"));
+        super(Text.method_43471("chat_screen.title"));
         this.originalChatText = originalChatText;
     }
 
@@ -48,7 +47,7 @@ extends Screen {
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
-        this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text)new TranslatableText("chat.editBox")){
+        this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, (Text)Text.method_43471("chat.editBox")){
 
             @Override
             protected MutableText getNarrationMessage() {
@@ -219,7 +218,7 @@ extends Screen {
         builder.put(NarrationPart.USAGE, USAGE_TEXT);
         String string = this.chatField.getText();
         if (!string.isEmpty()) {
-            builder.nextMessage().put(NarrationPart.TITLE, (Text)new TranslatableText("chat_screen.message", string));
+            builder.nextMessage().put(NarrationPart.TITLE, (Text)Text.method_43469("chat_screen.message", string));
         }
     }
 }

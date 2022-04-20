@@ -20,10 +20,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.Registry;
@@ -308,8 +306,8 @@ public class HoverEvent {
                 if (this.name != null) {
                     this.tooltip.add(this.name);
                 }
-                this.tooltip.add(new TranslatableText("gui.entity_tooltip.type", this.entityType.getName()));
-                this.tooltip.add(new LiteralText(this.uuid.toString()));
+                this.tooltip.add(Text.method_43469("gui.entity_tooltip.type", this.entityType.getName()));
+                this.tooltip.add(Text.method_43470(this.uuid.toString()));
             }
             return this.tooltip;
         }

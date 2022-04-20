@@ -20,11 +20,9 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -82,7 +80,7 @@ extends Item {
         String string;
         NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null && !StringHelper.isEmpty(string = nbtCompound.getString(TITLE_KEY))) {
-            return new LiteralText(string);
+            return Text.method_43470(string);
         }
         return super.getName(stack);
     }
@@ -93,9 +91,9 @@ extends Item {
             NbtCompound nbtCompound = stack.getNbt();
             String string = nbtCompound.getString(AUTHOR_KEY);
             if (!StringHelper.isEmpty(string)) {
-                tooltip.add(new TranslatableText("book.byAuthor", string).formatted(Formatting.GRAY));
+                tooltip.add(Text.method_43469("book.byAuthor", string).formatted(Formatting.GRAY));
             }
-            tooltip.add(new TranslatableText("book.generation." + nbtCompound.getInt(GENERATION_KEY)).formatted(Formatting.GRAY));
+            tooltip.add(Text.method_43471("book.generation." + nbtCompound.getInt(GENERATION_KEY)).formatted(Formatting.GRAY));
         }
     }
 
@@ -146,7 +144,7 @@ extends Item {
             text2 = Text.Serializer.fromLenientJson(text);
             text2 = Texts.parse(commandSource, text2, (Entity)player, 0);
         } catch (Exception exception) {
-            text2 = new LiteralText(text);
+            text2 = Text.method_43470(text);
         }
         return Text.Serializer.toJson(text2);
     }

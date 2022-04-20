@@ -518,32 +518,49 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                this.world.getProfiler().visit("chunkLoad");
-                NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
-                if (nbtCompound != null) {
-                    boolean bl = nbtCompound.contains("Status", NbtElement.STRING_TYPE);
-                    if (bl) {
-                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, nbtCompound);
-                        this.mark(pos, ((Chunk)chunk).getStatus().getChunkType());
-                        return Either.left(chunk);
-                    }
-                    LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
-                }
-            } catch (CrashException crashException) {
-                Throwable throwable = crashException.getCause();
-                if (throwable instanceof IOException) {
-                    LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)throwable);
-                }
-                this.markAsProtoChunk(pos);
-                throw crashException;
-            } catch (Exception exception) {
-                LOGGER.error("Couldn't load chunk {}", (Object)pos, (Object)exception);
+        return ((CompletableFuture)((CompletableFuture)this.method_43383(pos).thenApply(optional -> optional.filter(nbtCompound -> {
+            boolean bl = ThreadedAnvilChunkStorage.method_43380(nbtCompound);
+            if (!bl) {
+                LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
             }
-            this.markAsProtoChunk(pos);
-            return Either.left(new ProtoChunk(pos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null));
-        }, this.mainThreadExecutor);
+            return bl;
+        }))).thenApplyAsync(optional -> {
+            this.world.getProfiler().visit("chunkLoad");
+            if (optional.isPresent()) {
+                ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)optional.get());
+                this.mark(pos, ((Chunk)chunk).getStatus().getChunkType());
+                return Either.left(chunk);
+            }
+            return Either.left(this.method_43382(pos));
+        }, (Executor)this.mainThreadExecutor)).exceptionallyAsync(throwable -> this.method_43376((Throwable)throwable, pos), (Executor)this.mainThreadExecutor);
+    }
+
+    private static boolean method_43380(NbtCompound nbtCompound) {
+        return nbtCompound.contains("Status", NbtElement.STRING_TYPE);
+    }
+
+    /*
+     * Enabled aggressive block sorting
+     */
+    private Either<Chunk, ChunkHolder.Unloaded> method_43376(Throwable throwable, ChunkPos chunkPos) {
+        if (!(throwable instanceof CrashException)) {
+            if (!(throwable instanceof IOException)) return Either.left(this.method_43382(chunkPos));
+            LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable);
+            return Either.left(this.method_43382(chunkPos));
+        }
+        CrashException crashException = (CrashException)throwable;
+        Throwable throwable2 = crashException.getCause();
+        if (throwable2 instanceof IOException) {
+            LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable2);
+            return Either.left(this.method_43382(chunkPos));
+        }
+        this.markAsProtoChunk(chunkPos);
+        throw crashException;
+    }
+
+    private Chunk method_43382(ChunkPos chunkPos) {
+        this.markAsProtoChunk(chunkPos);
+        return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null);
     }
 
     private void markAsProtoChunk(ChunkPos pos) {
@@ -709,7 +726,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return b == 1;
         }
         try {
-            nbtCompound = this.getUpdatedChunkNbt(pos);
+            nbtCompound = this.method_43383(pos).join().orElse(null);
             if (nbtCompound == null) {
                 this.markAsProtoChunk(pos);
                 return false;
@@ -798,12 +815,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    @Nullable
-    private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
-        NbtCompound nbtCompound = this.getNbt(pos);
-        if (nbtCompound == null) {
-            return null;
-        }
+    private CompletableFuture<Optional<NbtCompound>> method_43383(ChunkPos chunkPos) {
+        return this.getNbt(chunkPos).thenApplyAsync(optional -> optional.map(this::method_43381), (Executor)Util.getMainWorkerExecutor());
+    }
+
+    private NbtCompound method_43381(NbtCompound nbtCompound) {
         return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
     }
 

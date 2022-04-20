@@ -20,7 +20,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.Sound;
 import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundEntry;
@@ -35,7 +34,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
@@ -98,10 +97,9 @@ extends SinglePreparationResourceReloader<SoundList> {
         soundList.reload(this.sounds, this.soundSystem);
         if (SharedConstants.isDevelopment) {
             for (Identifier identifier : this.sounds.keySet()) {
-                String string;
                 WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
-                if (!(weightedSoundSet.getSubtitle() instanceof TranslatableText) || I18n.hasTranslation(string = ((TranslatableText)weightedSoundSet.getSubtitle()).getKey()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
-                LOGGER.error("Missing subtitle {} for sound event: {}", (Object)string, (Object)identifier);
+                if (Texts.method_43476(weightedSoundSet.getSubtitle()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
+                LOGGER.error("Missing subtitle {} for sound event: {}", (Object)weightedSoundSet.getSubtitle(), (Object)identifier);
             }
         }
         if (LOGGER.isDebugEnabled()) {

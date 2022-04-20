@@ -17,21 +17,19 @@ import net.minecraft.client.realms.dto.Backup;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsSlotOptionsScreen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsBackupInfoScreen
 extends RealmsScreen {
-    private static final Text UNKNOWN = new LiteralText("UNKNOWN");
+    private static final Text UNKNOWN = Text.method_43470("UNKNOWN");
     private final Screen parent;
     final Backup backup;
     private BackupInfoList backupInfoList;
 
     public RealmsBackupInfoScreen(Screen parent, Backup backup) {
-        super(new LiteralText("Changes from last backup"));
+        super(Text.method_43470("Changes from last backup"));
         this.parent = parent;
         this.backup = backup;
     }
@@ -79,7 +77,7 @@ extends RealmsScreen {
         if (string.contains("game") && string.contains("difficulty")) {
             return this.gameDifficultyMetadata(value);
         }
-        return new LiteralText(value);
+        return Text.method_43470(value);
     }
 
     private Text gameDifficultyMetadata(String value) {
@@ -130,7 +128,7 @@ extends RealmsScreen {
 
         @Override
         public Text getNarration() {
-            return new TranslatableText("narrator.select", this.key + " " + this.value);
+            return Text.method_43469("narrator.select", this.key + " " + this.value);
         }
     }
 }

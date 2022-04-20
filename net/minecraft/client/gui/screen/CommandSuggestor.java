@@ -44,7 +44,6 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
@@ -208,7 +207,7 @@ public class CommandSuggestor {
         if (string == null) {
             return text.asOrderedText();
         }
-        return new TranslatableText("command.context.parse_error", text, exception.getCursor(), string).asOrderedText();
+        return Text.method_43469("command.context.parse_error", text, exception.getCursor(), string).asOrderedText();
     }
 
     private void show() {
@@ -481,9 +480,9 @@ public class CommandSuggestor {
             Suggestion suggestion = this.suggestions.get(this.selection);
             Message message = suggestion.getTooltip();
             if (message != null) {
-                return new TranslatableText("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message);
+                return Text.method_43469("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message);
             }
-            return new TranslatableText("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
+            return Text.method_43469("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
         }
 
         public void discard() {

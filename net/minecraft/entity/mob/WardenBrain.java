@@ -101,7 +101,7 @@ public class WardenBrain {
     }
 
     private static void addIdleActivities(Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new FindRoarTargetTask<WardenEntity>(WardenEntity::getPrimeSuspect), new StartSniffingTask(), WardenBrain.getStrollOrWaitTask()));
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new FindRoarTargetTask<WardenEntity>(WardenEntity::getPrimeSuspect), new StartSniffingTask(), new RandomTask(ImmutableMap.of(MemoryModuleType.IS_SNIFFING, MemoryModuleState.VALUE_ABSENT), ImmutableList.of(Pair.of(new StrollTask(0.5f), 2), Pair.of(new WaitTask(30, 60), 1)))));
     }
 
     private static void addInvestigateActivities(Brain<WardenEntity> brain) {
@@ -131,10 +131,6 @@ public class WardenBrain {
         WardenBrain.resetDigCooldown(warden);
     }
 
-    private static RandomTask<WardenEntity> getStrollOrWaitTask() {
-        return new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.5f), 2), Pair.of(new WaitTask(30, 60), 1)));
-    }
-
     public static void resetDigCooldown(LivingEntity warden) {
         if (warden.getBrain().hasMemoryModule(MemoryModuleType.DIG_COOLDOWN)) {
             warden.getBrain().remember(MemoryModuleType.DIG_COOLDOWN, Unit.INSTANCE, 1200L);
@@ -142,17 +138,14 @@ public class WardenBrain {
     }
 
     public static void lookAtDisturbance(WardenEntity warden, BlockPos pos) {
-        if (WardenBrain.hasNoSuspectOrTarget(warden)) {
-            WardenBrain.resetDigCooldown(warden);
-            warden.getBrain().remember(MemoryModuleType.SNIFF_COOLDOWN, Unit.INSTANCE, 100L);
-            warden.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos), 100L);
-            warden.getBrain().remember(MemoryModuleType.DISTURBANCE_LOCATION, pos, 100L);
-            warden.getBrain().forget(MemoryModuleType.WALK_TARGET);
+        if (!warden.world.getWorldBorder().contains(pos) || warden.getPrimeSuspect().isPresent() || warden.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isPresent()) {
+            return;
         }
-    }
-
-    private static boolean hasNoSuspectOrTarget(WardenEntity warden) {
-        return warden.getPrimeSuspect().isEmpty() && warden.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty();
+        WardenBrain.resetDigCooldown(warden);
+        warden.getBrain().remember(MemoryModuleType.SNIFF_COOLDOWN, Unit.INSTANCE, 100L);
+        warden.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(pos), 100L);
+        warden.getBrain().remember(MemoryModuleType.DISTURBANCE_LOCATION, pos, 100L);
+        warden.getBrain().forget(MemoryModuleType.WALK_TARGET);
     }
 }
 

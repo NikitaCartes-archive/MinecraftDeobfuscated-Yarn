@@ -46,10 +46,8 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -67,7 +65,7 @@ public class TitleScreen
 extends Screen {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String DEMO_WORLD_NAME = "Demo_World";
-    public static final Text COPYRIGHT = new LiteralText("Copyright Mojang AB. Do not distribute!");
+    public static final Text COPYRIGHT = Text.method_43470("Copyright Mojang AB. Do not distribute!");
     public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
     private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
     private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -91,7 +89,7 @@ extends Screen {
     }
 
     public TitleScreen(boolean doBackgroundFade) {
-        super(new TranslatableText("narrator.screen.title"));
+        super(Text.method_43471("narrator.screen.title"));
         this.doBackgroundFade = doBackgroundFade;
         this.isMinceraft = (double)AbstractRandom.createAtomic().nextFloat() < 1.0E-4;
         this.realms = RealmsClient.createRealmsClient();
@@ -149,10 +147,10 @@ extends Screen {
         } else {
             this.initWidgetsNormal(l, 24);
         }
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, l + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), new TranslatableText("narrator.button.language")));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, l + 72 + 12, 98, 20, new TranslatableText("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, new TranslatableText("menu.quit"), button -> this.client.scheduleStop()));
-        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), new TranslatableText("narrator.button.accessibility")));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, l + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), Text.method_43471("narrator.button.language")));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, l + 72 + 12, 98, 20, Text.method_43471("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, l + 72 + 12, 98, 20, Text.method_43471("menu.quit"), button -> this.client.scheduleStop()));
+        this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), Text.method_43471("narrator.button.accessibility")));
         this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, Runnables.doNothing())), this.textRenderer));
         this.client.setConnectedToRealms(false);
         if (this.client.options.getRealmsNotifications().getValue().booleanValue() && this.realmsNotificationGui == null) {
@@ -163,7 +161,7 @@ extends Screen {
         }
         if (!this.client.is64Bit()) {
             CompletableFuture<Boolean> completableFuture = this.deprecationNotice != null ? this.deprecationNotice.realmsSubscriptionFuture : CompletableFuture.supplyAsync(this::fetchRealmsSubscribed, Util.getMainWorkerExecutor());
-            this.deprecationNotice = new DeprecationNotice(MultilineText.create(this.textRenderer, (StringVisitable)new TranslatableText("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture);
+            this.deprecationNotice = new DeprecationNotice(MultilineText.create(this.textRenderer, (StringVisitable)Text.method_43471("title.32bit.deprecation"), 350, 2), this.width / 2, l - 24, completableFuture);
         }
     }
 
@@ -176,10 +174,10 @@ extends Screen {
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, Text.method_43471("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))));
         boolean bl = this.client.isMultiplayerEnabled();
         ButtonWidget.TooltipSupplier tooltipSupplier = bl ? ButtonWidget.EMPTY : new ButtonWidget.TooltipSupplier(){
-            private final Text MULTIPLAYER_DISABLED_TEXT = new TranslatableText("title.multiplayer.disabled");
+            private final Text MULTIPLAYER_DISABLED_TEXT = Text.method_43471("title.multiplayer.disabled");
 
             @Override
             public void onTooltip(ButtonWidget buttonWidget, MatrixStack matrixStack, int i, int j) {
@@ -193,13 +191,13 @@ extends Screen {
                 consumer.accept(this.MULTIPLAYER_DISABLED_TEXT);
             }
         };
-        this.addDrawableChild(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20, (Text)new TranslatableText((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.TooltipSupplier)tooltipSupplier)).active = bl;
-        this.addDrawableChild(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20, (Text)new TranslatableText((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.TooltipSupplier)tooltipSupplier)).active = bl;
+        this.addDrawableChild(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20, (Text)Text.method_43471((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.TooltipSupplier)tooltipSupplier)).active = bl;
+        this.addDrawableChild(new ButtonWidget((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20, (Text)Text.method_43471((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this), (ButtonWidget.TooltipSupplier)tooltipSupplier)).active = bl;
     }
 
     private void initWidgetsDemo(int y, int spacingY) {
         boolean bl = this.canReadDemoWorldData();
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y, 200, 20, Text.method_43471("menu.playdemo"), button -> {
             if (bl) {
                 this.client.method_41735().start(this, DEMO_WORLD_NAME);
             } else {
@@ -207,12 +205,12 @@ extends Screen {
                 this.client.method_41735().createAndStart(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, dynamicRegistryManager, WorldPresets.createDemoOptions(dynamicRegistryManager));
             }
         }));
-        this.buttonResetDemo = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, new TranslatableText("menu.resetdemo"), button -> {
+        this.buttonResetDemo = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, y + spacingY * 1, 200, 20, Text.method_43471("menu.resetdemo"), button -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
             try (LevelStorage.Session session = levelStorage.createSession(DEMO_WORLD_NAME);){
                 LevelSummary levelSummary = session.getLevelSummary();
                 if (levelSummary != null) {
-                    this.client.setScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", levelSummary.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
+                    this.client.setScreen(new ConfirmScreen(this::onDemoDeletionConfirmed, Text.method_43471("selectWorld.deleteQuestion"), Text.method_43469("selectWorld.deleteWarning", levelSummary.getDisplayName()), Text.method_43471("selectWorld.deleteButton"), ScreenTexts.CANCEL));
                 }
             } catch (IOException iOException) {
                 SystemToast.addWorldAccessFailureToast(this.client, DEMO_WORLD_NAME);

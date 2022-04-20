@@ -10,15 +10,15 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 public class SayCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("say").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
             Text text = MessageArgumentType.getMessage(context, "message");
-            TranslatableText text2 = new TranslatableText("chat.type.announcement", ((ServerCommandSource)context.getSource()).getDisplayName(), text);
+            MutableText text2 = Text.method_43469("chat.type.announcement", ((ServerCommandSource)context.getSource()).getDisplayName(), text);
             Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
             if (entity != null) {
                 ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcast(text2, MessageType.CHAT, entity.getUuid());

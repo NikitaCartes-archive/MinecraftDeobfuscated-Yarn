@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
 import net.minecraft.command.CommandSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class EntityAnchorArgumentType
 implements ArgumentType<EntityAnchor> {
     private static final Collection<String> EXAMPLES = Arrays.asList("eyes", "feet");
-    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("argument.anchor.invalid", name));
+    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("argument.anchor.invalid", name));
 
     public static EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> context, String name) {
         return context.getArgument(name, EntityAnchor.class);

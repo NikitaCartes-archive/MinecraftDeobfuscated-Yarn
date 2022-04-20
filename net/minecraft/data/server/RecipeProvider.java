@@ -632,6 +632,7 @@ implements DataProvider {
         ShapedRecipeJsonBuilder.create(Blocks.TINTED_GLASS, 2).input(Character.valueOf('G'), Blocks.GLASS).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern(" S ").pattern("SGS").pattern(" S ").criterion("has_amethyst_shard", RecipeProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Blocks.AMETHYST_BLOCK).input(Character.valueOf('S'), Items.AMETHYST_SHARD).pattern("SS").pattern("SS").criterion("has_amethyst_shard", RecipeProvider.conditionsFromItem(Items.AMETHYST_SHARD)).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(Items.RECOVERY_COMPASS).input(Character.valueOf('C'), Items.COMPASS).input(Character.valueOf('S'), Items.ECHO_SHARD).pattern("SSS").pattern("SCS").pattern("SSS").criterion("has_echo_shard", RecipeProvider.conditionsFromItem(Items.ECHO_SHARD)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(Items.MUSIC_DISC_5).input(Character.valueOf('S'), Items.DISC_FRAGMENT_5).pattern("SSS").pattern("SSS").pattern("SSS").criterion("has_disc_fragment_5", RecipeProvider.conditionsFromItem(Items.DISC_FRAGMENT_5)).offerTo(exporter);
         ComplexRecipeJsonBuilder.create(RecipeSerializer.ARMOR_DYE).offerTo(exporter, "armor_dye");
         ComplexRecipeJsonBuilder.create(RecipeSerializer.BANNER_DUPLICATE).offerTo(exporter, "banner_duplicate");
         ComplexRecipeJsonBuilder.create(RecipeSerializer.BOOK_CLONING).offerTo(exporter, "book_cloning");

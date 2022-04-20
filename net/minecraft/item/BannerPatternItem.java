@@ -10,7 +10,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +33,7 @@ extends Item {
     }
 
     public MutableText getDescription() {
-        return new TranslatableText(this.getTranslationKey() + ".desc");
+        return Text.method_43471(this.getTranslationKey() + ".desc");
     }
 }
 

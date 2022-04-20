@@ -23,8 +23,8 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ extends Screen {
     private boolean initialized;
 
     public MultiplayerScreen(Screen parent) {
-        super(new TranslatableText("multiplayer.title"));
+        super(Text.method_43471("multiplayer.title"));
         this.parent = parent;
     }
 
@@ -74,16 +74,16 @@ extends Screen {
             this.serverListWidget.setServers(this.serverList);
         }
         this.addSelectableChild(this.serverListWidget);
-        this.buttonJoin = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, new TranslatableText("selectServer.select"), button -> this.connect()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, new TranslatableText("selectServer.direct"), button -> {
+        this.buttonJoin = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, Text.method_43471("selectServer.select"), button -> this.connect()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, Text.method_43471("selectServer.direct"), button -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
             this.client.setScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, new TranslatableText("selectServer.add"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, Text.method_43471("selectServer.add"), button -> {
             this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName", new Object[0]), "", false);
             this.client.setScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
         }));
-        this.buttonEdit = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, new TranslatableText("selectServer.edit"), button -> {
+        this.buttonEdit = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, Text.method_43471("selectServer.edit"), button -> {
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelectedOrNull();
             if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
                 ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
@@ -92,18 +92,18 @@ extends Screen {
                 this.client.setScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
             }
         }));
-        this.buttonDelete = this.addDrawableChild(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, new TranslatableText("selectServer.delete"), button -> {
+        this.buttonDelete = this.addDrawableChild(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, Text.method_43471("selectServer.delete"), button -> {
             String string;
             MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.serverListWidget.getSelectedOrNull();
             if (entry instanceof MultiplayerServerListWidget.ServerEntry && (string = ((MultiplayerServerListWidget.ServerEntry)entry).getServer().name) != null) {
-                TranslatableText text = new TranslatableText("selectServer.deleteQuestion");
-                TranslatableText text2 = new TranslatableText("selectServer.deleteWarning", string);
-                TranslatableText text3 = new TranslatableText("selectServer.deleteButton");
+                MutableText text = Text.method_43471("selectServer.deleteQuestion");
+                MutableText text2 = Text.method_43469("selectServer.deleteWarning", string);
+                MutableText text3 = Text.method_43471("selectServer.deleteButton");
                 Text text4 = ScreenTexts.CANCEL;
                 this.client.setScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
             }
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, new TranslatableText("selectServer.refresh"), button -> this.refresh()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, Text.method_43471("selectServer.refresh"), button -> this.refresh()));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
         this.updateButtonActivationStates();
     }

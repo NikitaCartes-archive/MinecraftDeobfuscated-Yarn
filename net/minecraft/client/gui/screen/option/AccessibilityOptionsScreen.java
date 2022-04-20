@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
@@ -25,12 +25,12 @@ extends SimpleOptionsScreen {
     }
 
     public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, new TranslatableText("options.accessibility.title"), AccessibilityOptionsScreen.getOptions(gameOptions));
+        super(parent, gameOptions, Text.method_43471("options.accessibility.title"), AccessibilityOptionsScreen.getOptions(gameOptions));
     }
 
     @Override
     protected void initFooter() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, new TranslatableText("options.accessibility.link"), button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, Text.method_43471("options.accessibility.link"), button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
             if (openInBrowser) {
                 Util.getOperatingSystem().open(GUIDE_URL);
             }

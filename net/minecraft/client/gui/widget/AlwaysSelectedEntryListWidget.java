@@ -11,12 +11,11 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AlwaysSelectedEntryListWidget<E extends Entry<E>>
 extends EntryListWidget<E> {
-    private static final Text SELECTION_USAGE_TEXT = new TranslatableText("narration.selection.usage");
+    private static final Text SELECTION_USAGE_TEXT = Text.method_43471("narration.selection.usage");
     private boolean inFocus;
 
     public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {

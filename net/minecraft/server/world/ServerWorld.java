@@ -90,8 +90,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.tag.TagKey;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.CsvWriter;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
@@ -507,7 +507,7 @@ implements StructureWorldAccess {
             return;
         }
         int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-        TranslatableText text = this.sleepManager.canSkipNight(i) ? new TranslatableText("sleep.skipping_night") : new TranslatableText("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
+        MutableText text = this.sleepManager.canSkipNight(i) ? Text.method_43471("sleep.skipping_night") : Text.method_43469("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             serverPlayerEntity.sendMessage(text, true);
         }
@@ -661,11 +661,11 @@ implements StructureWorldAccess {
             return;
         }
         if (progressListener != null) {
-            progressListener.setTitle(new TranslatableText("menu.savingLevel"));
+            progressListener.setTitle(Text.method_43471("menu.savingLevel"));
         }
         this.saveLevel();
         if (progressListener != null) {
-            progressListener.setTask(new TranslatableText("menu.savingChunks"));
+            progressListener.setTask(Text.method_43471("menu.savingChunks"));
         }
         serverChunkManager.save(flush);
         if (flush) {

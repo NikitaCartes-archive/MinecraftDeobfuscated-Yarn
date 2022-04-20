@@ -23,10 +23,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -49,8 +47,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ServerCommandSource
 implements CommandSource {
-    public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
-    public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.entity"));
+    public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("permissions.requires.player"));
+    public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("permissions.requires.entity"));
     private final CommandOutput output;
     private final Vec3d position;
     private final ServerWorld world;
@@ -248,7 +246,7 @@ implements CommandSource {
     }
 
     private void sendToOps(Text message) {
-        MutableText text = new TranslatableText("chat.type.admin", this.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC);
+        MutableText text = Text.method_43469("chat.type.admin", this.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC);
         if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
             for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
                 if (serverPlayerEntity == this.output || !this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) continue;
@@ -262,7 +260,7 @@ implements CommandSource {
 
     public void sendError(Text message) {
         if (this.output.shouldTrackOutput() && !this.silent) {
-            this.output.sendSystemMessage(new LiteralText("").append(message).formatted(Formatting.RED), Util.NIL_UUID);
+            this.output.sendSystemMessage(Text.method_43473().append(message).formatted(Formatting.RED), Util.NIL_UUID);
         }
     }
 

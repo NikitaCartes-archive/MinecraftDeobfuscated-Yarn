@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class EntityCustomNameToTextFix
@@ -39,7 +38,7 @@ extends DataFix {
         if (string.isEmpty()) {
             return dynamic.remove("CustomName");
         }
-        return dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(new LiteralText(string))));
+        return dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.method_43470(string))));
     }
 }
 

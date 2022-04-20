@@ -15,9 +15,7 @@ import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Language;
 import net.minecraft.util.Lazy;
 import org.jetbrains.annotations.Nullable;
@@ -237,13 +235,13 @@ public class InputUtil {
     public static enum Type {
         KEYSYM("key.keyboard", (keyCode, translationKey) -> {
             String string = GLFW.glfwGetKeyName(keyCode, -1);
-            return string != null ? new LiteralText(string) : new TranslatableText((String)translationKey);
+            return string != null ? Text.method_43470(string) : Text.method_43471(translationKey);
         }),
         SCANCODE("scancode", (scanCode, translationKey) -> {
             String string = GLFW.glfwGetKeyName(-1, scanCode);
-            return string != null ? new LiteralText(string) : new TranslatableText((String)translationKey);
+            return string != null ? Text.method_43470(string) : Text.method_43471(translationKey);
         }),
-        MOUSE("key.mouse", (buttonCode, translationKey) -> Language.getInstance().hasTranslation((String)translationKey) ? new TranslatableText((String)translationKey) : new TranslatableText("key.mouse", buttonCode + 1));
+        MOUSE("key.mouse", (buttonCode, translationKey) -> Language.getInstance().hasTranslation((String)translationKey) ? Text.method_43471(translationKey) : Text.method_43469("key.mouse", buttonCode + 1));
 
         private final Int2ObjectMap<Key> map = new Int2ObjectOpenHashMap<Key>();
         final String name;

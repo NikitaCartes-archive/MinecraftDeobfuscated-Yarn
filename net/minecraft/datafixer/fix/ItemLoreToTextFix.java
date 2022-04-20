@@ -13,7 +13,6 @@ import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
 public class ItemLoreToTextFix
@@ -34,7 +33,7 @@ extends DataFix {
     }
 
     private static String componentize(String string) {
-        return Text.Serializer.toJson(new LiteralText(string));
+        return Text.Serializer.toJson(Text.method_43470(string));
     }
 }
 

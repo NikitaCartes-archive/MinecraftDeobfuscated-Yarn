@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,7 +28,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.ChunkPos;
@@ -56,7 +56,7 @@ public class WorldUpdater {
     private volatile int upgradedChunkCount;
     private volatile int skippedChunkCount;
     private final Object2FloatMap<RegistryKey<World>> dimensionProgress = Object2FloatMaps.synchronize(new Object2FloatOpenCustomHashMap(Util.identityHashStrategy()));
-    private volatile Text status = new TranslatableText("optimizeWorld.stage.counting");
+    private volatile Text status = Text.method_43471("optimizeWorld.stage.counting");
     private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
     private final PersistentStateManager persistentStateManager;
 
@@ -69,7 +69,7 @@ public class WorldUpdater {
         this.updateThread = UPDATE_THREAD_FACTORY.newThread(this::updateWorld);
         this.updateThread.setUncaughtExceptionHandler((thread, throwable) -> {
             LOGGER.error("Error upgrading world", throwable);
-            this.status = new TranslatableText("optimizeWorld.stage.failed");
+            this.status = Text.method_43471("optimizeWorld.stage.failed");
             this.done = true;
         });
         this.updateThread.start();
@@ -106,7 +106,7 @@ public class WorldUpdater {
         }
         ImmutableMap immutableMap2 = builder2.build();
         long l = Util.getMeasuringTimeMs();
-        this.status = new TranslatableText("optimizeWorld.stage.upgrading");
+        this.status = Text.method_43471("optimizeWorld.stage.upgrading");
         while (this.keepUpgradingChunks) {
             boolean bl = false;
             float g = 0.0f;
@@ -117,7 +117,7 @@ public class WorldUpdater {
                     ChunkPos chunkPos = (ChunkPos)listIterator.next();
                     boolean bl2 = false;
                     try {
-                        NbtCompound nbtCompound = versionedChunkStorage.getNbt(chunkPos);
+                        NbtCompound nbtCompound = versionedChunkStorage.getNbt(chunkPos).join().orElse(null);
                         if (nbtCompound != null) {
                             boolean bl3;
                             int i = VersionedChunkStorage.getDataVersion(nbtCompound);
@@ -147,14 +147,12 @@ public class WorldUpdater {
                                 bl2 = true;
                             }
                         }
-                    } catch (CrashException crashException) {
-                        Throwable throwable = crashException.getCause();
+                    } catch (CompletionException | CrashException runtimeException) {
+                        Throwable throwable = runtimeException.getCause();
                         if (throwable instanceof IOException) {
                             LOGGER.error("Error upgrading chunk {}", (Object)chunkPos, (Object)throwable);
                         }
-                        throw crashException;
-                    } catch (IOException iOException) {
-                        LOGGER.error("Error upgrading chunk {}", (Object)chunkPos, (Object)iOException);
+                        throw runtimeException;
                     }
                     if (bl2) {
                         ++this.upgradedChunkCount;
@@ -171,12 +169,12 @@ public class WorldUpdater {
             if (bl) continue;
             this.keepUpgradingChunks = false;
         }
-        this.status = new TranslatableText("optimizeWorld.stage.finished");
+        this.status = Text.method_43471("optimizeWorld.stage.finished");
         for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
             try {
                 versionedChunkStorage2.close();
-            } catch (IOException iOException2) {
-                LOGGER.error("Error upgrading chunk", iOException2);
+            } catch (IOException iOException) {
+                LOGGER.error("Error upgrading chunk", iOException);
             }
         }
         this.persistentStateManager.save();

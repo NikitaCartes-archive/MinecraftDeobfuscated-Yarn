@@ -30,9 +30,7 @@ import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -46,8 +44,8 @@ extends RealmsScreen {
     static final Identifier LINK_ICONS = new Identifier("realms", "textures/gui/realms/link_icons.png");
     static final Identifier TRAILER_ICONS = new Identifier("realms", "textures/gui/realms/trailer_icons.png");
     static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-    static final Text INFO_TOOLTIP = new TranslatableText("mco.template.info.tooltip");
-    static final Text TRAILER_TOOLTIP = new TranslatableText("mco.template.trailer.tooltip");
+    static final Text INFO_TOOLTIP = Text.method_43471("mco.template.info.tooltip");
+    static final Text TRAILER_TOOLTIP = Text.method_43471("mco.template.trailer.tooltip");
     private final Consumer<WorldTemplate> callback;
     WorldTemplateObjectSelectionList templateList;
     int selectedTemplate = -1;
@@ -103,12 +101,12 @@ extends RealmsScreen {
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
         this.templateList = new WorldTemplateObjectSelectionList(this.templateList.getValues());
-        this.trailerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, new TranslatableText("mco.template.button.trailer"), button -> this.onTrailer()));
-        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, new TranslatableText("mco.template.button.select"), button -> this.selectTemplate()));
+        this.trailerButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 206, this.height - 32, 100, 20, Text.method_43471("mco.template.button.trailer"), button -> this.onTrailer()));
+        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 32, 100, 20, Text.method_43471("mco.template.button.select"), button -> this.selectTemplate()));
         Text text = this.worldType == RealmsServer.WorldType.MINIGAME ? ScreenTexts.CANCEL : ScreenTexts.BACK;
         ButtonWidget buttonWidget = new ButtonWidget(this.width / 2 + 6, this.height - 32, 100, 20, text, button -> this.close());
         this.addDrawableChild(buttonWidget);
-        this.publisherButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, new TranslatableText("mco.template.button.publisher"), button -> this.onPublish()));
+        this.publisherButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 112, this.height - 32, 100, 20, Text.method_43471("mco.template.button.publisher"), button -> this.onPublish()));
         this.selectButton.active = false;
         this.trailerButton.visible = false;
         this.publisherButton.visible = false;
@@ -286,7 +284,7 @@ extends RealmsScreen {
                 int m = lineSegment.isLink() ? 0x3366BB : 0xFFFFFF;
                 int n = this.textRenderer.drawWithShadow(matrices, lineSegment.renderedText(), (float)l, (float)j, m);
                 if (lineSegment.isLink() && x > l && x < n && y > j - 3 && y < j + 8) {
-                    this.tooltip = new LiteralText(lineSegment.getLinkUrl());
+                    this.tooltip = Text.method_43470(lineSegment.getLinkUrl());
                     this.currentLink = lineSegment.getLinkUrl();
                 }
                 l = n;
@@ -463,8 +461,8 @@ extends RealmsScreen {
 
         @Override
         public Text getNarration() {
-            Text text = ScreenTexts.joinLines(new LiteralText(this.mTemplate.name), new TranslatableText("mco.template.select.narrate.authors", this.mTemplate.author), new LiteralText(this.mTemplate.recommendedPlayers), new TranslatableText("mco.template.select.narrate.version", this.mTemplate.version));
-            return new TranslatableText("narrator.select", text);
+            Text text = ScreenTexts.joinLines(Text.method_43470(this.mTemplate.name), Text.method_43469("mco.template.select.narrate.authors", this.mTemplate.author), Text.method_43470(this.mTemplate.recommendedPlayers), Text.method_43469("mco.template.select.narrate.version", this.mTemplate.version));
+            return Text.method_43469("narrator.select", text);
         }
     }
 }

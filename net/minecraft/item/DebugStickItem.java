@@ -16,7 +16,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -65,7 +64,7 @@ extends Item {
         Collection<Property<?>> collection = stateManager.getProperties();
         String string = Registry.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {
-            DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
+            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".empty", string));
             return false;
         }
         NbtCompound nbtCompound = stack.getOrCreateSubNbt("DebugProperty");
@@ -77,12 +76,12 @@ extends Item {
             }
             BlockState blockState = DebugStickItem.cycle(state, property, player.shouldCancelInteraction());
             world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-            DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
+            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
         } else {
             property = DebugStickItem.cycle(collection, property, player.shouldCancelInteraction());
             String string3 = property.getName();
             nbtCompound.putString(string, string3);
-            DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
+            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
         }
         return true;
     }

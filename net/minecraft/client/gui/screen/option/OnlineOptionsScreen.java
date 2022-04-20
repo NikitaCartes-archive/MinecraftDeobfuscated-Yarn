@@ -11,14 +11,14 @@ import net.minecraft.client.gui.screen.option.SimpleOptionsScreen;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
 
 @Environment(value=EnvType.CLIENT)
 public class OnlineOptionsScreen
 extends SimpleOptionsScreen {
     public OnlineOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, new TranslatableText("options.online.title"), new SimpleOption[]{gameOptions.getRealmsNotifications(), gameOptions.getAllowServerListing()});
+        super(parent, gameOptions, Text.method_43471("options.online.title"), new SimpleOption[]{gameOptions.getRealmsNotifications(), gameOptions.getAllowServerListing()});
     }
 
     @Override

@@ -138,7 +138,7 @@ implements SculkSensorListener.Callback {
 
     @Override
     public boolean canSpawn(WorldView world) {
-        return super.canSpawn(world) && world.isSpaceEmpty(this);
+        return super.canSpawn(world) && world.isSpaceEmpty(this, this.getType().getDimensions().getBoxAt(this.getPos()));
     }
 
     @Override
@@ -148,7 +148,10 @@ implements SculkSensorListener.Callback {
 
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return this.isDiggingOrEmerging() || super.isInvulnerableTo(damageSource);
+        if (this.isDiggingOrEmerging() && !damageSource.isOutOfWorld()) {
+            return true;
+        }
+        return super.isInvulnerableTo(damageSource);
     }
 
     private boolean isDiggingOrEmerging() {
@@ -392,6 +395,7 @@ implements SculkSensorListener.Callback {
         if (livingEntity.getType() == EntityType.WARDEN) return false;
         if (livingEntity.isInvulnerable()) return false;
         if (livingEntity.isDead()) return false;
+        if (!this.world.getWorldBorder().contains(livingEntity.getBoundingBox())) return false;
         return true;
     }
 
@@ -441,7 +445,7 @@ implements SculkSensorListener.Callback {
 
     @VisibleForTesting
     public void increaseAngerAt(@Nullable Entity entity2, int amount, boolean listening) {
-        if (this.isValidTarget(entity2)) {
+        if (!this.isAiDisabled() && this.isValidTarget(entity2)) {
             WardenBrain.resetDigCooldown(this);
             boolean bl = this.getPrimeSuspect().filter(entity -> !(entity instanceof PlayerEntity)).isPresent();
             int i = this.angerManager.increaseAngerAt(entity2, amount);
@@ -490,7 +494,7 @@ implements SculkSensorListener.Callback {
         if (this.world.isClient) {
             return false;
         }
-        if (bl) {
+        if (bl && !this.isAiDisabled()) {
             Entity entity = source.getAttacker();
             this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
             if (this.brain.getOptionalMemory(MemoryModuleType.ATTACK_TARGET).isEmpty() && entity instanceof LivingEntity) {
@@ -524,7 +528,7 @@ implements SculkSensorListener.Callback {
 
     @Override
     protected void pushAway(Entity entity) {
-        if (!this.getBrain().hasMemoryModule(MemoryModuleType.TOUCH_COOLDOWN)) {
+        if (!this.isAiDisabled() && !this.getBrain().hasMemoryModule(MemoryModuleType.TOUCH_COOLDOWN)) {
             this.getBrain().remember(MemoryModuleType.TOUCH_COOLDOWN, Unit.INSTANCE, 20L);
             this.increaseAngerAt(entity);
             WardenBrain.lookAtDisturbance(this, entity.getBlockPos());
@@ -534,13 +538,12 @@ implements SculkSensorListener.Callback {
 
     @Override
     public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
-        if (this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN)) {
+        LivingEntity livingEntity;
+        if (this.isAiDisabled() || this.getBrain().hasMemoryModule(MemoryModuleType.VIBRATION_COOLDOWN) || this.isDiggingOrEmerging() || !world.getWorldBorder().contains(pos)) {
             return false;
         }
-        if (this.isDiggingOrEmerging()) {
-            return false;
-        }
-        return !(emitter.sourceEntity() instanceof LivingEntity) || this.isValidTarget(emitter.sourceEntity());
+        Entity entity = emitter.sourceEntity();
+        return !(entity instanceof LivingEntity) || this.isValidTarget(livingEntity = (LivingEntity)entity);
     }
 
     @Override

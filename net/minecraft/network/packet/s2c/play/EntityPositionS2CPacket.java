@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.util.math.Vec3d;
 
 public class EntityPositionS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -20,9 +21,10 @@ implements Packet<ClientPlayPacketListener> {
 
     public EntityPositionS2CPacket(Entity entity) {
         this.id = entity.getId();
-        this.x = entity.getX();
-        this.y = entity.getY();
-        this.z = entity.getZ();
+        Vec3d vec3d = entity.method_43390();
+        this.x = vec3d.x;
+        this.y = vec3d.y;
+        this.z = vec3d.z;
         this.yaw = (byte)(entity.getYaw() * 256.0f / 360.0f);
         this.pitch = (byte)(entity.getPitch() * 256.0f / 360.0f);
         this.onGround = entity.isOnGround();

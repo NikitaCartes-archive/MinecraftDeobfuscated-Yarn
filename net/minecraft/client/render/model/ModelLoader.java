@@ -488,8 +488,8 @@ public class ModelLoader {
     @Environment(value=EnvType.CLIENT)
     static class ModelLoaderException
     extends RuntimeException {
-        public ModelLoaderException(String message) {
-            super(message);
+        public ModelLoaderException(String string) {
+            super(string);
         }
     }
 

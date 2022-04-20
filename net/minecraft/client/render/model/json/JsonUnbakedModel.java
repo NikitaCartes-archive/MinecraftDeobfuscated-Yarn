@@ -410,8 +410,8 @@ implements UnbakedModel {
     @Environment(value=EnvType.CLIENT)
     public static class UncheckedModelException
     extends RuntimeException {
-        public UncheckedModelException(String message) {
-            super(message);
+        public UncheckedModelException(String string) {
+            super(string);
         }
     }
 }

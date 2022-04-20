@@ -29,7 +29,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
@@ -157,7 +157,7 @@ implements AutoCloseable {
                 long o;
                 long n;
                 if (l < entry.delay || (n = l / entry.period) == (o = m / entry.period)) continue;
-                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, new TranslatableText(entry.title, n), new TranslatableText(entry.message, n)));
+                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, Text.method_43469(entry.title, n), Text.method_43469(entry.message, n)));
                 return;
             }
         }

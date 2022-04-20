@@ -19,24 +19,30 @@ public class WalkTowardsLookTargetTask<E extends LivingEntity>
 extends Task<E> {
     private final Function<LivingEntity, Optional<LookTarget>> lookTargetFunction;
     private final int range;
+    private final int field_38933;
     private final float speed;
 
-    public WalkTowardsLookTargetTask(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, int range, float speed) {
+    public WalkTowardsLookTargetTask(Function<LivingEntity, Optional<LookTarget>> lookTargetFunction, int range, int i, float f) {
         super(Map.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
         this.lookTargetFunction = lookTargetFunction;
         this.range = range;
-        this.speed = speed;
+        this.field_38933 = i;
+        this.speed = f;
     }
 
     @Override
     protected boolean shouldRun(ServerWorld world, E entity) {
         Optional<LookTarget> optional = this.lookTargetFunction.apply((LivingEntity)entity);
-        return optional.isPresent() && !((Entity)entity).getPos().isInRange(optional.get().getPos(), this.range);
+        if (optional.isEmpty()) {
+            return false;
+        }
+        LookTarget lookTarget = optional.get();
+        return lookTarget.isSeenBy((LivingEntity)entity) && !((Entity)entity).getPos().isInRange(lookTarget.getPos(), this.field_38933);
     }
 
     @Override
     protected void run(ServerWorld world, E entity, long time) {
-        LookTargetUtil.walkTowards(entity, this.lookTargetFunction.apply((LivingEntity)entity).get(), this.speed, this.range / 2);
+        LookTargetUtil.walkTowards(entity, this.lookTargetFunction.apply((LivingEntity)entity).get(), this.speed, this.range);
     }
 }
 

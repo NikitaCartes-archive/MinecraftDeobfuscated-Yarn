@@ -21,7 +21,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
@@ -78,7 +77,7 @@ implements Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableText("block.minecraft.banner");
+        return Text.method_43471("block.minecraft.banner");
     }
 
     @Override

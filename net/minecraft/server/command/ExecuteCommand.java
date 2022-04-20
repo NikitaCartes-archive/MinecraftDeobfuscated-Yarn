@@ -70,15 +70,15 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class ExecuteCommand {
     private static final int MAX_BLOCKS = 32768;
-    private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> new TranslatableText("commands.execute.blocks.toobig", maxCount, count));
-    private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.execute.conditional.fail"));
-    private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(count -> new TranslatableText("commands.execute.conditional.fail_count", count));
+    private static final Dynamic2CommandExceptionType BLOCKS_TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> Text.method_43469("commands.execute.blocks.toobig", maxCount, count));
+    private static final SimpleCommandExceptionType CONDITIONAL_FAIL_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.execute.conditional.fail"));
+    private static final DynamicCommandExceptionType CONDITIONAL_FAIL_COUNT_EXCEPTION = new DynamicCommandExceptionType(count -> Text.method_43469("commands.execute.conditional.fail_count", count));
     private static final BinaryOperator<ResultConsumer<ServerCommandSource>> BINARY_RESULT_CONSUMER = (consumer, consumer2) -> (context, success, result) -> {
         consumer.onCommandComplete(context, success, result);
         consumer2.onCommandComplete(context, success, result);
@@ -182,7 +182,7 @@ public class ExecuteCommand {
             return context -> {
                 int i = condition.test(context);
                 if (i > 0) {
-                    ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.execute.conditional.pass_count", i), false);
+                    ((ServerCommandSource)context.getSource()).sendFeedback(Text.method_43469("commands.execute.conditional.pass_count", i), false);
                     return i;
                 }
                 throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -191,7 +191,7 @@ public class ExecuteCommand {
         return context -> {
             int i = condition.test(context);
             if (i == 0) {
-                ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+                ((ServerCommandSource)context.getSource()).sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
                 return 1;
             }
             throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(i);
@@ -242,7 +242,7 @@ public class ExecuteCommand {
     private static ArgumentBuilder<ServerCommandSource, ?> addConditionLogic(CommandNode<ServerCommandSource> root, ArgumentBuilder<ServerCommandSource, ?> builder, boolean positive, Condition condition) {
         return ((ArgumentBuilder)builder.fork(root, context -> ExecuteCommand.getSourceOrEmptyForConditionFork(context, positive, condition.test(context)))).executes(context -> {
             if (positive == condition.test(context)) {
-                ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+                ((ServerCommandSource)context.getSource()).sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
                 return 1;
             }
             throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -256,7 +256,7 @@ public class ExecuteCommand {
     private static int executePositiveBlockCondition(CommandContext<ServerCommandSource> context, boolean masked) throws CommandSyntaxException {
         OptionalInt optionalInt = ExecuteCommand.testBlocksCondition(context, masked);
         if (optionalInt.isPresent()) {
-            context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
+            context.getSource().sendFeedback(Text.method_43469("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
             return optionalInt.getAsInt();
         }
         throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -267,7 +267,7 @@ public class ExecuteCommand {
         if (optionalInt.isPresent()) {
             throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(optionalInt.getAsInt());
         }
-        context.getSource().sendFeedback(new TranslatableText("commands.execute.conditional.pass"), false);
+        context.getSource().sendFeedback(Text.method_43471("commands.execute.conditional.pass"), false);
         return 1;
     }
 

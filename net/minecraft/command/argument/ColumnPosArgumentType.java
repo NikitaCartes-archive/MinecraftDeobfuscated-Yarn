@@ -20,14 +20,14 @@ import net.minecraft.command.argument.DefaultPosArgument;
 import net.minecraft.command.argument.PosArgument;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColumnPos;
 
 public class ColumnPosArgumentType
 implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~1 ~-2", "^ ^", "^-1 ^0");
-    public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos2d.incomplete"));
+    public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.pos2d.incomplete"));
 
     public static ColumnPosArgumentType columnPos() {
         return new ColumnPosArgumentType();

@@ -6,7 +6,6 @@ package net.minecraft.scoreboard;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
@@ -44,7 +43,7 @@ public class ScoreboardObjective {
     }
 
     private Text generateBracketedDisplayName() {
-        return Texts.bracketed(this.displayName.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.name)))));
+        return Texts.bracketed(this.displayName.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(this.name)))));
     }
 
     public Text toHoverableText() {

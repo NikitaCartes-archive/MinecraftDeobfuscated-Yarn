@@ -14,11 +14,11 @@ import net.minecraft.server.BannedIpList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.dedicated.command.BanIpCommand;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class PardonIpCommand {
-    private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.pardonip.invalid"));
-    private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.pardonip.failed"));
+    private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.pardonip.invalid"));
+    private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.pardonip.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("pardon-ip").requires(source -> source.hasPermissionLevel(3))).then(CommandManager.argument("target", StringArgumentType.word()).suggests((context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getPlayerManager().getIpBanList().getNames(), builder)).executes(context -> PardonIpCommand.pardonIp((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "target")))));
@@ -34,7 +34,7 @@ public class PardonIpCommand {
             throw ALREADY_UNBANNED_EXCEPTION.create();
         }
         bannedIpList.remove(target);
-        source.sendFeedback(new TranslatableText("commands.pardonip.success", target), true);
+        source.sendFeedback(Text.method_43469("commands.pardonip.success", target), true);
         return 1;
     }
 }

@@ -24,7 +24,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -79,7 +78,7 @@ extends DrawableHelper {
         if (entry.getDisplayName() != null) {
             return this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy());
         }
-        return this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), new LiteralText(entry.getProfile().getName())));
+        return this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.method_43470(entry.getProfile().getName())));
     }
 
     /**

@@ -7,14 +7,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class EntityS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private static final double COORDINATE_SCALE = 4096.0;
     protected final int id;
     protected final short deltaX;
     protected final short deltaY;
@@ -24,25 +21,6 @@ implements Packet<ClientPlayPacketListener> {
     protected final boolean onGround;
     protected final boolean rotate;
     protected final boolean positionChanged;
-
-    public static long encodePacketCoordinate(double coord) {
-        return MathHelper.lfloor(coord * 4096.0);
-    }
-
-    public static double decodePacketCoordinate(long coord) {
-        return (double)coord / 4096.0;
-    }
-
-    public Vec3d calculateDeltaPosition(Vec3d orig) {
-        double d = this.deltaX == 0 ? orig.x : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.x) + (long)this.deltaX);
-        double e = this.deltaY == 0 ? orig.y : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.y) + (long)this.deltaY);
-        double f = this.deltaZ == 0 ? orig.z : EntityS2CPacket.decodePacketCoordinate(EntityS2CPacket.encodePacketCoordinate(orig.z) + (long)this.deltaZ);
-        return new Vec3d(d, e, f);
-    }
-
-    public static Vec3d decodePacketCoordinates(long x, long y, long z) {
-        return new Vec3d(x, y, z).multiply(2.44140625E-4);
-    }
 
     protected EntityS2CPacket(int entityId, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, boolean onGround, boolean rotate, boolean positionChanged) {
         this.id = entityId;

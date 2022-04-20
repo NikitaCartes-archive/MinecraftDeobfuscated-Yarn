@@ -15,9 +15,9 @@ extends IOException {
     private final List<JsonStackTrace> traces = Lists.newArrayList();
     private final String message;
 
-    public ShaderParseException(String message) {
+    public ShaderParseException(String string) {
         this.traces.add(new JsonStackTrace());
-        this.message = message;
+        this.message = string;
     }
 
     public ShaderParseException(String message, Throwable cause) {

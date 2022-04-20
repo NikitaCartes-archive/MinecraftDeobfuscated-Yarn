@@ -12,13 +12,13 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.function.Function;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class FloatRangeArgument {
     public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
-    public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.range.ints"));
+    public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.range.ints"));
     @Nullable
     private final Float min;
     @Nullable

@@ -27,10 +27,8 @@ import net.minecraft.network.packet.c2s.play.UpdateBeaconC2SPacket;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +36,8 @@ import org.jetbrains.annotations.Nullable;
 public class BeaconScreen
 extends HandledScreen<BeaconScreenHandler> {
     static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
-    private static final Text PRIMARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.primary");
-    private static final Text SECONDARY_POWER_TEXT = new TranslatableText("block.minecraft.beacon.secondary");
+    private static final Text PRIMARY_POWER_TEXT = Text.method_43471("block.minecraft.beacon.primary");
+    private static final Text SECONDARY_POWER_TEXT = Text.method_43471("block.minecraft.beacon.secondary");
     private final List<BeaconButtonWidget> buttons = Lists.newArrayList();
     @Nullable
     StatusEffect primaryEffect;
@@ -219,7 +217,7 @@ extends HandledScreen<BeaconScreenHandler> {
         }
 
         protected MutableText getEffectName(StatusEffect statusEffect) {
-            return new TranslatableText(statusEffect.getTranslationKey());
+            return Text.method_43471(statusEffect.getTranslationKey());
         }
 
         @Override
@@ -267,7 +265,7 @@ extends HandledScreen<BeaconScreenHandler> {
 
         @Override
         protected MutableText getEffectName(StatusEffect statusEffect) {
-            return new TranslatableText(statusEffect.getTranslationKey()).append(" II");
+            return Text.method_43471(statusEffect.getTranslationKey()).append(" II");
         }
 
         @Override
@@ -312,7 +310,7 @@ extends HandledScreen<BeaconScreenHandler> {
         private boolean disabled;
 
         protected BaseButtonWidget(int x, int y) {
-            super(x, y, 22, 22, LiteralText.EMPTY);
+            super(x, y, 22, 22, ScreenTexts.field_39003);
         }
 
         protected BaseButtonWidget(int x, int y, Text message) {

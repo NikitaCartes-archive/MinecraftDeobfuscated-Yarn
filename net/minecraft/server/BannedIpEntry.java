@@ -6,7 +6,6 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import java.util.Date;
 import net.minecraft.server.BanEntry;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +21,7 @@ extends BanEntry<String> {
 
     @Override
     public Text toText() {
-        return new LiteralText(String.valueOf(this.getKey()));
+        return Text.method_43470(String.valueOf(this.getKey()));
     }
 
     public BannedIpEntry(JsonObject json) {

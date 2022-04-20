@@ -25,7 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -59,7 +58,7 @@ public class Advancement {
             parent.addChild(this);
         }
         if (display == null) {
-            this.text = new LiteralText(id.toString());
+            this.text = Text.method_43470(id.toString());
         } else {
             Text text = display.getTitle();
             Formatting formatting = display.getFrame().getTitleFormat();

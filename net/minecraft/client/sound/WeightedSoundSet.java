@@ -12,7 +12,6 @@ import net.minecraft.client.sound.SoundContainer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.sound.SoundSystem;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.AbstractRandom;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +27,7 @@ implements SoundContainer<Sound> {
 
     public WeightedSoundSet(Identifier id, @Nullable String subtitle) {
         this.id = id;
-        this.subtitle = subtitle == null ? null : new TranslatableText(subtitle);
+        this.subtitle = subtitle == null ? null : Text.method_43471(subtitle);
     }
 
     @Override

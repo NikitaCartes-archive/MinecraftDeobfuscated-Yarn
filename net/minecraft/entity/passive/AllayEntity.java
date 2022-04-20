@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -58,14 +59,17 @@ public class AllayEntity
 extends PathAwareEntity
 implements InventoryOwner,
 GameEventListener {
-    private static final boolean field_38404 = false;
     private static final int field_38405 = 16;
     private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
+    private static final int field_38934 = 5;
     protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS);
+    public static final ImmutableList<Float> field_38937 = ImmutableList.of(Float.valueOf(0.5625f), Float.valueOf(0.625f), Float.valueOf(0.75f), Float.valueOf(0.9375f), Float.valueOf(1.0f), Float.valueOf(1.0f), Float.valueOf(1.125f), Float.valueOf(1.25f), Float.valueOf(1.5f), Float.valueOf(1.875f), Float.valueOf(2.0f), Float.valueOf(2.25f), new Float[]{Float.valueOf(2.5f), Float.valueOf(3.0f), Float.valueOf(3.75f), Float.valueOf(4.0f)});
     private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
     private final EntityGameEventHandler<AllayEntity> gameEventHandler;
     private final SimpleInventory inventory = new SimpleInventory(1);
+    private float field_38935;
+    private float field_38936;
 
     public AllayEntity(EntityType<? extends AllayEntity> entityType, World world) {
         super((EntityType<? extends PathAwareEntity>)entityType, world);
@@ -88,7 +92,7 @@ GameEventListener {
     }
 
     public static DefaultAttributeContainer.Builder createAllayAttributes() {
-        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 10.0).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6f).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
+        return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 20.0).add(EntityAttributes.GENERIC_FLYING_SPEED, 0.1f).add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1f).add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0).add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0);
     }
 
     @Override
@@ -112,11 +116,9 @@ GameEventListener {
                 this.move(MovementType.SELF, this.getVelocity());
                 this.setVelocity(this.getVelocity().multiply(0.5));
             } else {
-                float f = this.onGround ? this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f : 0.91f;
-                float g = MathHelper.magnitude(0.6f) * MathHelper.magnitude(0.91f) / MathHelper.magnitude(f);
-                this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
+                this.updateVelocity(this.getMovementSpeed(), movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
-                this.setVelocity(this.getVelocity().multiply(f));
+                this.setVelocity(this.getVelocity().multiply(0.91f));
             }
         }
         this.updateLimbs(this, false);
@@ -193,8 +195,21 @@ GameEventListener {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (this.world.isClient) {
+            this.field_38936 = this.field_38935;
+            this.field_38935 = this.method_43396() ? MathHelper.clamp(this.field_38935 + 1.0f, 0.0f, 5.0f) : MathHelper.clamp(this.field_38935 - 1.0f, 0.0f, 5.0f);
+        }
+    }
+
+    @Override
     public boolean canPickUpLoot() {
-        return !this.isItemPickupCoolingDown() && !this.getStackInHand(Hand.MAIN_HAND).isEmpty();
+        return !this.isItemPickupCoolingDown() && this.method_43396();
+    }
+
+    public boolean method_43396() {
+        return !this.getStackInHand(Hand.MAIN_HAND).isEmpty();
     }
 
     private boolean isItemPickupCoolingDown() {
@@ -303,6 +318,30 @@ GameEventListener {
         }
         AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
         return true;
+    }
+
+    public boolean method_43395() {
+        return this.limbDistance > 0.3f;
+    }
+
+    public float method_43397(float f) {
+        return MathHelper.lerp(f, this.field_38936, this.field_38935) / 5.0f;
+    }
+
+    @Override
+    protected void dropInventory() {
+        super.dropInventory();
+        this.inventory.clearToList().forEach(this::dropStack);
+        ItemStack itemStack = this.getEquippedStack(EquipmentSlot.MAINHAND);
+        if (!itemStack.isEmpty() && !EnchantmentHelper.hasVanishingCurse(itemStack)) {
+            this.dropStack(itemStack);
+            this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        }
+    }
+
+    @Override
+    public boolean canImmediatelyDespawn(double distanceSquared) {
+        return false;
     }
 
     @Override

@@ -33,6 +33,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_7422;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -101,7 +102,6 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
@@ -188,7 +188,6 @@ import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
@@ -254,7 +253,6 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.TagPacketSerializer;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -291,7 +289,7 @@ import org.slf4j.Logger;
 public class ClientPlayNetworkHandler
 implements ClientPlayPacketListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Text DISCONNECT_LOST_TEXT = new TranslatableText("disconnect.lost");
+    private static final Text DISCONNECT_LOST_TEXT = Text.method_43471("disconnect.lost");
     private final ClientConnection connection;
     private final GameProfile profile;
     private final Screen loginScreen;
@@ -413,20 +411,11 @@ implements ClientPlayPacketListener {
         double e = packet.getY();
         double f = packet.getZ();
         ExperienceOrbEntity entity = new ExperienceOrbEntity(this.world, d, e, f, packet.getExperience());
-        entity.updateTrackedPosition(d, e, f);
+        entity.method_43391(d, e, f);
         entity.setYaw(0.0f);
         entity.setPitch(0.0f);
         entity.setId(packet.getId());
         this.world.addEntity(packet.getId(), entity);
-    }
-
-    @Override
-    public void onPaintingSpawn(PaintingSpawnS2CPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        PaintingEntity paintingEntity = new PaintingEntity(this.world, packet.getPos(), packet.getFacing(), packet.getMotive());
-        paintingEntity.setId(packet.getId());
-        paintingEntity.setUuid(packet.getPaintingUuid());
-        this.world.addEntity(packet.getId(), paintingEntity);
     }
 
     @Override
@@ -459,7 +448,7 @@ implements ClientPlayPacketListener {
         int i = packet.getId();
         OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile());
         otherClientPlayerEntity.setId(i);
-        otherClientPlayerEntity.updateTrackedPosition(d, e, f);
+        otherClientPlayerEntity.method_43391(d, e, f);
         otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
         otherClientPlayerEntity.resetPosition();
         this.world.addPlayer(i, otherClientPlayerEntity);
@@ -475,7 +464,7 @@ implements ClientPlayPacketListener {
         double d = packet.getX();
         double e = packet.getY();
         double f = packet.getZ();
-        entity.updateTrackedPosition(d, e, f);
+        entity.method_43391(d, e, f);
         if (!entity.isLogicalSideForUpdatingMovement()) {
             float g = (float)(packet.getYaw() * 360) / 256.0f;
             float h = (float)(packet.getPitch() * 360) / 256.0f;
@@ -501,15 +490,16 @@ implements ClientPlayPacketListener {
         }
         if (!entity.isLogicalSideForUpdatingMovement()) {
             if (packet.isPositionChanged()) {
-                Vec3d vec3d = packet.calculateDeltaPosition(entity.getTrackedPosition());
-                entity.updateTrackedPosition(vec3d);
+                class_7422 lv = entity.method_43389();
+                Vec3d vec3d = lv.method_43489(packet.getDeltaX(), packet.getDeltaY(), packet.getDeltaZ());
+                lv.method_43494(vec3d);
                 float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0f : entity.getYaw();
                 float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0f : entity.getPitch();
                 entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3, false);
             } else if (packet.hasRotation()) {
                 float h = (float)(packet.getYaw() * 360) / 256.0f;
-                float f = (float)(packet.getPitch() * 360) / 256.0f;
-                entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, f, 3, false);
+                float i = (float)(packet.getPitch() * 360) / 256.0f;
+                entity.updateTrackedPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), h, i, 3, false);
             }
             entity.setOnGround(packet.isOnGround());
         }
@@ -786,7 +776,7 @@ implements ClientPlayPacketListener {
                 this.client.player.setYaw(entity.getYaw());
                 this.client.player.setHeadYaw(entity.getYaw());
             }
-            this.client.inGameHud.setOverlayMessage(new TranslatableText("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
+            this.client.inGameHud.setOverlayMessage(Text.method_43469("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
         }
     }
 
@@ -1031,7 +1021,7 @@ implements ClientPlayPacketListener {
         float f = packet.getValue();
         int i = MathHelper.floor(f + 0.5f);
         if (reason == GameStateChangeS2CPacket.NO_RESPAWN_BLOCK) {
-            ((PlayerEntity)playerEntity).sendMessage(new TranslatableText("block.minecraft.spawn.not_valid"), false);
+            ((PlayerEntity)playerEntity).sendMessage(Text.method_43471("block.minecraft.spawn.not_valid"), false);
         } else if (reason == GameStateChangeS2CPacket.RAIN_STARTED) {
             this.world.getLevelProperties().setRaining(true);
             this.world.setRainGradient(0.0f);
@@ -1052,13 +1042,13 @@ implements ClientPlayPacketListener {
             if (f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN) {
                 this.client.setScreen(new DemoScreen());
             } else if (f == GameStateChangeS2CPacket.DEMO_MOVEMENT_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.movement", gameOptions.forwardKey.getBoundKeyLocalizedText(), gameOptions.leftKey.getBoundKeyLocalizedText(), gameOptions.backKey.getBoundKeyLocalizedText(), gameOptions.rightKey.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.help.movement", gameOptions.forwardKey.getBoundKeyLocalizedText(), gameOptions.leftKey.getBoundKeyLocalizedText(), gameOptions.backKey.getBoundKeyLocalizedText(), gameOptions.rightKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_JUMP_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_INVENTORY_HELP) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
             } else if (f == GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE) {
-                this.client.inGameHud.getChatHud().addMessage(new TranslatableText("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
+                this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
             }
         } else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
             this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
@@ -1492,7 +1482,7 @@ implements ClientPlayPacketListener {
                 } else {
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
                     if (bl) {
-                        this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
+                        this.connection.disconnect(Text.method_43471("multiplayer.requiredTexturePrompt.disconnect"));
                     } else if (serverInfo != null) {
                         serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
                     }
@@ -1500,11 +1490,11 @@ implements ClientPlayPacketListener {
                 if (serverInfo != null) {
                     ServerList.updateServerListEntry(serverInfo);
                 }
-            }, bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line1") : new TranslatableText("multiplayer.texturePrompt.line1"), ClientPlayNetworkHandler.getServerResourcePackPrompt(bl ? new TranslatableText("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD) : new TranslatableText("multiplayer.texturePrompt.line2"), packet.getPrompt()), bl ? ScreenTexts.PROCEED : ScreenTexts.YES, bl ? new TranslatableText("menu.disconnect") : ScreenTexts.NO)));
+            }, bl ? Text.method_43471("multiplayer.requiredTexturePrompt.line1") : Text.method_43471("multiplayer.texturePrompt.line1"), ClientPlayNetworkHandler.getServerResourcePackPrompt(bl ? Text.method_43471("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD) : Text.method_43471("multiplayer.texturePrompt.line2"), packet.getPrompt()), bl ? ScreenTexts.PROCEED : ScreenTexts.YES, bl ? Text.method_43471("menu.disconnect") : ScreenTexts.NO)));
         } else {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
             if (bl) {
-                this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
+                this.connection.disconnect(Text.method_43471("multiplayer.requiredTexturePrompt.disconnect"));
             }
         }
     }
@@ -1513,7 +1503,7 @@ implements ClientPlayPacketListener {
         if (customPrompt == null) {
             return defaultPrompt;
         }
-        return new TranslatableText("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt);
+        return Text.method_43469("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt);
     }
 
     @Nullable

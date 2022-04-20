@@ -27,7 +27,7 @@ public class Narration<T> {
     }
 
     public static Narration<?> text(Text text2) {
-        return new Narration<Text>(text2, (consumer, text) -> consumer.accept(text.asString()));
+        return new Narration<Text>(text2, (consumer, text) -> consumer.accept(text.getString()));
     }
 
     public static Narration<?> texts(List<Text> texts2) {

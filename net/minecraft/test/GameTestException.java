@@ -5,8 +5,8 @@ package net.minecraft.test;
 
 public class GameTestException
 extends RuntimeException {
-    public GameTestException(String message) {
-        super(message);
+    public GameTestException(String string) {
+        super(string);
     }
 }
 

@@ -14,7 +14,7 @@ import java.util.Collection;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,9 +64,9 @@ implements ArgumentType<MessageFormat> {
 
         public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
             if (this.selectors.length == 0 || !canUseSelectors) {
-                return new LiteralText(this.contents);
+                return Text.method_43470(this.contents);
             }
-            LiteralText mutableText = new LiteralText(this.contents.substring(0, this.selectors[0].getStart()));
+            MutableText mutableText = Text.method_43470(this.contents.substring(0, this.selectors[0].getStart()));
             int i = this.selectors[0].getStart();
             for (MessageSelector messageSelector : this.selectors) {
                 Text text = messageSelector.format(source);

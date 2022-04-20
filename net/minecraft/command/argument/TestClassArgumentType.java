@@ -16,7 +16,8 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.test.TestFunctions;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 public class TestClassArgumentType
 implements ArgumentType<String> {
@@ -28,7 +29,7 @@ implements ArgumentType<String> {
         if (TestFunctions.testClassExists(string)) {
             return string;
         }
-        LiteralText message = new LiteralText("No such test class: " + string);
+        MutableText message = Text.method_43470("No such test class: " + string);
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 

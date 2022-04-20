@@ -36,7 +36,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
@@ -254,7 +253,7 @@ implements ItemConvertible {
     }
 
     public Text getName() {
-        return new TranslatableText(this.getTranslationKey());
+        return Text.method_43471(this.getTranslationKey());
     }
 
     public String toString() {
@@ -345,7 +344,7 @@ implements ItemConvertible {
     }
 
     public Text getName(ItemStack stack) {
-        return new TranslatableText(this.getTranslationKey(stack));
+        return Text.method_43471(this.getTranslationKey(stack));
     }
 
     /**

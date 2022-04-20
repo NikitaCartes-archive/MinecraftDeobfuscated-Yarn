@@ -277,8 +277,8 @@ implements AutoCloseable {
 
     public static class FailedHttpRequestException
     extends RuntimeException {
-        FailedHttpRequestException(String message) {
-            super(message);
+        FailedHttpRequestException(String string) {
+            super(string);
         }
     }
 

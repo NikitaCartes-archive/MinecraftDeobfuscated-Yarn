@@ -30,6 +30,9 @@ import net.minecraft.world.gen.random.AtomicSimpleRandom;
  * the Java random number generator algorithm.
  */
 public interface AbstractRandom {
+    @Deprecated
+    public static final double field_38930 = 2.297;
+
     public static AbstractRandom createAtomic() {
         return AbstractRandom.createAtomic(System.nanoTime());
     }
@@ -70,6 +73,10 @@ public interface AbstractRandom {
     public double nextDouble();
 
     public double nextGaussian();
+
+    default public double method_43385(double d, double e) {
+        return d + e * (this.nextDouble() - this.nextDouble());
+    }
 
     default public void skip(int count) {
         for (int i = 0; i < count; ++i) {

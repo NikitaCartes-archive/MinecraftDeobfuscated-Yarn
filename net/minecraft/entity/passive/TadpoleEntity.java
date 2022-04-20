@@ -6,7 +6,6 @@ package net.minecraft.entity.passive;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -37,7 +36,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,11 +127,6 @@ extends FishEntity {
     @Nullable
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_TADPOLE_DEATH;
-    }
-
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundEvents.ENTITY_TADPOLE_STEP, 0.15f, 1.0f);
     }
 
     @Override

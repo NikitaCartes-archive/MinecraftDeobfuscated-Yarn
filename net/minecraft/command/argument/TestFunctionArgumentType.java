@@ -19,7 +19,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 
 public class TestFunctionArgumentType
 implements ArgumentType<TestFunction> {
@@ -32,7 +33,7 @@ implements ArgumentType<TestFunction> {
         if (optional.isPresent()) {
             return optional.get();
         }
-        LiteralText message = new LiteralText("No such test: " + string);
+        MutableText message = Text.method_43470("No such test: " + string);
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 

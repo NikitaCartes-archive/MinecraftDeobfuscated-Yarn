@@ -18,7 +18,6 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -27,8 +26,8 @@ import org.slf4j.Logger;
 public class RealmsInviteScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Text INVITE_PROFILE_NAME_TEXT = new TranslatableText("mco.configure.world.invite.profile.name");
-    private static final Text PLAYER_ERROR_TEXT = new TranslatableText("mco.configure.world.players.error");
+    private static final Text INVITE_PROFILE_NAME_TEXT = Text.method_43471("mco.configure.world.invite.profile.name");
+    private static final Text PLAYER_ERROR_TEXT = Text.method_43471("mco.configure.world.players.error");
     private TextFieldWidget nameWidget;
     private final RealmsServer serverData;
     private final RealmsConfigureWorldScreen configureScreen;
@@ -51,10 +50,10 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.nameWidget = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsInviteScreen.row(2), 200, 20, null, new TranslatableText("mco.configure.world.invite.profile.name"));
+        this.nameWidget = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsInviteScreen.row(2), 200, 20, null, Text.method_43471("mco.configure.world.invite.profile.name"));
         this.addSelectableChild(this.nameWidget);
         this.setInitialFocus(this.nameWidget);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(10), 200, 20, new TranslatableText("mco.configure.world.buttons.invite"), button -> this.onInvite()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(10), 200, 20, Text.method_43471("mco.configure.world.buttons.invite"), button -> this.onInvite()));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, RealmsInviteScreen.row(12), 200, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
     }
 

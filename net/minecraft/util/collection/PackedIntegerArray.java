@@ -177,8 +177,8 @@ implements PaletteStorage {
 
     public static class InvalidLengthException
     extends RuntimeException {
-        InvalidLengthException(String message) {
-            super(message);
+        InvalidLengthException(String string) {
+            super(string);
         }
     }
 }

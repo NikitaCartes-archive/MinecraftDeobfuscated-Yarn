@@ -28,7 +28,7 @@ import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class ScoreHolderArgumentType
 implements ArgumentType<ScoreHolder> {
@@ -44,7 +44,7 @@ implements ArgumentType<ScoreHolder> {
         return entitySelectorReader.listSuggestions(builder2, (SuggestionsBuilder builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getPlayerNames(), builder));
     };
     private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
-    private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.scoreHolder.empty"));
+    private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.scoreHolder.empty"));
     final boolean multiple;
 
     public ScoreHolderArgumentType(boolean multiple) {

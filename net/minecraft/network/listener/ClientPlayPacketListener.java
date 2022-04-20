@@ -58,7 +58,6 @@ import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
@@ -118,8 +117,6 @@ extends PacketListener {
     public void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket var1);
 
     public void onScoreboardObjectiveUpdate(ScoreboardObjectiveUpdateS2CPacket var1);
-
-    public void onPaintingSpawn(PaintingSpawnS2CPacket var1);
 
     public void onPlayerSpawn(PlayerSpawnS2CPacket var1);
 

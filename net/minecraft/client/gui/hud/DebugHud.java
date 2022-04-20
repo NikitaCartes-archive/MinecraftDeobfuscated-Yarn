@@ -10,6 +10,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import java.lang.management.GarbageCollectorMXBean;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
@@ -88,6 +91,7 @@ extends DrawableHelper {
         types.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
     });
     private final MinecraftClient client;
+    private final class_7412 field_38985;
     private final TextRenderer textRenderer;
     private HitResult blockHit;
     private HitResult fluidHit;
@@ -101,9 +105,10 @@ extends DrawableHelper {
     private static final int field_32192 = -256;
     private static final int field_32193 = -16711936;
 
-    public DebugHud(MinecraftClient client) {
-        this.client = client;
-        this.textRenderer = client.textRenderer;
+    public DebugHud(MinecraftClient minecraftClient) {
+        this.client = minecraftClient;
+        this.field_38985 = new class_7412();
+        this.textRenderer = minecraftClient.textRenderer;
     }
 
     public void resetChunk() {
@@ -320,7 +325,7 @@ extends DrawableHelper {
         long m = Runtime.getRuntime().totalMemory();
         long n = Runtime.getRuntime().freeMemory();
         long o = m - n;
-        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.toMiB(o), DebugHud.toMiB(l)), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.toMiB(m)), "", String.format("CPU: %s", GlDebugInfo.getCpuInfo()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().getWindow().getFramebufferWidth(), MinecraftClient.getInstance().getWindow().getFramebufferHeight(), GlDebugInfo.getVendor()), GlDebugInfo.getRenderer(), GlDebugInfo.getVersion());
+        ArrayList<String> list = Lists.newArrayList(String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32), String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, DebugHud.toMiB(o), DebugHud.toMiB(l)), String.format("Allocation rate: %03dMB /s", DebugHud.toMiB(this.field_38985.method_43448(o))), String.format("Allocated: % 2d%% %03dMB", m * 100L / l, DebugHud.toMiB(m)), "", String.format("CPU: %s", GlDebugInfo.getCpuInfo()), "", String.format("Display: %dx%d (%s)", MinecraftClient.getInstance().getWindow().getFramebufferWidth(), MinecraftClient.getInstance().getWindow().getFramebufferHeight(), GlDebugInfo.getVendor()), GlDebugInfo.getRenderer(), GlDebugInfo.getVersion());
         if (this.client.hasReducedDebugInfo()) {
             return list;
         }
@@ -412,7 +417,7 @@ extends DrawableHelper {
             k = metricsData.wrapIndex(k + 1);
         }
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (showFps) {
@@ -468,6 +473,44 @@ extends DrawableHelper {
 
     private static long toMiB(long bytes) {
         return bytes / 1024L / 1024L;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    static class class_7412 {
+        private static final int field_38986 = 500;
+        private static final List<GarbageCollectorMXBean> field_38987 = ManagementFactory.getGarbageCollectorMXBeans();
+        private long field_38988 = 0L;
+        private long field_38989 = -1L;
+        private long field_38990 = -1L;
+        private long field_38991 = 0L;
+
+        class_7412() {
+        }
+
+        long method_43448(long l) {
+            long m = System.currentTimeMillis();
+            if (m - this.field_38988 < 500L) {
+                return this.field_38991;
+            }
+            long n = class_7412.method_43447();
+            if (this.field_38988 != 0L && n == this.field_38990) {
+                double d = (double)TimeUnit.SECONDS.toMillis(1L) / (double)(m - this.field_38988);
+                long o = l - this.field_38989;
+                this.field_38991 = Math.round((double)o * d);
+            }
+            this.field_38988 = m;
+            this.field_38989 = l;
+            this.field_38990 = n;
+            return this.field_38991;
+        }
+
+        private static long method_43447() {
+            long l = 0L;
+            for (GarbageCollectorMXBean garbageCollectorMXBean : field_38987) {
+                l += garbageCollectorMXBean.getCollectionCount();
+            }
+            return l;
+        }
     }
 }
 

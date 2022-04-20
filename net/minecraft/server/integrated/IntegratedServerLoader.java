@@ -34,7 +34,8 @@ import net.minecraft.server.DataPackContents;
 import net.minecraft.server.SaveLoader;
 import net.minecraft.server.SaveLoading;
 import net.minecraft.server.command.CommandManager;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
@@ -175,7 +176,7 @@ public class IntegratedServerLoader {
 
     private CompletableFuture<Boolean> showPackLoadFailureScreen() {
         CompletableFuture<Boolean> completableFuture = new CompletableFuture<Boolean>();
-        this.client.setScreen(new ConfirmScreen(completableFuture::complete, new TranslatableText("multiplayer.texturePrompt.failure.line1"), new TranslatableText("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
+        this.client.setScreen(new ConfirmScreen(completableFuture::complete, Text.method_43471("multiplayer.texturePrompt.failure.line1"), Text.method_43471("multiplayer.texturePrompt.failure.line2"), ScreenTexts.PROCEED, ScreenTexts.CANCEL));
         return completableFuture;
     }
 
@@ -188,14 +189,14 @@ public class IntegratedServerLoader {
     }
 
     private void showBackupPromptScreen(Screen parent, String levelName, boolean customized, Runnable callback) {
-        TranslatableText text2;
-        TranslatableText text;
+        MutableText text2;
+        MutableText text;
         if (customized) {
-            text = new TranslatableText("selectWorld.backupQuestion.customized");
-            text2 = new TranslatableText("selectWorld.backupWarning.customized");
+            text = Text.method_43471("selectWorld.backupQuestion.customized");
+            text2 = Text.method_43471("selectWorld.backupWarning.customized");
         } else {
-            text = new TranslatableText("selectWorld.backupQuestion.experimental");
-            text2 = new TranslatableText("selectWorld.backupWarning.experimental");
+            text = Text.method_43471("selectWorld.backupQuestion.experimental");
+            text2 = Text.method_43471("selectWorld.backupWarning.experimental");
         }
         this.client.setScreen(new BackupPromptScreen(parent, (backup, eraseCache) -> {
             if (backup) {
@@ -216,9 +217,9 @@ public class IntegratedServerLoader {
         if (lifecycle == Lifecycle.stable()) {
             loader.run();
         } else if (lifecycle == Lifecycle.experimental()) {
-            client.setScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.experimental.title"), new TranslatableText("selectWorld.import_worldgen_settings.experimental.question")));
+            client.setScreen(new ConfirmScreen(booleanConsumer, Text.method_43471("selectWorld.import_worldgen_settings.experimental.title"), Text.method_43471("selectWorld.import_worldgen_settings.experimental.question")));
         } else {
-            client.setScreen(new ConfirmScreen(booleanConsumer, new TranslatableText("selectWorld.import_worldgen_settings.deprecated.title"), new TranslatableText("selectWorld.import_worldgen_settings.deprecated.question")));
+            client.setScreen(new ConfirmScreen(booleanConsumer, Text.method_43471("selectWorld.import_worldgen_settings.deprecated.title"), Text.method_43471("selectWorld.import_worldgen_settings.deprecated.question")));
         }
     }
 }

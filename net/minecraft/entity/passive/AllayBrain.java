@@ -40,13 +40,15 @@ import net.minecraft.world.World;
 
 public class AllayBrain {
     private static final float field_38406 = 1.0f;
-    private static final float field_38407 = 1.25f;
-    private static final float field_38408 = 2.0f;
-    private static final int field_38409 = 16;
+    private static final float field_38407 = 2.25f;
+    private static final float field_38408 = 1.75f;
+    private static final int field_38938 = 4;
+    private static final int field_38939 = 16;
     private static final int field_38410 = 6;
     private static final int field_38411 = 30;
     private static final int field_38412 = 60;
     private static final int field_38413 = 600;
+    private static final int field_38940 = 32;
 
     protected static Brain<?> create(Brain<AllayEntity> brain) {
         AllayBrain.addCoreActivities(brain);
@@ -62,7 +64,7 @@ public class AllayBrain {
     }
 
     private static void addIdleActivities(Brain<AllayEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new WalkToNearestVisibleWantedItemTask<AllayEntity>(allay -> true, 2.0f, true, 9)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 1.25f)), Pair.of(2, new WalkTowardsLookTargetTask(AllayBrain::getLookTarget, 16, 1.25f)), Pair.of(3, new TimeLimitedTask<LivingEntity>(new FollowMobTask(allay -> true, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(new NoPenaltyStrollTask(1.0f), 2), Pair.of(new GoTowardsLookTarget(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new WalkToNearestVisibleWantedItemTask<AllayEntity>(allay -> true, 1.75f, true, 32)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 2.25f)), Pair.of(2, new WalkTowardsLookTargetTask(AllayBrain::getLookTarget, 4, 16, 2.25f)), Pair.of(3, new TimeLimitedTask<LivingEntity>(new FollowMobTask(allay -> true, 6.0f), UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(new NoPenaltyStrollTask(1.0f), 2), Pair.of(new GoTowardsLookTarget(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
     }
 
     public static void updateActivities(AllayEntity allay) {

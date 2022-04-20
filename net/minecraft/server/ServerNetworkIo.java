@@ -46,7 +46,8 @@ import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.LocalServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -155,7 +156,7 @@ public class ServerNetworkIo {
                             throw new CrashException(CrashReport.create(exception, "Ticking memory connection"));
                         }
                         LOGGER.warn("Failed to handle packet for {}", (Object)clientConnection.getAddress(), (Object)exception);
-                        LiteralText text = new LiteralText("Internal server error");
+                        MutableText text = Text.method_43470("Internal server error");
                         clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
                         clientConnection.disableAutoRead();
                     }

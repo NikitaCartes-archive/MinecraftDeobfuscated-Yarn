@@ -68,10 +68,8 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.tag.FluidTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -104,8 +102,8 @@ extends DrawableHelper {
     private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
     private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
     private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
-    private static final Text DEMO_EXPIRED_MESSAGE = new TranslatableText("demo.demoExpired");
-    private static final Text SAVING_LEVEL_TEXT = new TranslatableText("menu.savingLevel");
+    private static final Text DEMO_EXPIRED_MESSAGE = Text.method_43471("demo.demoExpired");
+    private static final Text SAVING_LEVEL_TEXT = Text.method_43471("menu.savingLevel");
     private static final int WHITE = 0xFFFFFF;
     private static final float field_32168 = 5.0f;
     private static final int field_32169 = 10;
@@ -590,7 +588,7 @@ extends DrawableHelper {
         this.client.getProfiler().push("selectedItemName");
         if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
             int l;
-            MutableText mutableText = new LiteralText("").append(this.currentStack.getName()).formatted(this.currentStack.getRarity().formatting);
+            MutableText mutableText = Text.method_43473().append(this.currentStack.getName()).formatted(this.currentStack.getRarity().formatting);
             if (this.currentStack.hasCustomName()) {
                 mutableText.formatted(Formatting.ITALIC);
             }
@@ -616,7 +614,7 @@ extends DrawableHelper {
 
     public void renderDemoTimer(MatrixStack matrices) {
         this.client.getProfiler().push("demo");
-        Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : new TranslatableText("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
+        Text text = this.client.world.getTime() >= 120500L ? DEMO_EXPIRED_MESSAGE : Text.method_43469("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
         int i = this.getTextRenderer().getWidth(text);
         this.getTextRenderer().drawWithShadow(matrices, text, (float)(this.scaledWidth - i - 10), 5.0f, 0xFFFFFF);
         this.client.getProfiler().pop();
@@ -634,7 +632,7 @@ extends DrawableHelper {
         int k = this.getTextRenderer().getWidth(field_32171);
         for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
             Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-            MutableText text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
+            MutableText text2 = Team.decorateName(team, Text.method_43470(scoreboardPlayerScore.getPlayerName()));
             list2.add(Pair.of(scoreboardPlayerScore, text2));
             j = Math.max(j, this.getTextRenderer().getWidth(text2) + k + this.getTextRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
         }
@@ -1091,7 +1089,7 @@ extends DrawableHelper {
     }
 
     public void setRecordPlayingOverlay(Text description) {
-        this.setOverlayMessage(new TranslatableText("record.nowPlaying", description), true);
+        this.setOverlayMessage(Text.method_43469("record.nowPlaying", description), true);
     }
 
     public void setOverlayMessage(Text message, boolean tinted) {

@@ -16,7 +16,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class MouseOptionsScreen
@@ -28,7 +28,7 @@ extends GameOptionsScreen {
     }
 
     public MouseOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, new TranslatableText("options.mouse_settings.title"));
+        super(parent, gameOptions, Text.method_43471("options.mouse_settings.title"));
     }
 
     @Override

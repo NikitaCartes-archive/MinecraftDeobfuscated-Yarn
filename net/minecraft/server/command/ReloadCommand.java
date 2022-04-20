@@ -14,7 +14,7 @@ import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.SaveProperties;
 import org.slf4j.Logger;
 
@@ -24,7 +24,7 @@ public class ReloadCommand {
     public static void tryReloadDataPacks(Collection<String> dataPacks, ServerCommandSource source) {
         source.getServer().reloadResources(dataPacks).exceptionally(throwable -> {
             LOGGER.warn("Failed to execute reload", (Throwable)throwable);
-            source.sendError(new TranslatableText("commands.reload.failure"));
+            source.sendError(Text.method_43471("commands.reload.failure"));
             return null;
         });
     }
@@ -48,7 +48,7 @@ public class ReloadCommand {
             SaveProperties saveProperties = minecraftServer.getSaveProperties();
             Collection<String> collection = resourcePackManager.getEnabledNames();
             Collection<String> collection2 = ReloadCommand.findNewDataPacks(resourcePackManager, saveProperties, collection);
-            serverCommandSource.sendFeedback(new TranslatableText("commands.reload.success"), true);
+            serverCommandSource.sendFeedback(Text.method_43471("commands.reload.success"), true);
             ReloadCommand.tryReloadDataPacks(collection2, serverCommandSource);
             return 0;
         }));

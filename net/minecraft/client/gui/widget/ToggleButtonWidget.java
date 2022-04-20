@@ -6,11 +6,11 @@ package net.minecraft.client.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
@@ -24,7 +24,7 @@ extends ClickableWidget {
     protected int hoverVOffset;
 
     public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
-        super(x, y, width, height, LiteralText.EMPTY);
+        super(x, y, width, height, ScreenTexts.field_39003);
         this.toggled = toggled;
     }
 

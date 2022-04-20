@@ -20,7 +20,6 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,9 +41,9 @@ implements ClientAdvancementManager.Listener {
     public static final int field_32303 = 16;
     public static final int field_32304 = 14;
     public static final int field_32305 = 7;
-    private static final Text SAD_LABEL_TEXT = new TranslatableText("advancements.sad_label");
-    private static final Text EMPTY_TEXT = new TranslatableText("advancements.empty");
-    private static final Text ADVANCEMENTS_TEXT = new TranslatableText("gui.advancements");
+    private static final Text SAD_LABEL_TEXT = Text.method_43471("advancements.sad_label");
+    private static final Text EMPTY_TEXT = Text.method_43471("advancements.empty");
+    private static final Text ADVANCEMENTS_TEXT = Text.method_43471("gui.advancements");
     private final ClientAdvancementManager advancementHandler;
     private final Map<Advancement, AdvancementTab> tabs = Maps.newLinkedHashMap();
     @Nullable

@@ -8,7 +8,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class WeatherCommand {
     private static final int DEFAULT_DURATION = 6000;
@@ -19,19 +19,19 @@ public class WeatherCommand {
 
     private static int executeClear(ServerCommandSource source, int duration) {
         source.getWorld().setWeather(duration, 0, false, false);
-        source.sendFeedback(new TranslatableText("commands.weather.set.clear"), true);
+        source.sendFeedback(Text.method_43471("commands.weather.set.clear"), true);
         return duration;
     }
 
     private static int executeRain(ServerCommandSource source, int duration) {
         source.getWorld().setWeather(0, duration, true, false);
-        source.sendFeedback(new TranslatableText("commands.weather.set.rain"), true);
+        source.sendFeedback(Text.method_43471("commands.weather.set.rain"), true);
         return duration;
     }
 
     private static int executeThunder(ServerCommandSource source, int duration) {
         source.getWorld().setWeather(0, duration, true, true);
-        source.sendFeedback(new TranslatableText("commands.weather.set.thunder"), true);
+        source.sendFeedback(Text.method_43471("commands.weather.set.thunder"), true);
         return duration;
     }
 }

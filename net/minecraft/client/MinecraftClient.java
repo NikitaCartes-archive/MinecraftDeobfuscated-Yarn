@@ -51,6 +51,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.class_7420;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -80,6 +81,7 @@ import net.minecraft.client.gui.screen.OutOfMemoryScreen;
 import net.minecraft.client.gui.screen.Overlay;
 import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.SleepingChatScreen;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -200,11 +202,8 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.KeybindText;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
@@ -494,7 +493,7 @@ implements WindowEventHandler {
             string = null;
             i = 0;
         }
-        KeybindText.setTranslator(KeyBinding::getLocalizedName);
+        class_7420.method_43482(KeyBinding::getLocalizedName);
         this.dataFixer = Schemas.getFixer();
         this.toastManager = new ToastManager(this);
         this.thread = Thread.currentThread();
@@ -685,7 +684,7 @@ implements WindowEventHandler {
         this.options.write();
         this.reloadResources(true).thenRun(() -> {
             ToastManager toastManager = this.getToastManager();
-            SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, new TranslatableText("resourcePack.load_fail"), resourceName);
+            SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.method_43471("resourcePack.load_fail"), resourceName);
         });
     }
 
@@ -860,7 +859,7 @@ implements WindowEventHandler {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
             for (ItemStack itemStack : defaultedList) {
                 String string = itemStack.getTranslationKey();
-                String string2 = new TranslatableText(string).getString();
+                String string2 = Text.method_43471(string).getString();
                 if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
                 LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
             }
@@ -1180,14 +1179,14 @@ implements WindowEventHandler {
             if (this.integratedServerRunning && this.server != null) {
                 this.server.stop(true);
             }
-            this.disconnect(new MessageScreen(new TranslatableText("menu.savingLevel")));
+            this.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
         } catch (Throwable throwable) {
             // empty catch block
         }
         System.gc();
     }
 
-    public boolean toggleDebugProfiler(Consumer<TranslatableText> chatMessageSender) {
+    public boolean toggleDebugProfiler(Consumer<Text> chatMessageSender) {
         Consumer<Path> consumer4;
         if (this.recorder.isActive()) {
             this.stopRecorder();
@@ -1199,11 +1198,11 @@ implements WindowEventHandler {
             }
             int i = result.getTickSpan();
             double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
-            this.execute(() -> chatMessageSender.accept(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
+            this.execute(() -> chatMessageSender.accept(Text.method_43469("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
         Consumer<Path> consumer2 = path -> {
-            MutableText text = new LiteralText(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-            this.execute(() -> chatMessageSender.accept(new TranslatableText("debug.profiling.stop", text)));
+            MutableText text = Text.method_43470(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
+            this.execute(() -> chatMessageSender.accept(Text.method_43469("debug.profiling.stop", text)));
         };
         SystemDetails systemDetails = MinecraftClient.addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
         Consumer<List> consumer3 = files -> {
@@ -1601,8 +1600,8 @@ implements WindowEventHandler {
         if (this.world != null) {
             if (!this.paused) {
                 if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
-                    TranslatableText text = new TranslatableText("tutorial.socialInteractions.title");
-                    TranslatableText text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+                    MutableText text = Text.method_43471("tutorial.socialInteractions.title");
+                    MutableText text2 = Text.method_43469("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
                     this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
                     this.tutorialManager.add(this.socialInteractionsToast, 160);
                     this.options.joinedFirstServer = true;
@@ -1800,7 +1799,7 @@ implements WindowEventHandler {
 
     public void joinWorld(ClientWorld world) {
         ProgressScreen progressScreen = new ProgressScreen(true);
-        progressScreen.setTitle(new TranslatableText("connect.joining"));
+        progressScreen.setTitle(Text.method_43471("connect.joining"));
         this.reset(progressScreen);
         this.world = world;
         this.setWorld(world);
@@ -2375,13 +2374,13 @@ implements WindowEventHandler {
                 }
                 ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {});
             }
-            MutableText text2 = new LiteralText(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
-            TranslatableText translatableText = new TranslatableText("screenshot.success", text2);
-            return translatableText;
+            MutableText text2 = Text.method_43470(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
+            MutableText mutableText = Text.method_43469("screenshot.success", text2);
+            return mutableText;
         } catch (Exception exception) {
             LOGGER.error("Couldn't save image", exception);
-            TranslatableText translatableText = new TranslatableText("screenshot.failure", exception.getMessage());
-            return translatableText;
+            MutableText mutableText = Text.method_43469("screenshot.failure", exception.getMessage());
+            return mutableText;
         } finally {
             this.player.setPitch(f);
             this.player.setYaw(g);
@@ -2429,11 +2428,11 @@ implements WindowEventHandler {
             }
             File file = screenshotRecorder.finish();
             GlDebugInfo.freeMemory(byteBuffer);
-            MutableText text = new LiteralText(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
-            return new TranslatableText("screenshot.success", text);
+            MutableText text = Text.method_43470(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+            return Text.method_43469("screenshot.success", text);
         } catch (Exception exception) {
             LOGGER.warn("Couldn't save screenshot", exception);
-            return new TranslatableText("screenshot.failure", exception.getMessage());
+            return Text.method_43469("screenshot.failure", exception.getMessage());
         }
     }
 
@@ -2519,7 +2518,7 @@ implements WindowEventHandler {
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-        SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
+        SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.method_43471("multiplayer.socialInteractions.not_available");
     }
 
     /*
@@ -2527,7 +2526,7 @@ implements WindowEventHandler {
      */
     @Environment(value=EnvType.CLIENT)
     public static enum ChatRestriction {
-        ENABLED(LiteralText.EMPTY){
+        ENABLED(ScreenTexts.field_39003){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2535,7 +2534,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_OPTIONS(new TranslatableText("chat.disabled.options").formatted(Formatting.RED)){
+        DISABLED_BY_OPTIONS(Text.method_43471("chat.disabled.options").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2543,7 +2542,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_LAUNCHER(new TranslatableText("chat.disabled.launcher").formatted(Formatting.RED)){
+        DISABLED_BY_LAUNCHER(Text.method_43471("chat.disabled.launcher").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2551,7 +2550,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_PROFILE(new TranslatableText("chat.disabled.profile").formatted(Formatting.RED)){
+        DISABLED_BY_PROFILE(Text.method_43471("chat.disabled.profile").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {

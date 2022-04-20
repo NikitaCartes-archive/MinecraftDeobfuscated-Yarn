@@ -16,7 +16,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 public class MeCommand {
@@ -45,7 +44,7 @@ public class MeCommand {
     }
 
     private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
-        return new TranslatableText("chat.type.emote", context.getSource().getDisplayName(), arg);
+        return Text.method_43469("chat.type.emote", context.getSource().getDisplayName(), arg);
     }
 }
 

@@ -21,9 +21,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +46,7 @@ extends Screen {
     private ButtonWidget widgetButtonRemoveLayer;
 
     public CustomizeFlatLevelScreen(CreateWorldScreen parent, Consumer<FlatChunkGeneratorConfig> configConsumer, FlatChunkGeneratorConfig config) {
-        super(new TranslatableText("createWorld.customize.flat.title"));
+        super(Text.method_43471("createWorld.customize.flat.title"));
         this.parent = parent;
         this.configConsumer = configConsumer;
         this.config = config;
@@ -63,11 +62,11 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.tileText = new TranslatableText("createWorld.customize.flat.tile");
-        this.heightText = new TranslatableText("createWorld.customize.flat.height");
+        this.tileText = Text.method_43471("createWorld.customize.flat.tile");
+        this.heightText = Text.method_43471("createWorld.customize.flat.height");
         this.layers = new SuperflatLayersListWidget();
         this.addSelectableChild(this.layers);
-        this.widgetButtonRemoveLayer = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.flat.removeLayer"), button -> {
+        this.widgetButtonRemoveLayer = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, Text.method_43471("createWorld.customize.flat.removeLayer"), button -> {
             if (!this.hasLayerSelected()) {
                 return;
             }
@@ -80,7 +79,7 @@ extends Screen {
             this.layers.updateLayers();
             this.updateRemoveLayerButton();
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.presets"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, Text.method_43471("createWorld.customize.presets"), button -> {
             this.client.setScreen(new PresetsScreen(this));
             this.config.updateLayerBlocks();
             this.updateRemoveLayerButton();
@@ -173,7 +172,7 @@ extends Screen {
                 ItemStack itemStack = this.createItemStackFor(blockState);
                 this.renderIcon(matrices, x, y, itemStack);
                 CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, itemStack.getName(), (float)(x + 18 + 5), (float)(y + 3), 0xFFFFFF);
-                TranslatableText text = index == 0 ? new TranslatableText("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? new TranslatableText("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : new TranslatableText("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));
+                MutableText text = index == 0 ? Text.method_43469("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? Text.method_43469("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : Text.method_43469("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));
                 CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, text, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(text)), (float)(y + 3), 0xFFFFFF);
             }
 
@@ -194,9 +193,9 @@ extends Screen {
                 FlatChunkGeneratorLayer flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - SuperflatLayersListWidget.this.children().indexOf(this) - 1);
                 ItemStack itemStack = this.createItemStackFor(flatChunkGeneratorLayer.getBlockState());
                 if (!itemStack.isEmpty()) {
-                    return new TranslatableText("narrator.select", itemStack.getName());
+                    return Text.method_43469("narrator.select", itemStack.getName());
                 }
-                return LiteralText.EMPTY;
+                return ScreenTexts.field_39003;
             }
 
             @Override

@@ -4,7 +4,6 @@
 package net.minecraft.util;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public interface TranslatableOption {
     public int getId();
@@ -12,7 +11,7 @@ public interface TranslatableOption {
     public String getTranslationKey();
 
     default public Text getText() {
-        return new TranslatableText(this.getTranslationKey());
+        return Text.method_43471(this.getTranslationKey());
     }
 }
 

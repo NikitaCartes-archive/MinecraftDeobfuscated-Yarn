@@ -440,8 +440,8 @@ public class ServerConfigHandler {
             super(title, other);
         }
 
-        ServerConfigException(String title) {
-            super(title);
+        ServerConfigException(String string) {
+            super(string);
         }
     }
 }

@@ -11,7 +11,6 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
@@ -126,7 +125,7 @@ public abstract class ItemGroup {
     public ItemGroup(int index, String id) {
         this.index = index;
         this.id = id;
-        this.displayName = new TranslatableText("itemGroup." + id);
+        this.displayName = Text.method_43471("itemGroup." + id);
         this.icon = ItemStack.EMPTY;
         ItemGroup.GROUPS[index] = this;
     }

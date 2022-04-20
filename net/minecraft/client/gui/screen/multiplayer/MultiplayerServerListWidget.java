@@ -17,9 +17,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7413;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
@@ -32,10 +34,8 @@ import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -52,12 +52,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build());
     static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
     static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
-    static final Text LAN_SCANNING_TEXT = new TranslatableText("lanServer.scanning");
-    static final Text CANNOT_RESOLVE_TEXT = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
-    static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
-    static final Text INCOMPATIBLE_TEXT = new TranslatableText("multiplayer.status.incompatible");
-    static final Text NO_CONNECTION_TEXT = new TranslatableText("multiplayer.status.no_connection");
-    static final Text PINGING_TEXT = new TranslatableText("multiplayer.status.pinging");
+    static final Text LAN_SCANNING_TEXT = Text.method_43471("lanServer.scanning");
+    static final Text CANNOT_RESOLVE_TEXT = Text.method_43471("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
+    static final Text CANNOT_CONNECT_TEXT = Text.method_43471("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+    static final Text INCOMPATIBLE_TEXT = Text.method_43471("multiplayer.status.incompatible");
+    static final Text NO_CONNECTION_TEXT = Text.method_43471("multiplayer.status.no_connection");
+    static final Text PINGING_TEXT = Text.method_43471("multiplayer.status.pinging");
     private final MultiplayerScreen screen;
     private final List<ServerEntry> servers = Lists.newArrayList();
     private final Entry scanningEntry = new ScanningEntry();
@@ -132,17 +132,13 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int i = y + entryHeight / 2 - this.client.textRenderer.fontHeight / 2;
             this.client.textRenderer.draw(matrices, LAN_SCANNING_TEXT, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(LAN_SCANNING_TEXT) / 2), (float)i, 0xFFFFFF);
-            String string = switch ((int)(Util.getMeasuringTimeMs() / 300L % 4L)) {
-                default -> "O o o";
-                case 1, 3 -> "o O o";
-                case 2 -> "o o O";
-            };
+            String string = class_7413.method_43449(Util.getMeasuringTimeMs());
             this.client.textRenderer.draw(matrices, string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2), (float)(i + this.client.textRenderer.fontHeight), 0x808080);
         }
 
         @Override
         public Text getNarration() {
-            return LiteralText.EMPTY;
+            return ScreenTexts.field_39003;
         }
     }
 
@@ -191,8 +187,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (!this.server.online) {
                 this.server.online = true;
                 this.server.ping = -2L;
-                this.server.label = LiteralText.EMPTY;
-                this.server.playerCountLabel = LiteralText.EMPTY;
+                this.server.label = ScreenTexts.field_39003;
+                this.server.playerCountLabel = ScreenTexts.field_39003;
                 SERVER_PINGER_THREAD_POOL.submit(() -> {
                     try {
                         this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::saveFile));
@@ -225,7 +221,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     text2 = NO_CONNECTION_TEXT;
                     list2 = Collections.emptyList();
                 } else {
-                    text2 = new TranslatableText("multiplayer.status.ping", this.server.ping);
+                    text2 = Text.method_43469("multiplayer.status.ping", this.server.ping);
                     list2 = this.server.playerListSummary;
                 }
             } else {
@@ -393,7 +389,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public Text getNarration() {
-            return new TranslatableText("narrator.select", this.server.name);
+            return Text.method_43469("narrator.select", this.server.name);
         }
     }
 
@@ -401,8 +397,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     public static class LanServerEntry
     extends Entry {
         private static final int field_32386 = 32;
-        private static final Text TITLE_TEXT = new TranslatableText("lanServer.title");
-        private static final Text HIDDEN_ADDRESS_TEXT = new TranslatableText("selectServer.hiddenAddress");
+        private static final Text TITLE_TEXT = Text.method_43471("lanServer.title");
+        private static final Text HIDDEN_ADDRESS_TEXT = Text.method_43471("selectServer.hiddenAddress");
         private final MultiplayerScreen screen;
         protected final MinecraftClient client;
         protected final LanServerInfo server;
@@ -441,7 +437,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public Text getNarration() {
-            return new TranslatableText("narrator.select", new LiteralText("").append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
+            return Text.method_43469("narrator.select", Text.method_43473().append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
         }
     }
 }

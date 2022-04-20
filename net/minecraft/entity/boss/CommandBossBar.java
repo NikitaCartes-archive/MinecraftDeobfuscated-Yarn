@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
@@ -80,7 +79,7 @@ extends ServerBossBar {
     }
 
     public final Text toHoverableText() {
-        return Texts.bracketed(this.getName()).styled(style -> style.withColor(this.getColor().getTextFormat()).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(this.getId().toString()))).withInsertion(this.getId().toString()));
+        return Texts.bracketed(this.getName()).styled(style -> style.withColor(this.getColor().getTextFormat()).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(this.getId().toString()))).withInsertion(this.getId().toString()));
     }
 
     public boolean addPlayers(Collection<ServerPlayerEntity> players) {

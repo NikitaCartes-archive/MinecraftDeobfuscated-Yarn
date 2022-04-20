@@ -59,7 +59,7 @@ implements FlyingItemEntity {
             this.dataTracker.set(ITEM, stack.copy());
             i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
         }
-        this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
+        this.setVelocity(this.random.method_43385(0.0, 0.002297), 0.05, this.random.method_43385(0.0, 0.002297));
         this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
     }
 

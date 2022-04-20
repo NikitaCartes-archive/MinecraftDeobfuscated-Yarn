@@ -97,7 +97,7 @@ implements RangedAttackMob {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && world.getRandom().nextFloat() < 0.03f) {
             this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
-            this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0f;
+            this.updateDropChances(EquipmentSlot.OFFHAND);
         }
         return entityData;
     }

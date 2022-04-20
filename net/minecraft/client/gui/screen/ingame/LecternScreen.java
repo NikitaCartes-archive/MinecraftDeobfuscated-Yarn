@@ -15,7 +15,6 @@ import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class LecternScreen
@@ -68,7 +67,7 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
     protected void addCloseButton() {
         if (this.client.player.canModifyBlocks()) {
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, ScreenTexts.DONE, button -> this.close()));
-            this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, new TranslatableText("lectern.take_book"), button -> this.sendButtonPressPacket(3)));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, Text.method_43471("lectern.take_book"), button -> this.sendButtonPressPacket(3)));
         } else {
             super.addCloseButton();
         }

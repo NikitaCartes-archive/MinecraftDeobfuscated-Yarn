@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
@@ -26,7 +27,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroupLoader;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -87,7 +87,7 @@ implements ResourceReloader {
         CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
         CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(EXTENSION)), prepareExecutor).thenCompose(map -> {
             HashMap<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.newHashMap();
-            ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null);
+            ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.field_39003, null, null);
             for (Map.Entry entry : map.entrySet()) {
                 Identifier identifier = (Identifier)entry.getKey();
                 String string = identifier.getPath();

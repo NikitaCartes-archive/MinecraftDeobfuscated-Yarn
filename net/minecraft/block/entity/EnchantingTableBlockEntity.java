@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -107,7 +106,7 @@ implements Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return new TranslatableText("container.enchant");
+        return Text.method_43471("container.enchant");
     }
 
     public void setCustomName(@Nullable Text customName) {

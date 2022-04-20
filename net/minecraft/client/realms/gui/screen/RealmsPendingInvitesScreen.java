@@ -25,9 +25,7 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -39,9 +37,9 @@ extends RealmsScreen {
     static final Logger LOGGER = LogUtils.getLogger();
     static final Identifier ACCEPT_ICON = new Identifier("realms", "textures/gui/realms/accept_icon.png");
     static final Identifier REJECT_ICON = new Identifier("realms", "textures/gui/realms/reject_icon.png");
-    private static final Text NO_PENDING_TEXT = new TranslatableText("mco.invites.nopending");
-    static final Text ACCEPT_TEXT = new TranslatableText("mco.invites.button.accept");
-    static final Text REJECT_TEXT = new TranslatableText("mco.invites.button.reject");
+    private static final Text NO_PENDING_TEXT = Text.method_43471("mco.invites.nopending");
+    static final Text ACCEPT_TEXT = Text.method_43471("mco.invites.button.accept");
+    static final Text REJECT_TEXT = Text.method_43471("mco.invites.button.reject");
     private final Screen parent;
     @Nullable
     Text tooltip;
@@ -52,7 +50,7 @@ extends RealmsScreen {
     private ButtonWidget rejectButton;
 
     public RealmsPendingInvitesScreen(Screen parent) {
-        super(new TranslatableText("mco.invites.title"));
+        super(Text.method_43471("mco.invites.title"));
         this.parent = parent;
     }
 
@@ -80,13 +78,13 @@ extends RealmsScreen {
             }
         }.start();
         this.addSelectableChild(this.pendingInvitationSelectionList);
-        this.acceptButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 174, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.accept"), button -> {
+        this.acceptButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 174, this.height - 32, 100, 20, Text.method_43471("mco.invites.button.accept"), button -> {
             this.accept(this.selectedInvite);
             this.selectedInvite = -1;
             this.updateButtonStates();
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 32, 100, 20, ScreenTexts.DONE, button -> this.client.setScreen(new RealmsMainScreen(this.parent))));
-        this.rejectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, new TranslatableText("mco.invites.button.reject"), button -> {
+        this.rejectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 74, this.height - 32, 100, 20, Text.method_43471("mco.invites.button.reject"), button -> {
             this.reject(this.selectedInvite);
             this.selectedInvite = -1;
             this.updateButtonStates();
@@ -265,8 +263,8 @@ extends RealmsScreen {
 
         @Override
         public Text getNarration() {
-            Text text = ScreenTexts.joinLines(new LiteralText(this.mPendingInvite.worldName), new LiteralText(this.mPendingInvite.worldOwnerName), new LiteralText(RealmsUtil.convertToAgePresentation(this.mPendingInvite.date)));
-            return new TranslatableText("narrator.select", text);
+            Text text = ScreenTexts.joinLines(Text.method_43470(this.mPendingInvite.worldName), Text.method_43470(this.mPendingInvite.worldOwnerName), Text.method_43470(RealmsUtil.convertToAgePresentation(this.mPendingInvite.date)));
+            return Text.method_43469("narrator.select", text);
         }
 
         @Environment(value=EnvType.CLIENT)

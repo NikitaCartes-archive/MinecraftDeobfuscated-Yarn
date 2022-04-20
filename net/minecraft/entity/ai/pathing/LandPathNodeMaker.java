@@ -88,16 +88,17 @@ extends PathNodeMaker {
         if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0f) {
             Box box = this.entity.getBoundingBox();
             if (this.canPathThrough(mutable.set(box.minX, (double)i, box.minZ)) || this.canPathThrough(mutable.set(box.minX, (double)i, box.maxZ)) || this.canPathThrough(mutable.set(box.maxX, (double)i, box.minZ)) || this.canPathThrough(mutable.set(box.maxX, (double)i, box.maxZ))) {
-                PathNode pathNode = this.getNode(mutable);
-                pathNode.type = this.getNodeType(this.entity, pathNode.getBlockPos());
-                pathNode.penalty = this.entity.getPathfindingPenalty(pathNode.type);
-                return pathNode;
+                return this.method_43415(mutable);
             }
         }
-        PathNode pathNode2 = this.getNode(blockPos.getX(), i, blockPos.getZ());
-        pathNode2.type = this.getNodeType(this.entity, pathNode2.getBlockPos());
-        pathNode2.penalty = this.entity.getPathfindingPenalty(pathNode2.type);
-        return pathNode2;
+        return this.method_43415(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
+    }
+
+    protected PathNode method_43415(BlockPos blockPos) {
+        PathNode pathNode = this.getNode(blockPos);
+        pathNode.type = this.getNodeType(this.entity, pathNode.getBlockPos());
+        pathNode.penalty = this.entity.getPathfindingPenalty(pathNode.type);
+        return pathNode;
     }
 
     private boolean canPathThrough(BlockPos pos) {
@@ -176,9 +177,13 @@ extends PathNodeMaker {
         return zDiagNode.penalty >= 0.0f && (xDiagNode.y < xNode.y || xDiagNode.penalty >= 0.0f || bl) && (zNode.y < xNode.y || zNode.penalty >= 0.0f || bl);
     }
 
+    private static boolean method_43414(PathNodeType pathNodeType) {
+        return pathNodeType == PathNodeType.FENCE || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_IRON_CLOSED;
+    }
+
     private boolean isBlocked(PathNode node) {
-        Vec3d vec3d = new Vec3d((double)node.x - this.entity.getX(), (double)node.y - this.entity.getY(), (double)node.z - this.entity.getZ());
         Box box = this.entity.getBoundingBox();
+        Vec3d vec3d = new Vec3d((double)node.x - this.entity.getX() + box.getXLength() / 2.0, (double)node.y - this.entity.getY() + box.getYLength() / 2.0, (double)node.z - this.entity.getZ() + box.getZLength() / 2.0);
         int i = MathHelper.ceil(vec3d.length() / box.getAverageSideLength());
         vec3d = vec3d.multiply(1.0f / (float)i);
         for (int j = 1; j <= i; ++j) {
@@ -221,7 +226,7 @@ extends PathNodeMaker {
             pathNode.type = pathNodeType;
             pathNode.penalty = Math.max(pathNode.penalty, f);
         }
-        if (nodeType == PathNodeType.FENCE && pathNode != null && pathNode.penalty >= 0.0f && !this.isBlocked(pathNode)) {
+        if (LandPathNodeMaker.method_43414(nodeType) && pathNode != null && pathNode.penalty >= 0.0f && !this.isBlocked(pathNode)) {
             pathNode = null;
         }
         if (pathNodeType == PathNodeType.WALKABLE || this.isAmphibious() && pathNodeType == PathNodeType.WATER) {
@@ -275,7 +280,7 @@ extends PathNodeMaker {
                 return pathNode2;
             }
         }
-        if (pathNodeType == PathNodeType.FENCE) {
+        if (LandPathNodeMaker.method_43414(pathNodeType)) {
             pathNode = this.getNode(x, y, z);
             pathNode.visited = true;
             pathNode.type = pathNodeType;

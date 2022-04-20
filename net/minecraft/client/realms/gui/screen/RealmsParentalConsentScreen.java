@@ -12,15 +12,15 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsParentalConsentScreen
 extends RealmsScreen {
-    private static final Text PRIVACY_INFO_TEXT = new TranslatableText("mco.account.privacyinfo");
+    private static final Text PRIVACY_INFO_TEXT = Text.method_43471("mco.account.privacyinfo");
     private final Screen parent;
     private MultilineText privacyInfoText = MultilineText.EMPTY;
 
@@ -31,10 +31,10 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        TranslatableText text = new TranslatableText("mco.account.update");
+        MutableText text = Text.method_43471("mco.account.update");
         Text text2 = ScreenTexts.BACK;
         int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
-        TranslatableText text3 = new TranslatableText("mco.account.privacy.info");
+        MutableText text3 = Text.method_43471("mco.account.privacy.info");
         int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
         this.addDrawableChild(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, button -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, button -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")));

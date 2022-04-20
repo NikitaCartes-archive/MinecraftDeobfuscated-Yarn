@@ -111,7 +111,6 @@ public class ParticleTypes {
     public static final DefaultParticleType ELECTRIC_SPARK = ParticleTypes.register("electric_spark", true);
     public static final DefaultParticleType SCRAPE = ParticleTypes.register("scrape", true);
     public static final ParticleType<ShriekParticleEffect> SHRIEK = ParticleTypes.register("shriek", false, ShriekParticleEffect.FACTORY, type -> ShriekParticleEffect.CODEC);
-    public static final DefaultParticleType ALLAY_DUST = ParticleTypes.register("allay_dust", true);
     public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {

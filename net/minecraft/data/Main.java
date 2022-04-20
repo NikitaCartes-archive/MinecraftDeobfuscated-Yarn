@@ -15,6 +15,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpecBuilder;
 import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_7416;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.SnbtProvider;
 import net.minecraft.data.client.ModelProvider;
@@ -88,6 +89,7 @@ public class Main {
         dataGenerator.addProvider(includeServer, new WorldPresetTagProvider(dataGenerator));
         dataGenerator.addProvider(includeServer, new FlatLevelGeneratorPresetTagProvider(dataGenerator));
         dataGenerator.addProvider(includeServer, new CatVariantTagProvider(dataGenerator));
+        dataGenerator.addProvider(includeServer, new class_7416(dataGenerator));
         dataGenerator.addProvider(includeDev, new NbtProvider(dataGenerator));
         dataGenerator.addProvider(includeReports, new BlockListProvider(dataGenerator));
         dataGenerator.addProvider(includeReports, new RegistryDumpProvider(dataGenerator));

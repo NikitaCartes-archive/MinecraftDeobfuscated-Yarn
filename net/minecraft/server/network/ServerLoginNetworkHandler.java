@@ -31,8 +31,8 @@ import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.random.AbstractRandom;
@@ -104,7 +104,7 @@ implements ServerLoginPacketListener {
             this.delayedPlayer = null;
         }
         if (this.loginTicks++ == 600) {
-            this.disconnect(new TranslatableText("multiplayer.disconnect.slow_login"));
+            this.disconnect(Text.method_43471("multiplayer.disconnect.slow_login"));
         }
     }
 
@@ -155,7 +155,7 @@ implements ServerLoginPacketListener {
                 }
             } catch (Exception exception) {
                 LOGGER.error("Couldn't place player in world", exception);
-                TranslatableText text2 = new TranslatableText("multiplayer.disconnect.invalid_player_data");
+                MutableText text2 = Text.method_43471("multiplayer.disconnect.invalid_player_data");
                 this.connection.send(new DisconnectS2CPacket(text2));
                 this.connection.disconnect(text2);
             }
@@ -228,7 +228,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     } else {
-                        ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.unverified_username"));
+                        ServerLoginNetworkHandler.this.disconnect(Text.method_43471("multiplayer.disconnect.unverified_username"));
                         LOGGER.error("Username '{}' tried to join with an invalid session", (Object)gameProfile.getName());
                     }
                 } catch (AuthenticationUnavailableException authenticationUnavailableException) {
@@ -237,7 +237,7 @@ implements ServerLoginPacketListener {
                         ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
                         ServerLoginNetworkHandler.this.state = State.READY_TO_ACCEPT;
                     }
-                    ServerLoginNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.authservers_down"));
+                    ServerLoginNetworkHandler.this.disconnect(Text.method_43471("multiplayer.disconnect.authservers_down"));
                     LOGGER.error("Couldn't verify username because servers are unavailable");
                 }
             }
@@ -254,7 +254,7 @@ implements ServerLoginPacketListener {
 
     @Override
     public void onQueryResponse(LoginQueryResponseC2SPacket packet) {
-        this.disconnect(new TranslatableText("multiplayer.disconnect.unexpected_query_response"));
+        this.disconnect(Text.method_43471("multiplayer.disconnect.unexpected_query_response"));
     }
 
     protected GameProfile toOfflineProfile(GameProfile profile) {

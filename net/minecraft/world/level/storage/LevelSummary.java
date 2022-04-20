@@ -3,13 +3,11 @@
  */
 package net.minecraft.world.level.storage;
 
-import java.io.File;
+import java.nio.file.Path;
 import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringHelper;
 import net.minecraft.world.GameMode;
@@ -25,16 +23,16 @@ implements Comparable<LevelSummary> {
     private final String name;
     private final boolean requiresConversion;
     private final boolean locked;
-    private final File file;
+    private final Path file;
     @Nullable
     private Text details;
 
-    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, File file) {
+    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, Path path) {
         this.levelInfo = levelInfo;
         this.versionInfo = versionInfo;
         this.name = name;
         this.locked = locked;
-        this.file = file;
+        this.file = path;
         this.requiresConversion = requiresConversion;
     }
 
@@ -46,7 +44,7 @@ implements Comparable<LevelSummary> {
         return StringUtils.isEmpty(this.levelInfo.getLevelName()) ? this.name : this.levelInfo.getLevelName();
     }
 
-    public File getFile() {
+    public Path getFile() {
         return this.file;
     }
 
@@ -87,9 +85,9 @@ implements Comparable<LevelSummary> {
 
     public MutableText getVersion() {
         if (StringHelper.isEmpty(this.versionInfo.getVersionName())) {
-            return new TranslatableText("selectWorld.versionUnknown");
+            return Text.method_43471("selectWorld.versionUnknown");
         }
-        return new LiteralText(this.versionInfo.getVersionName());
+        return Text.method_43470(this.versionInfo.getVersionName());
     }
 
     public SaveVersionInfo getVersionInfo() {
@@ -140,22 +138,22 @@ implements Comparable<LevelSummary> {
     }
 
     private Text createDetails() {
-        TranslatableText mutableText;
+        MutableText mutableText;
         if (this.isLocked()) {
-            return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+            return Text.method_43471("selectWorld.locked").formatted(Formatting.RED);
         }
         if (this.requiresConversion()) {
-            return new TranslatableText("selectWorld.conversion").formatted(Formatting.RED);
+            return Text.method_43471("selectWorld.conversion").formatted(Formatting.RED);
         }
         if (!this.isVersionAvailable()) {
-            return new TranslatableText("selectWorld.incompatible_series").formatted(Formatting.RED);
+            return Text.method_43471("selectWorld.incompatible_series").formatted(Formatting.RED);
         }
-        MutableText mutableText2 = mutableText = this.isHardcore() ? new LiteralText("").append(new TranslatableText("gameMode.hardcore").formatted(Formatting.DARK_RED)) : new TranslatableText("gameMode." + this.getGameMode().getName());
+        MutableText mutableText2 = mutableText = this.isHardcore() ? Text.method_43473().append(Text.method_43471("gameMode.hardcore").formatted(Formatting.DARK_RED)) : Text.method_43471("gameMode." + this.getGameMode().getName());
         if (this.hasCheats()) {
-            mutableText.append(", ").append(new TranslatableText("selectWorld.cheats"));
+            mutableText.append(", ").append(Text.method_43471("selectWorld.cheats"));
         }
         MutableText mutableText22 = this.getVersion();
-        MutableText mutableText3 = new LiteralText(", ").append(new TranslatableText("selectWorld.version")).append(" ");
+        MutableText mutableText3 = Text.method_43470(", ").append(Text.method_43471("selectWorld.version")).append(" ");
         if (this.isDifferentVersion()) {
             mutableText3.append(mutableText22.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
         } else {

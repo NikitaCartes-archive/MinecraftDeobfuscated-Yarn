@@ -31,7 +31,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.Util;
@@ -40,8 +39,8 @@ import org.slf4j.Logger;
 
 public class DebugCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.notRunning"));
-    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.debug.alreadyRunning"));
+    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.debug.notRunning"));
+    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.debug.alreadyRunning"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debug").requires(source -> source.hasPermissionLevel(3))).then(CommandManager.literal("start").executes(context -> DebugCommand.executeStart((ServerCommandSource)context.getSource())))).then(CommandManager.literal("stop").executes(context -> DebugCommand.executeStop((ServerCommandSource)context.getSource())))).then(((LiteralArgumentBuilder)CommandManager.literal("function").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))).then(CommandManager.argument("name", CommandFunctionArgumentType.commandFunction()).suggests(FunctionCommand.SUGGESTION_PROVIDER).executes(context -> DebugCommand.executeFunction((ServerCommandSource)context.getSource(), CommandFunctionArgumentType.getFunctions(context, "name"))))));
@@ -53,7 +52,7 @@ public class DebugCommand {
             throw ALREADY_RUNNING_EXCEPTION.create();
         }
         minecraftServer.startDebug();
-        source.sendFeedback(new TranslatableText("commands.debug.started"), true);
+        source.sendFeedback(Text.method_43471("commands.debug.started"), true);
         return 0;
     }
 
@@ -65,7 +64,7 @@ public class DebugCommand {
         ProfileResult profileResult = minecraftServer.stopDebug();
         double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
         double e = (double)profileResult.getTickSpan() / d;
-        source.sendFeedback(new TranslatableText("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true);
+        source.sendFeedback(Text.method_43469("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format("%.2f", e)), true);
         return (int)e;
     }
 
@@ -86,12 +85,12 @@ public class DebugCommand {
             }
         } catch (IOException | UncheckedIOException exception) {
             LOGGER.warn("Tracing failed", exception);
-            source.sendError(new TranslatableText("commands.debug.function.traceFailed"));
+            source.sendError(Text.method_43471("commands.debug.function.traceFailed"));
         }
         if (functions.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.debug.function.success.single", i, functions.iterator().next().getId(), string), true);
+            source.sendFeedback(Text.method_43469("commands.debug.function.success.single", i, functions.iterator().next().getId(), string), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.debug.function.success.multiple", i, functions.size(), string), true);
+            source.sendFeedback(Text.method_43469("commands.debug.function.success.multiple", i, functions.size(), string), true);
         }
         return i;
     }

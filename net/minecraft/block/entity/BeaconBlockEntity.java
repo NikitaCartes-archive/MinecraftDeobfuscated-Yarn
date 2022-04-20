@@ -38,7 +38,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.Heightmap;
@@ -296,7 +295,7 @@ implements NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return this.customName != null ? this.customName : new TranslatableText("container.beacon");
+        return this.customName != null ? this.customName : Text.method_43471("container.beacon");
     }
 
     @Override

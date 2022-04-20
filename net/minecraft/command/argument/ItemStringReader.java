@@ -19,7 +19,7 @@ import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
@@ -28,9 +28,9 @@ import net.minecraft.util.registry.RegistryKey;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemStringReader {
-    private static final SimpleCommandExceptionType TAG_DISALLOWED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.item.tag.disallowed"));
-    private static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("argument.item.id.invalid", id));
-    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(tag -> new TranslatableText("arguments.item.tag.unknown", tag));
+    private static final SimpleCommandExceptionType TAG_DISALLOWED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.item.tag.disallowed"));
+    private static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("argument.item.id.invalid", id));
+    private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(tag -> Text.method_43469("arguments.item.tag.unknown", tag));
     private static final char LEFT_CURLY_BRACKET = '{';
     private static final char HASH_SIGN = '#';
     private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = SuggestionsBuilder::buildFuture;

@@ -13,12 +13,11 @@ import java.util.Collection;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class TextArgumentType
 implements ArgumentType<Text> {
     private static final Collection<String> EXAMPLES = Arrays.asList("\"hello world\"", "\"\"", "\"{\"text\":\"hello world\"}", "[\"\"]");
-    public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(text -> new TranslatableText("argument.component.invalid", text));
+    public static final DynamicCommandExceptionType INVALID_COMPONENT_EXCEPTION = new DynamicCommandExceptionType(text -> Text.method_43469("argument.component.invalid", text));
 
     private TextArgumentType() {
     }

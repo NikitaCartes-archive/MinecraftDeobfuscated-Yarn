@@ -9,9 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.OptionSliderWidget;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public class SoundSliderWidget
@@ -26,8 +24,8 @@ extends OptionSliderWidget {
 
     @Override
     protected void updateMessage() {
-        Text text = (float)this.value == (float)this.getYImage(false) ? ScreenTexts.OFF : new LiteralText((int)(this.value * 100.0) + "%");
-        this.setMessage(new TranslatableText("soundCategory." + this.category.getName()).append(": ").append(text));
+        Text text = (float)this.value == (float)this.getYImage(false) ? ScreenTexts.OFF : Text.method_43470((int)(this.value * 100.0) + "%");
+        this.setMessage(Text.method_43471("soundCategory." + this.category.getName()).append(": ").append(text));
     }
 
     @Override

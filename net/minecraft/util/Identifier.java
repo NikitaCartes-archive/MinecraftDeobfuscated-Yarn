@@ -16,7 +16,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.lang.reflect.Type;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class Identifier
 implements Comparable<Identifier> {
     public static final Codec<Identifier> CODEC = Codec.STRING.comapFlatMap(Identifier::validate, Identifier::toString).stable();
-    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
+    private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.id.invalid"));
     public static final char NAMESPACE_SEPARATOR = ':';
     public static final String DEFAULT_NAMESPACE = "minecraft";
     public static final String REALMS_NAMESPACE = "realms";

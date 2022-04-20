@@ -36,9 +36,7 @@ import net.minecraft.stat.Stat;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.stat.StatType;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -48,7 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public class StatsScreen
 extends Screen
 implements StatsListener {
-    private static final Text DOWNLOADING_STATS_TEXT = new TranslatableText("multiplayer.downloadingStats");
+    private static final Text DOWNLOADING_STATS_TEXT = Text.method_43471("multiplayer.downloadingStats");
     protected final Screen parent;
     private GeneralStatsListWidget generalStats;
     ItemStatsListWidget itemStats;
@@ -71,7 +69,7 @@ implements StatsListener {
     private static final int field_32280 = 1;
 
     public StatsScreen(Screen parent, StatHandler statHandler) {
-        super(new TranslatableText("gui.stats"));
+        super(Text.method_43471("gui.stats"));
         this.parent = parent;
         this.statHandler = statHandler;
     }
@@ -89,9 +87,9 @@ implements StatsListener {
     }
 
     public void createButtons() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, new TranslatableText("stat.generalButton"), button -> this.selectStatList(this.generalStats)));
-        ButtonWidget buttonWidget = this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, new TranslatableText("stat.itemsButton"), button -> this.selectStatList(this.itemStats)));
-        ButtonWidget buttonWidget2 = this.addDrawableChild(new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, new TranslatableText("stat.mobsButton"), button -> this.selectStatList(this.mobStats)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, Text.method_43471("stat.generalButton"), button -> this.selectStatList(this.generalStats)));
+        ButtonWidget buttonWidget = this.addDrawableChild(new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, Text.method_43471("stat.itemsButton"), button -> this.selectStatList(this.itemStats)));
+        ButtonWidget buttonWidget2 = this.addDrawableChild(new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, Text.method_43471("stat.mobsButton"), button -> this.selectStatList(this.mobStats)));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
         if (this.itemStats.children().isEmpty()) {
             buttonWidget.active = false;
@@ -189,7 +187,7 @@ implements StatsListener {
 
             Entry(Stat<Identifier> stat) {
                 this.stat = stat;
-                this.displayName = new TranslatableText(StatsScreen.getStatTranslationKey(stat));
+                this.displayName = Text.method_43471(StatsScreen.getStatTranslationKey(stat));
             }
 
             private String getFormatted() {
@@ -205,7 +203,7 @@ implements StatsListener {
 
             @Override
             public Text getNarration() {
-                return new TranslatableText("narrator.select", new LiteralText("").append(this.displayName).append(" ").append(this.getFormatted()));
+                return Text.method_43469("narrator.select", Text.method_43473().append(this.displayName).append(" ").append(this.getFormatted()));
             }
         }
     }
@@ -450,7 +448,7 @@ implements StatsListener {
 
             @Override
             public Text getNarration() {
-                return new TranslatableText("narrator.select", this.item.getName());
+                return Text.method_43469("narrator.select", this.item.getName());
             }
         }
     }
@@ -484,18 +482,18 @@ implements StatsListener {
                 this.entityTypeName = entityType.getName();
                 int i = StatsScreen.this.statHandler.getStat(Stats.KILLED.getOrCreateStat(entityType));
                 if (i == 0) {
-                    this.killedText = new TranslatableText("stat_type.minecraft.killed.none", this.entityTypeName);
+                    this.killedText = Text.method_43469("stat_type.minecraft.killed.none", this.entityTypeName);
                     this.killedAny = false;
                 } else {
-                    this.killedText = new TranslatableText("stat_type.minecraft.killed", i, this.entityTypeName);
+                    this.killedText = Text.method_43469("stat_type.minecraft.killed", i, this.entityTypeName);
                     this.killedAny = true;
                 }
                 int j = StatsScreen.this.statHandler.getStat(Stats.KILLED_BY.getOrCreateStat(entityType));
                 if (j == 0) {
-                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by.none", this.entityTypeName);
+                    this.killedByText = Text.method_43469("stat_type.minecraft.killed_by.none", this.entityTypeName);
                     this.killedByAny = false;
                 } else {
-                    this.killedByText = new TranslatableText("stat_type.minecraft.killed_by", this.entityTypeName, j);
+                    this.killedByText = Text.method_43469("stat_type.minecraft.killed_by", this.entityTypeName, j);
                     this.killedByAny = true;
                 }
             }
@@ -509,7 +507,7 @@ implements StatsListener {
 
             @Override
             public Text getNarration() {
-                return new TranslatableText("narrator.select", ScreenTexts.joinSentences(this.killedText, this.killedByText));
+                return Text.method_43469("narrator.select", ScreenTexts.joinSentences(this.killedText, this.killedByText));
             }
         }
     }

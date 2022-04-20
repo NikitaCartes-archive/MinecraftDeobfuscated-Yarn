@@ -12,8 +12,8 @@ import java.nio.file.Path;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
@@ -128,28 +128,15 @@ AutoCloseable {
         }).thenCompose(Function.identity());
     }
 
-    @Nullable
-    public NbtCompound getNbt(ChunkPos pos) throws IOException {
-        CompletableFuture<NbtCompound> completableFuture = this.readChunkData(pos);
-        try {
-            return completableFuture.join();
-        } catch (CompletionException completionException) {
-            if (completionException.getCause() instanceof IOException) {
-                throw (IOException)completionException.getCause();
-            }
-            throw completionException;
-        }
-    }
-
-    protected CompletableFuture<NbtCompound> readChunkData(ChunkPos pos) {
+    public CompletableFuture<Optional<NbtCompound>> readChunkData(ChunkPos pos) {
         return this.run(() -> {
             Result result = this.results.get(pos);
             if (result != null) {
-                return Either.left(result.nbt);
+                return Either.left(Optional.ofNullable(result.nbt));
             }
             try {
                 NbtCompound nbtCompound = this.storage.getTagAt(pos);
-                return Either.left(nbtCompound);
+                return Either.left(Optional.ofNullable(nbtCompound));
             } catch (Exception exception) {
                 LOGGER.warn("Failed to read chunk {}", (Object)pos, (Object)exception);
                 return Either.right(exception);

@@ -33,7 +33,6 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.OrderableTooltip;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.TranslatableOption;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
@@ -155,7 +154,7 @@ public final class SimpleOption<T> {
     }
 
     public SimpleOption(String key, TooltipFactoryGetter<T> tooltipFactoryGetter, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, Codec<T> codec, T defaultValue, Consumer<T> changeCallback) {
-        this.text = new TranslatableText(key);
+        this.text = Text.method_43471(key);
         this.tooltipFactoryGetter = tooltipFactoryGetter;
         this.textGetter = value -> valueTextGetter.toString(this.text, value);
         this.callbacks = callbacks;

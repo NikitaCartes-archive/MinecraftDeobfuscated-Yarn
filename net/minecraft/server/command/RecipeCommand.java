@@ -18,11 +18,11 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class RecipeCommand {
-    private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.recipe.give.failed"));
-    private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.recipe.take.failed"));
+    private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.recipe.give.failed"));
+    private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.recipe.take.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("recipe").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.literal("give").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("recipe", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.ALL_RECIPES).executes(context -> RecipeCommand.executeGive((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), Collections.singleton(IdentifierArgumentType.getRecipeArgument(context, "recipe")))))).then(CommandManager.literal("*").executes(context -> RecipeCommand.executeGive((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ((ServerCommandSource)context.getSource()).getServer().getRecipeManager().values())))))).then(CommandManager.literal("take").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("recipe", IdentifierArgumentType.identifier()).suggests(SuggestionProviders.ALL_RECIPES).executes(context -> RecipeCommand.executeTake((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), Collections.singleton(IdentifierArgumentType.getRecipeArgument(context, "recipe")))))).then(CommandManager.literal("*").executes(context -> RecipeCommand.executeTake((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ((ServerCommandSource)context.getSource()).getServer().getRecipeManager().values()))))));
@@ -37,9 +37,9 @@ public class RecipeCommand {
             throw GIVE_FAILED_EXCEPTION.create();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.recipe.give.success.single", recipes.size(), targets.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.recipe.give.success.single", recipes.size(), targets.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
+            source.sendFeedback(Text.method_43469("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
         }
         return i;
     }
@@ -53,9 +53,9 @@ public class RecipeCommand {
             throw TAKE_FAILED_EXCEPTION.create();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.recipe.take.success.single", recipes.size(), targets.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.recipe.take.success.single", recipes.size(), targets.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
+            source.sendFeedback(Text.method_43469("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
         }
         return i;
     }

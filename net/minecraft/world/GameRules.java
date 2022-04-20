@@ -117,6 +117,7 @@ public class GameRules {
     public static final Key<BooleanRule> FREEZE_DAMAGE = GameRules.register("freezeDamage", Category.PLAYER, BooleanRule.create(true));
     public static final Key<BooleanRule> DO_PATROL_SPAWNING = GameRules.register("doPatrolSpawning", Category.SPAWNING, BooleanRule.create(true));
     public static final Key<BooleanRule> DO_TRADER_SPAWNING = GameRules.register("doTraderSpawning", Category.SPAWNING, BooleanRule.create(true));
+    public static final Key<BooleanRule> DO_WARDEN_SPAWNING = GameRules.register("doWardenSpawning", Category.SPAWNING, BooleanRule.create(true));
     public static final Key<BooleanRule> FORGIVE_DEAD_PLAYERS = GameRules.register("forgiveDeadPlayers", Category.MOBS, BooleanRule.create(true));
     public static final Key<BooleanRule> UNIVERSAL_ANGER = GameRules.register("universalAnger", Category.MOBS, BooleanRule.create(false));
     public static final Key<IntRule> PLAYERS_SLEEPING_PERCENTAGE = GameRules.register("playersSleepingPercentage", Category.PLAYER, IntRule.create(100));

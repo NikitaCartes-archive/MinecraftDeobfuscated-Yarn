@@ -28,7 +28,6 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
@@ -537,7 +536,7 @@ Selectable {
         int i;
         List<E> list = this.children();
         if (list.size() > 1 && (i = list.indexOf(entry)) != -1) {
-            builder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.list", i + 1, list.size()));
+            builder.put(NarrationPart.POSITION, (Text)Text.method_43469("narrator.position.list", i + 1, list.size()));
         }
     }
 

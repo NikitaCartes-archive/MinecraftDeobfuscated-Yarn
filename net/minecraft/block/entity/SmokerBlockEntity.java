@@ -12,7 +12,6 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.SmokerScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SmokerBlockEntity
@@ -23,7 +22,7 @@ extends AbstractFurnaceBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.smoker");
+        return Text.method_43471("container.smoker");
     }
 
     @Override

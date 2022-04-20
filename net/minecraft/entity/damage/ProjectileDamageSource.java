@@ -8,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 public class ProjectileDamageSource
@@ -40,9 +39,9 @@ extends EntityDamageSource {
         String string = "death.attack." + this.name;
         String string2 = string + ".item";
         if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-            return new TranslatableText(string2, entity.getDisplayName(), text, itemStack.toHoverableText());
+            return Text.method_43469(string2, entity.getDisplayName(), text, itemStack.toHoverableText());
         }
-        return new TranslatableText(string, entity.getDisplayName(), text);
+        return Text.method_43469(string, entity.getDisplayName(), text);
     }
 }
 

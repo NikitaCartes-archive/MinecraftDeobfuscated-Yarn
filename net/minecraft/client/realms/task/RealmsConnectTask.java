@@ -12,7 +12,7 @@ import net.minecraft.client.realms.RealmsConnection;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.task.LongRunningTask;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsConnectTask
@@ -29,7 +29,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(new TranslatableText("mco.connect.connecting"));
+        this.setTitle(Text.method_43471("mco.connect.connecting"));
         this.realmsConnect.connect(this.server, ServerAddress.parse(this.address.address));
     }
 

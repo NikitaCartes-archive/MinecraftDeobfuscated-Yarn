@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 public class DimensionArgumentType
 implements ArgumentType<Identifier> {
     private static final Collection<String> EXAMPLES = Stream.of(World.OVERWORLD, World.NETHER).map(key -> key.getValue().toString()).collect(Collectors.toList());
-    private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(id -> new TranslatableText("argument.dimension.invalid", id));
+    private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("argument.dimension.invalid", id));
 
     @Override
     public Identifier parse(StringReader stringReader) throws CommandSyntaxException {

@@ -66,7 +66,6 @@ implements DebugRenderer.Renderer {
     public static void drawPath(Path path, float nodeSize, boolean drawDebugNodes, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(6.0f);
         PathfindingDebugRenderer.drawPathInternal(path, nodeSize, drawDebugNodes, drawLabels, cameraX, cameraY, cameraZ);

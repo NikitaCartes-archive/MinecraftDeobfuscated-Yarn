@@ -12,7 +12,8 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -29,14 +30,14 @@ public class GameModeCommand {
     }
 
     private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
-        TranslatableText text = new TranslatableText("gameMode." + gameMode.getName());
+        MutableText text = Text.method_43471("gameMode." + gameMode.getName());
         if (source.getEntity() == player) {
-            source.sendFeedback(new TranslatableText("commands.gamemode.success.self", text), true);
+            source.sendFeedback(Text.method_43469("commands.gamemode.success.self", text), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(new TranslatableText("gameMode.changed", text), Util.NIL_UUID);
+                player.sendSystemMessage(Text.method_43469("gameMode.changed", text), Util.NIL_UUID);
             }
-            source.sendFeedback(new TranslatableText("commands.gamemode.success.other", player.getDisplayName(), text), true);
+            source.sendFeedback(Text.method_43469("commands.gamemode.success.other", player.getDisplayName(), text), true);
         }
     }
 

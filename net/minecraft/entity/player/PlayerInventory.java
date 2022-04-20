@@ -22,7 +22,6 @@ import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
@@ -465,7 +464,7 @@ Nameable {
 
     @Override
     public Text getName() {
-        return new TranslatableText("container.inventory");
+        return Text.method_43471("container.inventory");
     }
 
     public ItemStack getArmorStack(int slot) {

@@ -85,15 +85,19 @@ public class LookTargetUtil {
     }
 
     public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation) {
-        double d = entity.getEyeY() - (double)0.3f;
-        ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
-        itemEntity.setThrower(entity.getUuid());
-        float f = 0.3f;
-        Vec3d vec3d = targetLocation.subtract(entity.getPos());
-        vec3d = vec3d.normalize().multiply(0.3f);
-        itemEntity.setVelocity(vec3d);
+        Vec3d vec3d = new Vec3d(0.3f, 0.3f, 0.3f);
+        LookTargetUtil.method_43392(entity, stack, targetLocation, vec3d, 0.3f);
+    }
+
+    public static void method_43392(LivingEntity livingEntity, ItemStack itemStack, Vec3d vec3d, Vec3d vec3d2, float f) {
+        double d = livingEntity.getEyeY() - (double)f;
+        ItemEntity itemEntity = new ItemEntity(livingEntity.world, livingEntity.getX(), d, livingEntity.getZ(), itemStack);
+        itemEntity.setThrower(livingEntity.getUuid());
+        Vec3d vec3d3 = vec3d.subtract(livingEntity.getPos());
+        vec3d3 = vec3d3.normalize().multiply(vec3d2.x, vec3d2.y, vec3d2.z);
+        itemEntity.setVelocity(vec3d3);
         itemEntity.setToDefaultPickupDelay();
-        entity.world.spawnEntity(itemEntity);
+        livingEntity.world.spawnEntity(itemEntity);
     }
 
     public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {

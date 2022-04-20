@@ -37,10 +37,8 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -188,7 +186,7 @@ extends BlockWithEntity {
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null) {
             if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-                tooltip.add(new LiteralText("???????"));
+                tooltip.add(Text.method_43470("???????"));
             }
             if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
@@ -205,7 +203,7 @@ extends BlockWithEntity {
                     tooltip.add(mutableText);
                 }
                 if (j - i > 0) {
-                    tooltip.add(new TranslatableText("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
+                    tooltip.add(Text.method_43469("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
                 }
             }
         }

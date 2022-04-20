@@ -38,11 +38,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -58,8 +56,8 @@ extends Screen {
     private static final int MAX_TEXT_HEIGHT = 128;
     private static final int WIDTH = 192;
     private static final int HEIGHT = 192;
-    private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
-    private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
+    private static final Text EDIT_TITLE_TEXT = Text.method_43471("book.editTitle");
+    private static final Text FINALIZE_WARNING_TEXT = Text.method_43471("book.finalizeWarning");
     private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
     private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.GRAY));
     private final PlayerEntity player;
@@ -85,7 +83,7 @@ extends Screen {
     private final Hand hand;
     @Nullable
     private PageContent pageContent = PageContent.EMPTY;
-    private Text pageIndicatorText = LiteralText.EMPTY;
+    private Text pageIndicatorText = ScreenTexts.field_39003;
     private final Text signedByText;
 
     public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
@@ -100,7 +98,7 @@ extends Screen {
         if (this.pages.isEmpty()) {
             this.pages.add("");
         }
-        this.signedByText = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
+        this.signedByText = Text.method_43469("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
     }
 
     private void setClipboard(String clipboard) {
@@ -127,7 +125,7 @@ extends Screen {
     protected void init() {
         this.invalidatePageContent();
         this.client.keyboard.setRepeatEvents(true);
-        this.signButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.signButton"), button -> {
+        this.signButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, Text.method_43471("book.signButton"), button -> {
             this.signing = true;
             this.updateButtons();
         }));
@@ -135,7 +133,7 @@ extends Screen {
             this.client.setScreen(null);
             this.finalizeBook(false);
         }));
-        this.finalizeButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, new TranslatableText("book.finalizeButton"), button -> {
+        this.finalizeButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, Text.method_43471("book.finalizeButton"), button -> {
             if (this.signing) {
                 this.finalizeBook(true);
                 this.client.setScreen(null);
@@ -528,7 +526,7 @@ extends Screen {
     private PageContent getPageContent() {
         if (this.pageContent == null) {
             this.pageContent = this.createPageContent();
-            this.pageIndicatorText = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
+            this.pageIndicatorText = Text.method_43469("book.pageIndicator", this.currentPage + 1, this.countPages());
         }
         return this.pageContent;
     }
@@ -696,7 +694,7 @@ extends Screen {
             this.content = content;
             this.x = x;
             this.y = y;
-            this.text = new LiteralText(content).setStyle(style);
+            this.text = Text.method_43470(content).setStyle(style);
         }
     }
 

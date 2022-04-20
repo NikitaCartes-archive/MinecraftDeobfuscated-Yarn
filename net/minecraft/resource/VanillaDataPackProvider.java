@@ -11,11 +11,11 @@ import net.minecraft.resource.ResourcePackProvider;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class VanillaDataPackProvider
 implements ResourcePackProvider {
-    public static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(new TranslatableText("dataPack.vanilla.description"), ResourceType.SERVER_DATA.getPackVersion(SharedConstants.getGameVersion()));
+    public static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(Text.method_43471("dataPack.vanilla.description"), ResourceType.SERVER_DATA.getPackVersion(SharedConstants.getGameVersion()));
     public static final String NAME = "vanilla";
     private final DefaultResourcePack pack = new DefaultResourcePack(DEFAULT_PACK_METADATA, "minecraft");
 

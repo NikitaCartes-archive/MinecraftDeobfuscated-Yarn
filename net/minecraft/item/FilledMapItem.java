@@ -27,7 +27,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
@@ -330,15 +329,15 @@ extends NetworkSyncedItem {
         Integer integer = FilledMapItem.getMapId(stack);
         MapState mapState2 = mapState = world == null ? null : FilledMapItem.getMapState(integer, world);
         if (mapState != null && mapState.locked) {
-            tooltip.add(new TranslatableText("filled_map.locked", integer).formatted(Formatting.GRAY));
+            tooltip.add(Text.method_43469("filled_map.locked", integer).formatted(Formatting.GRAY));
         }
         if (context.isAdvanced()) {
             if (mapState != null) {
-                tooltip.add(new TranslatableText("filled_map.id", integer).formatted(Formatting.GRAY));
-                tooltip.add(new TranslatableText("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
-                tooltip.add(new TranslatableText("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
+                tooltip.add(Text.method_43469("filled_map.id", integer).formatted(Formatting.GRAY));
+                tooltip.add(Text.method_43469("filled_map.scale", 1 << mapState.scale).formatted(Formatting.GRAY));
+                tooltip.add(Text.method_43469("filled_map.level", mapState.scale, 4).formatted(Formatting.GRAY));
             } else {
-                tooltip.add(new TranslatableText("filled_map.unknown").formatted(Formatting.GRAY));
+                tooltip.add(Text.method_43471("filled_map.unknown").formatted(Formatting.GRAY));
             }
         }
     }

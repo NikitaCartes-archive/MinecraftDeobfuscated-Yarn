@@ -12,22 +12,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.ParsableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Language;
 import org.jetbrains.annotations.Nullable;
 
 public class Texts {
     public static final String DEFAULT_SEPARATOR = ", ";
-    public static final Text GRAY_DEFAULT_SEPARATOR_TEXT = new LiteralText(", ").formatted(Formatting.GRAY);
-    public static final Text DEFAULT_SEPARATOR_TEXT = new LiteralText(", ");
+    public static final Text GRAY_DEFAULT_SEPARATOR_TEXT = Text.method_43470(", ").formatted(Formatting.GRAY);
+    public static final Text DEFAULT_SEPARATOR_TEXT = Text.method_43470(", ");
 
     public static MutableText setStyleIfAbsent(MutableText text, Style style) {
         if (style.isEmpty()) {
@@ -51,7 +51,7 @@ public class Texts {
         if (depth > 100) {
             return text.shallowCopy();
         }
-        MutableText mutableText = text instanceof ParsableText ? ((ParsableText)((Object)text)).parse(source, sender, depth + 1) : text.copy();
+        MutableText mutableText = text.asString().parse(source, sender, depth + 1);
         for (Text text2 : text.getSiblings()) {
             mutableText.append(Texts.parse(source, text2, sender, depth + 1));
         }
@@ -70,21 +70,21 @@ public class Texts {
 
     public static Text toText(GameProfile profile) {
         if (profile.getName() != null) {
-            return new LiteralText(profile.getName());
+            return Text.method_43470(profile.getName());
         }
         if (profile.getId() != null) {
-            return new LiteralText(profile.getId().toString());
+            return Text.method_43470(profile.getId().toString());
         }
-        return new LiteralText("(unknown)");
+        return Text.method_43470("(unknown)");
     }
 
     public static Text joinOrdered(Collection<String> strings) {
-        return Texts.joinOrdered(strings, string -> new LiteralText((String)string).formatted(Formatting.GREEN));
+        return Texts.joinOrdered(strings, string -> Text.method_43470(string).formatted(Formatting.GREEN));
     }
 
     public static <T extends Comparable<T>> Text joinOrdered(Collection<T> elements, Function<T, Text> transformer) {
         if (elements.isEmpty()) {
-            return LiteralText.EMPTY;
+            return ScreenTexts.field_39003;
         }
         if (elements.size() == 1) {
             return transformer.apply((Comparable)elements.iterator().next());
@@ -108,12 +108,12 @@ public class Texts {
 
     public static <T> MutableText join(Collection<? extends T> elements, Text separator, Function<T, Text> transformer) {
         if (elements.isEmpty()) {
-            return new LiteralText("");
+            return Text.method_43473();
         }
         if (elements.size() == 1) {
             return transformer.apply(elements.iterator().next()).shallowCopy();
         }
-        LiteralText mutableText = new LiteralText("");
+        MutableText mutableText = Text.method_43473();
         boolean bl = true;
         for (T object : elements) {
             if (!bl) {
@@ -126,14 +126,33 @@ public class Texts {
     }
 
     public static MutableText bracketed(Text text) {
-        return new TranslatableText("chat.square_brackets", text);
+        return Text.method_43469("chat.square_brackets", text);
     }
 
     public static Text toText(Message message) {
         if (message instanceof Text) {
-            return (Text)message;
+            Text text = (Text)message;
+            return text;
         }
-        return new LiteralText(message.getString());
+        return Text.method_43470(message.getString());
+    }
+
+    public static boolean method_43476(@Nullable Text text) {
+        if (text instanceof TranslatableText) {
+            TranslatableText translatableText = (TranslatableText)((Object)text);
+            String string = translatableText.getKey();
+            return Language.getInstance().hasTranslation(string);
+        }
+        return true;
+    }
+
+    @Deprecated(forRemoval=true)
+    public static Text method_43475(Text text, String string, String string2) {
+        TranslatableText translatableText;
+        if (text instanceof TranslatableText && string.equals((translatableText = (TranslatableText)((Object)text)).getKey())) {
+            return Text.method_43469(string2, translatableText.getArgs());
+        }
+        return text;
     }
 }
 

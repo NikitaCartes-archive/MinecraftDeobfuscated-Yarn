@@ -8,7 +8,6 @@ import java.util.Comparator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
@@ -24,7 +23,7 @@ public enum NarratorMode {
 
     private NarratorMode(int id, String name) {
         this.id = id;
-        this.name = new TranslatableText(name);
+        this.name = Text.method_43471(name);
     }
 
     public int getId() {

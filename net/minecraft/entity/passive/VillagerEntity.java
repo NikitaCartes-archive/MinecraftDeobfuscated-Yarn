@@ -69,7 +69,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.LargeEntitySpawnHelper;
@@ -645,7 +644,7 @@ VillagerDataContainer {
 
     @Override
     protected Text getDefaultName() {
-        return new TranslatableText(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+        return Text.method_43471(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 
     @Override

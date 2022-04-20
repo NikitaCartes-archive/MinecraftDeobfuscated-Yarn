@@ -3,58 +3,26 @@
  */
 package net.minecraft.text;
 
-import net.minecraft.text.BaseText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
+import java.util.Optional;
+import net.minecraft.class_7417;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Style;
 
-public class LiteralText
-extends BaseText {
-    public static final Text EMPTY = new LiteralText("");
-    private final String string;
-
-    public LiteralText(String string) {
-        this.string = string;
-    }
-
-    public String getRawString() {
-        return this.string;
+public record LiteralText(String string) implements class_7417
+{
+    @Override
+    public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+        return visitor.accept(this.string);
     }
 
     @Override
-    public String asString() {
-        return this.string;
-    }
-
-    @Override
-    public LiteralText copy() {
-        return new LiteralText(this.string);
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (object instanceof LiteralText) {
-            LiteralText literalText = (LiteralText)object;
-            return this.string.equals(literalText.getRawString()) && super.equals(object);
-        }
-        return false;
+    public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+        return styledVisitor.accept(style, this.string);
     }
 
     @Override
     public String toString() {
-        return "TextComponent{text='" + this.string + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
-    }
-
-    @Override
-    public /* synthetic */ BaseText copy() {
-        return this.copy();
-    }
-
-    @Override
-    public /* synthetic */ MutableText copy() {
-        return this.copy();
+        return "literal{" + this.string + "}";
     }
 }
 

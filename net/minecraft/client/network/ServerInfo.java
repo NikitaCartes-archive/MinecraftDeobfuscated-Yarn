@@ -10,9 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,7 +26,7 @@ public class ServerInfo {
     public Text label;
     public long ping;
     public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
-    public Text version = new LiteralText(SharedConstants.getGameVersion().getName());
+    public Text version = Text.method_43470(SharedConstants.getGameVersion().getName());
     public boolean online;
     public List<Text> playerListSummary = Collections.emptyList();
     private ResourcePackPolicy resourcePackPolicy = ResourcePackPolicy.PROMPT;
@@ -121,7 +119,7 @@ public class ServerInfo {
         private final Text name;
 
         private ResourcePackPolicy(String name) {
-            this.name = new TranslatableText("addServer.resourcePack." + name);
+            this.name = Text.method_43471("addServer.resourcePack." + name);
         }
 
         public Text getName() {

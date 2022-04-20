@@ -6,10 +6,10 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -25,8 +25,8 @@ extends AbstractTeam {
     private final String name;
     private final Set<String> playerList = Sets.newHashSet();
     private Text displayName;
-    private Text prefix = LiteralText.EMPTY;
-    private Text suffix = LiteralText.EMPTY;
+    private Text prefix = ScreenTexts.field_39003;
+    private Text suffix = ScreenTexts.field_39003;
     private boolean friendlyFire = true;
     private boolean showFriendlyInvisibles = true;
     private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
@@ -38,8 +38,8 @@ extends AbstractTeam {
     public Team(Scoreboard scoreboard, String name) {
         this.scoreboard = scoreboard;
         this.name = name;
-        this.displayName = new LiteralText(name);
-        this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(name)));
+        this.displayName = Text.method_43470(name);
+        this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(name)));
     }
 
     public Scoreboard getScoreboard() {
@@ -73,7 +73,7 @@ extends AbstractTeam {
     }
 
     public void setPrefix(@Nullable Text prefix) {
-        this.prefix = prefix == null ? LiteralText.EMPTY : prefix;
+        this.prefix = prefix == null ? ScreenTexts.field_39003 : prefix;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -82,7 +82,7 @@ extends AbstractTeam {
     }
 
     public void setSuffix(@Nullable Text suffix) {
-        this.suffix = suffix == null ? LiteralText.EMPTY : suffix;
+        this.suffix = suffix == null ? ScreenTexts.field_39003 : suffix;
         this.scoreboard.updateScoreboardTeam(this);
     }
 
@@ -97,7 +97,7 @@ extends AbstractTeam {
 
     @Override
     public MutableText decorateName(Text name) {
-        MutableText mutableText = new LiteralText("").append(this.prefix).append(name).append(this.suffix);
+        MutableText mutableText = Text.method_43473().append(this.prefix).append(name).append(this.suffix);
         Formatting formatting = this.getColor();
         if (formatting != Formatting.RESET) {
             mutableText.formatted(formatting);

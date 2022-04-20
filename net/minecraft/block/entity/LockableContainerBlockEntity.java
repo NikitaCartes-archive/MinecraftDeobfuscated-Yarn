@@ -17,7 +17,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +84,7 @@ Nameable {
         if (player.isSpectator() || lock.canOpen(player.getMainHandStack())) {
             return true;
         }
-        player.sendMessage(new TranslatableText("container.isLocked", containerName), true);
+        player.sendMessage(Text.method_43469("container.isLocked", containerName), true);
         player.playSound(SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0f, 1.0f);
         return false;
     }

@@ -3,8 +3,8 @@
  */
 package net.minecraft.resource;
 
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public interface ResourcePackSource {
@@ -20,8 +20,8 @@ public interface ResourcePackSource {
     }
 
     public static ResourcePackSource nameAndSource(String source) {
-        TranslatableText text = new TranslatableText(source);
-        return name -> new TranslatableText("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
+        MutableText text = Text.method_43471(source);
+        return name -> Text.method_43469("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
     }
 }
 

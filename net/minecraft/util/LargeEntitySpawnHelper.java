@@ -31,6 +31,9 @@ public class LargeEntitySpawnHelper {
     }
 
     private static boolean findSpawnPos(ServerWorld serverWorld, int i, BlockPos.Mutable mutable) {
+        if (!serverWorld.getWorldBorder().contains(mutable)) {
+            return false;
+        }
         BlockState blockState = serverWorld.getBlockState(mutable);
         for (int j = i; j >= -i; --j) {
             mutable.move(Direction.DOWN);

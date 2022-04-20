@@ -125,6 +125,7 @@ extends RenderPhase {
     private static final RenderLayer END_GATEWAY = RenderLayer.of("end_gateway", VertexFormats.POSITION, VertexFormat.DrawMode.QUADS, 256, false, false, MultiPhaseParameters.builder().shader(END_GATEWAY_SHADER).texture(RenderPhase.Textures.create().add(EndPortalBlockEntityRenderer.SKY_TEXTURE, false, false).add(EndPortalBlockEntityRenderer.PORTAL_TEXTURE, false, false).build()).build(false));
     public static final MultiPhase LINES = RenderLayer.of("lines", VertexFormats.LINES, VertexFormat.DrawMode.LINES, 256, MultiPhaseParameters.builder().shader(LINES_SHADER).lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty())).layering(VIEW_OFFSET_Z_LAYERING).transparency(TRANSLUCENT_TRANSPARENCY).target(ITEM_TARGET).writeMaskState(ALL_MASK).cull(DISABLE_CULLING).build(false));
     public static final MultiPhase LINE_STRIP = RenderLayer.of("line_strip", VertexFormats.LINES, VertexFormat.DrawMode.LINE_STRIP, 256, MultiPhaseParameters.builder().shader(LINES_SHADER).lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty())).layering(VIEW_OFFSET_Z_LAYERING).transparency(TRANSLUCENT_TRANSPARENCY).target(ITEM_TARGET).writeMaskState(ALL_MASK).cull(DISABLE_CULLING).build(false));
+    private static final ImmutableList<RenderLayer> field_39002 = ImmutableList.of(RenderLayer.getSolid(), RenderLayer.getCutoutMipped(), RenderLayer.getCutout(), RenderLayer.getTranslucent(), RenderLayer.getTripwire());
     private final VertexFormat vertexFormat;
     private final VertexFormat.DrawMode drawMode;
     private final int expectedBufferSize;
@@ -371,7 +372,7 @@ extends RenderPhase {
         }
         buffer.end();
         this.startDrawing();
-        BufferRenderer.draw(buffer);
+        BufferRenderer.method_43433(buffer);
         this.endDrawing();
     }
 
@@ -381,7 +382,7 @@ extends RenderPhase {
     }
 
     public static List<RenderLayer> getBlockLayers() {
-        return ImmutableList.of(RenderLayer.getSolid(), RenderLayer.getCutoutMipped(), RenderLayer.getCutout(), RenderLayer.getTranslucent(), RenderLayer.getTripwire());
+        return field_39002;
     }
 
     public int getExpectedBufferSize() {

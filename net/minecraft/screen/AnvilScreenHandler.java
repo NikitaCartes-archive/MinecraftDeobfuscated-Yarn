@@ -20,7 +20,7 @@ import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldEvents;
 import org.apache.commons.lang3.StringUtils;
@@ -218,7 +218,7 @@ extends ForgingScreenHandler {
         } else if (!this.newItemName.equals(itemStack.getName().getString())) {
             k = 1;
             i += k;
-            itemStack2.setCustomName(new LiteralText(this.newItemName));
+            itemStack2.setCustomName(Text.method_43470(this.newItemName));
         }
         this.levelCost.set(j + i);
         if (i <= 0) {
@@ -256,7 +256,7 @@ extends ForgingScreenHandler {
             if (StringUtils.isBlank(newItemName)) {
                 itemStack.removeCustomName();
             } else {
-                itemStack.setCustomName(new LiteralText(this.newItemName));
+                itemStack.setCustomName(Text.method_43470(this.newItemName));
             }
         }
         this.updateResult();

@@ -19,10 +19,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends ScreenHandler>
@@ -71,7 +69,7 @@ extends HandledScreen<T> {
                 l += k;
             }
             if (statusEffectInstance != null) {
-                List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), new LiteralText(StatusEffectUtil.durationToString(statusEffectInstance, 1.0f)));
+                List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), Text.method_43470(StatusEffectUtil.durationToString(statusEffectInstance, 1.0f)));
                 this.renderTooltip(matrices, list, Optional.empty(), mouseX, mouseY);
             }
         }
@@ -117,7 +115,7 @@ extends HandledScreen<T> {
     private Text getStatusEffectDescription(StatusEffectInstance statusEffect) {
         MutableText mutableText = statusEffect.getEffectType().getName().shallowCopy();
         if (statusEffect.getAmplifier() >= 1 && statusEffect.getAmplifier() <= 9) {
-            mutableText.append(" ").append(new TranslatableText("enchantment.level." + (statusEffect.getAmplifier() + 1)));
+            mutableText.append(" ").append(Text.method_43471("enchantment.level." + (statusEffect.getAmplifier() + 1)));
         }
         return mutableText;
     }

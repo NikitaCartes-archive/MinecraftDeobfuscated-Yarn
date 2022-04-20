@@ -4,7 +4,6 @@
 package net.minecraft.client.render.entity;
 
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public enum PlayerModelPart {
     CAPE(0, "cape"),
@@ -24,7 +23,7 @@ public enum PlayerModelPart {
         this.id = id;
         this.bitFlag = 1 << id;
         this.name = name;
-        this.optionName = new TranslatableText("options.modelPart." + name);
+        this.optionName = Text.method_43471("options.modelPart." + name);
     }
 
     public int getBitFlag() {

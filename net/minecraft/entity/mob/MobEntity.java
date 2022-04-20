@@ -123,6 +123,7 @@ extends LivingEntity {
     public static final float BASE_ENCHANTED_MAIN_HAND_EQUIPMENT_CHANCE = 0.25f;
     public static final String LEASH_KEY = "Leash";
     public static final float DEFAULT_DROP_CHANCE = 0.085f;
+    public static final int field_38932 = 2;
     public static final int field_35039 = 2;
     public int ambientSoundChance;
     protected int experiencePoints;
@@ -1034,7 +1035,7 @@ extends LivingEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         AbstractRandom abstractRandom = world.getRandom();
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", abstractRandom.method_43385(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE));
         if (abstractRandom.nextFloat() < 0.05f) {
             this.setLeftHanded(true);
         } else {

@@ -16,7 +16,6 @@ import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
@@ -33,7 +32,7 @@ implements SpectatorMenuCommand {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
         this.skinId = map.containsKey((Object)MinecraftProfileTexture.Type.SKIN) ? minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN) : DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
-        this.name = new LiteralText(gameProfile.getName());
+        this.name = Text.method_43470(gameProfile.getName());
     }
 
     @Override

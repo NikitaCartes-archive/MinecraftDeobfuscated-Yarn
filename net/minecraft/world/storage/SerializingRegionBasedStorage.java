@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
@@ -107,17 +109,19 @@ implements AutoCloseable {
     }
 
     private void loadDataAt(ChunkPos chunkPos) {
-        this.update(chunkPos, NbtOps.INSTANCE, this.loadNbt(chunkPos));
+        Optional<NbtCompound> optional = this.loadNbt(chunkPos).join();
+        this.update(chunkPos, NbtOps.INSTANCE, optional.orElse(null));
     }
 
-    @Nullable
-    private NbtCompound loadNbt(ChunkPos pos) {
-        try {
-            return this.worker.getNbt(pos);
-        } catch (IOException iOException) {
-            LOGGER.error("Error reading chunk {} data from disk", (Object)pos, (Object)iOException);
-            return null;
-        }
+    private CompletableFuture<Optional<NbtCompound>> loadNbt(ChunkPos pos) {
+        return this.worker.readChunkData(pos).exceptionally(throwable -> {
+            if (throwable instanceof IOException) {
+                IOException iOException = (IOException)throwable;
+                LOGGER.error("Error reading chunk {} data from disk", (Object)pos, (Object)iOException);
+                return Optional.empty();
+            }
+            throw new CompletionException((Throwable)throwable);
+        });
     }
 
     private <T> void update(ChunkPos pos, DynamicOps<T> ops, @Nullable T data) {

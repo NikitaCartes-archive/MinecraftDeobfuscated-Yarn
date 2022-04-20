@@ -22,9 +22,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -196,7 +194,7 @@ NamedScreenHandlerFactory {
         String string;
         if (player == null) {
             string = "Lectern";
-            text = new LiteralText("Lectern");
+            text = Text.method_43470("Lectern");
         } else {
             string = player.getName().getString();
             text = player.getDisplayName();
@@ -239,7 +237,7 @@ NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText("container.lectern");
+        return Text.method_43471("container.lectern");
     }
 }
 

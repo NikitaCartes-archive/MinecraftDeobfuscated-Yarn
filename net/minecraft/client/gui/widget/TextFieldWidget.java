@@ -31,7 +31,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
@@ -100,7 +99,7 @@ Element {
     @Override
     protected MutableText getNarrationMessage() {
         Text text = this.getMessage();
-        return new TranslatableText("gui.narrate.editBox", text, this.text);
+        return Text.method_43469("gui.narrate.editBox", text, this.text);
     }
 
     public void setText(String text) {
@@ -578,7 +577,7 @@ Element {
 
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, (Text)new TranslatableText("narration.edit_box", this.getText()));
+        builder.put(NarrationPart.TITLE, (Text)Text.method_43469("narration.edit_box", this.getText()));
     }
 }
 

@@ -11,11 +11,11 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
-    private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(difficulty -> new TranslatableText("commands.difficulty.failure", difficulty));
+    private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(difficulty -> Text.method_43469("commands.difficulty.failure", difficulty));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
@@ -24,7 +24,7 @@ public class DifficultyCommand {
         }
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(source -> source.hasPermissionLevel(2))).executes(context -> {
             Difficulty difficulty = ((ServerCommandSource)context.getSource()).getWorld().getDifficulty();
-            ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.difficulty.query", difficulty.getTranslatableName()), false);
+            ((ServerCommandSource)context.getSource()).sendFeedback(Text.method_43469("commands.difficulty.query", difficulty.getTranslatableName()), false);
             return difficulty.getId();
         }));
     }
@@ -35,7 +35,7 @@ public class DifficultyCommand {
             throw FAILURE_EXCEPTION.create(difficulty.getName());
         }
         minecraftServer.setDifficulty(difficulty, true);
-        source.sendFeedback(new TranslatableText("commands.difficulty.success", difficulty.getTranslatableName()), true);
+        source.sendFeedback(Text.method_43469("commands.difficulty.success", difficulty.getTranslatableName()), true);
         return 0;
     }
 }

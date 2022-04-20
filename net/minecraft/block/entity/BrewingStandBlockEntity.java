@@ -22,7 +22,6 @@ import net.minecraft.screen.BrewingStandScreenHandler;
 import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -88,7 +87,7 @@ implements SidedInventory {
 
     @Override
     protected Text getContainerName() {
-        return new TranslatableText("container.brewing");
+        return Text.method_43471("container.brewing");
     }
 
     @Override

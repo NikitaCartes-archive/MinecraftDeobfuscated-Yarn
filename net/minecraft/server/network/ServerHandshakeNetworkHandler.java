@@ -12,13 +12,12 @@ import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerQueryNetworkHandler;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class ServerHandshakeNetworkHandler
 implements ServerHandshakePacketListener {
-    private static final Text IGNORING_STATUS_REQUEST_MESSAGE = new LiteralText("Ignoring status request");
+    private static final Text IGNORING_STATUS_REQUEST_MESSAGE = Text.method_43470("Ignoring status request");
     private final MinecraftServer server;
     private final ClientConnection connection;
 
@@ -33,7 +32,7 @@ implements ServerHandshakePacketListener {
             case LOGIN: {
                 this.connection.setState(NetworkState.LOGIN);
                 if (packet.getProtocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
-                    TranslatableText text = packet.getProtocolVersion() < 754 ? new TranslatableText("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName()) : new TranslatableText("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
+                    MutableText text = packet.getProtocolVersion() < 754 ? Text.method_43469("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName()) : Text.method_43469("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
                     this.connection.send(new LoginDisconnectS2CPacket(text));
                     this.connection.disconnect(text);
                     break;

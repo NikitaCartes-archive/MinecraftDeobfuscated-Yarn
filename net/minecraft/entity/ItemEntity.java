@@ -26,7 +26,6 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -324,7 +323,7 @@ extends Entity {
         if (text != null) {
             return text;
         }
-        return new TranslatableText(this.getStack().getTranslationKey());
+        return Text.method_43471(this.getStack().getTranslationKey());
     }
 
     @Override

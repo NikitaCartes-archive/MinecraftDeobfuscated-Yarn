@@ -38,7 +38,7 @@ implements DispenserBehavior {
         e = side.getAxis() == Direction.Axis.Y ? (e -= 0.125) : (e -= 0.15625);
         ItemEntity itemEntity = new ItemEntity(world, d, e, f, stack);
         double g = world.random.nextDouble() * 0.1 + 0.2;
-        itemEntity.setVelocity(world.random.nextGaussian() * (double)0.0075f * (double)speed + (double)side.getOffsetX() * g, world.random.nextGaussian() * (double)0.0075f * (double)speed + (double)0.2f, world.random.nextGaussian() * (double)0.0075f * (double)speed + (double)side.getOffsetZ() * g);
+        itemEntity.setVelocity(world.random.method_43385((double)side.getOffsetX() * g, 0.0172275 * (double)speed), world.random.method_43385(0.2, 0.0172275 * (double)speed), world.random.method_43385((double)side.getOffsetZ() * g, 0.0172275 * (double)speed));
         world.spawnEntity(itemEntity);
     }
 

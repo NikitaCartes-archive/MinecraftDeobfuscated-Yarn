@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen.world;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,7 +18,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.OrderedText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.Difficulty;
@@ -44,7 +45,7 @@ extends Screen {
     private WorldListWidget levelList;
 
     public SelectWorldScreen(Screen parent) {
-        super(new TranslatableText("selectWorld.title"));
+        super(Text.method_43471("selectWorld.title"));
         this.parent = parent;
     }
 
@@ -61,16 +62,16 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, new TranslatableText("selectWorld.search"));
-        this.searchBox.setChangedListener(search -> this.levelList.filter(() -> search, false));
-        this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.method_43471("selectWorld.search"));
+        this.searchBox.setChangedListener(search -> this.levelList.filter((String)search));
+        this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.method_43450(), this.levelList);
         this.addSelectableChild(this.searchBox);
         this.addSelectableChild(this.levelList);
-        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, new TranslatableText("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, new TranslatableText("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)));
-        this.editButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, new TranslatableText("selectWorld.edit"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
-        this.deleteButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, new TranslatableText("selectWorld.delete"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
-        this.recreateButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, new TranslatableText("selectWorld.recreate"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
+        this.selectButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 52, 150, 20, Text.method_43471("selectWorld.select"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 52, 150, 20, Text.method_43471("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)));
+        this.editButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 72, 20, Text.method_43471("selectWorld.edit"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)));
+        this.deleteButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 76, this.height - 28, 72, 20, Text.method_43471("selectWorld.delete"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)));
+        this.recreateButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 72, 20, Text.method_43471("selectWorld.recreate"), button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)));
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
         this.worldSelected(false);
         this.setInitialFocus(this.searchBox);
@@ -120,15 +121,20 @@ extends Screen {
     @Override
     public void removed() {
         if (this.levelList != null) {
-            this.levelList.children().forEach(WorldListWidget.Entry::close);
+            this.levelList.children().forEach(WorldListWidget.class_7414::close);
         }
+    }
+
+    public Supplier<String> method_43450() {
+        return () -> this.searchBox.getText();
     }
 
     private /* synthetic */ void method_35739(ButtonWidget button) {
         try {
             WorldListWidget.Entry entry;
+            WorldListWidget.class_7414 lv;
             String string = "DEBUG world";
-            if (!this.levelList.children().isEmpty() && (entry = (WorldListWidget.Entry)this.levelList.children().get(0)).getLevelDisplayName().equals("DEBUG world")) {
+            if (!this.levelList.children().isEmpty() && (lv = (WorldListWidget.class_7414)this.levelList.children().get(0)) instanceof WorldListWidget.Entry && (entry = (WorldListWidget.Entry)lv).getLevelDisplayName().equals("DEBUG world")) {
                 entry.delete();
             }
             DynamicRegistryManager dynamicRegistryManager = DynamicRegistryManager.BUILTIN.get();

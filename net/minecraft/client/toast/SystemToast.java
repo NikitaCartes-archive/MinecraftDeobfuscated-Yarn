@@ -13,10 +13,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -126,15 +124,15 @@ implements Toast {
     }
 
     public static void addWorldAccessFailureToast(MinecraftClient client, String worldName) {
-        SystemToast.add(client.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.access_failure"), new LiteralText(worldName));
+        SystemToast.add(client.getToastManager(), Type.WORLD_ACCESS_FAILURE, Text.method_43471("selectWorld.access_failure"), Text.method_43470(worldName));
     }
 
     public static void addWorldDeleteFailureToast(MinecraftClient client, String worldName) {
-        SystemToast.add(client.getToastManager(), Type.WORLD_ACCESS_FAILURE, new TranslatableText("selectWorld.delete_failure"), new LiteralText(worldName));
+        SystemToast.add(client.getToastManager(), Type.WORLD_ACCESS_FAILURE, Text.method_43471("selectWorld.delete_failure"), Text.method_43470(worldName));
     }
 
     public static void addPackCopyFailure(MinecraftClient client, String directory) {
-        SystemToast.add(client.getToastManager(), Type.PACK_COPY_FAILURE, new TranslatableText("pack.copyFailure"), new LiteralText(directory));
+        SystemToast.add(client.getToastManager(), Type.PACK_COPY_FAILURE, Text.method_43471("pack.copyFailure"), Text.method_43470(directory));
     }
 
     @Override

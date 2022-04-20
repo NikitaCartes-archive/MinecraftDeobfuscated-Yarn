@@ -34,10 +34,9 @@ import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.tag.TagKey;
 import net.minecraft.tag.WorldPresetTags;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -53,10 +52,10 @@ import org.slf4j.Logger;
 public class MoreOptionsDialog
 implements Drawable {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
-    private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.minecraft.amplified.info");
-    private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
-    private static final Text SELECT_SETTINGS_FILE_TEXT = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
+    private static final Text CUSTOM_TEXT = Text.method_43471("generator.custom");
+    private static final Text AMPLIFIED_INFO_TEXT = Text.method_43471("generator.minecraft.amplified.info");
+    private static final Text MAP_FEATURES_INFO_TEXT = Text.method_43471("selectWorld.mapFeatures.info");
+    private static final Text SELECT_SETTINGS_FILE_TEXT = Text.method_43471("selectWorld.import_worldgen_settings.select_file");
     private MultilineText amplifiedInfoText = MultilineText.EMPTY;
     private TextRenderer textRenderer;
     private int parentWidth;
@@ -84,7 +83,7 @@ implements Drawable {
     public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
         this.textRenderer = textRenderer;
         this.parentWidth = parent.width;
-        this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
+        this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.method_43471("selectWorld.enterSeed"));
         this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
         this.seedTextField.setChangedListener(seedText -> {
             this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText());
@@ -92,7 +91,7 @@ implements Drawable {
         parent.addSelectableChild(this.seedTextField);
         int i = this.parentWidth / 2 - 155;
         int j = this.parentWidth / 2 + 5;
-        this.mapFeaturesButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().shouldGenerateStructures()).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), new TranslatableText("selectWorld.mapFeatures.info"))).build(i, 100, 150, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.apply(GeneratorOptions::toggleGenerateStructures)));
+        this.mapFeaturesButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().shouldGenerateStructures()).narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.method_43471("selectWorld.mapFeatures.info"))).build(i, 100, 150, 20, Text.method_43471("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.apply(GeneratorOptions::toggleGenerateStructures)));
         this.mapFeaturesButton.visible = false;
         Registry<WorldPreset> registry = this.generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_WORLDGEN);
         List list = MoreOptionsDialog.collectPresets(registry, WorldPresetTags.NORMAL).orElseGet(() -> registry.streamEntries().collect(Collectors.toUnmodifiableList()));
@@ -102,26 +101,26 @@ implements Drawable {
                 return ScreenTexts.joinSentences(button.getGenericNarrationMessage(), AMPLIFIED_INFO_TEXT);
             }
             return button.getGenericNarrationMessage();
-        }).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (button, presetEntry) -> {
+        }).build(j, 100, 150, 20, Text.method_43471("selectWorld.mapType"), (button, presetEntry) -> {
             this.presetEntry = Optional.of(presetEntry);
             this.apply(generatorOptions -> ((WorldPreset)presetEntry.value()).createGeneratorOptions((GeneratorOptions)generatorOptions));
             parent.setMoreOptionsOpen();
         }));
         this.presetEntry.ifPresent(this.mapTypeButton::setValue);
         this.mapTypeButton.visible = false;
-        this.unchangeableMapTypeButton = parent.addDrawableChild(new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), button -> {}));
+        this.unchangeableMapTypeButton = parent.addDrawableChild(new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(Text.method_43471("selectWorld.mapType"), CUSTOM_TEXT), button -> {}));
         this.unchangeableMapTypeButton.active = false;
         this.unchangeableMapTypeButton.visible = false;
-        this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), button -> {
+        this.customizeTypeButton = parent.addDrawableChild(new ButtonWidget(j, 120, 150, 20, Text.method_43471("selectWorld.customizeType"), button -> {
             LevelScreenProvider levelScreenProvider = LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER.get(this.presetEntry.flatMap(RegistryEntry::getKey));
             if (levelScreenProvider != null) {
                 client.setScreen(levelScreenProvider.createEditScreen(parent, this.generatorOptionsHolder));
             }
         }));
         this.customizeTypeButton.visible = false;
-        this.bonusItemsButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, new TranslatableText("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(GeneratorOptions::toggleBonusChest)));
+        this.bonusItemsButton = parent.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, Text.method_43471("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(GeneratorOptions::toggleBonusChest)));
         this.bonusItemsButton.visible = false;
-        this.importSettingsButton = parent.addDrawableChild(new ButtonWidget(i, 185, 150, 20, new TranslatableText("selectWorld.import_worldgen_settings"), button -> {
+        this.importSettingsButton = parent.addDrawableChild(new ButtonWidget(i, 185, 150, 20, Text.method_43471("selectWorld.import_worldgen_settings"), button -> {
             DataResult<Object> dataResult;
             String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
             if (string == null) {
@@ -135,10 +134,10 @@ implements Drawable {
                 dataResult = DataResult.error("Failed to parse file: " + exception.getMessage());
             }
             if (dataResult.error().isPresent()) {
-                TranslatableText text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
+                MutableText text = Text.method_43471("selectWorld.import_worldgen_settings.failure");
                 String string2 = dataResult.error().get().message();
                 LOGGER.error("Error parsing world settings: {}", (Object)string2);
-                LiteralText text2 = new LiteralText(string2);
+                MutableText text2 = Text.method_43470(string2);
                 client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
                 return;
             }
@@ -158,7 +157,7 @@ implements Drawable {
     }
 
     private static Text getText(RegistryEntry<WorldPreset> presetEntry) {
-        return presetEntry.getKey().map(key -> new TranslatableText(key.getValue().toTranslationKey("generator"))).orElse(CUSTOM_TEXT);
+        return presetEntry.getKey().map(key -> Text.method_43471(key.getValue().toTranslationKey("generator"))).orElse(CUSTOM_TEXT);
     }
 
     private void importOptions(GeneratorOptions generatorOptions) {

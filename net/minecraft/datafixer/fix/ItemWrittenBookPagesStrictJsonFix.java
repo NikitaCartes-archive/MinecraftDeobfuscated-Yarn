@@ -11,9 +11,9 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.BlockEntitySignTextStrictJsonFix;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +32,12 @@ extends DataFix {
             String string = dynamic.asString("");
             Text text = null;
             if ("null".equals(string) || StringUtils.isEmpty(string)) {
-                text = LiteralText.EMPTY;
+                text = ScreenTexts.field_39003;
             } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
                 try {
                     text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
                     if (text == null) {
-                        text = LiteralText.EMPTY;
+                        text = ScreenTexts.field_39003;
                     }
                 } catch (Exception exception) {
                     // empty catch block
@@ -57,10 +57,10 @@ extends DataFix {
                     }
                 }
                 if (text == null) {
-                    text = new LiteralText(string);
+                    text = Text.method_43470(string);
                 }
             } else {
-                text = new LiteralText(string);
+                text = Text.method_43470(string);
             }
             return dynamic.createString(Text.Serializer.toJson(text));
         })).map(dynamic::createList).result(), dynamic.emptyList()));

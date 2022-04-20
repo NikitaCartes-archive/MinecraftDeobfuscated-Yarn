@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.Packet;
@@ -19,7 +20,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -36,8 +36,8 @@ extends BlockEntity {
     public static final int field_31362 = 4;
     private static final String[] TEXT_KEYS = new String[]{"Text1", "Text2", "Text3", "Text4"};
     private static final String[] FILTERED_TEXT_KEYS = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
-    private final Text[] texts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
-    private final Text[] filteredTexts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
+    private final Text[] texts = new Text[]{ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003};
+    private final Text[] filteredTexts = new Text[]{ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003};
     private boolean editable = true;
     @Nullable
     private UUID editor;
@@ -103,7 +103,7 @@ extends BlockEntity {
         } catch (Exception exception) {
             // empty catch block
         }
-        return LiteralText.EMPTY;
+        return ScreenTexts.field_39003;
     }
 
     public Text getTextOnRow(int row, boolean filtered) {
@@ -181,7 +181,7 @@ extends BlockEntity {
 
     public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity player) {
         String string = player == null ? "Sign" : player.getName().getString();
-        Text text = player == null ? new LiteralText("Sign") : player.getDisplayName();
+        Text text = player == null ? Text.method_43470("Sign") : player.getDisplayName();
         return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player);
     }
 

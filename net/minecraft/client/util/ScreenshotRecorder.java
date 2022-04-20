@@ -19,10 +19,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
@@ -63,11 +61,11 @@ public class ScreenshotRecorder {
         Util.getIoWorkerExecutor().execute(() -> {
             try {
                 nativeImage.writeTo(file2);
-                MutableText text = new LiteralText(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
-                messageReceiver.accept(new TranslatableText("screenshot.success", text));
+                MutableText text = Text.method_43470(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
+                messageReceiver.accept(Text.method_43469("screenshot.success", text));
             } catch (Exception exception) {
                 LOGGER.warn("Couldn't save screenshot", exception);
-                messageReceiver.accept(new TranslatableText("screenshot.failure", exception.getMessage()));
+                messageReceiver.accept(Text.method_43469("screenshot.failure", exception.getMessage()));
             } finally {
                 nativeImage.close();
             }

@@ -11,7 +11,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class KillCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -23,9 +23,9 @@ public class KillCommand {
             entity.kill();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.kill.success.single", targets.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.kill.success.single", targets.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.kill.success.multiple", targets.size()), true);
+            source.sendFeedback(Text.method_43469("commands.kill.success.multiple", targets.size()), true);
         }
         return targets.size();
     }

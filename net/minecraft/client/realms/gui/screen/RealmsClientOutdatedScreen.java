@@ -11,16 +11,15 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsClientOutdatedScreen
 extends RealmsScreen {
-    private static final Text OUTDATED_TITLE = new TranslatableText("mco.client.outdated.title");
-    private static final Text[] OUTDATED_LINES = new Text[]{new TranslatableText("mco.client.outdated.msg.line1"), new TranslatableText("mco.client.outdated.msg.line2")};
-    private static final Text INCOMPATIBLE_TITLE = new TranslatableText("mco.client.incompatible.title");
-    private static final Text[] INCOMPATIBLE_LINES = new Text[]{new TranslatableText("mco.client.incompatible.msg.line1"), new TranslatableText("mco.client.incompatible.msg.line2"), new TranslatableText("mco.client.incompatible.msg.line3")};
+    private static final Text OUTDATED_TITLE = Text.method_43471("mco.client.outdated.title");
+    private static final Text[] OUTDATED_LINES = new Text[]{Text.method_43471("mco.client.outdated.msg.line1"), Text.method_43471("mco.client.outdated.msg.line2")};
+    private static final Text INCOMPATIBLE_TITLE = Text.method_43471("mco.client.incompatible.title");
+    private static final Text[] INCOMPATIBLE_LINES = new Text[]{Text.method_43471("mco.client.incompatible.msg.line1"), Text.method_43471("mco.client.incompatible.msg.line2"), Text.method_43471("mco.client.incompatible.msg.line3")};
     private final Screen parent;
     private final boolean outdated;
 

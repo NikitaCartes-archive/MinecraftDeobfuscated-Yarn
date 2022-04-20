@@ -25,6 +25,7 @@ import net.minecraft.Bootstrap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_7408;
 import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.command.argument.serialize.ArgumentSerializer;
 import net.minecraft.enchantment.Enchantment;
@@ -148,7 +149,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<Potion>> POTION_KEY = Registry.createRegistryKey("potion");
     public static final RegistryKey<Registry<ParticleType<?>>> PARTICLE_TYPE_KEY = Registry.createRegistryKey("particle_type");
     public static final RegistryKey<Registry<BlockEntityType<?>>> BLOCK_ENTITY_TYPE_KEY = Registry.createRegistryKey("block_entity_type");
-    public static final RegistryKey<Registry<PaintingMotive>> MOTIVE_KEY = Registry.createRegistryKey("motive");
+    public static final RegistryKey<Registry<PaintingMotive>> MOTIVE_KEY = Registry.createRegistryKey("painting_variant");
     public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT_KEY = Registry.createRegistryKey("custom_stat");
     public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS_KEY = Registry.createRegistryKey("chunk_status");
     public static final RegistryKey<Registry<RuleTestType<?>>> RULE_TEST_KEY = Registry.createRegistryKey("rule_test");
@@ -205,7 +206,7 @@ IndexedIterable<T> {
     public static final DefaultedRegistry<Potion> POTION = Registry.create(POTION_KEY, "empty", (Registry<T> registry) -> Potions.EMPTY);
     public static final Registry<ParticleType<?>> PARTICLE_TYPE = Registry.create(PARTICLE_TYPE_KEY, registry -> ParticleTypes.BLOCK);
     public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPE = Registry.create(BLOCK_ENTITY_TYPE_KEY, registry -> BlockEntityType.FURNACE);
-    public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = Registry.create(MOTIVE_KEY, "kebab", (Registry<T> registry) -> PaintingMotive.KEBAB);
+    public static final DefaultedRegistry<PaintingMotive> PAINTING_MOTIVE = Registry.create(MOTIVE_KEY, "kebab", class_7408::method_43406);
     public static final Registry<Identifier> CUSTOM_STAT = Registry.create(CUSTOM_STAT_KEY, registry -> Stats.JUMP);
     public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = Registry.create(CHUNK_STATUS_KEY, "empty", (Registry<T> registry) -> ChunkStatus.EMPTY);
     public static final Registry<RuleTestType<?>> RULE_TEST = Registry.create(RULE_TEST_KEY, registry -> RuleTestType.ALWAYS_TRUE);

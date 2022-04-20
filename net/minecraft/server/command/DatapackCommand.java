@@ -23,13 +23,13 @@ import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.text.TranslatableText;
 
 public class DatapackCommand {
-    private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("commands.datapack.unknown", name));
-    private static final DynamicCommandExceptionType ALREADY_ENABLED_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("commands.datapack.enable.failed", name));
-    private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(name -> new TranslatableText("commands.datapack.disable.failed", name));
+    private static final DynamicCommandExceptionType UNKNOWN_DATAPACK_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("commands.datapack.unknown", name));
+    private static final DynamicCommandExceptionType ALREADY_ENABLED_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("commands.datapack.enable.failed", name));
+    private static final DynamicCommandExceptionType ALREADY_DISABLED_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("commands.datapack.disable.failed", name));
     private static final SuggestionProvider<ServerCommandSource> ENABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> CommandSource.suggestMatching(((ServerCommandSource)context.getSource()).getServer().getDataPackManager().getEnabledNames().stream().map(StringArgumentType::escapeIfRequired), builder);
     private static final SuggestionProvider<ServerCommandSource> DISABLED_CONTAINERS_SUGGESTION_PROVIDER = (context, builder) -> {
         ResourcePackManager resourcePackManager = ((ServerCommandSource)context.getSource()).getServer().getDataPackManager();
@@ -45,7 +45,7 @@ public class DatapackCommand {
         ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
         ArrayList<ResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getEnabledProfiles());
         packAdder.apply(list, container);
-        source.sendFeedback(new TranslatableText("commands.datapack.modify.enable", container.getInformationText(true)), true);
+        source.sendFeedback(Text.method_43469("commands.datapack.modify.enable", container.getInformationText(true)), true);
         ReloadCommand.tryReloadDataPacks(list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
         return list.size();
     }
@@ -54,7 +54,7 @@ public class DatapackCommand {
         ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
         ArrayList<ResourcePackProfile> list = Lists.newArrayList(resourcePackManager.getEnabledProfiles());
         list.remove(container);
-        source.sendFeedback(new TranslatableText("commands.datapack.modify.disable", container.getInformationText(true)), true);
+        source.sendFeedback(Text.method_43469("commands.datapack.modify.disable", container.getInformationText(true)), true);
         ReloadCommand.tryReloadDataPacks(list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
         return list.size();
     }
@@ -70,9 +70,9 @@ public class DatapackCommand {
         Collection<ResourcePackProfile> collection2 = resourcePackManager.getProfiles();
         List list = collection2.stream().filter(profile -> !collection.contains(profile)).collect(Collectors.toList());
         if (list.isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.available.none"), false);
+            source.sendFeedback(Text.method_43471("commands.datapack.list.available.none"), false);
         } else {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false);
+            source.sendFeedback(Text.method_43469("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false);
         }
         return list.size();
     }
@@ -82,9 +82,9 @@ public class DatapackCommand {
         resourcePackManager.scanPacks();
         Collection<ResourcePackProfile> collection = resourcePackManager.getEnabledProfiles();
         if (collection.isEmpty()) {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.none"), false);
+            source.sendFeedback(Text.method_43471("commands.datapack.list.enabled.none"), false);
         } else {
-            source.sendFeedback(new TranslatableText("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))), false);
+            source.sendFeedback(Text.method_43469("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))), false);
         }
         return collection.size();
     }

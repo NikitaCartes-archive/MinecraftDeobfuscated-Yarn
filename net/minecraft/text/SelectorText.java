@@ -7,39 +7,43 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.Optional;
+import net.minecraft.class_7417;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.BaseText;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.ParsableText;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class SelectorText
-extends BaseText
-implements ParsableText {
+implements class_7417 {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final String pattern;
     @Nullable
     private final EntitySelector selector;
     protected final Optional<Text> separator;
 
-    public SelectorText(String pattern, Optional<Text> separator) {
-        this.pattern = pattern;
+    public SelectorText(String string, Optional<Text> separator) {
+        this.pattern = string;
         this.separator = separator;
+        this.selector = SelectorText.method_43486(string);
+    }
+
+    @Nullable
+    private static EntitySelector method_43486(String string) {
         EntitySelector entitySelector = null;
         try {
-            EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(pattern));
+            EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(string));
             entitySelector = entitySelectorReader.read();
         } catch (CommandSyntaxException commandSyntaxException) {
-            LOGGER.warn("Invalid selector component: {}: {}", (Object)pattern, (Object)commandSyntaxException.getMessage());
+            LOGGER.warn("Invalid selector component: {}: {}", (Object)string, (Object)commandSyntaxException.getMessage());
         }
-        this.selector = entitySelector;
+        return entitySelector;
     }
 
     public String getPattern() {
@@ -56,49 +60,47 @@ implements ParsableText {
     }
 
     @Override
-    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
-        if (source == null || this.selector == null) {
-            return new LiteralText("");
+    public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+        if (serverCommandSource == null || this.selector == null) {
+            return Text.method_43473();
         }
-        Optional<MutableText> optional = Texts.parse(source, this.separator, sender, depth);
-        return Texts.join(this.selector.getEntities(source), optional, Entity::getDisplayName);
+        Optional<MutableText> optional = Texts.parse(serverCommandSource, this.separator, entity, i);
+        return Texts.join(this.selector.getEntities(serverCommandSource), optional, Entity::getDisplayName);
     }
 
     @Override
-    public String asString() {
-        return this.pattern;
+    public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+        return styledVisitor.accept(style, this.pattern);
     }
 
     @Override
-    public SelectorText copy() {
-        return new SelectorText(this.pattern, this.separator);
+    public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+        return visitor.accept(this.pattern);
     }
 
-    @Override
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
     public boolean equals(Object object) {
         if (this == object) {
             return true;
         }
-        if (object instanceof SelectorText) {
-            SelectorText selectorText = (SelectorText)object;
-            return this.pattern.equals(selectorText.pattern) && super.equals(object);
-        }
-        return false;
+        if (!(object instanceof SelectorText)) return false;
+        SelectorText selectorText = (SelectorText)object;
+        if (!this.pattern.equals(selectorText.pattern)) return false;
+        if (!this.separator.equals(selectorText.separator)) return false;
+        return true;
     }
 
-    @Override
+    public int hashCode() {
+        int i = this.pattern.hashCode();
+        i = 31 * i + this.separator.hashCode();
+        return i;
+    }
+
     public String toString() {
-        return "SelectorComponent{pattern='" + this.pattern + "', siblings=" + this.siblings + ", style=" + this.getStyle() + "}";
-    }
-
-    @Override
-    public /* synthetic */ BaseText copy() {
-        return this.copy();
-    }
-
-    @Override
-    public /* synthetic */ MutableText copy() {
-        return this.copy();
+        return "pattern{" + this.pattern + "}";
     }
 }
 

@@ -21,7 +21,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -103,7 +102,7 @@ extends DrawableHelper {
             ChatHud.fill(matrices, -2, 0, k + 4, 9, u << 24);
             RenderSystem.enableBlend();
             matrices.translate(0.0, 0.0, 50.0);
-            this.client.textRenderer.drawWithShadow(matrices, new TranslatableText("chat.queue", this.messageQueue.size()), 0.0f, 1.0f, 0xFFFFFF + (n << 24));
+            this.client.textRenderer.drawWithShadow(matrices, Text.method_43469("chat.queue", this.messageQueue.size()), 0.0f, 1.0f, 0xFFFFFF + (n << 24));
             matrices.pop();
             RenderSystem.disableBlend();
         }

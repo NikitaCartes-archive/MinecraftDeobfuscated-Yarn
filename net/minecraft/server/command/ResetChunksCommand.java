@@ -21,7 +21,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -107,7 +107,7 @@ public class ResetChunksCommand {
         }
         LOGGER.debug("blockChanged took " + (System.currentTimeMillis() - w) + " ms");
         long q = System.currentTimeMillis() - o;
-        source.sendFeedback(new LiteralText(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", p, q, p, Float.valueOf((float)q / (float)p))), true);
+        source.sendFeedback(Text.method_43470(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", p, q, p, Float.valueOf((float)q / (float)p))), true);
         return 1;
     }
 }

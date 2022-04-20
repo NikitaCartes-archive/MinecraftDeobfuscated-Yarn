@@ -19,11 +19,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 
 public class ClearCommand {
-    private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(playerName -> new TranslatableText("clear.failed.single", playerName));
-    private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(playerCount -> new TranslatableText("clear.failed.multiple", playerCount));
+    private static final DynamicCommandExceptionType FAILED_SINGLE_EXCEPTION = new DynamicCommandExceptionType(playerName -> Text.method_43469("clear.failed.single", playerName));
+    private static final DynamicCommandExceptionType FAILED_MULTIPLE_EXCEPTION = new DynamicCommandExceptionType(playerCount -> Text.method_43469("clear.failed.multiple", playerCount));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("clear").requires(source -> source.hasPermissionLevel(2))).executes(context -> ClearCommand.execute((ServerCommandSource)context.getSource(), Collections.singleton(((ServerCommandSource)context.getSource()).getPlayer()), stack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", EntityArgumentType.players()).executes(context -> ClearCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), stack -> true, -1))).then(((RequiredArgumentBuilder)CommandManager.argument("item", ItemPredicateArgumentType.itemPredicate(commandRegistryAccess)).executes(context -> ClearCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item"), -1))).then(CommandManager.argument("maxCount", IntegerArgumentType.integer(0)).executes(context -> ClearCommand.execute((ServerCommandSource)context.getSource(), EntityArgumentType.getPlayers(context, "targets"), ItemPredicateArgumentType.getItemStackPredicate(context, "item"), IntegerArgumentType.getInteger(context, "maxCount")))))));
@@ -44,14 +44,14 @@ public class ClearCommand {
         }
         if (maxCount == 0) {
             if (targets.size() == 1) {
-                source.sendFeedback(new TranslatableText("commands.clear.test.single", i, targets.iterator().next().getDisplayName()), true);
+                source.sendFeedback(Text.method_43469("commands.clear.test.single", i, targets.iterator().next().getDisplayName()), true);
             } else {
-                source.sendFeedback(new TranslatableText("commands.clear.test.multiple", i, targets.size()), true);
+                source.sendFeedback(Text.method_43469("commands.clear.test.multiple", i, targets.size()), true);
             }
         } else if (targets.size() == 1) {
-            source.sendFeedback(new TranslatableText("commands.clear.success.single", i, targets.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.method_43469("commands.clear.success.single", i, targets.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(new TranslatableText("commands.clear.success.multiple", i, targets.size()), true);
+            source.sendFeedback(Text.method_43469("commands.clear.success.multiple", i, targets.size()), true);
         }
         return i;
     }

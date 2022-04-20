@@ -83,8 +83,8 @@ import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.TagPacketSerializer;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
@@ -183,7 +183,7 @@ public abstract class PlayerManager {
         player.getRecipeBook().sendInitRecipesPacket(player);
         this.sendScoreboard(serverWorld2.getScoreboard(), player);
         this.server.forcePlayerSampleUpdate();
-        TranslatableText mutableText = player.getGameProfile().getName().equalsIgnoreCase(string) ? new TranslatableText("multiplayer.player.joined", player.getDisplayName()) : new TranslatableText("multiplayer.player.joined.renamed", player.getDisplayName(), string);
+        MutableText mutableText = player.getGameProfile().getName().equalsIgnoreCase(string) ? Text.method_43469("multiplayer.player.joined", player.getDisplayName()) : Text.method_43469("multiplayer.player.joined.renamed", player.getDisplayName(), string);
         this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
         serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
         this.players.add(player);
@@ -337,25 +337,25 @@ public abstract class PlayerManager {
     public Text checkCanJoin(SocketAddress address, GameProfile profile) {
         if (this.bannedProfiles.contains(profile)) {
             BannedPlayerEntry bannedPlayerEntry = (BannedPlayerEntry)this.bannedProfiles.get(profile);
-            TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
+            MutableText mutableText = Text.method_43469("multiplayer.disconnect.banned.reason", bannedPlayerEntry.getReason());
             if (bannedPlayerEntry.getExpiryDate() != null) {
-                mutableText.append(new TranslatableText("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
+                mutableText.append(Text.method_43469("multiplayer.disconnect.banned.expiration", DATE_FORMATTER.format(bannedPlayerEntry.getExpiryDate())));
             }
             return mutableText;
         }
         if (!this.isWhitelisted(profile)) {
-            return new TranslatableText("multiplayer.disconnect.not_whitelisted");
+            return Text.method_43471("multiplayer.disconnect.not_whitelisted");
         }
         if (this.bannedIps.isBanned(address)) {
             BannedIpEntry bannedIpEntry = this.bannedIps.get(address);
-            TranslatableText mutableText = new TranslatableText("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
+            MutableText mutableText = Text.method_43469("multiplayer.disconnect.banned_ip.reason", bannedIpEntry.getReason());
             if (bannedIpEntry.getExpiryDate() != null) {
-                mutableText.append(new TranslatableText("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
+                mutableText.append(Text.method_43469("multiplayer.disconnect.banned_ip.expiration", DATE_FORMATTER.format(bannedIpEntry.getExpiryDate())));
             }
             return mutableText;
         }
         if (this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(profile)) {
-            return new TranslatableText("multiplayer.disconnect.server_full");
+            return Text.method_43471("multiplayer.disconnect.server_full");
         }
         return null;
     }
@@ -373,7 +373,7 @@ public abstract class PlayerManager {
             list.add(serverPlayerEntity2);
         }
         for (ServerPlayerEntity serverPlayerEntity3 : list) {
-            serverPlayerEntity3.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
+            serverPlayerEntity3.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.duplicate_login"));
         }
         return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
     }
@@ -651,7 +651,7 @@ public abstract class PlayerManager {
 
     public void disconnectAllPlayers() {
         for (int i = 0; i < this.players.size(); ++i) {
-            this.players.get((int)i).networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.server_shutdown"));
+            this.players.get((int)i).networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.server_shutdown"));
         }
     }
 

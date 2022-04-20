@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
@@ -22,9 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -35,7 +34,7 @@ extends ClickableWidget {
     private static final float field_32414 = 15.0f;
     private static final int field_32415 = 25;
     public static final int field_32413 = 30;
-    private static final Text MORE_RECIPES_TEXT = new TranslatableText("gui.recipebook.moreRecipes");
+    private static final Text MORE_RECIPES_TEXT = Text.method_43471("gui.recipebook.moreRecipes");
     private AbstractRecipeScreenHandler<?> craftingScreenHandler;
     private RecipeBook recipeBook;
     private RecipeResultCollection resultCollection;
@@ -44,7 +43,7 @@ extends ClickableWidget {
     private int currentResultIndex;
 
     public AnimatedResultButton() {
-        super(0, 0, 25, 25, LiteralText.EMPTY);
+        super(0, 0, 25, 25, ScreenTexts.field_39003);
     }
 
     public void showResultCollection(RecipeResultCollection resultCollection, RecipeBookResults results) {
@@ -141,11 +140,11 @@ extends ClickableWidget {
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
         ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
-        builder.put(NarrationPart.TITLE, (Text)new TranslatableText("narration.recipe", itemStack.getName()));
+        builder.put(NarrationPart.TITLE, (Text)Text.method_43469("narration.recipe", itemStack.getName()));
         if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-            builder.put(NarrationPart.USAGE, new TranslatableText("narration.button.usage.hovered"), new TranslatableText("narration.recipe.usage.more"));
+            builder.put(NarrationPart.USAGE, Text.method_43471("narration.button.usage.hovered"), Text.method_43471("narration.recipe.usage.more"));
         } else {
-            builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.button.usage.hovered"));
+            builder.put(NarrationPart.USAGE, (Text)Text.method_43471("narration.button.usage.hovered"));
         }
     }
 

@@ -16,7 +16,6 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -25,7 +24,7 @@ import net.minecraft.world.World;
 
 public class LoomBlock
 extends HorizontalFacingBlock {
-    private static final Text TITLE = new TranslatableText("container.loom");
+    private static final Text TITLE = Text.method_43471("container.loom");
 
     protected LoomBlock(AbstractBlock.Settings settings) {
         super(settings);

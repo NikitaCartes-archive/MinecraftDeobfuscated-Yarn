@@ -13,7 +13,6 @@ import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -22,7 +21,7 @@ import net.minecraft.world.World;
 
 public class SmithingTableBlock
 extends CraftingTableBlock {
-    private static final Text SCREEN_TITLE = new TranslatableText("container.upgrade");
+    private static final Text SCREEN_TITLE = Text.method_43471("container.upgrade");
 
     protected SmithingTableBlock(AbstractBlock.Settings settings) {
         super(settings);

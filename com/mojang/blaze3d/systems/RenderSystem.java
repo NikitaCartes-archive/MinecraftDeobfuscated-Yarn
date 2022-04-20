@@ -22,7 +22,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.FogShape;
 import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
@@ -888,11 +887,13 @@ public class RenderSystem {
         return textureMatrix;
     }
 
-    public static IndexBuffer getSequentialBuffer(VertexFormat.DrawMode drawMode, int i) {
+    public static IndexBuffer getSequentialBuffer(VertexFormat.DrawMode drawMode) {
         RenderSystem.assertOnRenderThread();
-        IndexBuffer indexBuffer = drawMode == VertexFormat.DrawMode.QUADS ? sharedSequentialQuad : (drawMode == VertexFormat.DrawMode.LINES ? sharedSequentialLines : sharedSequential);
-        indexBuffer.grow(i);
-        return indexBuffer;
+        return switch (drawMode) {
+            case VertexFormat.DrawMode.QUADS -> sharedSequentialQuad;
+            case VertexFormat.DrawMode.LINES -> sharedSequentialLines;
+            default -> sharedSequential;
+        };
     }
 
     public static void setShaderGameTime(long l, float f) {
@@ -1189,18 +1190,26 @@ public class RenderSystem {
             this.indexMapper = indexMapper;
         }
 
-        void grow(int newSize) {
-            if (newSize <= this.size) {
+        public boolean method_43409(int i) {
+            return i <= this.size;
+        }
+
+        public void method_43410(int i) {
+            if (this.id == 0) {
+                this.id = GlStateManager._glGenBuffers();
+            }
+            GlStateManager._glBindBuffer(34963, this.id);
+            this.grow(i);
+        }
+
+        private void grow(int newSize) {
+            if (this.method_43409(newSize)) {
                 return;
             }
             newSize = MathHelper.roundUpToMultiple(newSize * 2, this.increment);
             LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", (Object)this.size, (Object)newSize);
-            if (this.id == 0) {
-                this.id = GlStateManager._glGenBuffers();
-            }
             VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
             int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
-            GlStateManager._glBindBuffer(34963, this.id);
             GlStateManager._glBufferData(34963, i, 35048);
             ByteBuffer byteBuffer = GlStateManager.mapBuffer(34963, 35001);
             if (byteBuffer == null) {
@@ -1212,9 +1221,7 @@ public class RenderSystem {
                 this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
             }
             GlStateManager._glUnmapBuffer(34963);
-            GlStateManager._glBindBuffer(34963, 0);
             this.size = newSize;
-            BufferRenderer.unbindElementBuffer();
         }
 
         private IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
@@ -1227,10 +1234,6 @@ public class RenderSystem {
                 }
             }
             return indicesBuffer::putInt;
-        }
-
-        public int getId() {
-            return this.id;
         }
 
         public VertexFormat.IntType getElementFormat() {

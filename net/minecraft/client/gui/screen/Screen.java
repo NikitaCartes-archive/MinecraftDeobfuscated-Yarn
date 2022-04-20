@@ -52,7 +52,6 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -69,7 +68,7 @@ implements Drawable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final Set<String> ALLOWED_PROTOCOLS = Sets.newHashSet("http", "https");
     private static final int field_32270 = 2;
-    private static final Text SCREEN_USAGE_TEXT = new TranslatableText("narrator.screen.usage");
+    private static final Text SCREEN_USAGE_TEXT = Text.method_43471("narrator.screen.usage");
     protected final Text title;
     private final List<Element> children = Lists.newArrayList();
     private final List<Selectable> selectables = Lists.newArrayList();
@@ -251,7 +250,7 @@ implements Drawable {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         bufferBuilder.end();
-        BufferRenderer.draw(bufferBuilder);
+        BufferRenderer.method_43433(bufferBuilder);
         RenderSystem.disableBlend();
         RenderSystem.enableTexture();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
@@ -560,7 +559,7 @@ implements Drawable {
         }
     }
 
-    protected void narrateScreenIfNarrationEnabled(boolean useTranslationsCache) {
+    public void narrateScreenIfNarrationEnabled(boolean useTranslationsCache) {
         if (this.isNarratorActive()) {
             this.narrateScreen(useTranslationsCache);
         }
@@ -588,9 +587,9 @@ implements Drawable {
                 this.selected = selectedElementNarrationData.selectable;
             }
             if (immutableList.size() > 1) {
-                builder.put(NarrationPart.POSITION, (Text)new TranslatableText("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
+                builder.put(NarrationPart.POSITION, (Text)Text.method_43469("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
                 if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-                    builder.put(NarrationPart.USAGE, (Text)new TranslatableText("narration.component_list.usage"));
+                    builder.put(NarrationPart.USAGE, (Text)Text.method_43471("narration.component_list.usage"));
                 }
             }
             selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());

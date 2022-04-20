@@ -102,9 +102,7 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.test.TestManager;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
@@ -628,7 +626,7 @@ AutoCloseable {
         try {
             if (this.setupServer()) {
                 this.timeReference = Util.getMeasuringTimeMs();
-                this.metadata.setDescription(new LiteralText(this.motd));
+                this.metadata.setDescription(Text.method_43470(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
                 while (this.running) {
@@ -1384,7 +1382,7 @@ AutoCloseable {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList(playerManager.getPlayerList());
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (whitelist.isAllowed(serverPlayerEntity.getGameProfile())) continue;
-            serverPlayerEntity.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.not_whitelisted"));
+            serverPlayerEntity.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.not_whitelisted"));
         }
     }
 
@@ -1405,7 +1403,7 @@ AutoCloseable {
      */
     public ServerCommandSource getCommandSource() {
         ServerWorld serverWorld = this.getOverworld();
-        return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", new LiteralText("Server"), this, null);
+        return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", Text.method_43470("Server"), this, null);
     }
 
     @Override
