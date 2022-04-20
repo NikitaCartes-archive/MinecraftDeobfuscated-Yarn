@@ -4,7 +4,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.class_7417;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -15,7 +14,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 
-public class ScoreText implements class_7417 {
+public class ScoreTextContent implements TextContent {
 	private static final String SENDER_PLACEHOLDER = "*";
 	private final String name;
 	@Nullable
@@ -31,10 +30,10 @@ public class ScoreText implements class_7417 {
 		}
 	}
 
-	public ScoreText(String name, String string) {
+	public ScoreTextContent(String name, String objective) {
 		this.name = name;
 		this.selector = parseEntitySelector(name);
-		this.objective = string;
+		this.objective = objective;
 	}
 
 	public String getName() {
@@ -80,13 +79,13 @@ public class ScoreText implements class_7417 {
 	}
 
 	@Override
-	public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
-		if (serverCommandSource == null) {
-			return Text.method_43473();
+	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
+		if (source == null) {
+			return Text.empty();
 		} else {
-			String string = this.getPlayerName(serverCommandSource);
-			String string2 = entity != null && string.equals("*") ? entity.getEntityName() : string;
-			return Text.method_43470(this.getScore(string2, serverCommandSource));
+			String string = this.getPlayerName(source);
+			String string2 = sender != null && string.equals("*") ? sender.getEntityName() : string;
+			return Text.literal(this.getScore(string2, source));
 		}
 	}
 
@@ -94,7 +93,7 @@ public class ScoreText implements class_7417 {
 		if (this == object) {
 			return true;
 		} else {
-			if (object instanceof ScoreText scoreText && this.name.equals(scoreText.name) && this.objective.equals(scoreText.objective)) {
+			if (object instanceof ScoreTextContent scoreTextContent && this.name.equals(scoreTextContent.name) && this.objective.equals(scoreTextContent.objective)) {
 				return true;
 			}
 

@@ -58,7 +58,7 @@ public class Advancement {
 		}
 
 		if (display == null) {
-			this.text = Text.method_43470(id.toString());
+			this.text = Text.literal(id.toString());
 		} else {
 			Text text = display.getTitle();
 			Formatting formatting = display.getFrame().getTitleFormat();

@@ -21,7 +21,7 @@ public class DeathScreen extends Screen {
 	private final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
 
 	public DeathScreen(@Nullable Text message, boolean isHardcore) {
-		super(Text.method_43471(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
+		super(Text.translatable(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
 		this.message = message;
 		this.isHardcore = isHardcore;
 	}
@@ -38,7 +38,7 @@ public class DeathScreen extends Screen {
 						this.height / 4 + 72,
 						200,
 						20,
-						this.isHardcore ? Text.method_43471("deathScreen.spectate") : Text.method_43471("deathScreen.respawn"),
+						this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn"),
 						button -> {
 							this.client.player.requestRespawn();
 							this.client.setScreen(null);
@@ -54,17 +54,17 @@ public class DeathScreen extends Screen {
 						this.height / 4 + 96,
 						200,
 						20,
-						Text.method_43471("deathScreen.titleScreen"),
+						Text.translatable("deathScreen.titleScreen"),
 						button -> {
 							if (this.isHardcore) {
 								this.quitLevel();
 							} else {
 								ConfirmScreen confirmScreen = new ConfirmScreen(
 									this::onConfirmQuit,
-									Text.method_43471("deathScreen.quit.confirm"),
-									ScreenTexts.field_39003,
-									Text.method_43471("deathScreen.titleScreen"),
-									Text.method_43471("deathScreen.respawn")
+									Text.translatable("deathScreen.quit.confirm"),
+									ScreenTexts.EMPTY,
+									Text.translatable("deathScreen.titleScreen"),
+									Text.translatable("deathScreen.respawn")
 								);
 								this.client.setScreen(confirmScreen);
 								confirmScreen.disableButtons(20);
@@ -78,9 +78,9 @@ public class DeathScreen extends Screen {
 			buttonWidget.active = false;
 		}
 
-		this.scoreText = Text.method_43471("deathScreen.score")
+		this.scoreText = Text.translatable("deathScreen.score")
 			.append(": ")
-			.append(Text.method_43470(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+			.append(Text.literal(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class DeathScreen extends Screen {
 			this.client.world.disconnect();
 		}
 
-		this.client.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
+		this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
 		this.client.setScreen(new TitleScreen());
 	}
 

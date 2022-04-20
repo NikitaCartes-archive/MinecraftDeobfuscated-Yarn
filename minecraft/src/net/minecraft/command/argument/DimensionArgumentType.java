@@ -25,7 +25,7 @@ public class DimensionArgumentType implements ArgumentType<Identifier> {
 		.map(key -> key.getValue().toString())
 		.collect(Collectors.toList());
 	private static final DynamicCommandExceptionType INVALID_DIMENSION_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.method_43469("argument.dimension.invalid", id)
+		id -> Text.translatable("argument.dimension.invalid", id)
 	);
 
 	public Identifier parse(StringReader stringReader) throws CommandSyntaxException {

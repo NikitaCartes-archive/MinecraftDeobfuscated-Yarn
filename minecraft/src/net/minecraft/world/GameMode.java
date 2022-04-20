@@ -20,8 +20,8 @@ public enum GameMode {
 	private GameMode(int id, String name) {
 		this.id = id;
 		this.name = name;
-		this.simpleTranslatableName = Text.method_43471("selectWorld.gameMode." + name);
-		this.translatableName = Text.method_43471("gameMode." + name);
+		this.simpleTranslatableName = Text.translatable("selectWorld.gameMode." + name);
+		this.translatableName = Text.translatable("gameMode." + name);
 	}
 
 	public int getId() {

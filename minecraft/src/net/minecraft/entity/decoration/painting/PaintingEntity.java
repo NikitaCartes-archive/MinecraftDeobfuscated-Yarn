@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_7406;
-import net.minecraft.class_7408;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -19,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.PaintingVariantTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -31,13 +30,13 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 public class PaintingEntity extends AbstractDecorationEntity {
-	private static final TrackedData<RegistryEntry<PaintingMotive>> field_38941 = DataTracker.registerData(
-		PaintingEntity.class, TrackedDataHandlerRegistry.field_39017
+	private static final TrackedData<RegistryEntry<PaintingVariant>> VARIANT = DataTracker.registerData(
+		PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT
 	);
-	private static final RegistryKey<PaintingMotive> field_38942 = class_7408.KEBAB;
+	private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
 
-	private static RegistryEntry<PaintingMotive> method_43405() {
-		return Registry.PAINTING_MOTIVE.entryOf(field_38942);
+	private static RegistryEntry<PaintingVariant> getDefaultVariant() {
+		return Registry.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
 	}
 
 	public PaintingEntity(EntityType<? extends PaintingEntity> entityType, World world) {
@@ -46,78 +45,78 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(field_38941, method_43405());
+		this.dataTracker.startTracking(VARIANT, getDefaultVariant());
 	}
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (data == field_38941) {
+		if (data == VARIANT) {
 			this.updateAttachmentPosition();
 		}
 	}
 
-	private void method_43402(RegistryEntry<PaintingMotive> registryEntry) {
-		this.dataTracker.set(field_38941, registryEntry);
+	private void setVariant(RegistryEntry<PaintingVariant> variant) {
+		this.dataTracker.set(VARIANT, variant);
 	}
 
-	public RegistryEntry<PaintingMotive> method_43404() {
-		return this.dataTracker.get(field_38941);
+	public RegistryEntry<PaintingVariant> getVariant() {
+		return this.dataTracker.get(VARIANT);
 	}
 
-	public static Optional<PaintingEntity> method_43401(World world, BlockPos blockPos, Direction direction) {
-		PaintingEntity paintingEntity = new PaintingEntity(world, blockPos);
-		List<RegistryEntry<PaintingMotive>> list = new ArrayList();
-		Registry.PAINTING_MOTIVE.iterateEntries(class_7406.PLACEABLE).forEach(list::add);
+	public static Optional<PaintingEntity> placePainting(World world, BlockPos pos, Direction facing) {
+		PaintingEntity paintingEntity = new PaintingEntity(world, pos);
+		List<RegistryEntry<PaintingVariant>> list = new ArrayList();
+		Registry.PAINTING_VARIANT.iterateEntries(PaintingVariantTags.PLACEABLE).forEach(list::add);
 		if (list.isEmpty()) {
 			return Optional.empty();
 		} else {
-			paintingEntity.setFacing(direction);
-			list.removeIf(registryEntry -> {
-				paintingEntity.method_43402(registryEntry);
+			paintingEntity.setFacing(facing);
+			list.removeIf(variant -> {
+				paintingEntity.setVariant(variant);
 				return !paintingEntity.canStayAttached();
 			});
 			if (list.isEmpty()) {
 				return Optional.empty();
 			} else {
-				int i = list.stream().mapToInt(PaintingEntity::method_43403).max().orElse(0);
-				list.removeIf(registryEntry -> method_43403(registryEntry) < i);
-				Optional<RegistryEntry<PaintingMotive>> optional = Util.getRandomOrEmpty(list, paintingEntity.random);
+				int i = list.stream().mapToInt(PaintingEntity::getSize).max().orElse(0);
+				list.removeIf(variant -> getSize(variant) < i);
+				Optional<RegistryEntry<PaintingVariant>> optional = Util.getRandomOrEmpty(list, paintingEntity.random);
 				if (optional.isEmpty()) {
 					return Optional.empty();
 				} else {
-					paintingEntity.method_43402((RegistryEntry<PaintingMotive>)optional.get());
-					paintingEntity.setFacing(direction);
+					paintingEntity.setVariant((RegistryEntry<PaintingVariant>)optional.get());
+					paintingEntity.setFacing(facing);
 					return Optional.of(paintingEntity);
 				}
 			}
 		}
 	}
 
-	private static int method_43403(RegistryEntry<PaintingMotive> registryEntry) {
-		return registryEntry.value().getWidth() * registryEntry.value().getHeight();
+	private static int getSize(RegistryEntry<PaintingVariant> variant) {
+		return variant.value().getWidth() * variant.value().getHeight();
 	}
 
 	private PaintingEntity(World world, BlockPos pos) {
 		super(EntityType.PAINTING, world, pos);
 	}
 
-	public PaintingEntity(World world, BlockPos pos, Direction direction, RegistryEntry<PaintingMotive> registryEntry) {
+	public PaintingEntity(World world, BlockPos pos, Direction direction, RegistryEntry<PaintingVariant> variant) {
 		this(world, pos);
-		this.method_43402(registryEntry);
+		this.setVariant(variant);
 		this.setFacing(direction);
 	}
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.putString("variant", ((RegistryKey)this.method_43404().getKey().orElse(field_38942)).getValue().toString());
+		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
 		nbt.putByte("facing", (byte)this.facing.getHorizontal());
 		super.writeCustomDataToNbt(nbt);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		RegistryKey<PaintingMotive> registryKey = RegistryKey.of(Registry.MOTIVE_KEY, Identifier.tryParse(nbt.getString("variant")));
-		this.method_43402((RegistryEntry<PaintingMotive>)Registry.PAINTING_MOTIVE.getEntry(registryKey).orElseGet(PaintingEntity::method_43405));
+		RegistryKey<PaintingVariant> registryKey = RegistryKey.of(Registry.PAINTING_VARIANT_KEY, Identifier.tryParse(nbt.getString("variant")));
+		this.setVariant((RegistryEntry<PaintingVariant>)Registry.PAINTING_VARIANT.getEntry(registryKey).orElseGet(PaintingEntity::getDefaultVariant));
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
 		super.readCustomDataFromNbt(nbt);
 		this.setFacing(this.facing);
@@ -125,12 +124,12 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public int getWidthPixels() {
-		return this.method_43404().value().getWidth();
+		return this.getVariant().value().getWidth();
 	}
 
 	@Override
 	public int getHeightPixels() {
-		return this.method_43404().value().getHeight();
+		return this.getVariant().value().getHeight();
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public Vec3d method_43390() {
+	public Vec3d getSyncedPos() {
 		return Vec3d.of(this.attachmentPos);
 	}
 

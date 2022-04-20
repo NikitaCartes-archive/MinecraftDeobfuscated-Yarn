@@ -137,9 +137,9 @@ public abstract class ProjectileEntity extends Entity {
 		Vec3d vec3d = new Vec3d(x, y, z)
 			.normalize()
 			.add(
-				this.random.method_43385(0.0, 0.0172275 * (double)divergence),
-				this.random.method_43385(0.0, 0.0172275 * (double)divergence),
-				this.random.method_43385(0.0, 0.0172275 * (double)divergence)
+				this.random.nextPredictable(0.0, 0.0172275 * (double)divergence),
+				this.random.nextPredictable(0.0, 0.0172275 * (double)divergence),
+				this.random.nextPredictable(0.0, 0.0172275 * (double)divergence)
 			)
 			.multiply((double)speed);
 		this.setVelocity(vec3d);

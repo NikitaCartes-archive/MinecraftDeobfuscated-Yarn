@@ -56,7 +56,7 @@ public class LevelLoadingScreen extends Screen {
 	@Override
 	protected void addElementNarrations(NarrationMessageBuilder builder) {
 		if (this.done) {
-			builder.put(NarrationPart.TITLE, Text.method_43471("narrator.loading.done"));
+			builder.put(NarrationPart.TITLE, Text.translatable("narrator.loading.done"));
 		} else {
 			String string = this.getPercentage();
 			builder.put(NarrationPart.TITLE, string);

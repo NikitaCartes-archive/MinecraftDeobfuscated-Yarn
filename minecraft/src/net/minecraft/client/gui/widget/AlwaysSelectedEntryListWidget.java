@@ -10,7 +10,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public abstract class AlwaysSelectedEntryListWidget<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends EntryListWidget<E> {
-	private static final Text SELECTION_USAGE_TEXT = Text.method_43471("narration.selection.usage");
+	private static final Text SELECTION_USAGE_TEXT = Text.translatable("narration.selection.usage");
 	private boolean inFocus;
 
 	public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {

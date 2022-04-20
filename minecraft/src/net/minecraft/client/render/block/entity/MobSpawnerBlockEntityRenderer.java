@@ -13,10 +13,10 @@ import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpawnerBlockEntity> {
-	private final EntityRenderDispatcher field_38885;
+	private final EntityRenderDispatcher entityRenderDispatcher;
 
 	public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.field_38885 = ctx.getEntityRenderDIspatcher();
+		this.entityRenderDispatcher = ctx.getEntityRenderDIspatcher();
 	}
 
 	public void render(MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -38,7 +38,7 @@ public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpa
 			matrixStack.translate(0.0, -0.2F, 0.0);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-30.0F));
 			matrixStack.scale(g, g, g);
-			this.field_38885.render(entity, 0.0, 0.0, 0.0, 0.0F, f, matrixStack, vertexConsumerProvider, i);
+			this.entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, f, matrixStack, vertexConsumerProvider, i);
 		}
 
 		matrixStack.pop();

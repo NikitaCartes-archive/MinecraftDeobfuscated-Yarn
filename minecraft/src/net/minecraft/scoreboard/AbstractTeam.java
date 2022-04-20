@@ -63,7 +63,7 @@ public abstract class AbstractTeam {
 		}
 
 		public Text getDisplayName() {
-			return Text.method_43471("team.collision." + this.name);
+			return Text.translatable("team.collision." + this.name);
 		}
 	}
 
@@ -93,7 +93,7 @@ public abstract class AbstractTeam {
 		}
 
 		public Text getDisplayName() {
-			return Text.method_43471("team.visibility." + this.name);
+			return Text.translatable("team.visibility." + this.name);
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class DisconnectedScreen extends Screen {
 				Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30),
 				200,
 				20,
-				Text.method_43471("gui.toMenu"),
+				Text.translatable("gui.toMenu"),
 				button -> this.client.setScreen(this.parent)
 			)
 		);

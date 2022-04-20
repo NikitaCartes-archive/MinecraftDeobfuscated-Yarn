@@ -20,7 +20,7 @@ public enum PlayerModelPart {
 		this.id = id;
 		this.bitFlag = 1 << id;
 		this.name = name;
-		this.optionName = Text.method_43471("options.modelPart." + name);
+		this.optionName = Text.translatable("options.modelPart." + name);
 	}
 
 	public int getBitFlag() {

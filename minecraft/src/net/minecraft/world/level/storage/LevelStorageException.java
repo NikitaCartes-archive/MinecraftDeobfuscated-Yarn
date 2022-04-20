@@ -3,14 +3,14 @@ package net.minecraft.world.level.storage;
 import net.minecraft.text.Text;
 
 public class LevelStorageException extends RuntimeException {
-	private final Text field_38981;
+	private final Text message;
 
-	public LevelStorageException(Text text) {
-		super(text.getString());
-		this.field_38981 = text;
+	public LevelStorageException(Text message) {
+		super(message.getString());
+		this.message = message;
 	}
 
-	public Text method_43416() {
-		return this.field_38981;
+	public Text getMessage() {
+		return this.message;
 	}
 }

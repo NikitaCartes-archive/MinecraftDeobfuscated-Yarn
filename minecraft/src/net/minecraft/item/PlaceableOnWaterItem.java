@@ -9,8 +9,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
-public class LilyPadItem extends BlockItem {
-	public LilyPadItem(Block block, Item.Settings settings) {
+public class PlaceableOnWaterItem extends BlockItem {
+	public PlaceableOnWaterItem(Block block, Item.Settings settings) {
 		super(block, settings);
 	}
 

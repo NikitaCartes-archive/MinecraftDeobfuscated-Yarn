@@ -7,8 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 public abstract class AbstractNoiseBlockStateProvider extends BlockStateProvider {
 	protected final long seed;

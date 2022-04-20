@@ -26,7 +26,7 @@ public class RestoreTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(Text.method_43471("mco.backup.restoring"));
+		this.setTitle(Text.translatable("mco.backup.restoring"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 		int i = 0;
 

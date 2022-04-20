@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7422;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -89,6 +88,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -280,7 +280,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text DISCONNECT_LOST_TEXT = Text.method_43471("disconnect.lost");
+	private static final Text DISCONNECT_LOST_TEXT = Text.translatable("disconnect.lost");
 	private final ClientConnection connection;
 	private final GameProfile profile;
 	private final Screen loginScreen;
@@ -422,7 +422,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		double e = packet.getY();
 		double f = packet.getZ();
 		Entity entity = new ExperienceOrbEntity(this.world, d, e, f, packet.getExperience());
-		entity.method_43391(d, e, f);
+		entity.updateTrackedPosition(d, e, f);
 		entity.setYaw(0.0F);
 		entity.setPitch(0.0F);
 		entity.setId(packet.getId());
@@ -460,7 +460,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile()
 		);
 		otherClientPlayerEntity.setId(i);
-		otherClientPlayerEntity.method_43391(d, e, f);
+		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
 		otherClientPlayerEntity.resetPosition();
 		this.world.addPlayer(i, otherClientPlayerEntity);
@@ -474,7 +474,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			double d = packet.getX();
 			double e = packet.getY();
 			double f = packet.getZ();
-			entity.method_43391(d, e, f);
+			entity.updateTrackedPosition(d, e, f);
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				float g = (float)(packet.getYaw() * 360) / 256.0F;
 				float h = (float)(packet.getPitch() * 360) / 256.0F;
@@ -499,9 +499,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (entity != null) {
 			if (!entity.isLogicalSideForUpdatingMovement()) {
 				if (packet.isPositionChanged()) {
-					class_7422 lv = entity.method_43389();
-					Vec3d vec3d = lv.method_43489((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
-					lv.method_43494(vec3d);
+					TrackedPosition trackedPosition = entity.getTrackedPosition();
+					Vec3d vec3d = trackedPosition.withDelta((long)packet.getDeltaX(), (long)packet.getDeltaY(), (long)packet.getDeltaZ());
+					trackedPosition.setPos(vec3d);
 					float f = packet.hasRotation() ? (float)(packet.getYaw() * 360) / 256.0F : entity.getYaw();
 					float g = packet.hasRotation() ? (float)(packet.getPitch() * 360) / 256.0F : entity.getPitch();
 					entity.updateTrackedPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), f, g, 3, false);
@@ -822,7 +822,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							this.client.player.setHeadYaw(entity.getYaw());
 						}
 
-						this.client.inGameHud.setOverlayMessage(Text.method_43469("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
+						this.client.inGameHud.setOverlayMessage(Text.translatable("mount.onboard", this.client.options.sneakKey.getBoundKeyLocalizedText()), false);
 					}
 				}
 			}
@@ -1100,7 +1100,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float f = packet.getValue();
 		int i = MathHelper.floor(f + 0.5F);
 		if (reason == GameStateChangeS2CPacket.NO_RESPAWN_BLOCK) {
-			playerEntity.sendMessage(Text.method_43471("block.minecraft.spawn.not_valid"), false);
+			playerEntity.sendMessage(Text.translatable("block.minecraft.spawn.not_valid"), false);
 		} else if (reason == GameStateChangeS2CPacket.RAIN_STARTED) {
 			this.world.getLevelProperties().setRaining(true);
 			this.world.setRainGradient(0.0F);
@@ -1128,7 +1128,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					.inGameHud
 					.getChatHud()
 					.addMessage(
-						Text.method_43469(
+						Text.translatable(
 							"demo.help.movement",
 							gameOptions.forwardKey.getBoundKeyLocalizedText(),
 							gameOptions.leftKey.getBoundKeyLocalizedText(),
@@ -1137,11 +1137,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						)
 					);
 			} else if (f == GameStateChangeS2CPacket.DEMO_JUMP_HELP) {
-				this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(Text.translatable("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()));
 			} else if (f == GameStateChangeS2CPacket.DEMO_INVENTORY_HELP) {
-				this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(Text.translatable("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
 			} else if (f == GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE) {
-				this.client.inGameHud.getChatHud().addMessage(Text.method_43469("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
+				this.client.inGameHud.getChatHud().addMessage(Text.translatable("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
 			}
 		} else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
 			this.world
@@ -1614,7 +1614,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				&& (!bl || serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackPolicy.DISABLED)) {
 				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 				if (bl) {
-					this.connection.disconnect(Text.method_43471("multiplayer.requiredTexturePrompt.disconnect"));
+					this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
 				}
 			} else {
 				this.client
@@ -1635,7 +1635,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 											} else {
 												this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 												if (bl) {
-													this.connection.disconnect(Text.method_43471("multiplayer.requiredTexturePrompt.disconnect"));
+													this.connection.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
 												} else if (serverInfoxx != null) {
 													serverInfoxx.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
 												}
@@ -1645,15 +1645,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 												ServerList.updateServerListEntry(serverInfoxx);
 											}
 										},
-										bl ? Text.method_43471("multiplayer.requiredTexturePrompt.line1") : Text.method_43471("multiplayer.texturePrompt.line1"),
+										bl ? Text.translatable("multiplayer.requiredTexturePrompt.line1") : Text.translatable("multiplayer.texturePrompt.line1"),
 										getServerResourcePackPrompt(
 											bl
-												? Text.method_43471("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD)
-												: Text.method_43471("multiplayer.texturePrompt.line2"),
+												? Text.translatable("multiplayer.requiredTexturePrompt.line2").formatted(Formatting.YELLOW, Formatting.BOLD)
+												: Text.translatable("multiplayer.texturePrompt.line2"),
 											packet.getPrompt()
 										),
 										bl ? ScreenTexts.PROCEED : ScreenTexts.YES,
-										(Text)(bl ? Text.method_43471("menu.disconnect") : ScreenTexts.NO)
+										(Text)(bl ? Text.translatable("menu.disconnect") : ScreenTexts.NO)
 									)
 								)
 					);
@@ -1662,7 +1662,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	private static Text getServerResourcePackPrompt(Text defaultPrompt, @Nullable Text customPrompt) {
-		return (Text)(customPrompt == null ? defaultPrompt : Text.method_43469("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt));
+		return (Text)(customPrompt == null ? defaultPrompt : Text.translatable("multiplayer.texturePrompt.serverPrompt", defaultPrompt, customPrompt));
 	}
 
 	@Nullable

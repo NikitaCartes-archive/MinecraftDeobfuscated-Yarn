@@ -6,10 +6,10 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public enum RealmsWorldGeneratorType {
-	DEFAULT(0, Text.method_43471("generator.default")),
-	FLAT(1, Text.method_43471("generator.flat")),
-	LARGE_BIOMES(2, Text.method_43471("generator.large_biomes")),
-	AMPLIFIED(3, Text.method_43471("generator.amplified"));
+	DEFAULT(0, Text.translatable("generator.default")),
+	FLAT(1, Text.translatable("generator.flat")),
+	LARGE_BIOMES(2, Text.translatable("generator.large_biomes")),
+	AMPLIFIED(3, Text.translatable("generator.amplified"));
 
 	private final int id;
 	private final Text text;

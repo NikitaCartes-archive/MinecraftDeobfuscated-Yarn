@@ -23,7 +23,7 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	private static final RepeatedNarrator NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Screen parent;
-	private volatile Text title = ScreenTexts.field_39003;
+	private volatile Text title = ScreenTexts.EMPTY;
 	@Nullable
 	private volatile Text errorMessage;
 	private volatile boolean aborted;

@@ -14,7 +14,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class UuidArgumentType implements ArgumentType<UUID> {
-	public static final SimpleCommandExceptionType INVALID_UUID = new SimpleCommandExceptionType(Text.method_43471("argument.uuid.invalid"));
+	public static final SimpleCommandExceptionType INVALID_UUID = new SimpleCommandExceptionType(Text.translatable("argument.uuid.invalid"));
 	private static final Collection<String> EXAMPLES = Arrays.asList("dd12be42-52a9-4a91-a8a1-11c01849e498");
 	private static final Pattern VALID_CHARACTERS = Pattern.compile("^([-A-Fa-f0-9]+)");
 

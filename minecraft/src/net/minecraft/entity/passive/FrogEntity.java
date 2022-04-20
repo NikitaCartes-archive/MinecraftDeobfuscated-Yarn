@@ -385,10 +385,8 @@ public class FrogEntity extends AnimalEntity {
 		return SLIME_BALL.test(stack);
 	}
 
-	public static boolean method_43398(
-		EntityType<? extends AnimalEntity> entityType, WorldAccess worldAccess, SpawnReason spawnReason, BlockPos blockPos, AbstractRandom abstractRandom
-	) {
-		return worldAccess.getBlockState(blockPos.down()).isIn(BlockTags.FROGS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(worldAccess, blockPos);
+	public static boolean canSpawn(EntityType<? extends AnimalEntity> type, WorldAccess world, SpawnReason reason, BlockPos pos, AbstractRandom random) {
+		return world.getBlockState(pos.down()).isIn(BlockTags.FROGS_SPAWNABLE_ON) && isLightLevelValidForNaturalSpawn(world, pos);
 	}
 
 	class FrogLookControl extends LookControl {

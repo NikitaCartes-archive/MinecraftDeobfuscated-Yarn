@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class PardonCommand {
-	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.pardon.failed"));
+	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.pardon.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -38,7 +38,7 @@ public class PardonCommand {
 			if (bannedPlayerList.contains(gameProfile)) {
 				bannedPlayerList.remove(gameProfile);
 				++i;
-				source.sendFeedback(Text.method_43469("commands.pardon.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(Text.translatable("commands.pardon.success", Texts.toText(gameProfile)), true);
 			}
 		}
 

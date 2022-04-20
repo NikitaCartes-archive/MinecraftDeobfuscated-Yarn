@@ -84,7 +84,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Override
 	protected Text getContainerName() {
-		return Text.method_43471("container.hopper");
+		return Text.translatable("container.hopper");
 	}
 
 	public static void serverTick(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity) {

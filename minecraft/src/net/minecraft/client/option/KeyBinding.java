@@ -162,7 +162,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public static Supplier<Text> getLocalizedName(String id) {
 		KeyBinding keyBinding = (KeyBinding)KEYS_BY_ID.get(id);
-		return keyBinding == null ? () -> Text.method_43471(id) : keyBinding::getBoundKeyLocalizedText;
+		return keyBinding == null ? () -> Text.translatable(id) : keyBinding::getBoundKeyLocalizedText;
 	}
 
 	public boolean equals(KeyBinding other) {

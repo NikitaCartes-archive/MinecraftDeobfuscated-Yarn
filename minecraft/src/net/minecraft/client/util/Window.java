@@ -78,12 +78,12 @@ public final class Window implements AutoCloseable {
 		this.windowedWidth = this.width = settings.width > 0 ? settings.width : 1;
 		this.windowedHeight = this.height = settings.height > 0 ? settings.height : 1;
 		GLFW.glfwDefaultWindowHints();
-		GLFW.glfwWindowHint(139265, 196609);
-		GLFW.glfwWindowHint(139275, 221185);
-		GLFW.glfwWindowHint(139266, 3);
-		GLFW.glfwWindowHint(139267, 2);
-		GLFW.glfwWindowHint(139272, 204801);
-		GLFW.glfwWindowHint(139270, 1);
+		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_OPENGL_API);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_CREATION_API, GLFW.GLFW_NATIVE_CONTEXT_API);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, 1);
 		this.handle = GLFW.glfwCreateWindow(this.width, this.height, title, this.fullscreen && monitor != null ? monitor.getHandle() : 0L, 0L);
 		if (monitor != null) {
 			VideoMode videoMode2 = monitor.findClosestVideoMode(this.fullscreen ? this.videoMode : Optional.empty());

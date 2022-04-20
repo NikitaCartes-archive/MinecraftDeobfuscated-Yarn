@@ -653,7 +653,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
 						)
 				)
 				.pool(
@@ -891,7 +891,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
 						)
 				)
 		);
@@ -923,7 +923,7 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 										.withZoom((byte)1)
 										.withSkipExistingChunks(false)
 								)
-								.apply(SetNameLootFunction.builder(Text.method_43471("filled_map.buried_treasure")))
+								.apply(SetNameLootFunction.builder(Text.translatable("filled_map.buried_treasure")))
 						)
 				)
 		);

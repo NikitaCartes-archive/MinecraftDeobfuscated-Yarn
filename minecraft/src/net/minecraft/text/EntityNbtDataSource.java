@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_7419;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
@@ -14,8 +13,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.ServerCommandSource;
 
-public record EntityNbtText(String rawSelector, @Nullable EntitySelector selector) implements class_7419 {
-	public EntityNbtText(String rawPath) {
+public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector selector) implements NbtDataSource {
+	public EntityNbtDataSource(String rawPath) {
 		this(rawPath, parseSelector(rawPath));
 	}
 
@@ -30,9 +29,9 @@ public record EntityNbtText(String rawSelector, @Nullable EntitySelector selecto
 	}
 
 	@Override
-	public Stream<NbtCompound> toNbt(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+	public Stream<NbtCompound> get(ServerCommandSource source) throws CommandSyntaxException {
 		if (this.selector != null) {
-			List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
+			List<? extends Entity> list = this.selector.getEntities(source);
 			return list.stream().map(NbtPredicate::entityToNbt);
 		} else {
 			return Stream.empty();
@@ -47,7 +46,7 @@ public record EntityNbtText(String rawSelector, @Nullable EntitySelector selecto
 		if (this == object) {
 			return true;
 		} else {
-			if (object instanceof EntityNbtText entityNbtText && this.rawSelector.equals(entityNbtText.rawSelector)) {
+			if (object instanceof EntityNbtDataSource entityNbtDataSource && this.rawSelector.equals(entityNbtDataSource.rawSelector)) {
 				return true;
 			}
 

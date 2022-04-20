@@ -35,8 +35,8 @@ public class GameModeSelectionScreen extends Screen {
 	private static final int field_32314 = 31;
 	private static final int field_32315 = 5;
 	private static final int UI_WIDTH = GameModeSelectionScreen.GameModeSelection.values().length * 31 - 5;
-	private static final Text SELECT_NEXT_TEXT = Text.method_43469(
-		"debug.gamemodes.select_next", Text.method_43471("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
+	private static final Text SELECT_NEXT_TEXT = Text.translatable(
+		"debug.gamemodes.select_next", Text.translatable("debug.gamemodes.press_f4").formatted(Formatting.AQUA)
 	);
 	private final Optional<GameModeSelectionScreen.GameModeSelection> currentGameMode;
 	private Optional<GameModeSelectionScreen.GameModeSelection> gameMode = Optional.empty();
@@ -200,10 +200,10 @@ public class GameModeSelectionScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static enum GameModeSelection {
-		CREATIVE(Text.method_43471("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
-		SURVIVAL(Text.method_43471("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
-		ADVENTURE(Text.method_43471("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
-		SPECTATOR(Text.method_43471("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
+		CREATIVE(Text.translatable("gameMode.creative"), "/gamemode creative", new ItemStack(Blocks.GRASS_BLOCK)),
+		SURVIVAL(Text.translatable("gameMode.survival"), "/gamemode survival", new ItemStack(Items.IRON_SWORD)),
+		ADVENTURE(Text.translatable("gameMode.adventure"), "/gamemode adventure", new ItemStack(Items.MAP)),
+		SPECTATOR(Text.translatable("gameMode.spectator"), "/gamemode spectator", new ItemStack(Items.ENDER_EYE));
 
 		protected static final GameModeSelectionScreen.GameModeSelection[] VALUES = values();
 		private static final int field_32317 = 16;

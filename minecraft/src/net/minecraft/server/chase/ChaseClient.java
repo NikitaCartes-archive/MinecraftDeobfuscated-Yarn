@@ -174,15 +174,7 @@ public class ChaseClient {
 						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)list.get(0);
 						ServerWorld serverWorld = this.minecraftServer.getOverworld();
 						ServerCommandSource serverCommandSource = new ServerCommandSource(
-							serverPlayerEntity,
-							Vec3d.of(serverWorld.getSpawnPos()),
-							Vec2f.ZERO,
-							serverWorld,
-							4,
-							"",
-							ScreenTexts.field_39003,
-							this.minecraftServer,
-							serverPlayerEntity
+							serverPlayerEntity, Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "", ScreenTexts.EMPTY, this.minecraftServer, serverPlayerEntity
 						);
 						CommandManager commandManager = this.minecraftServer.getCommandManager();
 						commandManager.execute(serverCommandSource, command);

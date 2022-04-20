@@ -227,7 +227,7 @@ public class CommandSuggestor {
 	private static OrderedText formatException(CommandSyntaxException exception) {
 		Text text = Texts.toText(exception.getRawMessage());
 		String string = exception.getContext();
-		return string == null ? text.asOrderedText() : Text.method_43469("command.context.parse_error", text, exception.getCursor(), string).asOrderedText();
+		return string == null ? text.asOrderedText() : Text.translatable("command.context.parse_error", text, exception.getCursor(), string).asOrderedText();
 	}
 
 	private void show() {
@@ -569,8 +569,8 @@ public class CommandSuggestor {
 			Suggestion suggestion = (Suggestion)this.suggestions.get(this.selection);
 			Message message = suggestion.getTooltip();
 			return message != null
-				? Text.method_43469("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message)
-				: Text.method_43469("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
+				? Text.translatable("narration.suggestion.tooltip", this.selection + 1, this.suggestions.size(), suggestion.getText(), message)
+				: Text.translatable("narration.suggestion", this.selection + 1, this.suggestions.size(), suggestion.getText());
 		}
 
 		public void discard() {

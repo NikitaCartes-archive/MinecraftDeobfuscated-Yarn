@@ -8,6 +8,6 @@ public interface TranslatableOption {
 	String getTranslationKey();
 
 	default Text getText() {
-		return Text.method_43471(this.getTranslationKey());
+		return Text.translatable(this.getTranslationKey());
 	}
 }

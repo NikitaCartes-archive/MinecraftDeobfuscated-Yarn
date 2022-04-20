@@ -28,10 +28,10 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_ATTRIBUTE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.method_43469("attribute.unknown", id)
+		id -> Text.translatable("attribute.unknown", id)
 	);
 	private static final DynamicCommandExceptionType INVALID_CONFIGURED_FEATURE_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.method_43469("commands.placefeature.invalid", id)
+		id -> Text.translatable("commands.placefeature.invalid", id)
 	);
 	final RegistryKey<? extends Registry<T>> registryRef;
 

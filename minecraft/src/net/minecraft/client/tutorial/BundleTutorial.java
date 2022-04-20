@@ -27,8 +27,8 @@ public class BundleTutorial {
 			this.manager.remove(this.toast);
 		}
 
-		Text text = Text.method_43471("tutorial.bundleInsert.title");
-		Text text2 = Text.method_43471("tutorial.bundleInsert.description");
+		Text text = Text.translatable("tutorial.bundleInsert.title");
+		Text text2 = Text.translatable("tutorial.bundleInsert.description");
 		this.toast = new TutorialToast(TutorialToast.Type.RIGHT_CLICK, text, text2, true);
 		this.manager.add(this.toast, 160);
 	}

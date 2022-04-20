@@ -99,15 +99,15 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				|| this.canPathThrough(mutable.set(box.minX, (double)i, box.maxZ))
 				|| this.canPathThrough(mutable.set(box.maxX, (double)i, box.minZ))
 				|| this.canPathThrough(mutable.set(box.maxX, (double)i, box.maxZ))) {
-				return this.method_43415(mutable);
+				return this.getStart(mutable);
 			}
 		}
 
-		return this.method_43415(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
+		return this.getStart(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
 	}
 
-	protected PathNode method_43415(BlockPos blockPos) {
-		PathNode pathNode = this.getNode(blockPos);
+	protected PathNode getStart(BlockPos pos) {
+		PathNode pathNode = this.getNode(pos);
 		pathNode.type = this.getNodeType(this.entity, pathNode.getBlockPos());
 		pathNode.penalty = this.entity.getPathfindingPenalty(pathNode.type);
 		return pathNode;
@@ -196,8 +196,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 	}
 
-	private static boolean method_43414(PathNodeType pathNodeType) {
-		return pathNodeType == PathNodeType.FENCE || pathNodeType == PathNodeType.DOOR_WOOD_CLOSED || pathNodeType == PathNodeType.DOOR_IRON_CLOSED;
+	private static boolean isBlocked(PathNodeType nodeType) {
+		return nodeType == PathNodeType.FENCE || nodeType == PathNodeType.DOOR_WOOD_CLOSED || nodeType == PathNodeType.DOOR_IRON_CLOSED;
 	}
 
 	private boolean isBlocked(PathNode node) {
@@ -251,7 +251,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				pathNode.penalty = Math.max(pathNode.penalty, f);
 			}
 
-			if (method_43414(nodeType) && pathNode != null && pathNode.penalty >= 0.0F && !this.isBlocked(pathNode)) {
+			if (isBlocked(nodeType) && pathNode != null && pathNode.penalty >= 0.0F && !this.isBlocked(pathNode)) {
 				pathNode = null;
 			}
 
@@ -334,7 +334,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					}
 				}
 
-				if (method_43414(pathNodeType)) {
+				if (isBlocked(pathNodeType)) {
 					pathNode = this.getNode(x, y, z);
 					pathNode.visited = true;
 					pathNode.type = pathNodeType;

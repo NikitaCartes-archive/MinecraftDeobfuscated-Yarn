@@ -66,9 +66,7 @@ public class ResourcePackProfile {
 					return null;
 				}
 
-				var8 = profileFactory.create(
-					name, Text.method_43470(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource
-				);
+				var8 = profileFactory.create(name, Text.literal(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
 			}
 
 			return var8;
@@ -122,11 +120,11 @@ public class ResourcePackProfile {
 	}
 
 	public Text getInformationText(boolean enabled) {
-		return Texts.bracketed(this.source.decorate(Text.method_43470(this.name)))
+		return Texts.bracketed(this.source.decorate(Text.literal(this.name)))
 			.styled(
 				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43473().append(this.displayName).append("\n").append(this.description)))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(this.displayName).append("\n").append(this.description)))
 			);
 	}
 

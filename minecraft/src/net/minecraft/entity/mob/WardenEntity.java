@@ -282,7 +282,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		}
 
 		this.updateAnger();
-		WardenBrain.tick(this);
+		WardenBrain.updateActivities(this);
 	}
 
 	@Override
@@ -364,10 +364,10 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	}
 
 	@Override
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 		World var3 = this.world;
 		if (var3 instanceof ServerWorld serverWorld) {
-			biConsumer.accept(this.gameEventHandler, serverWorld);
+			callback.accept(this.gameEventHandler, serverWorld);
 		}
 	}
 

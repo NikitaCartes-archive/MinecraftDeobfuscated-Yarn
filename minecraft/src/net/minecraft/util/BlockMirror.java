@@ -5,9 +5,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.DirectionTransformation;
 
 public enum BlockMirror {
-	NONE(Text.method_43471("mirror.none"), DirectionTransformation.IDENTITY),
-	LEFT_RIGHT(Text.method_43471("mirror.left_right"), DirectionTransformation.INVERT_Z),
-	FRONT_BACK(Text.method_43471("mirror.front_back"), DirectionTransformation.INVERT_X);
+	NONE(Text.translatable("mirror.none"), DirectionTransformation.IDENTITY),
+	LEFT_RIGHT(Text.translatable("mirror.left_right"), DirectionTransformation.INVERT_Z),
+	FRONT_BACK(Text.translatable("mirror.front_back"), DirectionTransformation.INVERT_X);
 
 	private final Text name;
 	private final DirectionTransformation directionTransformation;

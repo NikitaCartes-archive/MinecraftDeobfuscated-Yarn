@@ -75,7 +75,7 @@ public class CommandBossBar extends ServerBossBar {
 		return Texts.bracketed(this.getName())
 			.styled(
 				style -> style.withColor(this.getColor().getTextFormat())
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(this.getId().toString())))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(this.getId().toString())))
 						.withInsertion(this.getId().toString())
 			);
 	}

@@ -155,7 +155,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void set(float value1, float value2, float value3, float value4) {
+	public final void setAndFlip(float value1, float value2, float value3, float value4) {
 		this.floatData.position(0);
 		this.floatData.put(value1);
 		this.floatData.put(value2);
@@ -266,7 +266,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void method_35657(float value1, float value2, float value3, float value4) {
+	public final void set(float value1, float value2, float value3, float value4) {
 		this.floatData.position(0);
 		this.floatData.put(0, value1);
 		this.floatData.put(1, value2);
@@ -451,9 +451,9 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public final void method_39978(Matrix3f matrix3f) {
+	public final void set(Matrix3f values) {
 		this.floatData.position(0);
-		matrix3f.writeColumnMajor(this.floatData);
+		values.writeColumnMajor(this.floatData);
 		this.markStateDirty();
 	}
 

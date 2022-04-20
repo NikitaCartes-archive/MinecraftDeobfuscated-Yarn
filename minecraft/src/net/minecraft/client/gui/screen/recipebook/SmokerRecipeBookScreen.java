@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class SmokerRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
-	private static final Text TOGGLE_SMOKABLE_RECIPES_TEXT = Text.method_43471("gui.recipebook.toggleRecipes.smokable");
+	private static final Text TOGGLE_SMOKABLE_RECIPES_TEXT = Text.translatable("gui.recipebook.toggleRecipes.smokable");
 
 	@Override
 	protected Text getToggleCraftableButtonText() {

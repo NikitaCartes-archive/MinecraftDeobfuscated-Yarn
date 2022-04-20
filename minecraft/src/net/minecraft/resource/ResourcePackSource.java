@@ -16,7 +16,7 @@ public interface ResourcePackSource {
 	}
 
 	static ResourcePackSource nameAndSource(String source) {
-		Text text = Text.method_43471(source);
-		return name -> Text.method_43469("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
+		Text text = Text.translatable(source);
+		return name -> Text.translatable("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
 	}
 }

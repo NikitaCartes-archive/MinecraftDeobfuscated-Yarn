@@ -134,9 +134,9 @@ public class CyclingButtonWidget<T> extends PressableWidget implements Orderable
 			T object = this.getValue(1);
 			Text text = this.composeText(object);
 			if (this.isFocused()) {
-				builder.put(NarrationPart.USAGE, Text.method_43469("narration.cycle_button.usage.focused", text));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.cycle_button.usage.focused", text));
 			} else {
-				builder.put(NarrationPart.USAGE, Text.method_43469("narration.cycle_button.usage.hovered", text));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.cycle_button.usage.hovered", text));
 			}
 		}
 	}

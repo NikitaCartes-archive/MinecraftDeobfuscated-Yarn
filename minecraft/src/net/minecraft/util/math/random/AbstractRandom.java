@@ -1,7 +1,6 @@
 package net.minecraft.util.math.random;
 
 import io.netty.util.internal.ThreadLocalRandom;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 /**
  * A reimplementation of {@link java.util.Random}.
@@ -68,8 +67,8 @@ public interface AbstractRandom {
 
 	double nextGaussian();
 
-	default double method_43385(double d, double e) {
-		return d + e * (this.nextDouble() - this.nextDouble());
+	default double nextPredictable(double base, double variance) {
+		return base + variance * (this.nextDouble() - this.nextDouble());
 	}
 
 	default void skip(int count) {

@@ -54,8 +54,8 @@ public class NetworkUtils {
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
 			if (progressListener != null) {
-				progressListener.setTitleAndTask(Text.method_43471("resourcepack.downloading"));
-				progressListener.setTask(Text.method_43471("resourcepack.requesting"));
+				progressListener.setTitleAndTask(Text.translatable("resourcepack.downloading"));
+				progressListener.setTask(Text.translatable("resourcepack.requesting"));
 			}
 
 			try {
@@ -76,7 +76,7 @@ public class NetworkUtils {
 				g = (float)httpURLConnection.getContentLength();
 				int j = httpURLConnection.getContentLength();
 				if (progressListener != null) {
-					progressListener.setTask(Text.method_43469("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
+					progressListener.setTask(Text.translatable("resourcepack.progress", String.format(Locale.ROOT, "%.2f", g / 1000.0F / 1000.0F)));
 				}
 
 				if (file.exists()) {

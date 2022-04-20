@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction;
 
 public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("xyz", "x");
-	private static final SimpleCommandExceptionType INVALID_SWIZZLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("arguments.swizzle.invalid"));
+	private static final SimpleCommandExceptionType INVALID_SWIZZLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.swizzle.invalid"));
 
 	public static SwizzleArgumentType swizzle() {
 		return new SwizzleArgumentType();

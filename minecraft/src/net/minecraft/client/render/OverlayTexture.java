@@ -1,5 +1,6 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,10 +30,10 @@ public class OverlayTexture implements AutoCloseable {
 			}
 		}
 
-		RenderSystem.activeTexture(33985);
+		RenderSystem.activeTexture(GlConst.GL_TEXTURE1);
 		this.texture.bindTexture();
 		nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
-		RenderSystem.activeTexture(33984);
+		RenderSystem.activeTexture(GlConst.GL_TEXTURE0);
 	}
 
 	public void close() {

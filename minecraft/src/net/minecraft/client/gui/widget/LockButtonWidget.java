@@ -14,14 +14,14 @@ public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
 	public LockButtonWidget(int x, int y, ButtonWidget.PressAction action) {
-		super(x, y, 20, 20, Text.method_43471("narrator.button.difficulty_lock"), action);
+		super(x, y, 20, 20, Text.translatable("narrator.button.difficulty_lock"), action);
 	}
 
 	@Override
 	protected MutableText getNarrationMessage() {
 		return ScreenTexts.joinSentences(
 			super.getNarrationMessage(),
-			this.isLocked() ? Text.method_43471("narrator.button.difficulty_lock.locked") : Text.method_43471("narrator.button.difficulty_lock.unlocked")
+			this.isLocked() ? Text.translatable("narrator.button.difficulty_lock.locked") : Text.translatable("narrator.button.difficulty_lock.unlocked")
 		);
 	}
 

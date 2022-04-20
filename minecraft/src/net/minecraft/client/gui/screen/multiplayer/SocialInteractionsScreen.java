@@ -29,17 +29,17 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
 	protected static final Identifier SOCIAL_INTERACTIONS_TEXTURE = new Identifier("textures/gui/social_interactions.png");
-	private static final Text ALL_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_all");
-	private static final Text HIDDEN_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_hidden");
-	private static final Text BLOCKED_TAB_TITLE = Text.method_43471("gui.socialInteractions.tab_blocked");
+	private static final Text ALL_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_all");
+	private static final Text HIDDEN_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_hidden");
+	private static final Text BLOCKED_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_blocked");
 	private static final Text SELECTED_ALL_TAB_TITLE = ALL_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
 	private static final Text SELECTED_HIDDEN_TAB_TITLE = HIDDEN_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
 	private static final Text SELECTED_BLOCKED_TAB_TITLE = BLOCKED_TAB_TITLE.copy().formatted(Formatting.UNDERLINE);
-	private static final Text SEARCH_TEXT = Text.method_43471("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
-	static final Text EMPTY_SEARCH_TEXT = Text.method_43471("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
-	private static final Text EMPTY_HIDDEN_TEXT = Text.method_43471("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
-	private static final Text EMPTY_BLOCKED_TEXT = Text.method_43471("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
-	private static final Text BLOCKING_TEXT = Text.method_43471("gui.socialInteractions.blocking_hint");
+	private static final Text SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_hint").formatted(Formatting.ITALIC).formatted(Formatting.GRAY);
+	static final Text EMPTY_SEARCH_TEXT = Text.translatable("gui.socialInteractions.search_empty").formatted(Formatting.GRAY);
+	private static final Text EMPTY_HIDDEN_TEXT = Text.translatable("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
+	private static final Text EMPTY_BLOCKED_TEXT = Text.translatable("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
+	private static final Text BLOCKING_TEXT = Text.translatable("gui.socialInteractions.blocking_hint");
 	private static final String BLOCKING_URL = "https://aka.ms/javablocking";
 	private static final int field_32424 = 8;
 	private static final int field_32425 = 16;
@@ -67,7 +67,7 @@ public class SocialInteractionsScreen extends Screen {
 	private Runnable onRendered;
 
 	public SocialInteractionsScreen() {
-		super(Text.method_43471("gui.socialInteractions.title"));
+		super(Text.translatable("gui.socialInteractions.title"));
 		this.updateServerLabel(MinecraftClient.getInstance());
 	}
 
@@ -285,9 +285,9 @@ public class SocialInteractionsScreen extends Screen {
 			}
 
 			if (i > 1) {
-				this.serverLabel = Text.method_43469("gui.socialInteractions.server_label.multiple", string, i);
+				this.serverLabel = Text.translatable("gui.socialInteractions.server_label.multiple", string, i);
 			} else {
-				this.serverLabel = Text.method_43469("gui.socialInteractions.server_label.single", string, i);
+				this.serverLabel = Text.translatable("gui.socialInteractions.server_label.single", string, i);
 			}
 
 			this.playerCount = i;

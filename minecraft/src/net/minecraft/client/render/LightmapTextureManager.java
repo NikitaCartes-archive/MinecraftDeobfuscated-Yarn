@@ -1,5 +1,6 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -79,25 +80,25 @@ public class LightmapTextureManager implements AutoCloseable {
 	public void enable() {
 		RenderSystem.setShaderTexture(2, this.textureIdentifier);
 		this.client.getTextureManager().bindTexture(this.textureIdentifier);
-		RenderSystem.texParameter(3553, 10241, 9729);
-		RenderSystem.texParameter(3553, 10240, 9729);
+		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
+		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private float getDarknessFactor(float f) {
+	private float getDarknessFactor(float delta) {
 		if (this.client.player.hasStatusEffect(StatusEffects.DARKNESS)) {
 			StatusEffectInstance statusEffectInstance = this.client.player.getStatusEffect(StatusEffects.DARKNESS);
 			if (statusEffectInstance != null && statusEffectInstance.getFactorCalculationData().isPresent()) {
-				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(f);
+				return ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(delta);
 			}
 		}
 
 		return 0.0F;
 	}
 
-	private float getDarkness(LivingEntity livingEntity, float f, float g) {
-		float h = 0.45F * f;
-		return Math.max(0.0F, MathHelper.cos(((float)livingEntity.age - g) * (float) Math.PI * 0.025F) * h);
+	private float getDarkness(LivingEntity entity, float factor, float delta) {
+		float f = 0.45F * factor;
+		return Math.max(0.0F, MathHelper.cos(((float)entity.age - delta) * (float) Math.PI * 0.025F) * f);
 	}
 
 	public void update(float delta) {
@@ -211,10 +212,10 @@ public class LightmapTextureManager implements AutoCloseable {
 		return 1.0F - f * f * f * f;
 	}
 
-	public static float getBrightness(DimensionType dimensionType, int i) {
-		float f = (float)i / 15.0F;
+	public static float getBrightness(DimensionType type, int lightLevel) {
+		float f = (float)lightLevel / 15.0F;
 		float g = f / (4.0F - 3.0F * f);
-		return MathHelper.lerp(dimensionType.ambientLight(), g, 1.0F);
+		return MathHelper.lerp(type.ambientLight(), g, 1.0F);
 	}
 
 	public static int pack(int block, int sky) {

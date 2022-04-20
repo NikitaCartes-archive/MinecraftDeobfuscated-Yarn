@@ -33,15 +33,15 @@ public class GameModeCommand {
 	}
 
 	private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
-		Text text = Text.method_43471("gameMode." + gameMode.getName());
+		Text text = Text.translatable("gameMode." + gameMode.getName());
 		if (source.getEntity() == player) {
-			source.sendFeedback(Text.method_43469("commands.gamemode.success.self", text), true);
+			source.sendFeedback(Text.translatable("commands.gamemode.success.self", text), true);
 		} else {
 			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-				player.sendSystemMessage(Text.method_43469("gameMode.changed", text), Util.NIL_UUID);
+				player.sendSystemMessage(Text.translatable("gameMode.changed", text), Util.NIL_UUID);
 			}
 
-			source.sendFeedback(Text.method_43469("commands.gamemode.success.other", player.getDisplayName(), text), true);
+			source.sendFeedback(Text.translatable("commands.gamemode.success.other", player.getDisplayName(), text), true);
 		}
 	}
 

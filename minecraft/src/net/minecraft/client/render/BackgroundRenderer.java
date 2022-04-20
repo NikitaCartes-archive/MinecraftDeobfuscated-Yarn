@@ -27,7 +27,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 @Environment(EnvType.CLIENT)
 public class BackgroundRenderer {
 	private static final int field_32685 = 96;
-	private static final List<BackgroundRenderer.StatusEffectFogModifier> field_38338 = Lists.<BackgroundRenderer.StatusEffectFogModifier>newArrayList(
+	private static final List<BackgroundRenderer.StatusEffectFogModifier> FOG_MODIFIERS = Lists.<BackgroundRenderer.StatusEffectFogModifier>newArrayList(
 		new BackgroundRenderer.BlindnessFogModifier(), new BackgroundRenderer.DarknessFogModifier()
 	);
 	public static final float field_32684 = 5000.0F;
@@ -189,20 +189,20 @@ public class BackgroundRenderer {
 	}
 
 	@Nullable
-	private static BackgroundRenderer.StatusEffectFogModifier getFogModifier(Entity entity, float f) {
+	private static BackgroundRenderer.StatusEffectFogModifier getFogModifier(Entity entity, float tickDelta) {
 		return entity instanceof LivingEntity livingEntity
-			? (BackgroundRenderer.StatusEffectFogModifier)field_38338.stream()
-				.filter(statusEffectFogModifier -> statusEffectFogModifier.shouldApply(livingEntity, f))
+			? (BackgroundRenderer.StatusEffectFogModifier)FOG_MODIFIERS.stream()
+				.filter(modifier -> modifier.shouldApply(livingEntity, tickDelta))
 				.findFirst()
 				.orElse(null)
 			: null;
 	}
 
-	public static void applyFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float f) {
+	public static void applyFog(Camera camera, BackgroundRenderer.FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
 		CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 		Entity entity = camera.getFocusedEntity();
 		BackgroundRenderer.FogData fogData = new BackgroundRenderer.FogData(fogType);
-		BackgroundRenderer.StatusEffectFogModifier statusEffectFogModifier = getFogModifier(entity, f);
+		BackgroundRenderer.StatusEffectFogModifier statusEffectFogModifier = getFogModifier(entity, tickDelta);
 		if (cameraSubmersionType == CameraSubmersionType.LAVA) {
 			if (entity.isSpectator()) {
 				fogData.fogStart = -8.0F;
@@ -226,7 +226,7 @@ public class BackgroundRenderer {
 			LivingEntity livingEntity = (LivingEntity)entity;
 			StatusEffectInstance statusEffectInstance = livingEntity.getStatusEffect(statusEffectFogModifier.getStatusEffect());
 			if (statusEffectInstance != null) {
-				statusEffectFogModifier.applyStartEndModifier(fogData, livingEntity, statusEffectInstance, viewDistance, f);
+				statusEffectFogModifier.applyStartEndModifier(fogData, livingEntity, statusEffectInstance, viewDistance, tickDelta);
 			}
 		} else if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			fogData.fogStart = -8.0F;
@@ -241,7 +241,7 @@ public class BackgroundRenderer {
 
 			if (fogData.fogEnd > viewDistance) {
 				fogData.fogEnd = viewDistance;
-				fogData.field_38342 = FogShape.CYLINDER;
+				fogData.fogShape = FogShape.CYLINDER;
 			}
 		} else if (thickFog) {
 			fogData.fogStart = viewDistance * 0.05F;
@@ -249,17 +249,17 @@ public class BackgroundRenderer {
 		} else if (fogType == BackgroundRenderer.FogType.FOG_SKY) {
 			fogData.fogStart = 0.0F;
 			fogData.fogEnd = viewDistance;
-			fogData.field_38342 = FogShape.CYLINDER;
+			fogData.fogShape = FogShape.CYLINDER;
 		} else {
-			float g = MathHelper.clamp(viewDistance / 10.0F, 4.0F, 64.0F);
-			fogData.fogStart = viewDistance - g;
+			float f = MathHelper.clamp(viewDistance / 10.0F, 4.0F, 64.0F);
+			fogData.fogStart = viewDistance - f;
 			fogData.fogEnd = viewDistance;
-			fogData.field_38342 = FogShape.CYLINDER;
+			fogData.fogShape = FogShape.CYLINDER;
 		}
 
 		RenderSystem.setShaderFogStart(fogData.fogStart);
 		RenderSystem.setShaderFogEnd(fogData.fogEnd);
-		RenderSystem.setShaderFogShape(fogData.field_38342);
+		RenderSystem.setShaderFogShape(fogData.fogShape);
 	}
 
 	public static void setFogBlack() {
@@ -274,14 +274,14 @@ public class BackgroundRenderer {
 		}
 
 		@Override
-		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-			float h = MathHelper.lerp(Math.min(1.0F, (float)statusEffectInstance.getDuration() / 20.0F), f, 5.0F);
+		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
+			float f = MathHelper.lerp(Math.min(1.0F, (float)effect.getDuration() / 20.0F), viewDistance, 5.0F);
 			if (fogData.fogType == BackgroundRenderer.FogType.FOG_SKY) {
 				fogData.fogStart = 0.0F;
-				fogData.fogEnd = h * 0.8F;
+				fogData.fogEnd = f * 0.8F;
 			} else {
-				fogData.fogStart = h * 0.25F;
-				fogData.fogEnd = h;
+				fogData.fogStart = f * 0.25F;
+				fogData.fogEnd = f;
 			}
 		}
 	}
@@ -294,19 +294,19 @@ public class BackgroundRenderer {
 		}
 
 		@Override
-		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-			if (!statusEffectInstance.getFactorCalculationData().isEmpty()) {
-				float h = MathHelper.lerp(((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(g), f, 15.0F);
-				fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : h * 0.75F;
-				fogData.fogEnd = h;
+		public void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
+			if (!effect.getFactorCalculationData().isEmpty()) {
+				float f = MathHelper.lerp(((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(tickDelta), viewDistance, 15.0F);
+				fogData.fogStart = fogData.fogType == BackgroundRenderer.FogType.FOG_SKY ? 0.0F : f * 0.75F;
+				fogData.fogEnd = f;
 			}
 		}
 
 		@Override
-		public float applyColorModifier(LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-			return statusEffectInstance.getFactorCalculationData().isEmpty()
+		public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
+			return effect.getFactorCalculationData().isEmpty()
 				? 0.0F
-				: 1.0F - ((StatusEffectInstance.FactorCalculationData)statusEffectInstance.getFactorCalculationData().get()).lerp(g);
+				: 1.0F - ((StatusEffectInstance.FactorCalculationData)effect.getFactorCalculationData().get()).lerp(tickDelta);
 		}
 	}
 
@@ -315,7 +315,7 @@ public class BackgroundRenderer {
 		public final BackgroundRenderer.FogType fogType;
 		public float fogStart;
 		public float fogEnd;
-		public FogShape field_38342 = FogShape.SPHERE;
+		public FogShape fogShape = FogShape.SPHERE;
 
 		public FogData(BackgroundRenderer.FogType fogType) {
 			this.fogType = fogType;
@@ -332,17 +332,17 @@ public class BackgroundRenderer {
 	interface StatusEffectFogModifier {
 		StatusEffect getStatusEffect();
 
-		void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g);
+		void applyStartEndModifier(BackgroundRenderer.FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta);
 
-		default boolean shouldApply(LivingEntity livingEntity, float f) {
-			return livingEntity.hasStatusEffect(this.getStatusEffect());
+		default boolean shouldApply(LivingEntity entity, float tickDelta) {
+			return entity.hasStatusEffect(this.getStatusEffect());
 		}
 
-		default float applyColorModifier(LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-			StatusEffectInstance statusEffectInstance2 = livingEntity.getStatusEffect(this.getStatusEffect());
-			if (statusEffectInstance2 != null) {
-				if (statusEffectInstance2.getDuration() < 20) {
-					f = 1.0F - (float)statusEffectInstance2.getDuration() / 20.0F;
+		default float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
+			StatusEffectInstance statusEffectInstance = entity.getStatusEffect(this.getStatusEffect());
+			if (statusEffectInstance != null) {
+				if (statusEffectInstance.getDuration() < 20) {
+					f = 1.0F - (float)statusEffectInstance.getDuration() / 20.0F;
 				} else {
 					f = 0.0F;
 				}

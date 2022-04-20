@@ -24,7 +24,7 @@ public class TestClassArgumentType implements ArgumentType<String> {
 		if (TestFunctions.testClassExists(string)) {
 			return string;
 		} else {
-			Message message = Text.method_43470("No such test class: " + string);
+			Message message = Text.literal("No such test class: " + string);
 			throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
 		}
 	}

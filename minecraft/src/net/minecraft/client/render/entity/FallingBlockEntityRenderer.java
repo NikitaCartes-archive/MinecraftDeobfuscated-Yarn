@@ -18,12 +18,12 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntity> {
-	private final BlockRenderManager field_38890;
+	private final BlockRenderManager blockRenderManager;
 
 	public FallingBlockEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 		this.shadowRadius = 0.5F;
-		this.field_38890 = context.getBlockRenderManager();
+		this.blockRenderManager = context.getBlockRenderManager();
 	}
 
 	public void render(FallingBlockEntity fallingBlockEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -34,11 +34,11 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 				matrixStack.push();
 				BlockPos blockPos = new BlockPos(fallingBlockEntity.getX(), fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.getZ());
 				matrixStack.translate(-0.5, 0.0, -0.5);
-				this.field_38890
+				this.blockRenderManager
 					.getModelRenderer()
 					.render(
 						world,
-						this.field_38890.getModel(blockState),
+						this.blockRenderManager.getModel(blockState),
 						blockState,
 						blockPos,
 						matrixStack,

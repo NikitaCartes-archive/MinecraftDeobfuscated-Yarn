@@ -110,8 +110,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Items.MAP,
-				Text.method_43471("advancements.adventure.root.title"),
-				Text.method_43471("advancements.adventure.root.description"),
+				Text.translatable("advancements.adventure.root.title"),
+				Text.translatable("advancements.adventure.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/adventure.png"),
 				AdvancementFrame.TASK,
 				false,
@@ -126,8 +126,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.RED_BED,
-				Text.method_43471("advancements.adventure.sleep_in_bed.title"),
-				Text.method_43471("advancements.adventure.sleep_in_bed.description"),
+				Text.translatable("advancements.adventure.sleep_in_bed.title"),
+				Text.translatable("advancements.adventure.sleep_in_bed.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -140,8 +140,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.DIAMOND_BOOTS,
-				Text.method_43471("advancements.adventure.adventuring_time.title"),
-				Text.method_43471("advancements.adventure.adventuring_time.description"),
+				Text.translatable("advancements.adventure.adventuring_time.title"),
+				Text.translatable("advancements.adventure.adventuring_time.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -154,8 +154,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.EMERALD,
-				Text.method_43471("advancements.adventure.trade.title"),
-				Text.method_43471("advancements.adventure.trade.description"),
+				Text.translatable("advancements.adventure.trade.title"),
+				Text.translatable("advancements.adventure.trade.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -168,8 +168,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement3)
 			.display(
 				Items.EMERALD,
-				Text.method_43471("advancements.adventure.trade_at_world_height.title"),
-				Text.method_43471("advancements.adventure.trade_at_world_height.description"),
+				Text.translatable("advancements.adventure.trade_at_world_height.title"),
+				Text.translatable("advancements.adventure.trade_at_world_height.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -185,8 +185,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.IRON_SWORD,
-				Text.method_43471("advancements.adventure.kill_a_mob.title"),
-				Text.method_43471("advancements.adventure.kill_a_mob.description"),
+				Text.translatable("advancements.adventure.kill_a_mob.title"),
+				Text.translatable("advancements.adventure.kill_a_mob.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -199,8 +199,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Items.DIAMOND_SWORD,
-				Text.method_43471("advancements.adventure.kill_all_mobs.title"),
-				Text.method_43471("advancements.adventure.kill_all_mobs.description"),
+				Text.translatable("advancements.adventure.kill_all_mobs.title"),
+				Text.translatable("advancements.adventure.kill_all_mobs.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -213,8 +213,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Items.BOW,
-				Text.method_43471("advancements.adventure.shoot_arrow.title"),
-				Text.method_43471("advancements.adventure.shoot_arrow.description"),
+				Text.translatable("advancements.adventure.shoot_arrow.title"),
+				Text.translatable("advancements.adventure.shoot_arrow.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -233,8 +233,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Items.TRIDENT,
-				Text.method_43471("advancements.adventure.throw_trident.title"),
-				Text.method_43471("advancements.adventure.throw_trident.description"),
+				Text.translatable("advancements.adventure.throw_trident.title"),
+				Text.translatable("advancements.adventure.throw_trident.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -253,8 +253,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement6)
 			.display(
 				Items.TRIDENT,
-				Text.method_43471("advancements.adventure.very_very_frightening.title"),
-				Text.method_43471("advancements.adventure.very_very_frightening.description"),
+				Text.translatable("advancements.adventure.very_very_frightening.title"),
+				Text.translatable("advancements.adventure.very_very_frightening.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -267,8 +267,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement3)
 			.display(
 				Blocks.CARVED_PUMPKIN,
-				Text.method_43471("advancements.adventure.summon_iron_golem.title"),
-				Text.method_43471("advancements.adventure.summon_iron_golem.description"),
+				Text.translatable("advancements.adventure.summon_iron_golem.title"),
+				Text.translatable("advancements.adventure.summon_iron_golem.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -281,8 +281,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Items.ARROW,
-				Text.method_43471("advancements.adventure.sniper_duel.title"),
-				Text.method_43471("advancements.adventure.sniper_duel.description"),
+				Text.translatable("advancements.adventure.sniper_duel.title"),
+				Text.translatable("advancements.adventure.sniper_duel.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -302,8 +302,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Items.TOTEM_OF_UNDYING,
-				Text.method_43471("advancements.adventure.totem_of_undying.title"),
-				Text.method_43471("advancements.adventure.totem_of_undying.description"),
+				Text.translatable("advancements.adventure.totem_of_undying.title"),
+				Text.translatable("advancements.adventure.totem_of_undying.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -316,8 +316,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.CROSSBOW,
-				Text.method_43471("advancements.adventure.ol_betsy.title"),
-				Text.method_43471("advancements.adventure.ol_betsy.description"),
+				Text.translatable("advancements.adventure.ol_betsy.title"),
+				Text.translatable("advancements.adventure.ol_betsy.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -330,8 +330,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
-				Text.method_43471("advancements.adventure.whos_the_pillager_now.title"),
-				Text.method_43471("advancements.adventure.whos_the_pillager_now.description"),
+				Text.translatable("advancements.adventure.whos_the_pillager_now.title"),
+				Text.translatable("advancements.adventure.whos_the_pillager_now.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -344,8 +344,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
-				Text.method_43471("advancements.adventure.two_birds_one_arrow.title"),
-				Text.method_43471("advancements.adventure.two_birds_one_arrow.description"),
+				Text.translatable("advancements.adventure.two_birds_one_arrow.title"),
+				Text.translatable("advancements.adventure.two_birds_one_arrow.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -364,8 +364,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement7)
 			.display(
 				Items.CROSSBOW,
-				Text.method_43471("advancements.adventure.arbalistic.title"),
-				Text.method_43471("advancements.adventure.arbalistic.description"),
+				Text.translatable("advancements.adventure.arbalistic.title"),
+				Text.translatable("advancements.adventure.arbalistic.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -379,8 +379,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Raid.getOminousBanner(),
-				Text.method_43471("advancements.adventure.voluntary_exile.title"),
-				Text.method_43471("advancements.adventure.voluntary_exile.description"),
+				Text.translatable("advancements.adventure.voluntary_exile.title"),
+				Text.translatable("advancements.adventure.voluntary_exile.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -398,8 +398,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement8)
 			.display(
 				Raid.getOminousBanner(),
-				Text.method_43471("advancements.adventure.hero_of_the_village.title"),
-				Text.method_43471("advancements.adventure.hero_of_the_village.description"),
+				Text.translatable("advancements.adventure.hero_of_the_village.title"),
+				Text.translatable("advancements.adventure.hero_of_the_village.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -413,8 +413,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.HONEY_BLOCK.asItem(),
-				Text.method_43471("advancements.adventure.honey_block_slide.title"),
-				Text.method_43471("advancements.adventure.honey_block_slide.description"),
+				Text.translatable("advancements.adventure.honey_block_slide.title"),
+				Text.translatable("advancements.adventure.honey_block_slide.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -427,8 +427,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement5)
 			.display(
 				Blocks.TARGET.asItem(),
-				Text.method_43471("advancements.adventure.bullseye.title"),
-				Text.method_43471("advancements.adventure.bullseye.description"),
+				Text.translatable("advancements.adventure.bullseye.title"),
+				Text.translatable("advancements.adventure.bullseye.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -448,8 +448,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.LEATHER_BOOTS,
-				Text.method_43471("advancements.adventure.walk_on_powder_snow_with_leather_boots.title"),
-				Text.method_43471("advancements.adventure.walk_on_powder_snow_with_leather_boots.description"),
+				Text.translatable("advancements.adventure.walk_on_powder_snow_with_leather_boots.title"),
+				Text.translatable("advancements.adventure.walk_on_powder_snow_with_leather_boots.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -462,8 +462,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.LIGHTNING_ROD,
-				Text.method_43471("advancements.adventure.lightning_rod_with_villager_no_fire.title"),
-				Text.method_43471("advancements.adventure.lightning_rod_with_villager_no_fire.description"),
+				Text.translatable("advancements.adventure.lightning_rod_with_villager_no_fire.title"),
+				Text.translatable("advancements.adventure.lightning_rod_with_villager_no_fire.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -479,8 +479,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.SPYGLASS,
-				Text.method_43471("advancements.adventure.spyglass_at_parrot.title"),
-				Text.method_43471("advancements.adventure.spyglass_at_parrot.description"),
+				Text.translatable("advancements.adventure.spyglass_at_parrot.title"),
+				Text.translatable("advancements.adventure.spyglass_at_parrot.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -493,8 +493,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement9)
 			.display(
 				Items.SPYGLASS,
-				Text.method_43471("advancements.adventure.spyglass_at_ghast.title"),
-				Text.method_43471("advancements.adventure.spyglass_at_ghast.description"),
+				Text.translatable("advancements.adventure.spyglass_at_ghast.title"),
+				Text.translatable("advancements.adventure.spyglass_at_ghast.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -507,8 +507,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.JUKEBOX,
-				Text.method_43471("advancements.adventure.play_jukebox_in_meadows.title"),
-				Text.method_43471("advancements.adventure.play_jukebox_in_meadows.description"),
+				Text.translatable("advancements.adventure.play_jukebox_in_meadows.title"),
+				Text.translatable("advancements.adventure.play_jukebox_in_meadows.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -527,8 +527,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement10)
 			.display(
 				Items.SPYGLASS,
-				Text.method_43471("advancements.adventure.spyglass_at_dragon.title"),
-				Text.method_43471("advancements.adventure.spyglass_at_dragon.description"),
+				Text.translatable("advancements.adventure.spyglass_at_dragon.title"),
+				Text.translatable("advancements.adventure.spyglass_at_dragon.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -541,8 +541,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.WATER_BUCKET,
-				Text.method_43471("advancements.adventure.fall_from_world_height.title"),
-				Text.method_43471("advancements.adventure.fall_from_world_height.description"),
+				Text.translatable("advancements.adventure.fall_from_world_height.title"),
+				Text.translatable("advancements.adventure.fall_from_world_height.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -562,8 +562,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.SCULK_CATALYST,
-				Text.method_43471("advancements.adventure.kill_mob_near_sculk_catalyst.title"),
-				Text.method_43471("advancements.adventure.kill_mob_near_sculk_catalyst.description"),
+				Text.translatable("advancements.adventure.kill_mob_near_sculk_catalyst.title"),
+				Text.translatable("advancements.adventure.kill_mob_near_sculk_catalyst.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -576,8 +576,8 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Blocks.SCULK_SENSOR,
-				Text.method_43471("advancements.adventure.avoid_vibration.title"),
-				Text.method_43471("advancements.adventure.avoid_vibration.description"),
+				Text.translatable("advancements.adventure.avoid_vibration.title"),
+				Text.translatable("advancements.adventure.avoid_vibration.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,

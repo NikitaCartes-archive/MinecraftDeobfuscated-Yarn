@@ -44,7 +44,9 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			AbstractHorseEntity abstractHorseEntity = this.getHorse(localDifficulty);
 			SkeletonEntity skeletonEntity2 = this.getSkeleton(localDifficulty, abstractHorseEntity);
 			skeletonEntity2.startRiding(abstractHorseEntity);
-			abstractHorseEntity.addVelocity(this.skeletonHorse.getRandom().method_43385(0.0, 1.1485), 0.0, this.skeletonHorse.getRandom().method_43385(0.0, 1.1485));
+			abstractHorseEntity.addVelocity(
+				this.skeletonHorse.getRandom().nextPredictable(0.0, 1.1485), 0.0, this.skeletonHorse.getRandom().nextPredictable(0.0, 1.1485)
+			);
 			serverWorld.spawnEntityAndPassengers(abstractHorseEntity);
 		}
 	}

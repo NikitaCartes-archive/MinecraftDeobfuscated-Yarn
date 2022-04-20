@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockDataObject implements DataCommandObject {
-	static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.data.block.invalid"));
+	static final SimpleCommandExceptionType INVALID_BLOCK_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.block.invalid"));
 	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -67,17 +67,17 @@ public class BlockDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackModify() {
-		return Text.method_43469("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
+		return Text.translatable("commands.data.block.modified", this.pos.getX(), this.pos.getY(), this.pos.getZ());
 	}
 
 	@Override
 	public Text feedbackQuery(NbtElement element) {
-		return Text.method_43469("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.toPrettyPrintedText(element));
+		return Text.translatable("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.toPrettyPrintedText(element));
 	}
 
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return Text.method_43469(
+		return Text.translatable(
 			"commands.data.block.get", path, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", scale), result
 		);
 	}

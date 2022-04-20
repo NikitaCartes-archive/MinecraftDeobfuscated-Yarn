@@ -1,6 +1,7 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
@@ -14,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class Program {
-	private static final int field_32037 = 32768;
+	private static final int MAX_SHADER_INFO_LOG_LENGTH = 32768;
 	private final Program.Type shaderType;
 	private final String name;
 	private int shaderRef;
@@ -59,7 +60,7 @@ public class Program {
 			int i = GlStateManager.glCreateShader(type.getGlType());
 			GlStateManager.glShaderSource(i, loader.readSource(string));
 			GlStateManager.glCompileShader(i);
-			if (GlStateManager.glGetShaderi(i, 35713) == 0) {
+			if (GlStateManager.glGetShaderi(i, GlConst.GL_COMPILE_STATUS) == 0) {
 				String string2 = StringUtils.trim(GlStateManager.glGetShaderInfoLog(i, 32768));
 				throw new IOException("Couldn't compile " + type.getName() + " program (" + domain + ", " + name + ") : " + string2);
 			} else {
@@ -74,8 +75,8 @@ public class Program {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		VERTEX("vertex", ".vsh", 35633),
-		FRAGMENT("fragment", ".fsh", 35632);
+		VERTEX("vertex", ".vsh", GlConst.GL_VERTEX_SHADER),
+		FRAGMENT("fragment", ".fsh", GlConst.GL_FRAGMENT_SHADER);
 
 		private final String name;
 		private final String fileExtension;

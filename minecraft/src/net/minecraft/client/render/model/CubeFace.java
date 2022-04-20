@@ -44,13 +44,13 @@ public enum CubeFace {
 		new CubeFace.Corner(CubeFace.DirectionIds.EAST, CubeFace.DirectionIds.UP, CubeFace.DirectionIds.NORTH)
 	);
 
-	private static final CubeFace[] DIRECTION_LOOKUP = Util.make(new CubeFace[6], cubeFaces -> {
-		cubeFaces[CubeFace.DirectionIds.DOWN] = DOWN;
-		cubeFaces[CubeFace.DirectionIds.UP] = UP;
-		cubeFaces[CubeFace.DirectionIds.NORTH] = NORTH;
-		cubeFaces[CubeFace.DirectionIds.SOUTH] = SOUTH;
-		cubeFaces[CubeFace.DirectionIds.WEST] = WEST;
-		cubeFaces[CubeFace.DirectionIds.EAST] = EAST;
+	private static final CubeFace[] DIRECTION_LOOKUP = Util.make(new CubeFace[6], lookup -> {
+		lookup[CubeFace.DirectionIds.DOWN] = DOWN;
+		lookup[CubeFace.DirectionIds.UP] = UP;
+		lookup[CubeFace.DirectionIds.NORTH] = NORTH;
+		lookup[CubeFace.DirectionIds.SOUTH] = SOUTH;
+		lookup[CubeFace.DirectionIds.WEST] = WEST;
+		lookup[CubeFace.DirectionIds.EAST] = EAST;
 	});
 	private final CubeFace.Corner[] corners;
 

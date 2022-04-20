@@ -45,7 +45,7 @@ public class ScaffoldingItem extends BlockItem {
 					int j = world.getTopY();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						((ServerPlayerEntity)playerEntity)
-							.sendMessage(Text.method_43469("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID);
+							.sendMessage(Text.translatable("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID);
 					}
 					break;
 				}

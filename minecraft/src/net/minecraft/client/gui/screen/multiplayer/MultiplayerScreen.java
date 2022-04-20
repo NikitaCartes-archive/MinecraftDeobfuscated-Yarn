@@ -43,7 +43,7 @@ public class MultiplayerScreen extends Screen {
 	private boolean initialized;
 
 	public MultiplayerScreen(Screen parent) {
-		super(Text.method_43471("multiplayer.title"));
+		super(Text.translatable("multiplayer.title"));
 		this.parent = parent;
 	}
 
@@ -72,17 +72,17 @@ public class MultiplayerScreen extends Screen {
 
 		this.addSelectableChild(this.serverListWidget);
 		this.buttonJoin = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, Text.method_43471("selectServer.select"), button -> this.connect())
+			new ButtonWidget(this.width / 2 - 154, this.height - 52, 100, 20, Text.translatable("selectServer.select"), button -> this.connect())
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, Text.method_43471("selectServer.direct"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, Text.translatable("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
 			this.client.setScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
 		}));
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, Text.method_43471("selectServer.add"), button -> {
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, Text.translatable("selectServer.add"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
 			this.client.setScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
 		}));
-		this.buttonEdit = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, Text.method_43471("selectServer.edit"), button -> {
+		this.buttonEdit = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, Text.translatable("selectServer.edit"), button -> {
 			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
 			if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
 				ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
@@ -92,21 +92,21 @@ public class MultiplayerScreen extends Screen {
 			}
 		}));
 		this.buttonDelete = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, Text.method_43471("selectServer.delete"), button -> {
+			new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, Text.translatable("selectServer.delete"), button -> {
 				MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
 				if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
 					String string = ((MultiplayerServerListWidget.ServerEntry)entry).getServer().name;
 					if (string != null) {
-						Text text = Text.method_43471("selectServer.deleteQuestion");
-						Text text2 = Text.method_43469("selectServer.deleteWarning", string);
-						Text text3 = Text.method_43471("selectServer.deleteButton");
+						Text text = Text.translatable("selectServer.deleteQuestion");
+						Text text2 = Text.translatable("selectServer.deleteWarning", string);
+						Text text3 = Text.translatable("selectServer.deleteButton");
 						Text text4 = ScreenTexts.CANCEL;
 						this.client.setScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
 					}
 				}
 			})
 		);
-		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, Text.method_43471("selectServer.refresh"), button -> this.refresh()));
+		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 28, 70, 20, Text.translatable("selectServer.refresh"), button -> this.refresh()));
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
 		this.updateButtonActivationStates();
 	}

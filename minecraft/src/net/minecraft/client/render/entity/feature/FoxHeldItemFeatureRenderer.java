@@ -14,11 +14,11 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
-	private final HeldItemRenderer field_38899;
+	private final HeldItemRenderer heldItemRenderer;
 
-	public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxEntityModel<FoxEntity>> featureRendererContext, HeldItemRenderer heldItemRenderer) {
-		super(featureRendererContext);
-		this.field_38899 = heldItemRenderer;
+	public FoxHeldItemFeatureRenderer(FeatureRendererContext<FoxEntity, FoxEntityModel<FoxEntity>> context, HeldItemRenderer heldItemRenderer) {
+		super(context);
+		this.heldItemRenderer = heldItemRenderer;
 	}
 
 	public void render(
@@ -60,7 +60,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxEn
 		}
 
 		ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-		this.field_38899.renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+		this.heldItemRenderer.renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
 		matrixStack.pop();
 	}
 }

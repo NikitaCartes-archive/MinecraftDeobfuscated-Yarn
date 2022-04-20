@@ -20,7 +20,7 @@ import net.minecraft.util.registry.Registry;
 public class StatusEffectArgumentType implements ArgumentType<StatusEffect> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
 	public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.method_43469("effect.effectNotFound", id)
+		id -> Text.translatable("effect.effectNotFound", id)
 	);
 
 	public static StatusEffectArgumentType statusEffect() {

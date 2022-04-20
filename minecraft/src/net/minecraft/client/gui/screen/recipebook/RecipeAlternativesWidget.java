@@ -209,7 +209,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		);
 
 		public AlternativeButtonWidget(int x, int y, Recipe<?> recipe, boolean craftable) {
-			super(x, y, 200, 20, ScreenTexts.field_39003);
+			super(x, y, 200, 20, ScreenTexts.EMPTY);
 			this.width = 24;
 			this.height = 24;
 			this.recipe = recipe;

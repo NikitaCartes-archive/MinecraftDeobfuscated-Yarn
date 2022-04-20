@@ -58,7 +58,7 @@ public class BookScreen extends Screen {
 	private int pageIndex;
 	private List<OrderedText> cachedPage = Collections.emptyList();
 	private int cachedPageIndex = -1;
-	private Text pageIndexText = ScreenTexts.field_39003;
+	private Text pageIndexText = ScreenTexts.EMPTY;
 	private PageTurnWidget nextPageButton;
 	private PageTurnWidget previousPageButton;
 	private final boolean pageTurnSound;
@@ -173,7 +173,7 @@ public class BookScreen extends Screen {
 		if (this.cachedPageIndex != this.pageIndex) {
 			StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
 			this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);
-			this.pageIndexText = Text.method_43469("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
+			this.pageIndexText = Text.translatable("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		}
 
 		this.cachedPageIndex = this.pageIndex;
@@ -339,7 +339,7 @@ public class BookScreen extends Screen {
 			NbtCompound nbtCompound = stack.getNbt();
 			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
 				? BookScreen.readPages(nbtCompound)
-				: ImmutableList.of(Text.Serializer.toJson(Text.method_43471("book.invalid.tag").formatted(Formatting.DARK_RED))));
+				: ImmutableList.of(Text.Serializer.toJson(Text.translatable("book.invalid.tag").formatted(Formatting.DARK_RED))));
 		}
 
 		@Override

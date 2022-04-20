@@ -14,12 +14,12 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class TntEntityRenderer extends EntityRenderer<TntEntity> {
-	private final BlockRenderManager field_38894;
+	private final BlockRenderManager blockRenderManager;
 
 	public TntEntityRenderer(EntityRendererFactory.Context context) {
 		super(context);
 		this.shadowRadius = 0.5F;
-		this.field_38894 = context.getBlockRenderManager();
+		this.blockRenderManager = context.getBlockRenderManager();
 	}
 
 	public void render(TntEntity tntEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -38,7 +38,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
 		matrixStack.translate(-0.5, -0.5, 0.5);
 		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
-		TntMinecartEntityRenderer.renderFlashingBlock(this.field_38894, Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
+		TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
 		matrixStack.pop();
 		super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

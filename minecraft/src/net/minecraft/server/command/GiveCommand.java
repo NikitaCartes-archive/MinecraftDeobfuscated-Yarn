@@ -52,7 +52,7 @@ public class GiveCommand {
 		int i = item.getItem().getMaxCount();
 		int j = i * 100;
 		if (count > j) {
-			source.sendError(Text.method_43469("commands.give.failed.toomanyitems", j, item.createStack(count, false).toHoverableText()));
+			source.sendError(Text.translatable("commands.give.failed.toomanyitems", j, item.createStack(count, false).toHoverableText()));
 			return 0;
 		} else {
 			for(ServerPlayerEntity serverPlayerEntity : targets) {
@@ -94,7 +94,7 @@ public class GiveCommand {
 
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.method_43469(
+					Text.translatable(
 						"commands.give.success.single",
 						count,
 						item.createStack(count, false).toHoverableText(),
@@ -103,7 +103,7 @@ public class GiveCommand {
 					true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.size()), true);
+				source.sendFeedback(Text.translatable("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.size()), true);
 			}
 
 			return targets.size();

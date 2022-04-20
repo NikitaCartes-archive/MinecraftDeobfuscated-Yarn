@@ -34,9 +34,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public static final int field_32303 = 16;
 	public static final int field_32304 = 14;
 	public static final int field_32305 = 7;
-	private static final Text SAD_LABEL_TEXT = Text.method_43471("advancements.sad_label");
-	private static final Text EMPTY_TEXT = Text.method_43471("advancements.empty");
-	private static final Text ADVANCEMENTS_TEXT = Text.method_43471("gui.advancements");
+	private static final Text SAD_LABEL_TEXT = Text.translatable("advancements.sad_label");
+	private static final Text EMPTY_TEXT = Text.translatable("advancements.empty");
+	private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
 	private final ClientAdvancementManager advancementHandler;
 	private final Map<Advancement, AdvancementTab> tabs = Maps.<Advancement, AdvancementTab>newLinkedHashMap();
 	@Nullable

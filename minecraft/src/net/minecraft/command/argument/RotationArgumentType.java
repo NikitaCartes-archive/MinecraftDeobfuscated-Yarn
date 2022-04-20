@@ -13,7 +13,7 @@ import net.minecraft.text.Text;
 public class RotationArgumentType implements ArgumentType<PosArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~-5 ~5");
 	public static final SimpleCommandExceptionType INCOMPLETE_ROTATION_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.rotation.incomplete")
+		Text.translatable("argument.rotation.incomplete")
 	);
 
 	public static RotationArgumentType rotation() {

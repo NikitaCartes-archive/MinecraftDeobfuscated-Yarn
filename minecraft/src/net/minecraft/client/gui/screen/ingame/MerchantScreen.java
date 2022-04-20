@@ -39,9 +39,9 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final int SCROLLBAR_AREA_HEIGHT = 139;
 	private static final int SCROLLBAR_OFFSET_Y = 18;
 	private static final int SCROLLBAR_OFFSET_X = 94;
-	private static final Text TRADES_TEXT = Text.method_43471("merchant.trades");
-	private static final Text SEPARATOR_TEXT = Text.method_43470(" - ");
-	private static final Text DEPRECATED_TEXT = Text.method_43471("merchant.deprecated");
+	private static final Text TRADES_TEXT = Text.translatable("merchant.trades");
+	private static final Text SEPARATOR_TEXT = Text.literal(" - ");
+	private static final Text DEPRECATED_TEXT = Text.translatable("merchant.deprecated");
 	private int selectedIndex;
 	private final MerchantScreen.WidgetButtonPage[] offers = new MerchantScreen.WidgetButtonPage[7];
 	int indexStartOffset;
@@ -81,7 +81,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		int i = this.handler.getLevelProgress();
 		if (i > 0 && i <= 5 && this.handler.isLeveled()) {
-			Text text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(Text.method_43471("merchant.level." + i));
+			Text text = this.title.shallowCopy().append(SEPARATOR_TEXT).append(Text.translatable("merchant.level." + i));
 			int j = this.textRenderer.getWidth(text);
 			int k = 49 + this.backgroundWidth / 2 - j / 2;
 			this.textRenderer.draw(matrices, text, (float)k, 6.0F, 4210752);
@@ -299,7 +299,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		final int index;
 
 		public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
-			super(x, y, 89, 20, ScreenTexts.field_39003, onPress);
+			super(x, y, 89, 20, ScreenTexts.EMPTY, onPress);
 			this.index = index;
 			this.visible = false;
 		}

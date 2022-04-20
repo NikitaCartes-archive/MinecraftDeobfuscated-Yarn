@@ -72,7 +72,7 @@ public class PlayerListHud extends DrawableHelper {
 	public Text getPlayerName(PlayerListEntry entry) {
 		return entry.getDisplayName() != null
 			? this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy())
-			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.method_43470(entry.getProfile().getName())));
+			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().getName())));
 	}
 
 	/**

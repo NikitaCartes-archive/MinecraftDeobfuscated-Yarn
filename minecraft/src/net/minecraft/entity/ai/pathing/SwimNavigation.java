@@ -37,7 +37,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
-		return method_43394(this.entity, origin, target);
+		return doesNotCollide(this.entity, origin, target);
 	}
 
 	@Override

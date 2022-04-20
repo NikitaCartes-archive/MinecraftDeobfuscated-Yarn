@@ -16,10 +16,10 @@ import net.minecraft.util.math.Vec3f;
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer implements BlockEntityRenderer<CampfireBlockEntity> {
 	private static final float SCALE = 0.375F;
-	private final ItemRenderer field_38884;
+	private final ItemRenderer itemRenderer;
 
 	public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-		this.field_38884 = ctx.getItemRenderer();
+		this.itemRenderer = ctx.getItemRenderer();
 	}
 
 	public void render(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -38,7 +38,7 @@ public class CampfireBlockEntityRenderer implements BlockEntityRenderer<Campfire
 				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				matrixStack.translate(-0.3125, -0.3125, 0.0);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				this.field_38884.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
 				matrixStack.pop();
 			}
 		}

@@ -44,10 +44,8 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 				if (list.size() == 1) {
 					predicate = this.createPredicate(stateManager, property, string);
 				} else {
-					List<Predicate<BlockState>> list2 = (List)list.stream()
-						.map(stringx -> this.createPredicate(stateManager, property, stringx))
-						.collect(Collectors.toList());
-					predicate = blockState -> list2.stream().anyMatch(predicatex -> predicatex.test(blockState));
+					List<Predicate<BlockState>> list2 = (List)list.stream().map(value -> this.createPredicate(stateManager, property, value)).collect(Collectors.toList());
+					predicate = state -> list2.stream().anyMatch(predicatex -> predicatex.test(state));
 				}
 
 				return bl ? predicate.negate() : predicate;
@@ -62,7 +60,7 @@ public class SimpleMultipartModelSelector implements MultipartModelSelector {
 				String.format("Unknown value '%s' for property '%s' on '%s' in '%s'", valueString, this.key, stateFactory.getOwner(), this.valueString)
 			);
 		} else {
-			return blockState -> blockState.get(property).equals(optional.get());
+			return state -> state.get(property).equals(optional.get());
 		}
 	}
 

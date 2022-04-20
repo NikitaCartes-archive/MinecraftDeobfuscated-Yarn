@@ -155,7 +155,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
 				super.renderLabelIfPresent(
 					abstractClientPlayerEntity,
-					Text.method_43470(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()),
+					Text.literal(Integer.toString(scoreboardPlayerScore.getScore())).append(" ").append(scoreboardObjective.getDisplayName()),
 					matrixStack,
 					vertexConsumerProvider,
 					i

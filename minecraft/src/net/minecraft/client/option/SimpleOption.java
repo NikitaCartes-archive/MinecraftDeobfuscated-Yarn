@@ -171,7 +171,7 @@ public final class SimpleOption<T> {
 		T defaultValue,
 		Consumer<T> changeCallback
 	) {
-		this.text = Text.method_43471(key);
+		this.text = Text.translatable(key);
 		this.tooltipFactoryGetter = tooltipFactoryGetter;
 		this.textGetter = value -> valueTextGetter.toString(this.text, (T)value);
 		this.callbacks = callbacks;

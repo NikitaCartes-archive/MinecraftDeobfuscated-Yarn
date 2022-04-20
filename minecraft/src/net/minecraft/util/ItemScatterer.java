@@ -40,9 +40,9 @@ public class ItemScatterer {
 			ItemEntity itemEntity = new ItemEntity(world, g, h, i, stack.split(world.random.nextInt(21) + 10));
 			float j = 0.05F;
 			itemEntity.setVelocity(
-				world.random.method_43385(0.0, 0.11485000171139836),
-				world.random.method_43385(0.2, 0.11485000171139836),
-				world.random.method_43385(0.0, 0.11485000171139836)
+				world.random.nextPredictable(0.0, 0.11485000171139836),
+				world.random.nextPredictable(0.2, 0.11485000171139836),
+				world.random.nextPredictable(0.0, 0.11485000171139836)
 			);
 			world.spawnEntity(itemEntity);
 		}

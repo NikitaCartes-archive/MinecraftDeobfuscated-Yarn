@@ -102,7 +102,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		}
 
 		if (this.loginTicks++ == 600) {
-			this.disconnect(Text.method_43471("multiplayer.disconnect.slow_login"));
+			this.disconnect(Text.translatable("multiplayer.disconnect.slow_login"));
 		}
 	}
 
@@ -160,7 +160,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				}
 			} catch (Exception var5) {
 				LOGGER.error("Couldn't place player in world", var5);
-				Text text2 = Text.method_43471("multiplayer.disconnect.invalid_player_data");
+				Text text2 = Text.translatable("multiplayer.disconnect.invalid_player_data");
 				this.connection.send(new DisconnectS2CPacket(text2));
 				this.connection.disconnect(text2);
 			}
@@ -235,7 +235,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 					} else {
-						ServerLoginNetworkHandler.this.disconnect(Text.method_43471("multiplayer.disconnect.unverified_username"));
+						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.unverified_username"));
 						ServerLoginNetworkHandler.LOGGER.error("Username '{}' tried to join with an invalid session", gameProfile.getName());
 					}
 				} catch (AuthenticationUnavailableException var3) {
@@ -244,7 +244,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.toOfflineProfile(gameProfile);
 						ServerLoginNetworkHandler.this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
 					} else {
-						ServerLoginNetworkHandler.this.disconnect(Text.method_43471("multiplayer.disconnect.authservers_down"));
+						ServerLoginNetworkHandler.this.disconnect(Text.translatable("multiplayer.disconnect.authservers_down"));
 						ServerLoginNetworkHandler.LOGGER.error("Couldn't verify username because servers are unavailable");
 					}
 				}
@@ -264,7 +264,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 	@Override
 	public void onQueryResponse(LoginQueryResponseC2SPacket packet) {
-		this.disconnect(Text.method_43471("multiplayer.disconnect.unexpected_query_response"));
+		this.disconnect(Text.translatable("multiplayer.disconnect.unexpected_query_response"));
 	}
 
 	protected GameProfile toOfflineProfile(GameProfile profile) {

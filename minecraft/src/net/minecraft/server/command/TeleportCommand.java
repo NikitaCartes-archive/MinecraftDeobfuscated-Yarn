@@ -34,7 +34,7 @@ import net.minecraft.world.World;
 
 public class TeleportCommand {
 	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.teleport.invalidPosition")
+		Text.translatable("commands.teleport.invalidPosition")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -166,10 +166,10 @@ public class TeleportCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				Text.method_43469("commands.teleport.success.entity.single", ((Entity)targets.iterator().next()).getDisplayName(), destination.getDisplayName()), true
+				Text.translatable("commands.teleport.success.entity.single", ((Entity)targets.iterator().next()).getDisplayName(), destination.getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.teleport.success.entity.multiple", targets.size(), destination.getDisplayName()), true);
+			source.sendFeedback(Text.translatable("commands.teleport.success.entity.multiple", targets.size(), destination.getDisplayName()), true);
 		}
 
 		return targets.size();
@@ -221,7 +221,7 @@ public class TeleportCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				Text.method_43469(
+				Text.translatable(
 					"commands.teleport.success.location.single",
 					((Entity)targets.iterator().next()).getDisplayName(),
 					formatFloat(vec3d.x),
@@ -232,7 +232,7 @@ public class TeleportCommand {
 			);
 		} else {
 			source.sendFeedback(
-				Text.method_43469("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)), true
+				Text.translatable("commands.teleport.success.location.multiple", targets.size(), formatFloat(vec3d.x), formatFloat(vec3d.y), formatFloat(vec3d.z)), true
 			);
 		}
 

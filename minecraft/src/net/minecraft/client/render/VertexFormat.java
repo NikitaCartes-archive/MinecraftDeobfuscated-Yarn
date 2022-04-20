@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -19,7 +20,7 @@ public class VertexFormat {
 	private final IntList offsets = new IntArrayList();
 	private final int size;
 	@Nullable
-	private VertexBuffer field_38984;
+	private VertexBuffer buffer;
 
 	public VertexFormat(ImmutableMap<String, VertexFormatElement> elementMap) {
 		this.elementMap = elementMap;
@@ -106,10 +107,10 @@ public class VertexFormat {
 		}
 	}
 
-	public VertexBuffer method_43446() {
-		VertexBuffer vertexBuffer = this.field_38984;
+	public VertexBuffer getBuffer() {
+		VertexBuffer vertexBuffer = this.buffer;
 		if (vertexBuffer == null) {
-			this.field_38984 = vertexBuffer = new VertexBuffer();
+			this.buffer = vertexBuffer = new VertexBuffer();
 		}
 
 		return vertexBuffer;
@@ -129,13 +130,13 @@ public class VertexFormat {
 		public final int mode;
 		public final int vertexCount;
 		public final int size;
-		public final boolean field_38878;
+		public final boolean shareVertices;
 
-		private DrawMode(int mode, int vertexCount, int size, boolean bl) {
+		private DrawMode(int mode, int vertexCount, int size, boolean shareVertices) {
 			this.mode = mode;
 			this.vertexCount = vertexCount;
 			this.size = size;
-			this.field_38878 = bl;
+			this.shareVertices = shareVertices;
 		}
 
 		public int getSize(int vertexCount) {
@@ -149,9 +150,9 @@ public class VertexFormat {
 
 	@Environment(EnvType.CLIENT)
 	public static enum IntType {
-		BYTE(5121, 1),
-		SHORT(5123, 2),
-		INT(5125, 4);
+		BYTE(GlConst.GL_UNSIGNED_BYTE, 1),
+		SHORT(GlConst.GL_UNSIGNED_SHORT, 2),
+		INT(GlConst.GL_UNSIGNED_INT, 4);
 
 		public final int type;
 		public final int size;

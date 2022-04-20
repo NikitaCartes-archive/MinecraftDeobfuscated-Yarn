@@ -31,7 +31,7 @@ public class SkullItem extends WallStandingBlockItem {
 			}
 
 			if (string != null) {
-				return Text.method_43469(this.getTranslationKey() + ".named", string);
+				return Text.translatable(this.getTranslationKey() + ".named", string);
 			}
 		}
 

@@ -53,7 +53,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(
-		Text.method_43471("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
+		Text.translatable("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
 	);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
@@ -63,7 +63,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	private static final String SERVER = "server";
 	private static final String PROGRAMER_ART_ID = "programer_art";
 	private static final String PROGRAMMER_ART_NAME = "Programmer Art";
-	private static final Text APPLYING_PACK_TEXT = Text.method_43471("multiplayer.applyingPack");
+	private static final Text APPLYING_PACK_TEXT = Text.translatable("multiplayer.applyingPack");
 	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
@@ -162,14 +162,14 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 												} else {
 													ClientPlayNetworkHandler clientPlayNetworkHandler = minecraftClientx.getNetworkHandler();
 													if (clientPlayNetworkHandler != null) {
-														clientPlayNetworkHandler.getConnection().disconnect(Text.method_43471("connect.aborted"));
+														clientPlayNetworkHandler.getConnection().disconnect(Text.translatable("connect.aborted"));
 													}
 												}
 											},
-											Text.method_43471("multiplayer.texturePrompt.failure.line1"),
-											Text.method_43471("multiplayer.texturePrompt.failure.line2"),
+											Text.translatable("multiplayer.texturePrompt.failure.line1"),
+											Text.translatable("multiplayer.texturePrompt.failure.line2"),
 											ScreenTexts.PROCEED,
-											Text.method_43471("menu.disconnect")
+											Text.translatable("menu.disconnect")
 										)
 									)
 							);
@@ -272,7 +272,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			"server",
 			true,
 			() -> new ZipResourcePack(packZip),
-			Text.method_43471("resourcePack.server.name"),
+			Text.translatable("resourcePack.server.name"),
 			packResourceMetadata.getDescription(),
 			ResourcePackCompatibility.from(packResourceMetadata, ResourceType.CLIENT_RESOURCES),
 			ResourcePackProfile.InsertionPosition.TOP,

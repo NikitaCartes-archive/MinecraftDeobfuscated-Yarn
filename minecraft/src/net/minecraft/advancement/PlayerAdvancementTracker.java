@@ -253,7 +253,7 @@ public class PlayerAdvancementTracker {
 					&& this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
 					this.playerManager
 						.broadcast(
-							Text.method_43469("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()),
+							Text.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()),
 							MessageType.SYSTEM,
 							Util.NIL_UUID
 						);

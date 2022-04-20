@@ -47,7 +47,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 						.networkHandler
 						.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE));
 				} else {
-					this.player.sendSystemMessage(Text.method_43471("demo.day." + m), Util.NIL_UUID);
+					this.player.sendSystemMessage(Text.translatable("demo.day." + m), Util.NIL_UUID);
 				}
 			}
 		} else if (m == 1L) {
@@ -63,13 +63,13 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 					.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, GameStateChangeS2CPacket.DEMO_INVENTORY_HELP));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.sendSystemMessage(Text.method_43471("demo.day.warning"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.translatable("demo.day.warning"), Util.NIL_UUID);
 		}
 	}
 
 	private void sendDemoReminder() {
 		if (this.reminderTicks > 100) {
-			this.player.sendSystemMessage(Text.method_43471("demo.reminder"), Util.NIL_UUID);
+			this.player.sendSystemMessage(Text.translatable("demo.reminder"), Util.NIL_UUID);
 			this.reminderTicks = 0;
 		}
 	}

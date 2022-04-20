@@ -40,12 +40,12 @@ public class MapRenderer implements AutoCloseable {
 	}
 
 	private MapRenderer.MapTexture getMapTexture(int id, MapState state) {
-		return this.mapTextures.compute(id, (integer, mapTexture) -> {
-			if (mapTexture == null) {
-				return new MapRenderer.MapTexture(integer, state);
+		return this.mapTextures.compute(id, (id2, texture) -> {
+			if (texture == null) {
+				return new MapRenderer.MapTexture(id2, state);
 			} else {
-				mapTexture.setState(state);
-				return mapTexture;
+				texture.setState(state);
+				return texture;
 			}
 		});
 	}

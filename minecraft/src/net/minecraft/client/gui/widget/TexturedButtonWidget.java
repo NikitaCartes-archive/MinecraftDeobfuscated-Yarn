@@ -39,7 +39,7 @@ public class TexturedButtonWidget extends ButtonWidget {
 		int textureHeight,
 		ButtonWidget.PressAction pressAction
 	) {
-		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, ScreenTexts.field_39003);
+		this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, ScreenTexts.EMPTY);
 	}
 
 	public TexturedButtonWidget(

@@ -19,10 +19,10 @@ import net.minecraft.text.Text;
 public class ScoreboardObjectiveArgumentType implements ArgumentType<String> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "*", "012");
 	private static final DynamicCommandExceptionType UNKNOWN_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.method_43469("arguments.objective.notFound", name)
+		name -> Text.translatable("arguments.objective.notFound", name)
 	);
 	private static final DynamicCommandExceptionType READONLY_OBJECTIVE_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.method_43469("arguments.objective.readonly", name)
+		name -> Text.translatable("arguments.objective.readonly", name)
 	);
 
 	public static ScoreboardObjectiveArgumentType scoreboardObjective() {

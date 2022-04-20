@@ -236,8 +236,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			++i;
 		}
 
-		if (bl && brain.field_38348 != -1) {
-			drawString(brain.pos, i, "Anger Level: " + brain.field_38348, -98404, 0.02F);
+		if (bl && brain.angerLevel != -1) {
+			drawString(brain.pos, i, "Anger Level: " + brain.angerLevel, -98404, 0.02F);
 			++i;
 		}
 
@@ -333,7 +333,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		for(VillageDebugRenderer.Brain brain : this.brains.values()) {
 			for(BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.potentialJobSites)) {
 				if (!this.pointsOfInterest.containsKey(blockPos)) {
-					((List)map.computeIfAbsent(blockPos, blockPosx -> Lists.newArrayList())).add(brain.name);
+					((List)map.computeIfAbsent(blockPos, pos -> Lists.newArrayList())).add(brain.name);
 				}
 			}
 		}
@@ -358,7 +358,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		public final String inventory;
 		public final Path path;
 		public final boolean wantsGolem;
-		public final int field_38348;
+		public final int angerLevel;
 		public final List<String> possibleActivities = Lists.newArrayList();
 		public final List<String> runningTasks = Lists.newArrayList();
 		public final List<String> memories = Lists.newArrayList();
@@ -378,7 +378,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			String inventory,
 			@Nullable Path path,
 			boolean wantsGolem,
-			int i
+			int angerLevel
 		) {
 			this.uuid = uuid;
 			this.entityId = entityId;
@@ -391,7 +391,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			this.inventory = inventory;
 			this.path = path;
 			this.wantsGolem = wantsGolem;
-			this.field_38348 = i;
+			this.angerLevel = angerLevel;
 		}
 
 		boolean isPointOfInterest(BlockPos pos) {

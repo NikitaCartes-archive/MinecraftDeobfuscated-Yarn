@@ -11,15 +11,15 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsClientOutdatedScreen extends RealmsScreen {
-	private static final Text OUTDATED_TITLE = Text.method_43471("mco.client.outdated.title");
+	private static final Text OUTDATED_TITLE = Text.translatable("mco.client.outdated.title");
 	private static final Text[] OUTDATED_LINES = new Text[]{
-		Text.method_43471("mco.client.outdated.msg.line1"), Text.method_43471("mco.client.outdated.msg.line2")
+		Text.translatable("mco.client.outdated.msg.line1"), Text.translatable("mco.client.outdated.msg.line2")
 	};
-	private static final Text INCOMPATIBLE_TITLE = Text.method_43471("mco.client.incompatible.title");
+	private static final Text INCOMPATIBLE_TITLE = Text.translatable("mco.client.incompatible.title");
 	private static final Text[] INCOMPATIBLE_LINES = new Text[]{
-		Text.method_43471("mco.client.incompatible.msg.line1"),
-		Text.method_43471("mco.client.incompatible.msg.line2"),
-		Text.method_43471("mco.client.incompatible.msg.line3")
+		Text.translatable("mco.client.incompatible.msg.line1"),
+		Text.translatable("mco.client.incompatible.msg.line2"),
+		Text.translatable("mco.client.incompatible.msg.line3")
 	};
 	private final Screen parent;
 	private final boolean outdated;

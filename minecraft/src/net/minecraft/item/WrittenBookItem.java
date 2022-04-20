@@ -68,7 +68,7 @@ public class WrittenBookItem extends Item {
 		if (nbtCompound != null) {
 			String string = nbtCompound.getString("title");
 			if (!StringHelper.isEmpty(string)) {
-				return Text.method_43470(string);
+				return Text.literal(string);
 			}
 		}
 
@@ -81,10 +81,10 @@ public class WrittenBookItem extends Item {
 			NbtCompound nbtCompound = stack.getNbt();
 			String string = nbtCompound.getString("author");
 			if (!StringHelper.isEmpty(string)) {
-				tooltip.add(Text.method_43469("book.byAuthor", string).formatted(Formatting.GRAY));
+				tooltip.add(Text.translatable("book.byAuthor", string).formatted(Formatting.GRAY));
 			}
 
-			tooltip.add(Text.method_43471("book.generation." + nbtCompound.getInt("generation")).formatted(Formatting.GRAY));
+			tooltip.add(Text.translatable("book.generation." + nbtCompound.getInt("generation")).formatted(Formatting.GRAY));
 		}
 	}
 
@@ -144,7 +144,7 @@ public class WrittenBookItem extends Item {
 			text2 = Text.Serializer.fromLenientJson(text);
 			text2 = Texts.parse(commandSource, text2, player, 0);
 		} catch (Exception var5) {
-			text2 = Text.method_43470(text);
+			text2 = Text.literal(text);
 		}
 
 		return Text.Serializer.toJson(text2);

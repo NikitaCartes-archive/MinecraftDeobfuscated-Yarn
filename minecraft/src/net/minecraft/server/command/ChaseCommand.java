@@ -63,13 +63,13 @@ public class ChaseCommand {
 	private static int stop(ServerCommandSource source) {
 		if (client != null) {
 			client.stop();
-			source.sendFeedback(Text.method_43470("You have now stopped chasing"), false);
+			source.sendFeedback(Text.literal("You have now stopped chasing"), false);
 			client = null;
 		}
 
 		if (server != null) {
 			server.stop();
-			source.sendFeedback(Text.method_43470("You are no longer being chased"), false);
+			source.sendFeedback(Text.literal("You are no longer being chased"), false);
 			server = null;
 		}
 
@@ -78,10 +78,10 @@ public class ChaseCommand {
 
 	private static boolean isRunning(ServerCommandSource source) {
 		if (server != null) {
-			source.sendError(Text.method_43470("Chase server is already running. Stop it using /chase stop"));
+			source.sendError(Text.literal("Chase server is already running. Stop it using /chase stop"));
 			return true;
 		} else if (client != null) {
-			source.sendError(Text.method_43470("You are already chasing someone. Stop it using /chase stop"));
+			source.sendError(Text.literal("You are already chasing someone. Stop it using /chase stop"));
 			return true;
 		} else {
 			return false;
@@ -96,10 +96,10 @@ public class ChaseCommand {
 
 			try {
 				server.start();
-				source.sendFeedback(Text.method_43470("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
+				source.sendFeedback(Text.literal("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
 			} catch (IOException var4) {
 				var4.printStackTrace();
-				source.sendError(Text.method_43470("Failed to start chase server on port " + port));
+				source.sendError(Text.literal("Failed to start chase server on port " + port));
 				server = null;
 			}
 
@@ -114,7 +114,7 @@ public class ChaseCommand {
 			client = new ChaseClient(ip, port, source.getServer());
 			client.start();
 			source.sendFeedback(
-				Text.method_43470(
+				Text.literal(
 					"You are now chasing "
 						+ ip
 						+ ":"

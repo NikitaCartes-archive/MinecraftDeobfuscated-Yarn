@@ -1,7 +1,6 @@
 package net.minecraft.util.math.random;
 
 import java.util.function.LongFunction;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class ChunkRandom extends AtomicSimpleRandom {

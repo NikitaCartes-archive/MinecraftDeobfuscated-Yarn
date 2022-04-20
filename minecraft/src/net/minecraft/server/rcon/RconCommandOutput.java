@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class RconCommandOutput implements CommandOutput {
 	private static final String RCON_NAME = "Rcon";
-	private static final Text RCON_NAME_TEXT = Text.method_43470("Rcon");
+	private static final Text RCON_NAME_TEXT = Text.literal("Rcon");
 	private final StringBuffer buffer = new StringBuffer();
 	private final MinecraftServer server;
 
