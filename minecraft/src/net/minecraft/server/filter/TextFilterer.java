@@ -318,8 +318,8 @@ public class TextFilterer implements AutoCloseable {
 	}
 
 	public static class FailedHttpRequestException extends RuntimeException {
-		FailedHttpRequestException(String string) {
-			super(string);
+		FailedHttpRequestException(String message) {
+			super(message);
 		}
 	}
 

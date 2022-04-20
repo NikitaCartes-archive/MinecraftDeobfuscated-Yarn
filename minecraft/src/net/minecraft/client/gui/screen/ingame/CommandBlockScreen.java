@@ -41,30 +41,30 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 			CyclingButtonWidget.<CommandBlockBlockEntity.Type>builder(value -> {
 					switch (value) {
 						case SEQUENCE:
-							return Text.method_43471("advMode.mode.sequence");
+							return Text.translatable("advMode.mode.sequence");
 						case AUTO:
-							return Text.method_43471("advMode.mode.auto");
+							return Text.translatable("advMode.mode.auto");
 						case REDSTONE:
 						default:
-							return Text.method_43471("advMode.mode.redstone");
+							return Text.translatable("advMode.mode.redstone");
 					}
 				})
 				.values(CommandBlockBlockEntity.Type.values())
 				.omitKeyText()
 				.initially(this.mode)
-				.build(this.width / 2 - 50 - 100 - 4, 165, 100, 20, Text.method_43471("advMode.mode"), (button, mode) -> this.mode = mode)
+				.build(this.width / 2 - 50 - 100 - 4, 165, 100, 20, Text.translatable("advMode.mode"), (button, mode) -> this.mode = mode)
 		);
 		this.conditionalModeButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(Text.method_43471("advMode.mode.conditional"), Text.method_43471("advMode.mode.unconditional"))
+			CyclingButtonWidget.onOffBuilder(Text.translatable("advMode.mode.conditional"), Text.translatable("advMode.mode.unconditional"))
 				.omitKeyText()
 				.initially(this.conditional)
-				.build(this.width / 2 - 50, 165, 100, 20, Text.method_43471("advMode.type"), (button, conditional) -> this.conditional = conditional)
+				.build(this.width / 2 - 50, 165, 100, 20, Text.translatable("advMode.type"), (button, conditional) -> this.conditional = conditional)
 		);
 		this.redstoneTriggerButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(Text.method_43471("advMode.mode.autoexec.bat"), Text.method_43471("advMode.mode.redstoneTriggered"))
+			CyclingButtonWidget.onOffBuilder(Text.translatable("advMode.mode.autoexec.bat"), Text.translatable("advMode.mode.redstoneTriggered"))
 				.omitKeyText()
 				.initially(this.autoActivate)
-				.build(this.width / 2 + 50 + 4, 165, 100, 20, Text.method_43471("advMode.triggering"), (button, autoActivate) -> this.autoActivate = autoActivate)
+				.build(this.width / 2 + 50 + 4, 165, 100, 20, Text.translatable("advMode.triggering"), (button, autoActivate) -> this.autoActivate = autoActivate)
 		);
 		this.setButtonsActive(false);
 	}

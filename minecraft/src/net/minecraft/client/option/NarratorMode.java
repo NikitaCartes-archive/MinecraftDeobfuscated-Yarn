@@ -22,7 +22,7 @@ public enum NarratorMode {
 
 	private NarratorMode(int id, String name) {
 		this.id = id;
-		this.name = Text.method_43471(name);
+		this.name = Text.translatable(name);
 	}
 
 	public int getId() {

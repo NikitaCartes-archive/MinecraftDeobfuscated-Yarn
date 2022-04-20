@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CartographyTableBlock extends Block {
-	private static final Text TITLE = Text.method_43471("container.cartography_table");
+	private static final Text TITLE = Text.translatable("container.cartography_table");
 
 	protected CartographyTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

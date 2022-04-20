@@ -19,8 +19,8 @@ public class SoundSliderWidget extends OptionSliderWidget {
 
 	@Override
 	protected void updateMessage() {
-		Text text = (Text)((float)this.value == (float)this.getYImage(false) ? ScreenTexts.OFF : Text.method_43470((int)(this.value * 100.0) + "%"));
-		this.setMessage(Text.method_43471("soundCategory." + this.category.getName()).append(": ").append(text));
+		Text text = (Text)((float)this.value == (float)this.getYImage(false) ? ScreenTexts.OFF : Text.literal((int)(this.value * 100.0) + "%"));
+		this.setMessage(Text.translatable("soundCategory." + this.category.getName()).append(": ").append(text));
 	}
 
 	@Override

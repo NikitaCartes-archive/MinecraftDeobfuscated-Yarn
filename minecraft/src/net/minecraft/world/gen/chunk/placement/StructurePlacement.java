@@ -13,12 +13,12 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 public abstract class StructurePlacement {
 	public static final Codec<StructurePlacement> TYPE_CODEC = Registry.STRUCTURE_PLACEMENT

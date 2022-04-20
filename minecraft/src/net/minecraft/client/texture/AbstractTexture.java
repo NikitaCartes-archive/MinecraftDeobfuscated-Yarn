@@ -1,5 +1,6 @@
 package net.minecraft.client.texture;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -27,13 +28,13 @@ public abstract class AbstractTexture implements AutoCloseable {
 			i = mipmap ? 9987 : 9729;
 			j = 9729;
 		} else {
-			i = mipmap ? 9986 : 9728;
-			j = 9728;
+			i = mipmap ? GlConst.GL_NEAREST_MIPMAP_LINEAR : GlConst.GL_NEAREST;
+			j = GlConst.GL_NEAREST;
 		}
 
 		this.bindTexture();
-		GlStateManager._texParameter(3553, 10241, i);
-		GlStateManager._texParameter(3553, 10240, j);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, i);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, j);
 	}
 
 	public int getGlId() {

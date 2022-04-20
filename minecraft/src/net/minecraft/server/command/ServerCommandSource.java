@@ -41,8 +41,8 @@ import net.minecraft.world.dimension.DimensionType;
  * @see Entity#getCommandSource()
  */
 public class ServerCommandSource implements CommandSource {
-	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("permissions.requires.player"));
-	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("permissions.requires.entity"));
+	public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.player"));
+	public static final SimpleCommandExceptionType REQUIRES_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("permissions.requires.entity"));
 	private final CommandOutput output;
 	private final Vec3d position;
 	private final ServerWorld world;
@@ -381,7 +381,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	private void sendToOps(Text message) {
-		Text text = Text.method_43469("chat.type.admin", this.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC);
+		Text text = Text.translatable("chat.type.admin", this.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC);
 		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
@@ -397,7 +397,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendError(Text message) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendSystemMessage(Text.method_43473().append(message).formatted(Formatting.RED), Util.NIL_UUID);
+			this.output.sendSystemMessage(Text.empty().append(message).formatted(Formatting.RED), Util.NIL_UUID);
 		}
 	}
 

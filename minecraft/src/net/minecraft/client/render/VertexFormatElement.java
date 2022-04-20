@@ -1,5 +1,6 @@
 package net.minecraft.client.render;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -99,13 +100,13 @@ public class VertexFormatElement {
 
 	@Environment(EnvType.CLIENT)
 	public static enum DataType {
-		FLOAT(4, "Float", 5126),
-		UBYTE(1, "Unsigned Byte", 5121),
-		BYTE(1, "Byte", 5120),
-		USHORT(2, "Unsigned Short", 5123),
-		SHORT(2, "Short", 5122),
-		UINT(4, "Unsigned Int", 5125),
-		INT(4, "Int", 5124);
+		FLOAT(4, "Float", GlConst.GL_FLOAT),
+		UBYTE(1, "Unsigned Byte", GlConst.GL_UNSIGNED_BYTE),
+		BYTE(1, "Byte", GlConst.GL_BYTE),
+		USHORT(2, "Unsigned Short", GlConst.GL_UNSIGNED_SHORT),
+		SHORT(2, "Short", GlConst.GL_SHORT),
+		UINT(4, "Unsigned Int", GlConst.GL_UNSIGNED_INT),
+		INT(4, "Int", GlConst.GL_INT);
 
 		private final int byteLength;
 		private final String name;

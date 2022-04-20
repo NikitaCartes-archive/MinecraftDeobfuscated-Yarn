@@ -32,7 +32,7 @@ public class SuggestionProviders {
 				Registry.ENTITY_TYPE.stream().filter(EntityType::isSummonable),
 				builder,
 				EntityType::getId,
-				entityType -> Text.method_43471(Util.createTranslationKey("entity", EntityType.getId(entityType)))
+				entityType -> Text.translatable(Util.createTranslationKey("entity", EntityType.getId(entityType)))
 			)
 	);
 

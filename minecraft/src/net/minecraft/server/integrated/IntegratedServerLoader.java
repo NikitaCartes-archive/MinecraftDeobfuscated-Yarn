@@ -195,8 +195,8 @@ public class IntegratedServerLoader {
 			.setScreen(
 				new ConfirmScreen(
 					completableFuture::complete,
-					Text.method_43471("multiplayer.texturePrompt.failure.line1"),
-					Text.method_43471("multiplayer.texturePrompt.failure.line2"),
+					Text.translatable("multiplayer.texturePrompt.failure.line1"),
+					Text.translatable("multiplayer.texturePrompt.failure.line2"),
 					ScreenTexts.PROCEED,
 					ScreenTexts.CANCEL
 				)
@@ -216,11 +216,11 @@ public class IntegratedServerLoader {
 		Text text;
 		Text text2;
 		if (customized) {
-			text = Text.method_43471("selectWorld.backupQuestion.customized");
-			text2 = Text.method_43471("selectWorld.backupWarning.customized");
+			text = Text.translatable("selectWorld.backupQuestion.customized");
+			text2 = Text.translatable("selectWorld.backupWarning.customized");
 		} else {
-			text = Text.method_43471("selectWorld.backupQuestion.experimental");
-			text2 = Text.method_43471("selectWorld.backupWarning.experimental");
+			text = Text.translatable("selectWorld.backupQuestion.experimental");
+			text2 = Text.translatable("selectWorld.backupWarning.experimental");
 		}
 
 		this.client.setScreen(new BackupPromptScreen(parent, (backup, eraseCache) -> {
@@ -246,16 +246,16 @@ public class IntegratedServerLoader {
 			client.setScreen(
 				new ConfirmScreen(
 					booleanConsumer,
-					Text.method_43471("selectWorld.import_worldgen_settings.experimental.title"),
-					Text.method_43471("selectWorld.import_worldgen_settings.experimental.question")
+					Text.translatable("selectWorld.import_worldgen_settings.experimental.title"),
+					Text.translatable("selectWorld.import_worldgen_settings.experimental.question")
 				)
 			);
 		} else {
 			client.setScreen(
 				new ConfirmScreen(
 					booleanConsumer,
-					Text.method_43471("selectWorld.import_worldgen_settings.deprecated.title"),
-					Text.method_43471("selectWorld.import_worldgen_settings.deprecated.question")
+					Text.translatable("selectWorld.import_worldgen_settings.deprecated.title"),
+					Text.translatable("selectWorld.import_worldgen_settings.deprecated.question")
 				)
 			);
 		}

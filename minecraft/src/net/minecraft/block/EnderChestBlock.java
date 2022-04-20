@@ -40,7 +40,7 @@ public class EnderChestBlock extends AbstractChestBlock<EnderChestBlockEntity> i
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 14.0, 15.0);
-	private static final Text CONTAINER_NAME = Text.method_43471("container.enderchest");
+	private static final Text CONTAINER_NAME = Text.translatable("container.enderchest");
 
 	protected EnderChestBlock(AbstractBlock.Settings settings) {
 		super(settings, () -> BlockEntityType.ENDER_CHEST);

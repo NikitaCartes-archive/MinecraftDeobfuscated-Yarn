@@ -13,7 +13,7 @@ import net.minecraft.world.biome.Biome;
 
 public class LocateBiomeCommand {
 	private static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
-		id -> Text.method_43469("commands.locatebiome.notFound", id)
+		id -> Text.translatable("commands.locatebiome.notFound", id)
 	);
 	private static final int RADIUS = 6400;
 	private static final int HORIZONTAL_BLOCK_CHECK_INTERVAL = 32;

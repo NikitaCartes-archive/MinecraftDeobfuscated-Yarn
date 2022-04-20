@@ -21,7 +21,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class EntityDataObject implements DataCommandObject {
-	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.data.entity.invalid"));
+	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.entity.invalid"));
 	public static final Function<String, DataCommand.ObjectType> TYPE_FACTORY = argumentName -> new DataCommand.ObjectType() {
 			@Override
 			public DataCommandObject getObject(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -62,16 +62,16 @@ public class EntityDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackModify() {
-		return Text.method_43469("commands.data.entity.modified", this.entity.getDisplayName());
+		return Text.translatable("commands.data.entity.modified", this.entity.getDisplayName());
 	}
 
 	@Override
 	public Text feedbackQuery(NbtElement element) {
-		return Text.method_43469("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(element));
+		return Text.translatable("commands.data.entity.query", this.entity.getDisplayName(), NbtHelper.toPrettyPrintedText(element));
 	}
 
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return Text.method_43469("commands.data.entity.get", path, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
+		return Text.translatable("commands.data.entity.get", path, this.entity.getDisplayName(), String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

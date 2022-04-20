@@ -13,7 +13,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsParentalConsentScreen extends RealmsScreen {
-	private static final Text PRIVACY_INFO_TEXT = Text.method_43471("mco.account.privacyinfo");
+	private static final Text PRIVACY_INFO_TEXT = Text.translatable("mco.account.privacyinfo");
 	private final Screen parent;
 	private MultilineText privacyInfoText = MultilineText.EMPTY;
 
@@ -24,10 +24,10 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		Text text = Text.method_43471("mco.account.update");
+		Text text = Text.translatable("mco.account.update");
 		Text text2 = ScreenTexts.BACK;
 		int i = Math.max(this.textRenderer.getWidth(text), this.textRenderer.getWidth(text2)) + 30;
-		Text text3 = Text.method_43471("mco.account.privacy.info");
+		Text text3 = Text.translatable("mco.account.privacy.info");
 		int j = (int)((double)this.textRenderer.getWidth(text3) * 1.2);
 		this.addDrawableChild(
 			new ButtonWidget(this.width / 2 - j / 2, row(11), j, 20, text3, button -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR"))

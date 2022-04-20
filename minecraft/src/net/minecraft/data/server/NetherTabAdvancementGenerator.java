@@ -88,8 +88,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.RED_NETHER_BRICKS,
-				Text.method_43471("advancements.nether.root.title"),
-				Text.method_43471("advancements.nether.root.description"),
+				Text.translatable("advancements.nether.root.title"),
+				Text.translatable("advancements.nether.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/nether.png"),
 				AdvancementFrame.TASK,
 				false,
@@ -102,8 +102,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.FIRE_CHARGE,
-				Text.method_43471("advancements.nether.return_to_sender.title"),
-				Text.method_43471("advancements.nether.return_to_sender.description"),
+				Text.translatable("advancements.nether.return_to_sender.title"),
+				Text.translatable("advancements.nether.return_to_sender.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -123,8 +123,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Blocks.NETHER_BRICKS,
-				Text.method_43471("advancements.nether.find_fortress.title"),
-				Text.method_43471("advancements.nether.find_fortress.description"),
+				Text.translatable("advancements.nether.find_fortress.title"),
+				Text.translatable("advancements.nether.find_fortress.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -137,8 +137,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.MAP,
-				Text.method_43471("advancements.nether.fast_travel.title"),
-				Text.method_43471("advancements.nether.fast_travel.description"),
+				Text.translatable("advancements.nether.fast_travel.title"),
+				Text.translatable("advancements.nether.fast_travel.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -152,8 +152,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement2)
 			.display(
 				Items.GHAST_TEAR,
-				Text.method_43471("advancements.nether.uneasy_alliance.title"),
-				Text.method_43471("advancements.nether.uneasy_alliance.description"),
+				Text.translatable("advancements.nether.uneasy_alliance.title"),
+				Text.translatable("advancements.nether.uneasy_alliance.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -172,8 +172,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement3)
 			.display(
 				Blocks.WITHER_SKELETON_SKULL,
-				Text.method_43471("advancements.nether.get_wither_skull.title"),
-				Text.method_43471("advancements.nether.get_wither_skull.description"),
+				Text.translatable("advancements.nether.get_wither_skull.title"),
+				Text.translatable("advancements.nether.get_wither_skull.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -186,8 +186,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement4)
 			.display(
 				Items.NETHER_STAR,
-				Text.method_43471("advancements.nether.summon_wither.title"),
-				Text.method_43471("advancements.nether.summon_wither.description"),
+				Text.translatable("advancements.nether.summon_wither.title"),
+				Text.translatable("advancements.nether.summon_wither.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -200,8 +200,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement3)
 			.display(
 				Items.BLAZE_ROD,
-				Text.method_43471("advancements.nether.obtain_blaze_rod.title"),
-				Text.method_43471("advancements.nether.obtain_blaze_rod.description"),
+				Text.translatable("advancements.nether.obtain_blaze_rod.title"),
+				Text.translatable("advancements.nether.obtain_blaze_rod.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -214,8 +214,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement5)
 			.display(
 				Blocks.BEACON,
-				Text.method_43471("advancements.nether.create_beacon.title"),
-				Text.method_43471("advancements.nether.create_beacon.description"),
+				Text.translatable("advancements.nether.create_beacon.title"),
+				Text.translatable("advancements.nether.create_beacon.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -228,8 +228,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement7)
 			.display(
 				Blocks.BEACON,
-				Text.method_43471("advancements.nether.create_full_beacon.title"),
-				Text.method_43471("advancements.nether.create_full_beacon.description"),
+				Text.translatable("advancements.nether.create_full_beacon.title"),
+				Text.translatable("advancements.nether.create_full_beacon.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -242,8 +242,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement6)
 			.display(
 				Items.POTION,
-				Text.method_43471("advancements.nether.brew_potion.title"),
-				Text.method_43471("advancements.nether.brew_potion.description"),
+				Text.translatable("advancements.nether.brew_potion.title"),
+				Text.translatable("advancements.nether.brew_potion.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -256,8 +256,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement8)
 			.display(
 				Items.MILK_BUCKET,
-				Text.method_43471("advancements.nether.all_potions.title"),
-				Text.method_43471("advancements.nether.all_potions.description"),
+				Text.translatable("advancements.nether.all_potions.title"),
+				Text.translatable("advancements.nether.all_potions.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -289,8 +289,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement9)
 			.display(
 				Items.BUCKET,
-				Text.method_43471("advancements.nether.all_effects.title"),
-				Text.method_43471("advancements.nether.all_effects.description"),
+				Text.translatable("advancements.nether.all_effects.title"),
+				Text.translatable("advancements.nether.all_effects.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -336,8 +336,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.ANCIENT_DEBRIS,
-				Text.method_43471("advancements.nether.obtain_ancient_debris.title"),
-				Text.method_43471("advancements.nether.obtain_ancient_debris.description"),
+				Text.translatable("advancements.nether.obtain_ancient_debris.title"),
+				Text.translatable("advancements.nether.obtain_ancient_debris.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -350,8 +350,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement10)
 			.display(
 				Items.NETHERITE_CHESTPLATE,
-				Text.method_43471("advancements.nether.netherite_armor.title"),
-				Text.method_43471("advancements.nether.netherite_armor.description"),
+				Text.translatable("advancements.nether.netherite_armor.title"),
+				Text.translatable("advancements.nether.netherite_armor.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -368,8 +368,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement10)
 			.display(
 				Items.LODESTONE,
-				Text.method_43471("advancements.nether.use_lodestone.title"),
-				Text.method_43471("advancements.nether.use_lodestone.description"),
+				Text.translatable("advancements.nether.use_lodestone.title"),
+				Text.translatable("advancements.nether.use_lodestone.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -388,8 +388,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.CRYING_OBSIDIAN,
-				Text.method_43471("advancements.nether.obtain_crying_obsidian.title"),
-				Text.method_43471("advancements.nether.obtain_crying_obsidian.description"),
+				Text.translatable("advancements.nether.obtain_crying_obsidian.title"),
+				Text.translatable("advancements.nether.obtain_crying_obsidian.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -402,8 +402,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement11)
 			.display(
 				Items.RESPAWN_ANCHOR,
-				Text.method_43471("advancements.nether.charge_respawn_anchor.title"),
-				Text.method_43471("advancements.nether.charge_respawn_anchor.description"),
+				Text.translatable("advancements.nether.charge_respawn_anchor.title"),
+				Text.translatable("advancements.nether.charge_respawn_anchor.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -428,8 +428,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
-				Text.method_43471("advancements.nether.ride_strider.title"),
-				Text.method_43471("advancements.nether.ride_strider.description"),
+				Text.translatable("advancements.nether.ride_strider.title"),
+				Text.translatable("advancements.nether.ride_strider.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -449,8 +449,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement12)
 			.display(
 				Items.WARPED_FUNGUS_ON_A_STICK,
-				Text.method_43471("advancements.nether.ride_strider_in_overworld_lava.title"),
-				Text.method_43471("advancements.nether.ride_strider_in_overworld_lava.description"),
+				Text.translatable("advancements.nether.ride_strider_in_overworld_lava.title"),
+				Text.translatable("advancements.nether.ride_strider_in_overworld_lava.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -471,8 +471,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement12)
 			.display(
 				Items.NETHERITE_BOOTS,
-				Text.method_43471("advancements.nether.explore_nether.title"),
-				Text.method_43471("advancements.nether.explore_nether.description"),
+				Text.translatable("advancements.nether.explore_nether.title"),
+				Text.translatable("advancements.nether.explore_nether.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -485,8 +485,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement)
 			.display(
 				Items.POLISHED_BLACKSTONE_BRICKS,
-				Text.method_43471("advancements.nether.find_bastion.title"),
-				Text.method_43471("advancements.nether.find_bastion.description"),
+				Text.translatable("advancements.nether.find_bastion.title"),
+				Text.translatable("advancements.nether.find_bastion.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -499,8 +499,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.parent(advancement13)
 			.display(
 				Blocks.CHEST,
-				Text.method_43471("advancements.nether.loot_bastion.title"),
-				Text.method_43471("advancements.nether.loot_bastion.description"),
+				Text.translatable("advancements.nether.loot_bastion.title"),
+				Text.translatable("advancements.nether.loot_bastion.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -518,8 +518,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.GOLD_INGOT,
-				Text.method_43471("advancements.nether.distract_piglin.title"),
-				Text.method_43471("advancements.nether.distract_piglin.description"),
+				Text.translatable("advancements.nether.distract_piglin.title"),
+				Text.translatable("advancements.nether.distract_piglin.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,

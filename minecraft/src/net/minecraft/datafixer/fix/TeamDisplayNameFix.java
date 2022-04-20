@@ -30,7 +30,7 @@ public class TeamDisplayNameFix extends DataFix {
 							dynamic -> dynamic.update(
 									"DisplayName",
 									dynamic2 -> DataFixUtils.orElse(
-											dynamic2.asString().map(string -> Text.Serializer.toJson(Text.method_43470(string))).map(dynamic::createString).result(), dynamic2
+											dynamic2.asString().map(string -> Text.Serializer.toJson(Text.literal(string))).map(dynamic::createString).result(), dynamic2
 										)
 								)
 						)

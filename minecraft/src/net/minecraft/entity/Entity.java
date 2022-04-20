@@ -21,7 +21,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_7422;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -259,7 +258,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
 	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private EntityChangeListener changeListener = EntityChangeListener.NONE;
-	private final class_7422 field_38931 = new class_7422();
+	private final TrackedPosition trackedPosition = new TrackedPosition();
 	public boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	private int netherPortalCooldown;
@@ -333,12 +332,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void method_43391(double d, double e, double f) {
-		this.field_38931.method_43494(new Vec3d(d, e, f));
+	public void updateTrackedPosition(double x, double y, double z) {
+		this.trackedPosition.setPos(new Vec3d(x, y, z));
 	}
 
-	public class_7422 method_43389() {
-		return this.field_38931;
+	public TrackedPosition getTrackedPosition() {
+		return this.trackedPosition;
 	}
 
 	public EntityType<?> getType() {
@@ -2203,7 +2202,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 	}
 
 	@Nullable
@@ -3140,7 +3139,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.pos;
 	}
 
-	public Vec3d method_43390() {
+	public Vec3d getSyncedPos() {
 		return this.getPos();
 	}
 
@@ -3255,7 +3254,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();
-		this.method_43391(d, e, f);
+		this.updateTrackedPosition(d, e, f);
 		this.refreshPositionAfterTeleport(d, e, f);
 		this.setPitch(packet.getPitch());
 		this.setYaw(packet.getYaw());

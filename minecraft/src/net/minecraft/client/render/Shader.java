@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -294,7 +295,7 @@ public class Shader implements GlShader, AutoCloseable {
 		if (json == null) {
 			return new GlBlendState();
 		} else {
-			int i = 32774;
+			int i = GlConst.GL_FUNC_ADD;
 			int j = 1;
 			int k = 0;
 			int l = 1;
@@ -302,28 +303,28 @@ public class Shader implements GlShader, AutoCloseable {
 			boolean bl = true;
 			boolean bl2 = false;
 			if (JsonHelper.hasString(json, "func")) {
-				i = GlBlendState.getFuncFromString(json.get("func").getAsString());
-				if (i != 32774) {
+				i = GlBlendState.getModeFromString(json.get("func").getAsString());
+				if (i != GlConst.GL_FUNC_ADD) {
 					bl = false;
 				}
 			}
 
 			if (JsonHelper.hasString(json, "srcrgb")) {
-				j = GlBlendState.getComponentFromString(json.get("srcrgb").getAsString());
+				j = GlBlendState.getFactorFromString(json.get("srcrgb").getAsString());
 				if (j != 1) {
 					bl = false;
 				}
 			}
 
 			if (JsonHelper.hasString(json, "dstrgb")) {
-				k = GlBlendState.getComponentFromString(json.get("dstrgb").getAsString());
+				k = GlBlendState.getFactorFromString(json.get("dstrgb").getAsString());
 				if (k != 0) {
 					bl = false;
 				}
 			}
 
 			if (JsonHelper.hasString(json, "srcalpha")) {
-				l = GlBlendState.getComponentFromString(json.get("srcalpha").getAsString());
+				l = GlBlendState.getFactorFromString(json.get("srcalpha").getAsString());
 				if (l != 1) {
 					bl = false;
 				}
@@ -332,7 +333,7 @@ public class Shader implements GlShader, AutoCloseable {
 			}
 
 			if (JsonHelper.hasString(json, "dstalpha")) {
-				m = GlBlendState.getComponentFromString(json.get("dstalpha").getAsString());
+				m = GlBlendState.getFactorFromString(json.get("dstalpha").getAsString());
 				if (m != 0) {
 					bl = false;
 				}
@@ -365,7 +366,7 @@ public class Shader implements GlShader, AutoCloseable {
 
 		for (int j = 0; j < this.loadedSamplerIds.size(); j++) {
 			if (this.samplers.get(this.samplerNames.get(j)) != null) {
-				GlStateManager._activeTexture(33984 + j);
+				GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + j);
 				GlStateManager._bindTexture(0);
 			}
 		}
@@ -390,7 +391,7 @@ public class Shader implements GlShader, AutoCloseable {
 			if (this.samplers.get(string) != null) {
 				int k = GlUniform.getUniformLocation(this.programId, string);
 				GlUniform.uniform1(k, j);
-				RenderSystem.activeTexture(33984 + j);
+				RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + j);
 				RenderSystem.enableTexture();
 				Object object = this.samplers.get(string);
 				int l = -1;

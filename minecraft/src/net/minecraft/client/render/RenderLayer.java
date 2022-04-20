@@ -634,7 +634,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.build(false)
 	);
-	private static final ImmutableList<RenderLayer> field_39002 = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
+	private static final ImmutableList<RenderLayer> BLOCK_LAYERS = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	private final VertexFormat vertexFormat;
 	private final VertexFormat.DrawMode drawMode;
 	private final int expectedBufferSize;
@@ -933,7 +933,7 @@ public abstract class RenderLayer extends RenderPhase {
 
 			buffer.end();
 			this.startDrawing();
-			BufferRenderer.method_43433(buffer);
+			BufferRenderer.drawWithShader(buffer);
 			this.endDrawing();
 		}
 	}
@@ -944,7 +944,7 @@ public abstract class RenderLayer extends RenderPhase {
 	}
 
 	public static List<RenderLayer> getBlockLayers() {
-		return field_39002;
+		return BLOCK_LAYERS;
 	}
 
 	public int getExpectedBufferSize() {
@@ -971,8 +971,8 @@ public abstract class RenderLayer extends RenderPhase {
 		return this.hasCrumbling;
 	}
 
-	public boolean method_43332() {
-		return !this.drawMode.field_38878;
+	public boolean areVerticesNotShared() {
+		return !this.drawMode.shareVertices;
 	}
 
 	public Optional<RenderLayer> asOptional() {

@@ -76,7 +76,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	public static MutableText getNarrationMessage(Text message) {
-		return Text.method_43469("gui.narrate.button", message);
+		return Text.translatable("gui.narrate.button", message);
 	}
 
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -242,9 +242,9 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
 		if (this.active) {
 			if (this.isFocused()) {
-				builder.put(NarrationPart.USAGE, Text.method_43471("narration.button.usage.focused"));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.focused"));
 			} else {
-				builder.put(NarrationPart.USAGE, Text.method_43471("narration.button.usage.hovered"));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"));
 			}
 		}
 	}

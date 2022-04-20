@@ -22,7 +22,7 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 	private ClickableWidget directionalAudioButton;
 
 	public SoundOptionsScreen(Screen parent, GameOptions options) {
-		super(parent, options, Text.method_43471("options.sounds.title"));
+		super(parent, options, Text.translatable("options.sounds.title"));
 	}
 
 	@Override

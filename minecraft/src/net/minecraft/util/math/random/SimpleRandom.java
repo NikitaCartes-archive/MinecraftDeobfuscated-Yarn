@@ -1,6 +1,5 @@
 package net.minecraft.util.math.random;
 
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.GaussianGenerator;
 
 public class SimpleRandom implements BaseSimpleRandom {

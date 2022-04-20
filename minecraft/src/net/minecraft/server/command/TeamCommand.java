@@ -20,34 +20,34 @@ import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 
 public class TeamCommand {
-	private static final SimpleCommandExceptionType ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.team.add.duplicate"));
-	private static final SimpleCommandExceptionType EMPTY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.team.empty.unchanged"));
+	private static final SimpleCommandExceptionType ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.team.add.duplicate"));
+	private static final SimpleCommandExceptionType EMPTY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.team.empty.unchanged"));
 	private static final SimpleCommandExceptionType OPTION_NAME_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.name.unchanged")
+		Text.translatable("commands.team.option.name.unchanged")
 	);
 	private static final SimpleCommandExceptionType OPTION_COLOR_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.color.unchanged")
+		Text.translatable("commands.team.option.color.unchanged")
 	);
 	private static final SimpleCommandExceptionType OPTION_FRIENDLY_FIRE_ALREADY_ENABLED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.friendlyfire.alreadyEnabled")
+		Text.translatable("commands.team.option.friendlyfire.alreadyEnabled")
 	);
 	private static final SimpleCommandExceptionType OPTION_FRIENDLY_FIRE_ALREADY_DISABLED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.friendlyfire.alreadyDisabled")
+		Text.translatable("commands.team.option.friendlyfire.alreadyDisabled")
 	);
 	private static final SimpleCommandExceptionType OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_ENABLED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.seeFriendlyInvisibles.alreadyEnabled")
+		Text.translatable("commands.team.option.seeFriendlyInvisibles.alreadyEnabled")
 	);
 	private static final SimpleCommandExceptionType OPTION_SEE_FRIENDLY_INVISIBLES_ALREADY_DISABLED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.seeFriendlyInvisibles.alreadyDisabled")
+		Text.translatable("commands.team.option.seeFriendlyInvisibles.alreadyDisabled")
 	);
 	private static final SimpleCommandExceptionType OPTION_NAMETAG_VISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.nametagVisibility.unchanged")
+		Text.translatable("commands.team.option.nametagVisibility.unchanged")
 	);
 	private static final SimpleCommandExceptionType OPTION_DEATH_MESSAGE_VISIBILITY_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.deathMessageVisibility.unchanged")
+		Text.translatable("commands.team.option.deathMessageVisibility.unchanged")
 	);
 	private static final SimpleCommandExceptionType OPTION_COLLISION_RULE_UNCHANGED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.team.option.collisionRule.unchanged")
+		Text.translatable("commands.team.option.collisionRule.unchanged")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -277,9 +277,9 @@ public class TeamCommand {
 		}
 
 		if (members.size() == 1) {
-			source.sendFeedback(Text.method_43469("commands.team.leave.success.single", members.iterator().next()), true);
+			source.sendFeedback(Text.translatable("commands.team.leave.success.single", members.iterator().next()), true);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.team.leave.success.multiple", members.size()), true);
+			source.sendFeedback(Text.translatable("commands.team.leave.success.multiple", members.size()), true);
 		}
 
 		return members.size();
@@ -293,9 +293,9 @@ public class TeamCommand {
 		}
 
 		if (members.size() == 1) {
-			source.sendFeedback(Text.method_43469("commands.team.join.success.single", members.iterator().next(), team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.join.success.single", members.iterator().next(), team.getFormattedName()), true);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.team.join.success.multiple", members.size(), team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.join.success.multiple", members.size(), team.getFormattedName()), true);
 		}
 
 		return members.size();
@@ -306,7 +306,7 @@ public class TeamCommand {
 			throw OPTION_NAMETAG_VISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setNameTagVisibilityRule(visibility);
-			source.sendFeedback(Text.method_43469("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.nametagVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
 			return 0;
 		}
 	}
@@ -316,7 +316,7 @@ public class TeamCommand {
 			throw OPTION_DEATH_MESSAGE_VISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setDeathMessageVisibilityRule(visibility);
-			source.sendFeedback(Text.method_43469("commands.team.option.deathMessageVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.deathMessageVisibility.success", team.getFormattedName(), visibility.getDisplayName()), true);
 			return 0;
 		}
 	}
@@ -326,7 +326,7 @@ public class TeamCommand {
 			throw OPTION_COLLISION_RULE_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setCollisionRule(collisionRule);
-			source.sendFeedback(Text.method_43469("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getDisplayName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.collisionRule.success", team.getFormattedName(), collisionRule.getDisplayName()), true);
 			return 0;
 		}
 	}
@@ -340,7 +340,7 @@ public class TeamCommand {
 			}
 		} else {
 			team.setShowFriendlyInvisibles(allowed);
-			source.sendFeedback(Text.method_43469("commands.team.option.seeFriendlyInvisibles." + (allowed ? "enabled" : "disabled"), team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.seeFriendlyInvisibles." + (allowed ? "enabled" : "disabled"), team.getFormattedName()), true);
 			return 0;
 		}
 	}
@@ -354,7 +354,7 @@ public class TeamCommand {
 			}
 		} else {
 			team.setFriendlyFireAllowed(allowed);
-			source.sendFeedback(Text.method_43469("commands.team.option.friendlyfire." + (allowed ? "enabled" : "disabled"), team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.friendlyfire." + (allowed ? "enabled" : "disabled"), team.getFormattedName()), true);
 			return 0;
 		}
 	}
@@ -364,7 +364,7 @@ public class TeamCommand {
 			throw OPTION_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setDisplayName(displayName);
-			source.sendFeedback(Text.method_43469("commands.team.option.name.success", team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.name.success", team.getFormattedName()), true);
 			return 0;
 		}
 	}
@@ -374,7 +374,7 @@ public class TeamCommand {
 			throw OPTION_COLOR_UNCHANGED_EXCEPTION.create();
 		} else {
 			team.setColor(color);
-			source.sendFeedback(Text.method_43469("commands.team.option.color.success", team.getFormattedName(), color.getName()), true);
+			source.sendFeedback(Text.translatable("commands.team.option.color.success", team.getFormattedName(), color.getName()), true);
 			return 0;
 		}
 	}
@@ -389,7 +389,7 @@ public class TeamCommand {
 				scoreboard.removePlayerFromTeam(string, team);
 			}
 
-			source.sendFeedback(Text.method_43469("commands.team.empty.success", collection.size(), team.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.empty.success", collection.size(), team.getFormattedName()), true);
 			return collection.size();
 		}
 	}
@@ -397,12 +397,12 @@ public class TeamCommand {
 	private static int executeRemove(ServerCommandSource source, Team team) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		scoreboard.removeTeam(team);
-		source.sendFeedback(Text.method_43469("commands.team.remove.success", team.getFormattedName()), true);
+		source.sendFeedback(Text.translatable("commands.team.remove.success", team.getFormattedName()), true);
 		return scoreboard.getTeams().size();
 	}
 
 	private static int executeAdd(ServerCommandSource source, String team) throws CommandSyntaxException {
-		return executeAdd(source, team, Text.method_43470(team));
+		return executeAdd(source, team, Text.literal(team));
 	}
 
 	private static int executeAdd(ServerCommandSource source, String team, Text displayName) throws CommandSyntaxException {
@@ -412,7 +412,7 @@ public class TeamCommand {
 		} else {
 			Team team2 = scoreboard.addTeam(team);
 			team2.setDisplayName(displayName);
-			source.sendFeedback(Text.method_43469("commands.team.add.success", team2.getFormattedName()), true);
+			source.sendFeedback(Text.translatable("commands.team.add.success", team2.getFormattedName()), true);
 			return scoreboard.getTeams().size();
 		}
 	}
@@ -420,10 +420,10 @@ public class TeamCommand {
 	private static int executeListMembers(ServerCommandSource source, Team team) {
 		Collection<String> collection = team.getPlayerList();
 		if (collection.isEmpty()) {
-			source.sendFeedback(Text.method_43469("commands.team.list.members.empty", team.getFormattedName()), false);
+			source.sendFeedback(Text.translatable("commands.team.list.members.empty", team.getFormattedName()), false);
 		} else {
 			source.sendFeedback(
-				Text.method_43469("commands.team.list.members.success", team.getFormattedName(), collection.size(), Texts.joinOrdered(collection)), false
+				Text.translatable("commands.team.list.members.success", team.getFormattedName(), collection.size(), Texts.joinOrdered(collection)), false
 			);
 		}
 
@@ -433,9 +433,9 @@ public class TeamCommand {
 	private static int executeListTeams(ServerCommandSource source) {
 		Collection<Team> collection = source.getServer().getScoreboard().getTeams();
 		if (collection.isEmpty()) {
-			source.sendFeedback(Text.method_43471("commands.team.list.teams.empty"), false);
+			source.sendFeedback(Text.translatable("commands.team.list.teams.empty"), false);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.team.list.teams.success", collection.size(), Texts.join(collection, Team::getFormattedName)), false);
+			source.sendFeedback(Text.translatable("commands.team.list.teams.success", collection.size(), Texts.join(collection, Team::getFormattedName)), false);
 		}
 
 		return collection.size();
@@ -443,13 +443,13 @@ public class TeamCommand {
 
 	private static int executeModifyPrefix(ServerCommandSource source, Team team, Text prefix) {
 		team.setPrefix(prefix);
-		source.sendFeedback(Text.method_43469("commands.team.option.prefix.success", prefix), false);
+		source.sendFeedback(Text.translatable("commands.team.option.prefix.success", prefix), false);
 		return 1;
 	}
 
 	private static int executeModifySuffix(ServerCommandSource source, Team team, Text suffix) {
 		team.setSuffix(suffix);
-		source.sendFeedback(Text.method_43469("commands.team.option.suffix.success", suffix), false);
+		source.sendFeedback(Text.translatable("commands.team.option.suffix.success", suffix), false);
 		return 1;
 	}
 }

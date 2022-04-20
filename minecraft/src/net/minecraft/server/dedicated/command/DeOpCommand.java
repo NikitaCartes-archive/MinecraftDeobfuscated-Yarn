@@ -13,7 +13,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class DeOpCommand {
-	private static final SimpleCommandExceptionType ALREADY_DEOPPED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.deop.failed"));
+	private static final SimpleCommandExceptionType ALREADY_DEOPPED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.deop.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -35,7 +35,7 @@ public class DeOpCommand {
 			if (playerManager.isOperator(gameProfile)) {
 				playerManager.removeFromOperators(gameProfile);
 				i++;
-				source.sendFeedback(Text.method_43469("commands.deop.success", ((GameProfile)targets.iterator().next()).getName()), true);
+				source.sendFeedback(Text.translatable("commands.deop.success", ((GameProfile)targets.iterator().next()).getName()), true);
 			}
 		}
 

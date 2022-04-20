@@ -3,7 +3,7 @@ package net.minecraft.client.texture;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.entity.decoration.painting.PaintingMotive;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -17,11 +17,11 @@ public class PaintingManager extends SpriteAtlasHolder {
 
 	@Override
 	protected Stream<Identifier> getSprites() {
-		return Stream.concat(Registry.PAINTING_MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
+		return Stream.concat(Registry.PAINTING_VARIANT.getIds().stream(), Stream.of(PAINTING_BACK_ID));
 	}
 
-	public Sprite getPaintingSprite(PaintingMotive motive) {
-		return this.getSprite(Registry.PAINTING_MOTIVE.getId(motive));
+	public Sprite getPaintingSprite(PaintingVariant motive) {
+		return this.getSprite(Registry.PAINTING_VARIANT.getId(motive));
 	}
 
 	public Sprite getBackSprite() {

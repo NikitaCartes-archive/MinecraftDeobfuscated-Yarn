@@ -36,9 +36,9 @@ public class FunctionCommand {
 		}
 
 		if (functions.size() == 1) {
-			source.sendFeedback(Text.method_43469("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
+			source.sendFeedback(Text.translatable("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.function.success.multiple", i, functions.size()), true);
+			source.sendFeedback(Text.translatable("commands.function.success.multiple", i, functions.size()), true);
 		}
 
 		return i;

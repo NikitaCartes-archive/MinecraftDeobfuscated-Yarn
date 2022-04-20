@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SmithingTableBlock extends CraftingTableBlock {
-	private static final Text SCREEN_TITLE = Text.method_43471("container.upgrade");
+	private static final Text SCREEN_TITLE = Text.translatable("container.upgrade");
 
 	protected SmithingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

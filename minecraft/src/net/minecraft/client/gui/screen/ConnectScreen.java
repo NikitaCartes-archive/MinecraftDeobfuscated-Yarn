@@ -34,7 +34,7 @@ public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final long NARRATOR_INTERVAL = 2000L;
-	public static final Text BLOCKED_HOST_TEXT = Text.method_43469("disconnect.genericReason", Text.method_43471("disconnect.unknownHost"));
+	public static final Text BLOCKED_HOST_TEXT = Text.translatable("disconnect.genericReason", Text.translatable("disconnect.unknownHost"));
 	/**
 	 * The client connection to the remote server.
 	 * This is not used when connecting to the client's own integrated server.
@@ -45,7 +45,7 @@ public class ConnectScreen extends Screen {
 	volatile ClientConnection connection;
 	volatile boolean connectingCancelled;
 	final Screen parent;
-	private Text status = Text.method_43471("connect.connecting");
+	private Text status = Text.translatable("connect.connecting");
 	private long lastNarrationTime = -1L;
 
 	private ConnectScreen(Screen parent) {
@@ -109,7 +109,7 @@ public class ConnectScreen extends Screen {
 							.replaceAll(inetSocketAddress.toString(), "");
 					client.execute(
 						() -> client.setScreen(
-								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, Text.method_43469("disconnect.genericReason", string))
+								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string))
 							)
 					);
 				}
@@ -144,7 +144,7 @@ public class ConnectScreen extends Screen {
 		this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, button -> {
 			this.connectingCancelled = true;
 			if (this.connection != null) {
-				this.connection.disconnect(Text.method_43471("connect.aborted"));
+				this.connection.disconnect(Text.translatable("connect.aborted"));
 			}
 
 			this.client.setScreen(this.parent);
@@ -157,7 +157,7 @@ public class ConnectScreen extends Screen {
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastNarrationTime > 2000L) {
 			this.lastNarrationTime = l;
-			NarratorManager.INSTANCE.narrate(Text.method_43471("narrator.joining"));
+			NarratorManager.INSTANCE.narrate(Text.translatable("narrator.joining"));
 		}
 
 		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);

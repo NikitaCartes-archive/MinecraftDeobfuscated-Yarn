@@ -9,7 +9,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class SaveAllCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.save.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.save.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -21,13 +21,13 @@ public class SaveAllCommand {
 	}
 
 	private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
-		source.sendFeedback(Text.method_43471("commands.save.saving"), false);
+		source.sendFeedback(Text.translatable("commands.save.saving"), false);
 		MinecraftServer minecraftServer = source.getServer();
 		boolean bl = minecraftServer.saveAll(true, flush, true);
 		if (!bl) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(Text.method_43471("commands.save.success"), true);
+			source.sendFeedback(Text.translatable("commands.save.success"), true);
 			return 1;
 		}
 	}

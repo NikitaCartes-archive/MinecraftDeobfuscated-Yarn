@@ -121,7 +121,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		boolean bl = worldAccess.getFluidState(blockPos).getFluid() == Fluids.WATER;
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(bl))
-			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(worldAccess.getBlockState(blockPos.down()))))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.isSignalFireBaseBlock(worldAccess.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
 			.with(FACING, ctx.getPlayerFacing());
 	}
@@ -135,11 +135,11 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 
 		return direction == Direction.DOWN
-			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(neighborState)))
+			? state.with(SIGNAL_FIRE, Boolean.valueOf(this.isSignalFireBaseBlock(neighborState)))
 			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
-	private boolean doesBlockCauseSignalFire(BlockState state) {
+	private boolean isSignalFireBaseBlock(BlockState state) {
 		return state.isOf(Blocks.HAY_BLOCK);
 	}
 

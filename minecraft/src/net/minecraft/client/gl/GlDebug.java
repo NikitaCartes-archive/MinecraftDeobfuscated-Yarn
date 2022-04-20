@@ -15,6 +15,7 @@ import net.minecraft.client.util.Untracker;
 import org.lwjgl.opengl.ARBDebugOutput;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL43;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLDebugMessageARBCallback;
 import org.lwjgl.opengl.GLDebugMessageCallback;
@@ -130,26 +131,26 @@ public class GlDebug {
 			GLCapabilities gLCapabilities = GL.getCapabilities();
 			if (gLCapabilities.GL_KHR_debug) {
 				debugMessageEnabled = true;
-				GL11.glEnable(37600);
+				GL11.glEnable(GL43.GL_DEBUG_OUTPUT);
 				if (sync) {
-					GL11.glEnable(33346);
+					GL11.glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
 				}
 
 				for (int i = 0; i < KHR_VERBOSITY_LEVELS.size(); i++) {
 					boolean bl = i < verbosity;
-					KHRDebug.glDebugMessageControl(4352, 4352, (Integer)KHR_VERBOSITY_LEVELS.get(i), (int[])null, bl);
+					KHRDebug.glDebugMessageControl(GL11.GL_DONT_CARE, GL11.GL_DONT_CARE, (Integer)KHR_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				KHRDebug.glDebugMessageCallback(GLX.make(GLDebugMessageCallback.create(GlDebug::info), Untracker::untrack), 0L);
 			} else if (gLCapabilities.GL_ARB_debug_output) {
 				debugMessageEnabled = true;
 				if (sync) {
-					GL11.glEnable(33346);
+					GL11.glEnable(GL43.GL_DEBUG_OUTPUT_SYNCHRONOUS);
 				}
 
 				for (int i = 0; i < ARB_VERBOSITY_LEVELS.size(); i++) {
 					boolean bl = i < verbosity;
-					ARBDebugOutput.glDebugMessageControlARB(4352, 4352, (Integer)ARB_VERBOSITY_LEVELS.get(i), (int[])null, bl);
+					ARBDebugOutput.glDebugMessageControlARB(GL11.GL_DONT_CARE, GL11.GL_DONT_CARE, (Integer)ARB_VERBOSITY_LEVELS.get(i), (int[])null, bl);
 				}
 
 				ARBDebugOutput.glDebugMessageCallbackARB(GLX.make(GLDebugMessageARBCallback.create(GlDebug::info), Untracker::untrack), 0L);

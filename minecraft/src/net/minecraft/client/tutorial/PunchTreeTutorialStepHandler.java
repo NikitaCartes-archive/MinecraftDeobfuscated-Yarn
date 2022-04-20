@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 600;
-	private static final Text TITLE = Text.method_43471("tutorial.punch_tree.title");
-	private static final Text DESCRIPTION = Text.method_43469("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
+	private static final Text TITLE = Text.translatable("tutorial.punch_tree.title");
+	private static final Text DESCRIPTION = Text.translatable("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

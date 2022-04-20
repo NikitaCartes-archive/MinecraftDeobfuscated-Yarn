@@ -62,15 +62,15 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener : this.listeners) {
 				listener.getPos(world)
 					.ifPresent(
-						vec3dx -> {
-							double gx = vec3dx.getX() - (double)listener.getRange();
-							double hx = vec3dx.getY() - (double)listener.getRange();
-							double ix = vec3dx.getZ() - (double)listener.getRange();
-							double jx = vec3dx.getX() + (double)listener.getRange();
-							double k = vec3dx.getY() + (double)listener.getRange();
-							double l = vec3dx.getZ() + (double)listener.getRange();
+						pos -> {
+							double gx = pos.getX() - (double)listener.getRange();
+							double hx = pos.getY() - (double)listener.getRange();
+							double ix = pos.getZ() - (double)listener.getRange();
+							double jx = pos.getX() + (double)listener.getRange();
+							double k = pos.getY() + (double)listener.getRange();
+							double l = pos.getZ() + (double)listener.getRange();
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
-							WorldRenderer.method_22983(
+							WorldRenderer.drawShapeOutline(
 								matrices,
 								vertexConsumer,
 								VoxelShapes.cuboid(new Box(gx, hx, ix, jx, k, l)),
@@ -94,16 +94,16 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world)
 					.ifPresent(
-						vec3dx -> {
+						pos -> {
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.drawBox(
 								bufferBuilder,
-								vec3dx.getX() - 0.25 - cameraX,
-								vec3dx.getY() - cameraY,
-								vec3dx.getZ() - 0.25 - cameraZ,
-								vec3dx.getX() + 0.25 - cameraX,
-								vec3dx.getY() - cameraY + 1.0,
-								vec3dx.getZ() + 0.25 - cameraZ,
+								pos.getX() - 0.25 - cameraX,
+								pos.getY() - cameraY,
+								pos.getZ() - 0.25 - cameraZ,
+								pos.getX() + 0.25 - cameraX,
+								pos.getY() - cameraY + 1.0,
+								pos.getZ() + 0.25 - cameraZ,
 								vec3f.getX(),
 								vec3f.getY(),
 								vec3f.getZ(),
@@ -120,9 +120,9 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.depthMask(false);
 
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
-				listener2.getPos(world).ifPresent(vec3dx -> {
-					DebugRenderer.drawString("Listener Origin", vec3dx.getX(), vec3dx.getY() + 1.8F, vec3dx.getZ(), -1, 0.025F);
-					DebugRenderer.drawString(new BlockPos(vec3dx).toString(), vec3dx.getX(), vec3dx.getY() + 1.5, vec3dx.getZ(), -6959665, 0.025F);
+				listener2.getPos(world).ifPresent(pos -> {
+					DebugRenderer.drawString("Listener Origin", pos.getX(), pos.getY() + 1.8F, pos.getZ(), -1, 0.025F);
+					DebugRenderer.drawString(new BlockPos(pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025F);
 				});
 			}
 
@@ -155,8 +155,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public void addEvent(GameEvent event, Vec3d vec3d) {
-		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), event, vec3d));
+	public void addEvent(GameEvent event, Vec3d pos) {
+		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), event, pos));
 	}
 
 	public void addListener(PositionSource positionSource, int range) {
@@ -181,8 +181,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			this.range = range;
 		}
 
-		public boolean isTooFar(World world, Vec3d vec3d) {
-			return this.positionSource.getPos(world).filter(vec3d2 -> vec3d2.squaredDistanceTo(vec3d) <= 1024.0).isPresent();
+		public boolean isTooFar(World world, Vec3d pos) {
+			return this.positionSource.getPos(world).filter(pos2 -> pos2.squaredDistanceTo(pos) <= 1024.0).isPresent();
 		}
 
 		public Optional<Vec3d> getPos(World world) {

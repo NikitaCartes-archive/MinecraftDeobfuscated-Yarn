@@ -36,10 +36,10 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			String string2 = keyBinding.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.addEntry(new ControlsListWidget.CategoryEntry(Text.method_43471(string2)));
+				this.addEntry(new ControlsListWidget.CategoryEntry(Text.translatable(string2)));
 			}
 
-			Text text = Text.method_43471(keyBinding.getTranslationKey());
+			Text text = Text.translatable(keyBinding.getTranslationKey());
 			int i = client.textRenderer.getWidth(text);
 			if (i > this.maxKeyNameLength) {
 				this.maxKeyNameLength = i;
@@ -120,17 +120,17 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				@Override
 				protected MutableText getNarrationMessage() {
 					return binding.isUnbound()
-						? Text.method_43469("narrator.controls.unbound", bindingName)
-						: Text.method_43469("narrator.controls.bound", bindingName, super.getNarrationMessage());
+						? Text.translatable("narrator.controls.unbound", bindingName)
+						: Text.translatable("narrator.controls.bound", bindingName, super.getNarrationMessage());
 				}
 			};
-			this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.method_43471("controls.reset"), button -> {
+			this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.translatable("controls.reset"), button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return Text.method_43469("narrator.controls.reset", bindingName);
+					return Text.translatable("narrator.controls.reset", bindingName);
 				}
 			};
 		}
@@ -159,9 +159,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 			if (bl) {
 				this.editButton
-					.setMessage(
-						Text.method_43470("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW)
-					);
+					.setMessage(Text.literal("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
 			} else if (bl2) {
 				this.editButton.setMessage(this.editButton.getMessage().shallowCopy().formatted(Formatting.RED));
 			}

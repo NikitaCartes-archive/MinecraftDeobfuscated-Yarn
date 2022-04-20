@@ -140,7 +140,7 @@ public class TutorialManager {
 	}
 
 	public static Text keyToText(String name) {
-		return Text.method_43472("key." + name).formatted(Formatting.BOLD);
+		return Text.keybind("key." + name).formatted(Formatting.BOLD);
 	}
 
 	/**

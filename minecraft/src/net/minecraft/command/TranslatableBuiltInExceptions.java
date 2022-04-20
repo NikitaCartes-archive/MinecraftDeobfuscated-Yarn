@@ -8,65 +8,65 @@ import net.minecraft.text.Text;
 
 public class TranslatableBuiltInExceptions implements BuiltInExceptionProvider {
 	private static final Dynamic2CommandExceptionType DOUBLE_TOO_LOW = new Dynamic2CommandExceptionType(
-		(found, min) -> Text.method_43469("argument.double.low", min, found)
+		(found, min) -> Text.translatable("argument.double.low", min, found)
 	);
 	private static final Dynamic2CommandExceptionType DOUBLE_TOO_HIGH = new Dynamic2CommandExceptionType(
-		(found, max) -> Text.method_43469("argument.double.big", max, found)
+		(found, max) -> Text.translatable("argument.double.big", max, found)
 	);
 	private static final Dynamic2CommandExceptionType FLOAT_TOO_LOW = new Dynamic2CommandExceptionType(
-		(found, min) -> Text.method_43469("argument.float.low", min, found)
+		(found, min) -> Text.translatable("argument.float.low", min, found)
 	);
 	private static final Dynamic2CommandExceptionType FLOAT_TOO_HIGH = new Dynamic2CommandExceptionType(
-		(found, max) -> Text.method_43469("argument.float.big", max, found)
+		(found, max) -> Text.translatable("argument.float.big", max, found)
 	);
 	private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW = new Dynamic2CommandExceptionType(
-		(found, min) -> Text.method_43469("argument.integer.low", min, found)
+		(found, min) -> Text.translatable("argument.integer.low", min, found)
 	);
 	private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH = new Dynamic2CommandExceptionType(
-		(found, max) -> Text.method_43469("argument.integer.big", max, found)
+		(found, max) -> Text.translatable("argument.integer.big", max, found)
 	);
 	private static final Dynamic2CommandExceptionType LONG_TOO_LOW = new Dynamic2CommandExceptionType(
-		(found, min) -> Text.method_43469("argument.long.low", min, found)
+		(found, min) -> Text.translatable("argument.long.low", min, found)
 	);
 	private static final Dynamic2CommandExceptionType LONG_TOO_HIGH = new Dynamic2CommandExceptionType(
-		(found, max) -> Text.method_43469("argument.long.big", max, found)
+		(found, max) -> Text.translatable("argument.long.big", max, found)
 	);
 	private static final DynamicCommandExceptionType LITERAL_INCORRECT = new DynamicCommandExceptionType(
-		expected -> Text.method_43469("argument.literal.incorrect", expected)
+		expected -> Text.translatable("argument.literal.incorrect", expected)
 	);
-	private static final SimpleCommandExceptionType READER_EXPECTED_START_QUOTE = new SimpleCommandExceptionType(Text.method_43471("parsing.quote.expected.start"));
-	private static final SimpleCommandExceptionType READER_EXPECTED_END_QUOTE = new SimpleCommandExceptionType(Text.method_43471("parsing.quote.expected.end"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_START_QUOTE = new SimpleCommandExceptionType(Text.translatable("parsing.quote.expected.start"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_END_QUOTE = new SimpleCommandExceptionType(Text.translatable("parsing.quote.expected.end"));
 	private static final DynamicCommandExceptionType READER_INVALID_ESCAPE = new DynamicCommandExceptionType(
-		character -> Text.method_43469("parsing.quote.escape", character)
+		character -> Text.translatable("parsing.quote.escape", character)
 	);
 	private static final DynamicCommandExceptionType READER_INVALID_BOOL = new DynamicCommandExceptionType(
-		value -> Text.method_43469("parsing.bool.invalid", value)
+		value -> Text.translatable("parsing.bool.invalid", value)
 	);
-	private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> Text.method_43469("parsing.int.invalid", value));
-	private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(Text.method_43471("parsing.int.expected"));
+	private static final DynamicCommandExceptionType READER_INVALID_INT = new DynamicCommandExceptionType(value -> Text.translatable("parsing.int.invalid", value));
+	private static final SimpleCommandExceptionType READER_EXPECTED_INT = new SimpleCommandExceptionType(Text.translatable("parsing.int.expected"));
 	private static final DynamicCommandExceptionType READER_INVALID_LONG = new DynamicCommandExceptionType(
-		value -> Text.method_43469("parsing.long.invalid", value)
+		value -> Text.translatable("parsing.long.invalid", value)
 	);
-	private static final SimpleCommandExceptionType READER_EXPECTED_LONG = new SimpleCommandExceptionType(Text.method_43471("parsing.long.expected"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_LONG = new SimpleCommandExceptionType(Text.translatable("parsing.long.expected"));
 	private static final DynamicCommandExceptionType READER_INVALID_DOUBLE = new DynamicCommandExceptionType(
-		value -> Text.method_43469("parsing.double.invalid", value)
+		value -> Text.translatable("parsing.double.invalid", value)
 	);
-	private static final SimpleCommandExceptionType READER_EXPECTED_DOUBLE = new SimpleCommandExceptionType(Text.method_43471("parsing.double.expected"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_DOUBLE = new SimpleCommandExceptionType(Text.translatable("parsing.double.expected"));
 	private static final DynamicCommandExceptionType READER_INVALID_FLOAT = new DynamicCommandExceptionType(
-		value -> Text.method_43469("parsing.float.invalid", value)
+		value -> Text.translatable("parsing.float.invalid", value)
 	);
-	private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(Text.method_43471("parsing.float.expected"));
-	private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(Text.method_43471("parsing.bool.expected"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_FLOAT = new SimpleCommandExceptionType(Text.translatable("parsing.float.expected"));
+	private static final SimpleCommandExceptionType READER_EXPECTED_BOOL = new SimpleCommandExceptionType(Text.translatable("parsing.bool.expected"));
 	private static final DynamicCommandExceptionType READER_EXPECTED_SYMBOL = new DynamicCommandExceptionType(
-		symbol -> Text.method_43469("parsing.expected", symbol)
+		symbol -> Text.translatable("parsing.expected", symbol)
 	);
-	private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(Text.method_43471("command.unknown.command"));
-	private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(Text.method_43471("command.unknown.argument"));
+	private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_COMMAND = new SimpleCommandExceptionType(Text.translatable("command.unknown.command"));
+	private static final SimpleCommandExceptionType DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(Text.translatable("command.unknown.argument"));
 	private static final SimpleCommandExceptionType DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType(
-		Text.method_43471("command.expected.separator")
+		Text.translatable("command.expected.separator")
 	);
 	private static final DynamicCommandExceptionType DISPATCHER_PARSE_EXCEPTION = new DynamicCommandExceptionType(
-		message -> Text.method_43469("command.exception", message)
+		message -> Text.translatable("command.exception", message)
 	);
 
 	@Override

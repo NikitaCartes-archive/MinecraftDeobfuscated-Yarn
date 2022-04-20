@@ -513,7 +513,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Override
 	public Text getName() {
-		return Text.method_43471("container.inventory");
+		return Text.translatable("container.inventory");
 	}
 
 	public ItemStack getArmorStack(int slot) {

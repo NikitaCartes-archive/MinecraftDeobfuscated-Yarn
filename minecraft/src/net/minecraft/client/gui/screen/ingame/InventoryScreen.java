@@ -33,7 +33,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	private boolean mouseDown;
 
 	public InventoryScreen(PlayerEntity player) {
-		super(player.playerScreenHandler, player.getInventory(), Text.method_43471("container.crafting"));
+		super(player.playerScreenHandler, player.getInventory(), Text.translatable("container.crafting"));
 		this.passEvents = true;
 		this.titleX = 97;
 	}

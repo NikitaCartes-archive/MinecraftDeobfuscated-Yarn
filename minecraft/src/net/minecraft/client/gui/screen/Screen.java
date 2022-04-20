@@ -63,7 +63,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	private static final int field_32270 = 2;
-	private static final Text SCREEN_USAGE_TEXT = Text.method_43471("narrator.screen.usage");
+	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
 	protected final Text title;
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
@@ -245,7 +245,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			bufferBuilder.end();
-			BufferRenderer.method_43433(bufferBuilder);
+			BufferRenderer.drawWithShader(bufferBuilder);
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
@@ -604,9 +604,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			}
 
 			if (immutableList.size() > 1) {
-				builder.put(NarrationPart.POSITION, Text.method_43469("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
+				builder.put(NarrationPart.POSITION, Text.translatable("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
 				if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-					builder.put(NarrationPart.USAGE, Text.method_43471("narration.component_list.usage"));
+					builder.put(NarrationPart.USAGE, Text.translatable("narration.component_list.usage"));
 				}
 			}
 

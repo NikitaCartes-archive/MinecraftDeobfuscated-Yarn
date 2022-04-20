@@ -55,7 +55,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	private static final String NEW_LINE = "\n";
 	private final String prefix;
 	private final int indentationLevel;
-	private Text result = ScreenTexts.field_39003;
+	private Text result = ScreenTexts.EMPTY;
 
 	public NbtTextFormatter(String prefix, int indentationLevel) {
 		this.prefix = prefix;
@@ -71,53 +71,53 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	public void visitString(NbtString element) {
 		String string = NbtString.escape(element.asString());
 		String string2 = string.substring(0, 1);
-		Text text = Text.method_43470(string.substring(1, string.length() - 1)).formatted(STRING_COLOR);
-		this.result = Text.method_43470(string2).append(text).append(string2);
+		Text text = Text.literal(string.substring(1, string.length() - 1)).formatted(STRING_COLOR);
+		this.result = Text.literal(string2).append(text).append(string2);
 	}
 
 	@Override
 	public void visitByte(NbtByte element) {
-		Text text = Text.method_43470("b").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.method_43470(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		Text text = Text.literal("b").formatted(TYPE_SUFFIX_COLOR);
+		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitShort(NbtShort element) {
-		Text text = Text.method_43470("s").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.method_43470(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		Text text = Text.literal("s").formatted(TYPE_SUFFIX_COLOR);
+		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitInt(NbtInt element) {
-		this.result = Text.method_43470(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR);
+		this.result = Text.literal(String.valueOf(element.numberValue())).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitLong(NbtLong element) {
-		Text text = Text.method_43470("L").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.method_43470(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
+		Text text = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
+		this.result = Text.literal(String.valueOf(element.numberValue())).append(text).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitFloat(NbtFloat element) {
-		Text text = Text.method_43470("f").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.method_43470(String.valueOf(element.floatValue())).append(text).formatted(NUMBER_COLOR);
+		Text text = Text.literal("f").formatted(TYPE_SUFFIX_COLOR);
+		this.result = Text.literal(String.valueOf(element.floatValue())).append(text).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitDouble(NbtDouble element) {
-		Text text = Text.method_43470("d").formatted(TYPE_SUFFIX_COLOR);
-		this.result = Text.method_43470(String.valueOf(element.doubleValue())).append(text).formatted(NUMBER_COLOR);
+		Text text = Text.literal("d").formatted(TYPE_SUFFIX_COLOR);
+		this.result = Text.literal(String.valueOf(element.doubleValue())).append(text).formatted(NUMBER_COLOR);
 	}
 
 	@Override
 	public void visitByteArray(NbtByteArray element) {
-		Text text = Text.method_43470("B").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.method_43470("[").append(text).append(";");
+		Text text = Text.literal("B").formatted(TYPE_SUFFIX_COLOR);
+		MutableText mutableText = Text.literal("[").append(text).append(";");
 		byte[] bs = element.getByteArray();
 
 		for (int i = 0; i < bs.length; i++) {
-			MutableText mutableText2 = Text.method_43470(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
+			MutableText mutableText2 = Text.literal(String.valueOf(bs[i])).formatted(NUMBER_COLOR);
 			mutableText.append(" ").append(mutableText2).append(text);
 			if (i != bs.length - 1) {
 				mutableText.append(ENTRY_SEPARATOR);
@@ -130,12 +130,12 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitIntArray(NbtIntArray element) {
-		Text text = Text.method_43470("I").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.method_43470("[").append(text).append(";");
+		Text text = Text.literal("I").formatted(TYPE_SUFFIX_COLOR);
+		MutableText mutableText = Text.literal("[").append(text).append(";");
 		int[] is = element.getIntArray();
 
 		for (int i = 0; i < is.length; i++) {
-			mutableText.append(" ").append(Text.method_43470(String.valueOf(is[i])).formatted(NUMBER_COLOR));
+			mutableText.append(" ").append(Text.literal(String.valueOf(is[i])).formatted(NUMBER_COLOR));
 			if (i != is.length - 1) {
 				mutableText.append(ENTRY_SEPARATOR);
 			}
@@ -147,12 +147,12 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	@Override
 	public void visitLongArray(NbtLongArray element) {
-		Text text = Text.method_43470("L").formatted(TYPE_SUFFIX_COLOR);
-		MutableText mutableText = Text.method_43470("[").append(text).append(";");
+		Text text = Text.literal("L").formatted(TYPE_SUFFIX_COLOR);
+		MutableText mutableText = Text.literal("[").append(text).append(";");
 		long[] ls = element.getLongArray();
 
 		for (int i = 0; i < ls.length; i++) {
-			Text text2 = Text.method_43470(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
+			Text text2 = Text.literal(String.valueOf(ls[i])).formatted(NUMBER_COLOR);
 			mutableText.append(" ").append(text2).append(text);
 			if (i != ls.length - 1) {
 				mutableText.append(ENTRY_SEPARATOR);
@@ -166,10 +166,10 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	@Override
 	public void visitList(NbtList element) {
 		if (element.isEmpty()) {
-			this.result = Text.method_43470("[]");
+			this.result = Text.literal("[]");
 		} else if (SINGLE_LINE_ELEMENT_TYPES.contains(element.getHeldType()) && element.size() <= 8) {
 			String string = ENTRY_SEPARATOR + " ";
-			MutableText mutableText = Text.method_43470("[");
+			MutableText mutableText = Text.literal("[");
 
 			for (int i = 0; i < element.size(); i++) {
 				if (i != 0) {
@@ -182,13 +182,13 @@ public class NbtTextFormatter implements NbtElementVisitor {
 			mutableText.append("]");
 			this.result = mutableText;
 		} else {
-			MutableText mutableText2 = Text.method_43470("[");
+			MutableText mutableText2 = Text.literal("[");
 			if (!this.prefix.isEmpty()) {
 				mutableText2.append("\n");
 			}
 
 			for (int j = 0; j < element.size(); j++) {
-				MutableText mutableText3 = Text.method_43470(Strings.repeat(this.prefix, this.indentationLevel + 1));
+				MutableText mutableText3 = Text.literal(Strings.repeat(this.prefix, this.indentationLevel + 1));
 				mutableText3.append(new NbtTextFormatter(this.prefix, this.indentationLevel + 1).apply(element.get(j)));
 				if (j != element.size() - 1) {
 					mutableText3.append(ENTRY_SEPARATOR).append(this.prefix.isEmpty() ? " " : "\n");
@@ -209,9 +209,9 @@ public class NbtTextFormatter implements NbtElementVisitor {
 	@Override
 	public void visitCompound(NbtCompound compound) {
 		if (compound.isEmpty()) {
-			this.result = Text.method_43470("{}");
+			this.result = Text.literal("{}");
 		} else {
-			MutableText mutableText = Text.method_43470("{");
+			MutableText mutableText = Text.literal("{");
 			Collection<String> collection = compound.getKeys();
 			if (LOGGER.isDebugEnabled()) {
 				List<String> list = Lists.<String>newArrayList(compound.getKeys());
@@ -227,7 +227,7 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 			while (iterator.hasNext()) {
 				String string = (String)iterator.next();
-				MutableText mutableText2 = Text.method_43470(Strings.repeat(this.prefix, this.indentationLevel + 1))
+				MutableText mutableText2 = Text.literal(Strings.repeat(this.prefix, this.indentationLevel + 1))
 					.append(escapeName(string))
 					.append(KEY_VALUE_SEPARATOR)
 					.append(" ")
@@ -250,17 +250,17 @@ public class NbtTextFormatter implements NbtElementVisitor {
 
 	protected static Text escapeName(String name) {
 		if (SIMPLE_NAME.matcher(name).matches()) {
-			return Text.method_43470(name).formatted(NAME_COLOR);
+			return Text.literal(name).formatted(NAME_COLOR);
 		} else {
 			String string = NbtString.escape(name);
 			String string2 = string.substring(0, 1);
-			Text text = Text.method_43470(string.substring(1, string.length() - 1)).formatted(NAME_COLOR);
-			return Text.method_43470(string2).append(text).append(string2);
+			Text text = Text.literal(string.substring(1, string.length() - 1)).formatted(NAME_COLOR);
+			return Text.literal(string2).append(text).append(string2);
 		}
 	}
 
 	@Override
 	public void visitEnd(NbtEnd element) {
-		this.result = ScreenTexts.field_39003;
+		this.result = ScreenTexts.EMPTY;
 	}
 }

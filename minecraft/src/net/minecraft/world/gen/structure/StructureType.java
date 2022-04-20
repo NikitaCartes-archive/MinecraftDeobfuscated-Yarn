@@ -21,6 +21,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -39,7 +40,6 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureTerrainAdaptation;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.noise.NoiseConfig;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 public abstract class StructureType {
 	public static final Codec<StructureType> STRUCTURE_TYPE_CODEC = Registry.STRUCTURE_TYPE

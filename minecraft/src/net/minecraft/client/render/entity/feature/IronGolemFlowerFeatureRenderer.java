@@ -14,13 +14,13 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	private final BlockRenderManager field_38900;
+	private final BlockRenderManager blockRenderManager;
 
 	public IronGolemFlowerFeatureRenderer(
-		FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext, BlockRenderManager blockRenderManager
+		FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> context, BlockRenderManager blockRenderManager
 	) {
-		super(featureRendererContext);
-		this.field_38900 = blockRenderManager;
+		super(context);
+		this.blockRenderManager = blockRenderManager;
 	}
 
 	public void render(
@@ -45,7 +45,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			matrixStack.translate(-0.5, -0.5, -0.5);
-			this.field_38900.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+			this.blockRenderManager.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 			matrixStack.pop();
 		}
 	}

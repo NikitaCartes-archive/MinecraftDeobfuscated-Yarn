@@ -56,13 +56,13 @@ public class SpawnPointCommand {
 		String string = registryKey.getValue().toString();
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				Text.method_43469(
+				Text.translatable(
 					"commands.spawnpoint.success.single", pos.getX(), pos.getY(), pos.getZ(), angle, string, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), angle, string, targets.size()), true);
+			source.sendFeedback(Text.translatable("commands.spawnpoint.success.multiple", pos.getX(), pos.getY(), pos.getZ(), angle, string, targets.size()), true);
 		}
 
 		return targets.size();

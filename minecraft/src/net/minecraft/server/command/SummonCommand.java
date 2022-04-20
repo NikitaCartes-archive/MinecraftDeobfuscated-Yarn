@@ -20,10 +20,10 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class SummonCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.summon.failed"));
-	private static final SimpleCommandExceptionType FAILED_UUID_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.summon.failed.uuid"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.summon.failed"));
+	private static final SimpleCommandExceptionType FAILED_UUID_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.summon.failed.uuid"));
 	private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.summon.invalidPosition")
+		Text.translatable("commands.summon.invalidPosition")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -84,7 +84,7 @@ public class SummonCommand {
 				if (!serverWorld.spawnNewEntityAndPassengers(entity2)) {
 					throw FAILED_UUID_EXCEPTION.create();
 				} else {
-					source.sendFeedback(Text.method_43469("commands.summon.success", entity2.getDisplayName()), true);
+					source.sendFeedback(Text.translatable("commands.summon.success", entity2.getDisplayName()), true);
 					return 1;
 				}
 			}

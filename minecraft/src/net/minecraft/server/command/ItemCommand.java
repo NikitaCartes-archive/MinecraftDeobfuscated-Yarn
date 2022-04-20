@@ -37,22 +37,22 @@ import net.minecraft.util.math.BlockPos;
 
 public class ItemCommand {
 	static final Dynamic3CommandExceptionType NOT_A_CONTAINER_TARGET_EXCEPTION = new Dynamic3CommandExceptionType(
-		(x, y, z) -> Text.method_43469("commands.item.target.not_a_container", x, y, z)
+		(x, y, z) -> Text.translatable("commands.item.target.not_a_container", x, y, z)
 	);
 	private static final Dynamic3CommandExceptionType NOT_A_CONTAINER_SOURCE_EXCEPTION = new Dynamic3CommandExceptionType(
-		(x, y, z) -> Text.method_43469("commands.item.source.not_a_container", x, y, z)
+		(x, y, z) -> Text.translatable("commands.item.source.not_a_container", x, y, z)
 	);
 	static final DynamicCommandExceptionType NO_SUCH_SLOT_TARGET_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.method_43469("commands.item.target.no_such_slot", slot)
+		slot -> Text.translatable("commands.item.target.no_such_slot", slot)
 	);
 	private static final DynamicCommandExceptionType NO_SUCH_SLOT_SOURCE_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.method_43469("commands.item.source.no_such_slot", slot)
+		slot -> Text.translatable("commands.item.source.no_such_slot", slot)
 	);
 	private static final DynamicCommandExceptionType NO_CHANGES_EXCEPTION = new DynamicCommandExceptionType(
-		slot -> Text.method_43469("commands.item.target.no_changes", slot)
+		slot -> Text.translatable("commands.item.target.no_changes", slot)
 	);
 	private static final Dynamic2CommandExceptionType KNOWN_ITEM_EXCEPTION = new Dynamic2CommandExceptionType(
-		(itemName, slot) -> Text.method_43469("commands.item.target.no_changed.known_item", itemName, slot)
+		(itemName, slot) -> Text.translatable("commands.item.target.no_changed.known_item", itemName, slot)
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
 		LootFunctionManager lootFunctionManager = context.getSource().getServer().getItemModifierManager();
@@ -321,7 +321,7 @@ public class ItemCommand {
 		if (slot >= 0 && slot < inventory.size()) {
 			ItemStack itemStack = getStackWithModifier(source, modifier, inventory.getStack(slot));
 			inventory.setStack(slot, itemStack);
-			source.sendFeedback(Text.method_43469("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
+			source.sendFeedback(Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
 			return 1;
 		} else {
 			throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
@@ -350,11 +350,11 @@ public class ItemCommand {
 			if (map.size() == 1) {
 				Entry<Entity, ItemStack> entry = (Entry<Entity, ItemStack>)map.entrySet().iterator().next();
 				source.sendFeedback(
-					Text.method_43469("commands.item.entity.set.success.single", ((Entity)entry.getKey()).getDisplayName(), ((ItemStack)entry.getValue()).toHoverableText()),
+					Text.translatable("commands.item.entity.set.success.single", ((Entity)entry.getKey()).getDisplayName(), ((ItemStack)entry.getValue()).toHoverableText()),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.item.entity.set.success.multiple", map.size()), true);
+				source.sendFeedback(Text.translatable("commands.item.entity.set.success.multiple", map.size()), true);
 			}
 
 			return map.size();
@@ -365,7 +365,7 @@ public class ItemCommand {
 		Inventory inventory = getInventoryAtPos(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
 		if (slot >= 0 && slot < inventory.size()) {
 			inventory.setStack(slot, stack);
-			source.sendFeedback(Text.method_43469("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), stack.toHoverableText()), true);
+			source.sendFeedback(Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), stack.toHoverableText()), true);
 			return 1;
 		} else {
 			throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
@@ -399,10 +399,10 @@ public class ItemCommand {
 		} else {
 			if (list.size() == 1) {
 				source.sendFeedback(
-					Text.method_43469("commands.item.entity.set.success.single", ((Entity)list.iterator().next()).getDisplayName(), stack.toHoverableText()), true
+					Text.translatable("commands.item.entity.set.success.single", ((Entity)list.iterator().next()).getDisplayName(), stack.toHoverableText()), true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.item.entity.set.success.multiple", list.size(), stack.toHoverableText()), true);
+				source.sendFeedback(Text.translatable("commands.item.entity.set.success.multiple", list.size(), stack.toHoverableText()), true);
 			}
 
 			return list.size();

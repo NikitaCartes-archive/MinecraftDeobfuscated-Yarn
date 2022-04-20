@@ -22,16 +22,16 @@ import net.minecraft.util.registry.Registry;
 
 public class AttributeCommand {
 	private static final DynamicCommandExceptionType ENTITY_FAILED_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.method_43469("commands.attribute.failed.entity", name)
+		name -> Text.translatable("commands.attribute.failed.entity", name)
 	);
 	private static final Dynamic2CommandExceptionType NO_ATTRIBUTE_EXCEPTION = new Dynamic2CommandExceptionType(
-		(entityName, attributeName) -> Text.method_43469("commands.attribute.failed.no_attribute", entityName, attributeName)
+		(entityName, attributeName) -> Text.translatable("commands.attribute.failed.no_attribute", entityName, attributeName)
 	);
 	private static final Dynamic3CommandExceptionType NO_MODIFIER_EXCEPTION = new Dynamic3CommandExceptionType(
-		(entityName, attributeName, uuid) -> Text.method_43469("commands.attribute.failed.no_modifier", attributeName, entityName, uuid)
+		(entityName, attributeName, uuid) -> Text.translatable("commands.attribute.failed.no_modifier", attributeName, entityName, uuid)
 	);
 	private static final Dynamic3CommandExceptionType MODIFIER_ALREADY_PRESENT_EXCEPTION = new Dynamic3CommandExceptionType(
-		(entityName, attributeName, uuid) -> Text.method_43469("commands.attribute.failed.modifier_already_present", uuid, attributeName, entityName)
+		(entityName, attributeName, uuid) -> Text.translatable("commands.attribute.failed.modifier_already_present", uuid, attributeName, entityName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -206,7 +206,7 @@ public class AttributeCommand {
 	private static EntityAttributeInstance getAttributeInstance(Entity entity, EntityAttribute attribute) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getLivingEntity(entity).getAttributes().getCustomInstance(attribute);
 		if (entityAttributeInstance == null) {
-			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.method_43471(attribute.getTranslationKey()));
+			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.translatable(attribute.getTranslationKey()));
 		} else {
 			return entityAttributeInstance;
 		}
@@ -223,7 +223,7 @@ public class AttributeCommand {
 	private static LivingEntity getLivingEntityWithAttribute(Entity entity, EntityAttribute attribute) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntity(entity);
 		if (!livingEntity.getAttributes().hasAttribute(attribute)) {
-			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.method_43471(attribute.getTranslationKey()));
+			throw NO_ATTRIBUTE_EXCEPTION.create(entity.getName(), Text.translatable(attribute.getTranslationKey()));
 		} else {
 			return livingEntity;
 		}
@@ -232,7 +232,7 @@ public class AttributeCommand {
 	private static int executeValueGet(ServerCommandSource source, Entity target, EntityAttribute attribute, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeValue(attribute);
-		source.sendFeedback(Text.method_43469("commands.attribute.value.get.success", Text.method_43471(attribute.getTranslationKey()), target.getName(), d), false);
+		source.sendFeedback(Text.translatable("commands.attribute.value.get.success", Text.translatable(attribute.getTranslationKey()), target.getName(), d), false);
 		return (int)(d * multiplier);
 	}
 
@@ -240,7 +240,7 @@ public class AttributeCommand {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeBaseValue(attribute);
 		source.sendFeedback(
-			Text.method_43469("commands.attribute.base_value.get.success", Text.method_43471(attribute.getTranslationKey()), target.getName(), d), false
+			Text.translatable("commands.attribute.base_value.get.success", Text.translatable(attribute.getTranslationKey()), target.getName(), d), false
 		);
 		return (int)(d * multiplier);
 	}
@@ -249,11 +249,11 @@ public class AttributeCommand {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		AttributeContainer attributeContainer = livingEntity.getAttributes();
 		if (!attributeContainer.hasModifierForAttribute(attribute, uuid)) {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.method_43471(attribute.getTranslationKey()), uuid);
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
 		} else {
 			double d = attributeContainer.getModifierValue(attribute, uuid);
 			source.sendFeedback(
-				Text.method_43469("commands.attribute.modifier.value.get.success", uuid, Text.method_43471(attribute.getTranslationKey()), target.getName(), d), false
+				Text.translatable("commands.attribute.modifier.value.get.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName(), d), false
 			);
 			return (int)(d * multiplier);
 		}
@@ -262,7 +262,7 @@ public class AttributeCommand {
 	private static int executeBaseValueSet(ServerCommandSource source, Entity target, EntityAttribute attribute, double value) throws CommandSyntaxException {
 		getAttributeInstance(target, attribute).setBaseValue(value);
 		source.sendFeedback(
-			Text.method_43469("commands.attribute.base_value.set.success", Text.method_43471(attribute.getTranslationKey()), target.getName(), value), false
+			Text.translatable("commands.attribute.base_value.set.success", Text.translatable(attribute.getTranslationKey()), target.getName(), value), false
 		);
 		return 1;
 	}
@@ -273,11 +273,11 @@ public class AttributeCommand {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(uuid, name, value, operation);
 		if (entityAttributeInstance.hasModifier(entityAttributeModifier)) {
-			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), Text.method_43471(attribute.getTranslationKey()), uuid);
+			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
 		} else {
 			entityAttributeInstance.addPersistentModifier(entityAttributeModifier);
 			source.sendFeedback(
-				Text.method_43469("commands.attribute.modifier.add.success", uuid, Text.method_43471(attribute.getTranslationKey()), target.getName()), false
+				Text.translatable("commands.attribute.modifier.add.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName()), false
 			);
 			return 1;
 		}
@@ -287,11 +287,11 @@ public class AttributeCommand {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		if (entityAttributeInstance.tryRemoveModifier(uuid)) {
 			source.sendFeedback(
-				Text.method_43469("commands.attribute.modifier.remove.success", uuid, Text.method_43471(attribute.getTranslationKey()), target.getName()), false
+				Text.translatable("commands.attribute.modifier.remove.success", uuid, Text.translatable(attribute.getTranslationKey()), target.getName()), false
 			);
 			return 1;
 		} else {
-			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.method_43471(attribute.getTranslationKey()), uuid);
+			throw NO_MODIFIER_EXCEPTION.create(target.getName(), Text.translatable(attribute.getTranslationKey()), uuid);
 		}
 	}
 }

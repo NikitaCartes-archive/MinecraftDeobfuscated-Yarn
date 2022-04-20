@@ -1,7 +1,6 @@
 package net.minecraft.util.math.random;
 
 import java.util.concurrent.atomic.AtomicLong;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.GaussianGenerator;
 
 @Deprecated

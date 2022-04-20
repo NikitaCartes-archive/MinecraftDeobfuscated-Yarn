@@ -19,7 +19,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 
 public class SetBlockCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.setblock.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.setblock.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
 		dispatcher.register(
@@ -100,7 +100,7 @@ public class SetBlockCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				serverWorld.updateNeighbors(pos, block.getBlockState().getBlock());
-				source.sendFeedback(Text.method_43469("commands.setblock.success", pos.getX(), pos.getY(), pos.getZ()), true);
+				source.sendFeedback(Text.translatable("commands.setblock.success", pos.getX(), pos.getY(), pos.getZ()), true);
 				return 1;
 			}
 		}

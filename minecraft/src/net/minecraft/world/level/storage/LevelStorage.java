@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -128,53 +129,56 @@ public class LevelStorage {
 		return "Anvil";
 	}
 
-	public LevelStorage.class_7410 getLevelList() throws LevelStorageException {
+	public LevelStorage.LevelList getLevelList() throws LevelStorageException {
 		if (!Files.isDirectory(this.savesDirectory, new LinkOption[0])) {
-			throw new LevelStorageException(Text.method_43471("selectWorld.load_folder_access"));
+			throw new LevelStorageException(Text.translatable("selectWorld.load_folder_access"));
 		} else {
 			try {
-				List<LevelStorage.class_7411> list = Files.list(this.savesDirectory)
+				List<LevelStorage.LevelSave> list = Files.list(this.savesDirectory)
 					.filter(path -> Files.isDirectory(path, new LinkOption[0]))
-					.map(LevelStorage.class_7411::new)
-					.filter(arg -> Files.isRegularFile(arg.method_43425(), new LinkOption[0]) || Files.isRegularFile(arg.method_43426(), new LinkOption[0]))
+					.map(LevelStorage.LevelSave::new)
+					.filter(
+						levelSave -> Files.isRegularFile(levelSave.getLevelDatPath(), new LinkOption[0])
+								|| Files.isRegularFile(levelSave.getLevelDatOldPath(), new LinkOption[0])
+					)
 					.toList();
-				return new LevelStorage.class_7410(list);
+				return new LevelStorage.LevelList(list);
 			} catch (IOException var2) {
-				throw new LevelStorageException(Text.method_43471("selectWorld.load_folder_access"));
+				throw new LevelStorageException(Text.translatable("selectWorld.load_folder_access"));
 			}
 		}
 	}
 
-	public CompletableFuture<List<LevelSummary>> method_43417(LevelStorage.class_7410 arg) {
-		List<CompletableFuture<LevelSummary>> list = new ArrayList(arg.levels.size());
+	public CompletableFuture<List<LevelSummary>> loadSummaries(LevelStorage.LevelList levels) {
+		List<CompletableFuture<LevelSummary>> list = new ArrayList(levels.levels.size());
 
-		for (LevelStorage.class_7411 lv : arg.levels) {
+		for (LevelStorage.LevelSave levelSave : levels.levels) {
 			list.add(
 				CompletableFuture.supplyAsync(
 					() -> {
 						boolean bl;
 						try {
-							bl = SessionLock.isLocked(lv.path());
+							bl = SessionLock.isLocked(levelSave.path());
 						} catch (Exception var6) {
-							LOGGER.warn("Failed to read {} lock", lv.path(), var6);
+							LOGGER.warn("Failed to read {} lock", levelSave.path(), var6);
 							return null;
 						}
 
 						try {
-							LevelSummary levelSummary = this.readLevelProperties(lv, this.createLevelDataParser(lv, bl));
+							LevelSummary levelSummary = this.readLevelProperties(levelSave, this.createLevelDataParser(levelSave, bl));
 							return levelSummary != null ? levelSummary : null;
 						} catch (OutOfMemoryError var4x) {
 							CrashMemoryReserve.releaseMemory();
 							System.gc();
-							LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", lv.method_43422());
+							LOGGER.error(LogUtils.FATAL_MARKER, "Ran out of memory trying to read summary of {}", levelSave.getRootPath());
 							throw var4x;
 						} catch (StackOverflowError var5) {
 							LOGGER.error(
 								LogUtils.FATAL_MARKER,
 								"Ran out of stack trying to read summary of {}. Assuming corruption; attempting to restore from from level.dat_old.",
-								lv.method_43422()
+								levelSave.getRootPath()
 							);
-							Util.backupAndReplace(lv.method_43425(), lv.method_43426(), lv.method_43424(LocalDateTime.now()), true);
+							Util.backupAndReplace(levelSave.getLevelDatPath(), levelSave.getLevelDatOldPath(), levelSave.getCorruptedLevelDatPath(LocalDateTime.now()), true);
 							throw var5;
 						}
 					},
@@ -183,7 +187,7 @@ public class LevelStorage {
 			);
 		}
 
-		return Util.method_43373(list);
+		return Util.combineCancellable(list).thenApply(summaries -> summaries.stream().filter(Objects::nonNull).toList());
 	}
 
 	private int getCurrentVersion() {
@@ -191,11 +195,11 @@ public class LevelStorage {
 	}
 
 	@Nullable
-	<T> T readLevelProperties(LevelStorage.class_7411 arg, BiFunction<Path, DataFixer, T> levelDataParser) {
-		if (!Files.exists(arg.path(), new LinkOption[0])) {
+	<T> T readLevelProperties(LevelStorage.LevelSave levelSave, BiFunction<Path, DataFixer, T> levelDataParser) {
+		if (!Files.exists(levelSave.path(), new LinkOption[0])) {
 			return null;
 		} else {
-			Path path = arg.method_43425();
+			Path path = levelSave.getLevelDatPath();
 			if (Files.exists(path, new LinkOption[0])) {
 				T object = (T)levelDataParser.apply(path, this.dataFixer);
 				if (object != null) {
@@ -203,7 +207,7 @@ public class LevelStorage {
 				}
 			}
 
-			path = arg.method_43426();
+			path = levelSave.getLevelDatOldPath();
 			return (T)(Files.exists(path, new LinkOption[0]) ? levelDataParser.apply(path, this.dataFixer) : null);
 		}
 	}
@@ -249,7 +253,7 @@ public class LevelStorage {
 		};
 	}
 
-	BiFunction<Path, DataFixer, LevelSummary> createLevelDataParser(LevelStorage.class_7411 arg, boolean locked) {
+	BiFunction<Path, DataFixer, LevelSummary> createLevelDataParser(LevelStorage.LevelSave levelSave, boolean locked) {
 		return (path, dataFixer) -> {
 			try {
 				if (loadCompactLevelData(path) instanceof NbtCompound nbtCompound) {
@@ -262,13 +266,13 @@ public class LevelStorage {
 					int j = saveVersionInfo.getLevelFormatVersion();
 					if (j == 19132 || j == 19133) {
 						boolean bl2 = j != this.getCurrentVersion();
-						Path path2 = arg.method_43427();
+						Path path2 = levelSave.getIconPath();
 						DataPackSettings dataPackSettings = (DataPackSettings)dynamic.get("DataPacks")
 							.result()
 							.map(LevelStorage::parseDataPackSettings)
 							.orElse(DataPackSettings.SAFE_MODE);
 						LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-						return new LevelSummary(levelInfo, saveVersionInfo, arg.method_43422(), bl2, locked, path2);
+						return new LevelSummary(levelInfo, saveVersionInfo, levelSave.getRootPath(), bl2, locked, path2);
 					}
 				} else {
 					LOGGER.warn("Invalid root tag in {}", path);
@@ -323,15 +327,56 @@ public class LevelStorage {
 		return new LevelStorage.Session(directoryName);
 	}
 
+	public static record LevelList(List<LevelStorage.LevelSave> levels) implements Iterable<LevelStorage.LevelSave> {
+
+		public boolean isEmpty() {
+			return this.levels.isEmpty();
+		}
+
+		public Iterator<LevelStorage.LevelSave> iterator() {
+			return this.levels.iterator();
+		}
+	}
+
+	public static record LevelSave(Path path) {
+		public String getRootPath() {
+			return this.path.getFileName().toString();
+		}
+
+		public Path getLevelDatPath() {
+			return this.getPath(WorldSavePath.LEVEL_DAT);
+		}
+
+		public Path getLevelDatOldPath() {
+			return this.getPath(WorldSavePath.LEVEL_DAT_OLD);
+		}
+
+		public Path getCorruptedLevelDatPath(LocalDateTime dateTime) {
+			return this.path.resolve(WorldSavePath.LEVEL_DAT.getRelativePath() + "_corrupted_" + dateTime.format(LevelStorage.TIME_FORMATTER));
+		}
+
+		public Path getIconPath() {
+			return this.getPath(WorldSavePath.ICON_PNG);
+		}
+
+		public Path getSessionLockPath() {
+			return this.getPath(WorldSavePath.SESSION_LOCK);
+		}
+
+		public Path getPath(WorldSavePath savePath) {
+			return this.path.resolve(savePath.getRelativePath());
+		}
+	}
+
 	public class Session implements AutoCloseable {
 		final SessionLock lock;
-		final LevelStorage.class_7411 directory;
+		final LevelStorage.LevelSave directory;
 		private final String directoryName;
 		private final Map<WorldSavePath, Path> paths = Maps.<WorldSavePath, Path>newHashMap();
 
 		public Session(String directoryName) throws IOException {
 			this.directoryName = directoryName;
-			this.directory = new LevelStorage.class_7411(LevelStorage.this.savesDirectory.resolve(directoryName));
+			this.directory = new LevelStorage.LevelSave(LevelStorage.this.savesDirectory.resolve(directoryName));
 			this.lock = SessionLock.create(this.directory.path());
 		}
 
@@ -340,7 +385,7 @@ public class LevelStorage {
 		}
 
 		public Path getDirectory(WorldSavePath savePath) {
-			return (Path)this.paths.computeIfAbsent(savePath, this.directory::method_43423);
+			return (Path)this.paths.computeIfAbsent(savePath, this.directory::getPath);
 		}
 
 		public Path getWorldDirectory(RegistryKey<World> key) {
@@ -389,8 +434,8 @@ public class LevelStorage {
 			try {
 				File file2 = File.createTempFile("level", ".dat", file);
 				NbtIo.writeCompressed(nbtCompound2, file2);
-				File file3 = this.directory.method_43426().toFile();
-				File file4 = this.directory.method_43425().toFile();
+				File file3 = this.directory.getLevelDatOldPath().toFile();
+				File file4 = this.directory.getLevelDatPath().toFile();
 				Util.backupAndReplace(file4, file2, file3);
 			} catch (Exception var10) {
 				LevelStorage.LOGGER.error("Failed to save level {}", file, var10);
@@ -398,12 +443,12 @@ public class LevelStorage {
 		}
 
 		public Optional<Path> getIconFile() {
-			return !this.lock.isValid() ? Optional.empty() : Optional.of(this.directory.method_43427());
+			return !this.lock.isValid() ? Optional.empty() : Optional.of(this.directory.getIconPath());
 		}
 
 		public void deleteSessionLock() throws IOException {
 			this.checkValid();
-			final Path path = this.directory.method_43428();
+			final Path path = this.directory.getSessionLockPath();
 			LevelStorage.LOGGER.info("Deleting level {}", this.directoryName);
 
 			for (int i = 1; i <= 5; i++) {
@@ -452,7 +497,7 @@ public class LevelStorage {
 
 		public void save(String name) throws IOException {
 			this.checkValid();
-			Path path = this.directory.method_43425();
+			Path path = this.directory.getLevelDatPath();
 			if (Files.exists(path, new LinkOption[0])) {
 				NbtCompound nbtCompound = NbtIo.readCompressed(path.toFile());
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
@@ -507,47 +552,6 @@ public class LevelStorage {
 
 		public void close() throws IOException {
 			this.lock.close();
-		}
-	}
-
-	public static record class_7410(List<LevelStorage.class_7411> levels) implements Iterable<LevelStorage.class_7411> {
-
-		public boolean method_43421() {
-			return this.levels.isEmpty();
-		}
-
-		public Iterator<LevelStorage.class_7411> iterator() {
-			return this.levels.iterator();
-		}
-	}
-
-	public static record class_7411(Path path) {
-		public String method_43422() {
-			return this.path.getFileName().toString();
-		}
-
-		public Path method_43425() {
-			return this.method_43423(WorldSavePath.LEVEL_DAT);
-		}
-
-		public Path method_43426() {
-			return this.method_43423(WorldSavePath.LEVEL_DAT_OLD);
-		}
-
-		public Path method_43424(LocalDateTime localDateTime) {
-			return this.path.resolve(WorldSavePath.LEVEL_DAT.getRelativePath() + "_corrupted_" + localDateTime.format(LevelStorage.TIME_FORMATTER));
-		}
-
-		public Path method_43427() {
-			return this.method_43423(WorldSavePath.ICON_PNG);
-		}
-
-		public Path method_43428() {
-			return this.method_43423(WorldSavePath.SESSION_LOCK);
-		}
-
-		public Path method_43423(WorldSavePath worldSavePath) {
-			return this.path.resolve(worldSavePath.getRelativePath());
 		}
 	}
 }

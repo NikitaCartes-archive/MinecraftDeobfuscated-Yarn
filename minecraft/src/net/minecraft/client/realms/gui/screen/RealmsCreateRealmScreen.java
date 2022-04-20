@@ -13,8 +13,8 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsCreateRealmScreen extends RealmsScreen {
-	private static final Text WORLD_NAME_TEXT = Text.method_43471("mco.configure.world.name");
-	private static final Text WORLD_DESCRIPTION_TEXT = Text.method_43471("mco.configure.world.description");
+	private static final Text WORLD_NAME_TEXT = Text.translatable("mco.configure.world.name");
+	private static final Text WORLD_DESCRIPTION_TEXT = Text.translatable("mco.configure.world.description");
 	private final RealmsServer server;
 	private final RealmsMainScreen parent;
 	private TextFieldWidget nameBox;
@@ -22,7 +22,7 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	private ButtonWidget createButton;
 
 	public RealmsCreateRealmScreen(RealmsServer server, RealmsMainScreen parent) {
-		super(Text.method_43471("mco.selectServer.create"));
+		super(Text.translatable("mco.selectServer.create"));
 		this.server = server;
 		this.parent = parent;
 	}
@@ -42,17 +42,17 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	public void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.createButton = this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, Text.method_43471("mco.create.world"), button -> this.createWorld())
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20, Text.translatable("mco.create.world"), button -> this.createWorld())
 		);
 		this.addDrawableChild(
 			new ButtonWidget(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
 		);
 		this.createButton.active = false;
-		this.nameBox = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, 65, 200, 20, null, Text.method_43471("mco.configure.world.name"));
+		this.nameBox = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, 65, 200, 20, null, Text.translatable("mco.configure.world.name"));
 		this.addSelectableChild(this.nameBox);
 		this.setInitialFocus(this.nameBox);
 		this.descriptionBox = new TextFieldWidget(
-			this.client.textRenderer, this.width / 2 - 100, 115, 200, 20, null, Text.method_43471("mco.configure.world.description")
+			this.client.textRenderer, this.width / 2 - 100, 115, 200, 20, null, Text.translatable("mco.configure.world.description")
 		);
 		this.addSelectableChild(this.descriptionBox);
 	}
@@ -86,14 +86,14 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 			RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
 				this.parent,
 				this.server,
-				Text.method_43471("mco.selectServer.create"),
-				Text.method_43471("mco.create.world.subtitle"),
+				Text.translatable("mco.selectServer.create"),
+				Text.translatable("mco.create.world.subtitle"),
 				10526880,
-				Text.method_43471("mco.create.world.skip"),
+				Text.translatable("mco.create.world.skip"),
 				() -> this.client.execute(() -> this.client.setScreen(this.parent.newScreen())),
 				() -> this.client.setScreen(this.parent.newScreen())
 			);
-			realmsResetWorldScreen.setResetTitle(Text.method_43471("mco.create.world.reset.title"));
+			realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
 			this.client
 				.setScreen(
 					new RealmsLongRunningMcoTaskScreen(

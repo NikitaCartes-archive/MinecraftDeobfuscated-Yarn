@@ -22,8 +22,8 @@ public class OrMultipartModelSelector implements MultipartModelSelector {
 	@Override
 	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
 		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.selectors)
-			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateManager))
+			.map(selector -> selector.getPredicate(stateManager))
 			.collect(Collectors.toList());
-		return blockState -> list.stream().anyMatch(predicate -> predicate.test(blockState));
+		return state -> list.stream().anyMatch(predicate -> predicate.test(state));
 	}
 }

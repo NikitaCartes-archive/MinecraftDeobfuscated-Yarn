@@ -31,7 +31,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								try {
 									text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
 									if (text == null) {
-										text = ScreenTexts.field_39003;
+										text = ScreenTexts.EMPTY;
 									}
 								} catch (Exception var6) {
 								}
@@ -51,13 +51,13 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 								}
 
 								if (text == null) {
-									text = Text.method_43470(string);
+									text = Text.literal(string);
 								}
 							} else {
-								text = Text.method_43470(string);
+								text = Text.literal(string);
 							}
 						} else {
-							text = ScreenTexts.field_39003;
+							text = ScreenTexts.EMPTY;
 						}
 
 						return dynamicxx.createString(Text.Serializer.toJson(text));

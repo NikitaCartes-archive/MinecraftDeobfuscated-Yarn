@@ -15,8 +15,8 @@ public class Frustum {
 	private double y;
 	private double z;
 
-	public Frustum(Matrix4f matrix4f, Matrix4f matrix4f2) {
-		this.init(matrix4f, matrix4f2);
+	public Frustum(Matrix4f positionMatrix, Matrix4f projectionMatrix) {
+		this.init(positionMatrix, projectionMatrix);
 	}
 
 	public Frustum(Frustum frustum) {
@@ -51,18 +51,18 @@ public class Frustum {
 		this.z = cameraZ;
 	}
 
-	private void init(Matrix4f matrix4f, Matrix4f matrix4f2) {
-		Matrix4f matrix4f3 = matrix4f2.copy();
-		matrix4f3.multiply(matrix4f);
-		matrix4f3.transpose();
+	private void init(Matrix4f positionMatrix, Matrix4f projectionMatrix) {
+		Matrix4f matrix4f = projectionMatrix.copy();
+		matrix4f.multiply(positionMatrix);
+		matrix4f.transpose();
 		this.field_34821 = new Vector4f(0.0F, 0.0F, 1.0F, 0.0F);
-		this.field_34821.transform(matrix4f3);
-		this.transform(matrix4f3, -1, 0, 0, 0);
-		this.transform(matrix4f3, 1, 0, 0, 1);
-		this.transform(matrix4f3, 0, -1, 0, 2);
-		this.transform(matrix4f3, 0, 1, 0, 3);
-		this.transform(matrix4f3, 0, 0, -1, 4);
-		this.transform(matrix4f3, 0, 0, 1, 5);
+		this.field_34821.transform(matrix4f);
+		this.transform(matrix4f, -1, 0, 0, 0);
+		this.transform(matrix4f, 1, 0, 0, 1);
+		this.transform(matrix4f, 0, -1, 0, 2);
+		this.transform(matrix4f, 0, 1, 0, 3);
+		this.transform(matrix4f, 0, 0, -1, 4);
+		this.transform(matrix4f, 0, 0, 1, 5);
 	}
 
 	private void transform(Matrix4f function, int x, int y, int z, int index) {

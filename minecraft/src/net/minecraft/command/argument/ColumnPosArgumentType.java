@@ -20,7 +20,7 @@ import net.minecraft.util.math.ColumnPos;
 
 public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~1 ~-2", "^ ^", "^-1 ^0");
-	public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.pos2d.incomplete"));
+	public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.pos2d.incomplete"));
 
 	public static ColumnPosArgumentType columnPos() {
 		return new ColumnPosArgumentType();

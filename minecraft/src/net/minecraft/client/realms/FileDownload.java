@@ -247,8 +247,8 @@ public class FileDownload {
 		name = findAvailableFolderName(name);
 
 		try {
-			for (LevelStorage.class_7411 lv : storage.getLevelList()) {
-				String string = lv.method_43422();
+			for (LevelStorage.LevelSave levelSave : storage.getLevelList()) {
+				String string = levelSave.getRootPath();
 				if (string.toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) {
 					Matcher matcher = pattern.matcher(string);
 					if (matcher.matches()) {

@@ -1,6 +1,7 @@
 package net.minecraft.client.texture;
 
 import com.google.common.base.Charsets;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -163,11 +164,11 @@ public final class NativeImage implements AutoCloseable {
 	private static void setTextureFilter(boolean blur, boolean mipmap) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		if (blur) {
-			GlStateManager._texParameter(3553, 10241, mipmap ? 9987 : 9729);
-			GlStateManager._texParameter(3553, 10240, 9729);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, mipmap ? GlConst.GL_LINEAR_MIPMAP_LINEAR : GlConst.GL_LINEAR);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
 		} else {
-			GlStateManager._texParameter(3553, 10241, mipmap ? 9986 : 9728);
-			GlStateManager._texParameter(3553, 10240, 9728);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, mipmap ? GlConst.GL_NEAREST_MIPMAP_LINEAR : GlConst.GL_NEAREST);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
 		}
 	}
 
@@ -417,18 +418,18 @@ public final class NativeImage implements AutoCloseable {
 		this.checkAllocated();
 		setTextureFilter(blur, mipmap);
 		if (width == this.getWidth()) {
-			GlStateManager._pixelStore(3314, 0);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, 0);
 		} else {
-			GlStateManager._pixelStore(3314, this.getWidth());
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, this.getWidth());
 		}
 
-		GlStateManager._pixelStore(3316, unpackSkipPixels);
-		GlStateManager._pixelStore(3315, unpackSkipRows);
+		GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, unpackSkipPixels);
+		GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, unpackSkipRows);
 		this.format.setUnpackAlignment();
-		GlStateManager._texSubImage2D(3553, level, offsetX, offsetY, width, height, this.format.toGl(), 5121, this.pointer);
+		GlStateManager._texSubImage2D(GlConst.GL_TEXTURE_2D, level, offsetX, offsetY, width, height, this.format.toGl(), GlConst.GL_UNSIGNED_BYTE, this.pointer);
 		if (clamp) {
-			GlStateManager._texParameter(3553, 10242, 33071);
-			GlStateManager._texParameter(3553, 10243, 33071);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
+			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
 		}
 
 		if (close) {
@@ -440,7 +441,7 @@ public final class NativeImage implements AutoCloseable {
 		RenderSystem.assertOnRenderThread();
 		this.checkAllocated();
 		this.format.setPackAlignment();
-		GlStateManager._getTexImage(3553, level, this.format.toGl(), 5121, this.pointer);
+		GlStateManager._getTexImage(GlConst.GL_TEXTURE_2D, level, this.format.toGl(), 5121, this.pointer);
 		if (removeAlpha && this.format.hasAlpha()) {
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
@@ -457,7 +458,7 @@ public final class NativeImage implements AutoCloseable {
 		} else {
 			this.checkAllocated();
 			this.format.setPackAlignment();
-			GlStateManager._readPixels(0, 0, this.width, this.height, 6402, 5121, this.pointer);
+			GlStateManager._readPixels(0, 0, this.width, this.height, GlConst.GL_DEPTH_COMPONENT, GlConst.GL_UNSIGNED_BYTE, this.pointer);
 		}
 	}
 
@@ -468,7 +469,7 @@ public final class NativeImage implements AutoCloseable {
 	public void drawPixels() {
 		RenderSystem.assertOnRenderThread();
 		this.format.setUnpackAlignment();
-		GlStateManager._glDrawPixels(this.width, this.height, this.format.toGl(), 5121, this.pointer);
+		GlStateManager._glDrawPixels(this.width, this.height, this.format.toGl(), GlConst.GL_UNSIGNED_BYTE, this.pointer);
 	}
 
 	public void writeTo(String path) throws IOException {
@@ -725,18 +726,18 @@ public final class NativeImage implements AutoCloseable {
 		 * The format stores RGBA in little endian order, so it's ABGR from the biggest to
 		 * the smallest bits.
 		 */
-		RGBA(4, 6408, true, true, true, false, true, 0, 8, 16, 255, 24, true),
+		RGBA(4, GlConst.GL_RGBA, true, true, true, false, true, 0, 8, 16, 255, 24, true),
 		/**
 		 * The format stores RGB in little endian order, so it's BGR from the biggest to
 		 * the smallest bits.
 		 */
-		RGB(3, 6407, true, true, true, false, false, 0, 8, 16, 255, 255, true),
+		RGB(3, GlConst.GL_RGB, true, true, true, false, false, 0, 8, 16, 255, 255, true),
 		/**
 		 * The format stores luminance and alpha in little endian order, so it's alpha then
 		 * luminance from the biggest to the smallest bits.
 		 */
-		LUMINANCE_ALPHA(2, 33319, false, false, false, true, true, 255, 255, 255, 0, 8, true),
-		LUMINANCE(1, 6403, false, false, false, true, false, 0, 0, 0, 0, 255, true);
+		LUMINANCE_ALPHA(2, GlConst.GL_RG, false, false, false, true, true, 255, 255, 255, 0, 8, true),
+		LUMINANCE(1, GlConst.GL_RED, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
 		final int channelCount;
 		private final int glFormat;
@@ -788,12 +789,12 @@ public final class NativeImage implements AutoCloseable {
 
 		public void setPackAlignment() {
 			RenderSystem.assertOnRenderThread();
-			GlStateManager._pixelStore(3333, this.getChannelCount());
+			GlStateManager._pixelStore(GlConst.GL_PACK_ALIGNMENT, this.getChannelCount());
 		}
 
 		public void setUnpackAlignment() {
 			RenderSystem.assertOnRenderThreadOrInit();
-			GlStateManager._pixelStore(3317, this.getChannelCount());
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_ALIGNMENT, this.getChannelCount());
 		}
 
 		public int toGl() {

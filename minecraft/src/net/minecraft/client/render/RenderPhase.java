@@ -457,18 +457,18 @@ public abstract class RenderPhase {
 	protected static class Textures extends RenderPhase.TextureBase {
 		private final Optional<Identifier> id;
 
-		Textures(ImmutableList<Triple<Identifier, Boolean, Boolean>> immutableList) {
+		Textures(ImmutableList<Triple<Identifier, Boolean, Boolean>> textures) {
 			super(() -> {
 				int i = 0;
 
-				for (Triple<Identifier, Boolean, Boolean> triple : immutableList) {
+				for (Triple<Identifier, Boolean, Boolean> triple : textures) {
 					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 					textureManager.getTexture(triple.getLeft()).setFilter(triple.getMiddle(), triple.getRight());
 					RenderSystem.setShaderTexture(i++, triple.getLeft());
 				}
 			}, () -> {
 			});
-			this.id = immutableList.stream().findFirst().map(Triple::getLeft);
+			this.id = textures.stream().findFirst().map(Triple::getLeft);
 		}
 
 		@Override

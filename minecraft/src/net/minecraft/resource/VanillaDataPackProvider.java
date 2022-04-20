@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 
 public class VanillaDataPackProvider implements ResourcePackProvider {
 	public static final PackResourceMetadata DEFAULT_PACK_METADATA = new PackResourceMetadata(
-		Text.method_43471("dataPack.vanilla.description"), ResourceType.SERVER_DATA.getPackVersion(SharedConstants.getGameVersion())
+		Text.translatable("dataPack.vanilla.description"), ResourceType.SERVER_DATA.getPackVersion(SharedConstants.getGameVersion())
 	);
 	public static final String NAME = "vanilla";
 	private final DefaultResourcePack pack = new DefaultResourcePack(DEFAULT_PACK_METADATA, "minecraft");

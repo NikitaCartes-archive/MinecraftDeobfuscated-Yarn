@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Identifier implements Comparable<Identifier> {
 	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
-	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.id.invalid"));
+	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.id.invalid"));
 	public static final char NAMESPACE_SEPARATOR = ':';
 	public static final String DEFAULT_NAMESPACE = "minecraft";
 	public static final String REALMS_NAMESPACE = "realms";

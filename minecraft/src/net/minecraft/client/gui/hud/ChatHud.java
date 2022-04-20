@@ -96,7 +96,7 @@ public class ChatHud extends DrawableHelper {
 					fill(matrices, -2, 0, k + 4, 9, u << 24);
 					RenderSystem.enableBlend();
 					matrices.translate(0.0, 0.0, 50.0);
-					this.client.textRenderer.drawWithShadow(matrices, Text.method_43469("chat.queue", this.messageQueue.size()), 0.0F, 1.0F, 16777215 + (nx << 24));
+					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", this.messageQueue.size()), 0.0F, 1.0F, 16777215 + (nx << 24));
 					matrices.pop();
 					RenderSystem.disableBlend();
 				}

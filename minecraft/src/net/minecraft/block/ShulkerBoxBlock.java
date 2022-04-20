@@ -176,7 +176,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-				tooltip.add(Text.method_43470("???????"));
+				tooltip.add(Text.literal("???????"));
 			}
 
 			if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
@@ -198,7 +198,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				}
 
 				if (j - i > 0) {
-					tooltip.add(Text.method_43469("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
+					tooltip.add(Text.translatable("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
 				}
 			}
 		}

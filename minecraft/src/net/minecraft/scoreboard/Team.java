@@ -19,8 +19,8 @@ public class Team extends AbstractTeam {
 	private final String name;
 	private final Set<String> playerList = Sets.<String>newHashSet();
 	private Text displayName;
-	private Text prefix = ScreenTexts.field_39003;
-	private Text suffix = ScreenTexts.field_39003;
+	private Text prefix = ScreenTexts.EMPTY;
+	private Text suffix = ScreenTexts.EMPTY;
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
 	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
@@ -32,8 +32,8 @@ public class Team extends AbstractTeam {
 	public Team(Scoreboard scoreboard, String name) {
 		this.scoreboard = scoreboard;
 		this.name = name;
-		this.displayName = Text.method_43470(name);
-		this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(name)));
+		this.displayName = Text.literal(name);
+		this.nameStyle = Style.EMPTY.withInsertion(name).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(name)));
 	}
 
 	public Scoreboard getScoreboard() {
@@ -69,7 +69,7 @@ public class Team extends AbstractTeam {
 	}
 
 	public void setPrefix(@Nullable Text prefix) {
-		this.prefix = prefix == null ? ScreenTexts.field_39003 : prefix;
+		this.prefix = prefix == null ? ScreenTexts.EMPTY : prefix;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -78,7 +78,7 @@ public class Team extends AbstractTeam {
 	}
 
 	public void setSuffix(@Nullable Text suffix) {
-		this.suffix = suffix == null ? ScreenTexts.field_39003 : suffix;
+		this.suffix = suffix == null ? ScreenTexts.EMPTY : suffix;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
@@ -93,7 +93,7 @@ public class Team extends AbstractTeam {
 
 	@Override
 	public MutableText decorateName(Text name) {
-		MutableText mutableText = Text.method_43473().append(this.prefix).append(name).append(this.suffix);
+		MutableText mutableText = Text.empty().append(this.prefix).append(name).append(this.suffix);
 		Formatting formatting = this.getColor();
 		if (formatting != Formatting.RESET) {
 			mutableText.formatted(formatting);

@@ -29,13 +29,13 @@ public class GameRuleCommand {
 		ServerCommandSource serverCommandSource = context.getSource();
 		T rule = serverCommandSource.getServer().getGameRules().get(key);
 		rule.set(context, "value");
-		serverCommandSource.sendFeedback(Text.method_43469("commands.gamerule.set", key.getName(), rule.toString()), true);
+		serverCommandSource.sendFeedback(Text.translatable("commands.gamerule.set", key.getName(), rule.toString()), true);
 		return rule.getCommandResult();
 	}
 
 	static <T extends GameRules.Rule<T>> int executeQuery(ServerCommandSource source, GameRules.Key<T> key) {
 		T rule = source.getServer().getGameRules().get(key);
-		source.sendFeedback(Text.method_43469("commands.gamerule.query", key.getName(), rule.toString()), false);
+		source.sendFeedback(Text.translatable("commands.gamerule.query", key.getName(), rule.toString()), false);
 		return rule.getCommandResult();
 	}
 }

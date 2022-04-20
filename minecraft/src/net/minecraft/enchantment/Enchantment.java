@@ -104,7 +104,7 @@ public abstract class Enchantment {
 	}
 
 	public Text getName(int level) {
-		MutableText mutableText = Text.method_43471(this.getTranslationKey());
+		MutableText mutableText = Text.translatable(this.getTranslationKey());
 		if (this.isCursed()) {
 			mutableText.formatted(Formatting.RED);
 		} else {
@@ -112,7 +112,7 @@ public abstract class Enchantment {
 		}
 
 		if (level != 1 || this.getMaxLevel() != 1) {
-			mutableText.append(" ").append(Text.method_43471("enchantment.level." + level));
+			mutableText.append(" ").append(Text.translatable("enchantment.level." + level));
 		}
 
 		return mutableText;

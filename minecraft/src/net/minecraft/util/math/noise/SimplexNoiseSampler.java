@@ -25,7 +25,7 @@ public class SimplexNoiseSampler {
 	private static final double SQRT_3 = Math.sqrt(3.0);
 	private static final double SKEW_FACTOR_2D = 0.5 * (SQRT_3 - 1.0);
 	private static final double UNSKEW_FACTOR_2D = (3.0 - SQRT_3) / 6.0;
-	private final int[] permutations = new int[512];
+	private final int[] permutation = new int[512];
 	public final double originX;
 	public final double originY;
 	public final double originZ;
@@ -37,23 +37,23 @@ public class SimplexNoiseSampler {
 		int i = 0;
 
 		while (i < 256) {
-			this.permutations[i] = i++;
+			this.permutation[i] = i++;
 		}
 
 		for (int ix = 0; ix < 256; ix++) {
 			int j = random.nextInt(256 - ix);
-			int k = this.permutations[ix];
-			this.permutations[ix] = this.permutations[j + ix];
-			this.permutations[j + ix] = k;
+			int k = this.permutation[ix];
+			this.permutation[ix] = this.permutation[j + ix];
+			this.permutation[j + ix] = k;
 		}
 	}
 
-	private int getGradient(int hash) {
-		return this.permutations[hash & 0xFF];
+	private int map(int input) {
+		return this.permutation[input & 0xFF];
 	}
 
-	protected static double dot(int[] gArr, double x, double y, double z) {
-		return (double)gArr[0] * x + (double)gArr[1] * y + (double)gArr[2] * z;
+	protected static double dot(int[] gradient, double x, double y, double z) {
+		return (double)gradient[0] * x + (double)gradient[1] * y + (double)gradient[2] * z;
 	}
 
 	private double grad(int hash, double x, double y, double z, double distance) {
@@ -94,9 +94,9 @@ public class SimplexNoiseSampler {
 		double q = k - 1.0 + 2.0 * UNSKEW_FACTOR_2D;
 		int r = i & 0xFF;
 		int s = j & 0xFF;
-		int t = this.getGradient(r + this.getGradient(s)) % 12;
-		int u = this.getGradient(r + l + this.getGradient(s + m)) % 12;
-		int v = this.getGradient(r + 1 + this.getGradient(s + 1)) % 12;
+		int t = this.map(r + this.map(s)) % 12;
+		int u = this.map(r + l + this.map(s + m)) % 12;
+		int v = this.map(r + 1 + this.map(s + 1)) % 12;
 		double w = this.grad(t, h, k, 0.0, 0.5);
 		double z = this.grad(u, n, o, 0.0, 0.5);
 		double aa = this.grad(v, p, q, 0.0, 0.5);
@@ -181,10 +181,10 @@ public class SimplexNoiseSampler {
 		int ai = i & 0xFF;
 		int aj = j & 0xFF;
 		int ak = k & 0xFF;
-		int al = this.getGradient(ai + this.getGradient(aj + this.getGradient(ak))) % 12;
-		int am = this.getGradient(ai + q + this.getGradient(aj + r + this.getGradient(ak + s))) % 12;
-		int an = this.getGradient(ai + t + this.getGradient(aj + u + this.getGradient(ak + v))) % 12;
-		int ao = this.getGradient(ai + 1 + this.getGradient(aj + 1 + this.getGradient(ak + 1))) % 12;
+		int al = this.map(ai + this.map(aj + this.map(ak))) % 12;
+		int am = this.map(ai + q + this.map(aj + r + this.map(ak + s))) % 12;
+		int an = this.map(ai + t + this.map(aj + u + this.map(ak + v))) % 12;
+		int ao = this.map(ai + 1 + this.map(aj + 1 + this.map(ak + 1))) % 12;
 		double ap = this.grad(al, n, o, p, 0.6);
 		double aq = this.grad(am, w, aa, ab, 0.6);
 		double ar = this.grad(an, ac, ad, ae, 0.6);

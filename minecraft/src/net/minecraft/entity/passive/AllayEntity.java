@@ -68,7 +68,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS,
 		MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS
 	);
-	public static final ImmutableList<Float> field_38937 = ImmutableList.of(
+	public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(
 		0.5625F, 0.625F, 0.75F, 0.9375F, 1.0F, 1.0F, 1.125F, 1.25F, 1.5F, 1.875F, 2.0F, 2.25F, 2.5F, 3.0F, 3.75F, 4.0F
 	);
 	private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
@@ -212,7 +212,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		super.tick();
 		if (this.world.isClient) {
 			this.field_38936 = this.field_38935;
-			if (this.method_43396()) {
+			if (this.isHoldingItem()) {
 				this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
 			} else {
 				this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
@@ -222,10 +222,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 
 	@Override
 	public boolean canPickUpLoot() {
-		return !this.isItemPickupCoolingDown() && this.method_43396();
+		return !this.isItemPickupCoolingDown() && this.isHoldingItem();
 	}
 
-	public boolean method_43396() {
+	public boolean isHoldingItem() {
 		return !this.getStackInHand(Hand.MAIN_HAND).isEmpty();
 	}
 
@@ -323,9 +323,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	}
 
 	@Override
-	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
+	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 		if (this.world instanceof ServerWorld serverWorld) {
-			biConsumer.accept(this.gameEventHandler, serverWorld);
+			callback.accept(this.gameEventHandler, serverWorld);
 		}
 	}
 

@@ -97,7 +97,7 @@ public class Keyboard {
 		this.client
 			.inGameHud
 			.getChatHud()
-			.addMessage(Text.method_43473().append(Text.method_43471("debug.prefix").formatted(formatting, Formatting.BOLD)).append(" ").append(text));
+			.addMessage(Text.empty().append(Text.translatable("debug.prefix").formatted(formatting, Formatting.BOLD)).append(" ").append(text));
 	}
 
 	private void debugLog(Text text) {
@@ -105,15 +105,15 @@ public class Keyboard {
 	}
 
 	private void debugLog(String key, Object... args) {
-		this.debugLog(Text.method_43469(key, args));
+		this.debugLog(Text.translatable(key, args));
 	}
 
 	private void debugError(String key, Object... args) {
-		this.addDebugMessage(Formatting.RED, Text.method_43469(key, args));
+		this.addDebugMessage(Formatting.RED, Text.translatable(key, args));
 	}
 
 	private void debugFormattedLog(String pattern, Object... args) {
-		this.debugLog(Text.method_43470(MessageFormat.format(pattern, args)));
+		this.debugLog(Text.literal(MessageFormat.format(pattern, args)));
 	}
 
 	private boolean processF3(int key) {
@@ -201,20 +201,20 @@ public class Keyboard {
 				case 81:
 					this.debugLog("debug.help.message");
 					ChatHud chatHud = this.client.inGameHud.getChatHud();
-					chatHud.addMessage(Text.method_43471("debug.reload_chunks.help"));
-					chatHud.addMessage(Text.method_43471("debug.show_hitboxes.help"));
-					chatHud.addMessage(Text.method_43471("debug.copy_location.help"));
-					chatHud.addMessage(Text.method_43471("debug.clear_chat.help"));
-					chatHud.addMessage(Text.method_43471("debug.chunk_boundaries.help"));
-					chatHud.addMessage(Text.method_43471("debug.advanced_tooltips.help"));
-					chatHud.addMessage(Text.method_43471("debug.inspect.help"));
-					chatHud.addMessage(Text.method_43471("debug.profiling.help"));
-					chatHud.addMessage(Text.method_43471("debug.creative_spectator.help"));
-					chatHud.addMessage(Text.method_43471("debug.pause_focus.help"));
-					chatHud.addMessage(Text.method_43471("debug.help.help"));
-					chatHud.addMessage(Text.method_43471("debug.reload_resourcepacks.help"));
-					chatHud.addMessage(Text.method_43471("debug.pause.help"));
-					chatHud.addMessage(Text.method_43471("debug.gamemodes.help"));
+					chatHud.addMessage(Text.translatable("debug.reload_chunks.help"));
+					chatHud.addMessage(Text.translatable("debug.show_hitboxes.help"));
+					chatHud.addMessage(Text.translatable("debug.copy_location.help"));
+					chatHud.addMessage(Text.translatable("debug.clear_chat.help"));
+					chatHud.addMessage(Text.translatable("debug.chunk_boundaries.help"));
+					chatHud.addMessage(Text.translatable("debug.advanced_tooltips.help"));
+					chatHud.addMessage(Text.translatable("debug.inspect.help"));
+					chatHud.addMessage(Text.translatable("debug.profiling.help"));
+					chatHud.addMessage(Text.translatable("debug.creative_spectator.help"));
+					chatHud.addMessage(Text.translatable("debug.pause_focus.help"));
+					chatHud.addMessage(Text.translatable("debug.help.help"));
+					chatHud.addMessage(Text.translatable("debug.reload_resourcepacks.help"));
+					chatHud.addMessage(Text.translatable("debug.pause.help"));
+					chatHud.addMessage(Text.translatable("debug.gamemodes.help"));
 					return true;
 				case 84:
 					this.debugLog("debug.reload_resourcepacks.message");

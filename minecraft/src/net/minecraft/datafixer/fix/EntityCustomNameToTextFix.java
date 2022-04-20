@@ -30,6 +30,6 @@ public class EntityCustomNameToTextFix extends DataFix {
 
 	public static Dynamic<?> fixCustomName(Dynamic<?> dynamic) {
 		String string = dynamic.get("CustomName").asString("");
-		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.method_43470(string))));
+		return string.isEmpty() ? dynamic.remove("CustomName") : dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.literal(string))));
 	}
 }

@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class BlastFurnaceRecipeBookScreen extends AbstractFurnaceRecipeBookScreen {
-	private static final Text TOGGLE_BLASTABLE_RECIPES_TEXT = Text.method_43471("gui.recipebook.toggleRecipes.blastable");
+	private static final Text TOGGLE_BLASTABLE_RECIPES_TEXT = Text.translatable("gui.recipebook.toggleRecipes.blastable");
 
 	@Override
 	protected Text getToggleCraftableButtonText() {

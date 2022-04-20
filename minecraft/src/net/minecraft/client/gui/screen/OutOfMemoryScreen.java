@@ -12,20 +12,20 @@ public class OutOfMemoryScreen extends Screen {
 	private MultilineText message = MultilineText.EMPTY;
 
 	public OutOfMemoryScreen() {
-		super(Text.method_43471("outOfMemory.error"));
+		super(Text.translatable("outOfMemory.error"));
 	}
 
 	@Override
 	protected void init() {
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, Text.method_43471("gui.toTitle"), button -> this.client.setScreen(new TitleScreen())
+				this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20, Text.translatable("gui.toTitle"), button -> this.client.setScreen(new TitleScreen())
 			)
 		);
 		this.addDrawableChild(
-			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, Text.method_43471("menu.quit"), button -> this.client.scheduleStop())
+			new ButtonWidget(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20, Text.translatable("menu.quit"), button -> this.client.scheduleStop())
 		);
-		this.message = MultilineText.create(this.textRenderer, Text.method_43471("outOfMemory.message"), 295);
+		this.message = MultilineText.create(this.textRenderer, Text.translatable("outOfMemory.message"), 295);
 	}
 
 	@Override

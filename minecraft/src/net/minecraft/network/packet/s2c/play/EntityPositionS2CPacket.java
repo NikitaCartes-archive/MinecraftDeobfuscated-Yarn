@@ -17,7 +17,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public EntityPositionS2CPacket(Entity entity) {
 		this.id = entity.getId();
-		Vec3d vec3d = entity.method_43390();
+		Vec3d vec3d = entity.getSyncedPos();
 		this.x = vec3d.x;
 		this.y = vec3d.y;
 		this.z = vec3d.z;

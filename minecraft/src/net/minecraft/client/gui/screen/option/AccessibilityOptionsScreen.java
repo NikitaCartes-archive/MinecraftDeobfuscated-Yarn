@@ -36,7 +36,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 	}
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(parent, gameOptions, Text.method_43471("options.accessibility.title"), getOptions(gameOptions));
+		super(parent, gameOptions, Text.translatable("options.accessibility.title"), getOptions(gameOptions));
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 				this.height - 27,
 				150,
 				20,
-				Text.method_43471("options.accessibility.link"),
+				Text.translatable("options.accessibility.link"),
 				button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
 						if (openInBrowser) {
 							Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");

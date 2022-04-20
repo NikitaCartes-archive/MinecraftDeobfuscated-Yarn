@@ -13,7 +13,7 @@ import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class PlaceFeatureCommand {
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.placefeature.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.placefeature.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -45,7 +45,7 @@ public class PlaceFeatureCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			String string = (String)feature.getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
-			source.sendFeedback(Text.method_43469("commands.placefeature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
+			source.sendFeedback(Text.translatable("commands.placefeature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
 	}

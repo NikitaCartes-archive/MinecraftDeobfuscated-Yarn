@@ -11,11 +11,11 @@ import net.minecraft.tag.BiomeTags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 import net.minecraft.util.registry.RegistryEntry;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.RandomSeed;
 
 public class OceanMonumentStructure extends StructureType {

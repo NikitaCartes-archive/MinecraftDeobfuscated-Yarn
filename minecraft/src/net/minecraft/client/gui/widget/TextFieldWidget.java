@@ -94,7 +94,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 	@Override
 	protected MutableText getNarrationMessage() {
 		Text text = this.getMessage();
-		return Text.method_43469("gui.narrate.editBox", text, this.text);
+		return Text.translatable("gui.narrate.editBox", text, this.text);
 	}
 
 	public void setText(String text) {
@@ -595,6 +595,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable, Elemen
 
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, Text.method_43469("narration.edit_box", this.getText()));
+		builder.put(NarrationPart.TITLE, Text.translatable("narration.edit_box", this.getText()));
 	}
 }

@@ -26,19 +26,19 @@ import net.minecraft.text.Text;
 
 public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", "dd12be42-52a9-4a91-a8a1-11c01849e498");
-	public static final SimpleCommandExceptionType TOO_MANY_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.entity.toomany"));
-	public static final SimpleCommandExceptionType TOO_MANY_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.player.toomany"));
+	public static final SimpleCommandExceptionType TOO_MANY_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.toomany"));
+	public static final SimpleCommandExceptionType TOO_MANY_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.player.toomany"));
 	public static final SimpleCommandExceptionType PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.player.entities")
+		Text.translatable("argument.player.entities")
 	);
 	public static final SimpleCommandExceptionType ENTITY_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.entity.notfound.entity")
+		Text.translatable("argument.entity.notfound.entity")
 	);
 	public static final SimpleCommandExceptionType PLAYER_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.entity.notfound.player")
+		Text.translatable("argument.entity.notfound.player")
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.entity.selector.not_allowed")
+		Text.translatable("argument.entity.selector.not_allowed")
 	);
 	final boolean singleTarget;
 	final boolean playersOnly;

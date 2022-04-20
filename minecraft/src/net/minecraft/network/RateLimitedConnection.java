@@ -11,7 +11,7 @@ import org.slf4j.Logger;
  */
 public class RateLimitedConnection extends ClientConnection {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text RATE_LIMIT_EXCEEDED_MESSAGE = Text.method_43471("disconnect.exceeded_packet_rate");
+	private static final Text RATE_LIMIT_EXCEEDED_MESSAGE = Text.translatable("disconnect.exceeded_packet_rate");
 	private final int rateLimit;
 
 	public RateLimitedConnection(int rateLimit) {

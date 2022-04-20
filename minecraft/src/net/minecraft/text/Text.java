@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.class_7417;
-import net.minecraft.class_7419;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -50,9 +48,9 @@ public interface Text extends Message, StringVisitable {
 	Style getStyle();
 
 	/**
-	 * Returns the string representation of this text itself, excluding siblings.
+	 * {@return the content of the text}
 	 */
-	class_7417 asString();
+	TextContent getContent();
 
 	@Override
 	default String getString() {
@@ -88,7 +86,7 @@ public interface Text extends Message, StringVisitable {
 	 * Copies the text itself, excluding the styles or siblings.
 	 */
 	default MutableText copy() {
-		return MutableText.method_43477(this.asString());
+		return MutableText.of(this.getContent());
 	}
 
 	/**
@@ -97,7 +95,7 @@ public interface Text extends Message, StringVisitable {
 	 * <p>A shallow copy is made for the siblings.
 	 */
 	default MutableText shallowCopy() {
-		return new MutableText(this.asString(), new ArrayList(this.getSiblings()), this.getStyle());
+		return new MutableText(this.getContent(), new ArrayList(this.getSiblings()), this.getStyle());
 	}
 
 	OrderedText asOrderedText();
@@ -105,7 +103,7 @@ public interface Text extends Message, StringVisitable {
 	@Override
 	default <T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
 		Style style2 = this.getStyle().withParent(style);
-		Optional<T> optional = this.asString().visitSelf(styledVisitor, style2);
+		Optional<T> optional = this.getContent().visit(styledVisitor, style2);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
@@ -122,7 +120,7 @@ public interface Text extends Message, StringVisitable {
 
 	@Override
 	default <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
-		Optional<T> optional = this.asString().visitSelf(visitor);
+		Optional<T> optional = this.getContent().visit(visitor);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
@@ -141,7 +139,7 @@ public interface Text extends Message, StringVisitable {
 		List<Text> list = Lists.<Text>newArrayList();
 		this.visit((styleOverride, text) -> {
 			if (!text.isEmpty()) {
-				list.add(method_43470(text).fillStyle(styleOverride));
+				list.add(literal(text).fillStyle(styleOverride));
 			}
 
 			return Optional.empty();
@@ -153,39 +151,39 @@ public interface Text extends Message, StringVisitable {
 	 * Creates a literal text with the given string as content.
 	 */
 	static Text of(@Nullable String string) {
-		return (Text)(string != null ? method_43470(string) : ScreenTexts.field_39003);
+		return (Text)(string != null ? literal(string) : ScreenTexts.EMPTY);
 	}
 
-	static MutableText method_43470(String string) {
-		return MutableText.method_43477(new LiteralText(string));
+	static MutableText literal(String string) {
+		return MutableText.of(new LiteralTextContent(string));
 	}
 
-	static MutableText method_43471(String string) {
-		return MutableText.method_43477(new TranslatableText(string));
+	static MutableText translatable(String key) {
+		return MutableText.of(new TranslatableTextContent(key));
 	}
 
-	static MutableText method_43469(String string, Object... objects) {
-		return MutableText.method_43477(new TranslatableText(string, objects));
+	static MutableText translatable(String key, Object... args) {
+		return MutableText.of(new TranslatableTextContent(key, args));
 	}
 
-	static MutableText method_43473() {
-		return MutableText.method_43477(class_7417.field_39004);
+	static MutableText empty() {
+		return MutableText.of(TextContent.EMPTY);
 	}
 
-	static MutableText method_43472(String string) {
-		return MutableText.method_43477(new KeybindText(string));
+	static MutableText keybind(String string) {
+		return MutableText.of(new KeybindTextContent(string));
 	}
 
-	static MutableText method_43468(String string, boolean bl, Optional<Text> optional, class_7419 arg) {
-		return MutableText.method_43477(new NbtText(string, bl, optional, arg));
+	static MutableText nbt(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource nbtDataSource) {
+		return MutableText.of(new NbtTextContent(rawPath, interpret, separator, nbtDataSource));
 	}
 
-	static MutableText method_43466(String string, String string2) {
-		return MutableText.method_43477(new ScoreText(string, string2));
+	static MutableText score(String name, String objective) {
+		return MutableText.of(new ScoreTextContent(name, objective));
 	}
 
-	static MutableText method_43467(String string, Optional<Text> optional) {
-		return MutableText.method_43477(new SelectorText(string, optional));
+	static MutableText selector(String pattern, Optional<Text> separator) {
+		return MutableText.of(new SelectorTextContent(pattern, separator));
 	}
 
 	/**
@@ -223,7 +221,7 @@ public interface Text extends Message, StringVisitable {
 
 		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
-				return Text.method_43470(jsonElement.getAsString());
+				return Text.literal(jsonElement.getAsString());
 			} else if (!jsonElement.isJsonObject()) {
 				if (jsonElement.isJsonArray()) {
 					JsonArray jsonArray3 = jsonElement.getAsJsonArray();
@@ -247,7 +245,7 @@ public interface Text extends Message, StringVisitable {
 				MutableText mutableText;
 				if (jsonObject.has("text")) {
 					String string = JsonHelper.getString(jsonObject, "text");
-					mutableText = string.isEmpty() ? Text.method_43473() : Text.method_43470(string);
+					mutableText = string.isEmpty() ? Text.empty() : Text.literal(string);
 				} else if (jsonObject.has("translate")) {
 					String string = JsonHelper.getString(jsonObject, "translate");
 					if (jsonObject.has("with")) {
@@ -258,9 +256,9 @@ public interface Text extends Message, StringVisitable {
 							objects[i] = method_43474(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
 						}
 
-						mutableText = Text.method_43469(string, objects);
+						mutableText = Text.translatable(string, objects);
 					} else {
-						mutableText = Text.method_43471(string);
+						mutableText = Text.translatable(string);
 					}
 				} else if (jsonObject.has("score")) {
 					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
@@ -268,12 +266,12 @@ public interface Text extends Message, StringVisitable {
 						throw new JsonParseException("A score component needs a least a name and an objective");
 					}
 
-					mutableText = Text.method_43466(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
+					mutableText = Text.score(JsonHelper.getString(jsonObject2, "name"), JsonHelper.getString(jsonObject2, "objective"));
 				} else if (jsonObject.has("selector")) {
 					Optional<Text> optional = this.getSeparator(type, jsonDeserializationContext, jsonObject);
-					mutableText = Text.method_43467(JsonHelper.getString(jsonObject, "selector"), optional);
+					mutableText = Text.selector(JsonHelper.getString(jsonObject, "selector"), optional);
 				} else if (jsonObject.has("keybind")) {
-					mutableText = Text.method_43472(JsonHelper.getString(jsonObject, "keybind"));
+					mutableText = Text.keybind(JsonHelper.getString(jsonObject, "keybind"));
 				} else {
 					if (!jsonObject.has("nbt")) {
 						throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
@@ -282,20 +280,20 @@ public interface Text extends Message, StringVisitable {
 					String string = JsonHelper.getString(jsonObject, "nbt");
 					Optional<Text> optional2 = this.getSeparator(type, jsonDeserializationContext, jsonObject);
 					boolean bl = JsonHelper.getBoolean(jsonObject, "interpret", false);
-					class_7419 lv;
+					NbtDataSource nbtDataSource;
 					if (jsonObject.has("block")) {
-						lv = new BlockNbtText(JsonHelper.getString(jsonObject, "block"));
+						nbtDataSource = new BlockNbtDataSource(JsonHelper.getString(jsonObject, "block"));
 					} else if (jsonObject.has("entity")) {
-						lv = new EntityNbtText(JsonHelper.getString(jsonObject, "entity"));
+						nbtDataSource = new EntityNbtDataSource(JsonHelper.getString(jsonObject, "entity"));
 					} else {
 						if (!jsonObject.has("storage")) {
 							throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
 						}
 
-						lv = new StorageNbtText(new Identifier(JsonHelper.getString(jsonObject, "storage")));
+						nbtDataSource = new StorageNbtDataSource(new Identifier(JsonHelper.getString(jsonObject, "storage")));
 					}
 
-					mutableText = Text.method_43468(string, bl, optional2, lv);
+					mutableText = Text.nbt(string, bl, optional2, nbtDataSource);
 				}
 
 				if (jsonObject.has("extra")) {
@@ -315,8 +313,11 @@ public interface Text extends Message, StringVisitable {
 		}
 
 		private static Object method_43474(Object object) {
-			if (object instanceof Text text && text.getStyle().isEmpty() && text.getSiblings().isEmpty() && text.asString() instanceof LiteralText literalText) {
-				return literalText.string();
+			if (object instanceof Text text
+				&& text.getStyle().isEmpty()
+				&& text.getSiblings().isEmpty()
+				&& text.getContent() instanceof LiteralTextContent literalTextContent) {
+				return literalTextContent.string();
 			}
 
 			return object;
@@ -353,17 +354,17 @@ public interface Text extends Message, StringVisitable {
 				jsonObject.add("extra", jsonArray);
 			}
 
-			class_7417 lv = text.asString();
-			if (lv == class_7417.field_39004) {
+			TextContent textContent = text.getContent();
+			if (textContent == TextContent.EMPTY) {
 				jsonObject.addProperty("text", "");
-			} else if (lv instanceof LiteralText literalText) {
-				jsonObject.addProperty("text", literalText.string());
-			} else if (lv instanceof TranslatableText translatableText) {
-				jsonObject.addProperty("translate", translatableText.getKey());
-				if (translatableText.getArgs().length > 0) {
+			} else if (textContent instanceof LiteralTextContent literalTextContent) {
+				jsonObject.addProperty("text", literalTextContent.string());
+			} else if (textContent instanceof TranslatableTextContent translatableTextContent) {
+				jsonObject.addProperty("translate", translatableTextContent.getKey());
+				if (translatableTextContent.getArgs().length > 0) {
 					JsonArray jsonArray2 = new JsonArray();
 
-					for (Object object : translatableText.getArgs()) {
+					for (Object object : translatableTextContent.getArgs()) {
 						if (object instanceof Text) {
 							jsonArray2.add(this.serialize((Text)object, object.getClass(), jsonSerializationContext));
 						} else {
@@ -373,35 +374,35 @@ public interface Text extends Message, StringVisitable {
 
 					jsonObject.add("with", jsonArray2);
 				}
-			} else if (lv instanceof ScoreText scoreText) {
+			} else if (textContent instanceof ScoreTextContent scoreTextContent) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.addProperty("name", scoreText.getName());
-				jsonObject2.addProperty("objective", scoreText.getObjective());
+				jsonObject2.addProperty("name", scoreTextContent.getName());
+				jsonObject2.addProperty("objective", scoreTextContent.getObjective());
 				jsonObject.add("score", jsonObject2);
-			} else if (lv instanceof SelectorText selectorText) {
-				jsonObject.addProperty("selector", selectorText.getPattern());
-				this.addSeparator(jsonSerializationContext, jsonObject, selectorText.getSeparator());
-			} else if (lv instanceof KeybindText keybindText) {
-				jsonObject.addProperty("keybind", keybindText.getKey());
+			} else if (textContent instanceof SelectorTextContent selectorTextContent) {
+				jsonObject.addProperty("selector", selectorTextContent.getPattern());
+				this.addSeparator(jsonSerializationContext, jsonObject, selectorTextContent.getSeparator());
+			} else if (textContent instanceof KeybindTextContent keybindTextContent) {
+				jsonObject.addProperty("keybind", keybindTextContent.getKey());
 			} else {
-				if (!(lv instanceof NbtText nbtText)) {
-					throw new IllegalArgumentException("Don't know how to serialize " + lv + " as a Component");
+				if (!(textContent instanceof NbtTextContent nbtTextContent)) {
+					throw new IllegalArgumentException("Don't know how to serialize " + textContent + " as a Component");
 				}
 
-				jsonObject.addProperty("nbt", nbtText.getPath());
-				jsonObject.addProperty("interpret", nbtText.shouldInterpret());
-				this.addSeparator(jsonSerializationContext, jsonObject, nbtText.method_43484());
-				class_7419 lv2 = nbtText.method_43485();
-				if (lv2 instanceof BlockNbtText blockNbtText) {
-					jsonObject.addProperty("block", blockNbtText.rawPos());
-				} else if (lv2 instanceof EntityNbtText entityNbtText) {
-					jsonObject.addProperty("entity", entityNbtText.rawSelector());
+				jsonObject.addProperty("nbt", nbtTextContent.getPath());
+				jsonObject.addProperty("interpret", nbtTextContent.shouldInterpret());
+				this.addSeparator(jsonSerializationContext, jsonObject, nbtTextContent.getSeparator());
+				NbtDataSource nbtDataSource = nbtTextContent.getDataSource();
+				if (nbtDataSource instanceof BlockNbtDataSource blockNbtDataSource) {
+					jsonObject.addProperty("block", blockNbtDataSource.rawPos());
+				} else if (nbtDataSource instanceof EntityNbtDataSource entityNbtDataSource) {
+					jsonObject.addProperty("entity", entityNbtDataSource.rawSelector());
 				} else {
-					if (!(lv2 instanceof StorageNbtText storageNbtText)) {
-						throw new IllegalArgumentException("Don't know how to serialize " + lv + " as a Component");
+					if (!(nbtDataSource instanceof StorageNbtDataSource storageNbtDataSource)) {
+						throw new IllegalArgumentException("Don't know how to serialize " + textContent + " as a Component");
 					}
 
-					jsonObject.addProperty("storage", storageNbtText.id().toString());
+					jsonObject.addProperty("storage", storageNbtDataSource.id().toString());
 				}
 			}
 

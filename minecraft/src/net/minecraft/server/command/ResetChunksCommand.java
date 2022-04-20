@@ -157,7 +157,7 @@ public class ResetChunksCommand {
 		LOGGER.debug("blockChanged took " + (System.currentTimeMillis() - w) + " ms");
 		long q = System.currentTimeMillis() - o;
 		source.sendFeedback(
-			Text.method_43470(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", p, q, p, (float)q / (float)p)), true
+			Text.literal(String.format("%d chunks have been reset. This took %d ms for %d chunks, or %02f ms per chunk", p, q, p, (float)q / (float)p)), true
 		);
 		return 1;
 	}

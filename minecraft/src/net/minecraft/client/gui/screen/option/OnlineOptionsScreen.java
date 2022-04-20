@@ -15,7 +15,7 @@ public class OnlineOptionsScreen extends SimpleOptionsScreen {
 		super(
 			parent,
 			gameOptions,
-			Text.method_43471("options.online.title"),
+			Text.translatable("options.online.title"),
 			new SimpleOption[]{gameOptions.getRealmsNotifications(), gameOptions.getAllowServerListing()}
 		);
 	}

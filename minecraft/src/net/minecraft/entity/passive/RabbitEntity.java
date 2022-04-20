@@ -348,7 +348,7 @@ public class RabbitEntity extends AnimalEntity {
 			this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
 			this.targetSelector.add(2, new ActiveTargetGoal(this, WolfEntity.class, true));
 			if (!this.hasCustomName()) {
-				this.setCustomName(Text.method_43471(Util.createTranslationKey("entity", KILLER_BUNNY)));
+				this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		}
 

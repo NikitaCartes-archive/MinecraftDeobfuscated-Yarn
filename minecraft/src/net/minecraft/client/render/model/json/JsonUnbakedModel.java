@@ -201,14 +201,14 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 		}
 
-		this.overrides.forEach(modelOverride -> {
-			UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
+		this.overrides.forEach(override -> {
+			UnbakedModel unbakedModelx = (UnbakedModel)unbakedModelGetter.apply(override.getModelId());
 			if (!Objects.equals(unbakedModelx, this)) {
 				set2.addAll(unbakedModelx.getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences));
 			}
 		});
 		if (this.getRootModel() == ModelLoader.GENERATION_MARKER) {
-			ItemModelGenerator.LAYERS.forEach(string -> set2.add(this.resolveSprite(string)));
+			ItemModelGenerator.LAYERS.forEach(layer -> set2.add(this.resolveSprite(layer)));
 		}
 
 		return set2;
@@ -448,8 +448,8 @@ public class JsonUnbakedModel implements UnbakedModel {
 	 */
 	@Environment(EnvType.CLIENT)
 	public static class UncheckedModelException extends RuntimeException {
-		public UncheckedModelException(String string) {
-			super(string);
+		public UncheckedModelException(String message) {
+			super(message);
 		}
 	}
 }

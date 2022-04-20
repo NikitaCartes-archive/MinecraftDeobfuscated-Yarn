@@ -98,7 +98,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 					if (chestBlockEntity.hasCustomName()) {
 						return chestBlockEntity.getDisplayName();
 					} else {
-						return (Text)(chestBlockEntity2.hasCustomName() ? chestBlockEntity2.getDisplayName() : Text.method_43471("container.chestDouble"));
+						return (Text)(chestBlockEntity2.hasCustomName() ? chestBlockEntity2.getDisplayName() : Text.translatable("container.chestDouble"));
 					}
 				}
 			});
@@ -327,7 +327,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	}
 
 	public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {
-		return hasBlockOnTop(world, pos) || hasOcelotOnTop(world, pos);
+		return hasBlockOnTop(world, pos) || hasCatOnTop(world, pos);
 	}
 
 	private static boolean hasBlockOnTop(BlockView world, BlockPos pos) {
@@ -335,7 +335,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 		return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
 	}
 
-	private static boolean hasOcelotOnTop(WorldAccess world, BlockPos pos) {
+	private static boolean hasCatOnTop(WorldAccess world, BlockPos pos) {
 		List<CatEntity> list = world.getNonSpectatingEntities(
 			CatEntity.class,
 			new Box((double)pos.getX(), (double)(pos.getY() + 1), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 2), (double)(pos.getZ() + 1))

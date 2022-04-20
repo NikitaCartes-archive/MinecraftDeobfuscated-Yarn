@@ -13,11 +13,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecartEntity> {
-	private final BlockRenderManager blockRenderManager;
+	private final BlockRenderManager tntBlockRenderManager;
 
 	public TntMinecartEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, EntityModelLayers.TNT_MINECART);
-		this.blockRenderManager = context.getBlockRenderManager();
+		this.tntBlockRenderManager = context.getBlockRenderManager();
 	}
 
 	protected void renderBlock(
@@ -33,7 +33,7 @@ public class TntMinecartEntityRenderer extends MinecartEntityRenderer<TntMinecar
 			matrixStack.scale(h, h, h);
 		}
 
-		renderFlashingBlock(this.blockRenderManager, blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
+		renderFlashingBlock(this.tntBlockRenderManager, blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
 	}
 
 	/**

@@ -10,12 +10,11 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
-import net.minecraft.class_7417;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
-public class TranslatableText implements class_7417 {
+public class TranslatableTextContent implements TextContent {
 	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
 	private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
 	private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
@@ -26,12 +25,12 @@ public class TranslatableText implements class_7417 {
 	private List<StringVisitable> translations = ImmutableList.of();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
-	public TranslatableText(String key) {
+	public TranslatableTextContent(String key) {
 		this.key = key;
 		this.args = EMPTY_ARGUMENTS;
 	}
 
-	public TranslatableText(String key, Object... args) {
+	public TranslatableTextContent(String key, Object... args) {
 		this.key = key;
 		this.args = args;
 	}
@@ -117,11 +116,11 @@ public class TranslatableText implements class_7417 {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+	public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
 		this.updateTranslations();
 
 		for (StringVisitable stringVisitable : this.translations) {
-			Optional<T> optional = stringVisitable.visit(styledVisitor, style);
+			Optional<T> optional = stringVisitable.visit(visitor, style);
 			if (optional.isPresent()) {
 				return optional;
 			}
@@ -131,7 +130,7 @@ public class TranslatableText implements class_7417 {
 	}
 
 	@Override
-	public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+	public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
 		this.updateTranslations();
 
 		for (StringVisitable stringVisitable : this.translations) {
@@ -145,26 +144,28 @@ public class TranslatableText implements class_7417 {
 	}
 
 	@Override
-	public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+	public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		Object[] objects = new Object[this.args.length];
 
-		for (int j = 0; j < objects.length; j++) {
-			Object object = this.args[j];
+		for (int i = 0; i < objects.length; i++) {
+			Object object = this.args[i];
 			if (object instanceof Text) {
-				objects[j] = Texts.parse(serverCommandSource, (Text)object, entity, i);
+				objects[i] = Texts.parse(source, (Text)object, sender, depth);
 			} else {
-				objects[j] = object;
+				objects[i] = object;
 			}
 		}
 
-		return MutableText.method_43477(new TranslatableText(this.key, objects));
+		return MutableText.of(new TranslatableTextContent(this.key, objects));
 	}
 
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;
 		} else {
-			if (object instanceof TranslatableText translatableText && this.key.equals(translatableText.key) && Arrays.equals(this.args, translatableText.args)) {
+			if (object instanceof TranslatableTextContent translatableTextContent
+				&& this.key.equals(translatableTextContent.key)
+				&& Arrays.equals(this.args, translatableTextContent.args)) {
 				return true;
 			}
 

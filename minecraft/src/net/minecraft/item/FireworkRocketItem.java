@@ -85,7 +85,7 @@ public class FireworkRocketItem extends Item {
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("Flight", NbtElement.NUMBER_TYPE)) {
 				tooltip.add(
-					Text.method_43471("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
+					Text.translatable("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
 				);
 			}
 
@@ -97,7 +97,7 @@ public class FireworkRocketItem extends Item {
 					FireworkStarItem.appendFireworkTooltip(nbtCompound2, list);
 					if (!list.isEmpty()) {
 						for (int j = 1; j < list.size(); j++) {
-							list.set(j, Text.method_43470("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
+							list.set(j, Text.literal("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
 						}
 
 						tooltip.addAll(list);

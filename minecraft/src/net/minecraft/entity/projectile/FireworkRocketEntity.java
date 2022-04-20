@@ -52,7 +52,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			i += stack.getOrCreateSubNbt("Fireworks").getByte("Flight");
 		}
 
-		this.setVelocity(this.random.method_43385(0.0, 0.002297), 0.05, this.random.method_43385(0.0, 0.002297));
+		this.setVelocity(this.random.nextPredictable(0.0, 0.002297), 0.05, this.random.nextPredictable(0.0, 0.002297));
 		this.lifeTime = 10 * i + this.random.nextInt(6) + this.random.nextInt(7);
 	}
 

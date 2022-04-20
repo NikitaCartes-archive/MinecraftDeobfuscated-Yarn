@@ -27,8 +27,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.GRASS_BLOCK,
-				Text.method_43471("advancements.story.root.title"),
-				Text.method_43471("advancements.story.root.description"),
+				Text.translatable("advancements.story.root.title"),
+				Text.translatable("advancements.story.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/stone.png"),
 				AdvancementFrame.TASK,
 				false,
@@ -41,8 +41,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement)
 			.display(
 				Items.WOODEN_PICKAXE,
-				Text.method_43471("advancements.story.mine_stone.title"),
-				Text.method_43471("advancements.story.mine_stone.description"),
+				Text.translatable("advancements.story.mine_stone.title"),
+				Text.translatable("advancements.story.mine_stone.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -55,8 +55,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement2)
 			.display(
 				Items.STONE_PICKAXE,
-				Text.method_43471("advancements.story.upgrade_tools.title"),
-				Text.method_43471("advancements.story.upgrade_tools.description"),
+				Text.translatable("advancements.story.upgrade_tools.title"),
+				Text.translatable("advancements.story.upgrade_tools.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -69,8 +69,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement3)
 			.display(
 				Items.IRON_INGOT,
-				Text.method_43471("advancements.story.smelt_iron.title"),
-				Text.method_43471("advancements.story.smelt_iron.description"),
+				Text.translatable("advancements.story.smelt_iron.title"),
+				Text.translatable("advancements.story.smelt_iron.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -83,8 +83,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.IRON_PICKAXE,
-				Text.method_43471("advancements.story.iron_tools.title"),
-				Text.method_43471("advancements.story.iron_tools.description"),
+				Text.translatable("advancements.story.iron_tools.title"),
+				Text.translatable("advancements.story.iron_tools.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -97,8 +97,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement5)
 			.display(
 				Items.DIAMOND,
-				Text.method_43471("advancements.story.mine_diamond.title"),
-				Text.method_43471("advancements.story.mine_diamond.description"),
+				Text.translatable("advancements.story.mine_diamond.title"),
+				Text.translatable("advancements.story.mine_diamond.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -111,8 +111,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.LAVA_BUCKET,
-				Text.method_43471("advancements.story.lava_bucket.title"),
-				Text.method_43471("advancements.story.lava_bucket.description"),
+				Text.translatable("advancements.story.lava_bucket.title"),
+				Text.translatable("advancements.story.lava_bucket.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -125,8 +125,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement4)
 			.display(
 				Items.IRON_CHESTPLATE,
-				Text.method_43471("advancements.story.obtain_armor.title"),
-				Text.method_43471("advancements.story.obtain_armor.description"),
+				Text.translatable("advancements.story.obtain_armor.title"),
+				Text.translatable("advancements.story.obtain_armor.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -143,8 +143,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement6)
 			.display(
 				Items.ENCHANTED_BOOK,
-				Text.method_43471("advancements.story.enchant_item.title"),
-				Text.method_43471("advancements.story.enchant_item.description"),
+				Text.translatable("advancements.story.enchant_item.title"),
+				Text.translatable("advancements.story.enchant_item.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -157,8 +157,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement7)
 			.display(
 				Blocks.OBSIDIAN,
-				Text.method_43471("advancements.story.form_obsidian.title"),
-				Text.method_43471("advancements.story.form_obsidian.description"),
+				Text.translatable("advancements.story.form_obsidian.title"),
+				Text.translatable("advancements.story.form_obsidian.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -171,8 +171,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement8)
 			.display(
 				Items.SHIELD,
-				Text.method_43471("advancements.story.deflect_arrow.title"),
-				Text.method_43471("advancements.story.deflect_arrow.description"),
+				Text.translatable("advancements.story.deflect_arrow.title"),
+				Text.translatable("advancements.story.deflect_arrow.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -188,8 +188,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement6)
 			.display(
 				Items.DIAMOND_CHESTPLATE,
-				Text.method_43471("advancements.story.shiny_gear.title"),
-				Text.method_43471("advancements.story.shiny_gear.description"),
+				Text.translatable("advancements.story.shiny_gear.title"),
+				Text.translatable("advancements.story.shiny_gear.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -206,8 +206,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement9)
 			.display(
 				Items.FLINT_AND_STEEL,
-				Text.method_43471("advancements.story.enter_the_nether.title"),
-				Text.method_43471("advancements.story.enter_the_nether.description"),
+				Text.translatable("advancements.story.enter_the_nether.title"),
+				Text.translatable("advancements.story.enter_the_nether.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -220,8 +220,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement10)
 			.display(
 				Items.GOLDEN_APPLE,
-				Text.method_43471("advancements.story.cure_zombie_villager.title"),
-				Text.method_43471("advancements.story.cure_zombie_villager.description"),
+				Text.translatable("advancements.story.cure_zombie_villager.title"),
+				Text.translatable("advancements.story.cure_zombie_villager.description"),
 				null,
 				AdvancementFrame.GOAL,
 				true,
@@ -234,8 +234,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement10)
 			.display(
 				Items.ENDER_EYE,
-				Text.method_43471("advancements.story.follow_ender_eye.title"),
-				Text.method_43471("advancements.story.follow_ender_eye.description"),
+				Text.translatable("advancements.story.follow_ender_eye.title"),
+				Text.translatable("advancements.story.follow_ender_eye.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -248,8 +248,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advanceme
 			.parent(advancement11)
 			.display(
 				Blocks.END_STONE,
-				Text.method_43471("advancements.story.enter_the_end.title"),
-				Text.method_43471("advancements.story.enter_the_end.description"),
+				Text.translatable("advancements.story.enter_the_end.title"),
+				Text.translatable("advancements.story.enter_the_end.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,

@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
-	private static final Text TEXT = Text.method_43471("multiplayer.downloadingTerrain");
+	private static final Text TEXT = Text.translatable("multiplayer.downloadingTerrain");
 	private static final long MIN_LOAD_TIME_MS = 2000L;
 	private boolean ready = false;
 	private boolean closeOnNextTick = false;

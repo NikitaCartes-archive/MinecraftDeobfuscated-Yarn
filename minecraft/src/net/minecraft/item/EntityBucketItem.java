@@ -64,15 +64,15 @@ public class EntityBucketItem extends BucketItem {
 
 				for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; j++) {
 					if (i == TropicalFishEntity.COMMON_VARIANTS[j]) {
-						tooltip.add(Text.method_43471(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
+						tooltip.add(Text.translatable(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
 						return;
 					}
 				}
 
-				tooltip.add(Text.method_43471(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
-				MutableText mutableText = Text.method_43471(string);
+				tooltip.add(Text.translatable(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+				MutableText mutableText = Text.translatable(string);
 				if (!string.equals(string2)) {
-					mutableText.append(", ").append(Text.method_43471(string2));
+					mutableText.append(", ").append(Text.translatable(string2));
 				}
 
 				mutableText.formatted(formattings);

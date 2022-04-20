@@ -575,8 +575,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						if (!future.isSuccess()) {
 							int i = 256;
 							String string = text.asTruncatedString(256);
-							Text text2 = Text.method_43469("death.attack.message_too_long", Text.method_43470(string).formatted(Formatting.YELLOW));
-							Text text3 = Text.method_43469("death.attack.even_more_magic", this.getDisplayName())
+							Text text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
+							Text text3 = Text.translatable("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 							this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text3));
 						}
@@ -591,7 +591,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), ScreenTexts.field_39003));
+			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), ScreenTexts.EMPTY));
 		}
 
 		this.dropShoulderEntities();
@@ -876,7 +876,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 					Criteria.SLEPT_IN_BED.trigger(this);
 				});
 				if (!this.getWorld().isSleepingEnabled()) {
-					this.sendMessage(Text.method_43471("sleep.not_possible"), true);
+					this.sendMessage(Text.translatable("sleep.not_possible"), true);
 				}
 
 				((ServerWorld)this.world).updateSleepingPlayers();
@@ -997,7 +997,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			ScreenHandler screenHandler = factory.createMenu(this.screenHandlerSyncId, this.getInventory(), this);
 			if (screenHandler == null) {
 				if (this.isSpectator()) {
-					this.sendMessage(Text.method_43471("container.spectatorCantOpen").formatted(Formatting.RED), true);
+					this.sendMessage(Text.translatable("container.spectatorCantOpen").formatted(Formatting.RED), true);
 				}
 
 				return OptionalInt.empty();
@@ -1304,10 +1304,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 						if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
 							int i = 256;
 							String string = message.asTruncatedString(256);
-							Text text2 = Text.method_43470(string).formatted(Formatting.YELLOW);
+							Text text2 = Text.literal(string).formatted(Formatting.YELLOW);
 							this.networkHandler
 								.sendPacket(
-									new GameMessageS2CPacket(Text.method_43469("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
+									new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
 								);
 						}
 					}
@@ -1501,7 +1501,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (pos != null) {
 			boolean bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
 			if (sendMessage && !bl) {
-				this.sendSystemMessage(Text.method_43471("block.minecraft.set_spawn"), Util.NIL_UUID);
+				this.sendSystemMessage(Text.translatable("block.minecraft.set_spawn"), Util.NIL_UUID);
 			}
 
 			this.spawnPointPosition = pos;

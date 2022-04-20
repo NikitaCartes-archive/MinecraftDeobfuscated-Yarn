@@ -15,31 +15,31 @@ import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderCommand {
 	private static final SimpleCommandExceptionType CENTER_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.center.failed")
+		Text.translatable("commands.worldborder.center.failed")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_NO_CHANGE_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.set.failed.nochange")
+		Text.translatable("commands.worldborder.set.failed.nochange")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_SMALL_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.set.failed.small")
+		Text.translatable("commands.worldborder.set.failed.small")
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_BIG_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43469("commands.worldborder.set.failed.big", 5.999997E7F)
+		Text.translatable("commands.worldborder.set.failed.big", 5.999997E7F)
 	);
 	private static final SimpleCommandExceptionType SET_FAILED_FAR_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43469("commands.worldborder.set.failed.far", 2.9999984E7)
+		Text.translatable("commands.worldborder.set.failed.far", 2.9999984E7)
 	);
 	private static final SimpleCommandExceptionType WARNING_TIME_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.warning.time.failed")
+		Text.translatable("commands.worldborder.warning.time.failed")
 	);
 	private static final SimpleCommandExceptionType WARNING_DISTANCE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.warning.distance.failed")
+		Text.translatable("commands.worldborder.warning.distance.failed")
 	);
 	private static final SimpleCommandExceptionType DAMAGE_BUFFER_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.damage.buffer.failed")
+		Text.translatable("commands.worldborder.damage.buffer.failed")
 	);
 	private static final SimpleCommandExceptionType DAMAGE_AMOUNT_FAILED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.worldborder.damage.amount.failed")
+		Text.translatable("commands.worldborder.damage.amount.failed")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -133,7 +133,7 @@ public class WorldBorderCommand {
 			throw DAMAGE_BUFFER_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setSafeZone((double)distance);
-			source.sendFeedback(Text.method_43469("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", distance)), true);
+			source.sendFeedback(Text.translatable("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", distance)), true);
 			return (int)distance;
 		}
 	}
@@ -144,7 +144,7 @@ public class WorldBorderCommand {
 			throw DAMAGE_AMOUNT_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setDamagePerBlock((double)damagePerBlock);
-			source.sendFeedback(Text.method_43469("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", damagePerBlock)), true);
+			source.sendFeedback(Text.translatable("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", damagePerBlock)), true);
 			return (int)damagePerBlock;
 		}
 	}
@@ -155,7 +155,7 @@ public class WorldBorderCommand {
 			throw WARNING_TIME_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setWarningTime(time);
-			source.sendFeedback(Text.method_43469("commands.worldborder.warning.time.success", time), true);
+			source.sendFeedback(Text.translatable("commands.worldborder.warning.time.success", time), true);
 			return time;
 		}
 	}
@@ -166,14 +166,14 @@ public class WorldBorderCommand {
 			throw WARNING_DISTANCE_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setWarningBlocks(distance);
-			source.sendFeedback(Text.method_43469("commands.worldborder.warning.distance.success", distance), true);
+			source.sendFeedback(Text.translatable("commands.worldborder.warning.distance.success", distance), true);
 			return distance;
 		}
 	}
 
 	private static int executeGet(ServerCommandSource source) {
 		double d = source.getServer().getOverworld().getWorldBorder().getSize();
-		source.sendFeedback(Text.method_43469("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
+		source.sendFeedback(Text.translatable("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
 		return MathHelper.floor(d + 0.5);
 	}
 
@@ -183,7 +183,7 @@ public class WorldBorderCommand {
 			throw CENTER_FAILED_EXCEPTION.create();
 		} else if (!((double)Math.abs(pos.x) > 2.9999984E7) && !((double)Math.abs(pos.y) > 2.9999984E7)) {
 			worldBorder.setCenter((double)pos.x, (double)pos.y);
-			source.sendFeedback(Text.method_43469("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", pos.x), String.format("%.2f", pos.y)), true);
+			source.sendFeedback(Text.translatable("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", pos.x), String.format("%.2f", pos.y)), true);
 			return 0;
 		} else {
 			throw SET_FAILED_FAR_EXCEPTION.create();
@@ -203,13 +203,13 @@ public class WorldBorderCommand {
 			if (time > 0L) {
 				worldBorder.interpolateSize(d, distance, time);
 				if (distance > d) {
-					source.sendFeedback(Text.method_43469("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
+					source.sendFeedback(Text.translatable("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
 				} else {
-					source.sendFeedback(Text.method_43469("commands.worldborder.set.shrink", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
+					source.sendFeedback(Text.translatable("commands.worldborder.set.shrink", String.format(Locale.ROOT, "%.1f", distance), Long.toString(time / 1000L)), true);
 				}
 			} else {
 				worldBorder.setSize(distance);
-				source.sendFeedback(Text.method_43469("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", distance)), true);
+				source.sendFeedback(Text.translatable("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", distance)), true);
 			}
 
 			return (int)(distance - d);

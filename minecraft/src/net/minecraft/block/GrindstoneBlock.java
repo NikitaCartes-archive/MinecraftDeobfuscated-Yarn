@@ -88,7 +88,7 @@ public class GrindstoneBlock extends WallMountedBlock {
 	public static final VoxelShape SOUTH_CEILING_SIDE = VoxelShapes.union(SOUTH_CEILING_LEG, SOUTH_CEILING_HINGE);
 	public static final VoxelShape X_CEILING_SIDES = VoxelShapes.union(NORTH_CEILING_SIDE, SOUTH_CEILING_SIDE);
 	public static final VoxelShape X_CEILING_SHAPE = VoxelShapes.union(X_CEILING_SIDES, Block.createCuboidShape(2.0, 0.0, 4.0, 14.0, 12.0, 12.0));
-	private static final Text TITLE = Text.method_43471("container.grindstone_title");
+	private static final Text TITLE = Text.translatable("container.grindstone_title");
 
 	protected GrindstoneBlock(AbstractBlock.Settings settings) {
 		super(settings);

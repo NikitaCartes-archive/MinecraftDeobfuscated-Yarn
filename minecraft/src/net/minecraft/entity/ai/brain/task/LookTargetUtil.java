@@ -83,18 +83,18 @@ public class LookTargetUtil {
 
 	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation) {
 		Vec3d vec3d = new Vec3d(0.3F, 0.3F, 0.3F);
-		method_43392(entity, stack, targetLocation, vec3d, 0.3F);
+		give(entity, stack, targetLocation, vec3d, 0.3F);
 	}
 
-	public static void method_43392(LivingEntity livingEntity, ItemStack itemStack, Vec3d vec3d, Vec3d vec3d2, float f) {
-		double d = livingEntity.getEyeY() - (double)f;
-		ItemEntity itemEntity = new ItemEntity(livingEntity.world, livingEntity.getX(), d, livingEntity.getZ(), itemStack);
-		itemEntity.setThrower(livingEntity.getUuid());
-		Vec3d vec3d3 = vec3d.subtract(livingEntity.getPos());
-		vec3d3 = vec3d3.normalize().multiply(vec3d2.x, vec3d2.y, vec3d2.z);
-		itemEntity.setVelocity(vec3d3);
+	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation, Vec3d velocityFactor, float yOffset) {
+		double d = entity.getEyeY() - (double)yOffset;
+		ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
+		itemEntity.setThrower(entity.getUuid());
+		Vec3d vec3d = targetLocation.subtract(entity.getPos());
+		vec3d = vec3d.normalize().multiply(velocityFactor.x, velocityFactor.y, velocityFactor.z);
+		itemEntity.setVelocity(vec3d);
 		itemEntity.setToDefaultPickupDelay();
-		livingEntity.world.spawnEntity(itemEntity);
+		entity.world.spawnEntity(itemEntity);
 	}
 
 	public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {

@@ -89,7 +89,7 @@ public class WardenBrain {
 		}
 	};
 
-	public static void tick(WardenEntity warden) {
+	public static void updateActivities(WardenEntity warden) {
 		warden.getBrain()
 			.resetPossibleActivities(ImmutableList.of(Activity.EMERGE, Activity.DIG, Activity.ROAR, Activity.FIGHT, Activity.INVESTIGATE, Activity.SNIFF, Activity.IDLE));
 	}

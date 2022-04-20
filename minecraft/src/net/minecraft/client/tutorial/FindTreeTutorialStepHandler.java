@@ -20,8 +20,8 @@ import net.minecraft.util.registry.RegistryEntry;
 @Environment(EnvType.CLIENT)
 public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 6000;
-	private static final Text TITLE = Text.method_43471("tutorial.find_tree.title");
-	private static final Text DESCRIPTION = Text.method_43471("tutorial.find_tree.description");
+	private static final Text TITLE = Text.translatable("tutorial.find_tree.title");
+	private static final Text DESCRIPTION = Text.translatable("tutorial.find_tree.description");
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

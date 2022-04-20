@@ -30,7 +30,7 @@ public class OptionsScreen extends Screen {
 	private LockButtonWidget lockDifficultyButton;
 
 	public OptionsScreen(Screen parent, GameOptions gameOptions) {
-		super(Text.method_43471("options.title"));
+		super(Text.translatable("options.title"));
 		this.parent = parent;
 		this.settings = gameOptions;
 	}
@@ -58,8 +58,8 @@ public class OptionsScreen extends Screen {
 								.setScreen(
 									new ConfirmScreen(
 										this::lockDifficulty,
-										Text.method_43471("difficulty.lock.title"),
-										Text.method_43469("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())
+										Text.translatable("difficulty.lock.title"),
+										Text.translatable("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())
 									)
 								)
 					)
@@ -77,7 +77,7 @@ public class OptionsScreen extends Screen {
 					this.height / 6 - 12 + 24 * (i >> 1),
 					150,
 					20,
-					Text.method_43471("options.online"),
+					Text.translatable("options.online"),
 					button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))
 				)
 			);
@@ -89,7 +89,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 48 - 6,
 				150,
 				20,
-				Text.method_43471("options.skinCustomisation"),
+				Text.translatable("options.skinCustomisation"),
 				button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))
 			)
 		);
@@ -99,7 +99,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 48 - 6,
 				150,
 				20,
-				Text.method_43471("options.sounds"),
+				Text.translatable("options.sounds"),
 				button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))
 			)
 		);
@@ -109,7 +109,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 72 - 6,
 				150,
 				20,
-				Text.method_43471("options.video"),
+				Text.translatable("options.video"),
 				button -> this.client.setScreen(new VideoOptionsScreen(this, this.settings))
 			)
 		);
@@ -119,7 +119,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 72 - 6,
 				150,
 				20,
-				Text.method_43471("options.controls"),
+				Text.translatable("options.controls"),
 				button -> this.client.setScreen(new ControlsOptionsScreen(this, this.settings))
 			)
 		);
@@ -129,7 +129,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 96 - 6,
 				150,
 				20,
-				Text.method_43471("options.language"),
+				Text.translatable("options.language"),
 				button -> this.client.setScreen(new LanguageOptionsScreen(this, this.settings, this.client.getLanguageManager()))
 			)
 		);
@@ -139,7 +139,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 96 - 6,
 				150,
 				20,
-				Text.method_43471("options.chat.title"),
+				Text.translatable("options.chat.title"),
 				button -> this.client.setScreen(new ChatOptionsScreen(this, this.settings))
 			)
 		);
@@ -149,11 +149,11 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 120 - 6,
 				150,
 				20,
-				Text.method_43471("options.resourcepack"),
+				Text.translatable("options.resourcepack"),
 				button -> this.client
 						.setScreen(
 							new PackScreen(
-								this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.method_43471("resourcePack.title")
+								this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title")
 							)
 						)
 			)
@@ -164,7 +164,7 @@ public class OptionsScreen extends Screen {
 				this.height / 6 + 120 - 6,
 				150,
 				20,
-				Text.method_43471("options.accessibility.title"),
+				Text.translatable("options.accessibility.title"),
 				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.settings))
 			)
 		);
@@ -182,7 +182,7 @@ public class OptionsScreen extends Screen {
 				height / 6 - 12 + 24 * (buttonIndex >> 1),
 				150,
 				20,
-				Text.method_43471(translationKey),
+				Text.translatable(translationKey),
 				(button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
 			);
 	}

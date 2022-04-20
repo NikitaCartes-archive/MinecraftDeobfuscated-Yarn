@@ -36,7 +36,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public PathNode getStart() {
-		return this.method_43415(
+		return this.getStart(
 			new BlockPos(
 				MathHelper.floor(this.entity.getBoundingBox().minX),
 				MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
@@ -65,11 +65,11 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
 		PathNode pathNode = this.getPathNode(node.x, node.y + 1, node.z, Math.max(0, j - 1), d, Direction.UP, pathNodeType2);
 		PathNode pathNode2 = this.getPathNode(node.x, node.y - 1, node.z, j, d, Direction.DOWN, pathNodeType2);
-		if (this.method_43413(pathNode, node)) {
+		if (this.isValidAquaticAdjacentSuccessor(pathNode, node)) {
 			successors[i++] = pathNode;
 		}
 
-		if (this.method_43413(pathNode2, node) && pathNodeType2 != PathNodeType.TRAPDOOR) {
+		if (this.isValidAquaticAdjacentSuccessor(pathNode2, node) && pathNodeType2 != PathNodeType.TRAPDOOR) {
 			successors[i++] = pathNode2;
 		}
 
@@ -83,8 +83,8 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		return i;
 	}
 
-	private boolean method_43413(@Nullable PathNode pathNode, PathNode pathNode2) {
-		return this.isValidAdjacentSuccessor(pathNode, pathNode2) && pathNode.type == PathNodeType.WATER;
+	private boolean isValidAquaticAdjacentSuccessor(@Nullable PathNode node, PathNode successor) {
+		return this.isValidAdjacentSuccessor(node, successor) && node.type == PathNodeType.WATER;
 	}
 
 	@Override

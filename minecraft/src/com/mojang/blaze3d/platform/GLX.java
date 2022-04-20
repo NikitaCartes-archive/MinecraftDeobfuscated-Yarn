@@ -23,6 +23,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -37,7 +38,11 @@ public class GLX {
 		RenderSystem.assertOnRenderThread();
 		return GLFW.glfwGetCurrentContext() == 0L
 			? "NO CONTEXT"
-			: GlStateManager._getString(7937) + " GL version " + GlStateManager._getString(7938) + ", " + GlStateManager._getString(7936);
+			: GlStateManager._getString(GL11.GL_RENDERER)
+				+ " GL version "
+				+ GlStateManager._getString(GL11.GL_VERSION)
+				+ ", "
+				+ GlStateManager._getString(GL11.GL_VENDOR);
 	}
 
 	public static int _getRefreshRate(Window window) {
@@ -58,11 +63,11 @@ public class GLX {
 
 	public static LongSupplier _initGlfw() {
 		RenderSystem.assertInInitPhase();
-		Window.acceptError((integer, stringx) -> {
-			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, stringx));
+		Window.acceptError((code, message) -> {
+			throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", code, message));
 		});
 		List<String> list = Lists.<String>newArrayList();
-		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback((i, l) -> list.add(String.format("GLFW error during init: [0x%X]%s", i, l)));
+		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback((code, pointer) -> list.add(String.format("GLFW error during init: [0x%X]%s", code, pointer)));
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Failed to initialize GLFW, errors: " + Joiner.on(",").join(list));
 		} else {

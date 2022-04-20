@@ -28,8 +28,8 @@ public class SignBlockEntity extends BlockEntity {
 	public static final int field_31362 = 4;
 	private static final String[] TEXT_KEYS = new String[]{"Text1", "Text2", "Text3", "Text4"};
 	private static final String[] FILTERED_TEXT_KEYS = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
-	private final Text[] texts = new Text[]{ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003};
-	private final Text[] filteredTexts = new Text[]{ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003, ScreenTexts.field_39003};
+	private final Text[] texts = new Text[]{ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY};
+	private final Text[] filteredTexts = new Text[]{ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY, ScreenTexts.EMPTY};
 	private boolean editable = true;
 	@Nullable
 	private UUID editor;
@@ -104,7 +104,7 @@ public class SignBlockEntity extends BlockEntity {
 		} catch (Exception var3) {
 		}
 
-		return ScreenTexts.field_39003;
+		return ScreenTexts.EMPTY;
 	}
 
 	public Text getTextOnRow(int row, boolean filtered) {
@@ -186,7 +186,7 @@ public class SignBlockEntity extends BlockEntity {
 
 	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity player) {
 		String string = player == null ? "Sign" : player.getName().getString();
-		Text text = (Text)(player == null ? Text.method_43470("Sign") : player.getDisplayName());
+		Text text = (Text)(player == null ? Text.literal("Sign") : player.getDisplayName());
 		return new ServerCommandSource(
 			CommandOutput.DUMMY, Vec3d.ofCenter(this.pos), Vec2f.ZERO, (ServerWorld)this.world, 2, string, text, this.world.getServer(), player
 		);

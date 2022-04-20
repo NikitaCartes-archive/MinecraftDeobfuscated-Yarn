@@ -22,8 +22,8 @@ public class AndMultipartModelSelector implements MultipartModelSelector {
 	@Override
 	public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> stateManager) {
 		List<Predicate<BlockState>> list = (List<Predicate<BlockState>>)Streams.stream(this.selectors)
-			.map(multipartModelSelector -> multipartModelSelector.getPredicate(stateManager))
+			.map(selector -> selector.getPredicate(stateManager))
 			.collect(Collectors.toList());
-		return blockState -> list.stream().allMatch(predicate -> predicate.test(blockState));
+		return state -> list.stream().allMatch(predicate -> predicate.test(state));
 	}
 }

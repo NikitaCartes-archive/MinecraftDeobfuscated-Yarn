@@ -1,6 +1,7 @@
 package net.minecraft.client.gl;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -19,37 +20,37 @@ public class WindowFramebuffer extends Framebuffer {
 		super(true);
 		RenderSystem.assertOnRenderThreadOrInit();
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> this.initSize(width, height));
+			RenderSystem.recordRenderCall(() -> this.init(width, height));
 		} else {
-			this.initSize(width, height);
+			this.init(width, height);
 		}
 	}
 
-	private void initSize(int width, int height) {
+	private void init(int width, int height) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		WindowFramebuffer.Size size = this.findSuitableSize(width, height);
 		this.fbo = GlStateManager.glGenFramebuffers();
-		GlStateManager._glBindFramebuffer(36160, this.fbo);
+		GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, this.fbo);
 		GlStateManager._bindTexture(this.colorAttachment);
-		GlStateManager._texParameter(3553, 10241, 9728);
-		GlStateManager._texParameter(3553, 10240, 9728);
-		GlStateManager._texParameter(3553, 10242, 33071);
-		GlStateManager._texParameter(3553, 10243, 33071);
-		GlStateManager._glFramebufferTexture2D(36160, 36064, 3553, this.colorAttachment, 0);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
+		GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_COLOR_ATTACHMENT0, GlConst.GL_TEXTURE_2D, this.colorAttachment, 0);
 		GlStateManager._bindTexture(this.depthAttachment);
-		GlStateManager._texParameter(3553, 34892, 0);
-		GlStateManager._texParameter(3553, 10241, 9728);
-		GlStateManager._texParameter(3553, 10240, 9728);
-		GlStateManager._texParameter(3553, 10242, 33071);
-		GlStateManager._texParameter(3553, 10243, 33071);
-		GlStateManager._glFramebufferTexture2D(36160, 36096, 3553, this.depthAttachment, 0);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_COMPARE_MODE, 0);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
+		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
+		GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_DEPTH_ATTACHMENT, GlConst.GL_TEXTURE_2D, this.depthAttachment, 0);
 		GlStateManager._bindTexture(0);
 		this.viewportWidth = size.width;
 		this.viewportHeight = size.height;
 		this.textureWidth = size.width;
 		this.textureHeight = size.height;
 		this.checkFramebufferStatus();
-		GlStateManager._glBindFramebuffer(36160, 0);
+		GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
 	}
 
 	private WindowFramebuffer.Size findSuitableSize(int width, int height) {
@@ -60,7 +61,7 @@ public class WindowFramebuffer extends Framebuffer {
 
 		for (WindowFramebuffer.Size size : WindowFramebuffer.Size.findCompatible(width, height)) {
 			attachment = WindowFramebuffer.Attachment.NONE;
-			if (this.supportColor(size)) {
+			if (this.supportsColor(size)) {
 				attachment = attachment.with(WindowFramebuffer.Attachment.COLOR);
 			}
 
@@ -76,20 +77,22 @@ public class WindowFramebuffer extends Framebuffer {
 		throw new RuntimeException("Unrecoverable GL_OUT_OF_MEMORY (allocated attachments = " + attachment.name() + ")");
 	}
 
-	private boolean supportColor(WindowFramebuffer.Size size) {
+	private boolean supportsColor(WindowFramebuffer.Size size) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GlStateManager._getError();
 		GlStateManager._bindTexture(this.colorAttachment);
-		GlStateManager._texImage2D(3553, 0, 32856, size.width, size.height, 0, 6408, 5121, null);
-		return GlStateManager._getError() != 1285;
+		GlStateManager._texImage2D(GlConst.GL_TEXTURE_2D, 0, GlConst.GL_RGBA8, size.width, size.height, 0, GlConst.GL_RGBA, GlConst.GL_UNSIGNED_BYTE, null);
+		return GlStateManager._getError() != GlConst.GL_OUT_OF_MEMORY;
 	}
 
 	private boolean supportsDepth(WindowFramebuffer.Size size) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GlStateManager._getError();
 		GlStateManager._bindTexture(this.depthAttachment);
-		GlStateManager._texImage2D(3553, 0, 6402, size.width, size.height, 0, 6402, 5126, null);
-		return GlStateManager._getError() != 1285;
+		GlStateManager._texImage2D(
+			GlConst.GL_TEXTURE_2D, 0, GlConst.GL_DEPTH_COMPONENT, size.width, size.height, 0, GlConst.GL_DEPTH_COMPONENT, GlConst.GL_FLOAT, null
+		);
+		return GlStateManager._getError() != GlConst.GL_OUT_OF_MEMORY;
 	}
 
 	@Environment(EnvType.CLIENT)

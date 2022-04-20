@@ -48,10 +48,10 @@ public class LootCommand {
 		return CommandSource.suggestIdentifiers(lootManager.getTableIds(), builder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.method_43469("commands.drop.no_held_items", entityName)
+		entityName -> Text.translatable("commands.drop.no_held_items", entityName)
 	);
 	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.method_43469("commands.drop.no_loot_table", entityName)
+		entityName -> Text.translatable("commands.drop.no_loot_table", entityName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -396,18 +396,18 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
-			source.sendFeedback(Text.method_43469("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
+			source.sendFeedback(Text.translatable("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.drop.success.multiple", stacks.size()), false);
+			source.sendFeedback(Text.translatable("commands.drop.success.multiple", stacks.size()), false);
 		}
 	}
 
 	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, Identifier lootTable) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
-			source.sendFeedback(Text.method_43469("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
+			source.sendFeedback(Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
+			source.sendFeedback(Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
 		}
 	}
 

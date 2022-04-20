@@ -51,6 +51,6 @@ public class MeCommand {
 	}
 
 	private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
-		return Text.method_43469("chat.type.emote", context.getSource().getDisplayName(), arg);
+		return Text.translatable("chat.type.emote", context.getSource().getDisplayName(), arg);
 	}
 }

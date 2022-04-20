@@ -191,7 +191,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 		Text text;
 		if (player == null) {
 			string = "Lectern";
-			text = Text.method_43470("Lectern");
+			text = Text.literal("Lectern");
 		} else {
 			string = player.getName().getString();
 			text = player.getDisplayName();
@@ -240,6 +240,6 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 
 	@Override
 	public Text getDisplayName() {
-		return Text.method_43471("container.lectern");
+		return Text.translatable("container.lectern");
 	}
 }

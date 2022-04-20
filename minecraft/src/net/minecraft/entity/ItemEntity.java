@@ -324,7 +324,7 @@ public class ItemEntity extends Entity {
 	@Override
 	public Text getName() {
 		Text text = this.getCustomName();
-		return (Text)(text != null ? text : Text.method_43471(this.getStack().getTranslationKey()));
+		return (Text)(text != null ? text : Text.translatable(this.getStack().getTranslationKey()));
 	}
 
 	@Override

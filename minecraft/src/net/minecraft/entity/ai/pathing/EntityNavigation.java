@@ -346,9 +346,9 @@ public abstract class EntityNavigation {
 		return false;
 	}
 
-	protected static boolean method_43394(MobEntity mobEntity, Vec3d vec3d, Vec3d vec3d2) {
-		Vec3d vec3d3 = new Vec3d(vec3d2.x, vec3d2.y + (double)mobEntity.getHeight() * 0.5, vec3d2.z);
-		return mobEntity.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, mobEntity)).getType()
+	protected static boolean doesNotCollide(MobEntity entity, Vec3d startPos, Vec3d entityPos) {
+		Vec3d vec3d = new Vec3d(entityPos.x, entityPos.y + (double)entity.getHeight() * 0.5, entityPos.z);
+		return entity.world.raycast(new RaycastContext(startPos, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType()
 			== HitResult.Type.MISS;
 	}
 

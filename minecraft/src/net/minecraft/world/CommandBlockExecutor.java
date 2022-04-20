@@ -31,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
  */
 public abstract class CommandBlockExecutor implements CommandOutput {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HH:mm:ss");
-	private static final Text DEFAULT_NAME = Text.method_43470("@");
+	private static final Text DEFAULT_NAME = Text.literal("@");
 	private long lastExecution = -1L;
 	private boolean updateLastExecution = true;
 	private int successCount;
@@ -50,7 +50,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	public Text getLastOutput() {
-		return this.lastOutput == null ? ScreenTexts.field_39003 : this.lastOutput;
+		return this.lastOutput == null ? ScreenTexts.EMPTY : this.lastOutput;
 	}
 
 	public NbtCompound writeNbt(NbtCompound nbt) {
@@ -85,7 +85,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			try {
 				this.lastOutput = Text.Serializer.fromJson(nbt.getString("LastOutput"));
 			} catch (Throwable var3) {
-				this.lastOutput = Text.method_43470(var3.getMessage());
+				this.lastOutput = Text.literal(var3.getMessage());
 			}
 		} else {
 			this.lastOutput = null;
@@ -115,7 +115,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 		if (world.isClient || world.getTime() == this.lastExecution) {
 			return false;
 		} else if ("Searge".equalsIgnoreCase(this.command)) {
-			this.lastOutput = Text.method_43470("#itzlipofutzli");
+			this.lastOutput = Text.literal("#itzlipofutzli");
 			this.successCount = 1;
 			return true;
 		} else {
@@ -164,7 +164,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	@Override
 	public void sendSystemMessage(Text message, UUID sender) {
 		if (this.trackOutput) {
-			this.lastOutput = Text.method_43470("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
+			this.lastOutput = Text.literal("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
 			this.markDirty();
 		}
 	}

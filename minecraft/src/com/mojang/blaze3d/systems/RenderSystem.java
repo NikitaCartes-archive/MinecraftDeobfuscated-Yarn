@@ -2,6 +2,7 @@ package com.mojang.blaze3d.systems;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.logging.LogUtils;
 import java.nio.ByteBuffer;
@@ -34,6 +35,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -52,21 +54,21 @@ public class RenderSystem {
 	private static boolean isInInit;
 	private static double lastDrawTime = Double.MIN_VALUE;
 	private static final RenderSystem.IndexBuffer sharedSequential = new RenderSystem.IndexBuffer(1, 1, IntConsumer::accept);
-	private static final RenderSystem.IndexBuffer sharedSequentialQuad = new RenderSystem.IndexBuffer(4, 6, (intConsumer, i) -> {
-		intConsumer.accept(i + 0);
-		intConsumer.accept(i + 1);
-		intConsumer.accept(i + 2);
-		intConsumer.accept(i + 2);
-		intConsumer.accept(i + 3);
-		intConsumer.accept(i + 0);
+	private static final RenderSystem.IndexBuffer sharedSequentialQuad = new RenderSystem.IndexBuffer(4, 6, (indexConsumer, vertexCount) -> {
+		indexConsumer.accept(vertexCount + 0);
+		indexConsumer.accept(vertexCount + 1);
+		indexConsumer.accept(vertexCount + 2);
+		indexConsumer.accept(vertexCount + 2);
+		indexConsumer.accept(vertexCount + 3);
+		indexConsumer.accept(vertexCount + 0);
 	});
-	private static final RenderSystem.IndexBuffer sharedSequentialLines = new RenderSystem.IndexBuffer(4, 6, (intConsumer, i) -> {
-		intConsumer.accept(i + 0);
-		intConsumer.accept(i + 1);
-		intConsumer.accept(i + 2);
-		intConsumer.accept(i + 3);
-		intConsumer.accept(i + 2);
-		intConsumer.accept(i + 1);
+	private static final RenderSystem.IndexBuffer sharedSequentialLines = new RenderSystem.IndexBuffer(4, 6, (indexConsumer, vertexCount) -> {
+		indexConsumer.accept(vertexCount + 0);
+		indexConsumer.accept(vertexCount + 1);
+		indexConsumer.accept(vertexCount + 2);
+		indexConsumer.accept(vertexCount + 3);
+		indexConsumer.accept(vertexCount + 2);
+		indexConsumer.accept(vertexCount + 1);
 	});
 	private static Matrix3f inverseViewRotationMatrix = new Matrix3f();
 	private static Matrix4f projectionMatrix = new Matrix4f();
@@ -198,10 +200,10 @@ public class RenderSystem {
 		GlStateManager._enableDepthTest();
 	}
 
-	public static void enableScissor(int i, int j, int k, int l) {
+	public static void enableScissor(int x, int y, int width, int height) {
 		assertOnGameThreadOrInit();
 		GlStateManager._enableScissorTest();
-		GlStateManager._scissorBox(i, j, k, l);
+		GlStateManager._scissorBox(x, y, width, height);
 	}
 
 	public static void disableScissor() {
@@ -266,9 +268,9 @@ public class RenderSystem {
 		GlStateManager._disableCull();
 	}
 
-	public static void polygonMode(int i, int j) {
+	public static void polygonMode(int face, int mode) {
 		assertOnRenderThread();
-		GlStateManager._polygonMode(i, j);
+		GlStateManager._polygonMode(face, mode);
 	}
 
 	public static void enablePolygonOffset() {
@@ -325,8 +327,8 @@ public class RenderSystem {
 		GlStateManager._deleteTexture(texture);
 	}
 
-	public static void bindTextureForSetup(int i) {
-		bindTexture(i);
+	public static void bindTextureForSetup(int id) {
+		bindTexture(id);
 	}
 
 	public static void bindTexture(int texture) {
@@ -348,9 +350,9 @@ public class RenderSystem {
 		GlStateManager._stencilFunc(func, ref, mask);
 	}
 
-	public static void stencilMask(int i) {
+	public static void stencilMask(int mask) {
 		assertOnRenderThread();
-		GlStateManager._stencilMask(i);
+		GlStateManager._stencilMask(mask);
 	}
 
 	public static void stencilOp(int sfail, int dpfail, int dppass) {
@@ -368,9 +370,9 @@ public class RenderSystem {
 		GlStateManager._clearColor(red, green, blue, alpha);
 	}
 
-	public static void clearStencil(int i) {
+	public static void clearStencil(int stencil) {
 		assertOnRenderThread();
-		GlStateManager._clearStencil(i);
+		GlStateManager._clearStencil(stencil);
 	}
 
 	public static void clear(int mask, boolean getError) {
@@ -378,13 +380,13 @@ public class RenderSystem {
 		GlStateManager._clear(mask, getError);
 	}
 
-	public static void setShaderFogStart(float f) {
+	public static void setShaderFogStart(float shaderFogStart) {
 		assertOnRenderThread();
-		_setShaderFogStart(f);
+		_setShaderFogStart(shaderFogStart);
 	}
 
-	private static void _setShaderFogStart(float f) {
-		shaderFogStart = f;
+	private static void _setShaderFogStart(float shaderFogStart) {
+		RenderSystem.shaderFogStart = shaderFogStart;
 	}
 
 	public static float getShaderFogStart() {
@@ -392,13 +394,13 @@ public class RenderSystem {
 		return shaderFogStart;
 	}
 
-	public static void setShaderFogEnd(float f) {
+	public static void setShaderFogEnd(float shaderFogEnd) {
 		assertOnRenderThread();
-		_setShaderFogEnd(f);
+		_setShaderFogEnd(shaderFogEnd);
 	}
 
-	private static void _setShaderFogEnd(float f) {
-		shaderFogEnd = f;
+	private static void _setShaderFogEnd(float shaderFogEnd) {
+		RenderSystem.shaderFogEnd = shaderFogEnd;
 	}
 
 	public static float getShaderFogEnd() {
@@ -406,20 +408,20 @@ public class RenderSystem {
 		return shaderFogEnd;
 	}
 
-	public static void setShaderFogColor(float f, float g, float h, float i) {
+	public static void setShaderFogColor(float red, float green, float blue, float alpha) {
 		assertOnRenderThread();
-		_setShaderFogColor(f, g, h, i);
+		_setShaderFogColor(red, green, blue, alpha);
 	}
 
-	public static void setShaderFogColor(float f, float g, float h) {
-		setShaderFogColor(f, g, h, 1.0F);
+	public static void setShaderFogColor(float red, float green, float blue) {
+		setShaderFogColor(red, green, blue, 1.0F);
 	}
 
-	private static void _setShaderFogColor(float f, float g, float h, float i) {
-		shaderFogColor[0] = f;
-		shaderFogColor[1] = g;
-		shaderFogColor[2] = h;
-		shaderFogColor[3] = i;
+	private static void _setShaderFogColor(float red, float green, float blue, float alpha) {
+		shaderFogColor[0] = red;
+		shaderFogColor[1] = green;
+		shaderFogColor[2] = blue;
+		shaderFogColor[3] = alpha;
 	}
 
 	public static float[] getShaderFogColor() {
@@ -427,13 +429,13 @@ public class RenderSystem {
 		return shaderFogColor;
 	}
 
-	public static void setShaderFogShape(FogShape fogShape) {
+	public static void setShaderFogShape(FogShape shaderFogShape) {
 		assertOnRenderThread();
-		_setShaderFogShape(fogShape);
+		_setShaderFogShape(shaderFogShape);
 	}
 
-	private static void _setShaderFogShape(FogShape fogShape) {
-		shaderFogShape = fogShape;
+	private static void _setShaderFogShape(FogShape shaderFogShape) {
+		RenderSystem.shaderFogShape = shaderFogShape;
 	}
 
 	public static FogShape getShaderFogShape() {
@@ -462,19 +464,19 @@ public class RenderSystem {
 		}
 	}
 
-	public static void setShaderColor(float f, float g, float h, float i) {
+	public static void setShaderColor(float red, float green, float blue, float alpha) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderColor(f, g, h, i));
+			recordRenderCall(() -> _setShaderColor(red, green, blue, alpha));
 		} else {
-			_setShaderColor(f, g, h, i);
+			_setShaderColor(red, green, blue, alpha);
 		}
 	}
 
-	private static void _setShaderColor(float f, float g, float h, float i) {
-		shaderColor[0] = f;
-		shaderColor[1] = g;
-		shaderColor[2] = h;
-		shaderColor[3] = i;
+	private static void _setShaderColor(float red, float green, float blue, float alpha) {
+		shaderColor[0] = red;
+		shaderColor[1] = green;
+		shaderColor[2] = blue;
+		shaderColor[3] = alpha;
 	}
 
 	public static float[] getShaderColor() {
@@ -566,10 +568,10 @@ public class RenderSystem {
 	public static int maxSupportedTextureSize() {
 		if (MAX_SUPPORTED_TEXTURE_SIZE == -1) {
 			assertOnRenderThreadOrInit();
-			int i = GlStateManager._getInteger(3379);
+			int i = GlStateManager._getInteger(GL11.GL_MAX_TEXTURE_SIZE);
 
 			for (int j = Math.max(32768, i); j >= 1024; j >>= 1) {
-				GlStateManager._texImage2D(32868, 0, 6408, j, j, 0, 6408, 5121, null);
+				GlStateManager._texImage2D(GlConst.GL_PROXY_TEXTURE_2D, 0, GlConst.GL_RGBA, j, j, 0, GlConst.GL_RGBA, GlConst.GL_UNSIGNED_BYTE, null);
 				int k = GlStateManager._getTexLevelParameter(32868, 0, 4096);
 				if (k != 0) {
 					MAX_SUPPORTED_TEXTURE_SIZE = j;
@@ -584,12 +586,12 @@ public class RenderSystem {
 		return MAX_SUPPORTED_TEXTURE_SIZE;
 	}
 
-	public static void glBindBuffer(int i, IntSupplier intSupplier) {
-		GlStateManager._glBindBuffer(i, intSupplier.getAsInt());
+	public static void glBindBuffer(int target, IntSupplier bufferSupplier) {
+		GlStateManager._glBindBuffer(target, bufferSupplier.getAsInt());
 	}
 
-	public static void glBindVertexArray(Supplier<Integer> supplier) {
-		GlStateManager._glBindVertexArray((Integer)supplier.get());
+	public static void glBindVertexArray(Supplier<Integer> arraySupplier) {
+		GlStateManager._glBindVertexArray((Integer)arraySupplier.get());
 	}
 
 	public static void glBufferData(int target, ByteBuffer data, int usage) {
@@ -602,9 +604,9 @@ public class RenderSystem {
 		GlStateManager._glDeleteBuffers(buffer);
 	}
 
-	public static void glDeleteVertexArrays(int i) {
+	public static void glDeleteVertexArrays(int array) {
 		assertOnRenderThread();
-		GlStateManager._glDeleteVertexArrays(i);
+		GlStateManager._glDeleteVertexArrays(array);
 	}
 
 	public static void glUniform1i(int location, int value) {
@@ -749,11 +751,11 @@ public class RenderSystem {
 		}
 	}
 
-	public static void setShader(Supplier<Shader> supplier) {
+	public static void setShader(Supplier<Shader> shaderSupplier) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shader = (Shader)supplier.get());
+			recordRenderCall(() -> shader = (Shader)shaderSupplier.get());
 		} else {
-			shader = (Shader)supplier.get();
+			shader = (Shader)shaderSupplier.get();
 		}
 	}
 
@@ -763,69 +765,69 @@ public class RenderSystem {
 		return shader;
 	}
 
-	public static int getTextureId(int i) {
-		return GlStateManager._getTextureId(i);
+	public static int getTextureId(int texture) {
+		return GlStateManager._getTextureId(texture);
 	}
 
-	public static void setShaderTexture(int i, Identifier identifier) {
+	public static void setShaderTexture(int texture, Identifier id) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderTexture(i, identifier));
+			recordRenderCall(() -> _setShaderTexture(texture, id));
 		} else {
-			_setShaderTexture(i, identifier);
+			_setShaderTexture(texture, id);
 		}
 	}
 
-	public static void _setShaderTexture(int i, Identifier identifier) {
-		if (i >= 0 && i < shaderTextures.length) {
+	public static void _setShaderTexture(int texture, Identifier id) {
+		if (texture >= 0 && texture < shaderTextures.length) {
 			TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-			AbstractTexture abstractTexture = textureManager.getTexture(identifier);
-			shaderTextures[i] = abstractTexture.getGlId();
+			AbstractTexture abstractTexture = textureManager.getTexture(id);
+			shaderTextures[texture] = abstractTexture.getGlId();
 		}
 	}
 
-	public static void setShaderTexture(int i, int j) {
+	public static void setShaderTexture(int texture, int glId) {
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> _setShaderTexture(i, j));
+			recordRenderCall(() -> _setShaderTexture(texture, glId));
 		} else {
-			_setShaderTexture(i, j);
+			_setShaderTexture(texture, glId);
 		}
 	}
 
-	public static void _setShaderTexture(int i, int j) {
-		if (i >= 0 && i < shaderTextures.length) {
-			shaderTextures[i] = j;
+	public static void _setShaderTexture(int texture, int glId) {
+		if (texture >= 0 && texture < shaderTextures.length) {
+			shaderTextures[texture] = glId;
 		}
 	}
 
-	public static int getShaderTexture(int i) {
+	public static int getShaderTexture(int texture) {
 		assertOnRenderThread();
-		return i >= 0 && i < shaderTextures.length ? shaderTextures[i] : 0;
+		return texture >= 0 && texture < shaderTextures.length ? shaderTextures[texture] : 0;
 	}
 
-	public static void setProjectionMatrix(Matrix4f matrix4f) {
-		Matrix4f matrix4f2 = matrix4f.copy();
+	public static void setProjectionMatrix(Matrix4f projectionMatrix) {
+		Matrix4f matrix4f = projectionMatrix.copy();
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> projectionMatrix = matrix4f2);
+			recordRenderCall(() -> projectionMatrix = matrix4f);
 		} else {
-			projectionMatrix = matrix4f2;
+			RenderSystem.projectionMatrix = matrix4f;
 		}
 	}
 
-	public static void setInverseViewRotationMatrix(Matrix3f matrix3f) {
-		Matrix3f matrix3f2 = matrix3f.copy();
+	public static void setInverseViewRotationMatrix(Matrix3f inverseViewRotationMatrix) {
+		Matrix3f matrix3f = inverseViewRotationMatrix.copy();
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> inverseViewRotationMatrix = matrix3f2);
+			recordRenderCall(() -> inverseViewRotationMatrix = matrix3f);
 		} else {
-			inverseViewRotationMatrix = matrix3f2;
+			RenderSystem.inverseViewRotationMatrix = matrix3f;
 		}
 	}
 
-	public static void setTextureMatrix(Matrix4f matrix4f) {
-		Matrix4f matrix4f2 = matrix4f.copy();
+	public static void setTextureMatrix(Matrix4f textureMatrix) {
+		Matrix4f matrix4f = textureMatrix.copy();
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> textureMatrix = matrix4f2);
+			recordRenderCall(() -> textureMatrix = matrix4f);
 		} else {
-			textureMatrix = matrix4f2;
+			RenderSystem.textureMatrix = matrix4f;
 		}
 	}
 
@@ -904,12 +906,12 @@ public class RenderSystem {
 		};
 	}
 
-	public static void setShaderGameTime(long l, float f) {
-		float g = ((float)(l % 24000L) + f) / 24000.0F;
+	public static void setShaderGameTime(long time, float tickDelta) {
+		float f = ((float)(time % 24000L) + tickDelta) / 24000.0F;
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> shaderGameTime = g);
+			recordRenderCall(() -> shaderGameTime = f);
 		} else {
-			shaderGameTime = g;
+			shaderGameTime = f;
 		}
 	}
 
@@ -934,33 +936,33 @@ public class RenderSystem {
 		private VertexFormat.IntType elementFormat = VertexFormat.IntType.BYTE;
 		private int size;
 
-		IndexBuffer(int i, int j, RenderSystem.IndexBuffer.IndexMapper indexMapper) {
-			this.sizeMultiplier = i;
-			this.increment = j;
+		IndexBuffer(int sizeMultiplier, int increment, RenderSystem.IndexBuffer.IndexMapper indexMapper) {
+			this.sizeMultiplier = sizeMultiplier;
+			this.increment = increment;
 			this.indexMapper = indexMapper;
 		}
 
-		public boolean method_43409(int i) {
-			return i <= this.size;
+		public boolean isSizeLessThanOrEqual(int size) {
+			return size <= this.size;
 		}
 
-		public void method_43410(int i) {
+		public void bindAndGrow(int newSize) {
 			if (this.id == 0) {
 				this.id = GlStateManager._glGenBuffers();
 			}
 
-			GlStateManager._glBindBuffer(34963, this.id);
-			this.grow(i);
+			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.id);
+			this.grow(newSize);
 		}
 
 		private void grow(int newSize) {
-			if (!this.method_43409(newSize)) {
+			if (!this.isSizeLessThanOrEqual(newSize)) {
 				newSize = MathHelper.roundUpToMultiple(newSize * 2, this.increment);
 				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.size, newSize);
 				VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
 				int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
-				GlStateManager._glBufferData(34963, (long)i, 35048);
-				ByteBuffer byteBuffer = GlStateManager.mapBuffer(34963, 35001);
+				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)i, GlConst.GL_DYNAMIC_DRAW);
+				ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
 				if (byteBuffer == null) {
 					throw new RuntimeException("Failed to map GL buffer");
 				} else {
@@ -971,7 +973,7 @@ public class RenderSystem {
 						this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
 					}
 
-					GlStateManager._glUnmapBuffer(34963);
+					GlStateManager._glUnmapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER);
 					this.size = newSize;
 				}
 			}
@@ -980,9 +982,9 @@ public class RenderSystem {
 		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
 			switch (this.elementFormat) {
 				case BYTE:
-					return i -> indicesBuffer.put((byte)i);
+					return index -> indicesBuffer.put((byte)index);
 				case SHORT:
-					return i -> indicesBuffer.putShort((short)i);
+					return index -> indicesBuffer.putShort((short)index);
 				case INT:
 				default:
 					return indicesBuffer::putInt;

@@ -71,7 +71,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			throw new IllegalStateException("Protocol error", var8);
 		}
 
-		this.statusConsumer.accept(Text.method_43471("connect.authorizing"));
+		this.statusConsumer.accept(Text.translatable("connect.authorizing"));
 		NetworkUtils.EXECUTOR.submit((Runnable)(() -> {
 			Text text = this.joinServerSession(string);
 			if (text != null) {
@@ -83,7 +83,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 				LOGGER.warn(text.getString());
 			}
 
-			this.statusConsumer.accept(Text.method_43471("connect.encrypting"));
+			this.statusConsumer.accept(Text.translatable("connect.encrypting"));
 			this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(cipher, cipher2));
 		}));
 	}
@@ -94,13 +94,13 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), serverId);
 			return null;
 		} catch (AuthenticationUnavailableException var3) {
-			return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.serversUnavailable"));
+			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.serversUnavailable"));
 		} catch (InvalidCredentialsException var4) {
-			return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.invalidSession"));
+			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.invalidSession"));
 		} catch (InsufficientPrivilegesException var5) {
-			return Text.method_43469("disconnect.loginFailedInfo", Text.method_43471("disconnect.loginFailedInfo.insufficientPrivileges"));
+			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.insufficientPrivileges"));
 		} catch (AuthenticationException var6) {
-			return Text.method_43469("disconnect.loginFailedInfo", var6.getMessage());
+			return Text.translatable("disconnect.loginFailedInfo", var6.getMessage());
 		}
 	}
 
@@ -110,7 +110,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onSuccess(LoginSuccessS2CPacket packet) {
-		this.statusConsumer.accept(Text.method_43471("connect.joining"));
+		this.statusConsumer.accept(Text.translatable("connect.joining"));
 		this.profile = packet.getProfile();
 		this.connection.setState(NetworkState.PLAY);
 		this.connection
@@ -145,7 +145,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onQueryRequest(LoginQueryRequestS2CPacket packet) {
-		this.statusConsumer.accept(Text.method_43471("connect.negotiating"));
+		this.statusConsumer.accept(Text.translatable("connect.negotiating"));
 		this.connection.send(new LoginQueryResponseC2SPacket(packet.getQueryId(), null));
 	}
 }

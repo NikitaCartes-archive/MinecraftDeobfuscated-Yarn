@@ -303,7 +303,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 	@Override
 	public Text getDisplayName() {
-		return (Text)(this.customName != null ? this.customName : Text.method_43471("container.beacon"));
+		return (Text)(this.customName != null ? this.customName : Text.translatable("container.beacon"));
 	}
 
 	@Override

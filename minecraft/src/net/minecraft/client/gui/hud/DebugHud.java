@@ -88,7 +88,7 @@ public class DebugHud extends DrawableHelper {
 		types.put(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, "ML");
 	});
 	private final MinecraftClient client;
-	private final DebugHud.class_7412 field_38985;
+	private final DebugHud.AllocationRateCalculator allocationRateCalculator;
 	private final TextRenderer textRenderer;
 	private HitResult blockHit;
 	private HitResult fluidHit;
@@ -102,10 +102,10 @@ public class DebugHud extends DrawableHelper {
 	private static final int field_32192 = -256;
 	private static final int field_32193 = -16711936;
 
-	public DebugHud(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
-		this.field_38985 = new DebugHud.class_7412();
-		this.textRenderer = minecraftClient.textRenderer;
+	public DebugHud(MinecraftClient client) {
+		this.client = client;
+		this.allocationRateCalculator = new DebugHud.AllocationRateCalculator();
+		this.textRenderer = client.textRenderer;
 	}
 
 	public void resetChunk() {
@@ -422,7 +422,7 @@ public class DebugHud extends DrawableHelper {
 		List<String> list = Lists.<String>newArrayList(
 			String.format("Java: %s %dbit", System.getProperty("java.version"), this.client.is64Bit() ? 64 : 32),
 			String.format("Mem: % 2d%% %03d/%03dMB", o * 100L / l, toMiB(o), toMiB(l)),
-			String.format("Allocation rate: %03dMB /s", toMiB(this.field_38985.method_43448(o))),
+			String.format("Allocation rate: %03dMB /s", toMiB(this.allocationRateCalculator.get(o))),
 			String.format("Allocated: % 2d%% %03dMB", m * 100L / l, toMiB(m)),
 			"",
 			String.format("CPU: %s", GlDebugInfo.getCpuInfo()),
@@ -450,7 +450,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				blockState.streamTags().map(tagKey -> "#" + tagKey.id()).forEach(list::add);
+				blockState.streamTags().map(tag -> "#" + tag.id()).forEach(list::add);
 			}
 
 			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
@@ -464,7 +464,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				fluidState.streamTags().map(tagKey -> "#" + tagKey.id()).forEach(list::add);
+				fluidState.streamTags().map(tag -> "#" + tag.id()).forEach(list::add);
 			}
 
 			Entity entity = this.client.targetedEntity;
@@ -536,7 +536,7 @@ public class DebugHud extends DrawableHelper {
 		}
 
 		bufferBuilder.end();
-		BufferRenderer.method_43433(bufferBuilder);
+		BufferRenderer.drawWithShader(bufferBuilder);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (showFps) {
@@ -596,37 +596,37 @@ public class DebugHud extends DrawableHelper {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_7412 {
-		private static final int field_38986 = 500;
-		private static final List<GarbageCollectorMXBean> field_38987 = ManagementFactory.getGarbageCollectorMXBeans();
-		private long field_38988 = 0L;
-		private long field_38989 = -1L;
-		private long field_38990 = -1L;
-		private long field_38991 = 0L;
+	static class AllocationRateCalculator {
+		private static final int INTERVAL = 500;
+		private static final List<GarbageCollectorMXBean> GARBAGE_COLLECTORS = ManagementFactory.getGarbageCollectorMXBeans();
+		private long lastCalculated = 0L;
+		private long allocatedBytes = -1L;
+		private long collectionCount = -1L;
+		private long allocationRate = 0L;
 
-		long method_43448(long l) {
-			long m = System.currentTimeMillis();
-			if (m - this.field_38988 < 500L) {
-				return this.field_38991;
+		long get(long allocatedBytes) {
+			long l = System.currentTimeMillis();
+			if (l - this.lastCalculated < 500L) {
+				return this.allocationRate;
 			} else {
-				long n = method_43447();
-				if (this.field_38988 != 0L && n == this.field_38990) {
-					double d = (double)TimeUnit.SECONDS.toMillis(1L) / (double)(m - this.field_38988);
-					long o = l - this.field_38989;
-					this.field_38991 = Math.round((double)o * d);
+				long m = getCollectionCount();
+				if (this.lastCalculated != 0L && m == this.collectionCount) {
+					double d = (double)TimeUnit.SECONDS.toMillis(1L) / (double)(l - this.lastCalculated);
+					long n = allocatedBytes - this.allocatedBytes;
+					this.allocationRate = Math.round((double)n * d);
 				}
 
-				this.field_38988 = m;
-				this.field_38989 = l;
-				this.field_38990 = n;
-				return this.field_38991;
+				this.lastCalculated = l;
+				this.allocatedBytes = allocatedBytes;
+				this.collectionCount = m;
+				return this.allocationRate;
 			}
 		}
 
-		private static long method_43447() {
+		private static long getCollectionCount() {
 			long l = 0L;
 
-			for (GarbageCollectorMXBean garbageCollectorMXBean : field_38987) {
+			for (GarbageCollectorMXBean garbageCollectorMXBean : GARBAGE_COLLECTORS) {
 				l += garbageCollectorMXBean.getCollectionCount();
 			}
 

@@ -37,7 +37,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		return entitySelectorReader.listSuggestions(builder, builderx -> CommandSource.suggestMatching(context.getSource().getPlayerNames(), builderx));
 	};
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "*", "@e");
-	private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.scoreHolder.empty"));
+	private static final SimpleCommandExceptionType EMPTY_SCORE_HOLDER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.scoreHolder.empty"));
 	final boolean multiple;
 
 	public ScoreHolderArgumentType(boolean multiple) {

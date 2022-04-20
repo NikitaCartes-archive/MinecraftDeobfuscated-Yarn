@@ -22,7 +22,7 @@ public class CloseServerTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(Text.method_43471("mco.configure.world.closing"));
+		this.setTitle(Text.translatable("mco.configure.world.closing"));
 		RealmsClient realmsClient = RealmsClient.createRealmsClient();
 
 		for (int i = 0; i < 25; i++) {

@@ -458,7 +458,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public MutableText getName() {
-		return Text.method_43471(this.getTranslationKey());
+		return Text.translatable(this.getTranslationKey());
 	}
 
 	/**

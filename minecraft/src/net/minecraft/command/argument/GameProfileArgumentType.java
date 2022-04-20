@@ -24,7 +24,7 @@ import net.minecraft.text.Text;
 
 public class GameProfileArgumentType implements ArgumentType<GameProfileArgumentType.GameProfileArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
-	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.player.unknown"));
+	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.player.unknown"));
 
 	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
 		return context.<GameProfileArgumentType.GameProfileArgument>getArgument(name, GameProfileArgumentType.GameProfileArgument.class)

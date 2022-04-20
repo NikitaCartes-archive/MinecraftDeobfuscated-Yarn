@@ -29,7 +29,7 @@ public class SelectWorldScreen extends Screen {
 	private WorldListWidget levelList;
 
 	public SelectWorldScreen(Screen parent) {
-		super(Text.method_43471("selectWorld.title"));
+		super(Text.translatable("selectWorld.title"));
 		this.parent = parent;
 	}
 
@@ -46,9 +46,9 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.method_43471("selectWorld.search"));
+		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.translatable("selectWorld.search"));
 		this.searchBox.setChangedListener(search -> this.levelList.filter(search));
-		this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.method_43450(), this.levelList);
+		this.levelList = new WorldListWidget(this, this.client, this.width, this.height, 48, this.height - 64, 36, this.getSearchFilter(), this.levelList);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.levelList);
 		this.selectButton = this.addDrawableChild(
@@ -57,13 +57,13 @@ public class SelectWorldScreen extends Screen {
 				this.height - 52,
 				150,
 				20,
-				Text.method_43471("selectWorld.select"),
-				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)
+				Text.translatable("selectWorld.select"),
+				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::play)
 			)
 		);
 		this.addDrawableChild(
 			new ButtonWidget(
-				this.width / 2 + 4, this.height - 52, 150, 20, Text.method_43471("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)
+				this.width / 2 + 4, this.height - 52, 150, 20, Text.translatable("selectWorld.create"), button -> CreateWorldScreen.create(this.client, this)
 			)
 		);
 		this.editButton = this.addDrawableChild(
@@ -72,8 +72,8 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				Text.method_43471("selectWorld.edit"),
-				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)
+				Text.translatable("selectWorld.edit"),
+				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::edit)
 			)
 		);
 		this.deleteButton = this.addDrawableChild(
@@ -82,8 +82,8 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				Text.method_43471("selectWorld.delete"),
-				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::deleteIfConfirmed)
+				Text.translatable("selectWorld.delete"),
+				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::deleteIfConfirmed)
 			)
 		);
 		this.recreateButton = this.addDrawableChild(
@@ -92,8 +92,8 @@ public class SelectWorldScreen extends Screen {
 				this.height - 28,
 				72,
 				20,
-				Text.method_43471("selectWorld.recreate"),
-				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)
+				Text.translatable("selectWorld.recreate"),
+				button -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.WorldEntry::recreate)
 			)
 		);
 		this.addDrawableChild(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)));
@@ -142,11 +142,11 @@ public class SelectWorldScreen extends Screen {
 	@Override
 	public void removed() {
 		if (this.levelList != null) {
-			this.levelList.children().forEach(WorldListWidget.class_7414::close);
+			this.levelList.children().forEach(WorldListWidget.Entry::close);
 		}
 	}
 
-	public Supplier<String> method_43450() {
+	public Supplier<String> getSearchFilter() {
 		return () -> this.searchBox.getText();
 	}
 }

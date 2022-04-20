@@ -94,7 +94,7 @@ public class FunctionLoader implements ResourceReloader {
 				map -> {
 					Map<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.<Identifier, CompletableFuture<CommandFunction>>newHashMap();
 					ServerCommandSource serverCommandSource = new ServerCommandSource(
-						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.field_39003, null, null
+						CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.EMPTY, null, null
 					);
 
 					for (Entry<Identifier, Resource> entry : map.entrySet()) {

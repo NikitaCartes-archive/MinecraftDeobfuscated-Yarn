@@ -18,8 +18,8 @@ import net.minecraft.util.Language;
 
 public class Texts {
 	public static final String DEFAULT_SEPARATOR = ", ";
-	public static final Text GRAY_DEFAULT_SEPARATOR_TEXT = Text.method_43470(", ").formatted(Formatting.GRAY);
-	public static final Text DEFAULT_SEPARATOR_TEXT = Text.method_43470(", ");
+	public static final Text GRAY_DEFAULT_SEPARATOR_TEXT = Text.literal(", ").formatted(Formatting.GRAY);
+	public static final Text DEFAULT_SEPARATOR_TEXT = Text.literal(", ");
 
 	public static MutableText setStyleIfAbsent(MutableText text, Style style) {
 		if (style.isEmpty()) {
@@ -42,7 +42,7 @@ public class Texts {
 		if (depth > 100) {
 			return text.shallowCopy();
 		} else {
-			MutableText mutableText = text.asString().parse(source, sender, depth + 1);
+			MutableText mutableText = text.getContent().parse(source, sender, depth + 1);
 
 			for (Text text2 : text.getSiblings()) {
 				mutableText.append(parse(source, text2, sender, depth + 1));
@@ -67,19 +67,19 @@ public class Texts {
 
 	public static Text toText(GameProfile profile) {
 		if (profile.getName() != null) {
-			return Text.method_43470(profile.getName());
+			return Text.literal(profile.getName());
 		} else {
-			return profile.getId() != null ? Text.method_43470(profile.getId().toString()) : Text.method_43470("(unknown)");
+			return profile.getId() != null ? Text.literal(profile.getId().toString()) : Text.literal("(unknown)");
 		}
 	}
 
 	public static Text joinOrdered(Collection<String> strings) {
-		return joinOrdered(strings, string -> Text.method_43470(string).formatted(Formatting.GREEN));
+		return joinOrdered(strings, string -> Text.literal(string).formatted(Formatting.GREEN));
 	}
 
 	public static <T extends Comparable<T>> Text joinOrdered(Collection<T> elements, Function<T, Text> transformer) {
 		if (elements.isEmpty()) {
-			return ScreenTexts.field_39003;
+			return ScreenTexts.EMPTY;
 		} else if (elements.size() == 1) {
 			return (Text)transformer.apply((Comparable)elements.iterator().next());
 		} else {
@@ -103,11 +103,11 @@ public class Texts {
 
 	public static <T> MutableText join(Collection<? extends T> elements, Text separator, Function<T, Text> transformer) {
 		if (elements.isEmpty()) {
-			return Text.method_43473();
+			return Text.empty();
 		} else if (elements.size() == 1) {
 			return ((Text)transformer.apply(elements.iterator().next())).shallowCopy();
 		} else {
-			MutableText mutableText = Text.method_43473();
+			MutableText mutableText = Text.empty();
 			boolean bl = true;
 
 			for (T object : elements) {
@@ -124,16 +124,16 @@ public class Texts {
 	}
 
 	public static MutableText bracketed(Text text) {
-		return Text.method_43469("chat.square_brackets", text);
+		return Text.translatable("chat.square_brackets", text);
 	}
 
 	public static Text toText(Message message) {
-		return (Text)(message instanceof Text ? (Text)message : Text.method_43470(message.getString()));
+		return (Text)(message instanceof Text ? (Text)message : Text.literal(message.getString()));
 	}
 
-	public static boolean method_43476(@Nullable Text text) {
-		if (text instanceof TranslatableText translatableText) {
-			String string = translatableText.getKey();
+	public static boolean hasTranslation(@Nullable Text text) {
+		if (text instanceof TranslatableTextContent translatableTextContent) {
+			String string = translatableTextContent.getKey();
 			return Language.getInstance().hasTranslation(string);
 		} else {
 			return true;
@@ -143,9 +143,9 @@ public class Texts {
 	@Deprecated(
 		forRemoval = true
 	)
-	public static Text method_43475(Text text, String string, String string2) {
-		if (text instanceof TranslatableText translatableText && string.equals(translatableText.getKey())) {
-			return Text.method_43469(string2, translatableText.getArgs());
+	public static Text brokenReplaceTranslationKey(Text text, String oldKey, String updatedKey) {
+		if (text instanceof TranslatableTextContent translatableTextContent && oldKey.equals(translatableTextContent.getKey())) {
+			return Text.translatable(updatedKey, translatableTextContent.getArgs());
 		}
 
 		return text;

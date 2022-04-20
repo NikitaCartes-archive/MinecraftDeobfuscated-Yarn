@@ -13,7 +13,7 @@ public class ChatOptionsScreen extends SimpleOptionsScreen {
 		super(
 			parent,
 			options,
-			Text.method_43471("options.chat.title"),
+			Text.translatable("options.chat.title"),
 			new SimpleOption[]{
 				options.getChatVisibility(),
 				options.getChatColors(),

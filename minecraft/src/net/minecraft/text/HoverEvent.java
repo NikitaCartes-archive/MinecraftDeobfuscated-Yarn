@@ -212,8 +212,8 @@ public class HoverEvent {
 					this.tooltip.add(this.name);
 				}
 
-				this.tooltip.add(Text.method_43469("gui.entity_tooltip.type", this.entityType.getName()));
-				this.tooltip.add(Text.method_43470(this.uuid.toString()));
+				this.tooltip.add(Text.translatable("gui.entity_tooltip.type", this.entityType.getName()));
+				this.tooltip.add(Text.literal(this.uuid.toString()));
 			}
 
 			return this.tooltip;

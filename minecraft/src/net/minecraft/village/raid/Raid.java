@@ -76,9 +76,9 @@ public class Raid {
 	public static final int field_30672 = 24000;
 	public static final int field_30673 = 5;
 	private static final int field_30688 = 2;
-	private static final Text EVENT_TEXT = Text.method_43471("event.minecraft.raid");
-	private static final Text VICTORY_SUFFIX_TEXT = Text.method_43471("event.minecraft.raid.victory");
-	private static final Text DEFEAT_SUFFIX_TEXT = Text.method_43471("event.minecraft.raid.defeat");
+	private static final Text EVENT_TEXT = Text.translatable("event.minecraft.raid");
+	private static final Text VICTORY_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.victory");
+	private static final Text DEFEAT_SUFFIX_TEXT = Text.translatable("event.minecraft.raid.defeat");
 	private static final Text VICTORY_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(VICTORY_SUFFIX_TEXT);
 	private static final Text DEFEAT_TITLE = EVENT_TEXT.shallowCopy().append(" - ").append(DEFEAT_SUFFIX_TEXT);
 	private static final int MAX_ACTIVE_TICKS = 48000;
@@ -317,7 +317,7 @@ public class Raid {
 					this.removeObsoleteRaiders();
 					if (i > 0) {
 						if (i <= 2) {
-							this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(Text.method_43469("event.minecraft.raid.raiders_remaining", i)));
+							this.bar.setName(EVENT_TEXT.shallowCopy().append(" - ").append(Text.translatable("event.minecraft.raid.raiders_remaining", i)));
 						} else {
 							this.bar.setName(EVENT_TEXT);
 						}
@@ -607,7 +607,7 @@ public class Raid {
 		nbtCompound.put("Patterns", nbtList);
 		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
 		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
-		itemStack.setCustomName(Text.method_43471("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
+		itemStack.setCustomName(Text.translatable("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
 		return itemStack;
 	}
 

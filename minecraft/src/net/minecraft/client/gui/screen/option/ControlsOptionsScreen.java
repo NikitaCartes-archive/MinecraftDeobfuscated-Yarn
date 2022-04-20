@@ -14,7 +14,7 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 	private static final int MARGIN_Y = 24;
 
 	public ControlsOptionsScreen(Screen parent, GameOptions options) {
-		super(parent, options, Text.method_43471("controls.title"));
+		super(parent, options, Text.translatable("controls.title"));
 	}
 
 	@Override
@@ -24,10 +24,10 @@ public class ControlsOptionsScreen extends GameOptionsScreen {
 		int j = i + 160;
 		int k = this.height / 6 - 12;
 		this.addDrawableChild(
-			new ButtonWidget(i, k, 150, 20, Text.method_43471("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
+			new ButtonWidget(i, k, 150, 20, Text.translatable("options.mouse_settings"), button -> this.client.setScreen(new MouseOptionsScreen(this, this.gameOptions)))
 		);
 		this.addDrawableChild(
-			new ButtonWidget(j, k, 150, 20, Text.method_43471("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions)))
+			new ButtonWidget(j, k, 150, 20, Text.translatable("controls.keybinds"), button -> this.client.setScreen(new KeybindsScreen(this, this.gameOptions)))
 		);
 		k += 24;
 		this.addDrawableChild(this.gameOptions.getSneakToggled().createButton(this.gameOptions, i, k, 150));

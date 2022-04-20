@@ -26,11 +26,11 @@ import net.minecraft.util.math.BlockPos;
 
 public class CloneCommand {
 	private static final int MAX_BLOCKS = 32768;
-	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.clone.overlap"));
+	private static final SimpleCommandExceptionType OVERLAP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.overlap"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
-		(maxCount, count) -> Text.method_43469("commands.clone.toobig", maxCount, count)
+		(maxCount, count) -> Text.translatable("commands.clone.toobig", maxCount, count)
 	);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.clone.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.clone.failed"));
 	public static final Predicate<CachedBlockPosition> IS_AIR_PREDICATE = pos -> !pos.getBlockState().isAir();
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -316,7 +316,7 @@ public class CloneCommand {
 					if (lx == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
-						source.sendFeedback(Text.method_43469("commands.clone.success", lx), true);
+						source.sendFeedback(Text.translatable("commands.clone.success", lx), true);
 						return lx;
 					}
 				} else {

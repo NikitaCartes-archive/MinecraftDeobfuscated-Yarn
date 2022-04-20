@@ -12,6 +12,7 @@ import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
@@ -46,7 +47,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7420;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -195,6 +195,7 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -297,7 +298,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.method_43471("multiplayer.socialInteractions.not_available");
+	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
 	/**
 	 * A message, in English, displayed in a dialog when a GLFW error is encountered.
 	 * 
@@ -491,7 +492,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			i = 0;
 		}
 
-		class_7420.method_43482(KeyBinding::getLocalizedName);
+		KeybindTranslations.setFactory(KeyBinding::getLocalizedName);
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
 		this.thread = Thread.currentThread();
@@ -718,7 +719,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.options.write();
 		this.reloadResources(true).thenRun(() -> {
 			ToastManager toastManager = this.getToastManager();
-			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.method_43471("resourcePack.load_fail"), resourceName);
+			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.translatable("resourcePack.load_fail"), resourceName);
 		});
 	}
 
@@ -935,7 +936,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			for (ItemStack itemStack : defaultedList) {
 				String string = itemStack.getTranslationKey();
-				String string2 = Text.method_43471(string).getString();
+				String string2 = Text.translatable(string).getString();
 				if (string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) {
 					LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
 				}
@@ -1126,7 +1127,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
 		RenderSystem.applyModelViewMatrix();
-		RenderSystem.clear(16640, IS_SYSTEM_MAC);
+		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
 		BackgroundRenderer.clearFog();
 		this.profiler.push("display");
@@ -1307,7 +1308,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.server.stop(true);
 			}
 
-			this.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
+			this.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1325,16 +1326,16 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 					this.execute(
 						() -> chatMessageSender.accept(
-								Text.method_43469("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
+								Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))
 							)
 					);
 				}
 			};
 			Consumer<Path> consumer2 = path -> {
-				Text text = Text.method_43470(path.toString())
+				Text text = Text.literal(path.toString())
 					.formatted(Formatting.UNDERLINE)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-				this.execute(() -> chatMessageSender.accept(Text.method_43469("debug.profiling.stop", text)));
+				this.execute(() -> chatMessageSender.accept(Text.translatable("debug.profiling.stop", text)));
 			};
 			SystemDetails systemDetails = addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
 			Consumer<List<Path>> consumer3 = files -> {
@@ -1461,7 +1462,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void drawProfilerResults(MatrixStack matrices, ProfileResult profileResult) {
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
-		RenderSystem.clear(256, IS_SYSTEM_MAC);
+		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		Matrix4f matrix4f = Matrix4f.projectionMatrix(
 			0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F
@@ -1798,8 +1799,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (this.world != null) {
 			if (!this.paused) {
 				if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
-					Text text = Text.method_43471("tutorial.socialInteractions.title");
-					Text text2 = Text.method_43469("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+					Text text = Text.translatable("tutorial.socialInteractions.title");
+					Text text2 = Text.translatable("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
 					this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
 					this.tutorialManager.add(this.socialInteractionsToast, 160);
 					this.options.joinedFirstServer = true;
@@ -1965,11 +1966,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.gpuUtilizationPercentage;
 	}
 
-	public IntegratedServerLoader method_41735() {
+	public IntegratedServerLoader createIntegratedServerLoader() {
 		return new IntegratedServerLoader(this, this.levelStorage);
 	}
 
-	public void startIntegratedServer(String string, LevelStorage.Session session, ResourcePackManager resourcePackManager, SaveLoader saveLoader) {
+	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
 
@@ -1983,8 +1984,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
 			UserCache.setUseRemote(false);
 			this.server = MinecraftServer.startServer(
-				thread2 -> new IntegratedServer(
-						thread2, this, session, resourcePackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
+				thread -> new IntegratedServer(
+						thread, this, session, dataPackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
 							WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
 							this.worldGenProgressTracker.set(worldGenerationProgressTracker);
 							return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
@@ -1995,7 +1996,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} catch (Throwable var10) {
 			CrashReport crashReport = CrashReport.create(var10, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-			crashReportSection.add("Level ID", string);
+			crashReportSection.add("Level ID", levelName);
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
 			throw new CrashException(crashReport);
 		}
@@ -2026,7 +2027,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.pop();
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {
+		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
@@ -2035,7 +2036,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void joinWorld(ClientWorld world) {
 		ProgressScreen progressScreen = new ProgressScreen(true);
-		progressScreen.setTitle(Text.method_43471("connect.joining"));
+		progressScreen.setTitle(Text.translatable("connect.joining"));
 		this.reset(progressScreen);
 		this.world = world;
 		this.setWorld(world);
@@ -2640,13 +2641,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				});
 			}
 
-			Text text = Text.method_43470(directory.getName())
+			Text text = Text.literal(directory.getName())
 				.formatted(Formatting.UNDERLINE)
 				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
-			return Text.method_43469("screenshot.success", text);
+			return Text.translatable("screenshot.success", text);
 		} catch (Exception var18) {
 			LOGGER.error("Couldn't save image", (Throwable)var18);
-			var12 = Text.method_43469("screenshot.failure", var18.getMessage());
+			var12 = Text.translatable("screenshot.failure", var18.getMessage());
 		} finally {
 			this.player.setPitch(f);
 			this.player.setYaw(g);
@@ -2701,13 +2702,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			File file = screenshotRecorder.finish();
 			GlDebugInfo.freeMemory(byteBuffer);
-			Text text = Text.method_43470(file.getName())
+			Text text = Text.literal(file.getName())
 				.formatted(Formatting.UNDERLINE)
 				.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
-			return Text.method_43469("screenshot.success", text);
+			return Text.translatable("screenshot.success", text);
 		} catch (Exception var15) {
 			LOGGER.warn("Couldn't save screenshot", (Throwable)var15);
-			return Text.method_43469("screenshot.failure", var15.getMessage());
+			return Text.translatable("screenshot.failure", var15.getMessage());
 		}
 	}
 
@@ -2802,25 +2803,25 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	@Environment(EnvType.CLIENT)
 	public static enum ChatRestriction {
-		ENABLED(ScreenTexts.field_39003) {
+		ENABLED(ScreenTexts.EMPTY) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return true;
 			}
 		},
-		DISABLED_BY_OPTIONS(Text.method_43471("chat.disabled.options").formatted(Formatting.RED)) {
+		DISABLED_BY_OPTIONS(Text.translatable("chat.disabled.options").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return false;
 			}
 		},
-		DISABLED_BY_LAUNCHER(Text.method_43471("chat.disabled.launcher").formatted(Formatting.RED)) {
+		DISABLED_BY_LAUNCHER(Text.translatable("chat.disabled.launcher").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return singlePlayer;
 			}
 		},
-		DISABLED_BY_PROFILE(Text.method_43471("chat.disabled.profile").formatted(Formatting.RED)) {
+		DISABLED_BY_PROFILE(Text.translatable("chat.disabled.profile").formatted(Formatting.RED)) {
 			@Override
 			public boolean allowsChat(boolean singlePlayer) {
 				return singlePlayer;

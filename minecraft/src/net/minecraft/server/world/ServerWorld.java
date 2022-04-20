@@ -562,9 +562,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 				Text text;
 				if (this.sleepManager.canSkipNight(i)) {
-					text = Text.method_43471("sleep.skipping_night");
+					text = Text.translatable("sleep.skipping_night");
 				} else {
-					text = Text.method_43469("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
+					text = Text.translatable("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
 				}
 
 				for (ServerPlayerEntity serverPlayerEntity : this.players) {
@@ -743,12 +743,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		ServerChunkManager serverChunkManager = this.getChunkManager();
 		if (!savingDisabled) {
 			if (progressListener != null) {
-				progressListener.setTitle(Text.method_43471("menu.savingLevel"));
+				progressListener.setTitle(Text.translatable("menu.savingLevel"));
 			}
 
 			this.saveLevel();
 			if (progressListener != null) {
-				progressListener.setTask(Text.method_43471("menu.savingChunks"));
+				progressListener.setTask(Text.translatable("menu.savingChunks"));
 			}
 
 			serverChunkManager.save(flush);

@@ -16,7 +16,7 @@ public class ReloadCommand {
 	public static void tryReloadDataPacks(Collection<String> dataPacks, ServerCommandSource source) {
 		source.getServer().reloadResources(dataPacks).exceptionally(throwable -> {
 			LOGGER.warn("Failed to execute reload", throwable);
-			source.sendError(Text.method_43471("commands.reload.failure"));
+			source.sendError(Text.translatable("commands.reload.failure"));
 			return null;
 		});
 	}
@@ -43,7 +43,7 @@ public class ReloadCommand {
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
 			Collection<String> collection = resourcePackManager.getEnabledNames();
 			Collection<String> collection2 = findNewDataPacks(resourcePackManager, saveProperties, collection);
-			serverCommandSource.sendFeedback(Text.method_43471("commands.reload.success"), true);
+			serverCommandSource.sendFeedback(Text.translatable("commands.reload.success"), true);
 			tryReloadDataPacks(collection2, serverCommandSource);
 			return 0;
 		}));

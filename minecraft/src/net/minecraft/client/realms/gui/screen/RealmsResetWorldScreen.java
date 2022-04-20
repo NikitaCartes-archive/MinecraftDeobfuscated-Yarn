@@ -30,7 +30,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private final Screen parent;
 	private final RealmsServer serverData;
-	private Text subtitle = Text.method_43471("mco.reset.world.warning");
+	private Text subtitle = Text.translatable("mco.reset.world.warning");
 	private Text buttonTitle = ScreenTexts.CANCEL;
 	private int subtitleColor = 16711680;
 	private static final Identifier SLOT_FRAME_TEXTURE = new Identifier("realms", "textures/gui/realms/slot_frame.png");
@@ -45,7 +45,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	WorldTemplatePaginatedList experienceWorldTemplates;
 	WorldTemplatePaginatedList inspirationWorldTemplates;
 	public int slot = -1;
-	private Text resetTitle = Text.method_43471("mco.reset.world.resetting.screen.title");
+	private Text resetTitle = Text.translatable("mco.reset.world.resetting.screen.title");
 	private final Runnable resetCallback;
 	private final Runnable selectFileUploadCallback;
 
@@ -58,7 +58,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	}
 
 	public RealmsResetWorldScreen(Screen parent, RealmsServer serverData, Runnable resetCallback, Runnable selectFileUploadCallback) {
-		this(parent, serverData, Text.method_43471("mco.reset.world.title"), resetCallback, selectFileUploadCallback);
+		this(parent, serverData, Text.translatable("mco.reset.world.title"), resetCallback, selectFileUploadCallback);
 	}
 
 	public RealmsResetWorldScreen(
@@ -106,7 +106,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
 				row(0) + 10,
-				Text.method_43471("mco.reset.world.generate"),
+				Text.translatable("mco.reset.world.generate"),
 				NEW_WORLD_TEXTURE,
 				button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
 			)
@@ -115,7 +115,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
 				row(0) + 10,
-				Text.method_43471("mco.reset.world.upload"),
+				Text.translatable("mco.reset.world.upload"),
 				UPLOAD_TEXTURE,
 				button -> this.client
 						.setScreen(
@@ -127,12 +127,12 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
 				row(0) + 10,
-				Text.method_43471("mco.reset.world.template"),
+				Text.translatable("mco.reset.world.template"),
 				SURVIVAL_SPAWN_TEXTURE,
 				button -> this.client
 						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
-								Text.method_43471("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
+								Text.translatable("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
 							)
 						)
 			)
@@ -141,12 +141,12 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(1),
 				row(6) + 20,
-				Text.method_43471("mco.reset.world.adventure"),
+				Text.translatable("mco.reset.world.adventure"),
 				ADVENTURE_TEXTURE,
 				button -> this.client
 						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
-								Text.method_43471("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
+								Text.translatable("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
 							)
 						)
 			)
@@ -155,12 +155,12 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(2),
 				row(6) + 20,
-				Text.method_43471("mco.reset.world.experience"),
+				Text.translatable("mco.reset.world.experience"),
 				EXPERIENCE_TEXTURE,
 				button -> this.client
 						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
-								Text.method_43471("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
+								Text.translatable("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
 							)
 						)
 			)
@@ -169,12 +169,12 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 			new RealmsResetWorldScreen.FrameButton(
 				this.frame(3),
 				row(6) + 20,
-				Text.method_43471("mco.reset.world.inspiration"),
+				Text.translatable("mco.reset.world.inspiration"),
 				INSPIRATION_TEXTURE,
 				button -> this.client
 						.setScreen(
 							new RealmsSelectWorldTemplateScreen(
-								Text.method_43471("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
+								Text.translatable("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
 							)
 						)
 			)

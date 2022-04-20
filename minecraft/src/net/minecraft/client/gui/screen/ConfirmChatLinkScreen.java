@@ -9,14 +9,14 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class ConfirmChatLinkScreen extends ConfirmScreen {
-	private static final Text COPY = Text.method_43471("chat.copy");
-	private static final Text WARNING = Text.method_43471("chat.link.warning");
+	private static final Text COPY = Text.translatable("chat.copy");
+	private static final Text WARNING = Text.translatable("chat.link.warning");
 	private final String link;
 	private final boolean drawWarning;
 
 	public ConfirmChatLinkScreen(BooleanConsumer callback, String link, boolean trusted) {
-		super(callback, Text.method_43471(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), Text.method_43470(link));
-		this.yesTranslated = (Text)(trusted ? Text.method_43471("chat.link.open") : ScreenTexts.YES);
+		super(callback, Text.translatable(trusted ? "chat.link.confirmTrusted" : "chat.link.confirm"), Text.literal(link));
+		this.yesTranslated = (Text)(trusted ? Text.translatable("chat.link.open") : ScreenTexts.YES);
 		this.noTranslated = trusted ? ScreenTexts.CANCEL : ScreenTexts.NO;
 		this.drawWarning = !trusted;
 		this.link = link;

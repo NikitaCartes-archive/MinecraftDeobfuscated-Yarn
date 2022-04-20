@@ -9,6 +9,6 @@ public interface Errable {
 	void error(Text errorMessage);
 
 	default void error(String errorMessage) {
-		this.error(Text.method_43470(errorMessage));
+		this.error(Text.literal(errorMessage));
 	}
 }

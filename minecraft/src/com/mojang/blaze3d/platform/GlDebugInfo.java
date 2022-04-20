@@ -4,6 +4,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
@@ -17,7 +18,7 @@ public class GlDebugInfo {
 	}
 
 	public static String getVendor() {
-		return GlStateManager._getString(7936);
+		return GlStateManager._getString(GL11.GL_VENDOR);
 	}
 
 	public static String getCpuInfo() {
@@ -25,10 +26,10 @@ public class GlDebugInfo {
 	}
 
 	public static String getRenderer() {
-		return GlStateManager._getString(7937);
+		return GlStateManager._getString(GL11.GL_RENDERER);
 	}
 
 	public static String getVersion() {
-		return GlStateManager._getString(7938);
+		return GlStateManager._getString(GL11.GL_VERSION);
 	}
 }

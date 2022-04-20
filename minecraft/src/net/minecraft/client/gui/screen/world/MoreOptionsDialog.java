@@ -46,10 +46,10 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class MoreOptionsDialog implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text CUSTOM_TEXT = Text.method_43471("generator.custom");
-	private static final Text AMPLIFIED_INFO_TEXT = Text.method_43471("generator.minecraft.amplified.info");
-	private static final Text MAP_FEATURES_INFO_TEXT = Text.method_43471("selectWorld.mapFeatures.info");
-	private static final Text SELECT_SETTINGS_FILE_TEXT = Text.method_43471("selectWorld.import_worldgen_settings.select_file");
+	private static final Text CUSTOM_TEXT = Text.translatable("generator.custom");
+	private static final Text AMPLIFIED_INFO_TEXT = Text.translatable("generator.minecraft.amplified.info");
+	private static final Text MAP_FEATURES_INFO_TEXT = Text.translatable("selectWorld.mapFeatures.info");
+	private static final Text SELECT_SETTINGS_FILE_TEXT = Text.translatable("selectWorld.import_worldgen_settings.select_file");
 	private MultilineText amplifiedInfoText = MultilineText.EMPTY;
 	private TextRenderer textRenderer;
 	private int parentWidth;
@@ -79,7 +79,7 @@ public class MoreOptionsDialog implements Drawable {
 	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
 		this.textRenderer = textRenderer;
 		this.parentWidth = parent.width;
-		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.method_43471("selectWorld.enterSeed"));
+		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.translatable("selectWorld.enterSeed"));
 		this.seedTextField.setText(seedToString(this.seed));
 		this.seedTextField.setChangedListener(seedText -> this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText()));
 		parent.addSelectableChild(this.seedTextField);
@@ -87,9 +87,9 @@ public class MoreOptionsDialog implements Drawable {
 		int j = this.parentWidth / 2 + 5;
 		this.mapFeaturesButton = parent.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().shouldGenerateStructures())
-				.narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.method_43471("selectWorld.mapFeatures.info")))
+				.narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.translatable("selectWorld.mapFeatures.info")))
 				.build(
-					i, 100, 150, 20, Text.method_43471("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.apply(GeneratorOptions::toggleGenerateStructures)
+					i, 100, 150, 20, Text.translatable("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.apply(GeneratorOptions::toggleGenerateStructures)
 				)
 		);
 		this.mapFeaturesButton.visible = false;
@@ -105,7 +105,7 @@ public class MoreOptionsDialog implements Drawable {
 							? ScreenTexts.joinSentences(button.getGenericNarrationMessage(), AMPLIFIED_INFO_TEXT)
 							: button.getGenericNarrationMessage()
 				)
-				.build(j, 100, 150, 20, Text.method_43471("selectWorld.mapType"), (button, presetEntry) -> {
+				.build(j, 100, 150, 20, Text.translatable("selectWorld.mapType"), (button, presetEntry) -> {
 					this.presetEntry = Optional.of(presetEntry);
 					this.apply(generatorOptions -> ((WorldPreset)presetEntry.value()).createGeneratorOptions(generatorOptions));
 					parent.setMoreOptionsOpen();
@@ -114,7 +114,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.presetEntry.ifPresent(this.mapTypeButton::setValue);
 		this.mapTypeButton.visible = false;
 		this.unchangeableMapTypeButton = parent.addDrawableChild(
-			new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(Text.method_43471("selectWorld.mapType"), CUSTOM_TEXT), button -> {
+			new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {
 			})
 		);
 		this.unchangeableMapTypeButton.active = false;
@@ -125,7 +125,7 @@ public class MoreOptionsDialog implements Drawable {
 				120,
 				150,
 				20,
-				Text.method_43471("selectWorld.customizeType"),
+				Text.translatable("selectWorld.customizeType"),
 				button -> {
 					LevelScreenProvider levelScreenProvider = (LevelScreenProvider)LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER
 						.get(this.presetEntry.flatMap(RegistryEntry::getKey));
@@ -138,7 +138,7 @@ public class MoreOptionsDialog implements Drawable {
 		this.customizeTypeButton.visible = false;
 		this.bonusItemsButton = parent.addDrawableChild(
 			CyclingButtonWidget.onOffBuilder(this.generatorOptionsHolder.generatorOptions().hasBonusChest() && !parent.hardcore)
-				.build(i, 151, 150, 20, Text.method_43471("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(GeneratorOptions::toggleBonusChest))
+				.build(i, 151, 150, 20, Text.translatable("selectWorld.bonusItems"), (button, bonusChest) -> this.apply(GeneratorOptions::toggleBonusChest))
 		);
 		this.bonusItemsButton.visible = false;
 		this.importSettingsButton = parent.addDrawableChild(
@@ -147,7 +147,7 @@ public class MoreOptionsDialog implements Drawable {
 				185,
 				150,
 				20,
-				Text.method_43471("selectWorld.import_worldgen_settings"),
+				Text.translatable("selectWorld.import_worldgen_settings"),
 				button -> {
 					String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
 					if (string != null) {
@@ -180,10 +180,10 @@ public class MoreOptionsDialog implements Drawable {
 						}
 
 						if (dataResult.error().isPresent()) {
-							Text text = Text.method_43471("selectWorld.import_worldgen_settings.failure");
+							Text text = Text.translatable("selectWorld.import_worldgen_settings.failure");
 							String string2 = ((PartialResult)dataResult.error().get()).message();
 							LOGGER.error("Error parsing world settings: {}", string2);
-							Text text2 = Text.method_43470(string2);
+							Text text2 = Text.literal(string2);
 							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
 						} else {
 							Lifecycle lifecycle = dataResult.lifecycle();
@@ -207,7 +207,7 @@ public class MoreOptionsDialog implements Drawable {
 	}
 
 	private static Text getText(RegistryEntry<WorldPreset> presetEntry) {
-		return (Text)presetEntry.getKey().map(key -> Text.method_43471(key.getValue().toTranslationKey("generator"))).orElse(CUSTOM_TEXT);
+		return (Text)presetEntry.getKey().map(key -> Text.translatable(key.getValue().toTranslationKey("generator"))).orElse(CUSTOM_TEXT);
 	}
 
 	private void importOptions(GeneratorOptions generatorOptions) {

@@ -38,7 +38,7 @@ public class CreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final Text SEPARATOR_LINE = Text.method_43470("============").formatted(Formatting.WHITE);
+	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
 	private static final int MAX_WIDTH = 274;
@@ -189,7 +189,7 @@ public class CreditsScreen extends Screen {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			String string = jsonObject.get("section").getAsString();
 			this.addText(SEPARATOR_LINE, true);
-			this.addText(Text.method_43470(string).formatted(Formatting.YELLOW), true);
+			this.addText(Text.literal(string).formatted(Formatting.YELLOW), true);
 			this.addText(SEPARATOR_LINE, true);
 			this.addEmptyLine();
 			this.addEmptyLine();
@@ -198,11 +198,11 @@ public class CreditsScreen extends Screen {
 				JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
 				String string2 = jsonObject2.get("title").getAsString();
 				JsonArray jsonArray3 = jsonObject2.getAsJsonArray("names");
-				this.addText(Text.method_43470(string2).formatted(Formatting.GRAY), false);
+				this.addText(Text.literal(string2).formatted(Formatting.GRAY), false);
 
 				for (JsonElement jsonElement3 : jsonArray3) {
 					String string3 = jsonElement3.getAsString();
-					this.addText(Text.method_43470("           ").append(string3).formatted(Formatting.WHITE), false);
+					this.addText(Text.literal("           ").append(string3).formatted(Formatting.WHITE), false);
 				}
 
 				this.addEmptyLine();
@@ -216,7 +216,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void addText(String text) {
-		this.credits.addAll(this.client.textRenderer.wrapLines(Text.method_43470(text), 274));
+		this.credits.addAll(this.client.textRenderer.wrapLines(Text.literal(text), 274));
 	}
 
 	private void addText(Text text, boolean centered) {

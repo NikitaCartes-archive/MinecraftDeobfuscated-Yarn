@@ -14,7 +14,7 @@ public enum StructureBlockMode implements StringIdentifiable {
 
 	private StructureBlockMode(String name) {
 		this.name = name;
-		this.text = Text.method_43471("structure_block.mode_info." + name);
+		this.text = Text.translatable("structure_block.mode_info." + name);
 	}
 
 	@Override

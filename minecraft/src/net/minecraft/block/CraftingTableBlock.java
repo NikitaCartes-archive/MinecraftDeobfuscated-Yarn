@@ -14,7 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingTableBlock extends Block {
-	private static final Text TITLE = Text.method_43471("container.crafting");
+	private static final Text TITLE = Text.translatable("container.crafting");
 
 	protected CraftingTableBlock(AbstractBlock.Settings settings) {
 		super(settings);

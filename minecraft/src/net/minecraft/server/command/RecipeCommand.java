@@ -13,8 +13,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 
 public class RecipeCommand {
-	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.recipe.give.failed"));
-	private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.recipe.take.failed"));
+	private static final SimpleCommandExceptionType GIVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.recipe.give.failed"));
+	private static final SimpleCommandExceptionType TAKE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.recipe.take.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -85,10 +85,10 @@ public class RecipeCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.method_43469("commands.recipe.give.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					Text.translatable("commands.recipe.give.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
+				source.sendFeedback(Text.translatable("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;
@@ -107,10 +107,10 @@ public class RecipeCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.method_43469("commands.recipe.take.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					Text.translatable("commands.recipe.take.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
+				source.sendFeedback(Text.translatable("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;

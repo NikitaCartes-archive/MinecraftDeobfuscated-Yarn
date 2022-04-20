@@ -14,7 +14,7 @@ import net.minecraft.util.registry.RegistryKey;
 
 public class ItemStackArgument implements Predicate<ItemStack> {
 	private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType(
-		(item, maxCount) -> Text.method_43469("arguments.item.overstacked", item, maxCount)
+		(item, maxCount) -> Text.translatable("arguments.item.overstacked", item, maxCount)
 	);
 	private final RegistryEntry<Item> item;
 	@Nullable

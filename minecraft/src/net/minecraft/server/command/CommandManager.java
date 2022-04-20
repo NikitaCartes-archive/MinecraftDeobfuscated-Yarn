@@ -167,7 +167,7 @@ public class CommandManager {
 			commandSource.sendError(Texts.toText(var14.getRawMessage()));
 			if (var14.getInput() != null && var14.getCursor() >= 0) {
 				int i = Math.min(var14.getInput().length(), var14.getCursor());
-				MutableText mutableText = Text.method_43473()
+				MutableText mutableText = Text.empty()
 					.formatted(Formatting.GRAY)
 					.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command)));
 				if (i > 10) {
@@ -176,17 +176,17 @@ public class CommandManager {
 
 				mutableText.append(var14.getInput().substring(Math.max(0, i - 10), i));
 				if (i < var14.getInput().length()) {
-					Text text = Text.method_43470(var14.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
+					Text text = Text.literal(var14.getInput().substring(i)).formatted(Formatting.RED, Formatting.UNDERLINE);
 					mutableText.append(text);
 				}
 
-				mutableText.append(Text.method_43471("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
+				mutableText.append(Text.translatable("command.context.here").formatted(Formatting.RED, Formatting.ITALIC));
 				commandSource.sendError(mutableText);
 			}
 
 			return 0;
 		} catch (Exception var15) {
-			MutableText mutableText2 = Text.method_43470(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
+			MutableText mutableText2 = Text.literal(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.error("Command exception: {}", command, var15);
 				StackTraceElement[] stackTraceElements = var15.getStackTrace();
@@ -201,9 +201,9 @@ public class CommandManager {
 				}
 			}
 
-			commandSource.sendError(Text.method_43471("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
+			commandSource.sendError(Text.translatable("command.failed").styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, mutableText2))));
 			if (SharedConstants.isDevelopment) {
-				commandSource.sendError(Text.method_43470(Util.getInnermostMessage(var15)));
+				commandSource.sendError(Text.literal(Util.getInnermostMessage(var15)));
 				LOGGER.error("'{}' threw an exception", command, var15);
 			}
 

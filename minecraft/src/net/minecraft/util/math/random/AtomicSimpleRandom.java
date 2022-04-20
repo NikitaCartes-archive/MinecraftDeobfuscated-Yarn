@@ -1,11 +1,10 @@
-package net.minecraft.world.gen.random;
+package net.minecraft.util.math.random;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicLong;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.AbstractRandom;
-import net.minecraft.util.math.random.BaseSimpleRandom;
 import net.minecraft.util.thread.LockHelper;
+import net.minecraft.world.gen.random.GaussianGenerator;
 
 public class AtomicSimpleRandom implements BaseSimpleRandom {
 	private static final int INT_BITS = 48;

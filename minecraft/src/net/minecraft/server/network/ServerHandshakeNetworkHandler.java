@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 
 public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
-	private static final Text IGNORING_STATUS_REQUEST_MESSAGE = Text.method_43470("Ignoring status request");
+	private static final Text IGNORING_STATUS_REQUEST_MESSAGE = Text.literal("Ignoring status request");
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 
@@ -27,9 +27,9 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 				if (packet.getProtocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
 					Text text;
 					if (packet.getProtocolVersion() < 754) {
-						text = Text.method_43469("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
+						text = Text.translatable("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
 					} else {
-						text = Text.method_43469("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
+						text = Text.translatable("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
 					}
 
 					this.connection.send(new LoginDisconnectS2CPacket(text));

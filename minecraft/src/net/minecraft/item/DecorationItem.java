@@ -35,7 +35,7 @@ public class DecorationItem extends Item {
 			World world = context.getWorld();
 			AbstractDecorationEntity abstractDecorationEntity;
 			if (this.entityType == EntityType.PAINTING) {
-				Optional<PaintingEntity> optional = PaintingEntity.method_43401(world, blockPos2, direction);
+				Optional<PaintingEntity> optional = PaintingEntity.placePainting(world, blockPos2, direction);
 				if (optional.isEmpty()) {
 					return ActionResult.CONSUME;
 				}

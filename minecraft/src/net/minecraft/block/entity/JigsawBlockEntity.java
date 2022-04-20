@@ -163,7 +163,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		}
 
 		public Text asText() {
-			return Text.method_43471("jigsaw_block.joint." + this.name);
+			return Text.translatable("jigsaw_block.joint." + this.name);
 		}
 	}
 }

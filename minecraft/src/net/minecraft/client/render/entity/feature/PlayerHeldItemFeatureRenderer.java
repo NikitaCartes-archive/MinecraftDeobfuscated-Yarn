@@ -20,13 +20,13 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PlayerHeldItemFeatureRenderer<T extends PlayerEntity, M extends EntityModel<T> & ModelWithArms & ModelWithHead>
 	extends HeldItemFeatureRenderer<T, M> {
-	private final HeldItemRenderer field_38904;
+	private final HeldItemRenderer playerHeldItemRenderer;
 	private static final float HEAD_YAW = (float) (-Math.PI / 6);
 	private static final float HEAD_ROLL = (float) (Math.PI / 2);
 
 	public PlayerHeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, HeldItemRenderer heldItemRenderer) {
 		super(featureRendererContext, heldItemRenderer);
-		this.field_38904 = heldItemRenderer;
+		this.playerHeldItemRenderer = heldItemRenderer;
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class PlayerHeldItemFeatureRenderer<T extends PlayerEntity, M extends Ent
 		HeadFeatureRenderer.translate(matrices, false);
 		boolean bl = arm == Arm.LEFT;
 		matrices.translate((double)((bl ? -2.5F : 2.5F) / 16.0F), -0.0625, 0.0);
-		this.field_38904.renderItem(entity, stack, ModelTransformation.Mode.HEAD, false, matrices, vertexConsumers, light);
+		this.playerHeldItemRenderer.renderItem(entity, stack, ModelTransformation.Mode.HEAD, false, matrices, vertexConsumers, light);
 		matrices.pop();
 	}
 }

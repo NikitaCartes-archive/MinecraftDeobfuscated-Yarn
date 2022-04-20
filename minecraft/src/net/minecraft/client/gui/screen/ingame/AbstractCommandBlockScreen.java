@@ -18,9 +18,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen extends Screen {
-	private static final Text SET_COMMAND_TEXT = Text.method_43471("advMode.setCommand");
-	private static final Text COMMAND_TEXT = Text.method_43471("advMode.command");
-	private static final Text PREVIOUS_OUTPUT_TEXT = Text.method_43471("advMode.previousOutput");
+	private static final Text SET_COMMAND_TEXT = Text.translatable("advMode.setCommand");
+	private static final Text COMMAND_TEXT = Text.translatable("advMode.command");
+	private static final Text PREVIOUS_OUTPUT_TEXT = Text.translatable("advMode.previousOutput");
 	protected TextFieldWidget consoleCommandTextField;
 	protected TextFieldWidget previousOutputTextField;
 	protected ButtonWidget doneButton;
@@ -52,16 +52,16 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		);
 		boolean bl = this.getCommandExecutor().isTrackingOutput();
 		this.toggleTrackingOutputButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(Text.method_43470("O"), Text.method_43470("X"))
+			CyclingButtonWidget.onOffBuilder(Text.literal("O"), Text.literal("X"))
 				.initially(bl)
 				.omitKeyText()
-				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.method_43471("advMode.trackOutput"), (button, trackOutput) -> {
+				.build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.translatable("advMode.trackOutput"), (button, trackOutput) -> {
 					CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 					commandBlockExecutor.setTrackOutput(trackOutput);
 					this.setPreviousOutputText(trackOutput);
 				})
 		);
-		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, Text.method_43471("advMode.command")) {
+		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, Text.translatable("advMode.command")) {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.getNarration());
@@ -71,7 +71,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.addSelectableChild(this.consoleCommandTextField);
 		this.previousOutputTextField = new TextFieldWidget(
-			this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, Text.method_43471("advMode.previousOutput")
+			this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, Text.translatable("advMode.previousOutput")
 		);
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setEditable(false);

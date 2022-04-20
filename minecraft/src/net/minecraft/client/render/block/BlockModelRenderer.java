@@ -260,32 +260,32 @@ public class BlockModelRenderer {
 		switch (face) {
 			case DOWN:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				flags.set(0, g == j && (g < 1.0E-4F || method_43333(world, state, pos)));
+				flags.set(0, g == j && (g < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
 				break;
 			case UP:
 				flags.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				flags.set(0, g == j && (j > 0.9999F || method_43333(world, state, pos)));
+				flags.set(0, g == j && (j > 0.9999F || isOpaqueFullCube(world, state, pos)));
 				break;
 			case NORTH:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				flags.set(0, h == k && (h < 1.0E-4F || method_43333(world, state, pos)));
+				flags.set(0, h == k && (h < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
 				break;
 			case SOUTH:
 				flags.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				flags.set(0, h == k && (k > 0.9999F || method_43333(world, state, pos)));
+				flags.set(0, h == k && (k > 0.9999F || isOpaqueFullCube(world, state, pos)));
 				break;
 			case WEST:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				flags.set(0, f == i && (f < 1.0E-4F || method_43333(world, state, pos)));
+				flags.set(0, f == i && (f < 1.0E-4F || isOpaqueFullCube(world, state, pos)));
 				break;
 			case EAST:
 				flags.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				flags.set(0, f == i && (i > 0.9999F || method_43333(world, state, pos)));
+				flags.set(0, f == i && (i > 0.9999F || isOpaqueFullCube(world, state, pos)));
 		}
 	}
 
-	private static boolean method_43333(BlockRenderView blockRenderView, BlockState blockState, BlockPos blockPos) {
-		return blockState.isOpaque() && blockState.isFullCube(blockRenderView, blockPos);
+	private static boolean isOpaqueFullCube(BlockRenderView world, BlockState state, BlockPos pos) {
+		return state.isOpaque() && state.isFullCube(world, pos);
 	}
 
 	private void renderQuadsFlat(
@@ -544,7 +544,7 @@ public class BlockModelRenderer {
 		private final Long2IntLinkedOpenHashMap intCache = Util.make(() -> {
 			Long2IntLinkedOpenHashMap long2IntLinkedOpenHashMap = new Long2IntLinkedOpenHashMap(100, 0.25F) {
 				@Override
-				protected void rehash(int i) {
+				protected void rehash(int newN) {
 				}
 			};
 			long2IntLinkedOpenHashMap.defaultReturnValue(Integer.MAX_VALUE);
@@ -553,7 +553,7 @@ public class BlockModelRenderer {
 		private final Long2FloatLinkedOpenHashMap floatCache = Util.make(() -> {
 			Long2FloatLinkedOpenHashMap long2FloatLinkedOpenHashMap = new Long2FloatLinkedOpenHashMap(100, 0.25F) {
 				@Override
-				protected void rehash(int i) {
+				protected void rehash(int newN) {
 				}
 			};
 			long2FloatLinkedOpenHashMap.defaultReturnValue(Float.NaN);
@@ -895,13 +895,13 @@ public class BlockModelRenderer {
 		final BlockModelRenderer.NeighborOrientation[] field_4185;
 		final BlockModelRenderer.NeighborOrientation[] field_4180;
 		final BlockModelRenderer.NeighborOrientation[] field_4188;
-		private static final BlockModelRenderer.NeighborData[] field_4190 = Util.make(new BlockModelRenderer.NeighborData[6], neighborDatas -> {
-			neighborDatas[Direction.DOWN.getId()] = DOWN;
-			neighborDatas[Direction.UP.getId()] = UP;
-			neighborDatas[Direction.NORTH.getId()] = NORTH;
-			neighborDatas[Direction.SOUTH.getId()] = SOUTH;
-			neighborDatas[Direction.WEST.getId()] = WEST;
-			neighborDatas[Direction.EAST.getId()] = EAST;
+		private static final BlockModelRenderer.NeighborData[] VALUES = Util.make(new BlockModelRenderer.NeighborData[6], values -> {
+			values[Direction.DOWN.getId()] = DOWN;
+			values[Direction.UP.getId()] = UP;
+			values[Direction.NORTH.getId()] = NORTH;
+			values[Direction.SOUTH.getId()] = SOUTH;
+			values[Direction.WEST.getId()] = WEST;
+			values[Direction.EAST.getId()] = EAST;
 		});
 
 		private NeighborData(
@@ -922,7 +922,7 @@ public class BlockModelRenderer {
 		}
 
 		public static BlockModelRenderer.NeighborData getData(Direction direction) {
-			return field_4190[direction.getId()];
+			return VALUES[direction.getId()];
 		}
 	}
 
@@ -961,13 +961,13 @@ public class BlockModelRenderer {
 		final int secondCorner;
 		final int thirdCorner;
 		final int fourthCorner;
-		private static final BlockModelRenderer.Translation[] VALUES = Util.make(new BlockModelRenderer.Translation[6], translations -> {
-			translations[Direction.DOWN.getId()] = DOWN;
-			translations[Direction.UP.getId()] = UP;
-			translations[Direction.NORTH.getId()] = NORTH;
-			translations[Direction.SOUTH.getId()] = SOUTH;
-			translations[Direction.WEST.getId()] = WEST;
-			translations[Direction.EAST.getId()] = EAST;
+		private static final BlockModelRenderer.Translation[] VALUES = Util.make(new BlockModelRenderer.Translation[6], values -> {
+			values[Direction.DOWN.getId()] = DOWN;
+			values[Direction.UP.getId()] = UP;
+			values[Direction.NORTH.getId()] = NORTH;
+			values[Direction.SOUTH.getId()] = SOUTH;
+			values[Direction.WEST.getId()] = WEST;
+			values[Direction.EAST.getId()] = EAST;
 		});
 
 		private Translation(int firstCorner, int secondCorner, int thirdCorner, int fourthCorner) {

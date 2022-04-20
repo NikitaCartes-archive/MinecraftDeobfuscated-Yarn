@@ -100,7 +100,7 @@ public class EnchantingPhrases {
 			stringBuilder.append(Util.getRandom(this.phrases, this.random));
 		}
 
-		return textRenderer.getTextHandler().trimToWidth(Text.method_43470(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
+		return textRenderer.getTextHandler().trimToWidth(Text.literal(stringBuilder.toString()).fillStyle(STYLE), width, Style.EMPTY);
 	}
 
 	public void setSeed(long seed) {

@@ -68,21 +68,21 @@ public class RaidCommand {
 		if (raid != null) {
 			int i = raid.getMaxAcceptableBadOmenLevel();
 			if (level > i) {
-				source.sendError(Text.method_43470("Sorry, the max bad omen level you can set is " + i));
+				source.sendError(Text.literal("Sorry, the max bad omen level you can set is " + i));
 			} else {
 				int j = raid.getBadOmenLevel();
 				raid.setBadOmenLevel(level);
-				source.sendFeedback(Text.method_43470("Changed village's bad omen level from " + j + " to " + level), false);
+				source.sendFeedback(Text.literal("Changed village's bad omen level from " + j + " to " + level), false);
 			}
 		} else {
-			source.sendError(Text.method_43470("No raid found here"));
+			source.sendError(Text.literal("No raid found here"));
 		}
 
 		return 1;
 	}
 
 	private static int executeSpawnLeader(ServerCommandSource source) {
-		source.sendFeedback(Text.method_43470("Spawned a raid captain"), false);
+		source.sendFeedback(Text.literal("Spawned a raid captain"), false);
 		RaiderEntity raiderEntity = EntityType.PILLAGER.create(source.getWorld());
 		raiderEntity.setPatrolLeader(true);
 		raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
@@ -104,7 +104,7 @@ public class RaidCommand {
 		ServerPlayerEntity serverPlayerEntity = source.getPlayer();
 		BlockPos blockPos = serverPlayerEntity.getBlockPos();
 		if (serverPlayerEntity.getWorld().hasRaidAt(blockPos)) {
-			source.sendError(Text.method_43470("Raid already started close by"));
+			source.sendError(Text.literal("Raid already started close by"));
 			return -1;
 		} else {
 			RaidManager raidManager = serverPlayerEntity.getWorld().getRaidManager();
@@ -112,9 +112,9 @@ public class RaidCommand {
 			if (raid != null) {
 				raid.setBadOmenLevel(level);
 				raidManager.markDirty();
-				source.sendFeedback(Text.method_43470("Created a raid in your local village"), false);
+				source.sendFeedback(Text.literal("Created a raid in your local village"), false);
 			} else {
-				source.sendError(Text.method_43470("Failed to create a raid in your local village"));
+				source.sendError(Text.literal("Failed to create a raid in your local village"));
 			}
 
 			return 1;
@@ -127,10 +127,10 @@ public class RaidCommand {
 		Raid raid = serverPlayerEntity.getWorld().getRaidAt(blockPos);
 		if (raid != null) {
 			raid.invalidate();
-			source.sendFeedback(Text.method_43470("Stopped raid"), false);
+			source.sendFeedback(Text.literal("Stopped raid"), false);
 			return 1;
 		} else {
-			source.sendError(Text.method_43470("No raid here"));
+			source.sendError(Text.literal("No raid here"));
 			return -1;
 		}
 	}
@@ -140,7 +140,7 @@ public class RaidCommand {
 		if (raid != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("Found a started raid! ");
-			source.sendFeedback(Text.method_43470(stringBuilder.toString()), false);
+			source.sendFeedback(Text.literal(stringBuilder.toString()), false);
 			stringBuilder = new StringBuilder();
 			stringBuilder.append("Num groups spawned: ");
 			stringBuilder.append(raid.getGroupsSpawned());
@@ -152,10 +152,10 @@ public class RaidCommand {
 			stringBuilder.append(raid.getCurrentRaiderHealth());
 			stringBuilder.append(" / ");
 			stringBuilder.append(raid.getTotalHealth());
-			source.sendFeedback(Text.method_43470(stringBuilder.toString()), false);
+			source.sendFeedback(Text.literal(stringBuilder.toString()), false);
 			return 1;
 		} else {
-			source.sendError(Text.method_43470("Found no started raids"));
+			source.sendError(Text.literal("Found no started raids"));
 			return 0;
 		}
 	}

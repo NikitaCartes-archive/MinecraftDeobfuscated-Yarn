@@ -21,9 +21,9 @@ import net.minecraft.text.Text;
 
 public class TriggerCommand {
 	private static final SimpleCommandExceptionType FAILED_UNPRIMED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.trigger.failed.unprimed")
+		Text.translatable("commands.trigger.failed.unprimed")
 	);
-	private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.trigger.failed.invalid"));
+	private static final SimpleCommandExceptionType FAILED_INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.trigger.failed.invalid"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -88,19 +88,19 @@ public class TriggerCommand {
 
 	private static int executeAdd(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
 		score.incrementScore(value);
-		source.sendFeedback(Text.method_43469("commands.trigger.add.success", score.getObjective().toHoverableText(), value), true);
+		source.sendFeedback(Text.translatable("commands.trigger.add.success", score.getObjective().toHoverableText(), value), true);
 		return score.getScore();
 	}
 
 	private static int executeSet(ServerCommandSource source, ScoreboardPlayerScore score, int value) {
 		score.setScore(value);
-		source.sendFeedback(Text.method_43469("commands.trigger.set.success", score.getObjective().toHoverableText(), value), true);
+		source.sendFeedback(Text.translatable("commands.trigger.set.success", score.getObjective().toHoverableText(), value), true);
 		return value;
 	}
 
 	private static int executeSimple(ServerCommandSource source, ScoreboardPlayerScore score) {
 		score.incrementScore(1);
-		source.sendFeedback(Text.method_43469("commands.trigger.simple.success", score.getObjective().toHoverableText()), true);
+		source.sendFeedback(Text.translatable("commands.trigger.simple.success", score.getObjective().toHoverableText()), true);
 		return score.getScore();
 	}
 

@@ -34,7 +34,7 @@ public class ProjectileDamageSource extends EntityDamageSource {
 		String string = "death.attack." + this.name;
 		String string2 = string + ".item";
 		return !itemStack.isEmpty() && itemStack.hasCustomName()
-			? Text.method_43469(string2, entity.getDisplayName(), text, itemStack.toHoverableText())
-			: Text.method_43469(string, entity.getDisplayName(), text);
+			? Text.translatable(string2, entity.getDisplayName(), text, itemStack.toHoverableText())
+			: Text.translatable(string, entity.getDisplayName(), text);
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.client.render;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
@@ -881,7 +882,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 			}
 
 			Window window = this.client.getWindow();
-			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 			Matrix4f matrix4f = Matrix4f.projectionMatrix(
 				0.0F,
 				(float)((double)window.getFramebufferWidth() / window.getScaleFactor()),
@@ -910,7 +911,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
 					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
 					this.client.inGameHud.render(matrixStack2, tickDelta);
-					RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+					RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
 				this.client.getProfiler().pop();
@@ -1093,7 +1094,7 @@ public class GameRenderer implements SynchronousResourceReloader, AutoCloseable 
 		this.client.worldRenderer.render(matrices, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
 		if (this.renderHand) {
-			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
+			RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 			this.renderHand(matrices, camera, tickDelta);
 		}
 

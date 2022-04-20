@@ -40,19 +40,19 @@ public class EntitySelectorReader {
 	private static final char RANDOM_PLAYER = 'r';
 	private static final char SELF = 's';
 	private static final char ALL_ENTITIES = 'e';
-	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.entity.invalid"));
+	public static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.invalid"));
 	public static final DynamicCommandExceptionType UNKNOWN_SELECTOR_EXCEPTION = new DynamicCommandExceptionType(
-		selectorType -> Text.method_43469("argument.entity.selector.unknown", selectorType)
+		selectorType -> Text.translatable("argument.entity.selector.unknown", selectorType)
 	);
 	public static final SimpleCommandExceptionType NOT_ALLOWED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.entity.selector.not_allowed")
+		Text.translatable("argument.entity.selector.not_allowed")
 	);
-	public static final SimpleCommandExceptionType MISSING_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.entity.selector.missing"));
+	public static final SimpleCommandExceptionType MISSING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.entity.selector.missing"));
 	public static final SimpleCommandExceptionType UNTERMINATED_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("argument.entity.options.unterminated")
+		Text.translatable("argument.entity.options.unterminated")
 	);
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
-		option -> Text.method_43469("argument.entity.options.valueless", option)
+		option -> Text.translatable("argument.entity.options.valueless", option)
 	);
 	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (pos, entities) -> {
 	};
@@ -461,11 +461,11 @@ public class EntitySelectorReader {
 	}
 
 	private static void suggestSelector(SuggestionsBuilder builder) {
-		builder.suggest("@p", Text.method_43471("argument.entity.selector.nearestPlayer"));
-		builder.suggest("@a", Text.method_43471("argument.entity.selector.allPlayers"));
-		builder.suggest("@r", Text.method_43471("argument.entity.selector.randomPlayer"));
-		builder.suggest("@s", Text.method_43471("argument.entity.selector.self"));
-		builder.suggest("@e", Text.method_43471("argument.entity.selector.allEntities"));
+		builder.suggest("@p", Text.translatable("argument.entity.selector.nearestPlayer"));
+		builder.suggest("@a", Text.translatable("argument.entity.selector.allPlayers"));
+		builder.suggest("@r", Text.translatable("argument.entity.selector.randomPlayer"));
+		builder.suggest("@s", Text.translatable("argument.entity.selector.self"));
+		builder.suggest("@e", Text.translatable("argument.entity.selector.allEntities"));
 	}
 
 	private CompletableFuture<Suggestions> suggestSelector(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {

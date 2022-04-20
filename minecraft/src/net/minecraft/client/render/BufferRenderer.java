@@ -11,67 +11,67 @@ import net.minecraft.client.gl.VertexBuffer;
 @Environment(EnvType.CLIENT)
 public class BufferRenderer {
 	@Nullable
-	private static VertexBuffer field_38982;
+	private static VertexBuffer currentVertexBuffer;
 
 	public static void unbindAll() {
-		if (field_38982 != null) {
-			method_43436();
+		if (currentVertexBuffer != null) {
+			resetCurrentVertexBuffer();
 			VertexBuffer.unbind();
 		}
 	}
 
-	public static void method_43436() {
-		field_38982 = null;
+	public static void resetCurrentVertexBuffer() {
+		currentVertexBuffer = null;
 	}
 
-	public static void method_43433(BufferBuilder bufferBuilder) {
+	public static void drawWithShader(BufferBuilder builder) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> method_43438(bufferBuilder));
+			RenderSystem.recordRenderCall(() -> drawWithShaderInternal(builder));
 		} else {
-			method_43438(bufferBuilder);
+			drawWithShaderInternal(builder);
 		}
 	}
 
-	private static void method_43438(BufferBuilder bufferBuilder) {
-		VertexBuffer vertexBuffer = method_43439(bufferBuilder);
+	private static void drawWithShaderInternal(BufferBuilder builder) {
+		VertexBuffer vertexBuffer = getVertexBuffer(builder);
 		if (vertexBuffer != null) {
-			vertexBuffer.setShader(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+			vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
 		}
 	}
 
-	public static void method_43437(BufferBuilder bufferBuilder) {
-		VertexBuffer vertexBuffer = method_43439(bufferBuilder);
+	public static void drawWithoutShader(BufferBuilder builder) {
+		VertexBuffer vertexBuffer = getVertexBuffer(builder);
 		if (vertexBuffer != null) {
 			vertexBuffer.drawElements();
 		}
 	}
 
 	@Nullable
-	private static VertexBuffer method_43439(BufferBuilder bufferBuilder) {
+	private static VertexBuffer getVertexBuffer(BufferBuilder builder) {
 		RenderSystem.assertOnRenderThread();
-		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = bufferBuilder.popData();
+		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = builder.popData();
 		BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
 		ByteBuffer byteBuffer = pair.getSecond();
 		byteBuffer.clear();
 		if (drawArrayParameters.getCount() <= 0) {
 			return null;
 		} else {
-			VertexBuffer vertexBuffer = method_43435(drawArrayParameters.getVertexFormat());
-			vertexBuffer.method_43441(drawArrayParameters, byteBuffer);
+			VertexBuffer vertexBuffer = bindAndSet(drawArrayParameters.getVertexFormat());
+			vertexBuffer.setFromParameters(drawArrayParameters, byteBuffer);
 			return vertexBuffer;
 		}
 	}
 
-	private static VertexBuffer method_43435(VertexFormat vertexFormat) {
-		VertexBuffer vertexBuffer = vertexFormat.method_43446();
-		method_43434(vertexBuffer);
+	private static VertexBuffer bindAndSet(VertexFormat vertexFormat) {
+		VertexBuffer vertexBuffer = vertexFormat.getBuffer();
+		bindAndSet(vertexBuffer);
 		return vertexBuffer;
 	}
 
-	private static void method_43434(VertexBuffer vertexBuffer) {
-		if (vertexBuffer != field_38982) {
+	private static void bindAndSet(VertexBuffer vertexBuffer) {
+		if (vertexBuffer != currentVertexBuffer) {
 			vertexBuffer.bind();
-			field_38982 = vertexBuffer;
+			currentVertexBuffer = vertexBuffer;
 		}
 	}
 }

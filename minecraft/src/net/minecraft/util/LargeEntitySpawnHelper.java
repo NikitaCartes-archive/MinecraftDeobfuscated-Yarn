@@ -12,18 +12,18 @@ import net.minecraft.util.math.MathHelper;
 
 public class LargeEntitySpawnHelper {
 	public static <T extends MobEntity> Optional<T> trySpawnAt(
-		EntityType<T> entityType, SpawnReason spawnReason, ServerWorld serverWorld, BlockPos blockPos, int i, int j, int k
+		EntityType<T> entityType, SpawnReason reason, ServerWorld world, BlockPos pos, int tries, int horizontalRange, int verticalRange
 	) {
-		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (int l = 0; l < i; l++) {
-			int m = MathHelper.nextBetween(serverWorld.random, -j, j);
-			int n = MathHelper.nextBetween(serverWorld.random, -j, j);
-			if (findSpawnPos(serverWorld, k, mutable.set(blockPos, m, k, n))) {
-				T mobEntity = (T)entityType.create(serverWorld, null, null, null, mutable, spawnReason, false, false);
+		for (int i = 0; i < tries; i++) {
+			int j = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
+			int k = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
+			if (findSpawnPos(world, verticalRange, mutable.set(pos, j, verticalRange, k))) {
+				T mobEntity = (T)entityType.create(world, null, null, null, mutable, reason, false, false);
 				if (mobEntity != null) {
-					if (mobEntity.canSpawn(serverWorld, spawnReason) && mobEntity.canSpawn(serverWorld)) {
-						serverWorld.spawnEntityAndPassengers(mobEntity);
+					if (mobEntity.canSpawn(world, reason) && mobEntity.canSpawn(world)) {
+						world.spawnEntityAndPassengers(mobEntity);
 						return Optional.of(mobEntity);
 					}
 
@@ -35,17 +35,17 @@ public class LargeEntitySpawnHelper {
 		return Optional.empty();
 	}
 
-	private static boolean findSpawnPos(ServerWorld serverWorld, int i, BlockPos.Mutable mutable) {
-		if (!serverWorld.getWorldBorder().contains(mutable)) {
+	private static boolean findSpawnPos(ServerWorld world, int verticalRange, BlockPos.Mutable pos) {
+		if (!world.getWorldBorder().contains(pos)) {
 			return false;
 		} else {
-			BlockState blockState = serverWorld.getBlockState(mutable);
+			BlockState blockState = world.getBlockState(pos);
 
-			for (int j = i; j >= -i; j--) {
-				mutable.move(Direction.DOWN);
-				BlockState blockState2 = serverWorld.getBlockState(mutable);
+			for (int i = verticalRange; i >= -verticalRange; i--) {
+				pos.move(Direction.DOWN);
+				BlockState blockState2 = world.getBlockState(pos);
 				if ((blockState.isAir() || blockState.getMaterial().isLiquid()) && blockState2.getMaterial().blocksLight()) {
-					mutable.move(Direction.UP);
+					pos.move(Direction.UP);
 					return true;
 				}
 

@@ -127,7 +127,7 @@ public class BlazeEntity extends HostileEntity {
 		this.eyeOffsetCooldown--;
 		if (this.eyeOffsetCooldown <= 0) {
 			this.eyeOffsetCooldown = 100;
-			this.eyeOffset = (float)this.random.method_43385(0.5, 6.891);
+			this.eyeOffset = (float)this.random.nextPredictable(0.5, 6.891);
 		}
 
 		LivingEntity livingEntity = this.getTarget();
@@ -247,7 +247,7 @@ public class BlazeEntity extends HostileEntity {
 
 							for (int i = 0; i < 1; i++) {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.world, this.blaze, this.blaze.getRandom().method_43385(e, 2.297 * h), f, this.blaze.getRandom().method_43385(g, 2.297 * h)
+									this.blaze.world, this.blaze, this.blaze.getRandom().nextPredictable(e, 2.297 * h), f, this.blaze.getRandom().nextPredictable(g, 2.297 * h)
 								);
 								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
 								this.blaze.world.spawnEntity(smallFireballEntity);

@@ -18,18 +18,18 @@ import net.minecraft.text.Text;
 
 public class EnchantCommand {
 	private static final DynamicCommandExceptionType FAILED_ENTITY_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.method_43469("commands.enchant.failed.entity", entityName)
+		entityName -> Text.translatable("commands.enchant.failed.entity", entityName)
 	);
 	private static final DynamicCommandExceptionType FAILED_ITEMLESS_EXCEPTION = new DynamicCommandExceptionType(
-		entityName -> Text.method_43469("commands.enchant.failed.itemless", entityName)
+		entityName -> Text.translatable("commands.enchant.failed.itemless", entityName)
 	);
 	private static final DynamicCommandExceptionType FAILED_INCOMPATIBLE_EXCEPTION = new DynamicCommandExceptionType(
-		itemName -> Text.method_43469("commands.enchant.failed.incompatible", itemName)
+		itemName -> Text.translatable("commands.enchant.failed.incompatible", itemName)
 	);
 	private static final Dynamic2CommandExceptionType FAILED_LEVEL_EXCEPTION = new Dynamic2CommandExceptionType(
-		(level, maxLevel) -> Text.method_43469("commands.enchant.failed.level", level, maxLevel)
+		(level, maxLevel) -> Text.translatable("commands.enchant.failed.level", level, maxLevel)
 	);
-	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.enchant.failed"));
+	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.enchant.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -90,10 +90,10 @@ public class EnchantCommand {
 			} else {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						Text.method_43469("commands.enchant.success.single", enchantment.getName(level), ((Entity)targets.iterator().next()).getDisplayName()), true
+						Text.translatable("commands.enchant.success.single", enchantment.getName(level), ((Entity)targets.iterator().next()).getDisplayName()), true
 					);
 				} else {
-					source.sendFeedback(Text.method_43469("commands.enchant.success.multiple", enchantment.getName(level), targets.size()), true);
+					source.sendFeedback(Text.translatable("commands.enchant.success.multiple", enchantment.getName(level), targets.size()), true);
 				}
 
 				return i;

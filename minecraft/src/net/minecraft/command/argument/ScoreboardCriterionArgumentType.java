@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 public class ScoreboardCriterionArgumentType implements ArgumentType<ScoreboardCriterion> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar.baz", "minecraft:foo");
 	public static final DynamicCommandExceptionType INVALID_CRITERION_EXCEPTION = new DynamicCommandExceptionType(
-		name -> Text.method_43469("argument.criteria.invalid", name)
+		name -> Text.translatable("argument.criteria.invalid", name)
 	);
 
 	private ScoreboardCriterionArgumentType() {

@@ -55,7 +55,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 			}
 		}
 
-		builder.put(NarrationPart.USAGE, Text.method_43471("narration.component_list.usage"));
+		builder.put(NarrationPart.USAGE, Text.translatable("narration.component_list.usage"));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -98,9 +98,9 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 				}
 
 				if (list.size() > 1) {
-					builder.put(NarrationPart.POSITION, Text.method_43469("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
+					builder.put(NarrationPart.POSITION, Text.translatable("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
 					if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-						builder.put(NarrationPart.USAGE, Text.method_43471("narration.component_list.usage"));
+						builder.put(NarrationPart.USAGE, Text.translatable("narration.component_list.usage"));
 					}
 				}
 

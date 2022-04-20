@@ -37,7 +37,7 @@ public class AxolotlSwimNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
-		return this.isInLiquid() ? method_43394(this.entity, origin, target) : false;
+		return this.isInLiquid() ? doesNotCollide(this.entity, origin, target) : false;
 	}
 
 	@Override

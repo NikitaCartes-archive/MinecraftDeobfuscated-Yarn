@@ -771,7 +771,7 @@ public final class ItemStack {
 
 	public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
 		List<Text> list = Lists.<Text>newArrayList();
-		MutableText mutableText = Text.method_43473().append(this.getName()).formatted(this.getRarity().formatting);
+		MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().formatting);
 		if (this.hasCustomName()) {
 			mutableText.formatted(Formatting.ITALIC);
 		}
@@ -780,7 +780,7 @@ public final class ItemStack {
 		if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
 			Integer integer = FilledMapItem.getMapId(this);
 			if (integer != null) {
-				list.add(Text.method_43470("#" + integer).formatted(Formatting.GRAY));
+				list.add(Text.literal("#" + integer).formatted(Formatting.GRAY));
 			}
 		}
 
@@ -798,9 +798,9 @@ public final class ItemStack {
 				NbtCompound nbtCompound = this.nbt.getCompound("display");
 				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && nbtCompound.contains("color", NbtElement.NUMBER_TYPE)) {
 					if (context.isAdvanced()) {
-						list.add(Text.method_43469("item.color", String.format("#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
+						list.add(Text.translatable("item.color", String.format("#%06X", nbtCompound.getInt("color"))).formatted(Formatting.GRAY));
 					} else {
-						list.add(Text.method_43471("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
+						list.add(Text.translatable("item.dyed").formatted(Formatting.GRAY, Formatting.ITALIC));
 					}
 				}
 
@@ -827,8 +827,8 @@ public final class ItemStack {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 				if (!multimap.isEmpty()) {
-					list.add(ScreenTexts.field_39003);
-					list.add(Text.method_43471("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
+					list.add(ScreenTexts.EMPTY);
+					list.add(Text.translatable("item.modifiers." + equipmentSlot.getName()).formatted(Formatting.GRAY));
 
 					for (Entry<EntityAttribute, EntityAttributeModifier> entry : multimap.entries()) {
 						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -857,32 +857,32 @@ public final class ItemStack {
 
 						if (bl) {
 							list.add(
-								Text.method_43470(" ")
+								Text.literal(" ")
 									.append(
-										Text.method_43469(
+										Text.translatable(
 											"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),
 											MODIFIER_FORMAT.format(e),
-											Text.method_43471(((EntityAttribute)entry.getKey()).getTranslationKey())
+											Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
 										)
 									)
 									.formatted(Formatting.DARK_GREEN)
 							);
 						} else if (d > 0.0) {
 							list.add(
-								Text.method_43469(
+								Text.translatable(
 										"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										Text.method_43471(((EntityAttribute)entry.getKey()).getTranslationKey())
+										Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
 									)
 									.formatted(Formatting.BLUE)
 							);
 						} else if (d < 0.0) {
 							e *= -1.0;
 							list.add(
-								Text.method_43469(
+								Text.translatable(
 										"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 										MODIFIER_FORMAT.format(e),
-										Text.method_43471(((EntityAttribute)entry.getKey()).getTranslationKey())
+										Text.translatable(((EntityAttribute)entry.getKey()).getTranslationKey())
 									)
 									.formatted(Formatting.RED)
 							);
@@ -894,14 +894,14 @@ public final class ItemStack {
 
 		if (this.hasNbt()) {
 			if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable")) {
-				list.add(Text.method_43471("item.unbreakable").formatted(Formatting.BLUE));
+				list.add(Text.translatable("item.unbreakable").formatted(Formatting.BLUE));
 			}
 
 			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.nbt.contains("CanDestroy", NbtElement.LIST_TYPE)) {
 				NbtList nbtList2 = this.nbt.getList("CanDestroy", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
-					list.add(ScreenTexts.field_39003);
-					list.add(Text.method_43471("item.canBreak").formatted(Formatting.GRAY));
+					list.add(ScreenTexts.EMPTY);
+					list.add(Text.translatable("item.canBreak").formatted(Formatting.GRAY));
 
 					for (int k = 0; k < nbtList2.size(); k++) {
 						list.addAll(parseBlockTag(nbtList2.getString(k)));
@@ -912,8 +912,8 @@ public final class ItemStack {
 			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.nbt.contains("CanPlaceOn", NbtElement.LIST_TYPE)) {
 				NbtList nbtList2 = this.nbt.getList("CanPlaceOn", NbtElement.STRING_TYPE);
 				if (!nbtList2.isEmpty()) {
-					list.add(ScreenTexts.field_39003);
-					list.add(Text.method_43471("item.canPlace").formatted(Formatting.GRAY));
+					list.add(ScreenTexts.EMPTY);
+					list.add(Text.translatable("item.canPlace").formatted(Formatting.GRAY));
 
 					for (int k = 0; k < nbtList2.size(); k++) {
 						list.addAll(parseBlockTag(nbtList2.getString(k)));
@@ -924,12 +924,12 @@ public final class ItemStack {
 
 		if (context.isAdvanced()) {
 			if (this.isDamaged()) {
-				list.add(Text.method_43469("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
+				list.add(Text.translatable("item.durability", this.getMaxDamage() - this.getDamage(), this.getMaxDamage()));
 			}
 
-			list.add(Text.method_43470(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
+			list.add(Text.literal(Registry.ITEM.getId(this.getItem()).toString()).formatted(Formatting.DARK_GRAY));
 			if (this.hasNbt()) {
-				list.add(Text.method_43469("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));
+				list.add(Text.translatable("item.nbt_tags", this.nbt.getKeys().size()).formatted(Formatting.DARK_GRAY));
 			}
 		}
 
@@ -972,7 +972,7 @@ public final class ItemStack {
 							.collect(Collectors.toList())
 				);
 		} catch (CommandSyntaxException var2) {
-			return Lists.<Text>newArrayList(Text.method_43470("missingno").formatted(Formatting.DARK_GRAY));
+			return Lists.<Text>newArrayList(Text.literal("missingno").formatted(Formatting.DARK_GRAY));
 		}
 	}
 
@@ -1086,7 +1086,7 @@ public final class ItemStack {
 	}
 
 	public Text toHoverableText() {
-		MutableText mutableText = Text.method_43473().append(this.getName());
+		MutableText mutableText = Text.empty().append(this.getName());
 		if (this.hasCustomName()) {
 			mutableText.formatted(Formatting.ITALIC);
 		}

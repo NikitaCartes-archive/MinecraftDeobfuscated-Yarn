@@ -1073,7 +1073,7 @@ public abstract class MobEntity extends LivingEntity {
 		AbstractRandom abstractRandom = world.getRandom();
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(
-				new EntityAttributeModifier("Random spawn bonus", abstractRandom.method_43385(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
+				new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextPredictable(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE)
 			);
 		if (abstractRandom.nextFloat() < 0.05F) {
 			this.setLeftHanded(true);

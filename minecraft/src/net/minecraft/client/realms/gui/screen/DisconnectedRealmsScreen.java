@@ -39,7 +39,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 
 	@Override
 	public Text getNarratedTitle() {
-		return Text.method_43473().append(this.title).append(": ").append(this.reason);
+		return Text.empty().append(this.title).append(": ").append(this.reason);
 	}
 
 	@Override

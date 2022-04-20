@@ -116,8 +116,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Advancement advancement = Advancement.Builder.create()
 			.display(
 				Blocks.HAY_BLOCK,
-				Text.method_43471("advancements.husbandry.root.title"),
-				Text.method_43471("advancements.husbandry.root.description"),
+				Text.translatable("advancements.husbandry.root.title"),
+				Text.translatable("advancements.husbandry.root.description"),
 				new Identifier("textures/gui/advancements/backgrounds/husbandry.png"),
 				AdvancementFrame.TASK,
 				false,
@@ -130,8 +130,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.WHEAT,
-				Text.method_43471("advancements.husbandry.plant_seed.title"),
-				Text.method_43471("advancements.husbandry.plant_seed.description"),
+				Text.translatable("advancements.husbandry.plant_seed.title"),
+				Text.translatable("advancements.husbandry.plant_seed.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -149,8 +149,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.WHEAT,
-				Text.method_43471("advancements.husbandry.breed_an_animal.title"),
-				Text.method_43471("advancements.husbandry.breed_an_animal.description"),
+				Text.translatable("advancements.husbandry.breed_an_animal.title"),
+				Text.translatable("advancements.husbandry.breed_an_animal.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -164,8 +164,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.APPLE,
-				Text.method_43471("advancements.husbandry.balanced_diet.title"),
-				Text.method_43471("advancements.husbandry.balanced_diet.description"),
+				Text.translatable("advancements.husbandry.balanced_diet.title"),
+				Text.translatable("advancements.husbandry.balanced_diet.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -178,8 +178,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement2)
 			.display(
 				Items.NETHERITE_HOE,
-				Text.method_43471("advancements.husbandry.netherite_hoe.title"),
-				Text.method_43471("advancements.husbandry.netherite_hoe.description"),
+				Text.translatable("advancements.husbandry.netherite_hoe.title"),
+				Text.translatable("advancements.husbandry.netherite_hoe.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -193,8 +193,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.LEAD,
-				Text.method_43471("advancements.husbandry.tame_an_animal.title"),
-				Text.method_43471("advancements.husbandry.tame_an_animal.description"),
+				Text.translatable("advancements.husbandry.tame_an_animal.title"),
+				Text.translatable("advancements.husbandry.tame_an_animal.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -207,8 +207,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement3)
 			.display(
 				Items.GOLDEN_CARROT,
-				Text.method_43471("advancements.husbandry.breed_all_animals.title"),
-				Text.method_43471("advancements.husbandry.breed_all_animals.description"),
+				Text.translatable("advancements.husbandry.breed_all_animals.title"),
+				Text.translatable("advancements.husbandry.breed_all_animals.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -222,8 +222,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.FISHING_ROD,
-				Text.method_43471("advancements.husbandry.fishy_business.title"),
-				Text.method_43471("advancements.husbandry.fishy_business.description"),
+				Text.translatable("advancements.husbandry.fishy_business.title"),
+				Text.translatable("advancements.husbandry.fishy_business.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -236,8 +236,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
 				Items.PUFFERFISH_BUCKET,
-				Text.method_43471("advancements.husbandry.tactical_fishing.title"),
-				Text.method_43471("advancements.husbandry.tactical_fishing.description"),
+				Text.translatable("advancements.husbandry.tactical_fishing.title"),
+				Text.translatable("advancements.husbandry.tactical_fishing.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -254,8 +254,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.display(
 				Items.AXOLOTL_BUCKET,
-				Text.method_43471("advancements.husbandry.axolotl_in_a_bucket.title"),
-				Text.method_43471("advancements.husbandry.axolotl_in_a_bucket.description"),
+				Text.translatable("advancements.husbandry.axolotl_in_a_bucket.title"),
+				Text.translatable("advancements.husbandry.axolotl_in_a_bucket.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -268,8 +268,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion("kill_axolotl_target", EffectsChangedCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.AXOLOTL).build()))
 			.display(
 				Items.TROPICAL_FISH_BUCKET,
-				Text.method_43471("advancements.husbandry.kill_axolotl_target.title"),
-				Text.method_43471("advancements.husbandry.kill_axolotl_target.description"),
+				Text.translatable("advancements.husbandry.kill_axolotl_target.title"),
+				Text.translatable("advancements.husbandry.kill_axolotl_target.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -281,8 +281,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement4)
 			.display(
 				Items.COD,
-				Text.method_43471("advancements.husbandry.complete_catalogue.title"),
-				Text.method_43471("advancements.husbandry.complete_catalogue.description"),
+				Text.translatable("advancements.husbandry.complete_catalogue.title"),
+				Text.translatable("advancements.husbandry.complete_catalogue.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -302,8 +302,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.display(
 				Items.HONEY_BOTTLE,
-				Text.method_43471("advancements.husbandry.safely_harvest_honey.title"),
-				Text.method_43471("advancements.husbandry.safely_harvest_honey.description"),
+				Text.translatable("advancements.husbandry.safely_harvest_honey.title"),
+				Text.translatable("advancements.husbandry.safely_harvest_honey.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -315,8 +315,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement8)
 			.display(
 				Items.HONEYCOMB,
-				Text.method_43471("advancements.husbandry.wax_on.title"),
-				Text.method_43471("advancements.husbandry.wax_on.description"),
+				Text.translatable("advancements.husbandry.wax_on.title"),
+				Text.translatable("advancements.husbandry.wax_on.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -335,8 +335,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement9)
 			.display(
 				Items.STONE_AXE,
-				Text.method_43471("advancements.husbandry.wax_off.title"),
-				Text.method_43471("advancements.husbandry.wax_off.description"),
+				Text.translatable("advancements.husbandry.wax_off.title"),
+				Text.translatable("advancements.husbandry.wax_off.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -359,8 +359,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.display(
 				Items.TADPOLE_BUCKET,
-				Text.method_43471("advancements.husbandry.tadpole_in_a_bucket.title"),
-				Text.method_43471("advancements.husbandry.tadpole_in_a_bucket.description"),
+				Text.translatable("advancements.husbandry.tadpole_in_a_bucket.title"),
+				Text.translatable("advancements.husbandry.tadpole_in_a_bucket.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -372,8 +372,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement10)
 			.display(
 				Items.LEAD,
-				Text.method_43471("advancements.husbandry.leash_all_frog_variants.title"),
-				Text.method_43471("advancements.husbandry.leash_all_frog_variants.description"),
+				Text.translatable("advancements.husbandry.leash_all_frog_variants.title"),
+				Text.translatable("advancements.husbandry.leash_all_frog_variants.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -385,8 +385,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement11)
 			.display(
 				Items.VERDANT_FROGLIGHT,
-				Text.method_43471("advancements.husbandry.froglights.title"),
-				Text.method_43471("advancements.husbandry.froglights.description"),
+				Text.translatable("advancements.husbandry.froglights.title"),
+				Text.translatable("advancements.husbandry.froglights.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,
@@ -407,8 +407,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			)
 			.display(
 				Blocks.BEE_NEST,
-				Text.method_43471("advancements.husbandry.silk_touch_nest.title"),
-				Text.method_43471("advancements.husbandry.silk_touch_nest.description"),
+				Text.translatable("advancements.husbandry.silk_touch_nest.title"),
+				Text.translatable("advancements.husbandry.silk_touch_nest.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -420,8 +420,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.OAK_BOAT,
-				Text.method_43471("advancements.husbandry.ride_a_boat_with_a_goat.title"),
-				Text.method_43471("advancements.husbandry.ride_a_boat_with_a_goat.description"),
+				Text.translatable("advancements.husbandry.ride_a_boat_with_a_goat.title"),
+				Text.translatable("advancements.husbandry.ride_a_boat_with_a_goat.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -440,8 +440,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.GLOW_INK_SAC,
-				Text.method_43471("advancements.husbandry.make_a_sign_glow.title"),
-				Text.method_43471("advancements.husbandry.make_a_sign_glow.description"),
+				Text.translatable("advancements.husbandry.make_a_sign_glow.title"),
+				Text.translatable("advancements.husbandry.make_a_sign_glow.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -460,8 +460,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement)
 			.display(
 				Items.COOKIE,
-				Text.method_43471("advancements.husbandry.allay_deliver_item_to_player.title"),
-				Text.method_43471("advancements.husbandry.allay_deliver_item_to_player.description"),
+				Text.translatable("advancements.husbandry.allay_deliver_item_to_player.title"),
+				Text.translatable("advancements.husbandry.allay_deliver_item_to_player.description"),
 				null,
 				AdvancementFrame.TASK,
 				true,
@@ -479,8 +479,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.parent(advancement12)
 			.display(
 				Items.NOTE_BLOCK,
-				Text.method_43471("advancements.husbandry.allay_deliver_cake_to_note_block.title"),
-				Text.method_43471("advancements.husbandry.allay_deliver_cake_to_note_block.description"),
+				Text.translatable("advancements.husbandry.allay_deliver_cake_to_note_block.title"),
+				Text.translatable("advancements.husbandry.allay_deliver_cake_to_note_block.description"),
 				null,
 				AdvancementFrame.CHALLENGE,
 				true,

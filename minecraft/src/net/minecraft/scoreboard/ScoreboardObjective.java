@@ -39,7 +39,7 @@ public class ScoreboardObjective {
 
 	private Text generateBracketedDisplayName() {
 		return Texts.bracketed(
-			this.displayName.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43470(this.name))))
+			this.displayName.shallowCopy().styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal(this.name))))
 		);
 	}
 

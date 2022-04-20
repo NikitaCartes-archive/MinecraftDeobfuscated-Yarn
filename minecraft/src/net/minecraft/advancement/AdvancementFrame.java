@@ -17,7 +17,7 @@ public enum AdvancementFrame {
 		this.id = id;
 		this.textureV = texV;
 		this.titleFormat = titleFormat;
-		this.toastText = Text.method_43471("advancements.toast." + id);
+		this.toastText = Text.translatable("advancements.toast." + id);
 	}
 
 	public String getId() {

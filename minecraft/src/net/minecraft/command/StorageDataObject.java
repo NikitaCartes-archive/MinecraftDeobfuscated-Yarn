@@ -64,16 +64,16 @@ public class StorageDataObject implements DataCommandObject {
 
 	@Override
 	public Text feedbackModify() {
-		return Text.method_43469("commands.data.storage.modified", this.id);
+		return Text.translatable("commands.data.storage.modified", this.id);
 	}
 
 	@Override
 	public Text feedbackQuery(NbtElement element) {
-		return Text.method_43469("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(element));
+		return Text.translatable("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(element));
 	}
 
 	@Override
 	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
-		return Text.method_43469("commands.data.storage.get", path, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
+		return Text.translatable("commands.data.storage.get", path, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

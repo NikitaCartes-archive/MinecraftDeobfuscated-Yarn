@@ -221,7 +221,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			} else if (!this.newItemName.equals(itemStack.getName().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.setCustomName(Text.method_43470(this.newItemName));
+				itemStack2.setCustomName(Text.literal(this.newItemName));
 			}
 
 			this.levelCost.set(j + i);
@@ -267,7 +267,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			if (StringUtils.isBlank(newItemName)) {
 				itemStack.removeCustomName();
 			} else {
-				itemStack.setCustomName(Text.method_43470(this.newItemName));
+				itemStack.setCustomName(Text.literal(this.newItemName));
 			}
 		}
 

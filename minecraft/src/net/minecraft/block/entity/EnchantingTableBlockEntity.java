@@ -106,7 +106,7 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 
 	@Override
 	public Text getName() {
-		return (Text)(this.customName != null ? this.customName : Text.method_43471("container.enchant"));
+		return (Text)(this.customName != null ? this.customName : Text.translatable("container.enchant"));
 	}
 
 	public void setCustomName(@Nullable Text customName) {

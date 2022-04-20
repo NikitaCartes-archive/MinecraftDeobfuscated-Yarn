@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.UnaryOperator;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_7407;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
 import net.minecraft.datafixer.fix.AdvancementCriteriaRenameFix;
@@ -67,6 +66,7 @@ import net.minecraft.datafixer.fix.EntityHorseSplitFix;
 import net.minecraft.datafixer.fix.EntityIdFix;
 import net.minecraft.datafixer.fix.EntityItemFrameDirectionFix;
 import net.minecraft.datafixer.fix.EntityMinecartIdentifiersFix;
+import net.minecraft.datafixer.fix.EntityPaintingFieldsRenameFix;
 import net.minecraft.datafixer.fix.EntityPaintingMotiveFix;
 import net.minecraft.datafixer.fix.EntityProjectileOwnerFix;
 import net.minecraft.datafixer.fix.EntityPufferfishRenameFix;
@@ -946,7 +946,7 @@ public class Schemas {
 		Schema schema165 = builder.addSchema(3088, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema165));
 		Schema schema166 = builder.addSchema(3090, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new class_7407(schema166));
+		builder.addFixer(new EntityPaintingFieldsRenameFix(schema166));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

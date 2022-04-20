@@ -15,7 +15,7 @@ import net.minecraft.util.registry.Registry;
 
 public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:pig", "cow");
-	public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("entity.notFound", id));
+	public static final DynamicCommandExceptionType NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("entity.notFound", id));
 
 	public static EntitySummonArgumentType entitySummon() {
 		return new EntitySummonArgumentType();

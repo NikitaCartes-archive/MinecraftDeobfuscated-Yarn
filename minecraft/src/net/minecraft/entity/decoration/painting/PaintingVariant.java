@@ -1,10 +1,10 @@
 package net.minecraft.entity.decoration.painting;
 
-public class PaintingMotive {
+public class PaintingVariant {
 	private final int width;
 	private final int height;
 
-	public PaintingMotive(int width, int height) {
+	public PaintingVariant(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}

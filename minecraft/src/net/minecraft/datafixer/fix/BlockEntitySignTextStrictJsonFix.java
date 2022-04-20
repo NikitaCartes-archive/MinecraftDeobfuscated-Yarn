@@ -23,7 +23,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Text.class, new JsonDeserializer<Text>() {
 		public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonPrimitive()) {
-				return Text.method_43470(jsonElement.getAsString());
+				return Text.literal(jsonElement.getAsString());
 			} else if (jsonElement.isJsonArray()) {
 				JsonArray jsonArray = jsonElement.getAsJsonArray();
 				MutableText mutableText = null;
@@ -56,7 +56,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				try {
 					text = JsonHelper.deserialize(GSON, string, Text.class, true);
 					if (text == null) {
-						text = ScreenTexts.field_39003;
+						text = ScreenTexts.EMPTY;
 					}
 				} catch (Exception var8) {
 				}
@@ -76,13 +76,13 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 				}
 
 				if (text == null) {
-					text = Text.method_43470(string);
+					text = Text.literal(string);
 				}
 			} else {
-				text = Text.method_43470(string);
+				text = Text.literal(string);
 			}
 		} else {
-			text = ScreenTexts.field_39003;
+			text = ScreenTexts.EMPTY;
 		}
 
 		return dynamic.set(lineName, dynamic.createString(Text.Serializer.toJson(text)));

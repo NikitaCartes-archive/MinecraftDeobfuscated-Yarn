@@ -176,7 +176,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			fs[i] = f * f + g * g + h * h;
 		}
 
-		IntArrays.mergeSort(is, (i, jx) -> Floats.compare(fs[jx], fs[i]));
+		IntArrays.mergeSort(is, (a, b) -> Floats.compare(fs[b], fs[a]));
 		IntConsumer intConsumer = this.createIndexWriter(elementFormat);
 		this.buffer.position(this.elementOffset);
 
@@ -428,20 +428,20 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			return this.count * this.vertexFormat.getVertexSize();
 		}
 
-		public int method_43429() {
+		public int getVertexBufferPosition() {
 			return 0;
 		}
 
-		public int method_43430() {
+		public int getVertexBufferLimit() {
 			return this.getIndexBufferStart();
 		}
 
-		public int method_43431() {
-			return this.hasNoVertexBuffer ? 0 : this.method_43430();
+		public int getIndexBufferPosition() {
+			return this.hasNoVertexBuffer ? 0 : this.getVertexBufferLimit();
 		}
 
-		public int method_43432() {
-			return this.method_43431() + this.getIndexBufferLength();
+		public int getIndexBufferLimit() {
+			return this.getIndexBufferPosition() + this.getIndexBufferLength();
 		}
 
 		private int getIndexBufferLength() {
@@ -449,7 +449,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 
 		public int getIndexBufferEnd() {
-			return this.method_43432();
+			return this.getIndexBufferLimit();
 		}
 
 		public boolean hasNoVertexBuffer() {

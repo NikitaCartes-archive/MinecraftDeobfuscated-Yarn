@@ -565,7 +565,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (list.size() > 1) {
 			int i = list.indexOf(entry);
 			if (i != -1) {
-				builder.put(NarrationPart.POSITION, Text.method_43469("narrator.position.list", i + 1, list.size()));
+				builder.put(NarrationPart.POSITION, Text.translatable("narrator.position.list", i + 1, list.size()));
 			}
 		}
 	}

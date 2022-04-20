@@ -44,7 +44,7 @@ public class EditGameRulesScreen extends Screen {
 	private final GameRules gameRules;
 
 	public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
-		super(Text.method_43471("editGamerule.title"));
+		super(Text.translatable("editGamerule.title"));
 		this.gameRules = gameRules;
 		this.ruleSaver = ruleSaveConsumer;
 	}
@@ -247,17 +247,17 @@ public class EditGameRulesScreen extends Screen {
 				}
 
 				private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, EditGameRulesScreen.RuleWidgetFactory<T> widgetFactory) {
-					Text text = Text.method_43471(key.getTranslationKey());
-					Text text2 = Text.method_43470(key.getName()).formatted(Formatting.YELLOW);
+					Text text = Text.translatable(key.getTranslationKey());
+					Text text2 = Text.literal(key.getName()).formatted(Formatting.YELLOW);
 					T rule = gameRules.get(key);
 					String string = rule.serialize();
-					Text text3 = Text.method_43469("editGamerule.default", Text.method_43470(string)).formatted(Formatting.GRAY);
+					Text text3 = Text.translatable("editGamerule.default", Text.literal(string)).formatted(Formatting.GRAY);
 					String string2 = key.getTranslationKey() + ".description";
 					List<OrderedText> list;
 					String string3;
 					if (I18n.hasTranslation(string2)) {
 						Builder<OrderedText> builder = ImmutableList.<OrderedText>builder().add(text2.asOrderedText());
-						Text text4 = Text.method_43471(string2);
+						Text text4 = Text.translatable(string2);
 						EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(builder::add);
 						list = builder.add(text3.asOrderedText()).build();
 						string3 = text4.getString() + "\n" + text3.getString();
@@ -276,7 +276,7 @@ public class EditGameRulesScreen extends Screen {
 					entry -> {
 						this.addEntry(
 							EditGameRulesScreen.this.new RuleCategoryWidget(
-								Text.method_43471(((GameRules.Category)entry.getKey()).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)
+								Text.translatable(((GameRules.Category)entry.getKey()).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)
 							)
 						);
 						((Map)entry.getValue())

@@ -91,7 +91,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 			boolean bl = potion == Potions.WATER && list.isEmpty();
 			if (bl) {
-				this.damageEntitiesHurtByWater();
+				this.applyWater();
 			} else if (!list.isEmpty()) {
 				if (this.isLingering()) {
 					this.applyLingeringPotion(itemStack, potion);
@@ -106,7 +106,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		}
 	}
 
-	private void damageEntitiesHurtByWater() {
+	private void applyWater() {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 		List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, box, WATER_HURTS);
 		if (!list.isEmpty()) {

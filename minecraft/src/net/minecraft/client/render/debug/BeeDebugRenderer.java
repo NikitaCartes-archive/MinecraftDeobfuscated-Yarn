@@ -134,7 +134,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	private Map<BlockPos, Set<UUID>> getBlacklistingBees() {
 		Map<BlockPos, Set<UUID>> map = Maps.<BlockPos, Set<UUID>>newHashMap();
-		this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos -> ((Set)map.computeIfAbsent(blockPos, blockPosx -> Sets.newHashSet())).add(bee.getUuid())));
+		this.bees.values().forEach(bee -> bee.blacklist.forEach(pos -> ((Set)map.computeIfAbsent(pos, blockPos -> Sets.newHashSet())).add(bee.getUuid())));
 		return map;
 	}
 
@@ -144,7 +144,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 			.values()
 			.stream()
 			.filter(BeeDebugRenderer.Bee::hasFlower)
-			.forEach(bee -> ((Set)map.computeIfAbsent(bee.flower, blockPos -> Sets.newHashSet())).add(bee.getUuid()));
+			.forEach(bee -> ((Set)map.computeIfAbsent(bee.flower, flower -> Sets.newHashSet())).add(bee.getUuid()));
 		map.entrySet().forEach(entry -> {
 			BlockPos blockPos = (BlockPos)entry.getKey();
 			Set<UUID> set = (Set<UUID>)entry.getValue();
@@ -299,7 +299,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BeeDebugRenderer.Bee bee : this.bees.values()) {
 			if (bee.hive != null && !this.hives.containsKey(bee.hive)) {
-				((List)map.computeIfAbsent(bee.hive, blockPos -> Lists.newArrayList())).add(bee.getName());
+				((List)map.computeIfAbsent(bee.hive, hive -> Lists.newArrayList())).add(bee.getName());
 			}
 		}
 

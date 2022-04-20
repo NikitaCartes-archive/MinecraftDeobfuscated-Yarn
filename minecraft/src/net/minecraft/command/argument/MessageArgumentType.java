@@ -55,7 +55,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 		public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
 			if (this.selectors.length != 0 && canUseSelectors) {
-				MutableText mutableText = Text.method_43470(this.contents.substring(0, this.selectors[0].getStart()));
+				MutableText mutableText = Text.literal(this.contents.substring(0, this.selectors[0].getStart()));
 				int i = this.selectors[0].getStart();
 
 				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
@@ -77,7 +77,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 				return mutableText;
 			} else {
-				return Text.method_43470(this.contents);
+				return Text.literal(this.contents);
 			}
 		}
 

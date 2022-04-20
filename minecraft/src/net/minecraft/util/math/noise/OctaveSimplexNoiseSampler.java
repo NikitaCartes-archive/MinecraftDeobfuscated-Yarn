@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.ChunkRandom;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 public class OctaveSimplexNoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;

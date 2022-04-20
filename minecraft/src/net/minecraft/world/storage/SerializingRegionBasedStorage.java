@@ -162,7 +162,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	private void save(ChunkPos chunkPos) {
-		Dynamic<NbtElement> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+		Dynamic<NbtElement> dynamic = this.serialize(chunkPos, NbtOps.INSTANCE);
 		NbtElement nbtElement = dynamic.getValue();
 		if (nbtElement instanceof NbtCompound) {
 			this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
@@ -171,7 +171,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
+	private <T> Dynamic<T> serialize(ChunkPos chunkPos, DynamicOps<T> ops) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
 		for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
@@ -179,20 +179,17 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && optional.isPresent()) {
-				DataResult<T> dataResult = ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(l))).encodeStart(dynamicOps, optional.get());
+				DataResult<T> dataResult = ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(l))).encodeStart(ops, optional.get());
 				String string = Integer.toString(i);
-				dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
+				dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(ops.createString(string), object));
 			}
 		}
 
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(
+			ops,
+			ops.createMap(
 				ImmutableMap.of(
-					dynamicOps.createString("Sections"),
-					dynamicOps.createMap(map),
-					dynamicOps.createString("DataVersion"),
-					dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion())
+					ops.createString("Sections"), ops.createMap(map), ops.createString("DataVersion"), ops.createInt(SharedConstants.getGameVersion().getWorldVersion())
 				)
 			)
 		);

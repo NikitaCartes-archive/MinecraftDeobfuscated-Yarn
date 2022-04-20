@@ -25,7 +25,7 @@ public class SetWorldSpawnCommand {
 
 	private static int execute(ServerCommandSource source, BlockPos pos, float angle) {
 		source.getWorld().setSpawnPos(pos, angle);
-		source.sendFeedback(Text.method_43469("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), true);
+		source.sendFeedback(Text.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle), true);
 		return 1;
 	}
 }

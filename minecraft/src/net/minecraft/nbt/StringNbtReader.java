@@ -12,16 +12,16 @@ import java.util.regex.Pattern;
 import net.minecraft.text.Text;
 
 public class StringNbtReader {
-	public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(Text.method_43471("argument.nbt.trailing"));
-	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(Text.method_43471("argument.nbt.expected.key"));
-	public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(Text.method_43471("argument.nbt.expected.value"));
+	public static final SimpleCommandExceptionType TRAILING = new SimpleCommandExceptionType(Text.translatable("argument.nbt.trailing"));
+	public static final SimpleCommandExceptionType EXPECTED_KEY = new SimpleCommandExceptionType(Text.translatable("argument.nbt.expected.key"));
+	public static final SimpleCommandExceptionType EXPECTED_VALUE = new SimpleCommandExceptionType(Text.translatable("argument.nbt.expected.value"));
 	public static final Dynamic2CommandExceptionType LIST_MIXED = new Dynamic2CommandExceptionType(
-		(receivedType, expectedType) -> Text.method_43469("argument.nbt.list.mixed", receivedType, expectedType)
+		(receivedType, expectedType) -> Text.translatable("argument.nbt.list.mixed", receivedType, expectedType)
 	);
 	public static final Dynamic2CommandExceptionType ARRAY_MIXED = new Dynamic2CommandExceptionType(
-		(receivedType, expectedType) -> Text.method_43469("argument.nbt.array.mixed", receivedType, expectedType)
+		(receivedType, expectedType) -> Text.translatable("argument.nbt.array.mixed", receivedType, expectedType)
 	);
-	public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(type -> Text.method_43469("argument.nbt.array.invalid", type));
+	public static final DynamicCommandExceptionType ARRAY_INVALID = new DynamicCommandExceptionType(type -> Text.translatable("argument.nbt.array.invalid", type));
 	public static final char COMMA = ',';
 	public static final char COLON = ':';
 	private static final char SQUARE_OPEN_BRACKET = '[';

@@ -65,13 +65,13 @@ public class ScreenshotRecorder {
 				() -> {
 					try {
 						nativeImage.writeTo(file2);
-						Text text = Text.method_43470(file2.getName())
+						Text text = Text.literal(file2.getName())
 							.formatted(Formatting.UNDERLINE)
 							.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
-						messageReceiver.accept(Text.method_43469("screenshot.success", text));
+						messageReceiver.accept(Text.translatable("screenshot.success", text));
 					} catch (Exception var7) {
 						LOGGER.warn("Couldn't save screenshot", (Throwable)var7);
-						messageReceiver.accept(Text.method_43469("screenshot.failure", var7.getMessage()));
+						messageReceiver.accept(Text.translatable("screenshot.failure", var7.getMessage()));
 					} finally {
 						nativeImage.close();
 					}

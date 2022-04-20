@@ -65,7 +65,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Override
 	public Text getName() {
-		return (Text)(this.customName != null ? this.customName : Text.method_43471("block.minecraft.banner"));
+		return (Text)(this.customName != null ? this.customName : Text.translatable("block.minecraft.banner"));
 	}
 
 	@Nullable

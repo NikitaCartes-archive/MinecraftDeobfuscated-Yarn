@@ -183,7 +183,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	@Override
 	protected Text getContainerName() {
-		return Text.method_43471("container.shulkerBox");
+		return Text.translatable("container.shulkerBox");
 	}
 
 	@Override

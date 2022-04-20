@@ -37,7 +37,7 @@ public interface VertexConsumerProvider {
 		public VertexConsumer getBuffer(RenderLayer renderLayer) {
 			Optional<RenderLayer> optional = renderLayer.asOptional();
 			BufferBuilder bufferBuilder = this.getBufferInternal(renderLayer);
-			if (!Objects.equals(this.currentLayer, optional) || !renderLayer.method_43332()) {
+			if (!Objects.equals(this.currentLayer, optional) || !renderLayer.areVerticesNotShared()) {
 				if (this.currentLayer.isPresent()) {
 					RenderLayer renderLayer2 = (RenderLayer)this.currentLayer.get();
 					if (!this.layerBuffers.containsKey(renderLayer2)) {

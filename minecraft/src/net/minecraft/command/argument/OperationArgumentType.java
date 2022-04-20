@@ -18,8 +18,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class OperationArgumentType implements ArgumentType<OperationArgumentType.Operation> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("=", ">", "<");
-	private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(Text.method_43471("arguments.operation.invalid"));
-	private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("arguments.operation.div0"));
+	private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(Text.translatable("arguments.operation.invalid"));
+	private static final SimpleCommandExceptionType DIVISION_ZERO_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.operation.div0"));
 
 	public static OperationArgumentType operation() {
 		return new OperationArgumentType();

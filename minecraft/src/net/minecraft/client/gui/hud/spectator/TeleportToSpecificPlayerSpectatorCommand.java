@@ -32,7 +32,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 			this.skinId = DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
 		}
 
-		this.name = Text.method_43470(gameProfile.getName());
+		this.name = Text.literal(gameProfile.getName());
 	}
 
 	@Override

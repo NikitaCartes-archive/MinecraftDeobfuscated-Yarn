@@ -12,9 +12,9 @@ import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class SpectateCommand {
-	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.spectate.self"));
+	private static final SimpleCommandExceptionType SPECTATE_SELF_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.spectate.self"));
 	private static final DynamicCommandExceptionType NOT_SPECTATOR_EXCEPTION = new DynamicCommandExceptionType(
-		playerName -> Text.method_43469("commands.spectate.not_spectator", playerName)
+		playerName -> Text.translatable("commands.spectate.not_spectator", playerName)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -41,9 +41,9 @@ public class SpectateCommand {
 		} else {
 			player.setCameraEntity(entity);
 			if (entity != null) {
-				source.sendFeedback(Text.method_43469("commands.spectate.success.started", entity.getDisplayName()), false);
+				source.sendFeedback(Text.translatable("commands.spectate.success.started", entity.getDisplayName()), false);
 			} else {
-				source.sendFeedback(Text.method_43471("commands.spectate.success.stopped"), false);
+				source.sendFeedback(Text.translatable("commands.spectate.success.stopped"), false);
 			}
 
 			return 1;

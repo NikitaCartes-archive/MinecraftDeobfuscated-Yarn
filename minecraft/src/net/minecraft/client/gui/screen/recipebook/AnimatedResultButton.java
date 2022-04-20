@@ -27,7 +27,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	private static final float field_32414 = 15.0F;
 	private static final int field_32415 = 25;
 	public static final int field_32413 = 30;
-	private static final Text MORE_RECIPES_TEXT = Text.method_43471("gui.recipebook.moreRecipes");
+	private static final Text MORE_RECIPES_TEXT = Text.translatable("gui.recipebook.moreRecipes");
 	private AbstractRecipeScreenHandler<?> craftingScreenHandler;
 	private RecipeBook recipeBook;
 	private RecipeResultCollection resultCollection;
@@ -36,7 +36,7 @@ public class AnimatedResultButton extends ClickableWidget {
 	private int currentResultIndex;
 
 	public AnimatedResultButton() {
-		super(0, 0, 25, 25, ScreenTexts.field_39003);
+		super(0, 0, 25, 25, ScreenTexts.EMPTY);
 	}
 
 	public void showResultCollection(RecipeResultCollection resultCollection, RecipeBookResults results) {
@@ -142,11 +142,11 @@ public class AnimatedResultButton extends ClickableWidget {
 	@Override
 	public void appendNarrations(NarrationMessageBuilder builder) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
-		builder.put(NarrationPart.TITLE, Text.method_43469("narration.recipe", itemStack.getName()));
+		builder.put(NarrationPart.TITLE, Text.translatable("narration.recipe", itemStack.getName()));
 		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-			builder.put(NarrationPart.USAGE, Text.method_43471("narration.button.usage.hovered"), Text.method_43471("narration.recipe.usage.more"));
+			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));
 		} else {
-			builder.put(NarrationPart.USAGE, Text.method_43471("narration.button.usage.hovered"));
+			builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"));
 		}
 	}
 

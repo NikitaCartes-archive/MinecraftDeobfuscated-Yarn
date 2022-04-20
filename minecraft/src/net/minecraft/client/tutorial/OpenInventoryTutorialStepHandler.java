@@ -8,8 +8,8 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public class OpenInventoryTutorialStepHandler implements TutorialStepHandler {
 	private static final int DELAY = 600;
-	private static final Text TITLE = Text.method_43471("tutorial.open_inventory.title");
-	private static final Text DESCRIPTION = Text.method_43469("tutorial.open_inventory.description", TutorialManager.keyToText("inventory"));
+	private static final Text TITLE = Text.translatable("tutorial.open_inventory.title");
+	private static final Text DESCRIPTION = Text.translatable("tutorial.open_inventory.description", TutorialManager.keyToText("inventory"));
 	private final TutorialManager manager;
 	private TutorialToast toast;
 	private int ticks;

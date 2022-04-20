@@ -46,7 +46,7 @@ public class OptimizeWorldScreen extends Screen {
 	) {
 		try {
 			OptimizeWorldScreen var7;
-			try (SaveLoader saveLoader = client.method_41735().createSaveLoader(storageSession, false)) {
+			try (SaveLoader saveLoader = client.createIntegratedServerLoader().createSaveLoader(storageSession, false)) {
 				SaveProperties saveProperties = saveLoader.saveProperties();
 				storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
 				var7 = new OptimizeWorldScreen(callback, dataFixer, storageSession, saveProperties.getLevelInfo(), eraseCache, saveProperties.getGeneratorOptions());
@@ -67,7 +67,7 @@ public class OptimizeWorldScreen extends Screen {
 		boolean eraseCache,
 		GeneratorOptions generatorOptions
 	) {
-		super(Text.method_43469("optimizeWorld.title", levelInfo.getLevelName()));
+		super(Text.translatable("optimizeWorld.title", levelInfo.getLevelName()));
 		this.callback = callback;
 		this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
 	}
@@ -109,12 +109,12 @@ public class OptimizeWorldScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - 9 - 2, 10526880);
 		if (this.updater.getTotalChunkCount() > 0) {
 			fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
-			drawTextWithShadow(matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, Text.translatable("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 10526880);
 			drawTextWithShadow(
-				matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880
+				matrices, this.textRenderer, Text.translatable("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + 9 + 3, 10526880
 			);
 			drawTextWithShadow(
-				matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880
+				matrices, this.textRenderer, Text.translatable("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (9 + 3) * 2, 10526880
 			);
 			int m = 0;
 

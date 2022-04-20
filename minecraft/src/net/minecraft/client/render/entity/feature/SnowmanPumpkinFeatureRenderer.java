@@ -21,17 +21,15 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
-	private final BlockRenderManager field_38905;
-	private final ItemRenderer field_38906;
+	private final BlockRenderManager blockRenderManager;
+	private final ItemRenderer itemRenderer;
 
 	public SnowmanPumpkinFeatureRenderer(
-		FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> featureRendererContext,
-		BlockRenderManager blockRenderManager,
-		ItemRenderer itemRenderer
+		FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> context, BlockRenderManager blockRenderManager, ItemRenderer itemRenderer
 	) {
-		super(featureRendererContext);
-		this.field_38905 = blockRenderManager;
-		this.field_38906 = itemRenderer;
+		super(context);
+		this.blockRenderManager = blockRenderManager;
+		this.itemRenderer = itemRenderer;
 	}
 
 	public void render(
@@ -58,10 +56,10 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 				ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
 				if (bl) {
 					BlockState blockState = Blocks.CARVED_PUMPKIN.getDefaultState();
-					BakedModel bakedModel = this.field_38905.getModel(blockState);
+					BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
 					int n = LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0F);
 					matrixStack.translate(-0.5, -0.5, -0.5);
-					this.field_38905
+					this.blockRenderManager
 						.getModelRenderer()
 						.render(
 							matrixStack.peek(),
@@ -75,7 +73,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 							n
 						);
 				} else {
-					this.field_38906
+					this.itemRenderer
 						.renderItem(
 							snowGolemEntity,
 							itemStack,

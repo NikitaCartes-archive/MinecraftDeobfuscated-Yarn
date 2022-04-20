@@ -73,12 +73,12 @@ public class MultipartModelComponent {
 			} else if (set.size() == 1) {
 				if (object.has("OR")) {
 					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(object, "OR"))
-						.map(jsonElement -> deserializeSelector(jsonElement.getAsJsonObject()))
+						.map(json -> deserializeSelector(json.getAsJsonObject()))
 						.collect(Collectors.toList());
 					return new OrMultipartModelSelector(list);
 				} else if (object.has("AND")) {
 					List<MultipartModelSelector> list = (List<MultipartModelSelector>)Streams.stream(JsonHelper.getArray(object, "AND"))
-						.map(jsonElement -> deserializeSelector(jsonElement.getAsJsonObject()))
+						.map(json -> deserializeSelector(json.getAsJsonObject()))
 						.collect(Collectors.toList());
 					return new AndMultipartModelSelector(list);
 				} else {

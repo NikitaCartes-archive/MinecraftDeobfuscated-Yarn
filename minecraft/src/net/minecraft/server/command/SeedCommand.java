@@ -16,15 +16,15 @@ public class SeedCommand {
 					context -> {
 						long l = context.getSource().getWorld().getSeed();
 						Text text = Texts.bracketed(
-							Text.method_43470(String.valueOf(l))
+							Text.literal(String.valueOf(l))
 								.styled(
 									style -> style.withColor(Formatting.GREEN)
 											.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l)))
-											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43471("chat.copy.click")))
+											.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click")))
 											.withInsertion(String.valueOf(l))
 								)
 						);
-						context.getSource().sendFeedback(Text.method_43469("commands.seed.success", text), false);
+						context.getSource().sendFeedback(Text.translatable("commands.seed.success", text), false);
 						return (int)l;
 					}
 				)

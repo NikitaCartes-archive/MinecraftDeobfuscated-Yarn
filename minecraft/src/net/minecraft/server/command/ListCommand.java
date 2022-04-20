@@ -23,14 +23,14 @@ public class ListCommand {
 	}
 
 	private static int executeUuids(ServerCommandSource source) {
-		return execute(source, player -> Text.method_43469("commands.list.nameAndId", player.getName(), player.getGameProfile().getId()));
+		return execute(source, player -> Text.translatable("commands.list.nameAndId", player.getName(), player.getGameProfile().getId()));
 	}
 
 	private static int execute(ServerCommandSource source, Function<ServerPlayerEntity, Text> nameProvider) {
 		PlayerManager playerManager = source.getServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		Text text = Texts.join(list, nameProvider);
-		source.sendFeedback(Text.method_43469("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
+		source.sendFeedback(Text.translatable("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
 		return list.size();
 	}
 }

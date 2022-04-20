@@ -22,11 +22,11 @@ public class ItemCustomNameToComponentFix extends DataFix {
 			Dynamic<?> dynamic2 = (Dynamic<?>)optional.get();
 			Optional<String> optional2 = dynamic2.get("Name").asString().result();
 			if (optional2.isPresent()) {
-				dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.method_43470((String)optional2.get()))));
+				dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.literal((String)optional2.get()))));
 			} else {
 				Optional<String> optional3 = dynamic2.get("LocName").asString().result();
 				if (optional3.isPresent()) {
-					dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.method_43471((String)optional3.get()))));
+					dynamic2 = dynamic2.set("Name", dynamic2.createString(Text.Serializer.toJson(Text.translatable((String)optional3.get()))));
 					dynamic2 = dynamic2.remove("LocName");
 				}
 			}

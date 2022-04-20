@@ -44,9 +44,9 @@ public class CheckboxWidget extends PressableWidget {
 		builder.put(NarrationPart.TITLE, this.getNarrationMessage());
 		if (this.active) {
 			if (this.isFocused()) {
-				builder.put(NarrationPart.USAGE, Text.method_43471("narration.checkbox.usage.focused"));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.checkbox.usage.focused"));
 			} else {
-				builder.put(NarrationPart.USAGE, Text.method_43471("narration.checkbox.usage.hovered"));
+				builder.put(NarrationPart.USAGE, Text.translatable("narration.checkbox.usage.hovered"));
 			}
 		}
 	}

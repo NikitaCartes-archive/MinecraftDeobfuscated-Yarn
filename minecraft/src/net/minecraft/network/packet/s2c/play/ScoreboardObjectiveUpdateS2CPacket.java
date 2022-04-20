@@ -28,7 +28,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		this.name = buf.readString();
 		this.mode = buf.readByte();
 		if (this.mode != 0 && this.mode != 2) {
-			this.displayName = ScreenTexts.field_39003;
+			this.displayName = ScreenTexts.EMPTY;
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
 		} else {
 			this.displayName = buf.readText();

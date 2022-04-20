@@ -14,7 +14,7 @@ public class KickCommand {
 				.requires(source -> source.hasPermissionLevel(3))
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.players())
-						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), Text.method_43471("multiplayer.disconnect.kicked")))
+						.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), Text.translatable("multiplayer.disconnect.kicked")))
 						.then(
 							CommandManager.argument("reason", MessageArgumentType.message())
 								.executes(context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), MessageArgumentType.getMessage(context, "reason")))
@@ -26,7 +26,7 @@ public class KickCommand {
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) {
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.networkHandler.disconnect(reason);
-			source.sendFeedback(Text.method_43469("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+			source.sendFeedback(Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
 		}
 
 		return targets.size();

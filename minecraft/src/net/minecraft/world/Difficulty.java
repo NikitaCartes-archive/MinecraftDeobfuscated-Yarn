@@ -27,7 +27,7 @@ public enum Difficulty {
 	}
 
 	public Text getTranslatableName() {
-		return Text.method_43471("options.difficulty." + this.name);
+		return Text.translatable("options.difficulty." + this.name);
 	}
 
 	public static Difficulty byOrdinal(int ordinal) {

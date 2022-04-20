@@ -183,8 +183,8 @@ public class PeriodicNotificationManager
 								() -> SystemToast.add(
 										MinecraftClient.getInstance().getToastManager(),
 										SystemToast.Type.PERIODIC_NOTIFICATION,
-										Text.method_43469(entry.title, n),
-										Text.method_43469(entry.message, n)
+										Text.translatable(entry.title, n),
+										Text.translatable(entry.message, n)
 									)
 							);
 						return;

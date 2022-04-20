@@ -42,7 +42,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 	}
 
 	public void run() {
-		this.setTitle(Text.method_43471("mco.connect.connecting"));
+		this.setTitle(Text.translatable("mco.connect.connecting"));
 
 		RealmsServerAddress realmsServerAddress;
 		try {
@@ -60,7 +60,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					setScreen(
 						(Screen)(bl
 							? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
-							: new RealmsGenericErrorScreen(Text.method_43471("mco.brokenworld.nonowner.title"), Text.method_43471("mco.brokenworld.nonowner.error"), this.lastScreen))
+							: new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen))
 					);
 					return;
 				default:
@@ -69,7 +69,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					return;
 			}
 		} catch (TimeoutException var6) {
-			this.error(Text.method_43471("mco.errorMessage.connectionFailure"));
+			this.error(Text.translatable("mco.errorMessage.connectionFailure"));
 			return;
 		} catch (Exception var7) {
 			field_36356.error("Couldn't connect to world", (Throwable)var7);
@@ -115,7 +115,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getResourcePackProvider().clear();
 						field_36356.error("Failed to download resource pack from {}", address, throwable);
-						setScreen(new RealmsGenericErrorScreen(Text.method_43470("Failed to download resource pack!"), this.lastScreen));
+						setScreen(new RealmsGenericErrorScreen(Text.literal("Failed to download resource pack!"), this.lastScreen));
 						return null;
 					});
 					return;
@@ -131,8 +131,8 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		return new RealmsLongConfirmationScreen(
 			booleanConsumer,
 			RealmsLongConfirmationScreen.Type.INFO,
-			Text.method_43471("mco.configure.world.resourcepack.question.line1"),
-			Text.method_43471("mco.configure.world.resourcepack.question.line2"),
+			Text.translatable("mco.configure.world.resourcepack.question.line1"),
+			Text.translatable("mco.configure.world.resourcepack.question.line2"),
 			true
 		);
 	}

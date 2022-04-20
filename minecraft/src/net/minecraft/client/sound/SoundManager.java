@@ -112,7 +112,7 @@ public class SoundManager extends SinglePreparationResourceReloader<SoundManager
 		if (SharedConstants.isDevelopment) {
 			for (Identifier identifier : this.sounds.keySet()) {
 				WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-				if (!Texts.method_43476(weightedSoundSet.getSubtitle()) && Registry.SOUND_EVENT.containsId(identifier)) {
+				if (!Texts.hasTranslation(weightedSoundSet.getSubtitle()) && Registry.SOUND_EVENT.containsId(identifier)) {
 					LOGGER.error("Missing subtitle {} for sound event: {}", weightedSoundSet.getSubtitle(), identifier);
 				}
 			}

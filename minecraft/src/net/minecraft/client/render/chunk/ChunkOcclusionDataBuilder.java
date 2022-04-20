@@ -26,7 +26,7 @@ public class ChunkOcclusionDataBuilder {
 	private static final int field_32840 = -1;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BitSet closed = new BitSet(4096);
-	private static final int[] EDGE_POINTS = Util.make(new int[1352], is -> {
+	private static final int[] EDGE_POINTS = Util.make(new int[1352], edgePoints -> {
 		int i = 0;
 		int j = 15;
 		int k = 0;
@@ -35,7 +35,7 @@ public class ChunkOcclusionDataBuilder {
 			for (int m = 0; m < 16; m++) {
 				for (int n = 0; n < 16; n++) {
 					if (l == 0 || l == 15 || m == 0 || m == 15 || n == 0 || n == 15) {
-						is[k++] = pack(l, m, n);
+						edgePoints[k++] = pack(l, m, n);
 					}
 				}
 			}

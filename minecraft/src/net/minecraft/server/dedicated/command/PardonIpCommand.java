@@ -12,8 +12,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 public class PardonIpCommand {
-	private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.pardonip.invalid"));
-	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.pardonip.failed"));
+	private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.pardonip.invalid"));
+	private static final SimpleCommandExceptionType ALREADY_UNBANNED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.pardonip.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -37,7 +37,7 @@ public class PardonIpCommand {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {
 				bannedIpList.remove(target);
-				source.sendFeedback(Text.method_43469("commands.pardonip.success", target), true);
+				source.sendFeedback(Text.translatable("commands.pardonip.success", target), true);
 				return 1;
 			}
 		}

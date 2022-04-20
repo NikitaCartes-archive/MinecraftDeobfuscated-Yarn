@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class ExperienceCommand {
 	private static final SimpleCommandExceptionType SET_POINT_INVALID_EXCEPTION = new SimpleCommandExceptionType(
-		Text.method_43471("commands.experience.set.points.invalid")
+		Text.translatable("commands.experience.set.points.invalid")
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -122,7 +122,7 @@ public class ExperienceCommand {
 
 	private static int executeQuery(ServerCommandSource source, ServerPlayerEntity player, ExperienceCommand.Component component) {
 		int i = component.getter.applyAsInt(player);
-		source.sendFeedback(Text.method_43469("commands.experience.query." + component.name, player.getDisplayName(), i), false);
+		source.sendFeedback(Text.translatable("commands.experience.query." + component.name, player.getDisplayName(), i), false);
 		return i;
 	}
 
@@ -133,11 +133,11 @@ public class ExperienceCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				Text.method_43469("commands.experience.add." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()),
+				Text.translatable("commands.experience.add." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()),
 				true
 			);
 		} else {
-			source.sendFeedback(Text.method_43469("commands.experience.add." + component.name + ".success.multiple", amount, targets.size()), true);
+			source.sendFeedback(Text.translatable("commands.experience.add." + component.name + ".success.multiple", amount, targets.size()), true);
 		}
 
 		return targets.size();
@@ -157,13 +157,13 @@ public class ExperienceCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.method_43469(
+					Text.translatable(
 						"commands.experience.set." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.method_43469("commands.experience.set." + component.name + ".success.multiple", amount, targets.size()), true);
+				source.sendFeedback(Text.translatable("commands.experience.set." + component.name + ".success.multiple", amount, targets.size()), true);
 			}
 
 			return targets.size();

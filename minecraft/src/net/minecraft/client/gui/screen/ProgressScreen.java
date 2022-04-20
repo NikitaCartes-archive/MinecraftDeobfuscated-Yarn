@@ -36,7 +36,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 	@Override
 	public void setTitleAndTask(Text title) {
 		this.title = title;
-		this.setTask(Text.method_43471("progress.working"));
+		this.setTask(Text.translatable("progress.working"));
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 			}
 
 			if (this.task != null && this.progress != 0) {
-				drawCenteredText(matrices, this.textRenderer, Text.method_43473().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215);
+				drawCenteredText(matrices, this.textRenderer, Text.empty().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215);
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);

@@ -36,7 +36,7 @@ public class RealmsConnection {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(true);
 		minecraftClient.loadBlockList();
-		NarratorManager.INSTANCE.narrate(Text.method_43471("mco.connect.success"));
+		NarratorManager.INSTANCE.narrate(Text.translatable("mco.connect.success"));
 		final String string = address.getAddress();
 		final int i = address.getPort();
 		(new Thread("Realms-connect-task") {
@@ -82,7 +82,7 @@ public class RealmsConnection {
 						}
 
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.method_43469("disconnect.genericReason", string)
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string)
 						);
 						minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
 					}
@@ -94,7 +94,7 @@ public class RealmsConnection {
 	public void abort() {
 		this.aborted = true;
 		if (this.connection != null && this.connection.isOpen()) {
-			this.connection.disconnect(Text.method_43471("disconnect.genericReason"));
+			this.connection.disconnect(Text.translatable("disconnect.genericReason"));
 			this.connection.handleDisconnection();
 		}
 	}

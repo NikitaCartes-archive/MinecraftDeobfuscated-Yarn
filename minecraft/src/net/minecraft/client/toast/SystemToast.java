@@ -136,15 +136,15 @@ public class SystemToast implements Toast {
 	}
 
 	public static void addWorldAccessFailureToast(MinecraftClient client, String worldName) {
-		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, Text.method_43471("selectWorld.access_failure"), Text.method_43470(worldName));
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, Text.translatable("selectWorld.access_failure"), Text.literal(worldName));
 	}
 
 	public static void addWorldDeleteFailureToast(MinecraftClient client, String worldName) {
-		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, Text.method_43471("selectWorld.delete_failure"), Text.method_43470(worldName));
+		add(client.getToastManager(), SystemToast.Type.WORLD_ACCESS_FAILURE, Text.translatable("selectWorld.delete_failure"), Text.literal(worldName));
 	}
 
 	public static void addPackCopyFailure(MinecraftClient client, String directory) {
-		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, Text.method_43471("pack.copyFailure"), Text.method_43470(directory));
+		add(client.getToastManager(), SystemToast.Type.PACK_COPY_FAILURE, Text.translatable("pack.copyFailure"), Text.literal(directory));
 	}
 
 	@Environment(EnvType.CLIENT)

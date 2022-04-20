@@ -10,7 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 
 public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
-	private static final Text REQUEST_HANDLED = Text.method_43471("multiplayer.status.request_handled");
+	private static final Text REQUEST_HANDLED = Text.translatable("multiplayer.status.request_handled");
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 	private boolean responseSent;

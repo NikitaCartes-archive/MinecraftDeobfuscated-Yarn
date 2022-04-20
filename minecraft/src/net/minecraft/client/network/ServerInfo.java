@@ -23,7 +23,7 @@ public class ServerInfo {
 	public Text label;
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
-	public Text version = Text.method_43470(SharedConstants.getGameVersion().getName());
+	public Text version = Text.literal(SharedConstants.getGameVersion().getName());
 	public boolean online;
 	public List<Text> playerListSummary = Collections.emptyList();
 	private ServerInfo.ResourcePackPolicy resourcePackPolicy = ServerInfo.ResourcePackPolicy.PROMPT;
@@ -137,7 +137,7 @@ public class ServerInfo {
 		private final Text name;
 
 		private ResourcePackPolicy(String name) {
-			this.name = Text.method_43471("addServer.resourcePack." + name);
+			this.name = Text.translatable("addServer.resourcePack." + name);
 		}
 
 		public Text getName() {
