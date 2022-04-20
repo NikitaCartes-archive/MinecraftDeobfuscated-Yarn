@@ -61,7 +61,7 @@ extends EntryListWidget<E> {
                 this.appendNarrations(builder, entry2);
             }
         }
-        builder.put(NarrationPart.USAGE, (Text)Text.method_43471("narration.component_list.usage"));
+        builder.put(NarrationPart.USAGE, (Text)Text.translatable("narration.component_list.usage"));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -105,9 +105,9 @@ extends EntryListWidget<E> {
                     this.focusedSelectable = selectedElementNarrationData.selectable;
                 }
                 if (list.size() > 1) {
-                    builder.put(NarrationPart.POSITION, (Text)Text.method_43469("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
+                    builder.put(NarrationPart.POSITION, (Text)Text.translatable("narrator.position.object_list", selectedElementNarrationData.index + 1, list.size()));
                     if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
-                        builder.put(NarrationPart.USAGE, (Text)Text.method_43471("narration.component_list.usage"));
+                        builder.put(NarrationPart.USAGE, (Text)Text.translatable("narration.component_list.usage"));
                     }
                 }
                 selectedElementNarrationData.selectable.appendNarrations(builder.nextMessage());

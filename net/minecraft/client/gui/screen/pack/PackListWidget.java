@@ -30,8 +30,8 @@ import net.minecraft.util.Language;
 public class PackListWidget
 extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
     static final Identifier RESOURCE_PACKS_TEXTURE = new Identifier("textures/gui/resource_packs.png");
-    static final Text INCOMPATIBLE = Text.method_43471("pack.incompatible");
-    static final Text INCOMPATIBLE_CONFIRM = Text.method_43471("pack.incompatible.confirm.title");
+    static final Text INCOMPATIBLE = Text.translatable("pack.incompatible");
+    static final Text INCOMPATIBLE_CONFIRM = Text.translatable("pack.incompatible.confirm.title");
     private final Text title;
 
     public PackListWidget(MinecraftClient client, int width, int height, Text title) {
@@ -44,7 +44,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
 
     @Override
     protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
-        MutableText text = Text.method_43473().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
+        MutableText text = Text.empty().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
         this.client.textRenderer.draw(matrices, text, (float)(x + this.width / 2 - this.client.textRenderer.getWidth(text) / 2), (float)Math.min(this.top + 3, y), 0xFFFFFF);
     }
 
@@ -105,7 +105,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
 
         @Override
         public Text getNarration() {
-            return Text.method_43469("narrator.select", this.pack.getDisplayName());
+            return Text.translatable("narrator.select", this.pack.getDisplayName());
         }
 
         @Override

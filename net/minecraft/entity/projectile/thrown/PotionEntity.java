@@ -100,7 +100,7 @@ implements FlyingItemEntity {
         List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
         boolean bl2 = bl = potion == Potions.WATER && list.isEmpty();
         if (bl) {
-            this.damageEntitiesHurtByWater();
+            this.applyWater();
         } else if (!list.isEmpty()) {
             if (this.isLingering()) {
                 this.applyLingeringPotion(itemStack, potion);
@@ -113,7 +113,7 @@ implements FlyingItemEntity {
         this.discard();
     }
 
-    private void damageEntitiesHurtByWater() {
+    private void applyWater() {
         Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
         List<LivingEntity> list = this.world.getEntitiesByClass(LivingEntity.class, box, WATER_HURTS);
         if (!list.isEmpty()) {

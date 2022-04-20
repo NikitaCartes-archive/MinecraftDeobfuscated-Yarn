@@ -22,8 +22,8 @@ import net.minecraft.util.Identifier;
 public class CommandFunctionArgumentType
 implements ArgumentType<FunctionArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "#foo");
-    private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("arguments.function.tag.unknown", id));
-    private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("arguments.function.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("arguments.function.tag.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("arguments.function.unknown", id));
 
     public static CommandFunctionArgumentType commandFunction() {
         return new CommandFunctionArgumentType();

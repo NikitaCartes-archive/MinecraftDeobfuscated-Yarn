@@ -37,7 +37,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(Text.method_43471("mco.configure.world.opening"));
+        this.setTitle(Text.translatable("mco.configure.world.opening"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         for (int i = 0; i < 25; ++i) {
             if (this.aborted()) {

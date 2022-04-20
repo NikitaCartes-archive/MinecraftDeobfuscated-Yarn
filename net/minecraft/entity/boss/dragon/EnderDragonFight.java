@@ -76,7 +76,7 @@ public class EnderDragonFight {
     private static final int field_31448 = 96;
     public static final int SPAWN_Y = 128;
     private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maxDistance(0.0, 128.0, 0.0, 192.0));
-    private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(Text.method_43471("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS).setDragonMusic(true).setThickenFog(true);
+    private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(Text.translatable("entity.minecraft.ender_dragon"), BossBar.Color.PINK, BossBar.Style.PROGRESS).setDragonMusic(true).setThickenFog(true);
     private final ServerWorld world;
     private final ObjectArrayList<Integer> gateways = new ObjectArrayList();
     private final BlockPattern endPortalPattern;

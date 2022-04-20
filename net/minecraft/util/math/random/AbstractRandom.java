@@ -4,10 +4,10 @@
 package net.minecraft.util.math.random;
 
 import io.netty.util.internal.ThreadLocalRandom;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.BlockingSimpleRandom;
 import net.minecraft.util.math.random.RandomDeriver;
 import net.minecraft.util.math.random.SimpleRandom;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 
 /**
  * A reimplementation of {@link java.util.Random}.
@@ -74,8 +74,8 @@ public interface AbstractRandom {
 
     public double nextGaussian();
 
-    default public double method_43385(double d, double e) {
-        return d + e * (this.nextDouble() - this.nextDouble());
+    default public double nextPredictable(double base, double variance) {
+        return base + variance * (this.nextDouble() - this.nextDouble());
     }
 
     default public void skip(int count) {

@@ -29,7 +29,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(Text.method_43471("mco.connect.connecting"));
+        this.setTitle(Text.translatable("mco.connect.connecting"));
         this.realmsConnect.connect(this.server, ServerAddress.parse(this.address.address));
     }
 

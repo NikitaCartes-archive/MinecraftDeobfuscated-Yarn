@@ -287,7 +287,7 @@ public class Mouse {
         this.cursorLocked = true;
         this.x = this.client.getWindow().getWidth() / 2;
         this.y = this.client.getWindow().getHeight() / 2;
-        InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212995, this.x, this.y);
+        InputUtil.setCursorParameters(this.client.getWindow().getHandle(), InputUtil.GLFW_CURSOR_DISABLED, this.x, this.y);
         this.client.setScreen(null);
         this.client.attackCooldown = 10000;
         this.hasResolutionChanged = true;
@@ -300,7 +300,7 @@ public class Mouse {
         this.cursorLocked = false;
         this.x = this.client.getWindow().getWidth() / 2;
         this.y = this.client.getWindow().getHeight() / 2;
-        InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212993, this.x, this.y);
+        InputUtil.setCursorParameters(this.client.getWindow().getHandle(), InputUtil.GLFW_CURSOR_NORMAL, this.x, this.y);
     }
 
     public void setResolutionChanged() {

@@ -130,7 +130,7 @@ extends Entity {
      * @param y the Y component of the direction vector
      */
     public void setVelocity(double x, double y, double z, float speed, float divergence) {
-        Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.method_43385(0.0, 0.0172275 * (double)divergence), this.random.method_43385(0.0, 0.0172275 * (double)divergence), this.random.method_43385(0.0, 0.0172275 * (double)divergence)).multiply(speed);
+        Vec3d vec3d = new Vec3d(x, y, z).normalize().add(this.random.nextPredictable(0.0, 0.0172275 * (double)divergence), this.random.nextPredictable(0.0, 0.0172275 * (double)divergence), this.random.nextPredictable(0.0, 0.0172275 * (double)divergence)).multiply(speed);
         this.setVelocity(vec3d);
         double d = vec3d.horizontalLength();
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));

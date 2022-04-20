@@ -29,14 +29,14 @@ extends GameOptionsScreen {
     private ButtonWidget resetAllButton;
 
     public KeybindsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.method_43471("controls.keybinds.title"));
+        super(parent, gameOptions, Text.translatable("controls.keybinds.title"));
     }
 
     @Override
     protected void init() {
         this.controlsList = new ControlsListWidget(this, this.client);
         this.addSelectableChild(this.controlsList);
-        this.resetAllButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, Text.method_43471("controls.resetAll"), button -> {
+        this.resetAllButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, Text.translatable("controls.resetAll"), button -> {
             for (KeyBinding keyBinding : this.gameOptions.allKeys) {
                 keyBinding.setBoundKey(keyBinding.getDefaultKey());
             }

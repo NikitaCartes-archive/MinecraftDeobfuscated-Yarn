@@ -32,7 +32,7 @@ extends Screen {
     protected DialogScreen(Text title, List<Text> messages, ImmutableList<ChoiceButton> choiceButtons) {
         super(title);
         this.message = StringVisitable.concat(messages);
-        this.narrationMessage = ScreenTexts.joinSentences(title, Texts.join(messages, ScreenTexts.field_39003));
+        this.narrationMessage = ScreenTexts.joinSentences(title, Texts.join(messages, ScreenTexts.EMPTY));
         this.choiceButtons = choiceButtons;
     }
 

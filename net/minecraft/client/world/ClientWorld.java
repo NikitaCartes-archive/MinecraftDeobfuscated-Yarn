@@ -331,7 +331,7 @@ extends World {
 
     @Override
     public void disconnect() {
-        this.networkHandler.getConnection().disconnect(Text.method_43471("multiplayer.status.quitting"));
+        this.networkHandler.getConnection().disconnect(Text.translatable("multiplayer.status.quitting"));
     }
 
     public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {

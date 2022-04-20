@@ -23,8 +23,8 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 public class TeamMsgCommand {
-    private static final Style STYLE = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43471("chat.type.team.hover"))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
-    private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.teammsg.failed.noteam"));
+    private static final Style STYLE = Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.type.team.hover"))).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
+    private static final SimpleCommandExceptionType NO_TEAM_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.teammsg.failed.noteam"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralCommandNode<ServerCommandSource> literalCommandNode = dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("teammsg").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("message", MessageArgumentType.message()).executes(context -> TeamMsgCommand.execute((ServerCommandSource)context.getSource(), MessageArgumentType.getMessage(context, "message")))));
@@ -41,11 +41,11 @@ public class TeamMsgCommand {
         List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
-                serverPlayerEntity.sendSystemMessage(Text.method_43469("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
+                serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
                 continue;
             }
             if (serverPlayerEntity.getScoreboardTeam() != team) continue;
-            serverPlayerEntity.sendSystemMessage(Text.method_43469("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
+            serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
         }
         return list.size();
     }

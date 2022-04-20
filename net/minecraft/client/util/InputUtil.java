@@ -196,7 +196,7 @@ public class InputUtil {
 
     public static void setCursorParameters(long handler, int inputModeValue, double x, double y) {
         GLFW.glfwSetCursorPos(handler, x, y);
-        GLFW.glfwSetInputMode(handler, 208897, inputModeValue);
+        GLFW.glfwSetInputMode(handler, GLFW_CURSOR, inputModeValue);
     }
 
     public static boolean isRawMouseMotionSupported() {
@@ -235,13 +235,13 @@ public class InputUtil {
     public static enum Type {
         KEYSYM("key.keyboard", (keyCode, translationKey) -> {
             String string = GLFW.glfwGetKeyName(keyCode, -1);
-            return string != null ? Text.method_43470(string) : Text.method_43471(translationKey);
+            return string != null ? Text.literal(string) : Text.translatable(translationKey);
         }),
         SCANCODE("scancode", (scanCode, translationKey) -> {
             String string = GLFW.glfwGetKeyName(-1, scanCode);
-            return string != null ? Text.method_43470(string) : Text.method_43471(translationKey);
+            return string != null ? Text.literal(string) : Text.translatable(translationKey);
         }),
-        MOUSE("key.mouse", (buttonCode, translationKey) -> Language.getInstance().hasTranslation((String)translationKey) ? Text.method_43471(translationKey) : Text.method_43469("key.mouse", buttonCode + 1));
+        MOUSE("key.mouse", (buttonCode, translationKey) -> Language.getInstance().hasTranslation((String)translationKey) ? Text.translatable(translationKey) : Text.translatable("key.mouse", buttonCode + 1));
 
         private final Int2ObjectMap<Key> map = new Int2ObjectOpenHashMap<Key>();
         final String name;

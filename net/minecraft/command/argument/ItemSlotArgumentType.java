@@ -24,7 +24,7 @@ import net.minecraft.util.Util;
 public class ItemSlotArgumentType
 implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("container.5", "12", "weapon");
-    private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("slot.unknown", name));
+    private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(name -> Text.translatable("slot.unknown", name));
     private static final Map<String, Integer> SLOT_NAMES_TO_SLOT_COMMAND_ID = Util.make(Maps.newHashMap(), map -> {
         int i;
         for (i = 0; i < 54; ++i) {

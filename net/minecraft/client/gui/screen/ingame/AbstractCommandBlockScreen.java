@@ -22,9 +22,9 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen
 extends Screen {
-    private static final Text SET_COMMAND_TEXT = Text.method_43471("advMode.setCommand");
-    private static final Text COMMAND_TEXT = Text.method_43471("advMode.command");
-    private static final Text PREVIOUS_OUTPUT_TEXT = Text.method_43471("advMode.previousOutput");
+    private static final Text SET_COMMAND_TEXT = Text.translatable("advMode.setCommand");
+    private static final Text COMMAND_TEXT = Text.translatable("advMode.command");
+    private static final Text PREVIOUS_OUTPUT_TEXT = Text.translatable("advMode.previousOutput");
     protected TextFieldWidget consoleCommandTextField;
     protected TextFieldWidget previousOutputTextField;
     protected ButtonWidget doneButton;
@@ -51,12 +51,12 @@ extends Screen {
         this.doneButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, button -> this.commitAndClose()));
         this.cancelButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, button -> this.close()));
         boolean bl = this.getCommandExecutor().isTrackingOutput();
-        this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Text.method_43470("O"), Text.method_43470("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.method_43471("advMode.trackOutput"), (button, trackOutput) -> {
+        this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Text.literal("O"), Text.literal("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.translatable("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
             commandBlockExecutor.setTrackOutput((boolean)trackOutput);
             this.setPreviousOutputText((boolean)trackOutput);
         }));
-        this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, (Text)Text.method_43471("advMode.command")){
+        this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, (Text)Text.translatable("advMode.command")){
 
             @Override
             protected MutableText getNarrationMessage() {
@@ -66,7 +66,7 @@ extends Screen {
         this.consoleCommandTextField.setMaxLength(32500);
         this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
         this.addSelectableChild(this.consoleCommandTextField);
-        this.previousOutputTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, Text.method_43471("advMode.previousOutput"));
+        this.previousOutputTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, this.getTrackOutputButtonHeight(), 276, 20, Text.translatable("advMode.previousOutput"));
         this.previousOutputTextField.setMaxLength(32500);
         this.previousOutputTextField.setEditable(false);
         this.previousOutputTextField.setText("-");

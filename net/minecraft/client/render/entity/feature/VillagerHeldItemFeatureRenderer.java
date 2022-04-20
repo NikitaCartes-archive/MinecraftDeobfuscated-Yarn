@@ -20,11 +20,11 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class VillagerHeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    private final HeldItemRenderer field_38896;
+    private final HeldItemRenderer heldItemRenderer;
 
-    public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, HeldItemRenderer heldItemRenderer) {
-        super(featureRendererContext);
-        this.field_38896 = heldItemRenderer;
+    public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, M> context, HeldItemRenderer heldItemRenderer) {
+        super(context);
+        this.heldItemRenderer = heldItemRenderer;
     }
 
     @Override
@@ -33,7 +33,7 @@ extends FeatureRenderer<T, M> {
         matrixStack.translate(0.0, 0.4f, -0.4f);
         matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.MAINHAND);
-        this.field_38896.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        this.heldItemRenderer.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

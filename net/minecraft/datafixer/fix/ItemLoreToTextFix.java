@@ -33,7 +33,7 @@ extends DataFix {
     }
 
     private static String componentize(String string) {
-        return Text.Serializer.toJson(Text.method_43470(string));
+        return Text.Serializer.toJson(Text.literal(string));
     }
 }
 

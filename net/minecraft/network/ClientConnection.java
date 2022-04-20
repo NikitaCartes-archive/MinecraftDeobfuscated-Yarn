@@ -135,7 +135,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
 
     @Override
     public void channelInactive(ChannelHandlerContext context) {
-        this.disconnect(Text.method_43471("disconnect.endOfStream"));
+        this.disconnect(Text.translatable("disconnect.endOfStream"));
     }
 
     @Override
@@ -151,9 +151,9 @@ extends SimpleChannelInboundHandler<Packet<?>> {
         }
         if (ex instanceof TimeoutException) {
             LOGGER.debug("Timeout", ex);
-            this.disconnect(Text.method_43471("disconnect.timeout"));
+            this.disconnect(Text.translatable("disconnect.timeout"));
         } else {
-            MutableText text = Text.method_43469("disconnect.genericReason", "Internal Exception: " + ex);
+            MutableText text = Text.translatable("disconnect.genericReason", "Internal Exception: " + ex);
             if (bl) {
                 LOGGER.debug("Failed to sent packet", ex);
                 NetworkState networkState = this.getState();
@@ -174,10 +174,10 @@ extends SimpleChannelInboundHandler<Packet<?>> {
                 ClientConnection.handlePacket(packet, this.packetListener);
             } catch (OffThreadException offThreadException) {
             } catch (RejectedExecutionException rejectedExecutionException) {
-                this.disconnect(Text.method_43471("multiplayer.disconnect.server_shutdown"));
+                this.disconnect(Text.translatable("multiplayer.disconnect.server_shutdown"));
             } catch (ClassCastException classCastException) {
                 LOGGER.error("Received {} that couldn't be processed", (Object)packet.getClass(), (Object)classCastException);
-                this.disconnect(Text.method_43471("multiplayer.disconnect.invalid_packet"));
+                this.disconnect(Text.translatable("multiplayer.disconnect.invalid_packet"));
             }
             ++this.packetsReceivedCounter;
         }
@@ -433,7 +433,7 @@ extends SimpleChannelInboundHandler<Packet<?>> {
             if (this.getDisconnectReason() != null) {
                 this.getPacketListener().onDisconnected(this.getDisconnectReason());
             } else if (this.getPacketListener() != null) {
-                this.getPacketListener().onDisconnected(Text.method_43471("multiplayer.disconnect.generic"));
+                this.getPacketListener().onDisconnected(Text.translatable("multiplayer.disconnect.generic"));
             }
         }
     }

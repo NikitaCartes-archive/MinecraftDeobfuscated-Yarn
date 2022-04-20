@@ -18,8 +18,8 @@ import net.minecraft.util.math.MathHelper;
 public class AngleArgumentType
 implements ArgumentType<Angle> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "~", "~-5");
-    public static final SimpleCommandExceptionType INCOMPLETE_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.angle.incomplete"));
-    public static final SimpleCommandExceptionType INVALID_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.angle.invalid"));
+    public static final SimpleCommandExceptionType INCOMPLETE_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.angle.incomplete"));
+    public static final SimpleCommandExceptionType INVALID_ANGLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.angle.invalid"));
 
     public static AngleArgumentType angle() {
         return new AngleArgumentType();

@@ -8,19 +8,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-import net.minecraft.class_7419;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.NbtDataSource;
 import org.jetbrains.annotations.Nullable;
 
-public record EntityNbtText(String rawSelector, @Nullable EntitySelector selector) implements class_7419
+public record EntityNbtDataSource(String rawSelector, @Nullable EntitySelector selector) implements NbtDataSource
 {
-    public EntityNbtText(String rawPath) {
-        this(rawPath, EntityNbtText.parseSelector(rawPath));
+    public EntityNbtDataSource(String rawPath) {
+        this(rawPath, EntityNbtDataSource.parseSelector(rawPath));
     }
 
     @Nullable
@@ -34,9 +34,9 @@ public record EntityNbtText(String rawSelector, @Nullable EntitySelector selecto
     }
 
     @Override
-    public Stream<NbtCompound> toNbt(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+    public Stream<NbtCompound> get(ServerCommandSource source) throws CommandSyntaxException {
         if (this.selector != null) {
-            List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
+            List<? extends Entity> list = this.selector.getEntities(source);
             return list.stream().map(NbtPredicate::entityToNbt);
         }
         return Stream.empty();
@@ -56,9 +56,9 @@ public record EntityNbtText(String rawSelector, @Nullable EntitySelector selecto
         if (this == object) {
             return true;
         }
-        if (!(object instanceof EntityNbtText)) return false;
-        EntityNbtText entityNbtText = (EntityNbtText)object;
-        if (!this.rawSelector.equals(entityNbtText.rawSelector)) return false;
+        if (!(object instanceof EntityNbtDataSource)) return false;
+        EntityNbtDataSource entityNbtDataSource = (EntityNbtDataSource)object;
+        if (!this.rawSelector.equals(entityNbtDataSource.rawSelector)) return false;
         return true;
     }
 

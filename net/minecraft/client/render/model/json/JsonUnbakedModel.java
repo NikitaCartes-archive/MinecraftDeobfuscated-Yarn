@@ -192,15 +192,15 @@ implements UnbakedModel {
                 set2.add(spriteIdentifier);
             }
         }
-        this.overrides.forEach(modelOverride -> {
-            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
+        this.overrides.forEach(override -> {
+            UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(override.getModelId());
             if (Objects.equals(unbakedModel, this)) {
                 return;
             }
             set2.addAll(unbakedModel.getTextureDependencies(unbakedModelGetter, unresolvedTextureReferences));
         });
         if (this.getRootModel() == ModelLoader.GENERATION_MARKER) {
-            ItemModelGenerator.LAYERS.forEach(string -> set2.add(this.resolveSprite((String)string)));
+            ItemModelGenerator.LAYERS.forEach(layer -> set2.add(this.resolveSprite((String)layer)));
         }
         return set2;
     }
@@ -410,8 +410,8 @@ implements UnbakedModel {
     @Environment(value=EnvType.CLIENT)
     public static class UncheckedModelException
     extends RuntimeException {
-        public UncheckedModelException(String string) {
-            super(string);
+        public UncheckedModelException(String message) {
+            super(message);
         }
     }
 }

@@ -19,7 +19,7 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen
 extends RealmsScreen {
-    private static final Text RESET_SEED_TEXT = Text.method_43471("mco.reset.world.seed");
+    private static final Text RESET_SEED_TEXT = Text.translatable("mco.reset.world.seed");
     private final Consumer<ResetWorldInfo> callback;
     private TextFieldWidget seedEdit;
     private RealmsWorldGeneratorType generatorType = RealmsWorldGeneratorType.DEFAULT;
@@ -27,7 +27,7 @@ extends RealmsScreen {
     private final Text parentTitle;
 
     public RealmsResetNormalWorldScreen(Consumer<ResetWorldInfo> callback, Text parentTitle) {
-        super(Text.method_43471("mco.reset.world.generate"));
+        super(Text.translatable("mco.reset.world.generate"));
         this.callback = callback;
         this.parentTitle = parentTitle;
     }
@@ -41,14 +41,14 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsResetNormalWorldScreen.row(2), 200, 20, null, Text.method_43471("mco.reset.world.seed"));
+        this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsResetNormalWorldScreen.row(2), 200, 20, null, Text.translatable("mco.reset.world.seed"));
         this.seedEdit.setMaxLength(32);
         this.addSelectableChild(this.seedEdit);
         this.setInitialFocus(this.seedEdit);
-        this.addDrawableChild(CyclingButtonWidget.builder(RealmsWorldGeneratorType::getText).values((RealmsWorldGeneratorType[])RealmsWorldGeneratorType.values()).initially(this.generatorType).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, Text.method_43471("selectWorld.mapType"), (button, generatorType) -> {
+        this.addDrawableChild(CyclingButtonWidget.builder(RealmsWorldGeneratorType::getText).values((RealmsWorldGeneratorType[])RealmsWorldGeneratorType.values()).initially(this.generatorType).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, Text.translatable("selectWorld.mapType"), (button, generatorType) -> {
             this.generatorType = generatorType;
         }));
-        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.mapFeatures).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, Text.method_43471("selectWorld.mapFeatures"), (button, mapFeatures) -> {
+        this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.mapFeatures).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> {
             this.mapFeatures = mapFeatures;
         }));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20, this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))));

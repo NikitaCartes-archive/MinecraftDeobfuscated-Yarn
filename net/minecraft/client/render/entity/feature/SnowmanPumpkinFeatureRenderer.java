@@ -27,13 +27,13 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class SnowmanPumpkinFeatureRenderer
 extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> {
-    private final BlockRenderManager field_38905;
-    private final ItemRenderer field_38906;
+    private final BlockRenderManager blockRenderManager;
+    private final ItemRenderer itemRenderer;
 
-    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> featureRendererContext, BlockRenderManager blockRenderManager, ItemRenderer itemRenderer) {
-        super(featureRendererContext);
-        this.field_38905 = blockRenderManager;
-        this.field_38906 = itemRenderer;
+    public SnowmanPumpkinFeatureRenderer(FeatureRendererContext<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> context, BlockRenderManager blockRenderManager, ItemRenderer itemRenderer) {
+        super(context);
+        this.blockRenderManager = blockRenderManager;
+        this.itemRenderer = itemRenderer;
     }
 
     @Override
@@ -55,12 +55,12 @@ extends FeatureRenderer<SnowGolemEntity, SnowGolemEntityModel<SnowGolemEntity>> 
         ItemStack itemStack = new ItemStack(Blocks.CARVED_PUMPKIN);
         if (bl) {
             BlockState blockState = Blocks.CARVED_PUMPKIN.getDefaultState();
-            BakedModel bakedModel = this.field_38905.getModel(blockState);
+            BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
             int n = LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f);
             matrixStack.translate(-0.5, -0.5, -0.5);
-            this.field_38905.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, n);
+            this.blockRenderManager.getModelRenderer().render(matrixStack.peek(), vertexConsumerProvider.getBuffer(RenderLayer.getOutline(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)), blockState, bakedModel, 0.0f, 0.0f, 0.0f, i, n);
         } else {
-            this.field_38906.renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f), snowGolemEntity.getId());
+            this.itemRenderer.renderItem(snowGolemEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, snowGolemEntity.world, i, LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0f), snowGolemEntity.getId());
         }
         matrixStack.pop();
     }

@@ -24,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class BanIpCommand {
     public static final Pattern PATTERN = Pattern.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-    private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.banip.invalid"));
-    private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.banip.failed"));
+    private static final SimpleCommandExceptionType INVALID_IP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.banip.invalid"));
+    private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.banip.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("ban-ip").requires(source -> source.hasPermissionLevel(3))).then(((RequiredArgumentBuilder)CommandManager.argument("target", StringArgumentType.word()).executes(context -> BanIpCommand.checkIp((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "target"), null))).then(CommandManager.argument("reason", MessageArgumentType.message()).executes(context -> BanIpCommand.checkIp((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "target"), MessageArgumentType.getMessage(context, "reason"))))));
@@ -51,12 +51,12 @@ public class BanIpCommand {
         List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayersByIp(targetIp);
         BannedIpEntry bannedIpEntry = new BannedIpEntry(targetIp, null, source.getName(), null, reason == null ? null : reason.getString());
         bannedIpList.add(bannedIpEntry);
-        source.sendFeedback(Text.method_43469("commands.banip.success", targetIp, bannedIpEntry.getReason()), true);
+        source.sendFeedback(Text.translatable("commands.banip.success", targetIp, bannedIpEntry.getReason()), true);
         if (!list.isEmpty()) {
-            source.sendFeedback(Text.method_43469("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);
+            source.sendFeedback(Text.translatable("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);
         }
         for (ServerPlayerEntity serverPlayerEntity : list) {
-            serverPlayerEntity.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.ip_banned"));
+            serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.ip_banned"));
         }
         return list.size();
     }

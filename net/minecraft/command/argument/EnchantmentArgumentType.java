@@ -23,7 +23,7 @@ import net.minecraft.util.registry.Registry;
 public class EnchantmentArgumentType
 implements ArgumentType<Enchantment> {
     private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
-    public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("enchantment.unknown", id));
+    public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("enchantment.unknown", id));
 
     public static EnchantmentArgumentType enchantment() {
         return new EnchantmentArgumentType();

@@ -39,9 +39,9 @@ extends EntityDamageSource {
         String string = "death.attack." + this.name;
         String string2 = string + ".item";
         if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-            return Text.method_43469(string2, entity.getDisplayName(), text, itemStack.toHoverableText());
+            return Text.translatable(string2, entity.getDisplayName(), text, itemStack.toHoverableText());
         }
-        return Text.method_43469(string, entity.getDisplayName(), text);
+        return Text.translatable(string, entity.getDisplayName(), text);
     }
 }
 

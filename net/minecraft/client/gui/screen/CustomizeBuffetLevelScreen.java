@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CustomizeBuffetLevelScreen
 extends Screen {
-    private static final Text BUFFET_BIOME_TEXT = Text.method_43471("createWorld.customize.buffet.biome");
+    private static final Text BUFFET_BIOME_TEXT = Text.translatable("createWorld.customize.buffet.biome");
     private final Screen parent;
     private final Consumer<RegistryEntry<Biome>> onDone;
     final Registry<Biome> biomeRegistry;
@@ -38,7 +38,7 @@ extends Screen {
     private ButtonWidget confirmButton;
 
     public CustomizeBuffetLevelScreen(Screen parent, GeneratorOptionsHolder generatorOptionsHolder, Consumer<RegistryEntry<Biome>> onDone) {
-        super(Text.method_43471("createWorld.customize.buffet.title"));
+        super(Text.translatable("createWorld.customize.buffet.title"));
         this.parent = parent;
         this.onDone = onDone;
         this.biomeRegistry = generatorOptionsHolder.dynamicRegistryManager().get(Registry.BIOME_KEY);
@@ -110,12 +110,12 @@ extends Screen {
                 this.biome = biome;
                 Identifier identifier = biome.registryKey().getValue();
                 String string = identifier.toTranslationKey("biome");
-                this.text = Language.getInstance().hasTranslation(string) ? Text.method_43471(string) : Text.method_43470(identifier.toString());
+                this.text = Language.getInstance().hasTranslation(string) ? Text.translatable(string) : Text.literal(identifier.toString());
             }
 
             @Override
             public Text getNarration() {
-                return Text.method_43469("narrator.select", this.text);
+                return Text.translatable("narrator.select", this.text);
             }
 
             @Override

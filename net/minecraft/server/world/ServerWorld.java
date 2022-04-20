@@ -507,7 +507,7 @@ implements StructureWorldAccess {
             return;
         }
         int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-        MutableText text = this.sleepManager.canSkipNight(i) ? Text.method_43471("sleep.skipping_night") : Text.method_43469("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
+        MutableText text = this.sleepManager.canSkipNight(i) ? Text.translatable("sleep.skipping_night") : Text.translatable("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             serverPlayerEntity.sendMessage(text, true);
         }
@@ -661,11 +661,11 @@ implements StructureWorldAccess {
             return;
         }
         if (progressListener != null) {
-            progressListener.setTitle(Text.method_43471("menu.savingLevel"));
+            progressListener.setTitle(Text.translatable("menu.savingLevel"));
         }
         this.saveLevel();
         if (progressListener != null) {
-            progressListener.setTask(Text.method_43471("menu.savingChunks"));
+            progressListener.setTask(Text.translatable("menu.savingChunks"));
         }
         serverChunkManager.save(flush);
         if (flush) {

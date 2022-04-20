@@ -6,6 +6,7 @@ package net.minecraft.client.realms.util;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -149,7 +150,7 @@ public class RealmsTextureManager {
         }
         int i = realmsTexture != null ? realmsTexture.textureId : GlStateManager._genTexture();
         RealmsTextureImage realmsTextureImage = RealmsTextureImage.fromBase64(image);
-        RenderSystem.activeTexture(33984);
+        RenderSystem.activeTexture(GlConst.GL_TEXTURE0);
         RenderSystem.bindTextureForSetup(i);
         TextureUtil.initTexture(realmsTextureImage.buffer, realmsTextureImage.width, realmsTextureImage.height);
         TEXTURES.put(id, new RealmsTexture(image, i));

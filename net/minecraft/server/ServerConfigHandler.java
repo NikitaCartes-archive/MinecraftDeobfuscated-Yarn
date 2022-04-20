@@ -60,13 +60,13 @@ public class ServerConfigHandler {
     }
 
     private static void lookupProfile(MinecraftServer server, Collection<String> bannedPlayers, ProfileLookupCallback callback) {
-        String[] strings = (String[])bannedPlayers.stream().filter(string -> !StringHelper.isEmpty(string)).toArray(String[]::new);
+        String[] strings = (String[])bannedPlayers.stream().filter(playerName -> !StringHelper.isEmpty(playerName)).toArray(String[]::new);
         if (server.isOnlineMode()) {
             server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
         } else {
-            for (String string2 : strings) {
-                UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, string2));
-                GameProfile gameProfile = new GameProfile(uUID, string2);
+            for (String string : strings) {
+                UUID uUID = DynamicSerializableUuid.getUuidFromProfile(new GameProfile(null, string));
+                GameProfile gameProfile = new GameProfile(uUID, string);
                 callback.onProfileLookupSucceeded(gameProfile);
             }
         }
@@ -436,12 +436,12 @@ public class ServerConfigHandler {
 
     static class ServerConfigException
     extends RuntimeException {
-        ServerConfigException(String title, Throwable other) {
-            super(title, other);
+        ServerConfigException(String message, Throwable cause) {
+            super(message, cause);
         }
 
-        ServerConfigException(String string) {
-            super(string);
+        ServerConfigException(String message) {
+            super(message);
         }
     }
 }

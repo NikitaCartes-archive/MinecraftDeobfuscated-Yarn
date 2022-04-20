@@ -16,7 +16,7 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class RootSpectatorCommandGroup
 implements SpectatorMenuCommandGroup {
-    private static final Text PROMPT_TEXT = Text.method_43471("spectatorMenu.root.prompt");
+    private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.root.prompt");
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public RootSpectatorCommandGroup() {

@@ -24,9 +24,9 @@ public class WardenSpawnTrackerCommand {
             playerEntity.getSculkShriekerWarningManager().setWarningLevel(warningCount);
         }
         if (players.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.single", players.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.set.success.single", players.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
+            source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
         }
         return players.size();
     }
@@ -36,9 +36,9 @@ public class WardenSpawnTrackerCommand {
             playerEntity.getSculkShriekerWarningManager().reset();
         }
         if (players.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.clear.success.single", players.iterator().next().getDisplayName()), true);
+            source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.clear.success.single", players.iterator().next().getDisplayName()), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
+            source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
         }
         return players.size();
     }

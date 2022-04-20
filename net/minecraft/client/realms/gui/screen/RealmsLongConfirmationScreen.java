@@ -38,7 +38,7 @@ extends RealmsScreen {
             this.addDrawableChild(new ButtonWidget(this.width / 2 - 105, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.YES, button -> this.callback.accept(true)));
             this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, RealmsLongConfirmationScreen.row(8), 100, 20, ScreenTexts.NO, button -> this.callback.accept(false)));
         } else {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20, Text.method_43471("mco.gui.ok"), button -> this.callback.accept(true)));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20, Text.translatable("mco.gui.ok"), button -> this.callback.accept(true)));
         }
     }
 
@@ -74,7 +74,7 @@ extends RealmsScreen {
         public final Text text;
 
         private Type(String text, int colorCode) {
-            this.text = Text.method_43470(text);
+            this.text = Text.literal(text);
             this.colorCode = colorCode;
         }
     }

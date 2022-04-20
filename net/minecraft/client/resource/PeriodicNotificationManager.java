@@ -157,7 +157,7 @@ implements AutoCloseable {
                 long o;
                 long n;
                 if (l < entry.delay || (n = l / entry.period) == (o = m / entry.period)) continue;
-                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, Text.method_43469(entry.title, n), Text.method_43469(entry.message, n)));
+                this.client.execute(() -> SystemToast.add(MinecraftClient.getInstance().getToastManager(), SystemToast.Type.PERIODIC_NOTIFICATION, Text.translatable(entry.title, n), Text.translatable(entry.message, n)));
                 return;
             }
         }

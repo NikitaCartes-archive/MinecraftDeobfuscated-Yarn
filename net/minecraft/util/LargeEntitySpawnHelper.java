@@ -14,15 +14,15 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 public class LargeEntitySpawnHelper {
-    public static <T extends MobEntity> Optional<T> trySpawnAt(EntityType<T> entityType, SpawnReason spawnReason, ServerWorld serverWorld, BlockPos blockPos, int i, int j, int k) {
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
-        for (int l = 0; l < i; ++l) {
+    public static <T extends MobEntity> Optional<T> trySpawnAt(EntityType<T> entityType, SpawnReason reason, ServerWorld world, BlockPos pos, int tries, int horizontalRange, int verticalRange) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        for (int i = 0; i < tries; ++i) {
             MobEntity mobEntity;
-            int n;
-            int m = MathHelper.nextBetween(serverWorld.random, -j, j);
-            if (!LargeEntitySpawnHelper.findSpawnPos(serverWorld, k, mutable.set(blockPos, m, k, n = MathHelper.nextBetween(serverWorld.random, -j, j))) || (mobEntity = (MobEntity)entityType.create(serverWorld, null, null, null, mutable, spawnReason, false, false)) == null) continue;
-            if (mobEntity.canSpawn(serverWorld, spawnReason) && mobEntity.canSpawn(serverWorld)) {
-                serverWorld.spawnEntityAndPassengers(mobEntity);
+            int k;
+            int j = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
+            if (!LargeEntitySpawnHelper.findSpawnPos(world, verticalRange, mutable.set(pos, j, verticalRange, k = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange))) || (mobEntity = (MobEntity)entityType.create(world, null, null, null, mutable, reason, false, false)) == null) continue;
+            if (mobEntity.canSpawn(world, reason) && mobEntity.canSpawn(world)) {
+                world.spawnEntityAndPassengers(mobEntity);
                 return Optional.of(mobEntity);
             }
             mobEntity.discard();
@@ -30,16 +30,16 @@ public class LargeEntitySpawnHelper {
         return Optional.empty();
     }
 
-    private static boolean findSpawnPos(ServerWorld serverWorld, int i, BlockPos.Mutable mutable) {
-        if (!serverWorld.getWorldBorder().contains(mutable)) {
+    private static boolean findSpawnPos(ServerWorld world, int verticalRange, BlockPos.Mutable pos) {
+        if (!world.getWorldBorder().contains(pos)) {
             return false;
         }
-        BlockState blockState = serverWorld.getBlockState(mutable);
-        for (int j = i; j >= -i; --j) {
-            mutable.move(Direction.DOWN);
-            BlockState blockState2 = serverWorld.getBlockState(mutable);
+        BlockState blockState = world.getBlockState(pos);
+        for (int i = verticalRange; i >= -verticalRange; --i) {
+            pos.move(Direction.DOWN);
+            BlockState blockState2 = world.getBlockState(pos);
             if ((blockState.isAir() || blockState.getMaterial().isLiquid()) && blockState2.getMaterial().blocksLight()) {
-                mutable.move(Direction.UP);
+                pos.move(Direction.UP);
                 return true;
             }
             blockState = blockState2;

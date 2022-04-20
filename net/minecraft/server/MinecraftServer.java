@@ -626,7 +626,7 @@ AutoCloseable {
         try {
             if (this.setupServer()) {
                 this.timeReference = Util.getMeasuringTimeMs();
-                this.metadata.setDescription(Text.method_43470(this.motd));
+                this.metadata.setDescription(Text.literal(this.motd));
                 this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
                 this.setFavicon(this.metadata);
                 while (this.running) {
@@ -1382,7 +1382,7 @@ AutoCloseable {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList(playerManager.getPlayerList());
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (whitelist.isAllowed(serverPlayerEntity.getGameProfile())) continue;
-            serverPlayerEntity.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.not_whitelisted"));
+            serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.not_whitelisted"));
         }
     }
 
@@ -1403,7 +1403,7 @@ AutoCloseable {
      */
     public ServerCommandSource getCommandSource() {
         ServerWorld serverWorld = this.getOverworld();
-        return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", Text.method_43470("Server"), this, null);
+        return new ServerCommandSource(this, serverWorld == null ? Vec3d.ZERO : Vec3d.of(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Server", Text.literal("Server"), this, null);
     }
 
     @Override

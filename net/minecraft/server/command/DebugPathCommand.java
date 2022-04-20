@@ -20,9 +20,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class DebugPathCommand {
-    private static final SimpleCommandExceptionType SOURCE_NOT_MOB_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Source is not a mob"));
-    private static final SimpleCommandExceptionType PATH_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Path not found"));
-    private static final SimpleCommandExceptionType TARGET_NOT_REACHED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43470("Target not reached"));
+    private static final SimpleCommandExceptionType SOURCE_NOT_MOB_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Source is not a mob"));
+    private static final SimpleCommandExceptionType PATH_NOT_FOUND_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Path not found"));
+    private static final SimpleCommandExceptionType TARGET_NOT_REACHED_EXCEPTION = new SimpleCommandExceptionType(Text.literal("Target not reached"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("debugpath").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("to", BlockPosArgumentType.blockPos()).executes(context -> DebugPathCommand.execute((ServerCommandSource)context.getSource(), BlockPosArgumentType.getLoadedBlockPos(context, "to")))));
@@ -43,7 +43,7 @@ public class DebugPathCommand {
         if (!path.reachesTarget()) {
             throw TARGET_NOT_REACHED_EXCEPTION.create();
         }
-        source.sendFeedback(Text.method_43470("Made path"), true);
+        source.sendFeedback(Text.literal("Made path"), true);
         return 1;
     }
 }

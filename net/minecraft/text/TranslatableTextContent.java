@@ -11,20 +11,20 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.class_7417;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.text.Texts;
 import net.minecraft.text.TranslationException;
 import net.minecraft.util.Language;
 import org.jetbrains.annotations.Nullable;
 
-public class TranslatableText
-implements class_7417 {
+public class TranslatableTextContent
+implements TextContent {
     private static final Object[] EMPTY_ARGUMENTS = new Object[0];
     private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
     private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
@@ -35,12 +35,12 @@ implements class_7417 {
     private List<StringVisitable> translations = ImmutableList.of();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
-    public TranslatableText(String key) {
+    public TranslatableTextContent(String key) {
         this.key = key;
         this.args = EMPTY_ARGUMENTS;
     }
 
-    public TranslatableText(String key, Object ... args) {
+    public TranslatableTextContent(String key, Object ... args) {
         this.key = key;
         this.args = args;
     }
@@ -117,10 +117,10 @@ implements class_7417 {
     }
 
     @Override
-    public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
+    public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
         this.updateTranslations();
         for (StringVisitable stringVisitable : this.translations) {
-            Optional<T> optional = stringVisitable.visit(styledVisitor, style);
+            Optional<T> optional = stringVisitable.visit(visitor, style);
             if (!optional.isPresent()) continue;
             return optional;
         }
@@ -128,7 +128,7 @@ implements class_7417 {
     }
 
     @Override
-    public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+    public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
         this.updateTranslations();
         for (StringVisitable stringVisitable : this.translations) {
             Optional<T> optional = stringVisitable.visit(visitor);
@@ -139,13 +139,13 @@ implements class_7417 {
     }
 
     @Override
-    public MutableText parse(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity, int i) throws CommandSyntaxException {
+    public MutableText parse(@Nullable ServerCommandSource source, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         Object[] objects = new Object[this.args.length];
-        for (int j = 0; j < objects.length; ++j) {
-            Object object = this.args[j];
-            objects[j] = object instanceof Text ? Texts.parse(serverCommandSource, (Text)object, entity, i) : object;
+        for (int i = 0; i < objects.length; ++i) {
+            Object object = this.args[i];
+            objects[i] = object instanceof Text ? Texts.parse(source, (Text)object, sender, depth) : object;
         }
-        return MutableText.method_43477(new TranslatableText(this.key, objects));
+        return MutableText.of(new TranslatableTextContent(this.key, objects));
     }
 
     /*
@@ -156,10 +156,10 @@ implements class_7417 {
         if (this == object) {
             return true;
         }
-        if (!(object instanceof TranslatableText)) return false;
-        TranslatableText translatableText = (TranslatableText)object;
-        if (!this.key.equals(translatableText.key)) return false;
-        if (!Arrays.equals(this.args, translatableText.args)) return false;
+        if (!(object instanceof TranslatableTextContent)) return false;
+        TranslatableTextContent translatableTextContent = (TranslatableTextContent)object;
+        if (!this.key.equals(translatableTextContent.key)) return false;
+        if (!Arrays.equals(this.args, translatableTextContent.args)) return false;
         return true;
     }
 

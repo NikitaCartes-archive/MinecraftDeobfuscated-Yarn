@@ -30,9 +30,9 @@ extends ButtonWidget {
     public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
     public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
     public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
-    private static final Text ACTIVE_TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip.active");
-    private static final Text MINIGAME_TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip.minigame");
-    private static final Text TOOLTIP = Text.method_43471("mco.configure.world.slot.tooltip");
+    private static final Text ACTIVE_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.active");
+    private static final Text MINIGAME_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.minigame");
+    private static final Text TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip");
     private final Supplier<RealmsServer> serverDataProvider;
     private final Consumer<Text> tooltipSetter;
     private final int slotIndex;
@@ -41,7 +41,7 @@ extends ButtonWidget {
     private State state;
 
     public RealmsWorldSlotButton(int x, int y, int width, int height, Supplier<RealmsServer> serverDataProvider, Consumer<Text> tooltipSetter, int id, ButtonWidget.PressAction action) {
-        super(x, y, width, height, ScreenTexts.field_39003, action);
+        super(x, y, width, height, ScreenTexts.EMPTY, action);
         this.serverDataProvider = serverDataProvider;
         this.slotIndex = id;
         this.tooltipSetter = tooltipSetter;
@@ -102,9 +102,9 @@ extends ButtonWidget {
 
     private Pair<Text, Text> getActionPromptAndMessage(RealmsServer server, String text, boolean empty, boolean minigame, Action action) {
         if (action == Action.NOTHING) {
-            return Pair.of(null, Text.method_43470(text));
+            return Pair.of(null, Text.literal(text));
         }
-        Text text2 = minigame ? (empty ? ScreenTexts.field_39003 : Text.method_43470(" ").append(text).append(" ").append(server.minigameName)) : Text.method_43470(" ").append(text);
+        Text text2 = minigame ? (empty ? ScreenTexts.EMPTY : Text.literal(" ").append(text).append(" ").append(server.minigameName)) : Text.literal(" ").append(text);
         Text text3 = action == Action.JOIN ? ACTIVE_TOOLTIP : (minigame ? MINIGAME_TOOLTIP : TOOLTIP);
         MutableText text4 = text3.shallowCopy().append(text2);
         return Pair.of(text3, text4);

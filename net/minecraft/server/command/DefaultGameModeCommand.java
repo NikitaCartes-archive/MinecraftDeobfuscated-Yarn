@@ -32,7 +32,7 @@ public class DefaultGameModeCommand {
                 ++i;
             }
         }
-        source.sendFeedback(Text.method_43469("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
+        source.sendFeedback(Text.translatable("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
         return i;
     }
 }

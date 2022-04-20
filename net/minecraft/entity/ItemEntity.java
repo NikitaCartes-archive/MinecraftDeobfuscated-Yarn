@@ -323,7 +323,7 @@ extends Entity {
         if (text != null) {
             return text;
         }
-        return Text.method_43471(this.getStack().getTranslationKey());
+        return Text.translatable(this.getStack().getTranslationKey());
     }
 
     @Override

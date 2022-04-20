@@ -156,7 +156,7 @@ public class ServerNetworkIo {
                             throw new CrashException(CrashReport.create(exception, "Ticking memory connection"));
                         }
                         LOGGER.warn("Failed to handle packet for {}", (Object)clientConnection.getAddress(), (Object)exception);
-                        MutableText text = Text.method_43470("Internal server error");
+                        MutableText text = Text.literal("Internal server error");
                         clientConnection.send(new DisconnectS2CPacket(text), future -> clientConnection.disconnect(text));
                         clientConnection.disableAutoRead();
                     }

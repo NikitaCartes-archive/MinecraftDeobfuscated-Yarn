@@ -24,7 +24,7 @@ extends ClickableWidget {
     protected int hoverVOffset;
 
     public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
-        super(x, y, width, height, ScreenTexts.field_39003);
+        super(x, y, width, height, ScreenTexts.EMPTY);
         this.toggled = toggled;
     }
 

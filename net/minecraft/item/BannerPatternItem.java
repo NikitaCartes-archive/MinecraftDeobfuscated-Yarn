@@ -33,7 +33,7 @@ extends Item {
     }
 
     public MutableText getDescription() {
-        return Text.method_43471(this.getTranslationKey() + ".desc");
+        return Text.translatable(this.getTranslationKey() + ".desc");
     }
 }
 

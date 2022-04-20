@@ -4,9 +4,9 @@
 package net.minecraft.util.math.random;
 
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.BaseSimpleRandom;
 import net.minecraft.util.math.random.RandomDeriver;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.GaussianGenerator;
 
 public class SimpleRandom

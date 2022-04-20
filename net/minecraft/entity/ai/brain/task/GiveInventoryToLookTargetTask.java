@@ -65,7 +65,7 @@ extends Task<E> {
         LookTarget lookTarget = optional.get();
         double d = lookTarget.getPos().distanceTo(((Entity)entity).getEyePos());
         if (d < 3.0 && !(itemStack = ((InventoryOwner)entity).getInventory().removeStack(0, 1)).isEmpty()) {
-            GiveInventoryToLookTargetTask.method_43393(entity, itemStack, GiveInventoryToLookTargetTask.offsetTarget(lookTarget));
+            GiveInventoryToLookTargetTask.playThrowSound(entity, itemStack, GiveInventoryToLookTargetTask.offsetTarget(lookTarget));
             if (entity instanceof AllayEntity) {
                 AllayEntity allayEntity = (AllayEntity)entity;
                 AllayBrain.getLikedPlayer(allayEntity).ifPresent(player -> this.triggerCriterion(lookTarget, itemStack, (ServerPlayerEntity)player));
@@ -91,13 +91,13 @@ extends Task<E> {
         return target.getPos().add(0.0, 1.0, 0.0);
     }
 
-    public static void method_43393(LivingEntity livingEntity, ItemStack itemStack, Vec3d vec3d) {
-        Vec3d vec3d2 = new Vec3d(0.2f, 0.3f, 0.2f);
-        LookTargetUtil.method_43392(livingEntity, itemStack, vec3d, vec3d2, 0.2f);
-        World world = livingEntity.world;
+    public static void playThrowSound(LivingEntity entity, ItemStack stack, Vec3d target) {
+        Vec3d vec3d = new Vec3d(0.2f, 0.3f, 0.2f);
+        LookTargetUtil.give(entity, stack, target, vec3d, 0.2f);
+        World world = entity.world;
         if (world.getTime() % 7L == 0L && world.random.nextDouble() < 0.9) {
-            float f = Util.getRandom(AllayEntity.field_38937, world.getRandom()).floatValue();
-            world.playSoundFromEntity(null, livingEntity, SoundEvents.ENTITY_ALLAY_ITEM_THROWN, SoundCategory.NEUTRAL, 1.0f, f);
+            float f = Util.getRandom(AllayEntity.THROW_SOUND_PITCHES, world.getRandom()).floatValue();
+            world.playSoundFromEntity(null, entity, SoundEvents.ENTITY_ALLAY_ITEM_THROWN, SoundCategory.NEUTRAL, 1.0f, f);
         }
     }
 }

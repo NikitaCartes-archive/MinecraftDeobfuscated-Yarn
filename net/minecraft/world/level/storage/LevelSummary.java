@@ -23,16 +23,16 @@ implements Comparable<LevelSummary> {
     private final String name;
     private final boolean requiresConversion;
     private final boolean locked;
-    private final Path file;
+    private final Path iconPath;
     @Nullable
     private Text details;
 
-    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, Path path) {
+    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, Path iconPath) {
         this.levelInfo = levelInfo;
         this.versionInfo = versionInfo;
         this.name = name;
         this.locked = locked;
-        this.file = path;
+        this.iconPath = iconPath;
         this.requiresConversion = requiresConversion;
     }
 
@@ -44,8 +44,8 @@ implements Comparable<LevelSummary> {
         return StringUtils.isEmpty(this.levelInfo.getLevelName()) ? this.name : this.levelInfo.getLevelName();
     }
 
-    public Path getFile() {
-        return this.file;
+    public Path getIconPath() {
+        return this.iconPath;
     }
 
     public boolean requiresConversion() {
@@ -85,9 +85,9 @@ implements Comparable<LevelSummary> {
 
     public MutableText getVersion() {
         if (StringHelper.isEmpty(this.versionInfo.getVersionName())) {
-            return Text.method_43471("selectWorld.versionUnknown");
+            return Text.translatable("selectWorld.versionUnknown");
         }
-        return Text.method_43470(this.versionInfo.getVersionName());
+        return Text.literal(this.versionInfo.getVersionName());
     }
 
     public SaveVersionInfo getVersionInfo() {
@@ -140,20 +140,20 @@ implements Comparable<LevelSummary> {
     private Text createDetails() {
         MutableText mutableText;
         if (this.isLocked()) {
-            return Text.method_43471("selectWorld.locked").formatted(Formatting.RED);
+            return Text.translatable("selectWorld.locked").formatted(Formatting.RED);
         }
         if (this.requiresConversion()) {
-            return Text.method_43471("selectWorld.conversion").formatted(Formatting.RED);
+            return Text.translatable("selectWorld.conversion").formatted(Formatting.RED);
         }
         if (!this.isVersionAvailable()) {
-            return Text.method_43471("selectWorld.incompatible_series").formatted(Formatting.RED);
+            return Text.translatable("selectWorld.incompatible_series").formatted(Formatting.RED);
         }
-        MutableText mutableText2 = mutableText = this.isHardcore() ? Text.method_43473().append(Text.method_43471("gameMode.hardcore").formatted(Formatting.DARK_RED)) : Text.method_43471("gameMode." + this.getGameMode().getName());
+        MutableText mutableText2 = mutableText = this.isHardcore() ? Text.empty().append(Text.translatable("gameMode.hardcore").formatted(Formatting.DARK_RED)) : Text.translatable("gameMode." + this.getGameMode().getName());
         if (this.hasCheats()) {
-            mutableText.append(", ").append(Text.method_43471("selectWorld.cheats"));
+            mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
         }
         MutableText mutableText22 = this.getVersion();
-        MutableText mutableText3 = Text.method_43470(", ").append(Text.method_43471("selectWorld.version")).append(" ");
+        MutableText mutableText3 = Text.literal(", ").append(Text.translatable("selectWorld.version")).append(" ");
         if (this.isDifferentVersion()) {
             mutableText3.append(mutableText22.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
         } else {
@@ -164,8 +164,8 @@ implements Comparable<LevelSummary> {
     }
 
     @Override
-    public /* synthetic */ int compareTo(Object object) {
-        return this.compareTo((LevelSummary)object);
+    public /* synthetic */ int compareTo(Object other) {
+        return this.compareTo((LevelSummary)other);
     }
 
     public static enum ConversionWarning {

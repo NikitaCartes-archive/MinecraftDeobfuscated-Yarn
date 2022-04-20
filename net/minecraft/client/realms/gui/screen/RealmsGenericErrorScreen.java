@@ -44,14 +44,14 @@ extends RealmsScreen {
 
     private static Pair<Text, Text> getErrorMessages(RealmsServiceException exception) {
         if (exception.error == null) {
-            return Pair.of(Text.method_43470("An error occurred (" + exception.httpResultCode + "):"), Text.method_43470(exception.httpResponseText));
+            return Pair.of(Text.literal("An error occurred (" + exception.httpResultCode + "):"), Text.literal(exception.httpResponseText));
         }
         String string = "mco.errorMessage." + exception.error.getErrorCode();
-        return Pair.of(Text.method_43470("Realms (" + exception.error + "):"), I18n.hasTranslation(string) ? Text.method_43471(string) : Text.of(exception.error.getErrorMessage()));
+        return Pair.of(Text.literal("Realms (" + exception.error + "):"), I18n.hasTranslation(string) ? Text.translatable(string) : Text.of(exception.error.getErrorMessage()));
     }
 
     private static Pair<Text, Text> getErrorMessages(Text description) {
-        return Pair.of(Text.method_43470("An error occurred: "), description);
+        return Pair.of(Text.literal("An error occurred: "), description);
     }
 
     private static Pair<Text, Text> getErrorMessages(Text title, Text description) {
@@ -60,13 +60,13 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, Text.method_43470("Ok"), button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height - 52, 200, 20, Text.literal("Ok"), button -> this.client.setScreen(this.parent)));
         this.description = MultilineText.create(this.textRenderer, (StringVisitable)this.errorMessages.getSecond(), this.width * 3 / 4);
     }
 
     @Override
     public Text getNarratedTitle() {
-        return Text.method_43473().append(this.errorMessages.getFirst()).append(": ").append(this.errorMessages.getSecond());
+        return Text.empty().append(this.errorMessages.getFirst()).append(": ").append(this.errorMessages.getSecond());
     }
 
     @Override

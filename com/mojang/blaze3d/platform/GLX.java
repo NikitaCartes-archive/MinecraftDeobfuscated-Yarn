@@ -27,6 +27,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWErrorCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL11;
 import org.slf4j.Logger;
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
@@ -42,7 +43,7 @@ public class GLX {
         if (GLFW.glfwGetCurrentContext() == 0L) {
             return "NO CONTEXT";
         }
-        return GlStateManager._getString(7937) + " GL version " + GlStateManager._getString(7938) + ", " + GlStateManager._getString(7936);
+        return GlStateManager._getString(GL11.GL_RENDERER) + " GL version " + GlStateManager._getString(GL11.GL_VERSION) + ", " + GlStateManager._getString(GL11.GL_VENDOR);
     }
 
     public static int _getRefreshRate(Window window) {
@@ -63,15 +64,15 @@ public class GLX {
     public static LongSupplier _initGlfw() {
         LongSupplier longSupplier;
         RenderSystem.assertInInitPhase();
-        Window.acceptError((integer, string) -> {
-            throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", integer, string));
+        Window.acceptError((code, message) -> {
+            throw new IllegalStateException(String.format("GLFW error before init: [0x%X]%s", code, message));
         });
         ArrayList<String> list = Lists.newArrayList();
-        GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback((i, l) -> list.add(String.format("GLFW error during init: [0x%X]%s", i, l)));
+        GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback((code, pointer) -> list.add(String.format("GLFW error during init: [0x%X]%s", code, pointer)));
         if (GLFW.glfwInit()) {
             longSupplier = () -> (long)(GLFW.glfwGetTime() * 1.0E9);
-            for (String string2 : list) {
-                LOGGER.error("GLFW error collected during initialization: {}", (Object)string2);
+            for (String string : list) {
+                LOGGER.error("GLFW error collected during initialization: {}", (Object)string);
             }
         } else {
             throw new IllegalStateException("Failed to initialize GLFW, errors: " + Joiner.on(",").join(list));

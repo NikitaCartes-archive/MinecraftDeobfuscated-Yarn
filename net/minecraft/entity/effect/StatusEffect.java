@@ -135,7 +135,7 @@ public class StatusEffect {
     }
 
     public Text getName() {
-        return Text.method_43471(this.getTranslationKey());
+        return Text.translatable(this.getTranslationKey());
     }
 
     public StatusEffectCategory getCategory() {

@@ -19,7 +19,7 @@ extends Screen {
     private final Runnable runServerInSafeMode;
 
     public DatapackFailureScreen(Runnable runServerInSafeMode) {
-        super(Text.method_43471("datapackFailure.title"));
+        super(Text.translatable("datapackFailure.title"));
         this.runServerInSafeMode = runServerInSafeMode;
     }
 
@@ -27,8 +27,8 @@ extends Screen {
     protected void init() {
         super.init();
         this.wrappedText = MultilineText.create(this.textRenderer, (StringVisitable)this.getTitle(), this.width - 50);
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, Text.method_43471("datapackFailure.safeMode"), button -> this.runServerInSafeMode.run()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, Text.method_43471("gui.toTitle"), button -> this.client.setScreen(null)));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, Text.translatable("datapackFailure.safeMode"), button -> this.runServerInSafeMode.run()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, Text.translatable("gui.toTitle"), button -> this.client.setScreen(null)));
     }
 
     @Override

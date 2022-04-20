@@ -28,7 +28,7 @@ extends GameOptionsScreen {
     }
 
     public MouseOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.method_43471("options.mouse_settings.title"));
+        super(parent, gameOptions, Text.translatable("options.mouse_settings.title"));
     }
 
     @Override

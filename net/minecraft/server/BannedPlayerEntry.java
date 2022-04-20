@@ -39,7 +39,7 @@ extends BanEntry<GameProfile> {
     @Override
     public Text toText() {
         GameProfile gameProfile = (GameProfile)this.getKey();
-        return Text.method_43470(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
+        return Text.literal(gameProfile.getName() != null ? gameProfile.getName() : Objects.toString(gameProfile.getId(), "(Unknown)"));
     }
 
     private static GameProfile profileFromJson(JsonObject json) {

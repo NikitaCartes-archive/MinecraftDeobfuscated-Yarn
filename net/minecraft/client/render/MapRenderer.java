@@ -48,12 +48,12 @@ implements AutoCloseable {
     }
 
     private MapTexture getMapTexture(int id, MapState state) {
-        return this.mapTextures.compute(id, (integer, mapTexture) -> {
-            if (mapTexture == null) {
-                return new MapTexture((int)integer, state);
+        return this.mapTextures.compute(id, (id2, texture) -> {
+            if (texture == null) {
+                return new MapTexture((int)id2, state);
             }
-            mapTexture.setState(state);
-            return mapTexture;
+            texture.setState(state);
+            return texture;
         });
     }
 

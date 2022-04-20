@@ -37,7 +37,7 @@ extends PlayerManager {
     @Override
     public Text checkCanJoin(SocketAddress address, GameProfile profile) {
         if (profile.getName().equalsIgnoreCase(this.getServer().getSinglePlayerName()) && this.getPlayer(profile.getName()) != null) {
-            return Text.method_43471("multiplayer.disconnect.name_taken");
+            return Text.translatable("multiplayer.disconnect.name_taken");
         }
         return super.checkCanJoin(address, profile);
     }

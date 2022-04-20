@@ -83,25 +83,25 @@ extends RealmsScreen {
     static final Identifier CROSS_ICON = new Identifier("realms", "textures/gui/realms/cross_icon.png");
     private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
     static final Identifier WIDGETS = new Identifier("minecraft", "textures/gui/widgets.png");
-    static final Text NO_PENDING_TEXT = Text.method_43471("mco.invites.nopending");
-    static final Text PENDING_TEXT = Text.method_43471("mco.invites.pending");
-    static final List<Text> TRIAL_MESSAGE_LINES = ImmutableList.of(Text.method_43471("mco.trial.message.line1"), Text.method_43471("mco.trial.message.line2"));
-    static final Text UNINITIALIZED_TEXT = Text.method_43471("mco.selectServer.uninitialized");
-    static final Text EXPIRED_LIST_TEXT = Text.method_43471("mco.selectServer.expiredList");
-    static final Text EXPIRED_RENEW_TEXT = Text.method_43471("mco.selectServer.expiredRenew");
-    static final Text EXPIRED_TRIAL_TEXT = Text.method_43471("mco.selectServer.expiredTrial");
-    static final Text EXPIRED_SUBSCRIBE_TEXT = Text.method_43471("mco.selectServer.expiredSubscribe");
-    static final Text MINIGAME_TEXT = Text.method_43471("mco.selectServer.minigame").append(" ");
-    private static final Text POPUP_TEXT = Text.method_43471("mco.selectServer.popup");
-    private static final Text EXPIRED_TEXT = Text.method_43471("mco.selectServer.expired");
-    private static final Text EXPIRES_SOON_TEXT = Text.method_43471("mco.selectServer.expires.soon");
-    private static final Text EXPIRES_IN_A_DAY_TEXT = Text.method_43471("mco.selectServer.expires.day");
-    private static final Text OPEN_TEXT = Text.method_43471("mco.selectServer.open");
-    private static final Text CLOSED_TEXT = Text.method_43471("mco.selectServer.closed");
-    private static final Text LEAVE_TEXT = Text.method_43471("mco.selectServer.leave");
-    private static final Text CONFIGURE_TEXT = Text.method_43471("mco.selectServer.configure");
-    private static final Text NEWS_TEXT = Text.method_43471("mco.news");
-    static final Text UNINITIALIZED_BUTTON_NARRATION = Text.method_43469("gui.narrate.button", UNINITIALIZED_TEXT);
+    static final Text NO_PENDING_TEXT = Text.translatable("mco.invites.nopending");
+    static final Text PENDING_TEXT = Text.translatable("mco.invites.pending");
+    static final List<Text> TRIAL_MESSAGE_LINES = ImmutableList.of(Text.translatable("mco.trial.message.line1"), Text.translatable("mco.trial.message.line2"));
+    static final Text UNINITIALIZED_TEXT = Text.translatable("mco.selectServer.uninitialized");
+    static final Text EXPIRED_LIST_TEXT = Text.translatable("mco.selectServer.expiredList");
+    static final Text EXPIRED_RENEW_TEXT = Text.translatable("mco.selectServer.expiredRenew");
+    static final Text EXPIRED_TRIAL_TEXT = Text.translatable("mco.selectServer.expiredTrial");
+    static final Text EXPIRED_SUBSCRIBE_TEXT = Text.translatable("mco.selectServer.expiredSubscribe");
+    static final Text MINIGAME_TEXT = Text.translatable("mco.selectServer.minigame").append(" ");
+    private static final Text POPUP_TEXT = Text.translatable("mco.selectServer.popup");
+    private static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
+    private static final Text EXPIRES_SOON_TEXT = Text.translatable("mco.selectServer.expires.soon");
+    private static final Text EXPIRES_IN_A_DAY_TEXT = Text.translatable("mco.selectServer.expires.day");
+    private static final Text OPEN_TEXT = Text.translatable("mco.selectServer.open");
+    private static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
+    private static final Text LEAVE_TEXT = Text.translatable("mco.selectServer.leave");
+    private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configure");
+    private static final Text NEWS_TEXT = Text.translatable("mco.news");
+    static final Text UNINITIALIZED_BUTTON_NARRATION = Text.translatable("gui.narrate.button", UNINITIALIZED_TEXT);
     static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
     private static List<Identifier> IMAGES = ImmutableList.of();
     static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
@@ -232,29 +232,29 @@ extends RealmsScreen {
     }
 
     public void addButtons() {
-        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, Text.method_43471("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())));
-        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, Text.method_43471("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())));
-        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, Text.method_43471("mco.selectServer.play"), button -> this.play(this.findServer(), this)));
+        this.leaveButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 202, this.height - 32, 90, 20, Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer())));
+        this.configureButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 190, this.height - 32, 90, 20, Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer())));
+        this.playButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 93, this.height - 32, 90, 20, Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this)));
         this.backButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, this.height - 32, 90, 20, ScreenTexts.BACK, button -> {
             if (!this.justClosedPopup) {
                 this.client.setScreen(this.lastScreen);
             }
         }));
-        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, Text.method_43471("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
+        this.renewButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 100, this.height - 32, 90, 20, Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer())));
         this.newsButton = this.addDrawableChild(new NewsButton());
-        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, Text.method_43471("mco.selectServer.purchase"), buttonWidget -> {
+        this.showPopupButton = this.addDrawableChild(new ButtonWidget(this.width - 90, 6, 80, 20, Text.translatable("mco.selectServer.purchase"), buttonWidget -> {
             this.popupOpenedByUser = !this.popupOpenedByUser;
         }));
         this.pendingInvitesButton = this.addDrawableChild(new PendingInvitesButton());
         this.closeButton = this.addDrawableChild(new CloseButton());
-        this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, Text.method_43471("mco.selectServer.trial"), button -> {
+        this.createTrialButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20, Text.translatable("mco.selectServer.trial"), button -> {
             if (!this.trialsAvailable || this.createdTrial) {
                 return;
             }
             Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
             this.client.setScreen(this.lastScreen);
         }));
-        this.buyARealmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, Text.method_43471("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
+        this.buyARealmButton = this.addDrawableChild(new ButtonWidget(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20, Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms")));
         this.updateButtonStates(null);
     }
 
@@ -354,7 +354,7 @@ extends RealmsScreen {
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.PENDING_INVITE)) {
             this.numberOfPendingInvites = REALMS_DATA_FETCHER.getPendingInvitesCount();
             if (this.numberOfPendingInvites > 0 && this.rateLimiter.tryAcquire(1)) {
-                NarratorManager.INSTANCE.narrate(Text.method_43469("mco.configure.world.invite.narration", this.numberOfPendingInvites));
+                NarratorManager.INSTANCE.narrate(Text.translatable("mco.configure.world.invite.narration", this.numberOfPendingInvites));
             }
         }
         if (REALMS_DATA_FETCHER.isFetchedSinceLastTry(RealmsDataFetcher.Task.TRIAL_AVAILABLE) && !this.createdTrial) {
@@ -456,7 +456,7 @@ extends RealmsScreen {
                         checkedClientCompatibility = false;
                         LOGGER.error("Couldn't connect to realms", realmsServiceException);
                         if (realmsServiceException.httpResultCode == 401) {
-                            realmsGenericErrorScreen = new RealmsGenericErrorScreen(Text.method_43471("mco.error.invalid.session.title"), Text.method_43471("mco.error.invalid.session.message"), RealmsMainScreen.this.lastScreen);
+                            realmsGenericErrorScreen = new RealmsGenericErrorScreen(Text.translatable("mco.error.invalid.session.title"), Text.translatable("mco.error.invalid.session.message"), RealmsMainScreen.this.lastScreen);
                             RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(realmsGenericErrorScreen));
                         }
                         RealmsMainScreen.this.client.execute(() -> RealmsMainScreen.this.client.setScreen(new RealmsGenericErrorScreen(realmsServiceException, RealmsMainScreen.this.lastScreen)));
@@ -554,8 +554,8 @@ extends RealmsScreen {
     void leaveClicked(@Nullable RealmsServer selectedServer) {
         if (selectedServer != null && !this.client.getSession().getUuid().equals(selectedServer.ownerUUID)) {
             this.saveListScrollPosition();
-            MutableText text = Text.method_43471("mco.configure.world.leave.question.line1");
-            MutableText text2 = Text.method_43471("mco.configure.world.leave.question.line2");
+            MutableText text = Text.translatable("mco.configure.world.leave.question.line1");
+            MutableText text2 = Text.translatable("mco.configure.world.leave.question.line2");
             this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> this.leaveServer(confirmed, selectedServer), RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
         }
     }
@@ -860,7 +860,7 @@ extends RealmsScreen {
             } else if (remainingDays == 1) {
                 this.setTooltips(EXPIRES_IN_A_DAY_TEXT);
             } else {
-                this.setTooltips(Text.method_43469("mco.selectServer.expires.days", remainingDays));
+                this.setTooltips(Text.translatable("mco.selectServer.expires.days", remainingDays));
             }
         }
     }
@@ -1101,7 +1101,7 @@ extends RealmsScreen {
     class NewsButton
     extends ButtonWidget {
         public NewsButton() {
-            super(RealmsMainScreen.this.width - 115, 6, 20, 20, Text.method_43471("mco.news"), button -> {
+            super(RealmsMainScreen.this.width - 115, 6, 20, 20, Text.translatable("mco.news"), button -> {
                 if (realmsMainScreen.newsLink == null) {
                     return;
                 }
@@ -1125,7 +1125,7 @@ extends RealmsScreen {
     class PendingInvitesButton
     extends ButtonWidget {
         public PendingInvitesButton() {
-            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, ScreenTexts.field_39003, RealmsMainScreen.this::openPendingInvitesScreen);
+            super(RealmsMainScreen.this.width / 2 + 47, 6, 22, 22, ScreenTexts.EMPTY, RealmsMainScreen.this::openPendingInvitesScreen);
         }
 
         public void updatePendingText() {
@@ -1142,7 +1142,7 @@ extends RealmsScreen {
     class CloseButton
     extends ButtonWidget {
         public CloseButton() {
-            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, Text.method_43471("mco.selectServer.close"), button -> RealmsMainScreen.this.onClosePopup());
+            super(RealmsMainScreen.this.popupX0() + 4, RealmsMainScreen.this.popupY0() + 4, 12, 12, Text.translatable("mco.selectServer.close"), button -> RealmsMainScreen.this.onClosePopup());
         }
 
         @Override
@@ -1260,7 +1260,7 @@ extends RealmsScreen {
                 String string = Formatting.GRAY + serverData.serverPing.nrOfPlayers;
                 RealmsMainScreen.this.textRenderer.draw(matrices, string, (float)(x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 0x808080);
                 if (mouseX >= x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string) && mouseX <= x + 207 && mouseY >= y + 1 && mouseY <= y + 10 && mouseY < RealmsMainScreen.this.height - 40 && mouseY > 32 && !RealmsMainScreen.this.shouldShowPopup()) {
-                    RealmsMainScreen.this.setTooltips(Text.method_43470(serverData.serverPing.playerList));
+                    RealmsMainScreen.this.setTooltips(Text.literal(serverData.serverPing.playerList));
                 }
             }
             if (RealmsMainScreen.this.isSelfOwnedServer(serverData) && serverData.expired) {
@@ -1322,7 +1322,7 @@ extends RealmsScreen {
             if (this.mServerData.state == RealmsServer.State.UNINITIALIZED) {
                 return UNINITIALIZED_BUTTON_NARRATION;
             }
-            return Text.method_43469("narrator.select", this.mServerData.name);
+            return Text.translatable("narrator.select", this.mServerData.name);
         }
 
         @Override

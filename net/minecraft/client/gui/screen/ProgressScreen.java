@@ -42,7 +42,7 @@ implements ProgressListener {
     @Override
     public void setTitleAndTask(Text title) {
         this.title = title;
-        this.setTask(Text.method_43471("progress.working"));
+        this.setTask(Text.translatable("progress.working"));
     }
 
     @Override
@@ -74,7 +74,7 @@ implements ProgressListener {
             ProgressScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         }
         if (this.task != null && this.progress != 0) {
-            ProgressScreen.drawCenteredText(matrices, this.textRenderer, Text.method_43473().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
+            ProgressScreen.drawCenteredText(matrices, this.textRenderer, Text.empty().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

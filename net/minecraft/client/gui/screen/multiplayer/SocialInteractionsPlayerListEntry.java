@@ -52,11 +52,11 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
     final List<OrderedText> hideTooltip;
     final List<OrderedText> showTooltip;
     float timeCounter;
-    private static final Text HIDDEN_TEXT = Text.method_43471("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
-    private static final Text BLOCKED_TEXT = Text.method_43471("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
-    private static final Text OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
-    private static final Text HIDDEN_OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
-    private static final Text BLOCKED_OFFLINE_TEXT = Text.method_43471("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+    private static final Text HIDDEN_TEXT = Text.translatable("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
+    private static final Text BLOCKED_TEXT = Text.translatable("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
+    private static final Text OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
+    private static final Text HIDDEN_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
+    private static final Text BLOCKED_OFFLINE_TEXT = Text.translatable("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
     private static final int field_32420 = 24;
     private static final int field_32421 = 4;
     private static final int field_32422 = 20;
@@ -73,15 +73,15 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.uuid = uuid;
         this.name = name;
         this.skinTexture = skinTexture;
-        this.hideText = Text.method_43469("gui.socialInteractions.tooltip.hide", name);
-        this.showText = Text.method_43469("gui.socialInteractions.tooltip.show", name);
+        this.hideText = Text.translatable("gui.socialInteractions.tooltip.hide", name);
+        this.showText = Text.translatable("gui.socialInteractions.tooltip.show", name);
         this.hideTooltip = client.textRenderer.wrapLines(this.hideText, 150);
         this.showTooltip = client.textRenderer.wrapLines(this.showText, 150);
         SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
         if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.isPlayerBlocked(uuid)) {
             this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.hidePlayer(uuid);
-                this.onButtonClick(true, Text.method_43469("gui.socialInteractions.hidden_in_chat", name));
+                this.onButtonClick(true, Text.translatable("gui.socialInteractions.hidden_in_chat", name));
             }, new ButtonWidget.TooltipSupplier(){
 
                 @Override
@@ -96,7 +96,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                 public void supply(Consumer<Text> consumer) {
                     consumer.accept(SocialInteractionsPlayerListEntry.this.hideText);
                 }
-            }, Text.method_43471("gui.socialInteractions.hide")){
+            }, Text.translatable("gui.socialInteractions.hide")){
 
                 @Override
                 protected MutableText getNarrationMessage() {
@@ -105,7 +105,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             };
             this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.showPlayer(uuid);
-                this.onButtonClick(false, Text.method_43469("gui.socialInteractions.shown_in_chat", name));
+                this.onButtonClick(false, Text.translatable("gui.socialInteractions.shown_in_chat", name));
             }, new ButtonWidget.TooltipSupplier(){
 
                 @Override
@@ -120,7 +120,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
                 public void supply(Consumer<Text> consumer) {
                     consumer.accept(SocialInteractionsPlayerListEntry.this.showText);
                 }
-            }, Text.method_43471("gui.socialInteractions.show")){
+            }, Text.translatable("gui.socialInteractions.show")){
 
                 @Override
                 protected MutableText getNarrationMessage() {
@@ -142,7 +142,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         int j = y + (entryHeight - 24) / 2;
         int k = i + 24 + 4;
         Text text = this.getStatusText();
-        if (text == ScreenTexts.field_39003) {
+        if (text == ScreenTexts.EMPTY) {
             DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
             l = y + (entryHeight - this.client.textRenderer.fontHeight) / 2;
         } else {
@@ -204,10 +204,10 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
 
     MutableText getNarrationMessage(MutableText text) {
         Text text2 = this.getStatusText();
-        if (text2 == ScreenTexts.field_39003) {
-            return Text.method_43470(this.name).append(", ").append(text);
+        if (text2 == ScreenTexts.EMPTY) {
+            return Text.literal(this.name).append(", ").append(text);
         }
-        return Text.method_43470(this.name).append(", ").append(text2).append(", ").append(text);
+        return Text.literal(this.name).append(", ").append(text2).append(", ").append(text);
     }
 
     private Text getStatusText() {
@@ -228,7 +228,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         if (this.offline) {
             return OFFLINE_TEXT;
         }
-        return ScreenTexts.field_39003;
+        return ScreenTexts.EMPTY;
     }
 
     static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {

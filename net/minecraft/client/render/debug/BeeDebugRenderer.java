@@ -140,13 +140,13 @@ implements DebugRenderer.Renderer {
 
     private Map<BlockPos, Set<UUID>> getBlacklistingBees() {
         HashMap<BlockPos, Set<UUID>> map = Maps.newHashMap();
-        this.bees.values().forEach(bee -> bee.blacklist.forEach(blockPos2 -> map.computeIfAbsent((BlockPos)blockPos2, blockPos -> Sets.newHashSet()).add(bee.getUuid())));
+        this.bees.values().forEach(bee -> bee.blacklist.forEach(pos -> map.computeIfAbsent((BlockPos)pos, blockPos -> Sets.newHashSet()).add(bee.getUuid())));
         return map;
     }
 
     private void drawFlowers() {
         HashMap map = Maps.newHashMap();
-        this.bees.values().stream().filter(Bee::hasFlower).forEach(bee -> map.computeIfAbsent(bee.flower, blockPos -> Sets.newHashSet()).add(bee.getUuid()));
+        this.bees.values().stream().filter(Bee::hasFlower).forEach(bee -> map.computeIfAbsent(bee.flower, flower -> Sets.newHashSet()).add(bee.getUuid()));
         map.entrySet().forEach(entry -> {
             BlockPos blockPos = (BlockPos)entry.getKey();
             Set set = (Set)entry.getValue();
@@ -294,7 +294,7 @@ implements DebugRenderer.Renderer {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Bee bee : this.bees.values()) {
             if (bee.hive == null || this.hives.containsKey(bee.hive)) continue;
-            map.computeIfAbsent(bee.hive, blockPos -> Lists.newArrayList()).add(bee.getName());
+            map.computeIfAbsent(bee.hive, hive -> Lists.newArrayList()).add(bee.getName());
         }
         return map;
     }

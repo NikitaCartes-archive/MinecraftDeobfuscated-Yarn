@@ -151,7 +151,7 @@ implements AutoCloseable {
     }
 
     private void save(ChunkPos chunkPos) {
-        Dynamic<NbtElement> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+        Dynamic<NbtElement> dynamic = this.serialize(chunkPos, NbtOps.INSTANCE);
         NbtElement nbtElement = dynamic.getValue();
         if (nbtElement instanceof NbtCompound) {
             this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
@@ -160,18 +160,18 @@ implements AutoCloseable {
         }
     }
 
-    private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
+    private <T> Dynamic<T> serialize(ChunkPos chunkPos, DynamicOps<T> ops) {
         HashMap map = Maps.newHashMap();
         for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
             long l = SerializingRegionBasedStorage.chunkSectionPosAsLong(chunkPos, i);
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
             if (optional == null || !optional.isPresent()) continue;
-            DataResult<T> dataResult = this.codecFactory.apply(() -> this.onUpdate(l)).encodeStart(dynamicOps, optional.get());
+            DataResult<T> dataResult = this.codecFactory.apply(() -> this.onUpdate(l)).encodeStart(ops, optional.get());
             String string = Integer.toString(i);
-            dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
+            dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(ops.createString(string), object));
         }
-        return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString(SECTIONS_KEY), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(SECTIONS_KEY), ops.createMap(map), ops.createString("DataVersion"), ops.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
     }
 
     private static long chunkSectionPosAsLong(ChunkPos chunkPos, int y) {

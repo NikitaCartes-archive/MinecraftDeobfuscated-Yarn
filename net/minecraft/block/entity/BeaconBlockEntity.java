@@ -295,7 +295,7 @@ implements NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return this.customName != null ? this.customName : Text.method_43471("container.beacon");
+        return this.customName != null ? this.customName : Text.translatable("container.beacon");
     }
 
     @Override

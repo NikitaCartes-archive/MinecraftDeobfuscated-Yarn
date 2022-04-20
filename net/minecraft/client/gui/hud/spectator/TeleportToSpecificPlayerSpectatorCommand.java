@@ -32,7 +32,7 @@ implements SpectatorMenuCommand {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
         this.skinId = map.containsKey((Object)MinecraftProfileTexture.Type.SKIN) ? minecraftClient.getSkinProvider().loadSkin(map.get((Object)MinecraftProfileTexture.Type.SKIN), MinecraftProfileTexture.Type.SKIN) : DefaultSkinHelper.getTexture(DynamicSerializableUuid.getUuidFromProfile(gameProfile));
-        this.name = Text.method_43470(gameProfile.getName());
+        this.name = Text.literal(gameProfile.getName());
     }
 
     @Override

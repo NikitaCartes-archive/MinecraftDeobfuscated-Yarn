@@ -41,7 +41,7 @@ extends Screen {
     private LockButtonWidget lockDifficultyButton;
 
     public OptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(Text.method_43471("options.title"));
+        super(Text.translatable("options.title"));
         this.parent = parent;
         this.settings = gameOptions;
     }
@@ -59,7 +59,7 @@ extends Screen {
             this.difficultyButton = this.addDrawableChild(OptionsScreen.createDifficultyButtonWidget(i, this.width, this.height, "options.difficulty", this.client));
             if (!this.client.world.getLevelProperties().isHardcore()) {
                 this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
-                this.lockDifficultyButton = this.addDrawableChild(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, button -> this.client.setScreen(new ConfirmScreen(this::lockDifficulty, Text.method_43471("difficulty.lock.title"), Text.method_43469("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())))));
+                this.lockDifficultyButton = this.addDrawableChild(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, button -> this.client.setScreen(new ConfirmScreen(this::lockDifficulty, Text.translatable("difficulty.lock.title"), Text.translatable("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())))));
                 this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
                 this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
                 this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
@@ -67,21 +67,21 @@ extends Screen {
                 this.difficultyButton.active = false;
             }
         } else {
-            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, Text.method_43471("options.online"), button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))));
+            this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, Text.translatable("options.online"), button -> this.client.setScreen(new OnlineOptionsScreen(this, this.settings))));
         }
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, Text.method_43471("options.skinCustomisation"), button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, Text.method_43471("options.sounds"), button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, Text.method_43471("options.video"), button -> this.client.setScreen(new VideoOptionsScreen(this, this.settings))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, Text.method_43471("options.controls"), button -> this.client.setScreen(new ControlsOptionsScreen(this, this.settings))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, Text.method_43471("options.language"), button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager()))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, Text.method_43471("options.chat.title"), button -> this.client.setScreen(new ChatOptionsScreen(this, this.settings))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, Text.method_43471("options.resourcepack"), button -> this.client.setScreen(new PackScreen(this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.method_43471("resourcePack.title")))));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, Text.method_43471("options.accessibility.title"), button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 48 - 6, 150, 20, Text.translatable("options.skinCustomisation"), button -> this.client.setScreen(new SkinOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 48 - 6, 150, 20, Text.translatable("options.sounds"), button -> this.client.setScreen(new SoundOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 72 - 6, 150, 20, Text.translatable("options.video"), button -> this.client.setScreen(new VideoOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 72 - 6, 150, 20, Text.translatable("options.controls"), button -> this.client.setScreen(new ControlsOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96 - 6, 150, 20, Text.translatable("options.language"), button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager()))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 96 - 6, 150, 20, Text.translatable("options.chat.title"), button -> this.client.setScreen(new ChatOptionsScreen(this, this.settings))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 120 - 6, 150, 20, Text.translatable("options.resourcepack"), button -> this.client.setScreen(new PackScreen(this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title")))));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height / 6 + 120 - 6, 150, 20, Text.translatable("options.accessibility.title"), button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.settings))));
         this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, ScreenTexts.DONE, button -> this.client.setScreen(this.parent)));
     }
 
     public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int buttonIndex, int width, int height, String translationKey, MinecraftClient client) {
-        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + buttonIndex % 2 * 160, height / 6 - 12 + 24 * (buttonIndex >> 1), 150, 20, Text.method_43471(translationKey), (button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
+        return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(width / 2 - 155 + buttonIndex % 2 * 160, height / 6 - 12 + 24 * (buttonIndex >> 1), 150, 20, Text.translatable(translationKey), (button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty))));
     }
 
     private void refreshResourcePacks(ResourcePackManager resourcePackManager) {

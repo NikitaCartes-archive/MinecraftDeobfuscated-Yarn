@@ -29,13 +29,13 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity>
 extends EntityRenderer<T> {
     private static final Identifier TEXTURE = new Identifier("textures/entity/minecart.png");
     protected final EntityModel<T> model;
-    private final BlockRenderManager field_38892;
+    private final BlockRenderManager blockRenderManager;
 
     public MinecartEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
         super(ctx);
         this.shadowRadius = 0.7f;
         this.model = new MinecartEntityModel(ctx.getPart(layer));
-        this.field_38892 = ctx.getBlockRenderManager();
+        this.blockRenderManager = ctx.getBlockRenderManager();
     }
 
     @Override
@@ -106,7 +106,7 @@ extends EntityRenderer<T> {
     }
 
     protected void renderBlock(T entity, float delta, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        this.field_38892.renderBlockAsEntity(state, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+        this.blockRenderManager.renderBlockAsEntity(state, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
     }
 }
 

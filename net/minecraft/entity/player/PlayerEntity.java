@@ -1657,7 +1657,7 @@ extends LivingEntity {
 
     @Override
     public Text getName() {
-        return Text.method_43470(this.gameProfile.getName());
+        return Text.literal(this.gameProfile.getName());
     }
 
     public EnderChestInventory getEnderChestInventory() {
@@ -1997,11 +1997,11 @@ extends LivingEntity {
 
     public static enum SleepFailureReason {
         NOT_POSSIBLE_HERE,
-        NOT_POSSIBLE_NOW(Text.method_43471("block.minecraft.bed.no_sleep")),
-        TOO_FAR_AWAY(Text.method_43471("block.minecraft.bed.too_far_away")),
-        OBSTRUCTED(Text.method_43471("block.minecraft.bed.obstructed")),
+        NOT_POSSIBLE_NOW(Text.translatable("block.minecraft.bed.no_sleep")),
+        TOO_FAR_AWAY(Text.translatable("block.minecraft.bed.too_far_away")),
+        OBSTRUCTED(Text.translatable("block.minecraft.bed.obstructed")),
         OTHER_PROBLEM,
-        NOT_SAFE(Text.method_43471("block.minecraft.bed.not_safe"));
+        NOT_SAFE(Text.translatable("block.minecraft.bed.not_safe"));
 
         @Nullable
         private final Text message;

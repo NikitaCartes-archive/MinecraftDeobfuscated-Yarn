@@ -40,7 +40,7 @@ extends RealmsScreen {
     static final Logger LOGGER = LogUtils.getLogger();
     private final Screen parent;
     private final RealmsServer serverData;
-    private Text subtitle = Text.method_43471("mco.reset.world.warning");
+    private Text subtitle = Text.translatable("mco.reset.world.warning");
     private Text buttonTitle = ScreenTexts.CANCEL;
     private int subtitleColor = 0xFF0000;
     private static final Identifier SLOT_FRAME_TEXTURE = new Identifier("realms", "textures/gui/realms/slot_frame.png");
@@ -55,7 +55,7 @@ extends RealmsScreen {
     WorldTemplatePaginatedList experienceWorldTemplates;
     WorldTemplatePaginatedList inspirationWorldTemplates;
     public int slot = -1;
-    private Text resetTitle = Text.method_43471("mco.reset.world.resetting.screen.title");
+    private Text resetTitle = Text.translatable("mco.reset.world.resetting.screen.title");
     private final Runnable resetCallback;
     private final Runnable selectFileUploadCallback;
 
@@ -68,7 +68,7 @@ extends RealmsScreen {
     }
 
     public RealmsResetWorldScreen(Screen parent, RealmsServer serverData, Runnable resetCallback, Runnable selectFileUploadCallback) {
-        this(parent, serverData, Text.method_43471("mco.reset.world.title"), resetCallback, selectFileUploadCallback);
+        this(parent, serverData, Text.translatable("mco.reset.world.title"), resetCallback, selectFileUploadCallback);
     }
 
     public RealmsResetWorldScreen(Screen parent, RealmsServer server, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable resetCallback, Runnable selectFileUploadCallback) {
@@ -111,12 +111,12 @@ extends RealmsScreen {
             }
         }.start();
         this.addLabel(new RealmsLabel(this.subtitle, this.width / 2, 22, this.subtitleColor));
-        this.addDrawableChild(new FrameButton(this.frame(1), RealmsResetWorldScreen.row(0) + 10, Text.method_43471("mco.reset.world.generate"), NEW_WORLD_TEXTURE, button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))));
-        this.addDrawableChild(new FrameButton(this.frame(2), RealmsResetWorldScreen.row(0) + 10, Text.method_43471("mco.reset.world.upload"), UPLOAD_TEXTURE, button -> this.client.setScreen(new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback))));
-        this.addDrawableChild(new FrameButton(this.frame(3), RealmsResetWorldScreen.row(0) + 10, Text.method_43471("mco.reset.world.template"), SURVIVAL_SPAWN_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.method_43471("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates))));
-        this.addDrawableChild(new FrameButton(this.frame(1), RealmsResetWorldScreen.row(6) + 20, Text.method_43471("mco.reset.world.adventure"), ADVENTURE_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.method_43471("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates))));
-        this.addDrawableChild(new FrameButton(this.frame(2), RealmsResetWorldScreen.row(6) + 20, Text.method_43471("mco.reset.world.experience"), EXPERIENCE_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.method_43471("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates))));
-        this.addDrawableChild(new FrameButton(this.frame(3), RealmsResetWorldScreen.row(6) + 20, Text.method_43471("mco.reset.world.inspiration"), INSPIRATION_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.method_43471("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates))));
+        this.addDrawableChild(new FrameButton(this.frame(1), RealmsResetWorldScreen.row(0) + 10, Text.translatable("mco.reset.world.generate"), NEW_WORLD_TEXTURE, button -> this.client.setScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))));
+        this.addDrawableChild(new FrameButton(this.frame(2), RealmsResetWorldScreen.row(0) + 10, Text.translatable("mco.reset.world.upload"), UPLOAD_TEXTURE, button -> this.client.setScreen(new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback))));
+        this.addDrawableChild(new FrameButton(this.frame(3), RealmsResetWorldScreen.row(0) + 10, Text.translatable("mco.reset.world.template"), SURVIVAL_SPAWN_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.translatable("mco.reset.world.template"), this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates))));
+        this.addDrawableChild(new FrameButton(this.frame(1), RealmsResetWorldScreen.row(6) + 20, Text.translatable("mco.reset.world.adventure"), ADVENTURE_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.translatable("mco.reset.world.adventure"), this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates))));
+        this.addDrawableChild(new FrameButton(this.frame(2), RealmsResetWorldScreen.row(6) + 20, Text.translatable("mco.reset.world.experience"), EXPERIENCE_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.translatable("mco.reset.world.experience"), this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates))));
+        this.addDrawableChild(new FrameButton(this.frame(3), RealmsResetWorldScreen.row(6) + 20, Text.translatable("mco.reset.world.inspiration"), INSPIRATION_TEXTURE, button -> this.client.setScreen(new RealmsSelectWorldTemplateScreen(Text.translatable("mco.reset.world.inspiration"), this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates))));
     }
 
     @Override

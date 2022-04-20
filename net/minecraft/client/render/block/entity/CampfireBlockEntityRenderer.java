@@ -22,10 +22,10 @@ import net.minecraft.util.math.Vec3f;
 public class CampfireBlockEntityRenderer
 implements BlockEntityRenderer<CampfireBlockEntity> {
     private static final float SCALE = 0.375f;
-    private final ItemRenderer field_38884;
+    private final ItemRenderer itemRenderer;
 
     public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.field_38884 = ctx.getItemRenderer();
+        this.itemRenderer = ctx.getItemRenderer();
     }
 
     @Override
@@ -44,7 +44,7 @@ implements BlockEntityRenderer<CampfireBlockEntity> {
             matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
             matrixStack.translate(-0.3125, -0.3125, 0.0);
             matrixStack.scale(0.375f, 0.375f, 0.375f);
-            this.field_38884.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
+            this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
             matrixStack.pop();
         }
     }

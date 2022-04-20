@@ -28,9 +28,9 @@ public class SpectatorMenu {
     private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, true);
     private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, false);
     private static final int field_32443 = 8;
-    static final Text CLOSE_TEXT = Text.method_43471("spectatorMenu.close");
-    static final Text PREVIOUS_PAGE_TEXT = Text.method_43471("spectatorMenu.previous_page");
-    static final Text NEXT_PAGE_TEXT = Text.method_43471("spectatorMenu.next_page");
+    static final Text CLOSE_TEXT = Text.translatable("spectatorMenu.close");
+    static final Text PREVIOUS_PAGE_TEXT = Text.translatable("spectatorMenu.previous_page");
+    static final Text NEXT_PAGE_TEXT = Text.translatable("spectatorMenu.next_page");
     public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand(){
 
         @Override
@@ -39,7 +39,7 @@ public class SpectatorMenu {
 
         @Override
         public Text getName() {
-            return ScreenTexts.field_39003;
+            return ScreenTexts.EMPTY;
         }
 
         @Override

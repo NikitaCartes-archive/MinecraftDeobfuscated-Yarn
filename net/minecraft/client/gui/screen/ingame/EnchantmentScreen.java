@@ -190,15 +190,15 @@ extends HandledScreen<EnchantmentScreenHandler> {
             int m = j + 1;
             if (!this.isPointWithinBounds(60, 14 + 19 * j, 108, 17, mouseX, mouseY) || k <= 0 || l < 0 || enchantment == null) continue;
             ArrayList<Text> list = Lists.newArrayList();
-            list.add(Text.method_43469("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
+            list.add(Text.translatable("container.enchant.clue", enchantment.getName(l)).formatted(Formatting.WHITE));
             if (!bl) {
-                list.add(ScreenTexts.field_39003);
+                list.add(ScreenTexts.EMPTY);
                 if (this.client.player.experienceLevel < k) {
-                    list.add(Text.method_43469("container.enchant.level.requirement", ((EnchantmentScreenHandler)this.handler).enchantmentPower[j]).formatted(Formatting.RED));
+                    list.add(Text.translatable("container.enchant.level.requirement", ((EnchantmentScreenHandler)this.handler).enchantmentPower[j]).formatted(Formatting.RED));
                 } else {
-                    MutableText mutableText = m == 1 ? Text.method_43471("container.enchant.lapis.one") : Text.method_43469("container.enchant.lapis.many", m);
+                    MutableText mutableText = m == 1 ? Text.translatable("container.enchant.lapis.one") : Text.translatable("container.enchant.lapis.many", m);
                     list.add(mutableText.formatted(i >= m ? Formatting.GRAY : Formatting.RED));
-                    MutableText mutableText2 = m == 1 ? Text.method_43471("container.enchant.level.one") : Text.method_43469("container.enchant.level.many", m);
+                    MutableText mutableText2 = m == 1 ? Text.translatable("container.enchant.level.one") : Text.translatable("container.enchant.level.many", m);
                     list.add(mutableText2.formatted(Formatting.GRAY));
                 }
             }

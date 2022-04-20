@@ -29,7 +29,7 @@ implements ArgumentType<String> {
         if (TestFunctions.testClassExists(string)) {
             return string;
         }
-        MutableText message = Text.method_43470("No such test class: " + string);
+        MutableText message = Text.literal("No such test class: " + string);
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 

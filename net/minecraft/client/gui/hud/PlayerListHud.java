@@ -78,7 +78,7 @@ extends DrawableHelper {
         if (entry.getDisplayName() != null) {
             return this.applyGameModeFormatting(entry, entry.getDisplayName().shallowCopy());
         }
-        return this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.method_43470(entry.getProfile().getName())));
+        return this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), Text.literal(entry.getProfile().getName())));
     }
 
     /**

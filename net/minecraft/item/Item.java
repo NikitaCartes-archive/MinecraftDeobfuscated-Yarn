@@ -253,7 +253,7 @@ implements ItemConvertible {
     }
 
     public Text getName() {
-        return Text.method_43471(this.getTranslationKey());
+        return Text.translatable(this.getTranslationKey());
     }
 
     public String toString() {
@@ -344,7 +344,7 @@ implements ItemConvertible {
     }
 
     public Text getName(ItemStack stack) {
-        return Text.method_43471(this.getTranslationKey(stack));
+        return Text.translatable(this.getTranslationKey(stack));
     }
 
     /**

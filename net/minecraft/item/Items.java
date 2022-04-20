@@ -7,7 +7,6 @@ import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
-import net.minecraft.class_7409;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.PigEntity;
@@ -38,6 +37,7 @@ import net.minecraft.item.CompassItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.DebugStickItem;
 import net.minecraft.item.DecorationItem;
+import net.minecraft.item.DiscFragmentItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.DyeableHorseArmorItem;
@@ -68,7 +68,6 @@ import net.minecraft.item.ItemFrameItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.KnowledgeBookItem;
 import net.minecraft.item.LeadItem;
-import net.minecraft.item.LilyPadItem;
 import net.minecraft.item.LingeringPotionItem;
 import net.minecraft.item.MilkBucketItem;
 import net.minecraft.item.MinecartItem;
@@ -77,6 +76,7 @@ import net.minecraft.item.NameTagItem;
 import net.minecraft.item.NetherStarItem;
 import net.minecraft.item.OnAStickItem;
 import net.minecraft.item.PickaxeItem;
+import net.minecraft.item.PlaceableOnWaterItem;
 import net.minecraft.item.PotionItem;
 import net.minecraft.item.PowderSnowBucketItem;
 import net.minecraft.item.SaddleItem;
@@ -428,7 +428,7 @@ public class Items {
     public static final Item STONE_BRICK_STAIRS = Items.register(Blocks.STONE_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item MUD_BRICK_STAIRS = Items.register(Blocks.MUD_BRICK_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item MYCELIUM = Items.register(Blocks.MYCELIUM, ItemGroup.BUILDING_BLOCKS);
-    public static final Item LILY_PAD = Items.register(new LilyPadItem(Blocks.LILY_PAD, new Item.Settings().group(ItemGroup.DECORATIONS)));
+    public static final Item LILY_PAD = Items.register(new PlaceableOnWaterItem(Blocks.LILY_PAD, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item NETHER_BRICKS = Items.register(Blocks.NETHER_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRACKED_NETHER_BRICKS = Items.register(Blocks.CRACKED_NETHER_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CHISELED_NETHER_BRICKS = Items.register(Blocks.CHISELED_NETHER_BRICKS, ItemGroup.BUILDING_BLOCKS);
@@ -1181,7 +1181,7 @@ public class Items {
     public static final Item MUSIC_DISC_OTHERSIDE = Items.register("music_disc_otherside", (Item)new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_5 = Items.register("music_disc_5", (Item)new MusicDiscItem(15, SoundEvents.MUSIC_DISC_5, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
     public static final Item MUSIC_DISC_PIGSTEP = Items.register("music_disc_pigstep", (Item)new MusicDiscItem(13, SoundEvents.MUSIC_DISC_PIGSTEP, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.RARE)));
-    public static final Item DISC_FRAGMENT_5 = Items.register("disc_fragment_5", (Item)new class_7409(new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item DISC_FRAGMENT_5 = Items.register("disc_fragment_5", (Item)new DiscFragmentItem(new Item.Settings().group(ItemGroup.MISC)));
     public static final Item TRIDENT = Items.register("trident", (Item)new TridentItem(new Item.Settings().maxDamage(250).group(ItemGroup.COMBAT)));
     public static final Item PHANTOM_MEMBRANE = Items.register("phantom_membrane", new Item(new Item.Settings().group(ItemGroup.BREWING)));
     public static final Item NAUTILUS_SHELL = Items.register("nautilus_shell", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1257,7 +1257,7 @@ public class Items {
     public static final Item OCHRE_FROGLIGHT = Items.register(Blocks.OCHRE_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item VERDANT_FROGLIGHT = Items.register(Blocks.VERDANT_FROGLIGHT, ItemGroup.DECORATIONS);
     public static final Item PEARLESCENT_FROGLIGHT = Items.register(Blocks.PEARLESCENT_FROGLIGHT, ItemGroup.DECORATIONS);
-    public static final Item FROGSPAWN = Items.register(new LilyPadItem(Blocks.FROGSPAWN, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item FROGSPAWN = Items.register(new PlaceableOnWaterItem(Blocks.FROGSPAWN, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item ECHO_SHARD = Items.register("echo_shard", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     private static <T> Optional<T> createEmptyOptional(T of) {

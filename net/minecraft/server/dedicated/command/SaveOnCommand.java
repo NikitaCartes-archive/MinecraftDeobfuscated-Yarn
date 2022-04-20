@@ -12,7 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 
 public class SaveOnCommand {
-    private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.save.alreadyOn"));
+    private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.save.alreadyOn"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("save-on").requires(source -> source.hasPermissionLevel(4))).executes(context -> {
@@ -26,7 +26,7 @@ public class SaveOnCommand {
             if (!bl) {
                 throw ALREADY_ON_EXCEPTION.create();
             }
-            serverCommandSource.sendFeedback(Text.method_43471("commands.save.enabled"), true);
+            serverCommandSource.sendFeedback(Text.translatable("commands.save.enabled"), true);
             return 1;
         }));
     }

@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class FloatRangeArgument {
     public static final FloatRangeArgument ANY = new FloatRangeArgument(null, null);
-    public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("argument.range.ints"));
+    public static final SimpleCommandExceptionType ONLY_INTS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.range.ints"));
     @Nullable
     private final Float min;
     @Nullable

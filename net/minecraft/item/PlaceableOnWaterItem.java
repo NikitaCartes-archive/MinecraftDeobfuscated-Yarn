@@ -16,9 +16,9 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
-public class LilyPadItem
+public class PlaceableOnWaterItem
 extends BlockItem {
-    public LilyPadItem(Block block, Item.Settings settings) {
+    public PlaceableOnWaterItem(Block block, Item.Settings settings) {
         super(block, settings);
     }
 
@@ -29,7 +29,7 @@ extends BlockItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        BlockHitResult blockHitResult = LilyPadItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
+        BlockHitResult blockHitResult = PlaceableOnWaterItem.raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
         BlockHitResult blockHitResult2 = blockHitResult.withBlockPos(blockHitResult.getBlockPos().up());
         ActionResult actionResult = super.useOnBlock(new ItemUsageContext(user, hand, blockHitResult2));
         return new TypedActionResult<ItemStack>(actionResult, user.getStackInHand(hand));

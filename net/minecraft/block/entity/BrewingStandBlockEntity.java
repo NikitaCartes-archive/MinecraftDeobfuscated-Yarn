@@ -87,7 +87,7 @@ implements SidedInventory {
 
     @Override
     protected Text getContainerName() {
-        return Text.method_43471("container.brewing");
+        return Text.translatable("container.brewing");
     }
 
     @Override

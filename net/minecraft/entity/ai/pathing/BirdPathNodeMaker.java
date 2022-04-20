@@ -59,10 +59,10 @@ extends LandPathNodeMaker {
             for (BlockPos blockPos2 : set) {
                 PathNodeType pathNodeType2 = this.getNodeType(blockPos.getX(), i, blockPos.getZ());
                 if (!(this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0f)) continue;
-                return super.method_43415(blockPos2);
+                return super.getStart(blockPos2);
             }
         }
-        return super.method_43415(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
+        return super.getStart(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
     }
 
     @Override

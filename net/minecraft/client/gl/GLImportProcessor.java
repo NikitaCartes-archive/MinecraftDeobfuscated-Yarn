@@ -54,7 +54,7 @@ public abstract class GLImportProcessor {
         while (matcher.find()) {
             int k;
             boolean bl;
-            if (GLImportProcessor.method_36424(source, matcher, j)) continue;
+            if (GLImportProcessor.hasBogusString(source, matcher, j)) continue;
             string2 = matcher.group(2);
             boolean bl2 = bl = string2 != null;
             if (!bl) {
@@ -97,7 +97,7 @@ public abstract class GLImportProcessor {
      */
     private String extractVersion(String line, Context context) {
         Matcher matcher = IMPORT_VERSION_PATTERN.matcher(line);
-        if (matcher.find() && GLImportProcessor.method_36423(line, matcher)) {
+        if (matcher.find() && GLImportProcessor.isLineValid(line, matcher)) {
             context.column = Math.max(context.column, Integer.parseInt(matcher.group(2)));
             return line.substring(0, matcher.start(1)) + "/*" + line.substring(matcher.start(1), matcher.end(1)) + "*/" + line.substring(matcher.end(1));
         }
@@ -106,27 +106,27 @@ public abstract class GLImportProcessor {
 
     private String readImport(String line, int start) {
         Matcher matcher = IMPORT_VERSION_PATTERN.matcher(line);
-        if (matcher.find() && GLImportProcessor.method_36423(line, matcher)) {
+        if (matcher.find() && GLImportProcessor.isLineValid(line, matcher)) {
             return line.substring(0, matcher.start(2)) + Math.max(start, Integer.parseInt(matcher.group(2))) + line.substring(matcher.end(2));
         }
         return line;
     }
 
-    private static boolean method_36423(String string, Matcher matcher) {
-        return !GLImportProcessor.method_36424(string, matcher, 0);
+    private static boolean isLineValid(String line, Matcher matcher) {
+        return !GLImportProcessor.hasBogusString(line, matcher, 0);
     }
 
-    private static boolean method_36424(String string, Matcher matcher, int i) {
-        int j = matcher.start() - i;
-        if (j == 0) {
+    private static boolean hasBogusString(String string, Matcher matcher, int matchEnd) {
+        int i = matcher.start() - matchEnd;
+        if (i == 0) {
             return false;
         }
-        Matcher matcher2 = TRAILING_WHITESPACE_PATTERN.matcher(string.substring(i, matcher.start()));
+        Matcher matcher2 = TRAILING_WHITESPACE_PATTERN.matcher(string.substring(matchEnd, matcher.start()));
         if (!matcher2.find()) {
             return true;
         }
-        int k = matcher2.end(1);
-        return k == matcher.start();
+        int j = matcher2.end(1);
+        return j == matcher.start();
     }
 
     /**

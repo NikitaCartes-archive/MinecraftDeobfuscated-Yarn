@@ -21,7 +21,7 @@ public class Uniform {
     public void set(float value1, float value2, float value3) {
     }
 
-    public void set(float value1, float value2, float value3, float value4) {
+    public void setAndFlip(float value1, float value2, float value3, float value4) {
     }
 
     public void setForDataType(float value1, float value2, float value3, float value4) {
@@ -51,7 +51,7 @@ public class Uniform {
     public void set(Vector4f vec) {
     }
 
-    public void method_35657(float value1, float value2, float value3, float value4) {
+    public void set(float value1, float value2, float value3, float value4) {
     }
 
     public void set(float value1, float value2, float value3, float value4, float value5, float value6) {
@@ -81,7 +81,7 @@ public class Uniform {
     public void set(Matrix4f values) {
     }
 
-    public void method_39978(Matrix3f matrix3f) {
+    public void set(Matrix3f values) {
     }
 }
 

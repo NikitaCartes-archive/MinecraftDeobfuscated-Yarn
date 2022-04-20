@@ -30,7 +30,7 @@ extends ChoiceFix {
         @Override
         public MutableText deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonPrimitive()) {
-                return Text.method_43470(jsonElement.getAsString());
+                return Text.literal(jsonElement.getAsString());
             }
             if (jsonElement.isJsonArray()) {
                 JsonArray jsonArray = jsonElement.getAsJsonArray();
@@ -62,12 +62,12 @@ extends ChoiceFix {
         String string = dynamic.get(lineName).asString("");
         Text text = null;
         if ("null".equals(string) || StringUtils.isEmpty(string)) {
-            text = ScreenTexts.field_39003;
+            text = ScreenTexts.EMPTY;
         } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
             try {
                 text = JsonHelper.deserialize(GSON, string, Text.class, true);
                 if (text == null) {
-                    text = ScreenTexts.field_39003;
+                    text = ScreenTexts.EMPTY;
                 }
             } catch (Exception exception) {
                 // empty catch block
@@ -87,10 +87,10 @@ extends ChoiceFix {
                 }
             }
             if (text == null) {
-                text = Text.method_43470(string);
+                text = Text.literal(string);
             }
         } else {
-            text = Text.method_43470(string);
+            text = Text.literal(string);
         }
         return dynamic.set(lineName, dynamic.createString(Text.Serializer.toJson(text)));
     }

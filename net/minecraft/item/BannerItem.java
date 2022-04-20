@@ -43,7 +43,7 @@ extends WallStandingBlockItem {
             DyeColor dyeColor = DyeColor.byId(nbtCompound2.getInt("Color"));
             BannerPattern bannerPattern = BannerPattern.byId(nbtCompound2.getString("Pattern"));
             if (bannerPattern == null) continue;
-            tooltip.add(Text.method_43471(TRANSLATION_KEY_PREFIX + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable(TRANSLATION_KEY_PREFIX + bannerPattern.getName() + "." + dyeColor.getName()).formatted(Formatting.GRAY));
         }
     }
 

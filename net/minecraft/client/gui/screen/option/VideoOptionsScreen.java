@@ -32,11 +32,11 @@ import net.minecraft.util.Formatting;
 @Environment(value=EnvType.CLIENT)
 public class VideoOptionsScreen
 extends GameOptionsScreen {
-    private static final Text GRAPHICS_FABULOUS_TEXT = Text.method_43471("options.graphics.fabulous").formatted(Formatting.ITALIC);
-    private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = Text.method_43469("options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT);
-    private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.method_43471("options.graphics.warning.title").formatted(Formatting.RED);
-    private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = Text.method_43471("options.graphics.warning.accept");
-    private static final Text GRAPHICS_WARNING_CANCEL_TEXT = Text.method_43471("options.graphics.warning.cancel");
+    private static final Text GRAPHICS_FABULOUS_TEXT = Text.translatable("options.graphics.fabulous").formatted(Formatting.ITALIC);
+    private static final Text GRAPHICS_WARNING_MESSAGE_TEXT = Text.translatable("options.graphics.warning.message", GRAPHICS_FABULOUS_TEXT, GRAPHICS_FABULOUS_TEXT);
+    private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.translatable("options.graphics.warning.title").formatted(Formatting.RED);
+    private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = Text.translatable("options.graphics.warning.accept");
+    private static final Text GRAPHICS_WARNING_CANCEL_TEXT = Text.translatable("options.graphics.warning.cancel");
     private ButtonListWidget list;
     private final VideoWarningManager warningManager;
     private final int mipmapLevels;
@@ -46,7 +46,7 @@ extends GameOptionsScreen {
     }
 
     public VideoOptionsScreen(Screen parent, GameOptions options) {
-        super(parent, options, Text.method_43471("options.videoTitle"));
+        super(parent, options, Text.translatable("options.videoTitle"));
         this.warningManager = parent.client.getVideoWarningManager();
         this.warningManager.reset();
         if (options.getGraphicsMode().getValue() == GraphicsMode.FABULOUS) {
@@ -70,12 +70,12 @@ extends GameOptionsScreen {
         }
         SimpleOption<Integer> simpleOption = new SimpleOption<Integer>("options.fullscreen.resolution", SimpleOption.emptyTooltip(), (text, value) -> {
             if (monitor == null) {
-                return Text.method_43471("options.fullscreen.unavailable");
+                return Text.translatable("options.fullscreen.unavailable");
             }
             if (value == -1) {
-                return GameOptions.getGenericValueText(text, Text.method_43471("options.fullscreen.current"));
+                return GameOptions.getGenericValueText(text, Text.translatable("options.fullscreen.current"));
             }
-            return GameOptions.getGenericValueText(text, Text.method_43470(monitor.getVideoMode((int)value).toString()));
+            return GameOptions.getGenericValueText(text, Text.literal(monitor.getVideoMode((int)value).toString()));
         }, new SimpleOption.ValidatingIntSliderCallbacks(-1, monitor != null ? monitor.getVideoModeCount() - 1 : -1), j, value -> {
             if (monitor == null) {
                 return;
@@ -116,15 +116,15 @@ extends GameOptionsScreen {
                 String string = this.warningManager.getRendererWarning();
                 if (string != null) {
                     list.add(ScreenTexts.LINE_BREAK);
-                    list.add(Text.method_43469("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
+                    list.add(Text.translatable("options.graphics.warning.renderer", string).formatted(Formatting.GRAY));
                 }
                 if ((string2 = this.warningManager.getVendorWarning()) != null) {
                     list.add(ScreenTexts.LINE_BREAK);
-                    list.add(Text.method_43469("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
+                    list.add(Text.translatable("options.graphics.warning.vendor", string2).formatted(Formatting.GRAY));
                 }
                 if ((string3 = this.warningManager.getVersionWarning()) != null) {
                     list.add(ScreenTexts.LINE_BREAK);
-                    list.add(Text.method_43469("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
+                    list.add(Text.translatable("options.graphics.warning.version", string3).formatted(Formatting.GRAY));
                 }
                 this.client.setScreen(new DialogScreen(GRAPHICS_WARNING_TITLE_TEXT, list, ImmutableList.of(new DialogScreen.ChoiceButton(GRAPHICS_WARNING_ACCEPT_TEXT, button -> {
                     this.gameOptions.getGraphicsMode().setValue(GraphicsMode.FABULOUS);

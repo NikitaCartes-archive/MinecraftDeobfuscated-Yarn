@@ -39,7 +39,7 @@ implements WorldGenerationProgressListener {
         int i = this.getProgressPercentage();
         if (Util.getMeasuringTimeMs() > this.nextMessageTime) {
             this.nextMessageTime += 500L;
-            LOGGER.info(Text.method_43469("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
+            LOGGER.info(Text.translatable("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
         }
     }
 

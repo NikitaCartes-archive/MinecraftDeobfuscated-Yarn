@@ -99,7 +99,7 @@ Element {
     @Override
     protected MutableText getNarrationMessage() {
         Text text = this.getMessage();
-        return Text.method_43469("gui.narrate.editBox", text, this.text);
+        return Text.translatable("gui.narrate.editBox", text, this.text);
     }
 
     public void setText(String text) {
@@ -577,7 +577,7 @@ Element {
 
     @Override
     public void appendNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, (Text)Text.method_43469("narration.edit_box", this.getText()));
+        builder.put(NarrationPart.TITLE, (Text)Text.translatable("narration.edit_box", this.getText()));
     }
 }
 

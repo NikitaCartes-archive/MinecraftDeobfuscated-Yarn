@@ -64,7 +64,7 @@ public class DamageTracker {
     public Text getDeathMessage() {
         Text text3;
         if (this.recentDamage.isEmpty()) {
-            return Text.method_43469("death.attack.generic", this.entity.getDisplayName());
+            return Text.translatable("death.attack.generic", this.entity.getDisplayName());
         }
         DamageRecord damageRecord = this.getBiggestFall();
         DamageRecord damageRecord2 = this.recentDamage.get(this.recentDamage.size() - 1);
@@ -73,18 +73,18 @@ public class DamageTracker {
         if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
             Text text2 = damageRecord.getAttackerName();
             if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
-                text3 = Text.method_43469("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
+                text3 = Text.translatable("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
             } else if (text2 != null && !text2.equals(text)) {
                 ItemStack itemStack;
                 Entity entity2 = damageRecord.getDamageSource().getAttacker();
                 ItemStack itemStack2 = itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
-                text3 = !itemStack.isEmpty() && itemStack.hasCustomName() ? Text.method_43469("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText()) : Text.method_43469("death.fell.assist", this.entity.getDisplayName(), text2);
+                text3 = !itemStack.isEmpty() && itemStack.hasCustomName() ? Text.translatable("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText()) : Text.translatable("death.fell.assist", this.entity.getDisplayName(), text2);
             } else if (text != null) {
                 ItemStack itemStack2;
                 ItemStack itemStack = itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
-                text3 = !itemStack2.isEmpty() && itemStack2.hasCustomName() ? Text.method_43469("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText()) : Text.method_43469("death.fell.finish", this.entity.getDisplayName(), text);
+                text3 = !itemStack2.isEmpty() && itemStack2.hasCustomName() ? Text.translatable("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText()) : Text.translatable("death.fell.finish", this.entity.getDisplayName(), text);
             } else {
-                text3 = Text.method_43469("death.fell.killer", this.entity.getDisplayName());
+                text3 = Text.translatable("death.fell.killer", this.entity.getDisplayName());
             }
         } else {
             text3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);

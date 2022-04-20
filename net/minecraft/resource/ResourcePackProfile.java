@@ -64,7 +64,7 @@ public class ResourcePackProfile {
         try (ResourcePack resourcePack = packFactory.get();){
             PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
             if (packResourceMetadata != null) {
-                ResourcePackProfile resourcePackProfile = profileFactory.create(name, Text.method_43470(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
+                ResourcePackProfile resourcePackProfile = profileFactory.create(name, Text.literal(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
                 return resourcePackProfile;
             }
             LOGGER.warn("Couldn't find pack meta for pack {}", (Object)name);
@@ -100,7 +100,7 @@ public class ResourcePackProfile {
     }
 
     public Text getInformationText(boolean enabled) {
-        return Texts.bracketed(this.source.decorate(Text.method_43470(this.name))).styled(style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED).withInsertion(StringArgumentType.escapeIfRequired(this.name)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43473().append(this.displayName).append("\n").append(this.description))));
+        return Texts.bracketed(this.source.decorate(Text.literal(this.name))).styled(style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED).withInsertion(StringArgumentType.escapeIfRequired(this.name)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(this.displayName).append("\n").append(this.description))));
     }
 
     public ResourcePackCompatibility getCompatibility() {

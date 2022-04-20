@@ -27,8 +27,8 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.gen.structure.StructureType;
 
 public class LocateCommand {
-    private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("commands.locate.failed", id));
-    private static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.method_43469("commands.locate.invalid", id));
+    private static final DynamicCommandExceptionType FAILED_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.locate.failed", id));
+    private static final DynamicCommandExceptionType INVALID_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.locate.invalid", id));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(Registry.STRUCTURE_KEY)).executes(context -> LocateCommand.execute((ServerCommandSource)context.getSource(), RegistryPredicateArgumentType.getConfiguredStructureFeaturePredicate(context, "structure")))));
@@ -51,8 +51,8 @@ public class LocateCommand {
         String string = structureFeature.getKey().map(key -> key.getValue().toString(), key2 -> "#" + key2.id() + " (" + ((RegistryEntry)structurePosAndEntry.getSecond()).getKey().map(key -> key.getValue().toString()).orElse("[unregistered]") + ")");
         int i = bl ? MathHelper.floor(MathHelper.sqrt((float)currentPos.getSquaredDistance(blockPos))) : MathHelper.floor(LocateCommand.getDistance(currentPos.getX(), currentPos.getZ(), blockPos.getX(), blockPos.getZ()));
         String string2 = bl ? String.valueOf(blockPos.getY()) : "~";
-        MutableText text = Texts.bracketed(Text.method_43469("chat.coordinates", blockPos.getX(), string2, blockPos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43471("chat.coordinates.tooltip"))));
-        source.sendFeedback(Text.method_43469(successMessage, string, text, i), false);
+        MutableText text = Texts.bracketed(Text.translatable("chat.coordinates", blockPos.getX(), string2, blockPos.getZ())).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string2 + " " + blockPos.getZ())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip"))));
+        source.sendFeedback(Text.translatable(successMessage, string, text, i), false);
         return i;
     }
 

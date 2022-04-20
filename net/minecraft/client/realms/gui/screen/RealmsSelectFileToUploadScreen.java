@@ -34,9 +34,9 @@ import org.slf4j.Logger;
 public class RealmsSelectFileToUploadScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogUtils.getLogger();
-    static final Text WORLD_LANG = Text.method_43471("selectWorld.world");
-    static final Text HARDCORE_TEXT = Text.method_43471("mco.upload.hardcore").formatted(Formatting.DARK_RED);
-    static final Text CHEATS_TEXT = Text.method_43471("selectWorld.cheats");
+    static final Text WORLD_LANG = Text.translatable("selectWorld.world");
+    static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").formatted(Formatting.DARK_RED);
+    static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
     private final RealmsResetWorldScreen parent;
     private final long worldId;
@@ -48,7 +48,7 @@ extends RealmsScreen {
     private final Runnable onBack;
 
     public RealmsSelectFileToUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, Runnable onBack) {
-        super(Text.method_43471("mco.upload.select.world.title"));
+        super(Text.translatable("mco.upload.select.world.title"));
         this.parent = parent;
         this.worldId = worldId;
         this.slotId = slotId;
@@ -56,8 +56,8 @@ extends RealmsScreen {
     }
 
     private void loadLevelList() throws Exception {
-        LevelStorage.class_7410 lv = this.client.getLevelStorage().getLevelList();
-        this.levelList = this.client.getLevelStorage().method_43417(lv).join().stream().filter(a -> !a.requiresConversion() && !a.isLocked()).sorted((a, b) -> {
+        LevelStorage.LevelList levelList = this.client.getLevelStorage().getLevelList();
+        this.levelList = this.client.getLevelStorage().loadSummaries(levelList).join().stream().filter(a -> !a.requiresConversion() && !a.isLocked()).sorted((a, b) -> {
             if (a.getLastPlayed() < b.getLastPlayed()) {
                 return 1;
             }
@@ -79,16 +79,16 @@ extends RealmsScreen {
             this.loadLevelList();
         } catch (Exception exception) {
             LOGGER.error("Couldn't load level list", exception);
-            this.client.setScreen(new RealmsGenericErrorScreen(Text.method_43470("Unable to load worlds"), Text.of(exception.getMessage()), this.parent));
+            this.client.setScreen(new RealmsGenericErrorScreen(Text.literal("Unable to load worlds"), Text.of(exception.getMessage()), this.parent));
             return;
         }
         this.addSelectableChild(this.worldSelectionList);
-        this.uploadButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, Text.method_43471("mco.upload.button.name"), button -> this.upload()));
+        this.uploadButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 154, this.height - 32, 153, 20, Text.translatable("mco.upload.button.name"), button -> this.upload()));
         this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
         this.addDrawableChild(new ButtonWidget(this.width / 2 + 6, this.height - 32, 153, 20, ScreenTexts.BACK, button -> this.client.setScreen(this.parent)));
-        this.addLabel(new RealmsLabel(Text.method_43471("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
+        this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
         if (this.levelList.isEmpty()) {
-            this.addLabel(new RealmsLabel(Text.method_43471("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF));
+            this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF));
         }
     }
 
@@ -207,8 +207,8 @@ extends RealmsScreen {
 
         @Override
         public Text getNarration() {
-            Text text = ScreenTexts.joinLines(Text.method_43470(this.summary.getDisplayName()), Text.method_43470(RealmsSelectFileToUploadScreen.getLastPlayed(this.summary)), RealmsSelectFileToUploadScreen.getGameModeName(this.summary));
-            return Text.method_43469("narrator.select", text);
+            Text text = ScreenTexts.joinLines(Text.literal(this.summary.getDisplayName()), Text.literal(RealmsSelectFileToUploadScreen.getLastPlayed(this.summary)), RealmsSelectFileToUploadScreen.getGameModeName(this.summary));
+            return Text.translatable("narrator.select", text);
         }
     }
 }

@@ -19,10 +19,10 @@ import net.minecraft.world.MobSpawnerLogic;
 @Environment(value=EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer
 implements BlockEntityRenderer<MobSpawnerBlockEntity> {
-    private final EntityRenderDispatcher field_38885;
+    private final EntityRenderDispatcher entityRenderDispatcher;
 
     public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.field_38885 = ctx.getEntityRenderDIspatcher();
+        this.entityRenderDispatcher = ctx.getEntityRenderDIspatcher();
     }
 
     @Override
@@ -42,7 +42,7 @@ implements BlockEntityRenderer<MobSpawnerBlockEntity> {
             matrixStack.translate(0.0, -0.2f, 0.0);
             matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
             matrixStack.scale(g, g, g);
-            this.field_38885.render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
+            this.entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

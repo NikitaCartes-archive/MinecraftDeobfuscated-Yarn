@@ -47,9 +47,9 @@ implements DebugRenderer.Renderer {
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
         BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-        this.goalSelectors.forEach((integer, list) -> {
-            for (int i = 0; i < list.size(); ++i) {
-                GoalSelector goalSelector = (GoalSelector)list.get(i);
+        this.goalSelectors.forEach((index, selectors) -> {
+            for (int i = 0; i < selectors.size(); ++i) {
+                GoalSelector goalSelector = (GoalSelector)selectors.get(i);
                 if (!blockPos.isWithinDistance(goalSelector.pos, 160.0)) continue;
                 double d = (double)goalSelector.pos.getX() + 0.5;
                 double e = (double)goalSelector.pos.getY() + 2.0 + (double)i * 0.25;

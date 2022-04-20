@@ -35,7 +35,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(Text.method_43471("mco.download.preparing"));
+        this.setTitle(Text.translatable("mco.download.preparing"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         for (int i = 0; i < 25; ++i) {
             try {

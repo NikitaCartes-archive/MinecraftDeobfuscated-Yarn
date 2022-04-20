@@ -33,7 +33,7 @@ implements ArgumentType<TestFunction> {
         if (optional.isPresent()) {
             return optional.get();
         }
-        MutableText message = Text.method_43470("No such test: " + string);
+        MutableText message = Text.literal("No such test: " + string);
         throw new CommandSyntaxException(new SimpleCommandExceptionType(message), message);
     }
 

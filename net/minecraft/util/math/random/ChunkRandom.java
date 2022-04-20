@@ -5,8 +5,8 @@ package net.minecraft.util.math.random;
 
 import java.util.function.LongFunction;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.math.random.AtomicSimpleRandom;
 import net.minecraft.util.math.random.RandomDeriver;
-import net.minecraft.world.gen.random.AtomicSimpleRandom;
 import net.minecraft.world.gen.random.Xoroshiro128PlusPlusRandom;
 
 public class ChunkRandom

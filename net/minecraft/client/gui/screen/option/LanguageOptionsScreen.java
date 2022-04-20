@@ -21,12 +21,12 @@ import net.minecraft.util.Formatting;
 @Environment(value=EnvType.CLIENT)
 public class LanguageOptionsScreen
 extends GameOptionsScreen {
-    private static final Text LANGUAGE_WARNING_TEXT = Text.method_43470("(").append(Text.method_43471("options.languageWarning")).append(")").formatted(Formatting.GRAY);
+    private static final Text LANGUAGE_WARNING_TEXT = Text.literal("(").append(Text.translatable("options.languageWarning")).append(")").formatted(Formatting.GRAY);
     private LanguageSelectionListWidget languageSelectionList;
     final LanguageManager languageManager;
 
     public LanguageOptionsScreen(Screen parent, GameOptions options, LanguageManager languageManager) {
-        super(parent, options, Text.method_43471("options.language"));
+        super(parent, options, Text.translatable("options.language"));
         this.languageManager = languageManager;
     }
 
@@ -122,7 +122,7 @@ extends GameOptionsScreen {
 
             @Override
             public Text getNarration() {
-                return Text.method_43469("narrator.select", this.languageDefinition);
+                return Text.translatable("narrator.select", this.languageDefinition);
             }
         }
     }

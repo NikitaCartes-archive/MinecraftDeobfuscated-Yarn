@@ -347,13 +347,13 @@ implements Vanishable {
             return;
         }
         ItemStack itemStack = list.get(0);
-        tooltip.add(Text.method_43471("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
+        tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
         if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
             ArrayList<Text> list2 = Lists.newArrayList();
             Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);
             if (!list2.isEmpty()) {
                 for (int i = 0; i < list2.size(); ++i) {
-                    list2.set(i, Text.method_43470("  ").append((Text)list2.get(i)).formatted(Formatting.GRAY));
+                    list2.set(i, Text.literal("  ").append((Text)list2.get(i)).formatted(Formatting.GRAY));
                 }
                 tooltip.addAll(list2);
             }

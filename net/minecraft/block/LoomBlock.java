@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 
 public class LoomBlock
 extends HorizontalFacingBlock {
-    private static final Text TITLE = Text.method_43471("container.loom");
+    private static final Text TITLE = Text.translatable("container.loom");
 
     protected LoomBlock(AbstractBlock.Settings settings) {
         super(settings);

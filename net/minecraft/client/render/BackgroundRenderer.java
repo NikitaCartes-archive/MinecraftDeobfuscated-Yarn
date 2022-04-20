@@ -34,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class BackgroundRenderer {
     private static final int field_32685 = 96;
-    private static final List<StatusEffectFogModifier> field_38338 = Lists.newArrayList(new BlindnessFogModifier(), new DarknessFogModifier());
+    private static final List<StatusEffectFogModifier> FOG_MODIFIERS = Lists.newArrayList(new BlindnessFogModifier(), new DarknessFogModifier());
     public static final float field_32684 = 5000.0f;
     private static float red;
     private static float green;
@@ -168,19 +168,19 @@ public class BackgroundRenderer {
     }
 
     @Nullable
-    private static StatusEffectFogModifier getFogModifier(Entity entity, float f) {
+    private static StatusEffectFogModifier getFogModifier(Entity entity, float tickDelta) {
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
-            return field_38338.stream().filter(statusEffectFogModifier -> statusEffectFogModifier.shouldApply(livingEntity, f)).findFirst().orElse(null);
+            return FOG_MODIFIERS.stream().filter(modifier -> modifier.shouldApply(livingEntity, tickDelta)).findFirst().orElse(null);
         }
         return null;
     }
 
-    public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float f) {
+    public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
         FogData fogData = new FogData(fogType);
-        StatusEffectFogModifier statusEffectFogModifier = BackgroundRenderer.getFogModifier(entity, f);
+        StatusEffectFogModifier statusEffectFogModifier = BackgroundRenderer.getFogModifier(entity, tickDelta);
         if (cameraSubmersionType == CameraSubmersionType.LAVA) {
             if (entity.isSpectator()) {
                 fogData.fogStart = -8.0f;
@@ -204,7 +204,7 @@ public class BackgroundRenderer {
             LivingEntity livingEntity = (LivingEntity)entity;
             StatusEffectInstance statusEffectInstance = livingEntity.getStatusEffect(statusEffectFogModifier.getStatusEffect());
             if (statusEffectInstance != null) {
-                statusEffectFogModifier.applyStartEndModifier(fogData, livingEntity, statusEffectInstance, viewDistance, f);
+                statusEffectFogModifier.applyStartEndModifier(fogData, livingEntity, statusEffectInstance, viewDistance, tickDelta);
             }
         } else if (cameraSubmersionType == CameraSubmersionType.WATER) {
             fogData.fogStart = -8.0f;
@@ -219,7 +219,7 @@ public class BackgroundRenderer {
             }
             if (fogData.fogEnd > viewDistance) {
                 fogData.fogEnd = viewDistance;
-                fogData.field_38342 = FogShape.CYLINDER;
+                fogData.fogShape = FogShape.CYLINDER;
             }
         } else if (thickFog) {
             fogData.fogStart = viewDistance * 0.05f;
@@ -227,16 +227,16 @@ public class BackgroundRenderer {
         } else if (fogType == FogType.FOG_SKY) {
             fogData.fogStart = 0.0f;
             fogData.fogEnd = viewDistance;
-            fogData.field_38342 = FogShape.CYLINDER;
+            fogData.fogShape = FogShape.CYLINDER;
         } else {
-            float g = MathHelper.clamp(viewDistance / 10.0f, 4.0f, 64.0f);
-            fogData.fogStart = viewDistance - g;
+            float f = MathHelper.clamp(viewDistance / 10.0f, 4.0f, 64.0f);
+            fogData.fogStart = viewDistance - f;
             fogData.fogEnd = viewDistance;
-            fogData.field_38342 = FogShape.CYLINDER;
+            fogData.fogShape = FogShape.CYLINDER;
         }
         RenderSystem.setShaderFogStart(fogData.fogStart);
         RenderSystem.setShaderFogEnd(fogData.fogEnd);
-        RenderSystem.setShaderFogShape(fogData.field_38342);
+        RenderSystem.setShaderFogShape(fogData.fogShape);
     }
 
     public static void setFogBlack() {
@@ -255,14 +255,14 @@ public class BackgroundRenderer {
 
         public void applyStartEndModifier(FogData var1, LivingEntity var2, StatusEffectInstance var3, float var4, float var5);
 
-        default public boolean shouldApply(LivingEntity livingEntity, float f) {
-            return livingEntity.hasStatusEffect(this.getStatusEffect());
+        default public boolean shouldApply(LivingEntity entity, float tickDelta) {
+            return entity.hasStatusEffect(this.getStatusEffect());
         }
 
-        default public float applyColorModifier(LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-            StatusEffectInstance statusEffectInstance2 = livingEntity.getStatusEffect(this.getStatusEffect());
-            if (statusEffectInstance2 != null) {
-                f = statusEffectInstance2.getDuration() < 20 ? 1.0f - (float)statusEffectInstance2.getDuration() / 20.0f : 0.0f;
+        default public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
+            StatusEffectInstance statusEffectInstance = entity.getStatusEffect(this.getStatusEffect());
+            if (statusEffectInstance != null) {
+                f = statusEffectInstance.getDuration() < 20 ? 1.0f - (float)statusEffectInstance.getDuration() / 20.0f : 0.0f;
             }
             return f;
         }
@@ -273,7 +273,7 @@ public class BackgroundRenderer {
         public final FogType fogType;
         public float fogStart;
         public float fogEnd;
-        public FogShape field_38342 = FogShape.SPHERE;
+        public FogShape fogShape = FogShape.SPHERE;
 
         public FogData(FogType fogType) {
             this.fogType = fogType;
@@ -299,14 +299,14 @@ public class BackgroundRenderer {
         }
 
         @Override
-        public void applyStartEndModifier(FogData fogData, LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-            float h = MathHelper.lerp(Math.min(1.0f, (float)statusEffectInstance.getDuration() / 20.0f), f, 5.0f);
+        public void applyStartEndModifier(FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
+            float f = MathHelper.lerp(Math.min(1.0f, (float)effect.getDuration() / 20.0f), viewDistance, 5.0f);
             if (fogData.fogType == FogType.FOG_SKY) {
                 fogData.fogStart = 0.0f;
-                fogData.fogEnd = h * 0.8f;
+                fogData.fogEnd = f * 0.8f;
             } else {
-                fogData.fogStart = h * 0.25f;
-                fogData.fogEnd = h;
+                fogData.fogStart = f * 0.25f;
+                fogData.fogEnd = f;
             }
         }
     }
@@ -323,21 +323,21 @@ public class BackgroundRenderer {
         }
 
         @Override
-        public void applyStartEndModifier(FogData fogData, LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-            if (statusEffectInstance.getFactorCalculationData().isEmpty()) {
+        public void applyStartEndModifier(FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
+            if (effect.getFactorCalculationData().isEmpty()) {
                 return;
             }
-            float h = MathHelper.lerp(statusEffectInstance.getFactorCalculationData().get().lerp(g), f, 15.0f);
-            fogData.fogStart = fogData.fogType == FogType.FOG_SKY ? 0.0f : h * 0.75f;
-            fogData.fogEnd = h;
+            float f = MathHelper.lerp(effect.getFactorCalculationData().get().lerp(tickDelta), viewDistance, 15.0f);
+            fogData.fogStart = fogData.fogType == FogType.FOG_SKY ? 0.0f : f * 0.75f;
+            fogData.fogEnd = f;
         }
 
         @Override
-        public float applyColorModifier(LivingEntity livingEntity, StatusEffectInstance statusEffectInstance, float f, float g) {
-            if (statusEffectInstance.getFactorCalculationData().isEmpty()) {
+        public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
+            if (effect.getFactorCalculationData().isEmpty()) {
                 return 0.0f;
             }
-            return 1.0f - statusEffectInstance.getFactorCalculationData().get().lerp(g);
+            return 1.0f - effect.getFactorCalculationData().get().lerp(tickDelta);
         }
     }
 }

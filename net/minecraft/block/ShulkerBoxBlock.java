@@ -186,7 +186,7 @@ extends BlockWithEntity {
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         if (nbtCompound != null) {
             if (nbtCompound.contains("LootTable", NbtElement.STRING_TYPE)) {
-                tooltip.add(Text.method_43470("???????"));
+                tooltip.add(Text.literal("???????"));
             }
             if (nbtCompound.contains("Items", NbtElement.LIST_TYPE)) {
                 DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
@@ -203,7 +203,7 @@ extends BlockWithEntity {
                     tooltip.add(mutableText);
                 }
                 if (j - i > 0) {
-                    tooltip.add(Text.method_43469("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
+                    tooltip.add(Text.translatable("container.shulkerBox.more", j - i).formatted(Formatting.ITALIC));
                 }
             }
         }

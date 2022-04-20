@@ -18,7 +18,7 @@ import net.minecraft.world.Difficulty;
 public class OnlineOptionsScreen
 extends SimpleOptionsScreen {
     public OnlineOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.method_43471("options.online.title"), new SimpleOption[]{gameOptions.getRealmsNotifications(), gameOptions.getAllowServerListing()});
+        super(parent, gameOptions, Text.translatable("options.online.title"), new SimpleOption[]{gameOptions.getRealmsNotifications(), gameOptions.getAllowServerListing()});
     }
 
     @Override

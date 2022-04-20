@@ -536,7 +536,7 @@ Selectable {
         int i;
         List<E> list = this.children();
         if (list.size() > 1 && (i = list.indexOf(entry)) != -1) {
-            builder.put(NarrationPart.POSITION, (Text)Text.method_43469("narrator.position.list", i + 1, list.size()));
+            builder.put(NarrationPart.POSITION, (Text)Text.translatable("narrator.position.list", i + 1, list.size()));
         }
     }
 

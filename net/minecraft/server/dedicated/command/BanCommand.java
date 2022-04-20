@@ -22,7 +22,7 @@ import net.minecraft.text.Texts;
 import org.jetbrains.annotations.Nullable;
 
 public class BanCommand {
-    private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.ban.failed"));
+    private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ban.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("ban").requires(source -> source.hasPermissionLevel(3))).then(((RequiredArgumentBuilder)CommandManager.argument("targets", GameProfileArgumentType.gameProfile()).executes(context -> BanCommand.ban((ServerCommandSource)context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets"), null))).then(CommandManager.argument("reason", MessageArgumentType.message()).executes(context -> BanCommand.ban((ServerCommandSource)context.getSource(), GameProfileArgumentType.getProfileArgument(context, "targets"), MessageArgumentType.getMessage(context, "reason"))))));
@@ -36,10 +36,10 @@ public class BanCommand {
             BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(gameProfile, null, source.getName(), null, reason == null ? null : reason.getString());
             bannedPlayerList.add(bannedPlayerEntry);
             ++i;
-            source.sendFeedback(Text.method_43469("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
+            source.sendFeedback(Text.translatable("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
             ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(gameProfile.getId());
             if (serverPlayerEntity == null) continue;
-            serverPlayerEntity.networkHandler.disconnect(Text.method_43471("multiplayer.disconnect.banned"));
+            serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.banned"));
         }
         if (i == 0) {
             throw ALREADY_BANNED_EXCEPTION.create();

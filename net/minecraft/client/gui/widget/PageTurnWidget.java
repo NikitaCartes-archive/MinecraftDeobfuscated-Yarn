@@ -22,7 +22,7 @@ extends ButtonWidget {
     private final boolean playPageTurnSound;
 
     public PageTurnWidget(int x, int y, boolean isNextPageButton, ButtonWidget.PressAction action, boolean playPageTurnSound) {
-        super(x, y, 23, 13, ScreenTexts.field_39003, action);
+        super(x, y, 23, 13, ScreenTexts.EMPTY, action);
         this.isNextPageButton = isNextPageButton;
         this.playPageTurnSound = playPageTurnSound;
     }

@@ -220,8 +220,8 @@ public class FileDownload {
         try {
             Object object = storage.getLevelList().iterator();
             while (object.hasNext()) {
-                LevelStorage.class_7411 lv = (LevelStorage.class_7411)object.next();
-                String string = lv.method_43422();
+                LevelStorage.LevelSave levelSave = (LevelStorage.LevelSave)object.next();
+                String string = levelSave.getRootPath();
                 if (!string.toLowerCase(Locale.ROOT).startsWith(name.toLowerCase(Locale.ROOT))) continue;
                 Matcher matcher = pattern.matcher(string);
                 if (matcher.matches()) {

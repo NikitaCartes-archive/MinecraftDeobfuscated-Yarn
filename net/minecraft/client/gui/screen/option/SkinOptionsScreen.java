@@ -19,7 +19,7 @@ import net.minecraft.text.Text;
 public class SkinOptionsScreen
 extends GameOptionsScreen {
     public SkinOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.method_43471("options.skinCustomisation.title"));
+        super(parent, gameOptions, Text.translatable("options.skinCustomisation.title"));
     }
 
     @Override

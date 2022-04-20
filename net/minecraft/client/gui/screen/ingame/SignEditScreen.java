@@ -49,7 +49,7 @@ extends Screen {
     private final String[] text = (String[])IntStream.range(0, 4).mapToObj(row -> sign.getTextOnRow(row, filtered)).map(Text::getString).toArray(String[]::new);
 
     public SignEditScreen(SignBlockEntity sign, boolean filtered) {
-        super(Text.method_43471("sign.edit"));
+        super(Text.translatable("sign.edit"));
         this.sign = sign;
     }
 
@@ -60,7 +60,7 @@ extends Screen {
         this.sign.setEditable(false);
         this.selectionManager = new SelectionManager(() -> this.text[this.currentRow], text -> {
             this.text[this.currentRow] = text;
-            this.sign.setTextOnRow(this.currentRow, Text.method_43470(text));
+            this.sign.setTextOnRow(this.currentRow, Text.literal(text));
         }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), text -> this.client.textRenderer.getWidth((String)text) <= 90);
         BlockState blockState = this.sign.getCachedState();
         this.signType = SignBlockEntityRenderer.getSignType(blockState.getBlock());
@@ -198,7 +198,7 @@ extends Screen {
             bufferBuilder.vertex(matrix4f, v, l, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, u, l, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.end();
-            BufferRenderer.method_43433(bufferBuilder);
+            BufferRenderer.drawWithShader(bufferBuilder);
             RenderSystem.disableColorLogicOp();
             RenderSystem.enableTexture();
         }

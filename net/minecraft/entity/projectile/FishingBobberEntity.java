@@ -97,7 +97,7 @@ extends ProjectileEntity {
         this.refreshPositionAndAngles(d, e, l, g, f);
         Vec3d vec3d = new Vec3d(-i, MathHelper.clamp(-(k / j), -5.0f, 5.0f), -h);
         double m = vec3d.length();
-        vec3d = vec3d.multiply(0.6 / m + this.random.method_43385(0.5, 0.0103365), 0.6 / m + this.random.method_43385(0.5, 0.0103365), 0.6 / m + this.random.method_43385(0.5, 0.0103365));
+        vec3d = vec3d.multiply(0.6 / m + this.random.nextPredictable(0.5, 0.0103365), 0.6 / m + this.random.nextPredictable(0.5, 0.0103365), 0.6 / m + this.random.nextPredictable(0.5, 0.0103365));
         this.setVelocity(vec3d);
         this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
         this.setPitch((float)(MathHelper.atan2(vec3d.y, vec3d.horizontalLength()) * 57.2957763671875));
@@ -286,7 +286,7 @@ extends ProjectileEntity {
             if (this.fishTravelCountdown > 0) {
                 double j;
                 double e;
-                this.fishAngle += (float)this.random.method_43385(0.0, 9.188);
+                this.fishAngle += (float)this.random.nextPredictable(0.0, 9.188);
                 float f = this.fishAngle * ((float)Math.PI / 180);
                 float g = MathHelper.sin(f);
                 float h = MathHelper.cos(f);

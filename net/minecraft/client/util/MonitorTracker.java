@@ -39,10 +39,10 @@ public class MonitorTracker {
 
     private void handleMonitorEvent(long monitor, int event) {
         RenderSystem.assertOnRenderThread();
-        if (event == 262145) {
+        if (event == GLFW.GLFW_CONNECTED) {
             this.pointerToMonitorMap.put(monitor, this.monitorFactory.createMonitor(monitor));
             LOGGER.debug("Monitor {} connected. Current monitors: {}", (Object)monitor, (Object)this.pointerToMonitorMap);
-        } else if (event == 262146) {
+        } else if (event == GLFW.GLFW_DISCONNECTED) {
             this.pointerToMonitorMap.remove(monitor);
             LOGGER.debug("Monitor {} disconnected. Current monitors: {}", (Object)monitor, (Object)this.pointerToMonitorMap);
         }

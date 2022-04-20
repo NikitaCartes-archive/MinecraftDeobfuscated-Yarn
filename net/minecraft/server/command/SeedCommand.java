@@ -18,8 +18,8 @@ public class SeedCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, boolean dedicated) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("seed").requires(source -> !dedicated || source.hasPermissionLevel(2))).executes(context -> {
             long l = ((ServerCommandSource)context.getSource()).getWorld().getSeed();
-            MutableText text = Texts.bracketed(Text.method_43470(String.valueOf(l)).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.method_43471("chat.copy.click"))).withInsertion(String.valueOf(l))));
-            ((ServerCommandSource)context.getSource()).sendFeedback(Text.method_43469("commands.seed.success", text), false);
+            MutableText text = Texts.bracketed(Text.literal(String.valueOf(l)).styled(style -> style.withColor(Formatting.GREEN).withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(l))).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click"))).withInsertion(String.valueOf(l))));
+            ((ServerCommandSource)context.getSource()).sendFeedback(Text.translatable("commands.seed.success", text), false);
             return (int)l;
         }));
     }

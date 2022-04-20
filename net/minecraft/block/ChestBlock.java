@@ -126,7 +126,7 @@ implements Waterloggable {
                     if (chestBlockEntity2.hasCustomName()) {
                         return chestBlockEntity2.getDisplayName();
                     }
-                    return Text.method_43471("container.chestDouble");
+                    return Text.translatable("container.chestDouble");
                 }
             });
         }
@@ -342,7 +342,7 @@ implements Waterloggable {
     }
 
     public static boolean isChestBlocked(WorldAccess world, BlockPos pos) {
-        return ChestBlock.hasBlockOnTop(world, pos) || ChestBlock.hasOcelotOnTop(world, pos);
+        return ChestBlock.hasBlockOnTop(world, pos) || ChestBlock.hasCatOnTop(world, pos);
     }
 
     private static boolean hasBlockOnTop(BlockView world, BlockPos pos) {
@@ -350,7 +350,7 @@ implements Waterloggable {
         return world.getBlockState(blockPos).isSolidBlock(world, blockPos);
     }
 
-    private static boolean hasOcelotOnTop(WorldAccess world, BlockPos pos) {
+    private static boolean hasCatOnTop(WorldAccess world, BlockPos pos) {
         List<CatEntity> list = world.getNonSpectatingEntities(CatEntity.class, new Box(pos.getX(), pos.getY() + 1, pos.getZ(), pos.getX() + 1, pos.getY() + 2, pos.getZ() + 1));
         if (!list.isEmpty()) {
             for (CatEntity catEntity : list) {

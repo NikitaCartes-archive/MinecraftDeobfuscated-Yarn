@@ -55,7 +55,7 @@ extends Screen {
     private static final int ICON_OFFSET_X = 2;
     private static final int ICON_OFFSET_Y = 2;
     private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
-    public static final Text UNKNOWN_PRESET_TEXT = Text.method_43471("flat_world_preset.unknown");
+    public static final Text UNKNOWN_PRESET_TEXT = Text.translatable("flat_world_preset.unknown");
     private final CustomizeFlatLevelScreen parent;
     private Text shareText;
     private Text listText;
@@ -65,7 +65,7 @@ extends Screen {
     FlatChunkGeneratorConfig config;
 
     public PresetsScreen(CustomizeFlatLevelScreen parent) {
-        super(Text.method_43471("createWorld.customize.presets.title"));
+        super(Text.translatable("createWorld.customize.presets.title"));
         this.parent = parent;
     }
 
@@ -163,8 +163,8 @@ extends Screen {
     @Override
     protected void init() {
         this.client.keyboard.setRepeatEvents(true);
-        this.shareText = Text.method_43471("createWorld.customize.presets.share");
-        this.listText = Text.method_43471("createWorld.customize.presets.list");
+        this.shareText = Text.translatable("createWorld.customize.presets.share");
+        this.listText = Text.translatable("createWorld.customize.presets.list");
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
         DynamicRegistryManager dynamicRegistryManager = this.parent.parent.moreOptionsDialog.getRegistryManager();
@@ -175,7 +175,7 @@ extends Screen {
         this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget(this.parent.parent.moreOptionsDialog.getRegistryManager());
         this.addSelectableChild(this.listWidget);
-        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.method_43471("createWorld.customize.presets.select"), buttonWidget -> {
+        this.selectPresetButton = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registry, registry2, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.setScreen(this.parent);
@@ -270,7 +270,7 @@ extends Screen {
 
             public SuperflatPresetEntry(RegistryEntry<FlatLevelGeneratorPreset> preset) {
                 this.preset = preset.value();
-                this.text = preset.getKey().map(key -> Text.method_43471(key.getValue().toTranslationKey("flat_world_preset"))).orElse(UNKNOWN_PRESET_TEXT);
+                this.text = preset.getKey().map(key -> Text.translatable(key.getValue().toTranslationKey("flat_world_preset"))).orElse(UNKNOWN_PRESET_TEXT);
             }
 
             @Override
@@ -307,7 +307,7 @@ extends Screen {
 
             @Override
             public Text getNarration() {
-                return Text.method_43469("narrator.select", this.text);
+                return Text.translatable("narrator.select", this.text);
             }
         }
     }

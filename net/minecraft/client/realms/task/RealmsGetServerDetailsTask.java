@@ -50,7 +50,7 @@ extends LongRunningTask {
     @Override
     public void run() {
         RealmsServerAddress realmsServerAddress;
-        this.setTitle(Text.method_43471("mco.connect.connecting"));
+        this.setTitle(Text.translatable("mco.connect.connecting"));
         try {
             realmsServerAddress = this.join();
         } catch (CancellationException cancellationException) {
@@ -64,7 +64,7 @@ extends LongRunningTask {
                 }
                 case 6006: {
                     boolean bl = this.server.ownerUUID.equals(MinecraftClient.getInstance().getSession().getUuid());
-                    RealmsGetServerDetailsTask.setScreen(bl ? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME) : new RealmsGenericErrorScreen(Text.method_43471("mco.brokenworld.nonowner.title"), Text.method_43471("mco.brokenworld.nonowner.error"), this.lastScreen));
+                    RealmsGetServerDetailsTask.setScreen(bl ? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME) : new RealmsGenericErrorScreen(Text.translatable("mco.brokenworld.nonowner.title"), Text.translatable("mco.brokenworld.nonowner.error"), this.lastScreen));
                     return;
                 }
             }
@@ -72,7 +72,7 @@ extends LongRunningTask {
             field_36356.error("Couldn't connect to world", realmsServiceException);
             return;
         } catch (TimeoutException timeoutException) {
-            this.error(Text.method_43471("mco.errorMessage.connectionFailure"));
+            this.error(Text.translatable("mco.errorMessage.connectionFailure"));
             return;
         } catch (Exception exception) {
             field_36356.error("Couldn't connect to world", exception);
@@ -114,7 +114,7 @@ extends LongRunningTask {
                 ((CompletableFuture)this.downloadResourcePack(address).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)connectingScreenCreator.apply(address)))).exceptionally(throwable -> {
                     MinecraftClient.getInstance().getResourcePackProvider().clear();
                     field_36356.error("Failed to download resource pack from {}", (Object)address, throwable);
-                    RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(Text.method_43470("Failed to download resource pack!"), this.lastScreen));
+                    RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(Text.literal("Failed to download resource pack!"), this.lastScreen));
                     return null;
                 });
             } finally {
@@ -123,7 +123,7 @@ extends LongRunningTask {
                 }
             }
         };
-        return new RealmsLongConfirmationScreen(booleanConsumer, RealmsLongConfirmationScreen.Type.INFO, Text.method_43471("mco.configure.world.resourcepack.question.line1"), Text.method_43471("mco.configure.world.resourcepack.question.line2"), true);
+        return new RealmsLongConfirmationScreen(booleanConsumer, RealmsLongConfirmationScreen.Type.INFO, Text.translatable("mco.configure.world.resourcepack.question.line1"), Text.translatable("mco.configure.world.resourcepack.question.line2"), true);
     }
 
     private CompletableFuture<?> downloadResourcePack(RealmsServerAddress address) {

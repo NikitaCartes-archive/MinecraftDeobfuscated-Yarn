@@ -94,20 +94,20 @@ implements SynchronousResourceReloader {
             BlockEntity blockEntity;
             Block block = ((BlockItem)item).getBlock();
             if (block instanceof AbstractSkullBlock) {
-                GameProfile gameProfile2 = null;
+                GameProfile gameProfile = null;
                 if (stack.hasNbt()) {
                     NbtCompound nbtCompound = stack.getNbt();
                     if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-                        gameProfile2 = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+                        gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
                     } else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
-                        gameProfile2 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
+                        gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                         nbtCompound.remove("SkullOwner");
-                        SkullBlockEntity.loadProperties(gameProfile2, gameProfile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile)));
+                        SkullBlockEntity.loadProperties(gameProfile, profile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile)));
                     }
                 }
                 SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
                 SkullBlockEntityModel skullBlockEntityModel = this.skullModels.get(skullType);
-                RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile2);
+                RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
                 SkullBlockEntityRenderer.renderSkull(null, 180.0f, 0.0f, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
                 return;
             }

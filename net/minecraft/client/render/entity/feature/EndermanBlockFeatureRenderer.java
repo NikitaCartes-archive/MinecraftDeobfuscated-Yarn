@@ -19,11 +19,11 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class EndermanBlockFeatureRenderer
 extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-    private final BlockRenderManager field_38895;
+    private final BlockRenderManager blockRenderManager;
 
-    public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> featureRendererContext, BlockRenderManager blockRenderManager) {
-        super(featureRendererContext);
-        this.field_38895 = blockRenderManager;
+    public EndermanBlockFeatureRenderer(FeatureRendererContext<EndermanEntity, EndermanEntityModel<EndermanEntity>> context, BlockRenderManager blockRenderManager) {
+        super(context);
+        this.blockRenderManager = blockRenderManager;
     }
 
     @Override
@@ -40,7 +40,7 @@ extends FeatureRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
         float m = 0.5f;
         matrixStack.scale(-0.5f, -0.5f, 0.5f);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f));
-        this.field_38895.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+        this.blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }
 }

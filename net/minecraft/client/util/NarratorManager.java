@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class NarratorManager
 implements ClientChatListener {
-    public static final Text EMPTY = ScreenTexts.field_39003;
+    public static final Text EMPTY = ScreenTexts.EMPTY;
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final NarratorManager INSTANCE = new NarratorManager();
     private final Narrator narrator = Narrator.getNarrator();
@@ -39,7 +39,7 @@ implements ClientChatListener {
             return;
         }
         if (narratorMode == NarratorMode.ALL || narratorMode == NarratorMode.CHAT && type == MessageType.CHAT || narratorMode == NarratorMode.SYSTEM && type == MessageType.SYSTEM) {
-            Text text = Texts.method_43475(message, "chat.type.text", "chat.type.text.narrate");
+            Text text = Texts.brokenReplaceTranslationKey(message, "chat.type.text", "chat.type.text.narrate");
             String string = text.getString();
             this.debugPrintMessage(string);
             this.narrator.say(string, type.interruptsNarration());
@@ -73,16 +73,16 @@ implements ClientChatListener {
 
     public void addToast(NarratorMode option) {
         this.clear();
-        this.narrator.say(Text.method_43471("options.narrator").append(" : ").append(option.getName()).getString(), true);
+        this.narrator.say(Text.translatable("options.narrator").append(" : ").append(option.getName()).getString(), true);
         ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
         if (this.narrator.active()) {
             if (option == NarratorMode.OFF) {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.method_43471("narrator.toast.disabled"), null);
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.disabled"), null);
             } else {
-                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.method_43471("narrator.toast.enabled"), option.getName());
+                SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.enabled"), option.getName());
             }
         } else {
-            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.method_43471("narrator.toast.disabled"), Text.method_43471("options.narrator.notavailable"));
+            SystemToast.show(toastManager, SystemToast.Type.NARRATOR_TOGGLE, Text.translatable("narrator.toast.disabled"), Text.translatable("options.narrator.notavailable"));
         }
     }
 

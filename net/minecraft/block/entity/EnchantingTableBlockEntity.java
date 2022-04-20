@@ -106,7 +106,7 @@ implements Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return Text.method_43471("container.enchant");
+        return Text.translatable("container.enchant");
     }
 
     public void setCustomName(@Nullable Text customName) {

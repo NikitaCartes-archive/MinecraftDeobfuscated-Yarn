@@ -20,11 +20,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DolphinHeldItemFeatureRenderer
 extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
-    private final HeldItemRenderer field_38898;
+    private final HeldItemRenderer heldItemRenderer;
 
-    public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> featureRendererContext, HeldItemRenderer heldItemRenderer) {
-        super(featureRendererContext);
-        this.field_38898 = heldItemRenderer;
+    public DolphinHeldItemFeatureRenderer(FeatureRendererContext<DolphinEntity, DolphinEntityModel<DolphinEntity>> context, HeldItemRenderer heldItemRenderer) {
+        super(context);
+        this.heldItemRenderer = heldItemRenderer;
     }
 
     @Override
@@ -40,7 +40,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
             matrixStack.translate(0.0, 1.0f + o * 0.8f, -1.0f + o * 0.2f);
         }
         ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-        this.field_38898.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        this.heldItemRenderer.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

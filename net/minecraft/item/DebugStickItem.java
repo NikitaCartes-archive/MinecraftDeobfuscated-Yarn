@@ -64,7 +64,7 @@ extends Item {
         Collection<Property<?>> collection = stateManager.getProperties();
         String string = Registry.BLOCK.getId(block).toString();
         if (collection.isEmpty()) {
-            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".empty", string));
+            DebugStickItem.sendMessage(player, Text.translatable(this.getTranslationKey() + ".empty", string));
             return false;
         }
         NbtCompound nbtCompound = stack.getOrCreateSubNbt("DebugProperty");
@@ -76,12 +76,12 @@ extends Item {
             }
             BlockState blockState = DebugStickItem.cycle(state, property, player.shouldCancelInteraction());
             world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
-            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
+            DebugStickItem.sendMessage(player, Text.translatable(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
         } else {
             property = DebugStickItem.cycle(collection, property, player.shouldCancelInteraction());
             String string3 = property.getName();
             nbtCompound.putString(string, string3);
-            DebugStickItem.sendMessage(player, Text.method_43469(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
+            DebugStickItem.sendMessage(player, Text.translatable(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
         }
         return true;
     }

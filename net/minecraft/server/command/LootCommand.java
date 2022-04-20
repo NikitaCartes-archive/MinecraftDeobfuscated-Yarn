@@ -57,8 +57,8 @@ public class LootCommand {
         LootManager lootManager = ((ServerCommandSource)context.getSource()).getServer().getLootManager();
         return CommandSource.suggestIdentifiers(lootManager.getTableIds(), builder);
     };
-    private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(entityName -> Text.method_43469("commands.drop.no_held_items", entityName));
-    private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(entityName -> Text.method_43469("commands.drop.no_loot_table", entityName));
+    private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(entityName -> Text.translatable("commands.drop.no_held_items", entityName));
+    private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(entityName -> Text.translatable("commands.drop.no_loot_table", entityName));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
         dispatcher.register(LootCommand.addTargetArguments((LiteralArgumentBuilder)CommandManager.literal("loot").requires(source -> source.hasPermissionLevel(2)), (builder, constructor) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)builder.then(CommandManager.literal("fish").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("loot_table", IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> LootCommand.executeFish(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStack.EMPTY, constructor))).then(CommandManager.argument("tool", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> LootCommand.executeFish(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStackArgumentType.getItemStackArgument(context, "tool").createStack(1, false), constructor)))).then(CommandManager.literal("mainhand").executes(context -> LootCommand.executeFish(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"), LootCommand.getHeldItem((ServerCommandSource)context.getSource(), EquipmentSlot.MAINHAND), constructor)))).then(CommandManager.literal("offhand").executes(context -> LootCommand.executeFish(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), BlockPosArgumentType.getLoadedBlockPos(context, "pos"), LootCommand.getHeldItem((ServerCommandSource)context.getSource(), EquipmentSlot.OFFHAND), constructor))))))).then(CommandManager.literal("loot").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("loot_table", IdentifierArgumentType.identifier()).suggests(SUGGESTION_PROVIDER).executes(context -> LootCommand.executeLoot(context, IdentifierArgumentType.getIdentifier(context, "loot_table"), constructor))))).then(CommandManager.literal("kill").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", EntityArgumentType.entity()).executes(context -> LootCommand.executeKill(context, EntityArgumentType.getEntity(context, "target"), constructor))))).then(CommandManager.literal("mine").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("pos", BlockPosArgumentType.blockPos()).executes(context -> LootCommand.executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStack.EMPTY, constructor))).then(CommandManager.argument("tool", ItemStackArgumentType.itemStack(commandRegistryAccess)).executes(context -> LootCommand.executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), ItemStackArgumentType.getItemStackArgument(context, "tool").createStack(1, false), constructor)))).then(CommandManager.literal("mainhand").executes(context -> LootCommand.executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), LootCommand.getHeldItem((ServerCommandSource)context.getSource(), EquipmentSlot.MAINHAND), constructor)))).then(CommandManager.literal("offhand").executes(context -> LootCommand.executeMine(context, BlockPosArgumentType.getLoadedBlockPos(context, "pos"), LootCommand.getHeldItem((ServerCommandSource)context.getSource(), EquipmentSlot.OFFHAND), constructor)))))));
@@ -181,18 +181,18 @@ public class LootCommand {
     private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks) {
         if (stacks.size() == 1) {
             ItemStack itemStack = stacks.get(0);
-            source.sendFeedback(Text.method_43469("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
+            source.sendFeedback(Text.translatable("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
         } else {
-            source.sendFeedback(Text.method_43469("commands.drop.success.multiple", stacks.size()), false);
+            source.sendFeedback(Text.translatable("commands.drop.success.multiple", stacks.size()), false);
         }
     }
 
     private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, Identifier lootTable) {
         if (stacks.size() == 1) {
             ItemStack itemStack = stacks.get(0);
-            source.sendFeedback(Text.method_43469("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
+            source.sendFeedback(Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
         } else {
-            source.sendFeedback(Text.method_43469("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
+            source.sendFeedback(Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
         }
     }
 

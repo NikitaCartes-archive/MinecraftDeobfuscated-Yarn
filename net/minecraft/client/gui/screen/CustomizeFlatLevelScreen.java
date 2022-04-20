@@ -46,7 +46,7 @@ extends Screen {
     private ButtonWidget widgetButtonRemoveLayer;
 
     public CustomizeFlatLevelScreen(CreateWorldScreen parent, Consumer<FlatChunkGeneratorConfig> configConsumer, FlatChunkGeneratorConfig config) {
-        super(Text.method_43471("createWorld.customize.flat.title"));
+        super(Text.translatable("createWorld.customize.flat.title"));
         this.parent = parent;
         this.configConsumer = configConsumer;
         this.config = config;
@@ -62,11 +62,11 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.tileText = Text.method_43471("createWorld.customize.flat.tile");
-        this.heightText = Text.method_43471("createWorld.customize.flat.height");
+        this.tileText = Text.translatable("createWorld.customize.flat.tile");
+        this.heightText = Text.translatable("createWorld.customize.flat.height");
         this.layers = new SuperflatLayersListWidget();
         this.addSelectableChild(this.layers);
-        this.widgetButtonRemoveLayer = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, Text.method_43471("createWorld.customize.flat.removeLayer"), button -> {
+        this.widgetButtonRemoveLayer = this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 52, 150, 20, Text.translatable("createWorld.customize.flat.removeLayer"), button -> {
             if (!this.hasLayerSelected()) {
                 return;
             }
@@ -79,7 +79,7 @@ extends Screen {
             this.layers.updateLayers();
             this.updateRemoveLayerButton();
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, Text.method_43471("createWorld.customize.presets"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, Text.translatable("createWorld.customize.presets"), button -> {
             this.client.setScreen(new PresetsScreen(this));
             this.config.updateLayerBlocks();
             this.updateRemoveLayerButton();
@@ -172,7 +172,7 @@ extends Screen {
                 ItemStack itemStack = this.createItemStackFor(blockState);
                 this.renderIcon(matrices, x, y, itemStack);
                 CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, itemStack.getName(), (float)(x + 18 + 5), (float)(y + 3), 0xFFFFFF);
-                MutableText text = index == 0 ? Text.method_43469("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? Text.method_43469("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : Text.method_43469("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));
+                MutableText text = index == 0 ? Text.translatable("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness()) : (index == CustomizeFlatLevelScreen.this.config.getLayers().size() - 1 ? Text.translatable("createWorld.customize.flat.layer.bottom", flatChunkGeneratorLayer.getThickness()) : Text.translatable("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness()));
                 CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, text, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(text)), (float)(y + 3), 0xFFFFFF);
             }
 
@@ -193,9 +193,9 @@ extends Screen {
                 FlatChunkGeneratorLayer flatChunkGeneratorLayer = CustomizeFlatLevelScreen.this.config.getLayers().get(CustomizeFlatLevelScreen.this.config.getLayers().size() - SuperflatLayersListWidget.this.children().indexOf(this) - 1);
                 ItemStack itemStack = this.createItemStackFor(flatChunkGeneratorLayer.getBlockState());
                 if (!itemStack.isEmpty()) {
-                    return Text.method_43469("narrator.select", itemStack.getName());
+                    return Text.translatable("narrator.select", itemStack.getName());
                 }
-                return ScreenTexts.field_39003;
+                return ScreenTexts.EMPTY;
             }
 
             @Override

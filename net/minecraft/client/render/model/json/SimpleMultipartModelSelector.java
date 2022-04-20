@@ -38,19 +38,19 @@ implements MultipartModelSelector {
         if (property == null) {
             throw new RuntimeException(String.format("Unknown property '%s' on '%s'", this.key, stateManager.getOwner()));
         }
-        String string2 = this.valueString;
-        boolean bl2 = bl = !string2.isEmpty() && string2.charAt(0) == '!';
+        String string = this.valueString;
+        boolean bl2 = bl = !string.isEmpty() && string.charAt(0) == '!';
         if (bl) {
-            string2 = string2.substring(1);
+            string = string.substring(1);
         }
-        if ((list = VALUE_SPLITTER.splitToList(string2)).isEmpty()) {
+        if ((list = VALUE_SPLITTER.splitToList(string)).isEmpty()) {
             throw new RuntimeException(String.format("Empty value '%s' for property '%s' on '%s'", this.valueString, this.key, stateManager.getOwner()));
         }
         if (list.size() == 1) {
-            predicate = this.createPredicate(stateManager, property, string2);
+            predicate = this.createPredicate(stateManager, property, string);
         } else {
-            List list2 = list.stream().map(string -> this.createPredicate(stateManager, property, (String)string)).collect(Collectors.toList());
-            predicate = blockState -> list2.stream().anyMatch(predicate -> predicate.test(blockState));
+            List list2 = list.stream().map(value -> this.createPredicate(stateManager, property, (String)value)).collect(Collectors.toList());
+            predicate = state -> list2.stream().anyMatch(predicate -> predicate.test(state));
         }
         return bl ? predicate.negate() : predicate;
     }
@@ -60,7 +60,7 @@ implements MultipartModelSelector {
         if (!optional.isPresent()) {
             throw new RuntimeException(String.format("Unknown value '%s' for property '%s' on '%s' in '%s'", valueString, this.key, stateFactory.getOwner(), this.valueString));
         }
-        return blockState -> blockState.get(property).equals(optional.get());
+        return state -> state.get(property).equals(optional.get());
     }
 
     public String toString() {

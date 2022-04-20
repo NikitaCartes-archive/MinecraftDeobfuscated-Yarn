@@ -518,47 +518,47 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> loadChunk(ChunkPos pos) {
-        return ((CompletableFuture)((CompletableFuture)this.method_43383(pos).thenApply(optional -> optional.filter(nbtCompound -> {
-            boolean bl = ThreadedAnvilChunkStorage.method_43380(nbtCompound);
+        return ((CompletableFuture)((CompletableFuture)this.getUpdatedChunkNbt(pos).thenApply(nbt -> nbt.filter(nbt2 -> {
+            boolean bl = ThreadedAnvilChunkStorage.containsStatus(nbt2);
             if (!bl) {
                 LOGGER.error("Chunk file at {} is missing level data, skipping", (Object)pos);
             }
             return bl;
-        }))).thenApplyAsync(optional -> {
+        }))).thenApplyAsync(nbt -> {
             this.world.getProfiler().visit("chunkLoad");
-            if (optional.isPresent()) {
-                ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)optional.get());
+            if (nbt.isPresent()) {
+                ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.pointOfInterestStorage, pos, (NbtCompound)nbt.get());
                 this.mark(pos, ((Chunk)chunk).getStatus().getChunkType());
                 return Either.left(chunk);
             }
-            return Either.left(this.method_43382(pos));
-        }, (Executor)this.mainThreadExecutor)).exceptionallyAsync(throwable -> this.method_43376((Throwable)throwable, pos), (Executor)this.mainThreadExecutor);
+            return Either.left(this.getProtoChunk(pos));
+        }, (Executor)this.mainThreadExecutor)).exceptionallyAsync(throwable -> this.recoverFromException((Throwable)throwable, pos), (Executor)this.mainThreadExecutor);
     }
 
-    private static boolean method_43380(NbtCompound nbtCompound) {
-        return nbtCompound.contains("Status", NbtElement.STRING_TYPE);
+    private static boolean containsStatus(NbtCompound nbt) {
+        return nbt.contains("Status", NbtElement.STRING_TYPE);
     }
 
     /*
      * Enabled aggressive block sorting
      */
-    private Either<Chunk, ChunkHolder.Unloaded> method_43376(Throwable throwable, ChunkPos chunkPos) {
+    private Either<Chunk, ChunkHolder.Unloaded> recoverFromException(Throwable throwable, ChunkPos chunkPos) {
         if (!(throwable instanceof CrashException)) {
-            if (!(throwable instanceof IOException)) return Either.left(this.method_43382(chunkPos));
+            if (!(throwable instanceof IOException)) return Either.left(this.getProtoChunk(chunkPos));
             LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable);
-            return Either.left(this.method_43382(chunkPos));
+            return Either.left(this.getProtoChunk(chunkPos));
         }
         CrashException crashException = (CrashException)throwable;
         Throwable throwable2 = crashException.getCause();
         if (throwable2 instanceof IOException) {
             LOGGER.error("Couldn't load chunk {}", (Object)chunkPos, (Object)throwable2);
-            return Either.left(this.method_43382(chunkPos));
+            return Either.left(this.getProtoChunk(chunkPos));
         }
         this.markAsProtoChunk(chunkPos);
         throw crashException;
     }
 
-    private Chunk method_43382(ChunkPos chunkPos) {
+    private Chunk getProtoChunk(ChunkPos chunkPos) {
         this.markAsProtoChunk(chunkPos);
         return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(Registry.BIOME_KEY), null);
     }
@@ -726,7 +726,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return b == 1;
         }
         try {
-            nbtCompound = this.method_43383(pos).join().orElse(null);
+            nbtCompound = this.getUpdatedChunkNbt(pos).join().orElse(null);
             if (nbtCompound == null) {
                 this.markAsProtoChunk(pos);
                 return false;
@@ -815,12 +815,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    private CompletableFuture<Optional<NbtCompound>> method_43383(ChunkPos chunkPos) {
-        return this.getNbt(chunkPos).thenApplyAsync(optional -> optional.map(this::method_43381), (Executor)Util.getMainWorkerExecutor());
+    private CompletableFuture<Optional<NbtCompound>> getUpdatedChunkNbt(ChunkPos chunkPos) {
+        return this.getNbt(chunkPos).thenApplyAsync(nbt -> nbt.map(this::updateChunkNbt), (Executor)Util.getMainWorkerExecutor());
     }
 
-    private NbtCompound method_43381(NbtCompound nbtCompound) {
-        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound, this.chunkGenerator.getCodecKey());
+    private NbtCompound updateChunkNbt(NbtCompound nbt) {
+        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbt, this.chunkGenerator.getCodecKey());
     }
 
     boolean shouldTick(ChunkPos pos) {

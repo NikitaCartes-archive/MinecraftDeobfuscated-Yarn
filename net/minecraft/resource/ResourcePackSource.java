@@ -20,8 +20,8 @@ public interface ResourcePackSource {
     }
 
     public static ResourcePackSource nameAndSource(String source) {
-        MutableText text = Text.method_43471(source);
-        return name -> Text.method_43469("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
+        MutableText text = Text.translatable(source);
+        return name -> Text.translatable("pack.nameAndSource", name, text).formatted(Formatting.GRAY);
     }
 }
 

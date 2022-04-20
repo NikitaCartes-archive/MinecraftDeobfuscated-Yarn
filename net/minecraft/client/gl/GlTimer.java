@@ -10,7 +10,9 @@ import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.ARBTimerQuery;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL32C;
+import org.lwjgl.opengl.GL33;
 
 @Environment(value=EnvType.CLIENT)
 public class GlTimer {
@@ -26,7 +28,7 @@ public class GlTimer {
             throw new IllegalStateException("Current profile not ended");
         }
         this.queryId = GL32C.glGenQueries();
-        GL32C.glBeginQuery(35007, this.queryId);
+        GL32C.glBeginQuery(GL33.GL_TIME_ELAPSED, this.queryId);
     }
 
     public Query endProfile() {
@@ -34,7 +36,7 @@ public class GlTimer {
         if (this.queryId == 0) {
             throw new IllegalStateException("endProfile called before beginProfile");
         }
-        GL32C.glEndQuery(35007);
+        GL32C.glEndQuery(GL33.GL_TIME_ELAPSED);
         Query query = new Query(this.queryId);
         this.queryId = 0;
         return query;
@@ -81,8 +83,8 @@ public class GlTimer {
             if (this.result != 0L) {
                 return true;
             }
-            if (1 == GL32C.glGetQueryObjecti(this.queryId, 34919)) {
-                this.result = ARBTimerQuery.glGetQueryObjecti64(this.queryId, 34918);
+            if (1 == GL32C.glGetQueryObjecti(this.queryId, GL15.GL_QUERY_RESULT_AVAILABLE)) {
+                this.result = ARBTimerQuery.glGetQueryObjecti64(this.queryId, GL15.GL_QUERY_RESULT);
                 GL32C.glDeleteQueries(this.queryId);
                 return true;
             }
@@ -92,7 +94,7 @@ public class GlTimer {
         public long queryResult() {
             RenderSystem.assertOnRenderThread();
             if (this.result == 0L) {
-                this.result = ARBTimerQuery.glGetQueryObjecti64(this.queryId, 34918);
+                this.result = ARBTimerQuery.glGetQueryObjecti64(this.queryId, GL15.GL_QUERY_RESULT);
                 GL32C.glDeleteQueries(this.queryId);
             }
             return this.result;

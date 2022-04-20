@@ -17,7 +17,7 @@ import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
-import net.minecraft.entity.decoration.painting.PaintingMotive;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,12 +37,12 @@ extends EntityRenderer<PaintingEntity> {
     public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
-        PaintingMotive paintingMotive = paintingEntity.method_43404().value();
+        PaintingVariant paintingVariant = paintingEntity.getVariant().value();
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
         PaintingManager paintingManager = MinecraftClient.getInstance().getPaintingManager();
-        this.renderPainting(matrixStack, vertexConsumer, paintingEntity, paintingMotive.getWidth(), paintingMotive.getHeight(), paintingManager.getPaintingSprite(paintingMotive), paintingManager.getBackSprite());
+        this.renderPainting(matrixStack, vertexConsumer, paintingEntity, paintingVariant.getWidth(), paintingVariant.getHeight(), paintingManager.getPaintingSprite(paintingVariant), paintingManager.getBackSprite());
         matrixStack.pop();
         super.render(paintingEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }

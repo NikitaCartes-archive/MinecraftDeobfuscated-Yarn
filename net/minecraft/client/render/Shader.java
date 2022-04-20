@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -247,31 +248,31 @@ AutoCloseable {
         if (json == null) {
             return new GlBlendState();
         }
-        int i = 32774;
+        int i = GlConst.GL_FUNC_ADD;
         int j = 1;
         int k = 0;
         int l = 1;
         int m = 0;
         boolean bl = true;
         boolean bl2 = false;
-        if (JsonHelper.hasString(json, "func") && (i = GlBlendState.getFuncFromString(json.get("func").getAsString())) != 32774) {
+        if (JsonHelper.hasString(json, "func") && (i = GlBlendState.getModeFromString(json.get("func").getAsString())) != GlConst.GL_FUNC_ADD) {
             bl = false;
         }
-        if (JsonHelper.hasString(json, "srcrgb") && (j = GlBlendState.getComponentFromString(json.get("srcrgb").getAsString())) != 1) {
+        if (JsonHelper.hasString(json, "srcrgb") && (j = GlBlendState.getFactorFromString(json.get("srcrgb").getAsString())) != 1) {
             bl = false;
         }
-        if (JsonHelper.hasString(json, "dstrgb") && (k = GlBlendState.getComponentFromString(json.get("dstrgb").getAsString())) != 0) {
+        if (JsonHelper.hasString(json, "dstrgb") && (k = GlBlendState.getFactorFromString(json.get("dstrgb").getAsString())) != 0) {
             bl = false;
         }
         if (JsonHelper.hasString(json, "srcalpha")) {
-            l = GlBlendState.getComponentFromString(json.get("srcalpha").getAsString());
+            l = GlBlendState.getFactorFromString(json.get("srcalpha").getAsString());
             if (l != 1) {
                 bl = false;
             }
             bl2 = true;
         }
         if (JsonHelper.hasString(json, "dstalpha")) {
-            m = GlBlendState.getComponentFromString(json.get("dstalpha").getAsString());
+            m = GlBlendState.getFactorFromString(json.get("dstalpha").getAsString());
             if (m != 0) {
                 bl = false;
             }
@@ -302,7 +303,7 @@ AutoCloseable {
         int i = GlStateManager._getActiveTexture();
         for (int j = 0; j < this.loadedSamplerIds.size(); ++j) {
             if (this.samplers.get(this.samplerNames.get(j)) == null) continue;
-            GlStateManager._activeTexture(33984 + j);
+            GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + j);
             GlStateManager._bindTexture(0);
         }
         GlStateManager._activeTexture(i);
@@ -323,7 +324,7 @@ AutoCloseable {
             if (this.samplers.get(string) == null) continue;
             int k = GlUniform.getUniformLocation(this.programId, string);
             GlUniform.uniform1(k, j);
-            RenderSystem.activeTexture(33984 + j);
+            RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + j);
             RenderSystem.enableTexture();
             Object object = this.samplers.get(string);
             int l = -1;

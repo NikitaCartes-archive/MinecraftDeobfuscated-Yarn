@@ -13,6 +13,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlDebugInfo;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixer;
@@ -51,7 +52,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
-import net.minecraft.class_7420;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClientGame;
@@ -202,6 +202,7 @@ import net.minecraft.sound.MusicSound;
 import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -493,7 +494,7 @@ implements WindowEventHandler {
             string = null;
             i = 0;
         }
-        class_7420.method_43482(KeyBinding::getLocalizedName);
+        KeybindTranslations.setFactory(KeyBinding::getLocalizedName);
         this.dataFixer = Schemas.getFixer();
         this.toastManager = new ToastManager(this);
         this.thread = Thread.currentThread();
@@ -684,7 +685,7 @@ implements WindowEventHandler {
         this.options.write();
         this.reloadResources(true).thenRun(() -> {
             ToastManager toastManager = this.getToastManager();
-            SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.method_43471("resourcePack.load_fail"), resourceName);
+            SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.translatable("resourcePack.load_fail"), resourceName);
         });
     }
 
@@ -859,7 +860,7 @@ implements WindowEventHandler {
             item.appendStacks(ItemGroup.SEARCH, defaultedList);
             for (ItemStack itemStack : defaultedList) {
                 String string = itemStack.getTranslationKey();
-                String string2 = Text.method_43471(string).getString();
+                String string2 = Text.translatable(string).getString();
                 if (!string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) continue;
                 LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
             }
@@ -1033,7 +1034,7 @@ implements WindowEventHandler {
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.push();
         RenderSystem.applyModelViewMatrix();
-        RenderSystem.clear(16640, IS_SYSTEM_MAC);
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, IS_SYSTEM_MAC);
         this.framebuffer.beginWrite(true);
         BackgroundRenderer.clearFog();
         this.profiler.push("display");
@@ -1179,7 +1180,7 @@ implements WindowEventHandler {
             if (this.integratedServerRunning && this.server != null) {
                 this.server.stop(true);
             }
-            this.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
+            this.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
         } catch (Throwable throwable) {
             // empty catch block
         }
@@ -1198,11 +1199,11 @@ implements WindowEventHandler {
             }
             int i = result.getTickSpan();
             double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
-            this.execute(() -> chatMessageSender.accept(Text.method_43469("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
+            this.execute(() -> chatMessageSender.accept(Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d))));
         };
         Consumer<Path> consumer2 = path -> {
-            MutableText text = Text.method_43470(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
-            this.execute(() -> chatMessageSender.accept(Text.method_43469("debug.profiling.stop", text)));
+            MutableText text = Text.literal(path.toString()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().getParent())));
+            this.execute(() -> chatMessageSender.accept(Text.translatable("debug.profiling.stop", text)));
         };
         SystemDetails systemDetails = MinecraftClient.addSystemDetailsToCrashReport(new SystemDetails(), this, this.languageManager, this.gameVersion, this.options);
         Consumer<List> consumer3 = files -> {
@@ -1295,7 +1296,7 @@ implements WindowEventHandler {
         int m;
         List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
         ProfilerTiming profilerTiming = list.remove(0);
-        RenderSystem.clear(256, IS_SYSTEM_MAC);
+        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         Matrix4f matrix4f = Matrix4f.projectionMatrix(0.0f, this.window.getFramebufferWidth(), 0.0f, this.window.getFramebufferHeight(), 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
@@ -1600,8 +1601,8 @@ implements WindowEventHandler {
         if (this.world != null) {
             if (!this.paused) {
                 if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
-                    MutableText text = Text.method_43471("tutorial.socialInteractions.title");
-                    MutableText text2 = Text.method_43469("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+                    MutableText text = Text.translatable("tutorial.socialInteractions.title");
+                    MutableText text2 = Text.translatable("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
                     this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
                     this.tutorialManager.add(this.socialInteractionsToast, 160);
                     this.options.joinedFirstServer = true;
@@ -1741,11 +1742,11 @@ implements WindowEventHandler {
         return this.gpuUtilizationPercentage;
     }
 
-    public IntegratedServerLoader method_41735() {
+    public IntegratedServerLoader createIntegratedServerLoader() {
         return new IntegratedServerLoader(this, this.levelStorage);
     }
 
-    public void startIntegratedServer(String string, LevelStorage.Session session, ResourcePackManager resourcePackManager, SaveLoader saveLoader) {
+    public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
         this.disconnect();
         this.worldGenProgressTracker.set(null);
         try {
@@ -1757,7 +1758,7 @@ implements WindowEventHandler {
             userCache.setExecutor(this);
             SkullBlockEntity.setServices(userCache, minecraftSessionService, this);
             UserCache.setUseRemote(false);
-            this.server = MinecraftServer.startServer(thread2 -> new IntegratedServer((Thread)thread2, this, session, resourcePackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
+            this.server = MinecraftServer.startServer(thread -> new IntegratedServer((Thread)thread, this, session, dataPackManager, saveLoader, minecraftSessionService, gameProfileRepository, userCache, spawnChunkRadius -> {
                 WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(spawnChunkRadius + 0);
                 this.worldGenProgressTracker.set(worldGenerationProgressTracker);
                 return QueueingWorldGenerationProgressListener.create(worldGenerationProgressTracker, this.renderTaskQueue::add);
@@ -1766,7 +1767,7 @@ implements WindowEventHandler {
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Starting integrated server");
             CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
-            crashReportSection.add("Level ID", string);
+            crashReportSection.add("Level ID", levelName);
             crashReportSection.add("Level Name", () -> saveLoader.saveProperties().getLevelName());
             throw new CrashException(crashReport);
         }
@@ -1791,7 +1792,7 @@ implements WindowEventHandler {
         this.profiler.pop();
         SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, text -> {}));
+        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
         this.integratedServerConnection = clientConnection;
@@ -1799,7 +1800,7 @@ implements WindowEventHandler {
 
     public void joinWorld(ClientWorld world) {
         ProgressScreen progressScreen = new ProgressScreen(true);
-        progressScreen.setTitle(Text.method_43471("connect.joining"));
+        progressScreen.setTitle(Text.translatable("connect.joining"));
         this.reset(progressScreen);
         this.world = world;
         this.setWorld(world);
@@ -2374,12 +2375,12 @@ implements WindowEventHandler {
                 }
                 ScreenshotRecorder.saveScreenshot(directory, "panorama_" + l + ".png", framebuffer, text -> {});
             }
-            MutableText text2 = Text.method_43470(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
-            MutableText mutableText = Text.method_43469("screenshot.success", text2);
+            MutableText text2 = Text.literal(directory.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, directory.getAbsolutePath())));
+            MutableText mutableText = Text.translatable("screenshot.success", text2);
             return mutableText;
         } catch (Exception exception) {
             LOGGER.error("Couldn't save image", exception);
-            MutableText mutableText = Text.method_43469("screenshot.failure", exception.getMessage());
+            MutableText mutableText = Text.translatable("screenshot.failure", exception.getMessage());
             return mutableText;
         } finally {
             this.player.setPitch(f);
@@ -2428,11 +2429,11 @@ implements WindowEventHandler {
             }
             File file = screenshotRecorder.finish();
             GlDebugInfo.freeMemory(byteBuffer);
-            MutableText text = Text.method_43470(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
-            return Text.method_43469("screenshot.success", text);
+            MutableText text = Text.literal(file.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
+            return Text.translatable("screenshot.success", text);
         } catch (Exception exception) {
             LOGGER.warn("Couldn't save screenshot", exception);
-            return Text.method_43469("screenshot.failure", exception.getMessage());
+            return Text.translatable("screenshot.failure", exception.getMessage());
         }
     }
 
@@ -2518,7 +2519,7 @@ implements WindowEventHandler {
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-        SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.method_43471("multiplayer.socialInteractions.not_available");
+        SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
     }
 
     /*
@@ -2526,7 +2527,7 @@ implements WindowEventHandler {
      */
     @Environment(value=EnvType.CLIENT)
     public static enum ChatRestriction {
-        ENABLED(ScreenTexts.field_39003){
+        ENABLED(ScreenTexts.EMPTY){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2534,7 +2535,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_OPTIONS(Text.method_43471("chat.disabled.options").formatted(Formatting.RED)){
+        DISABLED_BY_OPTIONS(Text.translatable("chat.disabled.options").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2542,7 +2543,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_LAUNCHER(Text.method_43471("chat.disabled.launcher").formatted(Formatting.RED)){
+        DISABLED_BY_LAUNCHER(Text.translatable("chat.disabled.launcher").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {
@@ -2550,7 +2551,7 @@ implements WindowEventHandler {
             }
         }
         ,
-        DISABLED_BY_PROFILE(Text.method_43471("chat.disabled.profile").formatted(Formatting.RED)){
+        DISABLED_BY_PROFILE(Text.translatable("chat.disabled.profile").formatted(Formatting.RED)){
 
             @Override
             public boolean allowsChat(boolean singlePlayer) {

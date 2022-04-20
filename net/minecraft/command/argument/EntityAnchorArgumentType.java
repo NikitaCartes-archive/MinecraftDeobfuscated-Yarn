@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 public class EntityAnchorArgumentType
 implements ArgumentType<EntityAnchor> {
     private static final Collection<String> EXAMPLES = Arrays.asList("eyes", "feet");
-    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(name -> Text.method_43469("argument.anchor.invalid", name));
+    private static final DynamicCommandExceptionType INVALID_ANCHOR_EXCEPTION = new DynamicCommandExceptionType(name -> Text.translatable("argument.anchor.invalid", name));
 
     public static EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> context, String name) {
         return context.getArgument(name, EntityAnchor.class);

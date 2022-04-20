@@ -33,19 +33,19 @@ extends Item {
     public static void appendFireworkTooltip(NbtCompound nbt, List<Text> tooltip) {
         int[] js;
         FireworkRocketItem.Type type = FireworkRocketItem.Type.byId(nbt.getByte("Type"));
-        tooltip.add(Text.method_43471("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
         int[] is = nbt.getIntArray("Colors");
         if (is.length > 0) {
-            tooltip.add(FireworkStarItem.appendColors(Text.method_43473().formatted(Formatting.GRAY), is));
+            tooltip.add(FireworkStarItem.appendColors(Text.empty().formatted(Formatting.GRAY), is));
         }
         if ((js = nbt.getIntArray("FadeColors")).length > 0) {
-            tooltip.add(FireworkStarItem.appendColors(Text.method_43471("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
+            tooltip.add(FireworkStarItem.appendColors(Text.translatable("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
         }
         if (nbt.getBoolean("Trail")) {
-            tooltip.add(Text.method_43471("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
         }
         if (nbt.getBoolean("Flicker")) {
-            tooltip.add(Text.method_43471("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
         }
     }
 
@@ -62,9 +62,9 @@ extends Item {
     private static Text getColorText(int color) {
         DyeColor dyeColor = DyeColor.byFireworkColor(color);
         if (dyeColor == null) {
-            return Text.method_43471("item.minecraft.firework_star.custom_color");
+            return Text.translatable("item.minecraft.firework_star.custom_color");
         }
-        return Text.method_43471("item.minecraft.firework_star." + dyeColor.getName());
+        return Text.translatable("item.minecraft.firework_star." + dyeColor.getName());
     }
 }
 

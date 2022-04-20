@@ -3,6 +3,7 @@
  */
 package com.mojang.blaze3d.platform;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -22,6 +23,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
@@ -65,13 +68,13 @@ public class TextureUtil {
         RenderSystem.assertOnRenderThreadOrInit();
         TextureUtil.bind(id);
         if (maxLevel >= 0) {
-            GlStateManager._texParameter(3553, 33085, maxLevel);
-            GlStateManager._texParameter(3553, 33082, 0);
-            GlStateManager._texParameter(3553, 33083, maxLevel);
-            GlStateManager._texParameter(3553, 34049, 0.0f);
+            GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LEVEL, maxLevel);
+            GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GL12.GL_TEXTURE_MIN_LOD, 0);
+            GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GL12.GL_TEXTURE_MAX_LOD, maxLevel);
+            GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, 0.0f);
         }
         for (int i = 0; i <= maxLevel; ++i) {
-            GlStateManager._texImage2D(3553, i, internalFormat.getValue(), width >> i, height >> i, 0, 6408, 5121, null);
+            GlStateManager._texImage2D(GlConst.GL_TEXTURE_2D, i, internalFormat.getValue(), width >> i, height >> i, 0, GlConst.GL_RGBA, GlConst.GL_UNSIGNED_BYTE, null);
         }
     }
 
@@ -99,17 +102,17 @@ public class TextureUtil {
         return byteBuffer;
     }
 
-    public static void writeAsPNG(String string, int i, int j, int k, int l) {
+    public static void writeAsPNG(String filename, int id, int scales, int width, int height) {
         RenderSystem.assertOnRenderThread();
-        TextureUtil.bind(i);
-        for (int m = 0; m <= j; ++m) {
-            String string2 = string + "_" + m + ".png";
-            int n = k >> m;
-            int o = l >> m;
-            try (NativeImage nativeImage = new NativeImage(n, o, false);){
-                nativeImage.loadFromTextureImage(m, false);
-                nativeImage.writeTo(string2);
-                LOGGER.debug("Exported png to: {}", (Object)new File(string2).getAbsolutePath());
+        TextureUtil.bind(id);
+        for (int i = 0; i <= scales; ++i) {
+            String string = filename + "_" + i + ".png";
+            int j = width >> i;
+            int k = height >> i;
+            try (NativeImage nativeImage = new NativeImage(j, k, false);){
+                nativeImage.loadFromTextureImage(i, false);
+                nativeImage.writeTo(string);
+                LOGGER.debug("Exported png to: {}", (Object)new File(string).getAbsolutePath());
                 continue;
             } catch (IOException iOException) {
                 LOGGER.debug("Unable to write: ", iOException);
@@ -119,15 +122,15 @@ public class TextureUtil {
 
     public static void initTexture(IntBuffer imageData, int width, int height) {
         RenderSystem.assertOnRenderThread();
-        GL11.glPixelStorei(3312, 0);
-        GL11.glPixelStorei(3313, 0);
-        GL11.glPixelStorei(3314, 0);
-        GL11.glPixelStorei(3315, 0);
-        GL11.glPixelStorei(3316, 0);
-        GL11.glPixelStorei(3317, 4);
-        GL11.glTexImage2D(3553, 0, 6408, width, height, 0, 32993, 33639, imageData);
-        GL11.glTexParameteri(3553, 10240, 9728);
-        GL11.glTexParameteri(3553, 10241, 9729);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_SWAP_BYTES, 0);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_LSB_FIRST, 0);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_ROW_LENGTH, 0);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_SKIP_ROWS, 0);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
+        GL11.glPixelStorei(GlConst.GL_UNPACK_ALIGNMENT, 4);
+        GL11.glTexImage2D(GlConst.GL_TEXTURE_2D, 0, GlConst.GL_RGBA, width, height, 0, GL12.GL_BGRA, 33639, imageData);
+        GL11.glTexParameteri(GlConst.GL_TEXTURE_2D, 10240, 9728);
+        GL11.glTexParameteri(GlConst.GL_TEXTURE_2D, 10241, 9729);
     }
 }
 

@@ -20,11 +20,11 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class IronGolemFlowerFeatureRenderer
 extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-    private final BlockRenderManager field_38900;
+    private final BlockRenderManager blockRenderManager;
 
-    public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> featureRendererContext, BlockRenderManager blockRenderManager) {
-        super(featureRendererContext);
-        this.field_38900 = blockRenderManager;
+    public IronGolemFlowerFeatureRenderer(FeatureRendererContext<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> context, BlockRenderManager blockRenderManager) {
+        super(context);
+        this.blockRenderManager = blockRenderManager;
     }
 
     @Override
@@ -41,7 +41,7 @@ extends FeatureRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> 
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f));
         matrixStack.translate(-0.5, -0.5, -0.5);
-        this.field_38900.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+        this.blockRenderManager.renderBlockAsEntity(Blocks.POPPY.getDefaultState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
         matrixStack.pop();
     }
 }

@@ -18,15 +18,15 @@ import net.minecraft.world.GameMode;
 @Environment(value=EnvType.CLIENT)
 public class OpenToLanScreen
 extends Screen {
-    private static final Text ALLOW_COMMANDS_TEXT = Text.method_43471("selectWorld.allowCommands");
-    private static final Text GAME_MODE_TEXT = Text.method_43471("selectWorld.gameMode");
-    private static final Text OTHER_PLAYERS_TEXT = Text.method_43471("lanServer.otherPlayers");
+    private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
+    private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
+    private static final Text OTHER_PLAYERS_TEXT = Text.translatable("lanServer.otherPlayers");
     private final Screen parent;
     private GameMode gameMode = GameMode.SURVIVAL;
     private boolean allowCommands;
 
     public OpenToLanScreen(Screen parent) {
-        super(Text.method_43471("lanServer.title"));
+        super(Text.translatable("lanServer.title"));
         this.parent = parent;
     }
 
@@ -38,10 +38,10 @@ extends Screen {
         this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.allowCommands).build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (button, allowCommands) -> {
             this.allowCommands = allowCommands;
         }));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.method_43471("lanServer.start"), button -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, Text.translatable("lanServer.start"), button -> {
             this.client.setScreen(null);
             int i = NetworkUtils.findLocalPort();
-            MutableText text = this.client.getServer().openToLan(this.gameMode, this.allowCommands, i) ? Text.method_43469("commands.publish.started", i) : Text.method_43471("commands.publish.failed");
+            MutableText text = this.client.getServer().openToLan(this.gameMode, this.allowCommands, i) ? Text.translatable("commands.publish.started", i) : Text.translatable("commands.publish.failed");
             this.client.inGameHud.getChatHud().addMessage(text);
             this.client.updateWindowTitle();
         }));

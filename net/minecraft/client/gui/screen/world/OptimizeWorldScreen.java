@@ -44,7 +44,7 @@ extends Screen {
 
     @Nullable
     public static OptimizeWorldScreen create(MinecraftClient client, BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, boolean eraseCache) {
-        SaveLoader saveLoader = client.method_41735().createSaveLoader(storageSession, false);
+        SaveLoader saveLoader = client.createIntegratedServerLoader().createSaveLoader(storageSession, false);
         try {
             SaveProperties saveProperties = saveLoader.saveProperties();
             storageSession.backupLevelDataFile(saveLoader.dynamicRegistryManager(), saveProperties);
@@ -71,7 +71,7 @@ extends Screen {
     }
 
     private OptimizeWorldScreen(BooleanConsumer callback, DataFixer dataFixer, LevelStorage.Session storageSession, LevelInfo levelInfo, boolean eraseCache, GeneratorOptions generatorOptions) {
-        super(Text.method_43469("optimizeWorld.title", levelInfo.getLevelName()));
+        super(Text.translatable("optimizeWorld.title", levelInfo.getLevelName()));
         this.callback = callback;
         this.updater = new WorldUpdater(storageSession, dataFixer, generatorOptions, eraseCache);
     }
@@ -113,9 +113,9 @@ extends Screen {
         OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - this.textRenderer.fontHeight - 2, 0xA0A0A0);
         if (this.updater.getTotalChunkCount() > 0) {
             OptimizeWorldScreen.fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
-            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 0xA0A0A0);
-            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + this.textRenderer.fontHeight + 3, 0xA0A0A0);
-            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.method_43469("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (this.textRenderer.fontHeight + 3) * 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.translatable("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 0xA0A0A0);
+            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.translatable("optimizeWorld.info.skipped", this.updater.getSkippedChunkCount()), i, 40 + this.textRenderer.fontHeight + 3, 0xA0A0A0);
+            OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.translatable("optimizeWorld.info.total", this.updater.getTotalChunkCount()), i, 40 + (this.textRenderer.fontHeight + 3) * 2, 0xA0A0A0);
             int m = 0;
             for (RegistryKey registryKey : this.updater.getWorlds()) {
                 int n = MathHelper.floor(this.updater.getProgress(registryKey) * (float)(j - i));

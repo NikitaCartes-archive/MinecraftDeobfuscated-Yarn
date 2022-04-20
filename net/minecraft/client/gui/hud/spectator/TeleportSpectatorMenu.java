@@ -28,8 +28,8 @@ public class TeleportSpectatorMenu
 implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
     private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((a, b) -> ComparisonChain.start().compare(a.getProfile().getId(), b.getProfile().getId()).result());
-    private static final Text TELEPORT_TEXT = Text.method_43471("spectatorMenu.teleport");
-    private static final Text PROMPT_TEXT = Text.method_43471("spectatorMenu.teleport.prompt");
+    private static final Text TELEPORT_TEXT = Text.translatable("spectatorMenu.teleport");
+    private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.teleport.prompt");
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public TeleportSpectatorMenu() {

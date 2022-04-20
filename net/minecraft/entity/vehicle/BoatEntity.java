@@ -377,7 +377,7 @@ extends Entity {
     private void updatePositionAndRotation() {
         if (this.isLogicalSideForUpdatingMovement()) {
             this.field_7708 = 0;
-            this.method_43391(this.getX(), this.getY(), this.getZ());
+            this.updateTrackedPosition(this.getX(), this.getY(), this.getZ());
         }
         if (this.field_7708 <= 0) {
             return;

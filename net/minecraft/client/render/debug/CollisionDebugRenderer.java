@@ -40,7 +40,7 @@ implements DebugRenderer.Renderer {
         }
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (VoxelShape voxelShape : this.collisions) {
-            WorldRenderer.method_22983(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0f, 1.0f, 1.0f, 1.0f);
+            WorldRenderer.drawShapeOutline(matrices, vertexConsumer, voxelShape, -cameraX, -cameraY, -cameraZ, 1.0f, 1.0f, 1.0f, 1.0f);
         }
     }
 }

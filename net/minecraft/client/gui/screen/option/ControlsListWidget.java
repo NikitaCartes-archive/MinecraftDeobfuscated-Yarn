@@ -42,9 +42,9 @@ extends ElementListWidget<Entry> {
             String string2 = ((KeyBinding)keyBinding).getCategory();
             if (!string2.equals(string)) {
                 string = string2;
-                this.addEntry(new CategoryEntry(Text.method_43471(string2)));
+                this.addEntry(new CategoryEntry(Text.translatable(string2)));
             }
-            if ((i = client.textRenderer.getWidth(text = Text.method_43471(((KeyBinding)keyBinding).getTranslationKey()))) > this.maxKeyNameLength) {
+            if ((i = client.textRenderer.getWidth(text = Text.translatable(((KeyBinding)keyBinding).getTranslationKey()))) > this.maxKeyNameLength) {
                 this.maxKeyNameLength = i;
             }
             this.addEntry(new KeyBindingEntry((KeyBinding)keyBinding, text));
@@ -122,19 +122,19 @@ extends ElementListWidget<Entry> {
                 @Override
                 protected MutableText getNarrationMessage() {
                     if (binding.isUnbound()) {
-                        return Text.method_43469("narrator.controls.unbound", bindingName);
+                        return Text.translatable("narrator.controls.unbound", bindingName);
                     }
-                    return Text.method_43469("narrator.controls.bound", bindingName, super.getNarrationMessage());
+                    return Text.translatable("narrator.controls.bound", bindingName, super.getNarrationMessage());
                 }
             };
-            this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.method_43471("controls.reset"), button -> {
+            this.resetButton = new ButtonWidget(0, 0, 50, 20, Text.translatable("controls.reset"), button -> {
                 ((ControlsListWidget)ControlsListWidget.this).client.options.setKeyCode(binding, binding.getDefaultKey());
                 KeyBinding.updateKeysByCode();
             }){
 
                 @Override
                 protected MutableText getNarrationMessage() {
-                    return Text.method_43469("narrator.controls.reset", bindingName);
+                    return Text.translatable("narrator.controls.reset", bindingName);
                 }
             };
         }
@@ -159,7 +159,7 @@ extends ElementListWidget<Entry> {
                 }
             }
             if (bl) {
-                this.editButton.setMessage(Text.method_43470("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+                this.editButton.setMessage(Text.literal("> ").append(this.editButton.getMessage().shallowCopy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
             } else if (bl2) {
                 this.editButton.setMessage(this.editButton.getMessage().shallowCopy().formatted(Formatting.RED));
             }

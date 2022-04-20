@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gl;
 
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -41,7 +42,7 @@ public class GlProgramManager {
         RenderSystem.assertOnRenderThread();
         shader.attachReferencedShaders();
         GlStateManager.glLinkProgram(shader.getProgramRef());
-        int i = GlStateManager.glGetProgrami(shader.getProgramRef(), 35714);
+        int i = GlStateManager.glGetProgrami(shader.getProgramRef(), GlConst.GL_LINK_STATUS);
         if (i == 0) {
             LOGGER.warn("Error encountered when linking program containing VS {} and FS {}. Log output:", (Object)shader.getVertexShader().getName(), (Object)shader.getFragmentShader().getName());
             LOGGER.warn(GlStateManager.glGetProgramInfoLog(shader.getProgramRef(), 32768));

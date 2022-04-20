@@ -233,8 +233,8 @@ implements DebugRenderer.Renderer {
             VillageDebugRenderer.drawString(brain.pos, i, "Wants Golem", -23296, 0.02f);
             ++i;
         }
-        if (bl && brain.field_38348 != -1) {
-            VillageDebugRenderer.drawString(brain.pos, i, "Anger Level: " + brain.field_38348, -98404, 0.02f);
+        if (bl && brain.angerLevel != -1) {
+            VillageDebugRenderer.drawString(brain.pos, i, "Anger Level: " + brain.angerLevel, -98404, 0.02f);
             ++i;
         }
         if (bl) {
@@ -313,9 +313,9 @@ implements DebugRenderer.Renderer {
     private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
         HashMap<BlockPos, List<String>> map = Maps.newHashMap();
         for (Brain brain : this.brains.values()) {
-            for (BlockPos blockPos2 : Iterables.concat(brain.pointsOfInterest, brain.potentialJobSites)) {
-                if (this.pointsOfInterest.containsKey(blockPos2)) continue;
-                map.computeIfAbsent(blockPos2, blockPos -> Lists.newArrayList()).add(brain.name);
+            for (BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.potentialJobSites)) {
+                if (this.pointsOfInterest.containsKey(blockPos)) continue;
+                map.computeIfAbsent(blockPos, pos -> Lists.newArrayList()).add(brain.name);
             }
         }
         return map;
@@ -353,7 +353,7 @@ implements DebugRenderer.Renderer {
         public final String inventory;
         public final Path path;
         public final boolean wantsGolem;
-        public final int field_38348;
+        public final int angerLevel;
         public final List<String> possibleActivities = Lists.newArrayList();
         public final List<String> runningTasks = Lists.newArrayList();
         public final List<String> memories = Lists.newArrayList();
@@ -361,7 +361,7 @@ implements DebugRenderer.Renderer {
         public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
         public final Set<BlockPos> potentialJobSites = Sets.newHashSet();
 
-        public Brain(UUID uuid, int entityId, String name, String profession, int xp, float health, float maxHealth, Position pos, String inventory, @Nullable Path path, boolean wantsGolem, int i) {
+        public Brain(UUID uuid, int entityId, String name, String profession, int xp, float health, float maxHealth, Position pos, String inventory, @Nullable Path path, boolean wantsGolem, int angerLevel) {
             this.uuid = uuid;
             this.entityId = entityId;
             this.name = name;
@@ -373,7 +373,7 @@ implements DebugRenderer.Renderer {
             this.inventory = inventory;
             this.path = path;
             this.wantsGolem = wantsGolem;
-            this.field_38348 = i;
+            this.angerLevel = angerLevel;
         }
 
         boolean isPointOfInterest(BlockPos pos) {

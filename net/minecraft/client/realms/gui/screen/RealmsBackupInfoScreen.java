@@ -23,13 +23,13 @@ import org.lwjgl.glfw.GLFW;
 @Environment(value=EnvType.CLIENT)
 public class RealmsBackupInfoScreen
 extends RealmsScreen {
-    private static final Text UNKNOWN = Text.method_43470("UNKNOWN");
+    private static final Text UNKNOWN = Text.literal("UNKNOWN");
     private final Screen parent;
     final Backup backup;
     private BackupInfoList backupInfoList;
 
     public RealmsBackupInfoScreen(Screen parent, Backup backup) {
-        super(Text.method_43470("Changes from last backup"));
+        super(Text.literal("Changes from last backup"));
         this.parent = parent;
         this.backup = backup;
     }
@@ -77,7 +77,7 @@ extends RealmsScreen {
         if (string.contains("game") && string.contains("difficulty")) {
             return this.gameDifficultyMetadata(value);
         }
-        return Text.method_43470(value);
+        return Text.literal(value);
     }
 
     private Text gameDifficultyMetadata(String value) {
@@ -128,7 +128,7 @@ extends RealmsScreen {
 
         @Override
         public Text getNarration() {
-            return Text.method_43469("narrator.select", this.key + " " + this.value);
+            return Text.translatable("narrator.select", this.key + " " + this.value);
         }
     }
 }

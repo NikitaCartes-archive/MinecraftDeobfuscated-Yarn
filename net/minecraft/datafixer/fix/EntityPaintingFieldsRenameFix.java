@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.datafixer.fix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
@@ -12,25 +12,25 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
 
-public class class_7407
+public class EntityPaintingFieldsRenameFix
 extends ChoiceFix {
-    public class_7407(Schema schema) {
+    public EntityPaintingFieldsRenameFix(Schema schema) {
         super(schema, false, "EntityPaintingFieldsRenameFix", TypeReferences.ENTITY, "minecraft:painting");
     }
 
-    public Dynamic<?> method_43386(Dynamic<?> dynamic) {
-        return this.method_43387(this.method_43387(dynamic, "Motive", "variant"), "Facing", "facing");
+    public Dynamic<?> rename(Dynamic<?> dynamic) {
+        return this.rename(this.rename(dynamic, "Motive", "variant"), "Facing", "facing");
     }
 
-    private Dynamic<?> method_43387(Dynamic<?> dynamic, String string, String string2) {
-        Optional<Dynamic<?>> optional = dynamic.get(string).result();
-        Optional<Dynamic> optional2 = optional.map(dynamic2 -> dynamic.remove(string).set(string2, (Dynamic<?>)dynamic2));
+    private Dynamic<?> rename(Dynamic<?> dynamic, String oldKey, String newKey) {
+        Optional<Dynamic<?>> optional = dynamic.get(oldKey).result();
+        Optional<Dynamic> optional2 = optional.map(value -> dynamic.remove(oldKey).set(newKey, (Dynamic<?>)value));
         return DataFixUtils.orElse(optional2, dynamic);
     }
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), this::method_43386);
+        return inputType.update(DSL.remainderFinder(), this::rename);
     }
 }
 

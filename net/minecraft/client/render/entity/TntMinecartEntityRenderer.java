@@ -19,11 +19,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class TntMinecartEntityRenderer
 extends MinecartEntityRenderer<TntMinecartEntity> {
-    private final BlockRenderManager blockRenderManager;
+    private final BlockRenderManager tntBlockRenderManager;
 
     public TntMinecartEntityRenderer(EntityRendererFactory.Context context) {
         super(context, EntityModelLayers.TNT_MINECART);
-        this.blockRenderManager = context.getBlockRenderManager();
+        this.tntBlockRenderManager = context.getBlockRenderManager();
     }
 
     @Override
@@ -37,7 +37,7 @@ extends MinecartEntityRenderer<TntMinecartEntity> {
             float h = 1.0f + g * 0.3f;
             matrixStack.scale(h, h, h);
         }
-        TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
+        TntMinecartEntityRenderer.renderFlashingBlock(this.tntBlockRenderManager, blockState, matrixStack, vertexConsumerProvider, i, j > -1 && j / 5 % 2 == 0);
     }
 
     /**

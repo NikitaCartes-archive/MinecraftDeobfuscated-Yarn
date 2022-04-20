@@ -32,7 +32,6 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_7422;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -44,6 +43,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -274,7 +274,7 @@ CommandOutput {
     protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
     private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
     private EntityChangeListener changeListener = EntityChangeListener.NONE;
-    private final class_7422 field_38931 = new class_7422();
+    private final TrackedPosition trackedPosition = new TrackedPosition();
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
     private int netherPortalCooldown;
@@ -350,12 +350,12 @@ CommandOutput {
         }
     }
 
-    public void method_43391(double d, double e, double f) {
-        this.field_38931.method_43494(new Vec3d(d, e, f));
+    public void updateTrackedPosition(double x, double y, double z) {
+        this.trackedPosition.setPos(new Vec3d(x, y, z));
     }
 
-    public class_7422 method_43389() {
-        return this.field_38931;
+    public TrackedPosition getTrackedPosition() {
+        return this.trackedPosition;
     }
 
     public EntityType<?> getType() {
@@ -2118,7 +2118,7 @@ CommandOutput {
         return this.isInvisible();
     }
 
-    public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
+    public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
     }
 
     @Nullable
@@ -2973,7 +2973,7 @@ CommandOutput {
         return this.pos;
     }
 
-    public Vec3d method_43390() {
+    public Vec3d getSyncedPos() {
         return this.getPos();
     }
 
@@ -3086,7 +3086,7 @@ CommandOutput {
         double d = packet.getX();
         double e = packet.getY();
         double f = packet.getZ();
-        this.method_43391(d, e, f);
+        this.updateTrackedPosition(d, e, f);
         this.refreshPositionAfterTeleport(d, e, f);
         this.setPitch(packet.getPitch());
         this.setYaw(packet.getYaw());

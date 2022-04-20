@@ -5,38 +5,42 @@ package net.minecraft.text;
 
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.class_7417;
-import net.minecraft.class_7420;
+import net.minecraft.text.KeybindTranslations;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import org.jetbrains.annotations.Nullable;
 
-public class KeybindText
-implements class_7417 {
+/**
+ * The keybind text content. This {@link #getTranslated()} implementation
+ * is not thread-safe.
+ */
+public class KeybindTextContent
+implements TextContent {
     private final String key;
     @Nullable
     private Supplier<Text> translated;
 
-    public KeybindText(String key) {
+    public KeybindTextContent(String key) {
         this.key = key;
     }
 
     private Text getTranslated() {
         if (this.translated == null) {
-            this.translated = class_7420.field_39013.apply(this.key);
+            this.translated = KeybindTranslations.FACTORY.apply(this.key);
         }
         return this.translated.get();
     }
 
     @Override
-    public <T> Optional<T> visitSelf(StringVisitable.Visitor<T> visitor) {
+    public <T> Optional<T> visit(StringVisitable.Visitor<T> visitor) {
         return this.getTranslated().visit(visitor);
     }
 
     @Override
-    public <T> Optional<T> visitSelf(StringVisitable.StyledVisitor<T> styledVisitor, Style style) {
-        return this.getTranslated().visit(styledVisitor, style);
+    public <T> Optional<T> visit(StringVisitable.StyledVisitor<T> visitor, Style style) {
+        return this.getTranslated().visit(visitor, style);
     }
 
     /*
@@ -47,9 +51,9 @@ implements class_7417 {
         if (this == object) {
             return true;
         }
-        if (!(object instanceof KeybindText)) return false;
-        KeybindText keybindText = (KeybindText)object;
-        if (!this.key.equals(keybindText.key)) return false;
+        if (!(object instanceof KeybindTextContent)) return false;
+        KeybindTextContent keybindTextContent = (KeybindTextContent)object;
+        if (!this.key.equals(keybindTextContent.key)) return false;
         return true;
     }
 

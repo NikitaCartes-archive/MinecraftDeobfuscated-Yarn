@@ -644,7 +644,7 @@ VillagerDataContainer {
 
     @Override
     protected Text getDefaultName() {
-        return Text.method_43471(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
+        return Text.translatable(this.getType().getTranslationKey() + "." + Registry.VILLAGER_PROFESSION.getId(this.getVillagerData().getProfession()).getPath());
     }
 
     @Override

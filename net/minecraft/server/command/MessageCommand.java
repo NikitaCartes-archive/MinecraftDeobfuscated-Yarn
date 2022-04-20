@@ -33,13 +33,13 @@ public class MessageCommand {
         Entity entity = source.getEntity();
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-            consumer = playerName -> serverPlayerEntity.sendSystemMessage(Text.method_43469("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), serverPlayerEntity.getUuid());
+            consumer = playerName -> serverPlayerEntity.sendSystemMessage(Text.translatable("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), serverPlayerEntity.getUuid());
         } else {
-            consumer = playerName -> source.sendFeedback(Text.method_43469("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), false);
+            consumer = playerName -> source.sendFeedback(Text.translatable("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), false);
         }
         for (ServerPlayerEntity serverPlayerEntity2 : targets) {
             consumer.accept(serverPlayerEntity2.getDisplayName());
-            serverPlayerEntity2.sendSystemMessage(Text.method_43469("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID);
+            serverPlayerEntity2.sendSystemMessage(Text.translatable("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID);
         }
         return targets.size();
     }

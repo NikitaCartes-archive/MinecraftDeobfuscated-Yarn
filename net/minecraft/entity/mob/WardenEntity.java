@@ -285,7 +285,7 @@ implements SculkSensorListener.Callback {
             this.angerManager.tick(serverWorld, this::isValidTarget);
         }
         this.updateAnger();
-        WardenBrain.tick(this);
+        WardenBrain.updateActivities(this);
     }
 
     @Override
@@ -369,11 +369,11 @@ implements SculkSensorListener.Callback {
     }
 
     @Override
-    public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> biConsumer) {
+    public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
         World world = this.world;
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            biConsumer.accept(this.gameEventHandler, serverWorld);
+            callback.accept(this.gameEventHandler, serverWorld);
         }
     }
 

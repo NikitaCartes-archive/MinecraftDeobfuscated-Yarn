@@ -32,8 +32,8 @@ import org.slf4j.Logger;
 
 public class PerfCommand {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.perf.notRunning"));
-    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.perf.alreadyRunning"));
+    private static final SimpleCommandExceptionType NOT_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.perf.notRunning"));
+    private static final SimpleCommandExceptionType ALREADY_RUNNING_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.perf.alreadyRunning"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("perf").requires(source -> source.hasPermissionLevel(4))).then(CommandManager.literal("start").executes(context -> PerfCommand.executeStart((ServerCommandSource)context.getSource())))).then(CommandManager.literal("stop").executes(context -> PerfCommand.executeStop((ServerCommandSource)context.getSource()))));
@@ -47,7 +47,7 @@ public class PerfCommand {
         Consumer<ProfileResult> consumer = result -> PerfCommand.sendProfilingStoppedMessage(source, result);
         Consumer<Path> consumer2 = dumpDirectory -> PerfCommand.saveReport(source, dumpDirectory, minecraftServer);
         minecraftServer.setupRecorder(consumer, consumer2);
-        source.sendFeedback(Text.method_43471("commands.perf.started"), false);
+        source.sendFeedback(Text.translatable("commands.perf.started"), false);
         return 0;
     }
 
@@ -66,7 +66,7 @@ public class PerfCommand {
         try {
             string2 = FileNameUtil.getNextUniqueName(RecordDumper.DEBUG_PROFILING_DIRECTORY, string, ".zip");
         } catch (IOException iOException) {
-            source.sendError(Text.method_43471("commands.perf.reportFailed"));
+            source.sendError(Text.translatable("commands.perf.reportFailed"));
             LOGGER.error("Failed to create report name", iOException);
             return;
         }
@@ -79,7 +79,7 @@ public class PerfCommand {
         } catch (IOException iOException) {
             LOGGER.warn("Failed to delete temporary profiling file {}", (Object)tempProfilingDirectory, (Object)iOException);
         }
-        source.sendFeedback(Text.method_43469("commands.perf.reportSaved", string2), false);
+        source.sendFeedback(Text.translatable("commands.perf.reportSaved", string2), false);
     }
 
     private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
@@ -88,7 +88,7 @@ public class PerfCommand {
         }
         int i = result.getTickSpan();
         double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
-        source.sendFeedback(Text.method_43469("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false);
+        source.sendFeedback(Text.translatable("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false);
     }
 }
 

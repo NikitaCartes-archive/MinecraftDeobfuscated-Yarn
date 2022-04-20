@@ -264,9 +264,9 @@ public class ChunkBuilder {
         private Box boundingBox;
         private boolean needsRebuild = true;
         final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
-        private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], mutables -> {
-            for (int i = 0; i < ((BlockPos.Mutable[])mutables).length; ++i) {
-                mutables[i] = new BlockPos.Mutable();
+        private final BlockPos.Mutable[] neighborPositions = Util.make(new BlockPos.Mutable[6], neighborPositions -> {
+            for (int i = 0; i < ((BlockPos.Mutable[])neighborPositions).length; ++i) {
+                neighborPositions[i] = new BlockPos.Mutable();
             }
         });
         private boolean needsImportantRebuild;
@@ -573,7 +573,7 @@ public class ChunkBuilder {
                 });
             }
 
-            private Set<BlockEntity> render(float cameraX, float cameraY, float cameraZ, ChunkData data, BlockBufferBuilderStorage blockBufferBuilderStorage) {
+            private Set<BlockEntity> render(float cameraX, float cameraY, float cameraZ, ChunkData data, BlockBufferBuilderStorage builderStorage) {
                 boolean i = true;
                 BlockPos blockPos = BuiltChunk.this.origin.toImmutable();
                 BlockPos blockPos2 = blockPos.add(15, 15, 15);
@@ -602,7 +602,7 @@ public class ChunkBuilder {
                         }
                         if (!(fluidState = (blockState2 = chunkRendererRegion.getBlockState(blockPos3)).getFluidState()).isEmpty()) {
                             renderLayer = RenderLayers.getFluidLayer(fluidState);
-                            bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
+                            bufferBuilder = builderStorage.get(renderLayer);
                             if (set2.add(renderLayer)) {
                                 BuiltChunk.this.beginBufferBuilding(bufferBuilder);
                             }
@@ -612,7 +612,7 @@ public class ChunkBuilder {
                         }
                         if (blockState.getRenderType() == BlockRenderType.INVISIBLE) continue;
                         renderLayer = RenderLayers.getBlockLayer(blockState);
-                        bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
+                        bufferBuilder = builderStorage.get(renderLayer);
                         if (set2.add(renderLayer)) {
                             BuiltChunk.this.beginBufferBuilding(bufferBuilder);
                         }
@@ -624,12 +624,12 @@ public class ChunkBuilder {
                         matrixStack.pop();
                     }
                     if (data.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
-                        BufferBuilder bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent());
+                        BufferBuilder bufferBuilder2 = builderStorage.get(RenderLayer.getTranslucent());
                         bufferBuilder2.sortFrom(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
                         data.bufferState = bufferBuilder2.popState();
                     }
                     for (RenderLayer renderLayer2 : set2) {
-                        blockBufferBuilderStorage.get(renderLayer2).end();
+                        builderStorage.get(renderLayer2).end();
                     }
                     BlockModelRenderer.disableBrightnessCache();
                 }

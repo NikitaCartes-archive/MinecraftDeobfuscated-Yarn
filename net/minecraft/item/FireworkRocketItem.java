@@ -85,7 +85,7 @@ extends Item {
             return;
         }
         if (nbtCompound.contains(FLIGHT_KEY, NbtElement.NUMBER_TYPE)) {
-            tooltip.add(Text.method_43471("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte(FLIGHT_KEY))).formatted(Formatting.GRAY));
+            tooltip.add(Text.translatable("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte(FLIGHT_KEY))).formatted(Formatting.GRAY));
         }
         if (!(nbtList = nbtCompound.getList(EXPLOSIONS_KEY, NbtElement.COMPOUND_TYPE)).isEmpty()) {
             for (int i = 0; i < nbtList.size(); ++i) {
@@ -94,7 +94,7 @@ extends Item {
                 FireworkStarItem.appendFireworkTooltip(nbtCompound2, list);
                 if (list.isEmpty()) continue;
                 for (int j = 1; j < list.size(); ++j) {
-                    list.set(j, Text.method_43470("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
+                    list.set(j, Text.literal("  ").append((Text)list.get(j)).formatted(Formatting.GRAY));
                 }
                 tooltip.addAll(list);
             }

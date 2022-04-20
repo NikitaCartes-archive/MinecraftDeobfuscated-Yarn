@@ -25,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
 public class AnvilScreen
 extends ForgingScreen<AnvilScreenHandler> {
     private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
-    private static final Text TOO_EXPENSIVE_TEXT = Text.method_43471("container.repair.expensive");
+    private static final Text TOO_EXPENSIVE_TEXT = Text.translatable("container.repair.expensive");
     private TextFieldWidget nameField;
     private final PlayerEntity player;
 
@@ -46,7 +46,7 @@ extends ForgingScreen<AnvilScreenHandler> {
         this.client.keyboard.setRepeatEvents(true);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.nameField = new TextFieldWidget(this.textRenderer, i + 62, j + 24, 103, 12, Text.method_43471("container.repair"));
+        this.nameField = new TextFieldWidget(this.textRenderer, i + 62, j + 24, 103, 12, Text.translatable("container.repair"));
         this.nameField.setFocusUnlocked(false);
         this.nameField.setEditableColor(-1);
         this.nameField.setUneditableColor(-1);
@@ -110,7 +110,7 @@ extends ForgingScreen<AnvilScreenHandler> {
             } else if (!((AnvilScreenHandler)this.handler).getSlot(2).hasStack()) {
                 text = null;
             } else {
-                text = Text.method_43469("container.repair.cost", i);
+                text = Text.translatable("container.repair.cost", i);
                 if (!((AnvilScreenHandler)this.handler).getSlot(2).canTakeItems(this.player)) {
                     j = 0xFF6060;
                 }

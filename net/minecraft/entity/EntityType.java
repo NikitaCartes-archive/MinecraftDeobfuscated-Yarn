@@ -430,7 +430,7 @@ implements TypeFilter<Entity, T> {
 
     public Text getName() {
         if (this.name == null) {
-            this.name = Text.method_43471(this.getTranslationKey());
+            this.name = Text.translatable(this.getTranslationKey());
         }
         return this.name;
     }

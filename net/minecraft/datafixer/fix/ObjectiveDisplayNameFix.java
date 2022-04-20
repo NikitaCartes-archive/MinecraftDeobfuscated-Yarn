@@ -21,7 +21,7 @@ extends DataFix {
     @Override
     protected TypeRewriteRule makeRule() {
         Type<?> type = this.getInputSchema().getType(TypeReferences.OBJECTIVE);
-        return this.fixTypeEverywhereTyped("ObjectiveDisplayNameFix", type, typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("DisplayName", dynamic2 -> DataFixUtils.orElse(dynamic2.asString().map(string -> Text.Serializer.toJson(Text.method_43470(string))).map(dynamic::createString).result(), dynamic2))));
+        return this.fixTypeEverywhereTyped("ObjectiveDisplayNameFix", type, typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("DisplayName", dynamic2 -> DataFixUtils.orElse(dynamic2.asString().map(string -> Text.Serializer.toJson(Text.literal(string))).map(dynamic::createString).result(), dynamic2))));
     }
 }
 

@@ -32,26 +32,26 @@ implements PaletteStorage {
     private final int indexOffset;
     private final int indexShift;
 
-    public PackedIntegerArray(int i, int j, int[] is) {
-        this(i, j);
-        int l;
-        int k = 0;
-        for (l = 0; l <= j - this.elementsPerLong; l += this.elementsPerLong) {
-            long m = 0L;
-            for (int n = this.elementsPerLong - 1; n >= 0; --n) {
-                m <<= i;
-                m |= (long)is[l + n] & this.maxValue;
+    public PackedIntegerArray(int elementBits, int size, int[] data) {
+        this(elementBits, size);
+        int j;
+        int i = 0;
+        for (j = 0; j <= size - this.elementsPerLong; j += this.elementsPerLong) {
+            long l = 0L;
+            for (int k = this.elementsPerLong - 1; k >= 0; --k) {
+                l <<= elementBits;
+                l |= (long)data[j + k] & this.maxValue;
             }
-            this.data[k++] = m;
+            this.data[i++] = l;
         }
-        int o = j - l;
-        if (o > 0) {
-            long p = 0L;
-            for (int q = o - 1; q >= 0; --q) {
-                p <<= i;
-                p |= (long)is[l + q] & this.maxValue;
+        int m = size - j;
+        if (m > 0) {
+            long n = 0L;
+            for (int o = m - 1; o >= 0; --o) {
+                n <<= elementBits;
+                n |= (long)data[j + o] & this.maxValue;
             }
-            this.data[k] = p;
+            this.data[i] = n;
         }
     }
 
@@ -177,8 +177,8 @@ implements PaletteStorage {
 
     public static class InvalidLengthException
     extends RuntimeException {
-        InvalidLengthException(String string) {
-            super(string);
+        InvalidLengthException(String message) {
+            super(message);
         }
     }
 }

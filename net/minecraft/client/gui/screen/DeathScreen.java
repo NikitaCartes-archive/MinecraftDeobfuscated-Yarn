@@ -30,7 +30,7 @@ extends Screen {
     private final List<ButtonWidget> buttons = Lists.newArrayList();
 
     public DeathScreen(@Nullable Text message, boolean isHardcore) {
-        super(Text.method_43471(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
+        super(Text.translatable(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
         this.message = message;
         this.isHardcore = isHardcore;
     }
@@ -39,23 +39,23 @@ extends Screen {
     protected void init() {
         this.ticksSinceDeath = 0;
         this.buttons.clear();
-        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? Text.method_43471("deathScreen.spectate") : Text.method_43471("deathScreen.respawn"), button -> {
+        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn"), button -> {
             this.client.player.requestRespawn();
             this.client.setScreen(null);
         })));
-        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, Text.method_43471("deathScreen.titleScreen"), button -> {
+        this.buttons.add(this.addDrawableChild(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96, 200, 20, Text.translatable("deathScreen.titleScreen"), button -> {
             if (this.isHardcore) {
                 this.quitLevel();
                 return;
             }
-            ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, Text.method_43471("deathScreen.quit.confirm"), ScreenTexts.field_39003, Text.method_43471("deathScreen.titleScreen"), Text.method_43471("deathScreen.respawn"));
+            ConfirmScreen confirmScreen = new ConfirmScreen(this::onConfirmQuit, Text.translatable("deathScreen.quit.confirm"), ScreenTexts.EMPTY, Text.translatable("deathScreen.titleScreen"), Text.translatable("deathScreen.respawn"));
             this.client.setScreen(confirmScreen);
             confirmScreen.disableButtons(20);
         })));
         for (ButtonWidget buttonWidget : this.buttons) {
             buttonWidget.active = false;
         }
-        this.scoreText = Text.method_43471("deathScreen.score").append(": ").append(Text.method_43470(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+        this.scoreText = Text.translatable("deathScreen.score").append(": ").append(Text.literal(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
     }
 
     @Override
@@ -76,7 +76,7 @@ extends Screen {
         if (this.client.world != null) {
             this.client.world.disconnect();
         }
-        this.client.disconnect(new MessageScreen(Text.method_43471("menu.savingLevel")));
+        this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
         this.client.setScreen(new TitleScreen());
     }
 

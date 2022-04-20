@@ -15,7 +15,7 @@ extends SliderWidget {
     protected final GameOptions options;
 
     protected OptionSliderWidget(GameOptions options, int x, int y, int width, int height, double value) {
-        super(x, y, width, height, ScreenTexts.field_39003, value);
+        super(x, y, width, height, ScreenTexts.EMPTY, value);
         this.options = options;
     }
 }

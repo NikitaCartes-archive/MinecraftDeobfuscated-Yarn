@@ -98,7 +98,7 @@ extends SinglePreparationResourceReloader<SoundList> {
         if (SharedConstants.isDevelopment) {
             for (Identifier identifier : this.sounds.keySet()) {
                 WeightedSoundSet weightedSoundSet = this.sounds.get(identifier);
-                if (Texts.method_43476(weightedSoundSet.getSubtitle()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
+                if (Texts.hasTranslation(weightedSoundSet.getSubtitle()) || !Registry.SOUND_EVENT.containsId(identifier)) continue;
                 LOGGER.error("Missing subtitle {} for sound event: {}", (Object)weightedSoundSet.getSubtitle(), (Object)identifier);
             }
         }

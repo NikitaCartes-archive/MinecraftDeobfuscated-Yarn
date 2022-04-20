@@ -20,11 +20,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class PandaHeldItemFeatureRenderer
 extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
-    private final HeldItemRenderer field_38903;
+    private final HeldItemRenderer heldItemRenderer;
 
-    public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> featureRendererContext, HeldItemRenderer heldItemRenderer) {
-        super(featureRendererContext);
-        this.field_38903 = heldItemRenderer;
+    public PandaHeldItemFeatureRenderer(FeatureRendererContext<PandaEntity, PandaEntityModel<PandaEntity>> context, HeldItemRenderer heldItemRenderer) {
+        super(context);
+        this.heldItemRenderer = heldItemRenderer;
     }
 
     @Override
@@ -41,7 +41,7 @@ extends FeatureRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
         }
         matrixStack.push();
         matrixStack.translate(0.1f, n, m);
-        this.field_38903.renderItem(pandaEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        this.heldItemRenderer.renderItem(pandaEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

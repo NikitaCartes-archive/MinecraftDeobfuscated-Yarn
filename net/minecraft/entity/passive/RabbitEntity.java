@@ -339,7 +339,7 @@ extends AnimalEntity {
             this.targetSelector.add(2, new ActiveTargetGoal<PlayerEntity>((MobEntity)this, PlayerEntity.class, true));
             this.targetSelector.add(2, new ActiveTargetGoal<WolfEntity>((MobEntity)this, WolfEntity.class, true));
             if (!this.hasCustomName()) {
-                this.setCustomName(Text.method_43471(Util.createTranslationKey("entity", KILLER_BUNNY)));
+                this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
             }
         }
         this.dataTracker.set(RABBIT_TYPE, rabbitType);

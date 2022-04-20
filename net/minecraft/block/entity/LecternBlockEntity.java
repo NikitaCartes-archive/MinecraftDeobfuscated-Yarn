@@ -194,7 +194,7 @@ NamedScreenHandlerFactory {
         String string;
         if (player == null) {
             string = "Lectern";
-            text = Text.method_43470("Lectern");
+            text = Text.literal("Lectern");
         } else {
             string = player.getName().getString();
             text = player.getDisplayName();
@@ -237,7 +237,7 @@ NamedScreenHandlerFactory {
 
     @Override
     public Text getDisplayName() {
-        return Text.method_43471("container.lectern");
+        return Text.translatable("container.lectern");
     }
 }
 

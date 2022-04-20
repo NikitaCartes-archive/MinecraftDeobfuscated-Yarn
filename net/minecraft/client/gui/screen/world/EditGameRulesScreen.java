@@ -50,7 +50,7 @@ extends Screen {
     private final GameRules gameRules;
 
     public EditGameRulesScreen(GameRules gameRules, Consumer<Optional<GameRules>> ruleSaveConsumer) {
-        super(Text.method_43471("editGamerule.title"));
+        super(Text.translatable("editGamerule.title"));
         this.gameRules = gameRules;
         this.ruleSaver = ruleSaveConsumer;
     }
@@ -125,15 +125,15 @@ extends Screen {
                 private <T extends GameRules.Rule<T>> void createRuleWidget(GameRules.Key<T> key, RuleWidgetFactory<T> widgetFactory) {
                     Object string3;
                     ImmutableCollection list;
-                    MutableText text = Text.method_43471(key.getTranslationKey());
-                    MutableText text2 = Text.method_43470(key.getName()).formatted(Formatting.YELLOW);
+                    MutableText text = Text.translatable(key.getTranslationKey());
+                    MutableText text2 = Text.literal(key.getName()).formatted(Formatting.YELLOW);
                     T rule = gameRules.get(key);
                     String string = ((GameRules.Rule)rule).serialize();
-                    MutableText text3 = Text.method_43469("editGamerule.default", Text.method_43470(string)).formatted(Formatting.GRAY);
+                    MutableText text3 = Text.translatable("editGamerule.default", Text.literal(string)).formatted(Formatting.GRAY);
                     String string2 = key.getTranslationKey() + ".description";
                     if (I18n.hasTranslation(string2)) {
                         ImmutableCollection.Builder builder = ImmutableList.builder().add(text2.asOrderedText());
-                        MutableText text4 = Text.method_43471(string2);
+                        MutableText text4 = Text.translatable(string2);
                         EditGameRulesScreen.this.textRenderer.wrapLines(text4, 150).forEach(((ImmutableList.Builder)builder)::add);
                         list = ((ImmutableList.Builder)((ImmutableList.Builder)builder).add(text3.asOrderedText())).build();
                         string3 = text4.getString() + "\n" + text3.getString();
@@ -145,7 +145,7 @@ extends Screen {
                 }
             });
             map.entrySet().stream().sorted(Map.Entry.comparingByKey()).forEach(entry -> {
-                this.addEntry(new RuleCategoryWidget(Text.method_43471(((GameRules.Category)((Object)((Object)entry.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
+                this.addEntry(new RuleCategoryWidget(Text.translatable(((GameRules.Category)((Object)((Object)entry.getKey()))).getCategory()).formatted(Formatting.BOLD, Formatting.YELLOW)));
                 ((Map)entry.getValue()).entrySet().stream().sorted(Map.Entry.comparingByKey(Comparator.comparing(GameRules.Key::getName))).forEach(e -> this.addEntry((AbstractRuleWidget)e.getValue()));
             });
         }

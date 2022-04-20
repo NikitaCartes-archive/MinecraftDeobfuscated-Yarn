@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.item;
 
 import java.util.List;
 import net.minecraft.client.item.TooltipContext;
@@ -13,19 +13,19 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-public class class_7409
+public class DiscFragmentItem
 extends Item {
-    public class_7409(Item.Settings settings) {
+    public DiscFragmentItem(Item.Settings settings) {
         super(settings);
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        tooltip.add(this.method_43408().formatted(Formatting.GRAY));
+        tooltip.add(this.getDescription().formatted(Formatting.GRAY));
     }
 
-    public MutableText method_43408() {
-        return Text.method_43471(this.getTranslationKey() + ".desc");
+    public MutableText getDescription() {
+        return Text.translatable(this.getTranslationKey() + ".desc");
     }
 }
 

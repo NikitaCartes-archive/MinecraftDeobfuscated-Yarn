@@ -22,7 +22,7 @@ extends AbstractFurnaceBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return Text.method_43471("container.smoker");
+        return Text.translatable("container.smoker");
     }
 
     @Override

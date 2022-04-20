@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class ItemStackArgument
 implements Predicate<ItemStack> {
-    private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((item, maxCount) -> Text.method_43469("arguments.item.overstacked", item, maxCount));
+    private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((item, maxCount) -> Text.translatable("arguments.item.overstacked", item, maxCount));
     private final RegistryEntry<Item> item;
     @Nullable
     private final NbtCompound nbt;

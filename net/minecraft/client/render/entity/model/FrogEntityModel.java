@@ -35,7 +35,7 @@ extends SinglePartEntityModel<T> {
     private final ModelPart rightArm;
     private final ModelPart leftLeg;
     private final ModelPart rightLeg;
-    private final ModelPart field_38448;
+    private final ModelPart croakingBody;
 
     public FrogEntityModel(ModelPart root) {
         this.root = root.getChild(EntityModelPartNames.ROOT);
@@ -47,7 +47,7 @@ extends SinglePartEntityModel<T> {
         this.rightArm = this.body.getChild(EntityModelPartNames.RIGHT_ARM);
         this.leftLeg = this.root.getChild(EntityModelPartNames.LEFT_LEG);
         this.rightLeg = this.root.getChild(EntityModelPartNames.RIGHT_LEG);
-        this.field_38448 = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
+        this.croakingBody = this.body.getChild(EntityModelPartNames.CROAKING_BODY);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -82,7 +82,7 @@ extends SinglePartEntityModel<T> {
         this.runAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, l);
         this.runAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING, l);
         this.runAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, l);
-        this.field_38448.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();
+        this.croakingBody.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();
     }
 
     private void runAnimation(AnimationState animationState, Animation animation, long time) {

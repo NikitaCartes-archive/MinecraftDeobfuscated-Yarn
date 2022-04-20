@@ -95,7 +95,7 @@ extends LootableContainerBlockEntity {
 
     @Override
     protected Text getContainerName() {
-        return Text.method_43471("container.barrel");
+        return Text.translatable("container.barrel");
     }
 
     @Override

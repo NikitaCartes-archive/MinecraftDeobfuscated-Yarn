@@ -18,7 +18,7 @@ public class SayCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("say").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("message", MessageArgumentType.message()).executes(context -> {
             Text text = MessageArgumentType.getMessage(context, "message");
-            MutableText text2 = Text.method_43469("chat.type.announcement", ((ServerCommandSource)context.getSource()).getDisplayName(), text);
+            MutableText text2 = Text.translatable("chat.type.announcement", ((ServerCommandSource)context.getSource()).getDisplayName(), text);
             Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
             if (entity != null) {
                 ((ServerCommandSource)context.getSource()).getServer().getPlayerManager().broadcast(text2, MessageType.CHAT, entity.getUuid());

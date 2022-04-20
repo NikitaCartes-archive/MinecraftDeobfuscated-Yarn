@@ -21,11 +21,11 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M> {
-    private final HeldItemRenderer field_38901;
+    private final HeldItemRenderer heldItemRenderer;
 
-    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, HeldItemRenderer heldItemRenderer) {
-        super(featureRendererContext);
-        this.field_38901 = heldItemRenderer;
+    public HeldItemFeatureRenderer(FeatureRendererContext<T, M> context, HeldItemRenderer heldItemRenderer) {
+        super(context);
+        this.heldItemRenderer = heldItemRenderer;
     }
 
     @Override
@@ -58,7 +58,7 @@ extends FeatureRenderer<T, M> {
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         boolean bl = arm == Arm.LEFT;
         matrices.translate((float)(bl ? -1 : 1) / 16.0f, 0.125, -0.625);
-        this.field_38901.renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
+        this.heldItemRenderer.renderItem(entity, stack, transformationMode, bl, matrices, vertexConsumers, light);
         matrices.pop();
     }
 }

@@ -4,6 +4,7 @@
 package com.mojang.blaze3d.platform;
 
 import com.google.common.base.Charsets;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -314,9 +315,9 @@ public class GlStateManager {
     public static void _glDeleteBuffers(int buffer) {
         RenderSystem.assertOnRenderThread();
         if (ON_LINUX) {
-            GL32C.glBindBuffer(34962, buffer);
-            GL32C.glBufferData(34962, 0L, 35048);
-            GL32C.glBindBuffer(34962, 0);
+            GL32C.glBindBuffer(GlConst.GL_ARRAY_BUFFER, buffer);
+            GL32C.glBufferData(GlConst.GL_ARRAY_BUFFER, 0L, GlConst.GL_DYNAMIC_DRAW);
+            GL32C.glBindBuffer(GlConst.GL_ARRAY_BUFFER, 0);
         }
         GL15.glDeleteBuffers(buffer);
     }
@@ -495,8 +496,8 @@ public class GlStateManager {
 
     public static void _activeTexture(int texture) {
         RenderSystem.assertOnRenderThread();
-        if (activeTexture != texture - 33984) {
-            activeTexture = texture - 33984;
+        if (activeTexture != texture - GlConst.GL_TEXTURE0) {
+            activeTexture = texture - GlConst.GL_TEXTURE0;
             GlStateManager.glActiveTexture(texture);
         }
     }
@@ -560,7 +561,7 @@ public class GlStateManager {
         RenderSystem.assertOnRenderThreadOrInit();
         if (texture != GlStateManager.TEXTURES[GlStateManager.activeTexture].boundTexture) {
             GlStateManager.TEXTURES[GlStateManager.activeTexture].boundTexture = texture;
-            GL11.glBindTexture(3553, texture);
+            GL11.glBindTexture(GlConst.GL_TEXTURE_2D, texture);
         }
     }
 
@@ -728,7 +729,7 @@ public class GlStateManager {
 
     @Environment(value=EnvType.CLIENT)
     static class ScissorTestState {
-        public final CapabilityTracker capState = new CapabilityTracker(3089);
+        public final CapabilityTracker capState = new CapabilityTracker(GL11.GL_SCISSOR_TEST);
 
         ScissorTestState() {
         }
@@ -766,7 +767,7 @@ public class GlStateManager {
 
     @Environment(value=EnvType.CLIENT)
     static class DepthTestState {
-        public final CapabilityTracker capState = new CapabilityTracker(2929);
+        public final CapabilityTracker capState = new CapabilityTracker(GL11.GL_DEPTH_TEST);
         public boolean mask = true;
         public int func = 513;
 
@@ -776,7 +777,7 @@ public class GlStateManager {
 
     @Environment(value=EnvType.CLIENT)
     static class BlendFuncState {
-        public final CapabilityTracker capState = new CapabilityTracker(3042);
+        public final CapabilityTracker capState = new CapabilityTracker(GL11.GL_BLEND);
         public int srcFactorRGB = 1;
         public int dstFactorRGB = 0;
         public int srcFactorAlpha = 1;
@@ -788,7 +789,7 @@ public class GlStateManager {
 
     @Environment(value=EnvType.CLIENT)
     static class CullFaceState {
-        public final CapabilityTracker capState = new CapabilityTracker(2884);
+        public final CapabilityTracker capState = new CapabilityTracker(GL11.GL_CULL_FACE);
         public int mode = 1029;
 
         CullFaceState() {
@@ -798,7 +799,7 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     static class PolygonOffsetState {
         public final CapabilityTracker capFill = new CapabilityTracker(32823);
-        public final CapabilityTracker capLine = new CapabilityTracker(10754);
+        public final CapabilityTracker capLine = new CapabilityTracker(GL11.GL_POLYGON_OFFSET_LINE);
         public float factor;
         public float units;
 
@@ -808,7 +809,7 @@ public class GlStateManager {
 
     @Environment(value=EnvType.CLIENT)
     static class LogicOpState {
-        public final CapabilityTracker capState = new CapabilityTracker(3058);
+        public final CapabilityTracker capState = new CapabilityTracker(GL11.GL_COLOR_LOGIC_OP);
         public int op = 5379;
 
         LogicOpState() {
@@ -886,19 +887,19 @@ public class GlStateManager {
     @Environment(value=EnvType.CLIENT)
     @DeobfuscateClass
     public static enum DstFactor {
-        CONSTANT_ALPHA(32771),
-        CONSTANT_COLOR(32769),
-        DST_ALPHA(772),
-        DST_COLOR(774),
+        CONSTANT_ALPHA(GL14.GL_CONSTANT_ALPHA),
+        CONSTANT_COLOR(GL14.GL_CONSTANT_COLOR),
+        DST_ALPHA(GlConst.GL_DST_ALPHA),
+        DST_COLOR(GlConst.GL_DST_COLOR),
         ONE(1),
-        ONE_MINUS_CONSTANT_ALPHA(32772),
-        ONE_MINUS_CONSTANT_COLOR(32770),
-        ONE_MINUS_DST_ALPHA(773),
-        ONE_MINUS_DST_COLOR(775),
-        ONE_MINUS_SRC_ALPHA(771),
-        ONE_MINUS_SRC_COLOR(769),
-        SRC_ALPHA(770),
-        SRC_COLOR(768),
+        ONE_MINUS_CONSTANT_ALPHA(GL14.GL_ONE_MINUS_CONSTANT_ALPHA),
+        ONE_MINUS_CONSTANT_COLOR(GL14.GL_ONE_MINUS_CONSTANT_COLOR),
+        ONE_MINUS_DST_ALPHA(GlConst.GL_ONE_MINUS_DST_ALPHA),
+        ONE_MINUS_DST_COLOR(GlConst.GL_ONE_MINUS_DST_COLOR),
+        ONE_MINUS_SRC_ALPHA(GlConst.GL_ONE_MINUS_SRC_ALPHA),
+        ONE_MINUS_SRC_COLOR(GlConst.GL_ONE_MINUS_SRC_COLOR),
+        SRC_ALPHA(GlConst.GL_SRC_ALPHA),
+        SRC_COLOR(GlConst.GL_SRC_COLOR),
         ZERO(0);
 
         public final int value;

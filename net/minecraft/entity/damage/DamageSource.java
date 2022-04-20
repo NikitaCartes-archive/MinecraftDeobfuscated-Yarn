@@ -223,9 +223,9 @@ public class DamageSource {
         String string = "death.attack." + this.name;
         String string2 = string + ".player";
         if (livingEntity != null) {
-            return Text.method_43469(string2, entity.getDisplayName(), livingEntity.getDisplayName());
+            return Text.translatable(string2, entity.getDisplayName(), livingEntity.getDisplayName());
         }
-        return Text.method_43469(string, entity.getDisplayName());
+        return Text.translatable(string, entity.getDisplayName());
     }
 
     public boolean isFire() {

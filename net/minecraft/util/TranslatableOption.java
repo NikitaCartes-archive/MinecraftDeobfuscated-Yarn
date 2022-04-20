@@ -11,7 +11,7 @@ public interface TranslatableOption {
     public String getTranslationKey();
 
     default public Text getText() {
-        return Text.method_43471(this.getTranslationKey());
+        return Text.translatable(this.getTranslationKey());
     }
 }
 

@@ -80,7 +80,7 @@ implements ChestAnimationProgress {
 
     @Override
     protected Text getContainerName() {
-        return Text.method_43471("container.chest");
+        return Text.translatable("container.chest");
     }
 
     @Override

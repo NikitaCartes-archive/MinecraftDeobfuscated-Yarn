@@ -35,7 +35,7 @@ implements Packet<ClientPlayPacketListener> {
             this.displayName = buf.readText();
             this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
         } else {
-            this.displayName = ScreenTexts.field_39003;
+            this.displayName = ScreenTexts.EMPTY;
             this.type = ScoreboardCriterion.RenderType.INTEGER;
         }
     }

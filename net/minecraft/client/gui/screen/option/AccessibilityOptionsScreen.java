@@ -25,12 +25,12 @@ extends SimpleOptionsScreen {
     }
 
     public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
-        super(parent, gameOptions, Text.method_43471("options.accessibility.title"), AccessibilityOptionsScreen.getOptions(gameOptions));
+        super(parent, gameOptions, Text.translatable("options.accessibility.title"), AccessibilityOptionsScreen.getOptions(gameOptions));
     }
 
     @Override
     protected void initFooter() {
-        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, Text.method_43471("options.accessibility.link"), button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
+        this.addDrawableChild(new ButtonWidget(this.width / 2 - 155, this.height - 27, 150, 20, Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmChatLinkScreen(openInBrowser -> {
             if (openInBrowser) {
                 Util.getOperatingSystem().open(GUIDE_URL);
             }

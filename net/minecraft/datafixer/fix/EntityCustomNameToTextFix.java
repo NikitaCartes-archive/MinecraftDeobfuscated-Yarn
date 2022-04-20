@@ -38,7 +38,7 @@ extends DataFix {
         if (string.isEmpty()) {
             return dynamic.remove("CustomName");
         }
-        return dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.method_43470(string))));
+        return dynamic.set("CustomName", dynamic.createString(Text.Serializer.toJson(Text.literal(string))));
     }
 }
 

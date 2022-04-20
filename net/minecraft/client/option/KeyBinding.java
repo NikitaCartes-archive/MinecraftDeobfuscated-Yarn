@@ -164,7 +164,7 @@ implements Comparable<KeyBinding> {
     public static Supplier<Text> getLocalizedName(String id) {
         KeyBinding keyBinding = KEYS_BY_ID.get(id);
         if (keyBinding == null) {
-            return () -> Text.method_43471(id);
+            return () -> Text.translatable(id);
         }
         return keyBinding::getBoundKeyLocalizedText;
     }

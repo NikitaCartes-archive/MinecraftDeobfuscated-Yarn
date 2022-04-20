@@ -9,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,21 +48,21 @@ implements AutoCloseable {
     private float time;
     private float lastTickDelta;
 
-    public ShaderEffect(TextureManager textureManager, ResourceManager resourceManager, Framebuffer framebuffer, Identifier location) throws IOException, JsonSyntaxException {
+    public ShaderEffect(TextureManager textureManager, ResourceManager resourceManager, Framebuffer framebuffer, Identifier id) throws IOException, JsonSyntaxException {
         this.resourceManager = resourceManager;
         this.mainTarget = framebuffer;
         this.time = 0.0f;
         this.lastTickDelta = 0.0f;
         this.width = framebuffer.viewportWidth;
         this.height = framebuffer.viewportHeight;
-        this.name = location.toString();
+        this.name = id.toString();
         this.setupProjectionMatrix();
-        this.parseEffect(textureManager, location);
+        this.parseEffect(textureManager, id);
     }
 
-    private void parseEffect(TextureManager textureManager, Identifier location) throws IOException, JsonSyntaxException {
+    private void parseEffect(TextureManager textureManager, Identifier id) throws IOException, JsonSyntaxException {
         block15: {
-            Resource resource = this.resourceManager.getResourceOrThrow(location);
+            Resource resource = this.resourceManager.getResourceOrThrow(id);
             try (BufferedReader reader = resource.getReader();){
                 int i;
                 JsonArray jsonArray;
@@ -95,7 +96,7 @@ implements AutoCloseable {
                 }
             } catch (Exception exception2) {
                 ShaderParseException shaderParseException2 = ShaderParseException.wrap(exception2);
-                shaderParseException2.addFaultyFile(location.getPath() + " (" + resource.getResourcePackName() + ")");
+                shaderParseException2.addFaultyFile(id.getPath() + " (" + resource.getResourcePackName() + ")");
                 throw shaderParseException2;
             }
         }
@@ -162,11 +163,11 @@ implements AutoCloseable {
                         int k = JsonHelper.getInt(jsonObject2, "height");
                         boolean bl2 = JsonHelper.getBoolean(jsonObject2, "bilinear");
                         if (bl2) {
-                            RenderSystem.texParameter(3553, 10241, 9729);
-                            RenderSystem.texParameter(3553, 10240, 9729);
+                            RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
+                            RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
                         } else {
-                            RenderSystem.texParameter(3553, 10241, 9728);
-                            RenderSystem.texParameter(3553, 10240, 9728);
+                            RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
+                            RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
                         }
                         postProcessShader.addAuxTarget(string4, abstractTexture::getGlId, j, k);
                     } else if (bl) {
@@ -234,7 +235,7 @@ implements AutoCloseable {
                 break;
             }
             case 4: {
-                glUniform.set(fs[0], fs[1], fs[2], fs[3]);
+                glUniform.setAndFlip(fs[0], fs[1], fs[2], fs[3]);
             }
         }
     }

@@ -37,15 +37,15 @@ import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 
 public class ScoreboardCommand {
-    private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.scoreboard.objectives.add.duplicate"));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.scoreboard.objectives.display.alreadyEmpty"));
-    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.scoreboard.objectives.display.alreadySet"));
-    private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.scoreboard.players.enable.failed"));
-    private static final SimpleCommandExceptionType PLAYERS_ENABLE_INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.method_43471("commands.scoreboard.players.enable.invalid"));
-    private static final Dynamic2CommandExceptionType PLAYERS_GET_NULL_EXCEPTION = new Dynamic2CommandExceptionType((objective, target) -> Text.method_43469("commands.scoreboard.players.get.null", objective, target));
+    private static final SimpleCommandExceptionType OBJECTIVES_ADD_DUPLICATE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.scoreboard.objectives.add.duplicate"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.scoreboard.objectives.display.alreadyEmpty"));
+    private static final SimpleCommandExceptionType OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.scoreboard.objectives.display.alreadySet"));
+    private static final SimpleCommandExceptionType PLAYERS_ENABLE_FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.scoreboard.players.enable.failed"));
+    private static final SimpleCommandExceptionType PLAYERS_ENABLE_INVALID_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.scoreboard.players.enable.invalid"));
+    private static final Dynamic2CommandExceptionType PLAYERS_GET_NULL_EXCEPTION = new Dynamic2CommandExceptionType((objective, target) -> Text.translatable("commands.scoreboard.players.get.null", objective, target));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("scoreboard").requires(source -> source.hasPermissionLevel(2))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("objectives").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("list").executes(context -> ScoreboardCommand.executeListObjectives((ServerCommandSource)context.getSource())))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", StringArgumentType.word()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("criteria", ScoreboardCriterionArgumentType.scoreboardCriterion()).executes(context -> ScoreboardCommand.executeAddObjective((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "objective"), ScoreboardCriterionArgumentType.getCriterion(context, "criteria"), Text.method_43470(StringArgumentType.getString(context, "objective"))))).then(CommandManager.argument("displayName", TextArgumentType.text()).executes(context -> ScoreboardCommand.executeAddObjective((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "objective"), ScoreboardCriterionArgumentType.getCriterion(context, "criteria"), TextArgumentType.getTextArgument(context, "displayName")))))))).then(CommandManager.literal("modify").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("displayname").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("displayName", TextArgumentType.text()).executes(context -> ScoreboardCommand.executeModifyObjective((ServerCommandSource)context.getSource(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"), TextArgumentType.getTextArgument(context, "displayName")))))).then(ScoreboardCommand.makeRenderTypeArguments())))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeRemoveObjective((ServerCommandSource)context.getSource(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")))))).then(CommandManager.literal("setdisplay").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("slot", ScoreboardSlotArgumentType.scoreboardSlot()).executes(context -> ScoreboardCommand.executeClearDisplay((ServerCommandSource)context.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(context, "slot")))).then(CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeSetDisplay((ServerCommandSource)context.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(context, "slot"), ScoreboardObjectiveArgumentType.getObjective(context, "objective")))))))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("players").then((ArgumentBuilder<ServerCommandSource, ?>)((LiteralArgumentBuilder)CommandManager.literal("list").executes(context -> ScoreboardCommand.executeListPlayers((ServerCommandSource)context.getSource()))).then(CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).executes(context -> ScoreboardCommand.executeListScores((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreHolder(context, "target")))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer()).executes(context -> ScoreboardCommand.executeSet((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("get").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeGet((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreHolder(context, "target"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer(0)).executes(context -> ScoreboardCommand.executeAdd((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer(0)).executes(context -> ScoreboardCommand.executeRemove((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("reset").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).executes(context -> ScoreboardCommand.executeReset((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets")))).then(CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeReset((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("enable").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).suggests((context, builder) -> ScoreboardCommand.suggestDisabled((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), builder)).executes(context -> ScoreboardCommand.executeEnable((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("operation").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targetObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("operation", OperationArgumentType.operation()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("source", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeOperation((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "targetObjective"), OperationArgumentType.getOperation(context, "operation"), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "source"), ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective")))))))))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("scoreboard").requires(source -> source.hasPermissionLevel(2))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("objectives").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("list").executes(context -> ScoreboardCommand.executeListObjectives((ServerCommandSource)context.getSource())))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", StringArgumentType.word()).then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("criteria", ScoreboardCriterionArgumentType.scoreboardCriterion()).executes(context -> ScoreboardCommand.executeAddObjective((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "objective"), ScoreboardCriterionArgumentType.getCriterion(context, "criteria"), Text.literal(StringArgumentType.getString(context, "objective"))))).then(CommandManager.argument("displayName", TextArgumentType.text()).executes(context -> ScoreboardCommand.executeAddObjective((ServerCommandSource)context.getSource(), StringArgumentType.getString(context, "objective"), ScoreboardCriterionArgumentType.getCriterion(context, "criteria"), TextArgumentType.getTextArgument(context, "displayName")))))))).then(CommandManager.literal("modify").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("displayname").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("displayName", TextArgumentType.text()).executes(context -> ScoreboardCommand.executeModifyObjective((ServerCommandSource)context.getSource(), ScoreboardObjectiveArgumentType.getObjective(context, "objective"), TextArgumentType.getTextArgument(context, "displayName")))))).then(ScoreboardCommand.makeRenderTypeArguments())))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeRemoveObjective((ServerCommandSource)context.getSource(), ScoreboardObjectiveArgumentType.getObjective(context, "objective")))))).then(CommandManager.literal("setdisplay").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("slot", ScoreboardSlotArgumentType.scoreboardSlot()).executes(context -> ScoreboardCommand.executeClearDisplay((ServerCommandSource)context.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(context, "slot")))).then(CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeSetDisplay((ServerCommandSource)context.getSource(), ScoreboardSlotArgumentType.getScoreboardSlot(context, "slot"), ScoreboardObjectiveArgumentType.getObjective(context, "objective")))))))).then(((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("players").then((ArgumentBuilder<ServerCommandSource, ?>)((LiteralArgumentBuilder)CommandManager.literal("list").executes(context -> ScoreboardCommand.executeListPlayers((ServerCommandSource)context.getSource()))).then(CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).executes(context -> ScoreboardCommand.executeListScores((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreHolder(context, "target")))))).then(CommandManager.literal("set").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer()).executes(context -> ScoreboardCommand.executeSet((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("get").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeGet((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreHolder(context, "target"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("add").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer(0)).executes(context -> ScoreboardCommand.executeAdd((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("remove").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("score", IntegerArgumentType.integer(0)).executes(context -> ScoreboardCommand.executeRemove((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "objective"), IntegerArgumentType.getInteger(context, "score")))))))).then(CommandManager.literal("reset").then((ArgumentBuilder<ServerCommandSource, ?>)((RequiredArgumentBuilder)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).executes(context -> ScoreboardCommand.executeReset((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets")))).then(CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeReset((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("enable").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective()).suggests((context, builder) -> ScoreboardCommand.suggestDisabled((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), builder)).executes(context -> ScoreboardCommand.executeEnable((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getObjective(context, "objective"))))))).then(CommandManager.literal("operation").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("targetObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("operation", OperationArgumentType.operation()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("source", ScoreHolderArgumentType.scoreHolders()).suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()).executes(context -> ScoreboardCommand.executeOperation((ServerCommandSource)context.getSource(), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "targets"), ScoreboardObjectiveArgumentType.getWritableObjective(context, "targetObjective"), OperationArgumentType.getOperation(context, "operation"), ScoreHolderArgumentType.getScoreboardScoreHolders(context, "source"), ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective")))))))))));
     }
 
     private static LiteralArgumentBuilder<ServerCommandSource> makeRenderTypeArguments() {
@@ -79,7 +79,7 @@ public class ScoreboardCommand {
             throw PLAYERS_GET_NULL_EXCEPTION.create(objective.getName(), target);
         }
         ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(target, objective);
-        source.sendFeedback(Text.method_43469("commands.scoreboard.players.get.success", target, scoreboardPlayerScore.getScore(), objective.toHoverableText()), false);
+        source.sendFeedback(Text.translatable("commands.scoreboard.players.get.success", target, scoreboardPlayerScore.getScore(), objective.toHoverableText()), false);
         return scoreboardPlayerScore.getScore();
     }
 
@@ -95,9 +95,9 @@ public class ScoreboardCommand {
             i += scoreboardPlayerScore.getScore();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), targets.iterator().next(), i), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), targets.iterator().next(), i), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.operation.success.multiple", targetObjective.toHoverableText(), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.operation.success.multiple", targetObjective.toHoverableText(), targets.size()), true);
         }
         return i;
     }
@@ -118,9 +118,9 @@ public class ScoreboardCommand {
             throw PLAYERS_ENABLE_FAILED_EXCEPTION.create();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), targets.iterator().next()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), targets.iterator().next()), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.enable.success.multiple", objective.toHoverableText(), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.enable.success.multiple", objective.toHoverableText(), targets.size()), true);
         }
         return i;
     }
@@ -131,9 +131,9 @@ public class ScoreboardCommand {
             scoreboard.resetPlayerScore(string, null);
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.reset.all.single", targets.iterator().next()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.all.single", targets.iterator().next()), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.reset.all.multiple", targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.all.multiple", targets.size()), true);
         }
         return targets.size();
     }
@@ -144,9 +144,9 @@ public class ScoreboardCommand {
             scoreboard.resetPlayerScore(string, objective);
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), targets.iterator().next()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), targets.iterator().next()), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.reset.specific.multiple", objective.toHoverableText(), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.specific.multiple", objective.toHoverableText(), targets.size()), true);
         }
         return targets.size();
     }
@@ -158,9 +158,9 @@ public class ScoreboardCommand {
             scoreboardPlayerScore.setScore(score);
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.set.success.single", objective.toHoverableText(), targets.iterator().next(), score), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.set.success.single", objective.toHoverableText(), targets.iterator().next(), score), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.set.success.multiple", objective.toHoverableText(), targets.size(), score), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.set.success.multiple", objective.toHoverableText(), targets.size(), score), true);
         }
         return score * targets.size();
     }
@@ -174,9 +174,9 @@ public class ScoreboardCommand {
             i += scoreboardPlayerScore.getScore();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.add.success.multiple", score, objective.toHoverableText(), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.add.success.multiple", score, objective.toHoverableText(), targets.size()), true);
         }
         return i;
     }
@@ -190,9 +190,9 @@ public class ScoreboardCommand {
             i += scoreboardPlayerScore.getScore();
         }
         if (targets.size() == 1) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.remove.success.multiple", score, objective.toHoverableText(), targets.size()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.remove.success.multiple", score, objective.toHoverableText(), targets.size()), true);
         }
         return i;
     }
@@ -200,9 +200,9 @@ public class ScoreboardCommand {
     private static int executeListPlayers(ServerCommandSource source) {
         Collection<String> collection = source.getServer().getScoreboard().getKnownPlayers();
         if (collection.isEmpty()) {
-            source.sendFeedback(Text.method_43471("commands.scoreboard.players.list.empty"), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.list.empty"), false);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
         }
         return collection.size();
     }
@@ -210,11 +210,11 @@ public class ScoreboardCommand {
     private static int executeListScores(ServerCommandSource source, String target) {
         Map<ScoreboardObjective, ScoreboardPlayerScore> map = source.getServer().getScoreboard().getPlayerObjectives(target);
         if (map.isEmpty()) {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.list.entity.empty", target), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.list.entity.empty", target), false);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.players.list.entity.success", target, map.size()), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.players.list.entity.success", target, map.size()), false);
             for (Map.Entry<ScoreboardObjective, ScoreboardPlayerScore> entry : map.entrySet()) {
-                source.sendFeedback(Text.method_43469("commands.scoreboard.players.list.entity.entry", entry.getKey().toHoverableText(), entry.getValue().getScore()), false);
+                source.sendFeedback(Text.translatable("commands.scoreboard.players.list.entity.entry", entry.getKey().toHoverableText(), entry.getValue().getScore()), false);
             }
         }
         return map.size();
@@ -226,7 +226,7 @@ public class ScoreboardCommand {
             throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
         }
         ((Scoreboard)scoreboard).setObjectiveSlot(slot, null);
-        source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
+        source.sendFeedback(Text.translatable("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
         return 0;
     }
 
@@ -236,14 +236,14 @@ public class ScoreboardCommand {
             throw OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION.create();
         }
         ((Scoreboard)scoreboard).setObjectiveSlot(slot, objective);
-        source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true);
+        source.sendFeedback(Text.translatable("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true);
         return 0;
     }
 
     private static int executeModifyObjective(ServerCommandSource source, ScoreboardObjective objective, Text displayName) {
         if (!objective.getDisplayName().equals(displayName)) {
             objective.setDisplayName(displayName);
-            source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.modify.displayname", objective.getName(), objective.toHoverableText()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.objectives.modify.displayname", objective.getName(), objective.toHoverableText()), true);
         }
         return 0;
     }
@@ -251,7 +251,7 @@ public class ScoreboardCommand {
     private static int executeModifyRenderType(ServerCommandSource source, ScoreboardObjective objective, ScoreboardCriterion.RenderType type) {
         if (objective.getRenderType() != type) {
             objective.setRenderType(type);
-            source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.modify.rendertype", objective.toHoverableText()), true);
+            source.sendFeedback(Text.translatable("commands.scoreboard.objectives.modify.rendertype", objective.toHoverableText()), true);
         }
         return 0;
     }
@@ -259,7 +259,7 @@ public class ScoreboardCommand {
     private static int executeRemoveObjective(ServerCommandSource source, ScoreboardObjective objective) {
         ServerScoreboard scoreboard = source.getServer().getScoreboard();
         scoreboard.removeObjective(objective);
-        source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.remove.success", objective.toHoverableText()), true);
+        source.sendFeedback(Text.translatable("commands.scoreboard.objectives.remove.success", objective.toHoverableText()), true);
         return scoreboard.getObjectives().size();
     }
 
@@ -270,16 +270,16 @@ public class ScoreboardCommand {
         }
         scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
         ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
-        source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
+        source.sendFeedback(Text.translatable("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
         return scoreboard.getObjectives().size();
     }
 
     private static int executeListObjectives(ServerCommandSource source) {
         Collection<ScoreboardObjective> collection = source.getServer().getScoreboard().getObjectives();
         if (collection.isEmpty()) {
-            source.sendFeedback(Text.method_43471("commands.scoreboard.objectives.list.empty"), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.objectives.list.empty"), false);
         } else {
-            source.sendFeedback(Text.method_43469("commands.scoreboard.objectives.list.success", collection.size(), Texts.join(collection, ScoreboardObjective::toHoverableText)), false);
+            source.sendFeedback(Text.translatable("commands.scoreboard.objectives.list.success", collection.size(), Texts.join(collection, ScoreboardObjective::toHoverableText)), false);
         }
         return collection.size();
     }

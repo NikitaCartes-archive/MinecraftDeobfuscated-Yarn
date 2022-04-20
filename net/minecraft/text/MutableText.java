@@ -7,57 +7,61 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
-import net.minecraft.class_7417;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Language;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A text with mutation operations.
+ * The text implementation, with mutation operations.
  */
 public class MutableText
 implements Text {
-    private final class_7417 field_39005;
-    private final List<Text> field_39006;
-    private Style field_39007;
-    private OrderedText field_39008 = OrderedText.EMPTY;
+    private final TextContent content;
+    private final List<Text> siblings;
+    private Style style;
+    private OrderedText ordered = OrderedText.EMPTY;
     @Nullable
-    private Language field_39009;
+    private Language language;
 
-    MutableText(class_7417 arg, List<Text> list, Style style) {
-        this.field_39005 = arg;
-        this.field_39006 = list;
-        this.field_39007 = style;
+    MutableText(TextContent content, List<Text> siblings, Style style) {
+        this.content = content;
+        this.siblings = siblings;
+        this.style = style;
     }
 
-    public static MutableText method_43477(class_7417 arg) {
-        return new MutableText(arg, Lists.newArrayList(), Style.EMPTY);
+    /**
+     * Creates a piece of mutable text with the given content, with no sibling
+     * and style.
+     */
+    public static MutableText of(TextContent content) {
+        return new MutableText(content, Lists.newArrayList(), Style.EMPTY);
     }
 
     @Override
-    public class_7417 asString() {
-        return this.field_39005;
+    public TextContent getContent() {
+        return this.content;
     }
 
     @Override
     public List<Text> getSiblings() {
-        return this.field_39006;
+        return this.siblings;
     }
 
     /**
      * Sets the style of this text.
      */
     public MutableText setStyle(Style style) {
-        this.field_39007 = style;
+        this.style = style;
         return this;
     }
 
     @Override
     public Style getStyle() {
-        return this.field_39007;
+        return this.style;
     }
 
     /**
@@ -66,7 +70,7 @@ implements Text {
      * @param text the literal text content
      */
     public MutableText append(String text) {
-        return this.append(Text.method_43470(text));
+        return this.append(Text.literal(text));
     }
 
     /**
@@ -75,7 +79,7 @@ implements Text {
      * @param text the sibling
      */
     public MutableText append(Text text) {
-        this.field_39006.add(text);
+        this.siblings.add(text);
         return this;
     }
 
@@ -128,11 +132,11 @@ implements Text {
     @Override
     public OrderedText asOrderedText() {
         Language language = Language.getInstance();
-        if (this.field_39009 != language) {
-            this.field_39008 = language.reorder(this);
-            this.field_39009 = language;
+        if (this.language != language) {
+            this.ordered = language.reorder(this);
+            this.language = language;
         }
-        return this.field_39008;
+        return this.ordered;
     }
 
     public boolean equals(Object object) {
@@ -141,32 +145,32 @@ implements Text {
         }
         if (object instanceof MutableText) {
             MutableText mutableText = (MutableText)object;
-            return this.field_39005.equals(mutableText.field_39005) && this.field_39007.equals(mutableText.field_39007) && this.field_39006.equals(mutableText.field_39006);
+            return this.content.equals(mutableText.content) && this.style.equals(mutableText.style) && this.siblings.equals(mutableText.siblings);
         }
         return false;
     }
 
     public int hashCode() {
-        return Objects.hash(this.field_39005, this.field_39007, this.field_39006);
+        return Objects.hash(this.content, this.style, this.siblings);
     }
 
     public String toString() {
         boolean bl2;
-        StringBuilder stringBuilder = new StringBuilder(this.field_39005.toString());
-        boolean bl = !this.field_39007.isEmpty();
-        boolean bl3 = bl2 = !this.field_39006.isEmpty();
+        StringBuilder stringBuilder = new StringBuilder(this.content.toString());
+        boolean bl = !this.style.isEmpty();
+        boolean bl3 = bl2 = !this.siblings.isEmpty();
         if (bl || bl2) {
             stringBuilder.append('[');
             if (bl) {
                 stringBuilder.append("style=");
-                stringBuilder.append(this.field_39007);
+                stringBuilder.append(this.style);
             }
             if (bl && bl2) {
                 stringBuilder.append(", ");
             }
             if (bl2) {
                 stringBuilder.append("siblings=");
-                stringBuilder.append(this.field_39006);
+                stringBuilder.append(this.siblings);
             }
             stringBuilder.append(']');
         }

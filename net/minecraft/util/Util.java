@@ -386,40 +386,54 @@ public class Util {
      * waiting for other input futures.
      * 
      * @return the combined future
+     * @see #combineCancellable(List)
      * @see #combineSafe(List)
      * 
      * @param futures the completable futures to combine
      */
     public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures) {
         CompletableFuture completableFuture = new CompletableFuture();
-        return Util.method_43370(futures, completableFuture::completeExceptionally).applyToEither((CompletionStage)completableFuture, Function.identity());
+        return Util.combine(futures, completableFuture::completeExceptionally).applyToEither((CompletionStage)completableFuture, Function.identity());
     }
 
-    public static <V> CompletableFuture<List<V>> method_43373(List<? extends CompletableFuture<? extends V>> list) {
+    /**
+     * Combines a list of {@code futures} into one future that holds a list
+     * of their results.
+     * 
+     * <p>The returned future is fail-fast; if any of the input futures fails,
+     * this returned future will be immediately completed exceptionally than
+     * waiting for other input futures. Additionally, all other futures will
+     * be canceled.
+     * 
+     * @return the combined future
+     * @see #combine(List)
+     * @see #combineSafe(List)
+     */
+    public static <V> CompletableFuture<List<V>> combineCancellable(List<? extends CompletableFuture<? extends V>> futures) {
         CompletableFuture completableFuture = new CompletableFuture();
-        return Util.method_43370(list, throwable -> {
-            for (CompletableFuture completableFuture2 : list) {
+        return Util.combine(futures, throwable -> {
+            for (CompletableFuture completableFuture2 : futures) {
                 completableFuture2.cancel(true);
             }
             completableFuture.completeExceptionally((Throwable)throwable);
         }).applyToEither((CompletionStage)completableFuture, Function.identity());
     }
 
-    private static <V> CompletableFuture<List<V>> method_43370(List<? extends CompletableFuture<? extends V>> list, Consumer<Throwable> consumer) {
-        ArrayList list2 = Lists.newArrayListWithCapacity(list.size());
-        CompletableFuture[] completableFutures = new CompletableFuture[list.size()];
-        list.forEach(completableFuture -> {
-            int i = list2.size();
-            list2.add(null);
-            completableFutures[i] = completableFuture.whenComplete((object, throwable) -> {
+    private static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures, Consumer<Throwable> exceptionHandler) {
+        ArrayList list = Lists.newArrayListWithCapacity(futures.size());
+        CompletableFuture[] completableFutures = new CompletableFuture[futures.size()];
+        futures.forEach(future -> {
+            int i = list.size();
+            list.add(null);
+            completableFutures[i] = future.whenComplete((value, throwable) -> {
                 if (throwable != null) {
-                    consumer.accept((Throwable)throwable);
+                    exceptionHandler.accept((Throwable)throwable);
                 } else {
-                    list2.set(i, object);
+                    list.set(i, value);
                 }
             });
         });
-        return CompletableFuture.allOf(completableFutures).thenApply(void_ -> list2);
+        return CompletableFuture.allOf(completableFutures).thenApply(void_ -> list);
     }
 
     public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> presentAction, Runnable elseAction) {

@@ -13,8 +13,8 @@ import net.minecraft.state.StateManager;
 @FunctionalInterface
 @Environment(value=EnvType.CLIENT)
 public interface MultipartModelSelector {
-    public static final MultipartModelSelector TRUE = stateManager -> blockState -> true;
-    public static final MultipartModelSelector FALSE = stateManager -> blockState -> false;
+    public static final MultipartModelSelector TRUE = stateFactory -> state -> true;
+    public static final MultipartModelSelector FALSE = stateFactory -> state -> false;
 
     public Predicate<BlockState> getPredicate(StateManager<Block, BlockState> var1);
 }

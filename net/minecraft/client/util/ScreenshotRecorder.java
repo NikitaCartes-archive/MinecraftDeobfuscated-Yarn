@@ -61,11 +61,11 @@ public class ScreenshotRecorder {
         Util.getIoWorkerExecutor().execute(() -> {
             try {
                 nativeImage.writeTo(file2);
-                MutableText text = Text.method_43470(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
-                messageReceiver.accept(Text.method_43469("screenshot.success", text));
+                MutableText text = Text.literal(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
+                messageReceiver.accept(Text.translatable("screenshot.success", text));
             } catch (Exception exception) {
                 LOGGER.warn("Couldn't save screenshot", exception);
-                messageReceiver.accept(Text.method_43469("screenshot.failure", exception.getMessage()));
+                messageReceiver.accept(Text.translatable("screenshot.failure", exception.getMessage()));
             } finally {
                 nativeImage.close();
             }

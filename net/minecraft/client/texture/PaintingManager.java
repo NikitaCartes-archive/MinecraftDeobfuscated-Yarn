@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.entity.decoration.painting.PaintingMotive;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -24,11 +24,11 @@ extends SpriteAtlasHolder {
 
     @Override
     protected Stream<Identifier> getSprites() {
-        return Stream.concat(Registry.PAINTING_MOTIVE.getIds().stream(), Stream.of(PAINTING_BACK_ID));
+        return Stream.concat(Registry.PAINTING_VARIANT.getIds().stream(), Stream.of(PAINTING_BACK_ID));
     }
 
-    public Sprite getPaintingSprite(PaintingMotive motive) {
-        return this.getSprite(Registry.PAINTING_MOTIVE.getId(motive));
+    public Sprite getPaintingSprite(PaintingVariant motive) {
+        return this.getSprite(Registry.PAINTING_VARIANT.getId(motive));
     }
 
     public Sprite getBackSprite() {

@@ -64,9 +64,9 @@ implements ArgumentType<MessageFormat> {
 
         public Text format(ServerCommandSource source, boolean canUseSelectors) throws CommandSyntaxException {
             if (this.selectors.length == 0 || !canUseSelectors) {
-                return Text.method_43470(this.contents);
+                return Text.literal(this.contents);
             }
-            MutableText mutableText = Text.method_43470(this.contents.substring(0, this.selectors[0].getStart()));
+            MutableText mutableText = Text.literal(this.contents.substring(0, this.selectors[0].getStart()));
             int i = this.selectors[0].getStart();
             for (MessageSelector messageSelector : this.selectors) {
                 Text text = messageSelector.format(source);

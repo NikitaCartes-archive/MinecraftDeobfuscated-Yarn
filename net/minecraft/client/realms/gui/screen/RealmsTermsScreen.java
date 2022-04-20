@@ -28,9 +28,9 @@ import org.slf4j.Logger;
 public class RealmsTermsScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Text TITLE = Text.method_43471("mco.terms.title");
-    private static final Text SENTENCE_ONE_TEXT = Text.method_43471("mco.terms.sentence.1");
-    private static final Text SENTENCE_TWO_TEXT = Text.method_43470(" ").append(Text.method_43471("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
+    private static final Text TITLE = Text.translatable("mco.terms.title");
+    private static final Text SENTENCE_ONE_TEXT = Text.translatable("mco.terms.sentence.1");
+    private static final Text SENTENCE_TWO_TEXT = Text.literal(" ").append(Text.translatable("mco.terms.sentence.2").fillStyle(Style.EMPTY.withUnderline(true)));
     private final Screen parent;
     private final RealmsMainScreen mainScreen;
     private final RealmsServer realmsServer;
@@ -48,8 +48,8 @@ extends RealmsScreen {
     public void init() {
         this.client.keyboard.setRepeatEvents(true);
         int i = this.width / 4 - 2;
-        this.addDrawableChild(new ButtonWidget(this.width / 4, RealmsTermsScreen.row(12), i, 20, Text.method_43471("mco.terms.buttons.agree"), button -> this.agreedToTos()));
-        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, RealmsTermsScreen.row(12), i, 20, Text.method_43471("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent)));
+        this.addDrawableChild(new ButtonWidget(this.width / 4, RealmsTermsScreen.row(12), i, 20, Text.translatable("mco.terms.buttons.agree"), button -> this.agreedToTos()));
+        this.addDrawableChild(new ButtonWidget(this.width / 2 + 4, RealmsTermsScreen.row(12), i, 20, Text.translatable("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent)));
     }
 
     @Override

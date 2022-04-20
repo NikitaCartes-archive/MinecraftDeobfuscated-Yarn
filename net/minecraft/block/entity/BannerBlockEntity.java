@@ -77,7 +77,7 @@ implements Nameable {
         if (this.customName != null) {
             return this.customName;
         }
-        return Text.method_43471("block.minecraft.banner");
+        return Text.translatable("block.minecraft.banner");
     }
 
     @Override

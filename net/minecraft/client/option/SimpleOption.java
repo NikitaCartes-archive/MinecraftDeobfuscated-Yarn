@@ -154,7 +154,7 @@ public final class SimpleOption<T> {
     }
 
     public SimpleOption(String key, TooltipFactoryGetter<T> tooltipFactoryGetter, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, Codec<T> codec, T defaultValue, Consumer<T> changeCallback) {
-        this.text = Text.method_43471(key);
+        this.text = Text.translatable(key);
         this.tooltipFactoryGetter = tooltipFactoryGetter;
         this.textGetter = value -> valueTextGetter.toString(this.text, value);
         this.callbacks = callbacks;

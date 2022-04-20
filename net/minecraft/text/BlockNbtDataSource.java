@@ -7,19 +7,19 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.stream.Stream;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_7419;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.PosArgument;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.NbtDataSource;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
 
-public record BlockNbtText(String rawPos, @Nullable PosArgument pos) implements class_7419
+public record BlockNbtDataSource(String rawPos, @Nullable PosArgument pos) implements NbtDataSource
 {
-    public BlockNbtText(String rawPath) {
-        this(rawPath, BlockNbtText.parsePos(rawPath));
+    public BlockNbtDataSource(String rawPath) {
+        this(rawPath, BlockNbtDataSource.parsePos(rawPath));
     }
 
     @Nullable
@@ -32,11 +32,11 @@ public record BlockNbtText(String rawPos, @Nullable PosArgument pos) implements 
     }
 
     @Override
-    public Stream<NbtCompound> toNbt(ServerCommandSource serverCommandSource) {
+    public Stream<NbtCompound> get(ServerCommandSource source) {
         BlockEntity blockEntity;
         BlockPos blockPos;
         ServerWorld serverWorld;
-        if (this.pos != null && (serverWorld = serverCommandSource.getWorld()).canSetBlock(blockPos = this.pos.toAbsoluteBlockPos(serverCommandSource)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
+        if (this.pos != null && (serverWorld = source.getWorld()).canSetBlock(blockPos = this.pos.toAbsoluteBlockPos(source)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
             return Stream.of(blockEntity.createNbtWithIdentifyingData());
         }
         return Stream.empty();
@@ -56,9 +56,9 @@ public record BlockNbtText(String rawPos, @Nullable PosArgument pos) implements 
         if (this == object) {
             return true;
         }
-        if (!(object instanceof BlockNbtText)) return false;
-        BlockNbtText blockNbtText = (BlockNbtText)object;
-        if (!this.rawPos.equals(blockNbtText.rawPos)) return false;
+        if (!(object instanceof BlockNbtDataSource)) return false;
+        BlockNbtDataSource blockNbtDataSource = (BlockNbtDataSource)object;
+        if (!this.rawPos.equals(blockNbtDataSource.rawPos)) return false;
         return true;
     }
 

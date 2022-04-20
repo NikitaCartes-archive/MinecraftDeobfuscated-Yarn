@@ -33,7 +33,7 @@ implements DebugRenderer.Renderer {
     }
 
     public void addNeighborUpdate(long time, BlockPos pos) {
-        Map map = this.neighborUpdates.computeIfAbsent(time, long_ -> Maps.newHashMap());
+        Map map = this.neighborUpdates.computeIfAbsent(time, time2 -> Maps.newHashMap());
         int i = map.getOrDefault(pos, 0);
         map.put(pos, i + 1);
     }

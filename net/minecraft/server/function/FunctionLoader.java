@@ -87,7 +87,7 @@ implements ResourceReloader {
         CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
         CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", identifier -> identifier.getPath().endsWith(EXTENSION)), prepareExecutor).thenCompose(map -> {
             HashMap<Identifier, CompletableFuture<CommandFunction>> map2 = Maps.newHashMap();
-            ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.field_39003, null, null);
+            ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", ScreenTexts.EMPTY, null, null);
             for (Map.Entry entry : map.entrySet()) {
                 Identifier identifier = (Identifier)entry.getKey();
                 String string = identifier.getPath();

@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.data.TrackedDataHandler;
-import net.minecraft.entity.decoration.painting.PaintingMotive;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.item.ItemStack;
@@ -193,7 +193,7 @@ public class TrackedDataHandlerRegistry {
     public static final TrackedDataHandler<EntityPose> ENTITY_POSE = TrackedDataHandler.ofEnum(EntityPose.class);
     public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registry.CAT_VARIANT);
     public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registry.FROG_VARIANT);
-    public static final TrackedDataHandler<RegistryEntry<PaintingMotive>> field_39017 = TrackedDataHandler.of(Registry.PAINTING_MOTIVE.getIndexedEntries());
+    public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(Registry.PAINTING_VARIANT.getIndexedEntries());
 
     public static void register(TrackedDataHandler<?> handler) {
         DATA_HANDLERS.add(handler);
@@ -234,7 +234,7 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(CAT_VARIANT);
         TrackedDataHandlerRegistry.register(FROG_VARIANT);
         TrackedDataHandlerRegistry.register(OPTIONAL_GLOBAL_POS);
-        TrackedDataHandlerRegistry.register(field_39017);
+        TrackedDataHandlerRegistry.register(PAINTING_VARIANT);
     }
 }
 

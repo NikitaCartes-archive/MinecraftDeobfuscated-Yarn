@@ -33,7 +33,7 @@ extends LongRunningTask {
 
     @Override
     public void run() {
-        this.setTitle(Text.method_43471("mco.backup.restoring"));
+        this.setTitle(Text.translatable("mco.backup.restoring"));
         RealmsClient realmsClient = RealmsClient.createRealmsClient();
         for (int i = 0; i < 25; ++i) {
             try {

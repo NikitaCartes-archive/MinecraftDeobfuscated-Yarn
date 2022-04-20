@@ -31,8 +31,8 @@ public class BundleTutorial {
         if (this.toast != null) {
             this.manager.remove(this.toast);
         }
-        MutableText text = Text.method_43471("tutorial.bundleInsert.title");
-        MutableText text2 = Text.method_43471("tutorial.bundleInsert.description");
+        MutableText text = Text.translatable("tutorial.bundleInsert.title");
+        MutableText text2 = Text.translatable("tutorial.bundleInsert.description");
         this.toast = new TutorialToast(TutorialToast.Type.RIGHT_CLICK, text, text2, true);
         this.manager.add(this.toast, 160);
     }

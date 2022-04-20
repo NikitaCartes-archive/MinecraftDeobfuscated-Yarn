@@ -23,8 +23,8 @@ import net.minecraft.util.registry.RegistryEntry;
 public class CraftPlanksTutorialStepHandler
 implements TutorialStepHandler {
     private static final int DELAY = 1200;
-    private static final Text TITLE = Text.method_43471("tutorial.craft_planks.title");
-    private static final Text DESCRIPTION = Text.method_43471("tutorial.craft_planks.description");
+    private static final Text TITLE = Text.translatable("tutorial.craft_planks.title");
+    private static final Text DESCRIPTION = Text.translatable("tutorial.craft_planks.description");
     private final TutorialManager manager;
     private TutorialToast toast;
     private int ticks;

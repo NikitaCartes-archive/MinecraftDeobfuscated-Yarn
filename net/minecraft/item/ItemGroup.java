@@ -125,7 +125,7 @@ public abstract class ItemGroup {
     public ItemGroup(int index, String id) {
         this.index = index;
         this.id = id;
-        this.displayName = Text.method_43471("itemGroup." + id);
+        this.displayName = Text.translatable("itemGroup." + id);
         this.icon = ItemStack.EMPTY;
         ItemGroup.GROUPS[index] = this;
     }

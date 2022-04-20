@@ -12,7 +12,7 @@ public interface Errable {
     public void error(Text var1);
 
     default public void error(String errorMessage) {
-        this.error(Text.method_43470(errorMessage));
+        this.error(Text.literal(errorMessage));
     }
 }
 

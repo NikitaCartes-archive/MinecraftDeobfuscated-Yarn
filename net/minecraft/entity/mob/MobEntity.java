@@ -1035,7 +1035,7 @@ extends LivingEntity {
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         AbstractRandom abstractRandom = world.getRandom();
-        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", abstractRandom.method_43385(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", abstractRandom.nextPredictable(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.MULTIPLY_BASE));
         if (abstractRandom.nextFloat() < 0.05f) {
             this.setLeftHanded(true);
         } else {

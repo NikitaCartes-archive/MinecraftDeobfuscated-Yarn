@@ -36,7 +36,7 @@ extends WallStandingBlockItem {
                 string = nbtCompound2.getString("Name");
             }
             if (string != null) {
-                return Text.method_43469(this.getTranslationKey() + ".named", string);
+                return Text.translatable(this.getTranslationKey() + ".named", string);
             }
         }
         return super.getName(stack);
