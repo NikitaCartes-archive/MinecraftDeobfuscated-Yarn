@@ -107,9 +107,9 @@ public class AllayBrain {
 		Brain<?> brain = allay.getBrain();
 		Optional<GlobalPos> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
 		if (optional.isPresent()) {
-			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
-			if (shouldGoTowardsNoteBlock(allay, brain, blockPos)) {
-				return Optional.of(new BlockPosLookTarget(blockPos.up()));
+			GlobalPos globalPos = (GlobalPos)optional.get();
+			if (shouldGoTowardsNoteBlock(allay, brain, globalPos)) {
+				return Optional.of(new BlockPosLookTarget(globalPos.getPos().up()));
 			}
 
 			brain.forget(MemoryModuleType.LIKED_NOTEBLOCK);
@@ -118,9 +118,10 @@ public class AllayBrain {
 		return getLikedLookTarget(allay);
 	}
 
-	private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, BlockPos pos) {
+	private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, GlobalPos pos) {
 		Optional<Integer> optional = brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS);
-		return allay.getWorld().getBlockState(pos).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
+		World world = allay.getWorld();
+		return world.getRegistryKey() == pos.getDimension() && world.getBlockState(pos.getPos()).isOf(Blocks.NOTE_BLOCK) && optional.isPresent();
 	}
 
 	private static Optional<LookTarget> getLikedLookTarget(LivingEntity allay) {

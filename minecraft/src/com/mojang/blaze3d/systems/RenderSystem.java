@@ -933,7 +933,7 @@ public class RenderSystem {
 		private final int increment;
 		private final RenderSystem.IndexBuffer.IndexMapper indexMapper;
 		private int id;
-		private VertexFormat.IntType elementFormat = VertexFormat.IntType.BYTE;
+		private VertexFormat.IndexType indexType = VertexFormat.IndexType.BYTE;
 		private int size;
 
 		IndexBuffer(int sizeMultiplier, int increment, RenderSystem.IndexBuffer.IndexMapper indexMapper) {
@@ -959,14 +959,14 @@ public class RenderSystem {
 			if (!this.isSizeLessThanOrEqual(newSize)) {
 				newSize = MathHelper.roundUpToMultiple(newSize * 2, this.increment);
 				RenderSystem.LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", this.size, newSize);
-				VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
-				int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
+				VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(newSize);
+				int i = MathHelper.roundUpToMultiple(newSize * indexType.size, 4);
 				GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, (long)i, GlConst.GL_DYNAMIC_DRAW);
 				ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
 				if (byteBuffer == null) {
 					throw new RuntimeException("Failed to map GL buffer");
 				} else {
-					this.elementFormat = intType;
+					this.indexType = indexType;
 					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
 
 					for (int j = 0; j < newSize; j += this.increment) {
@@ -980,7 +980,7 @@ public class RenderSystem {
 		}
 
 		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
-			switch (this.elementFormat) {
+			switch (this.indexType) {
 				case BYTE:
 					return index -> indicesBuffer.put((byte)index);
 				case SHORT:
@@ -991,8 +991,8 @@ public class RenderSystem {
 			}
 		}
 
-		public VertexFormat.IntType getElementFormat() {
-			return this.elementFormat;
+		public VertexFormat.IndexType getIndexType() {
+			return this.indexType;
 		}
 
 		@Environment(EnvType.CLIENT)

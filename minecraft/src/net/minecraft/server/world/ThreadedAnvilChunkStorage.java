@@ -165,7 +165,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.world = world;
 		this.chunkGenerator = chunkGenerator;
 		if (chunkGenerator instanceof NoiseChunkGenerator noiseChunkGenerator) {
-			this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.method_41541().value(), world.getRegistryManager().get(Registry.NOISE_WORLDGEN), world.getSeed());
+			this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.method_41541().value(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
 		} else {
 			this.noiseConfig = NoiseConfig.create(world.getRegistryManager(), ChunkGeneratorSettings.OVERWORLD, world.getSeed());
 		}

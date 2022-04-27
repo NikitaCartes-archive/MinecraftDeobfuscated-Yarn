@@ -150,42 +150,44 @@ public class Main {
 				SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(
 					dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel
 				);
-				saveLoader = (SaveLoader)SaveLoader.load(
-						serverConfig,
-						(resourceManager, dataPackSettingsx) -> {
-							DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
-							DynamicOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
-							SaveProperties savePropertiesx = session.readLevelProperties(dynamicOps, dataPackSettingsx, mutable.getRegistryLifecycle());
-							if (savePropertiesx != null) {
-								return Pair.of(savePropertiesx, mutable.toImmutable());
-							} else {
-								LevelInfo levelInfo;
-								GeneratorOptions generatorOptions;
-								if (optionSet.has(optionSpec3)) {
-									levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-									generatorOptions = WorldPresets.createDemoOptions(mutable);
-								} else {
-									ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
-									levelInfo = new LevelInfo(
-										serverPropertiesHandler.levelName,
-										serverPropertiesHandler.gameMode,
-										serverPropertiesHandler.hardcore,
-										serverPropertiesHandler.difficulty,
-										false,
-										new GameRules(),
-										dataPackSettingsx
-									);
-									generatorOptions = optionSet.has(optionSpec4)
-										? serverPropertiesHandler.getGeneratorOptions(mutable).withBonusChest()
-										: serverPropertiesHandler.getGeneratorOptions(mutable);
-								}
+				saveLoader = (SaveLoader)Util.waitAndApply(
+						executor -> SaveLoader.load(
+								serverConfig,
+								(resourceManager, dataPackSettingsx) -> {
+									DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
+									DynamicOps<NbtElement> dynamicOps = RegistryOps.ofLoaded(NbtOps.INSTANCE, mutable, resourceManager);
+									SaveProperties savePropertiesx = session.readLevelProperties(dynamicOps, dataPackSettingsx, mutable.getRegistryLifecycle());
+									if (savePropertiesx != null) {
+										return Pair.of(savePropertiesx, mutable.toImmutable());
+									} else {
+										LevelInfo levelInfo;
+										GeneratorOptions generatorOptions;
+										if (optionSet.has(optionSpec3)) {
+											levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
+											generatorOptions = WorldPresets.createDemoOptions(mutable);
+										} else {
+											ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
+											levelInfo = new LevelInfo(
+												serverPropertiesHandler.levelName,
+												serverPropertiesHandler.gameMode,
+												serverPropertiesHandler.hardcore,
+												serverPropertiesHandler.difficulty,
+												false,
+												new GameRules(),
+												dataPackSettingsx
+											);
+											generatorOptions = optionSet.has(optionSpec4)
+												? serverPropertiesHandler.getGeneratorOptions(mutable).withBonusChest()
+												: serverPropertiesHandler.getGeneratorOptions(mutable);
+										}
 
-								LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
-								return Pair.of(levelProperties, mutable.toImmutable());
-							}
-						},
-						Util.getMainWorkerExecutor(),
-						Runnable::run
+										LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
+										return Pair.of(levelProperties, mutable.toImmutable());
+									}
+								},
+								Util.getMainWorkerExecutor(),
+								executor
+							)
 					)
 					.get();
 			} catch (Exception var38) {

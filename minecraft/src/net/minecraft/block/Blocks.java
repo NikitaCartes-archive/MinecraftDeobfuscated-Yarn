@@ -3267,7 +3267,7 @@ public class Blocks {
 			8
 		)
 	);
-	public static final Block SCULK = register("sculk", new SculkBlock(AbstractBlock.Settings.of(Material.SCULK).strength(0.6F).sounds(BlockSoundGroup.SCULK)));
+	public static final Block SCULK = register("sculk", new SculkBlock(AbstractBlock.Settings.of(Material.SCULK).strength(0.2F).sounds(BlockSoundGroup.SCULK)));
 	public static final Block SCULK_VEIN = register(
 		"sculk_vein", new SculkVeinBlock(AbstractBlock.Settings.of(Material.SCULK).noCollision().strength(0.2F).sounds(BlockSoundGroup.SCULK_VEIN))
 	);

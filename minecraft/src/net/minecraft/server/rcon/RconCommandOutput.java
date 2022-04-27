@@ -1,6 +1,5 @@
 package net.minecraft.server.rcon;
 
-import java.util.UUID;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -33,7 +32,7 @@ public class RconCommandOutput implements CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendMessage(Text message) {
 		this.buffer.append(message.getString());
 	}
 

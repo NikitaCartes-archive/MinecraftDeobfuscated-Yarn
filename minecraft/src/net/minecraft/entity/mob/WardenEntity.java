@@ -63,10 +63,10 @@ import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.event.listener.VibrationListener;
 import org.slf4j.Logger;
 
-public class WardenEntity extends HostileEntity implements SculkSensorListener.Callback {
+public class WardenEntity extends HostileEntity implements VibrationListener.Callback {
 	private static final Logger field_38138 = LogUtils.getLogger();
 	private static final int field_38139 = 16;
 	private static final int field_38142 = 40;
@@ -99,14 +99,12 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	public AnimationState diggingAnimationState = new AnimationState();
 	public AnimationState attackingAnimationState = new AnimationState();
 	public AnimationState chargingSonicBoomAnimationState = new AnimationState();
-	private final EntityGameEventHandler<SculkSensorListener> gameEventHandler;
+	private final EntityGameEventHandler<VibrationListener> gameEventHandler;
 	private WardenAngerManager angerManager = new WardenAngerManager(Collections.emptyList());
 
 	public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
-		this.gameEventHandler = new EntityGameEventHandler<>(
-			new SculkSensorListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0)
-		);
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0));
 		this.experiencePoints = 5;
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
@@ -208,7 +206,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 	public boolean tryAttack(Entity target) {
 		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		this.playSound(SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, 10.0F, this.getSoundPitch());
-		SonicBoomTask.cooldown(this, 100);
+		SonicBoomTask.cooldown(this, 40);
 		return super.tryAttack(target);
 	}
 
@@ -401,7 +399,7 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 			.encodeStart(NbtOps.INSTANCE, this.angerManager)
 			.resultOrPartial(field_38138::error)
 			.ifPresent(angerNbt -> nbt.put("anger", angerNbt));
-		SculkSensorListener.createCodec(this)
+		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
 			.resultOrPartial(field_38138::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
@@ -419,10 +417,10 @@ public class WardenEntity extends HostileEntity implements SculkSensorListener.C
 		}
 
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-			SculkSensorListener.createCodec(this)
+			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(field_38138::error)
-				.ifPresent(sculkSensorListener -> this.gameEventHandler.setListener(sculkSensorListener, this.world));
+				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
 		}
 	}
 

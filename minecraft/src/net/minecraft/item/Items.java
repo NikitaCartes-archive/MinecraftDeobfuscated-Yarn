@@ -1556,6 +1556,7 @@ public class Items {
 	public static final Item PIGLIN_BANNER_PATTERN = register(
 		"piglin_banner_pattern", new BannerPatternItem(BannerPattern.PIGLIN, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
+	public static final Item GOAT_HORN = register("goat_horn", new GoatHornItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1)));
 	public static final Item COMPOSTER = register(Blocks.COMPOSTER, ItemGroup.DECORATIONS);
 	public static final Item BARREL = register(Blocks.BARREL, ItemGroup.DECORATIONS);
 	public static final Item SMOKER = register(Blocks.SMOKER, ItemGroup.DECORATIONS);

@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
@@ -23,7 +22,6 @@ import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeHelper;
-import net.minecraft.util.Util;
 import net.minecraft.util.profiler.ProfileResult;
 import org.slf4j.Logger;
 
@@ -123,7 +121,7 @@ public class DebugCommand {
 		return i;
 	}
 
-	static class Tracer implements CommandOutput, CommandFunctionManager.Tracer {
+	static class Tracer implements CommandFunctionManager.Tracer, CommandOutput {
 		public static final int MARGIN = 1;
 		private final PrintWriter writer;
 		private int lastIndentWidth;
@@ -194,15 +192,10 @@ public class DebugCommand {
 		}
 
 		@Override
-		public void sendSystemMessage(Text message, UUID sender) {
+		public void sendMessage(Text message) {
 			this.writeNewLine();
 			this.writeIndentWithoutRememberingWidth(this.lastIndentWidth + 1);
 			this.writer.print("[M] ");
-			if (sender != Util.NIL_UUID) {
-				this.writer.print(sender);
-				this.writer.print(": ");
-			}
-
 			this.writer.println(message.getString());
 		}
 

@@ -159,6 +159,14 @@ public class BlockTagProvider extends AbstractTagProvider<Block> {
 			.addTag(BlockTags.JUNGLE_LOGS)
 			.addTag(BlockTags.SPRUCE_LOGS)
 			.addTag(BlockTags.MANGROVE_LOGS);
+		this.getOrCreateTagBuilder(BlockTags.OVERWORLD_NATURAL_LOGS)
+			.add(Blocks.ACACIA_LOG)
+			.add(Blocks.BIRCH_LOG)
+			.add(Blocks.OAK_LOG)
+			.add(Blocks.JUNGLE_LOG)
+			.add(Blocks.SPRUCE_LOG)
+			.add(Blocks.DARK_OAK_LOG)
+			.add(Blocks.MANGROVE_LOG);
 		this.getOrCreateTagBuilder(BlockTags.LOGS).addTag(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.CRIMSON_STEMS).addTag(BlockTags.WARPED_STEMS);
 		this.getOrCreateTagBuilder(BlockTags.ANVIL).add(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS)
@@ -1416,7 +1424,8 @@ public class BlockTagProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.DEEPSLATE_TILES)
 			.add(Blocks.COBBLED_DEEPSLATE)
 			.add(Blocks.CRACKED_DEEPSLATE_BRICKS)
-			.add(Blocks.CRACKED_DEEPSLATE_TILES);
+			.add(Blocks.CRACKED_DEEPSLATE_TILES)
+			.add(Blocks.POLISHED_DEEPSLATE);
 		this.getOrCreateTagBuilder(BlockTags.CONVERTABLE_TO_MUD).add(Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.ANCIENT_CITY_REPLACEABLE)
 			.add(Blocks.DEEPSLATE)
@@ -1446,5 +1455,12 @@ public class BlockTagProvider extends AbstractTagProvider<Block> {
 			.add(Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS, Blocks.MANGROVE_ROOTS, Blocks.MOSS_CARPET, Blocks.VINE, Blocks.MANGROVE_PROPAGULE, Blocks.SNOW);
 		this.getOrCreateTagBuilder(BlockTags.DEAD_BUSH_MAY_PLACE_ON).addTag(BlockTags.SAND).addTag(BlockTags.TERRACOTTA).addTag(BlockTags.DIRT);
 		this.getOrCreateTagBuilder(BlockTags.COMPLETES_FIND_TREE_TUTORIAL).addTag(BlockTags.LOGS).addTag(BlockTags.LEAVES).addTag(BlockTags.WART_BLOCKS);
+		this.getOrCreateTagBuilder(BlockTags.SNAPS_GOAT_HORN)
+			.addTag(BlockTags.OVERWORLD_NATURAL_LOGS)
+			.add(Blocks.STONE)
+			.add(Blocks.PACKED_ICE)
+			.add(Blocks.IRON_ORE)
+			.add(Blocks.COAL_ORE)
+			.add(Blocks.EMERALD_ORE);
 	}
 }

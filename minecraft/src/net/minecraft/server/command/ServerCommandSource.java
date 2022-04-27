@@ -23,7 +23,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -372,7 +371,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendFeedback(Text message, boolean broadcastToOps) {
 		if (this.output.shouldReceiveFeedback() && !this.silent) {
-			this.output.sendSystemMessage(message, Util.NIL_UUID);
+			this.output.sendMessage(message);
 		}
 
 		if (broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
@@ -385,19 +384,19 @@ public class ServerCommandSource implements CommandSource {
 		if (this.server.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 			for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.server.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.sendSystemMessage(text, Util.NIL_UUID);
+					serverPlayerEntity.sendMessage(text);
 				}
 			}
 		}
 
 		if (this.output != this.server && this.server.getGameRules().getBoolean(GameRules.LOG_ADMIN_COMMANDS)) {
-			this.server.sendSystemMessage(text, Util.NIL_UUID);
+			this.server.sendMessage(text);
 		}
 	}
 
 	public void sendError(Text message) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.sendSystemMessage(Text.empty().append(message).formatted(Formatting.RED), Util.NIL_UUID);
+			this.output.sendMessage(Text.empty().append(message).formatted(Formatting.RED));
 		}
 	}
 

@@ -1,5 +1,6 @@
 package net.minecraft.test;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
@@ -8,6 +9,7 @@ import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
@@ -63,24 +65,19 @@ public class TestServer extends MinecraftServer {
 			SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, 4);
 
 			try {
-				SaveLoader saveLoader = (SaveLoader)SaveLoader.load(
-						serverConfig,
-						(resourceManager, dataPackSettings) -> {
-							DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
-							GeneratorOptions generatorOptions = immutable.get(Registry.WORLD_PRESET_WORLDGEN)
-								.entryOf(WorldPresets.FLAT)
-								.value()
-								.createGeneratorOptions(0L, false, false);
-							SaveProperties saveProperties = new LevelProperties(TEST_LEVEL, generatorOptions, Lifecycle.stable());
-							return Pair.of(saveProperties, immutable);
-						},
-						Util.getMainWorkerExecutor(),
-						Runnable::run
-					)
-					.get();
+				LOGGER.debug("Starting resource loading");
+				Stopwatch stopwatch = Stopwatch.createStarted();
+				SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(executor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
+						DynamicRegistryManager.Immutable immutable = (DynamicRegistryManager.Immutable)DynamicRegistryManager.BUILTIN.get();
+						GeneratorOptions generatorOptions = immutable.get(Registry.WORLD_PRESET_KEY).entryOf(WorldPresets.FLAT).value().createGeneratorOptions(0L, false, false);
+						SaveProperties saveProperties = new LevelProperties(TEST_LEVEL, generatorOptions, Lifecycle.stable());
+						return Pair.of(saveProperties, immutable);
+					}, Util.getMainWorkerExecutor(), executor)).get();
+				stopwatch.stop();
+				LOGGER.debug("Finished resource loading after {} ms", stopwatch.elapsed(TimeUnit.MILLISECONDS));
 				return new TestServer(thread, session, resourcePackManager, saveLoader, batches, pos);
-			} catch (Exception var8) {
-				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var8);
+			} catch (Exception var9) {
+				LOGGER.warn("Failed to load vanilla datapack, bit oops", (Throwable)var9);
 				System.exit(-1);
 				throw new IllegalStateException();
 			}
@@ -109,6 +106,7 @@ public class TestServer extends MinecraftServer {
 		serverWorld.setSpawnPos(this.pos, 0.0F);
 		int i = 20000000;
 		serverWorld.setWeather(20000000, 20000000, false, false);
+		LOGGER.info("Started game test server");
 		return true;
 	}
 

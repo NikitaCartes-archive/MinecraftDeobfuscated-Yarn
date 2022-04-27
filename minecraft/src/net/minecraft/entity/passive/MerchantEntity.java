@@ -212,6 +212,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 		return false;
 	}
 
+	@Override
 	public SimpleInventory getInventory() {
 		return this.inventory;
 	}

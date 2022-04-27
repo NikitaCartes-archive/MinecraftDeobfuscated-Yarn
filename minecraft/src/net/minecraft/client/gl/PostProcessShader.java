@@ -84,8 +84,7 @@ public class PostProcessShader implements AutoCloseable {
 		bufferBuilder.vertex((double)f, 0.0, 500.0).next();
 		bufferBuilder.vertex((double)f, (double)g, 500.0).next();
 		bufferBuilder.vertex(0.0, (double)g, 500.0).next();
-		bufferBuilder.end();
-		BufferRenderer.drawWithoutShader(bufferBuilder);
+		BufferRenderer.drawWithoutShader(bufferBuilder.end());
 		RenderSystem.depthFunc(515);
 		this.program.disable();
 		this.output.endWrite();

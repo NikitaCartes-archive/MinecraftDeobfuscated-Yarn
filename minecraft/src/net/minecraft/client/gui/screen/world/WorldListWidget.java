@@ -12,8 +12,6 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -135,7 +133,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			levelList = this.client.getLevelStorage().getLevelList();
 		} catch (LevelStorageException var3) {
 			LOGGER.error("Couldn't load level list", (Throwable)var3);
-			this.showUnableToLoadScreen(var3.getMessage());
+			this.showUnableToLoadScreen(var3.getMessageText());
 			return CompletableFuture.completedFuture(List.of());
 		}
 
@@ -143,12 +141,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			CreateWorldScreen.create(this.client, null);
 			return CompletableFuture.completedFuture(List.of());
 		} else {
-			return this.client.getLevelStorage().loadSummaries(levelList).thenApply(summaries -> {
-				List var1x = new ArrayList(summaries);
-				Collections.sort(var1x);
-				return var1x;
-			}).exceptionally(throwable -> {
-				this.client.setCrashReportSupplier(() -> CrashReport.create(throwable, "Couldn't load level list"));
+			return this.client.getLevelStorage().loadSummaries(levelList).exceptionally(throwable -> {
+				this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Couldn't load level list"));
 				return List.of();
 			});
 		}

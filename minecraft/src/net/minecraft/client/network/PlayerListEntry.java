@@ -3,21 +3,28 @@ package net.minecraft.client.network;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.minecraft.InsecurePublicKeyException;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
+import com.mojang.logging.LogUtils;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.network.encryption.NetworkEncryptionException;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
+import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PlayerListEntry {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final GameProfile profile;
 	private final Map<Type, Identifier> textures = Maps.newEnumMap(Type.class);
 	private GameMode gameMode;
@@ -32,16 +39,35 @@ public class PlayerListEntry {
 	private long lastHealthTime;
 	private long blinkingHeartTime;
 	private long showTime;
+	@Nullable
+	private final PlayerPublicKey.PublicKeyData publicKeyData;
 
-	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry) {
+	public PlayerListEntry(PlayerListS2CPacket.Entry playerListPacketEntry, MinecraftSessionService sessionService) {
 		this.profile = playerListPacketEntry.getProfile();
 		this.gameMode = playerListPacketEntry.getGameMode();
 		this.latency = playerListPacketEntry.getLatency();
 		this.displayName = playerListPacketEntry.getDisplayName();
+		PlayerPublicKey.PublicKeyData publicKeyData = null;
+
+		try {
+			PlayerPublicKey playerPublicKey = (PlayerPublicKey)PlayerPublicKey.fromGameProfile(this.profile).orElse(null);
+			if (playerPublicKey != null) {
+				publicKeyData = playerPublicKey.verifyAndDecode(sessionService);
+			}
+		} catch (InsecurePublicKeyException | NetworkEncryptionException var5) {
+			LOGGER.error("Failed to retrieve publicKey property for profile {}", this.profile.getId(), var5);
+		}
+
+		this.publicKeyData = publicKeyData;
 	}
 
 	public GameProfile getProfile() {
 		return this.profile;
+	}
+
+	@Nullable
+	public PlayerPublicKey.PublicKeyData getPublicKeyData() {
+		return this.publicKeyData;
 	}
 
 	@Nullable

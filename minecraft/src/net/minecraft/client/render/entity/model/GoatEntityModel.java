@@ -112,8 +112,8 @@ public class GoatEntityModel<T extends GoatEntity> extends QuadrupedEntityModel<
 	}
 
 	public void setAngles(T goatEntity, float f, float g, float h, float i, float j) {
-		this.head.getChild(EntityModelPartNames.LEFT_HORN).visible = !goatEntity.isBaby();
-		this.head.getChild(EntityModelPartNames.RIGHT_HORN).visible = !goatEntity.isBaby();
+		this.head.getChild(EntityModelPartNames.LEFT_HORN).visible = goatEntity.hasLeftHorn();
+		this.head.getChild(EntityModelPartNames.RIGHT_HORN).visible = goatEntity.hasRightHorn();
 		super.setAngles(goatEntity, f, g, h, i, j);
 		float k = goatEntity.getHeadPitch();
 		if (k != 0.0F) {

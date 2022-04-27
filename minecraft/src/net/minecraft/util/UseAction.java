@@ -8,5 +8,6 @@ public enum UseAction {
 	BOW,
 	SPEAR,
 	CROSSBOW,
-	SPYGLASS;
+	SPYGLASS,
+	TOOT_HORN;
 }

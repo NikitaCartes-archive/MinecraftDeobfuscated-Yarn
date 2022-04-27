@@ -244,7 +244,7 @@ public class PresetsScreen extends Screen {
 		public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager) {
 			super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
 
-			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN)
+			for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY)
 				.iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
 				this.addEntry(new PresetsScreen.SuperflatPresetsListWidget.SuperflatPresetEntry(registryEntry));
 			}

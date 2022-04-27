@@ -59,6 +59,6 @@ public class GameEventTagProvider extends AbstractTagProvider<GameEvent> {
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
 		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(field_38363).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
 		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING).add(GameEvent.HIT_GROUND, GameEvent.PROJECTILE_SHOOT, GameEvent.STEP, GameEvent.SWIM);
-		this.getOrCreateTagBuilder(GameEventTags.DAMPENABLE_VIBRATIONS).add(GameEvent.HIT_GROUND, GameEvent.STEP);
+		this.getOrCreateTagBuilder(GameEventTags.ALLAY_CAN_LISTEN).add(GameEvent.NOTE_BLOCK_PLAY);
 	}
 }

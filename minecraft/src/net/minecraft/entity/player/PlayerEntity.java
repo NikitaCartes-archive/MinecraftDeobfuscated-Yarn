@@ -70,6 +70,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1376,6 +1377,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * @param clickType the click type (mouse button used)
 	 */
 	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
+	}
+
+	public ChatMessageSender asChatMessageSender() {
+		return new ChatMessageSender(this.getUuid(), this.getDisplayName());
 	}
 
 	/**

@@ -42,9 +42,9 @@ public class TeamMsgCommand {
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
+					serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
 				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
-					serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
+					serverPlayerEntity.sendMessage(Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
 				}
 			}
 

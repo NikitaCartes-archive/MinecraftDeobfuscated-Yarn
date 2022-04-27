@@ -58,6 +58,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 	private static final float SPYGLASS_ARM_YAW_OFFSET = (float) (Math.PI / 12);
 	private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622F;
 	private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = (float) (Math.PI / 12);
+	public static final float field_39069 = 1.4835298F;
+	public static final float field_39070 = (float) (Math.PI / 6);
 	public final ModelPart head;
 	public final ModelPart hat;
 	public final ModelPart body;
@@ -321,6 +323,10 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case SPYGLASS:
 				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
 				this.rightArm.yaw = this.head.yaw - (float) (Math.PI / 12);
+				break;
+			case TOOT_HORN:
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
+				this.rightArm.yaw = this.head.yaw - (float) (Math.PI / 6);
 		}
 	}
 
@@ -356,6 +362,10 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			case SPYGLASS:
 				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (entity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
 				this.leftArm.yaw = this.head.yaw + (float) (Math.PI / 12);
+				break;
+			case TOOT_HORN:
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2F, 1.2F) - 1.4835298F;
+				this.leftArm.yaw = this.head.yaw + (float) (Math.PI / 6);
 		}
 	}
 
@@ -457,7 +467,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		THROW_SPEAR(false),
 		CROSSBOW_CHARGE(true),
 		CROSSBOW_HOLD(true),
-		SPYGLASS(false);
+		SPYGLASS(false),
+		TOOT_HORN(false);
 
 		private final boolean twoHanded;
 

@@ -88,6 +88,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String textFilteringConfig = this.getString("text-filtering-config", "");
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
+	public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
 	private final ServerPropertiesHandler.WorldGenProperties worldGenProperties = new ServerPropertiesHandler.WorldGenProperties(
 		this.getString("level-seed", ""),
 		this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()),
@@ -126,12 +127,12 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 
 		public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
 			long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(AbstractRandom.createAtomic().nextLong());
-			Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_WORLDGEN);
+			Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
 			RegistryEntry<WorldPreset> registryEntry = (RegistryEntry<WorldPreset>)registry.getEntry(WorldPresets.DEFAULT)
 				.or(() -> registry.streamEntries().findAny())
 				.orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
 			RegistryEntry<WorldPreset> registryEntry2 = (RegistryEntry<WorldPreset>)Optional.ofNullable(Identifier.tryParse(this.levelType))
-				.map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_WORLDGEN, levelTypeId))
+				.map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId))
 				.or(() -> Optional.ofNullable((RegistryKey)LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType)))
 				.flatMap(registry::getEntry)
 				.orElseGet(

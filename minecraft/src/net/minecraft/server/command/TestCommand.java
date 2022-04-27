@@ -43,7 +43,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -491,7 +490,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(Text.literal(formatting + message), Util.NIL_UUID));
+		world.getPlayers(player -> true).forEach(player -> player.sendMessage(Text.literal(formatting + message)));
 	}
 
 	static class Listener implements TestListener {

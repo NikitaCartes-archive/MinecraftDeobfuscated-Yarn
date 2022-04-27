@@ -40,7 +40,7 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	}
 
 	public PublicKey getPublicKey() throws NetworkEncryptionException {
-		return NetworkEncryptionUtils.readEncodedPublicKey(this.publicKey);
+		return NetworkEncryptionUtils.decodeEncodedRsaPublicKey(this.publicKey);
 	}
 
 	public byte[] getNonce() {

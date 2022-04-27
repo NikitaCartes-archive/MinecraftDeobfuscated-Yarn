@@ -63,7 +63,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		instance -> createStructureSetRegistryGetter(instance)
 				.and(
 					instance.group(
-						RegistryOps.createRegistryCodec(Registry.NOISE_WORLDGEN).forGetter(generator -> generator.noiseRegistry),
+						RegistryOps.createRegistryCodec(Registry.NOISE_KEY).forGetter(generator -> generator.noiseRegistry),
 						BiomeSource.CODEC.fieldOf("biome_source").forGetter(generator -> generator.populationSource),
 						ChunkGeneratorSettings.REGISTRY_CODEC.fieldOf("settings").forGetter(generator -> generator.settings)
 					)

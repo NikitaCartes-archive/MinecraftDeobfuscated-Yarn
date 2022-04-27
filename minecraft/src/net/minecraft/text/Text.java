@@ -174,8 +174,8 @@ public interface Text extends Message, StringVisitable {
 		return MutableText.of(new KeybindTextContent(string));
 	}
 
-	static MutableText nbt(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource nbtDataSource) {
-		return MutableText.of(new NbtTextContent(rawPath, interpret, separator, nbtDataSource));
+	static MutableText nbt(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
+		return MutableText.of(new NbtTextContent(rawPath, interpret, separator, dataSource));
 	}
 
 	static MutableText score(String name, String objective) {

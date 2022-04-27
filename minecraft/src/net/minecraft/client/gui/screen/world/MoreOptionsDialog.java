@@ -73,7 +73,7 @@ public class MoreOptionsDialog implements Drawable {
 	private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(
 		GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey
 	) {
-		return presetKey.flatMap(key -> generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_WORLDGEN).getEntry(key));
+		return presetKey.flatMap(key -> generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_KEY).getEntry(key));
 	}
 
 	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
@@ -93,7 +93,7 @@ public class MoreOptionsDialog implements Drawable {
 				)
 		);
 		this.mapFeaturesButton.visible = false;
-		Registry<WorldPreset> registry = this.generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_WORLDGEN);
+		Registry<WorldPreset> registry = this.generatorOptionsHolder.dynamicRegistryManager().get(Registry.WORLD_PRESET_KEY);
 		List<RegistryEntry<WorldPreset>> list = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.NORMAL)
 			.orElseGet(() -> (List)registry.streamEntries().collect(Collectors.toUnmodifiableList()));
 		List<RegistryEntry<WorldPreset>> list2 = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.EXTENDED).orElse(list);

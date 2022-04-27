@@ -38,7 +38,7 @@ public final class NoiseConfig {
 	) {
 		return create(
 			dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(chunkGeneratorSettingsKey),
-			dynamicRegistryManager.get(Registry.NOISE_WORLDGEN),
+			dynamicRegistryManager.get(Registry.NOISE_KEY),
 			legacyWorldSeed
 		);
 	}

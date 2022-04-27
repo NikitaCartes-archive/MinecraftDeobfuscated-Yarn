@@ -198,9 +198,12 @@ public class SculkVeinBlock extends AbstractLichenBlock implements SculkSpreadab
 				}
 
 				FluidState fluidState = state.getFluidState();
-				return !fluidState.isEmpty() && !fluidState.isOf(Fluids.WATER)
-					? false
-					: state.getMaterial().isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
+				if (!fluidState.isEmpty() && !fluidState.isOf(Fluids.WATER)) {
+					return false;
+				} else {
+					Material material = state.getMaterial();
+					return material == Material.FIRE ? false : material.isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
+				}
 			} else {
 				return false;
 			}

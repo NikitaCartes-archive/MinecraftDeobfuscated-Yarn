@@ -32,7 +32,7 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	 */
 	private static final int RELOADER_WEIGHT = 1;
 	protected final CompletableFuture<Unit> prepareStageFuture = new CompletableFuture();
-	protected final CompletableFuture<List<S>> applyStageFuture;
+	protected CompletableFuture<List<S>> applyStageFuture;
 	final Set<ResourceReloader> waitingReloaders;
 	private final int reloaderCount;
 	private int toApplyCount;

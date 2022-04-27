@@ -6,56 +6,57 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 /**
- * Represents a singular field within a larger vertex format.
- * <p>
- * This element comprises a data type, a field length,
- * and the corresponding GL element type to which this field corresponds.
+ * Represents a singular field within a larger {@link
+ * net.minecraft.client.render.VertexFormat vertex format}.
+ * 
+ * <p>This element comprises a component type, the number of components,
+ * and a type that describes how the components should be interpreted.
  */
 @Environment(EnvType.CLIENT)
 public class VertexFormatElement {
-	private final VertexFormatElement.DataType dataType;
+	private final VertexFormatElement.ComponentType componentType;
 	private final VertexFormatElement.Type type;
-	private final int textureIndex;
-	private final int length;
+	private final int uvIndex;
+	private final int componentCount;
 	/**
 	 * The total length of this element (in bytes).
 	 */
 	private final int byteLength;
 
-	public VertexFormatElement(int textureIndex, VertexFormatElement.DataType dataType, VertexFormatElement.Type type, int length) {
-		if (this.isValidType(textureIndex, type)) {
+	public VertexFormatElement(int uvIndex, VertexFormatElement.ComponentType componentType, VertexFormatElement.Type type, int componentCount) {
+		if (this.isValidType(uvIndex, type)) {
 			this.type = type;
-			this.dataType = dataType;
-			this.textureIndex = textureIndex;
-			this.length = length;
-			this.byteLength = dataType.getByteLength() * this.length;
+			this.componentType = componentType;
+			this.uvIndex = uvIndex;
+			this.componentCount = componentCount;
+			this.byteLength = componentType.getByteLength() * this.componentCount;
 		} else {
 			throw new IllegalStateException("Multiple vertex elements of the same type other than UVs are not supported");
 		}
 	}
 
-	private boolean isValidType(int index, VertexFormatElement.Type type) {
-		return index == 0 || type == VertexFormatElement.Type.UV;
+	private boolean isValidType(int uvIndex, VertexFormatElement.Type type) {
+		return uvIndex == 0 || type == VertexFormatElement.Type.UV;
 	}
 
-	public final VertexFormatElement.DataType getDataType() {
-		return this.dataType;
+	public final VertexFormatElement.ComponentType getComponentType() {
+		return this.componentType;
 	}
 
 	public final VertexFormatElement.Type getType() {
 		return this.type;
 	}
 
-	public final int getLength() {
-		return this.length;
+	public final int getComponentCount() {
+		return this.componentCount;
 	}
 
-	public final int getTextureIndex() {
-		return this.textureIndex;
+	public final int getUvIndex() {
+		return this.uvIndex;
 	}
 
 	public String toString() {
-		return this.length + "," + this.type.getName() + "," + this.dataType.getName();
+		return this.componentCount + "," + this.type.getName() + "," + this.componentType.getName();
 	}
 
 	public final int getByteLength() {
@@ -71,12 +72,12 @@ public class VertexFormatElement {
 			return true;
 		} else if (o != null && this.getClass() == o.getClass()) {
 			VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
-			if (this.length != vertexFormatElement.length) {
+			if (this.componentCount != vertexFormatElement.componentCount) {
 				return false;
-			} else if (this.textureIndex != vertexFormatElement.textureIndex) {
+			} else if (this.uvIndex != vertexFormatElement.uvIndex) {
 				return false;
 			} else {
-				return this.dataType != vertexFormatElement.dataType ? false : this.type == vertexFormatElement.type;
+				return this.componentType != vertexFormatElement.componentType ? false : this.type == vertexFormatElement.type;
 			}
 		} else {
 			return false;
@@ -84,22 +85,34 @@ public class VertexFormatElement {
 	}
 
 	public int hashCode() {
-		int i = this.dataType.hashCode();
+		int i = this.componentType.hashCode();
 		i = 31 * i + this.type.hashCode();
-		i = 31 * i + this.textureIndex;
-		return 31 * i + this.length;
+		i = 31 * i + this.uvIndex;
+		return 31 * i + this.componentCount;
 	}
 
-	public void startDrawing(int elementIndex, long pointer, int stride) {
-		this.type.startDrawing(this.length, this.dataType.getId(), stride, pointer, this.textureIndex, elementIndex);
+	/**
+	 * Specifies for OpenGL how the vertex data corresponding to this element
+	 * should be interpreted.
+	 * 
+	 * @param elementIndex the index of the element in a vertex format
+	 * @param offset the distance between the start of the buffer and the first instance of
+	 * the element in the buffer
+	 * @param stride the distance between consecutive instances of the element in the buffer
+	 */
+	public void setupState(int elementIndex, long offset, int stride) {
+		this.type.setupState(this.componentCount, this.componentType.getGlType(), stride, offset, this.uvIndex, elementIndex);
 	}
 
-	public void endDrawing(int elementIndex) {
-		this.type.endDrawing(this.textureIndex, elementIndex);
+	public void clearState(int elementIndex) {
+		this.type.clearState(this.uvIndex, elementIndex);
 	}
 
+	/**
+	 * Represents a type of components in an element.
+	 */
 	@Environment(EnvType.CLIENT)
-	public static enum DataType {
+	public static enum ComponentType {
 		FLOAT(4, "Float", GlConst.GL_FLOAT),
 		UBYTE(1, "Unsigned Byte", GlConst.GL_UNSIGNED_BYTE),
 		BYTE(1, "Byte", GlConst.GL_BYTE),
@@ -110,12 +123,12 @@ public class VertexFormatElement {
 
 		private final int byteLength;
 		private final String name;
-		private final int id;
+		private final int glType;
 
-		private DataType(int byteCount, String name, int id) {
-			this.byteLength = byteCount;
+		private ComponentType(int byteLength, String name, int glType) {
+			this.byteLength = byteLength;
 			this.name = name;
-			this.id = id;
+			this.glType = glType;
 		}
 
 		public int getByteLength() {
@@ -126,57 +139,60 @@ public class VertexFormatElement {
 			return this.name;
 		}
 
-		public int getId() {
-			return this.id;
+		public int getGlType() {
+			return this.glType;
 		}
 	}
 
+	/**
+	 * Describes how the components should be interpreted.
+	 */
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		POSITION("Position", (size, type, stride, pointer, textureIndex, elementIndex) -> {
+		POSITION("Position", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
 			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, size, type, false, stride, pointer);
-		}, (textureIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		NORMAL("Normal", (size, type, stride, pointer, textureIndex, elementIndex) -> {
+			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
+		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
+		NORMAL("Normal", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
 			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, size, type, true, stride, pointer);
-		}, (textureIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		COLOR("Vertex Color", (size, type, stride, pointer, textureIndex, elementIndex) -> {
+			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, true, stride, offset);
+		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
+		COLOR("Vertex Color", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
 			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, size, type, true, stride, pointer);
-		}, (textureIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		UV("UV", (size, type, stride, pointer, textureIndex, elementIndex) -> {
+			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, true, stride, offset);
+		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
+		UV("UV", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
 			GlStateManager._enableVertexAttribArray(elementIndex);
-			if (type == 5126) {
-				GlStateManager._vertexAttribPointer(elementIndex, size, type, false, stride, pointer);
+			if (componentType == 5126) {
+				GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
 			} else {
-				GlStateManager._vertexAttribIPointer(elementIndex, size, type, stride, pointer);
+				GlStateManager._vertexAttribIPointer(elementIndex, componentCount, componentType, stride, offset);
 			}
-		}, (textureIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
-		PADDING("Padding", (size, type, stride, pointer, textureIndex, elementIndex) -> {
-		}, (textureIndex, elementIndex) -> {
+		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex)),
+		PADDING("Padding", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
+		}, (uvIndex, elementIndex) -> {
 		}),
-		GENERIC("Generic", (size, type, stride, pointer, textureIndex, elementIndex) -> {
+		GENERIC("Generic", (componentCount, componentType, stride, offset, uvIndex, elementIndex) -> {
 			GlStateManager._enableVertexAttribArray(elementIndex);
-			GlStateManager._vertexAttribPointer(elementIndex, size, type, false, stride, pointer);
-		}, (textureIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex));
+			GlStateManager._vertexAttribPointer(elementIndex, componentCount, componentType, false, stride, offset);
+		}, (uvIndex, elementIndex) -> GlStateManager._disableVertexAttribArray(elementIndex));
 
 		private final String name;
-		private final VertexFormatElement.Type.Starter starter;
-		private final VertexFormatElement.Type.Finisher finisher;
+		private final VertexFormatElement.Type.SetupTask setupTask;
+		private final VertexFormatElement.Type.ClearTask clearTask;
 
-		private Type(String name, VertexFormatElement.Type.Starter starter, VertexFormatElement.Type.Finisher finisher) {
+		private Type(String name, VertexFormatElement.Type.SetupTask setupTask, VertexFormatElement.Type.ClearTask clearTask) {
 			this.name = name;
-			this.starter = starter;
-			this.finisher = finisher;
+			this.setupTask = setupTask;
+			this.clearTask = clearTask;
 		}
 
-		void startDrawing(int size, int type, int stride, long pointer, int textureIndex, int elementIndex) {
-			this.starter.setupBufferState(size, type, stride, pointer, textureIndex, elementIndex);
+		void setupState(int componentCount, int componentType, int stride, long offset, int uvIndex, int elementIndex) {
+			this.setupTask.setupBufferState(componentCount, componentType, stride, offset, uvIndex, elementIndex);
 		}
 
-		public void endDrawing(int textureIndex, int elementIndex) {
-			this.finisher.clearBufferState(textureIndex, elementIndex);
+		public void clearState(int uvIndex, int elementIndex) {
+			this.clearTask.clearBufferState(uvIndex, elementIndex);
 		}
 
 		public String getName() {
@@ -185,14 +201,29 @@ public class VertexFormatElement {
 
 		@FunctionalInterface
 		@Environment(EnvType.CLIENT)
-		interface Finisher {
-			void clearBufferState(int textureIndex, int elementIndex);
+		interface ClearTask {
+			/**
+			 * @param elementIndex the index of the element in a vertex format
+			 */
+			void clearBufferState(int uvIndex, int elementIndex);
 		}
 
 		@FunctionalInterface
 		@Environment(EnvType.CLIENT)
-		interface Starter {
-			void setupBufferState(int size, int type, int stride, long pointer, int textureIndex, int elementIndex);
+		interface SetupTask {
+			/**
+			 * Specifies for OpenGL how the vertex data corresponding to the element
+			 * should be interpreted.
+			 * 
+			 * @param componentCount the number of components in the element
+			 * @param componentType the GL type of components in the element
+			 * @param stride the distance between consecutive instances of the element in the buffer
+			 * @param offset the distance between the start of the buffer and the first instance of
+			 * the element in the buffer; be aware that {@code pointer} is a legacy
+			 * name from OpenGL 2
+			 * @param elementIndex the index of the element in a vertex format
+			 */
+			void setupBufferState(int componentCount, int componentType, int stride, long offset, int uvIndex, int elementIndex);
 		}
 	}
 }

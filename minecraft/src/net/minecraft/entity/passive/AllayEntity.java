@@ -1,12 +1,14 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -31,25 +33,34 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.GameEventTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.VibrationListener;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
-public class AllayEntity extends PathAwareEntity implements InventoryOwner, GameEventListener {
+public class AllayEntity extends PathAwareEntity implements InventoryOwner, VibrationListener.Callback {
+	private static final Logger field_39045 = LogUtils.getLogger();
 	private static final int field_38405 = 16;
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_38934 = 5;
@@ -71,8 +82,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(
 		0.5625F, 0.625F, 0.75F, 0.9375F, 1.0F, 1.0F, 1.125F, 1.25F, 1.5F, 1.875F, 2.0F, 2.25F, 2.5F, 3.0F, 3.75F, 4.0F
 	);
-	private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
-	private final EntityGameEventHandler<AllayEntity> gameEventHandler;
+	private final EntityGameEventHandler<VibrationListener> gameEventHandler;
 	private final SimpleInventory inventory = new SimpleInventory(1);
 	private float field_38935;
 	private float field_38936;
@@ -81,7 +91,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.setCanPickUpLoot(this.canPickUpLoot());
-		this.gameEventHandler = new EntityGameEventHandler<>(this);
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0));
 	}
 
 	@Override
@@ -217,6 +227,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 			} else {
 				this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
 			}
+		} else {
+			this.gameEventHandler.getListener().tick(this.world);
 		}
 	}
 
@@ -227,6 +239,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 
 	public boolean isHoldingItem() {
 		return !this.getStackInHand(Hand.MAIN_HAND).isEmpty();
+	}
+
+	@Override
+	public boolean canEquip(ItemStack stack) {
+		return false;
 	}
 
 	private boolean isItemPickupCoolingDown() {
@@ -265,6 +282,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 		}
 	}
 
+	@Override
 	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
@@ -282,23 +300,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 
 	@Override
 	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
-		if (this.canGather(itemStack)) {
-			SimpleInventory simpleInventory = this.getInventory();
-			boolean bl = simpleInventory.canInsert(itemStack);
-			if (!bl) {
-				return;
-			}
-
-			this.triggerItemPickedUpByEntityCriteria(item);
-			this.sendPickup(item, itemStack.getCount());
-			ItemStack itemStack2 = simpleInventory.addStack(itemStack);
-			if (itemStack2.isEmpty()) {
-				item.discard();
-			} else {
-				itemStack.setCount(itemStack2.getCount());
-			}
-		}
+		InventoryOwner.pickUpItem(this, this, item);
 	}
 
 	@Override
@@ -313,29 +315,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	}
 
 	@Override
-	public PositionSource getPositionSource() {
-		return this.positionSource;
-	}
-
-	@Override
-	public int getRange() {
-		return 16;
-	}
-
-	@Override
 	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
 		if (this.world instanceof ServerWorld serverWorld) {
 			callback.accept(this.gameEventHandler, serverWorld);
-		}
-	}
-
-	@Override
-	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
-		if (event != GameEvent.NOTE_BLOCK_PLAY) {
-			return false;
-		} else {
-			AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
-			return true;
 		}
 	}
 
@@ -361,5 +343,51 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Game
 	@Override
 	public boolean canImmediatelyDespawn(double distanceSquared) {
 		return false;
+	}
+
+	@Override
+	public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+		if (this.isAiDisabled()) {
+			return false;
+		} else if (!this.brain.hasMemoryModule(MemoryModuleType.LIKED_NOTEBLOCK)) {
+			return true;
+		} else {
+			Optional<GlobalPos> optional = this.brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+			return optional.isPresent() && ((GlobalPos)optional.get()).getDimension() == world.getRegistryKey() && ((GlobalPos)optional.get()).getPos().equals(pos);
+		}
+	}
+
+	@Override
+	public void accept(
+		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
+	) {
+		if (event == GameEvent.NOTE_BLOCK_PLAY) {
+			AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
+		}
+	}
+
+	@Override
+	public TagKey<GameEvent> getTag() {
+		return GameEventTags.ALLAY_CAN_LISTEN;
+	}
+
+	@Override
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		VibrationListener.createCodec(this)
+			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
+			.resultOrPartial(field_39045::error)
+			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
+	}
+
+	@Override
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
+			VibrationListener.createCodec(this)
+				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
+				.resultOrPartial(field_39045::error)
+				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
+		}
 	}
 }

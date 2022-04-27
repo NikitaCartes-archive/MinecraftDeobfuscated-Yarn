@@ -3,6 +3,10 @@ package net.minecraft.network;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
@@ -68,7 +72,7 @@ import net.minecraft.util.registry.Registry;
  *  <td>Codec-based</td><td>{@link #decode(Codec)}</td><td>{@link #encode(Codec, Object)}</td>
  * </tr>
  * <tr>
- *  <td>{@link Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
+ *  <td>{@link net.minecraft.util.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, Function)}</td><td>{@link #writeCollection(Collection, BiConsumer)}</td>
@@ -113,6 +117,12 @@ import net.minecraft.util.registry.Registry;
  *  <td>{@link UUID}</td><td>{@link #readUuid()}</td><td>{@link #writeUuid(UUID)}</td>
  * </tr>
  * <tr>
+ *  <td>{@index GameProfile}</td><td>{@link #readGameProfile()}</td><td>{@link #writeGameProfile(GameProfile)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@index Property}</td><td>{@link #readProperty()}</td><td>{@link #writeProperty(Property)}</td>
+ * </tr>
+ * <tr>
  *  <td>{@link NbtCompound}</td><td>{@link #readNbt()}</td><td>{@link #writeNbt(NbtCompound)}</td>
  * </tr>
  * <tr>
@@ -135,6 +145,9 @@ import net.minecraft.util.registry.Registry;
  * </tr>
  * <tr>
  *  <td>{@link Optional}</td><td>{@link #readOptional(Function)}</td><td>{@link #writeOptional(Optional, BiConsumer)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@index Either}</td><td>{@link #readEither(Function, Function)}</td><td>{@link #writeEither(Either, BiConsumer, BiConsumer)}</td>
  * </tr>
  * </table></div>
  * 
@@ -520,6 +533,35 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public <T> Optional<T> readOptional(Function<PacketByteBuf, T> parser) {
 		return this.readBoolean() ? Optional.of(parser.apply(this)) : Optional.empty();
+	}
+
+	/**
+	 * Writes an {@code Either} to this buf. An either is represented by
+	 * a boolean indicating if the left side or the right side of the either,
+	 * followed by the value.
+	 * 
+	 * @see #readEither(Function, Function)
+	 */
+	public <L, R> void writeEither(Either<L, R> either, BiConsumer<PacketByteBuf, L> leftSerializer, BiConsumer<PacketByteBuf, R> rightSerializer) {
+		either.ifLeft(object -> {
+			this.writeBoolean(true);
+			leftSerializer.accept(this, object);
+		}).ifRight(object -> {
+			this.writeBoolean(false);
+			rightSerializer.accept(this, object);
+		});
+	}
+
+	/**
+	 * Reads an {@code Either} from this buf. An either is represented by
+	 * a boolean indicating if the left side or the right side of the either,
+	 * followed by the value.
+	 * 
+	 * @return the read either
+	 * @see #writeEither(Either, BiConsumer, BiConsumer)
+	 */
+	public <L, R> Either<L, R> readEither(Function<PacketByteBuf, L> leftParser, Function<PacketByteBuf, R> rightParser) {
+		return this.readBoolean() ? Either.left((L)leftParser.apply(this)) : Either.right((R)rightParser.apply(this));
 	}
 
 	/**
@@ -1350,6 +1392,78 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public void writeBitSet(BitSet bitSet) {
 		this.writeLongArray(bitSet.toLongArray());
+	}
+
+	/**
+	 * Reads a game profile from this buf. A game profile is represented by a
+	 * {@linkplain #readUuid() uuid}, a username string, and a collection of
+	 * {@linkplain #readProperty() properties}.
+	 * 
+	 * @return the game profile
+	 * @see #writeGameProfile(GameProfile)
+	 */
+	public GameProfile readGameProfile() {
+		UUID uUID = this.readUuid();
+		String string = this.readString(16);
+		GameProfile gameProfile = new GameProfile(uUID, string);
+		PropertyMap propertyMap = gameProfile.getProperties();
+		this.forEachInCollection(buf -> {
+			Property property = this.readProperty();
+			propertyMap.put(property.getName(), property);
+		});
+		return gameProfile;
+	}
+
+	/**
+	 * Writes a game profile to this buf. A game profile is represented by a
+	 * {@linkplain #writeUuid(UUID) uuid}, a username string, and a collection of
+	 * {@linkplain #writeProperty(Property) properties}.
+	 * 
+	 * @see #readGameProfile()
+	 */
+	public void writeGameProfile(GameProfile gameProfile) {
+		this.writeUuid(gameProfile.getId());
+		this.writeString(gameProfile.getName());
+		this.writeCollection(gameProfile.getProperties().values(), PacketByteBuf::writeProperty);
+	}
+
+	/**
+	 * Reads a property from this buf. A property is represented by a string representing
+	 * the property key, a string representing the property value, a boolean indicating
+	 * whether the property is signed, and a string representing the signature (only
+	 * exists if signed).
+	 * 
+	 * @return the property
+	 * @see #writeProperty(Property)
+	 */
+	public Property readProperty() {
+		String string = this.readString();
+		String string2 = this.readString();
+		if (this.readBoolean()) {
+			String string3 = this.readString();
+			return new Property(string, string2, string3);
+		} else {
+			return new Property(string, string2);
+		}
+	}
+
+	/**
+	 * Writes a property to this buf. A property is represented by a string representing
+	 * the property key, a string representing the property value, a boolean indicating
+	 * whether the property is signed, and a string representing the signature (only
+	 * exists if signed).
+	 * 
+	 * @see #readProperty()
+	 */
+	public void writeProperty(Property property) {
+		this.writeString(property.getName());
+		this.writeString(property.getValue());
+		if (property.hasSignature()) {
+			this.writeBoolean(true);
+			this.writeString(property.getSignature());
+		} else {
+			this.writeBoolean(false);
+		}
 	}
 
 	@Override

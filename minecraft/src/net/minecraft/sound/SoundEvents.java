@@ -1,5 +1,7 @@
 package net.minecraft.sound;
 
+import com.google.common.collect.ImmutableList;
+import java.util.stream.IntStream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -474,6 +476,8 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_GOAT_MILK = register("entity.goat.milk");
 	public static final SoundEvent ENTITY_GOAT_PREPARE_RAM = register("entity.goat.prepare_ram");
 	public static final SoundEvent ENTITY_GOAT_RAM_IMPACT = register("entity.goat.ram_impact");
+	public static final SoundEvent ENTITY_GOAT_HORN_BREAK = register("entity.goat.horn_break");
+	public static final SoundEvent ITEM_GOAT_HORN_PLAY = register("item.goat_horn.play");
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_AMBIENT = register("entity.goat.screaming.ambient");
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_DEATH = register("entity.goat.screaming.death");
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_EAT = register("entity.goat.screaming.eat");
@@ -482,6 +486,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_MILK = register("entity.goat.screaming.milk");
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_PREPARE_RAM = register("entity.goat.screaming.prepare_ram");
 	public static final SoundEvent ENTITY_GOAT_SCREAMING_RAM_IMPACT = register("entity.goat.screaming.ram_impact");
+	public static final SoundEvent ENTITY_GOAT_SCREAMING_HORN_BREAK = register("entity.goat.screaming.horn_break");
 	public static final SoundEvent ENTITY_GOAT_STEP = register("entity.goat.step");
 	public static final SoundEvent BLOCK_GRASS_BREAK = register("block.grass.break");
 	public static final SoundEvent BLOCK_GRASS_FALL = register("block.grass.fall");
@@ -525,6 +530,8 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_HONEY_BLOCK_STEP = register("block.honey_block.step");
 	public static final SoundEvent ITEM_HONEYCOMB_WAX_ON = register("item.honeycomb.wax_on");
 	public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = register("item.honey_bottle.drink");
+	public static final int GOAT_HORN_SOUND_COUNT = 8;
+	public static final ImmutableList<SoundEvent> GOAT_HORN_SOUNDS = registerGoatHornSounds();
 	public static final SoundEvent ENTITY_HORSE_AMBIENT = register("entity.horse.ambient");
 	public static final SoundEvent ENTITY_HORSE_ANGRY = register("entity.horse.angry");
 	public static final SoundEvent ENTITY_HORSE_ARMOR = register("entity.horse.armor");
@@ -1321,5 +1328,11 @@ public class SoundEvents {
 
 	private static SoundEvent register(String id) {
 		return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));
+	}
+
+	private static ImmutableList<SoundEvent> registerGoatHornSounds() {
+		return (ImmutableList<SoundEvent>)IntStream.range(0, 8)
+			.mapToObj(variant -> register("item.goat_horn.sound." + variant))
+			.collect(ImmutableList.toImmutableList());
 	}
 }

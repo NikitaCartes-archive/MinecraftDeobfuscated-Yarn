@@ -1,5 +1,6 @@
 package net.minecraft.client.network;
 
+import com.google.common.primitives.Longs;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.exceptions.AuthenticationException;
 import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
@@ -8,7 +9,9 @@ import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.PublicKey;
+import java.security.Signature;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -61,14 +64,23 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		String string;
 		LoginKeyC2SPacket loginKeyC2SPacket;
 		try {
-			SecretKey secretKey = NetworkEncryptionUtils.generateKey();
+			SecretKey secretKey = NetworkEncryptionUtils.generateSecretKey();
 			PublicKey publicKey = packet.getPublicKey();
-			string = new BigInteger(NetworkEncryptionUtils.generateServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
+			string = new BigInteger(NetworkEncryptionUtils.computeServerId(packet.getServerId(), publicKey, secretKey)).toString(16);
 			cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
 			cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
-			loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, packet.getNonce());
-		} catch (NetworkEncryptionException var8) {
-			throw new IllegalStateException("Protocol error", var8);
+			byte[] bs = packet.getNonce();
+			Signature signature = this.client.getProfileKeys().createSignatureInstance();
+			if (signature == null) {
+				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, bs);
+			} else {
+				long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+				signature.update(bs);
+				signature.update(Longs.toByteArray(l));
+				loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, l, signature.sign());
+			}
+		} catch (GeneralSecurityException | NetworkEncryptionException var12) {
+			throw new IllegalStateException("Protocol error", var12);
 		}
 
 		this.statusConsumer.accept(Text.translatable("connect.authorizing"));

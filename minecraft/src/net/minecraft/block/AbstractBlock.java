@@ -467,7 +467,7 @@ public abstract class AbstractBlock {
 	 * @deprecated Consider calling {@link AbstractBlockState#onStacksDropped} instead. See <a href="#deprecated-methods">the class javadoc</a>.
 	 */
 	@Deprecated
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
 	}
 
 	/**
@@ -804,8 +804,8 @@ public abstract class AbstractBlock {
 			this.getBlock().onEntityCollision(this.asBlockState(), world, pos, entity);
 		}
 
-		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack stack) {
-			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, stack);
+		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, stack, dropExperience);
 		}
 
 		public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {

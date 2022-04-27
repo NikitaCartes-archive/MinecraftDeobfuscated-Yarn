@@ -31,6 +31,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		super.clear();
 	}
 
+	@Nullable
 	@Override
 	public PathNode getStart() {
 		int i;
@@ -66,7 +67,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return new TargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+		return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
 	}
 
 	@Override
@@ -269,10 +270,12 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		float f = this.entity.getPathfindingPenalty(pathNodeType);
 		if (f >= 0.0F) {
 			pathNode = super.getNode(x, y, z);
-			pathNode.type = pathNodeType;
-			pathNode.penalty = Math.max(pathNode.penalty, f);
-			if (pathNodeType == PathNodeType.WALKABLE) {
-				pathNode.penalty++;
+			if (pathNode != null) {
+				pathNode.type = pathNodeType;
+				pathNode.penalty = Math.max(pathNode.penalty, f);
+				if (pathNodeType == PathNodeType.WALKABLE) {
+					pathNode.penalty++;
+				}
 			}
 		}
 

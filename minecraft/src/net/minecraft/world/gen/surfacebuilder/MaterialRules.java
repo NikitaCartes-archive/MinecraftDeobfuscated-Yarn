@@ -575,7 +575,7 @@ public class MaterialRules {
 		static final CodecHolder<MaterialRules.NoiseThresholdMaterialCondition> CODEC = CodecHolder.of(
 			RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-							RegistryKey.createCodec(Registry.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
+							RegistryKey.createCodec(Registry.NOISE_KEY).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
 							Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
 							Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
 						)

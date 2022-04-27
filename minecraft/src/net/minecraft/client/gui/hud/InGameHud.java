@@ -48,6 +48,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -1232,12 +1233,36 @@ public class InGameHud extends DrawableHelper {
 		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().getUuid(string2);
 	}
 
-	public void addChatMessage(MessageType type, Text message, UUID sender) {
-		if (!this.client.shouldBlockMessages(sender)) {
+	/**
+	 * Handles a chat message.
+	 * 
+	 * @implNote This method discards the message if the sender is blocked.
+	 * Otherwise, it calls {@link ClientChatListener#onChatMessage}.
+	 * 
+	 * @see net.minecraft.client.network.ClientPlayNetworkHandler#onChatMessage
+	 */
+	public void onChatMessage(MessageType type, Text message, ChatMessageSender sender) {
+		if (!this.client.shouldBlockMessages(sender.uuid())) {
 			if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
 				for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
 					clientChatListener.onChatMessage(type, message, sender);
 				}
+			}
+		}
+	}
+
+	/**
+	 * Handles a game message.
+	 * 
+	 * @implNote This method discards the message if {@linkplain #extractSender the extracted
+	 * sender} is blocked. Otherwise, it calls {@link ClientChatListener#onChatMessage}.
+	 * 
+	 * @see net.minecraft.client.network.ClientPlayNetworkHandler#onGameMessage
+	 */
+	public void onGameMessage(MessageType type, Text message) {
+		if (!this.client.options.getHideMatchedNames().getValue() || !this.client.shouldBlockMessages(this.extractSender(message))) {
+			for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
+				clientChatListener.onChatMessage(type, message, null);
 			}
 		}
 	}

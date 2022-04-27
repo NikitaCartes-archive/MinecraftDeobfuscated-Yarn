@@ -26,35 +26,35 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 
-public class SculkSensorListener implements GameEventListener {
+public class VibrationListener implements GameEventListener {
 	protected final PositionSource positionSource;
 	protected final int range;
-	protected final SculkSensorListener.Callback callback;
+	protected final VibrationListener.Callback callback;
 	@Nullable
-	protected SculkSensorListener.Vibration vibration;
+	protected VibrationListener.Vibration vibration;
 	protected int distance;
 	protected int delay;
 
-	public static Codec<SculkSensorListener> createCodec(SculkSensorListener.Callback callback) {
+	public static Codec<VibrationListener> createCodec(VibrationListener.Callback callback) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						PositionSource.CODEC.fieldOf("source").forGetter(listener -> listener.positionSource),
 						Codecs.NONNEGATIVE_INT.fieldOf("range").forGetter(listener -> listener.range),
-						SculkSensorListener.Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)),
+						VibrationListener.Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)),
 						Codecs.NONNEGATIVE_INT.fieldOf("event_distance").orElse(0).forGetter(listener -> listener.distance),
 						Codecs.NONNEGATIVE_INT.fieldOf("event_delay").orElse(0).forGetter(listener -> listener.delay)
 					)
 					.apply(
 						instance,
-						(positionSource, range, vibration, distance, delay) -> new SculkSensorListener(
-								positionSource, range, callback, (SculkSensorListener.Vibration)vibration.orElse(null), distance, delay
+						(positionSource, range, vibration, distance, delay) -> new VibrationListener(
+								positionSource, range, callback, (VibrationListener.Vibration)vibration.orElse(null), distance, delay
 							)
 					)
 		);
 	}
 
-	public SculkSensorListener(
-		PositionSource positionSource, int range, SculkSensorListener.Callback callback, @Nullable SculkSensorListener.Vibration vibration, int distance, int delay
+	public VibrationListener(
+		PositionSource positionSource, int range, VibrationListener.Callback callback, @Nullable VibrationListener.Vibration vibration, int distance, int delay
 	) {
 		this.positionSource = positionSource;
 		this.range = range;
@@ -120,7 +120,7 @@ public class SculkSensorListener implements GameEventListener {
 
 	private void listen(ServerWorld world, GameEvent gameEvent, GameEvent.Emitter emitter, Vec3d start, Vec3d end) {
 		this.distance = MathHelper.floor(start.distanceTo(end));
-		this.vibration = new SculkSensorListener.Vibration(gameEvent, this.distance, start, emitter.sourceEntity());
+		this.vibration = new VibrationListener.Vibration(gameEvent, this.distance, start, emitter.sourceEntity());
 		this.delay = this.distance;
 		world.spawnParticles(new VibrationParticleEffect(this.positionSource, this.delay), start.x, start.y, start.z, 1, 0.0, 0.0, 0.0, 0.0);
 		this.callback.onListen();
@@ -168,10 +168,6 @@ public class SculkSensorListener implements GameEventListener {
 					if (entity.occludeVibrationSignals()) {
 						return false;
 					}
-
-					if (gameEvent.isIn(GameEventTags.DAMPENABLE_VIBRATIONS)) {
-						return !entity.getSteppingBlockState().isIn(BlockTags.DAMPENS_VIBRATIONS);
-					}
 				}
 
 				return emitter.affectedState() != null ? !emitter.affectedState().isIn(BlockTags.DAMPENS_VIBRATIONS) : true;
@@ -193,17 +189,17 @@ public class SculkSensorListener implements GameEventListener {
 	}
 
 	public static record Vibration(GameEvent gameEvent, int distance, Vec3d pos, @Nullable UUID uuid, @Nullable UUID projectileOwnerUuid, @Nullable Entity entity) {
-		public static final Codec<SculkSensorListener.Vibration> CODEC = RecordCodecBuilder.create(
+		public static final Codec<VibrationListener.Vibration> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Registry.GAME_EVENT.getCodec().fieldOf("game_event").forGetter(SculkSensorListener.Vibration::gameEvent),
-						Codecs.NONNEGATIVE_INT.fieldOf("distance").forGetter(SculkSensorListener.Vibration::distance),
-						Vec3d.CODEC.fieldOf("pos").forGetter(SculkSensorListener.Vibration::pos),
+						Registry.GAME_EVENT.getCodec().fieldOf("game_event").forGetter(VibrationListener.Vibration::gameEvent),
+						Codecs.NONNEGATIVE_INT.fieldOf("distance").forGetter(VibrationListener.Vibration::distance),
+						Vec3d.CODEC.fieldOf("pos").forGetter(VibrationListener.Vibration::pos),
 						Codecs.UUID.optionalFieldOf("source").forGetter(vibration -> Optional.ofNullable(vibration.uuid())),
 						Codecs.UUID.optionalFieldOf("projectile_owner").forGetter(vibration -> Optional.ofNullable(vibration.projectileOwnerUuid()))
 					)
 					.apply(
 						instance,
-						(gameEvent, integer, vec3d, optional, optional2) -> new SculkSensorListener.Vibration(
+						(gameEvent, integer, vec3d, optional, optional2) -> new VibrationListener.Vibration(
 								gameEvent, integer, vec3d, (UUID)optional.orElse(null), (UUID)optional2.orElse(null)
 							)
 					)

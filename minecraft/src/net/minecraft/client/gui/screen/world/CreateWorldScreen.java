@@ -498,7 +498,7 @@ public class CreateWorldScreen extends Screen {
 						GeneratorOptions generatorOptions = dataResult2.getOrThrow(
 							false, Util.addPrefix("Error parsing worldgen settings after loading data packs: ", LOGGER::error)
 						);
-						if (immutable.get(Registry.WORLD_PRESET_WORLDGEN).size() == 0) {
+						if (immutable.get(Registry.WORLD_PRESET_KEY).size() == 0) {
 							throw new IllegalStateException("Needs at least one world preset to continue");
 						} else if (immutable.get(Registry.BIOME_KEY).size() == 0) {
 							throw new IllegalStateException("Needs at least one biome continue");

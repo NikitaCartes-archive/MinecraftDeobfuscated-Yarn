@@ -490,6 +490,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return this.getProperties().networkCompressionThreshold;
 	}
 
+	@Override
+	public boolean shouldEnforceSecureProfile() {
+		return this.getProperties().enforceSecureProfile;
+	}
+
 	protected boolean convertData() {
 		boolean bl = false;
 

@@ -200,7 +200,7 @@ public abstract class BiomeSource implements BiomeSupplier {
 			return null;
 		} else {
 			int l = Math.floorDiv(i, j);
-			int[] is = MathHelper.stream(blockPos.getY(), worldView.getBottomY(), worldView.getTopY(), k).toArray();
+			int[] is = MathHelper.stream(blockPos.getY(), worldView.getBottomY() + 1, worldView.getTopY(), k).toArray();
 
 			for (BlockPos.Mutable mutable : BlockPos.iterateInSquare(BlockPos.ORIGIN, l, Direction.EAST, Direction.SOUTH)) {
 				int m = blockPos.getX() + mutable.getX() * j;

@@ -46,6 +46,7 @@ public class EntityTrackerEntry {
 	private final int tickInterval;
 	private final boolean alwaysUpdateVelocity;
 	private final Consumer<Packet<?>> receiver;
+	private final TrackedPosition field_39019 = new TrackedPosition();
 	private int lastYaw;
 	private int lastPitch;
 	private int lastHeadPitch;
@@ -62,7 +63,7 @@ public class EntityTrackerEntry {
 		this.entity = entity;
 		this.tickInterval = tickInterval;
 		this.alwaysUpdateVelocity = alwaysUpdateVelocity;
-		entity.getTrackedPosition().setPos(entity.getSyncedPos());
+		this.field_39019.setPos(entity.getSyncedPos());
 		this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
@@ -96,7 +97,6 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.trackingTick % this.tickInterval == 0 || this.entity.velocityDirty || this.entity.getDataTracker().isDirty()) {
-			TrackedPosition trackedPosition = this.entity.getTrackedPosition();
 			if (this.entity.hasVehicle()) {
 				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
@@ -107,7 +107,7 @@ public class EntityTrackerEntry {
 					this.lastPitch = j;
 				}
 
-				trackedPosition.setPos(this.entity.getSyncedPos());
+				this.field_39019.setPos(this.entity.getSyncedPos());
 				this.syncEntityData();
 				this.hadVehicle = true;
 			} else {
@@ -115,14 +115,14 @@ public class EntityTrackerEntry {
 				int i = MathHelper.floor(this.entity.getYaw() * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.getPitch() * 256.0F / 360.0F);
 				Vec3d vec3d = this.entity.getSyncedPos();
-				boolean bl2 = trackedPosition.subtract(vec3d).lengthSquared() >= 7.6293945E-6F;
+				boolean bl2 = this.field_39019.subtract(vec3d).lengthSquared() >= 7.6293945E-6F;
 				Packet<?> packet2 = null;
 				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
 				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
 				if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
-					long l = trackedPosition.getDeltaX(vec3d);
-					long m = trackedPosition.getDeltaY(vec3d);
-					long n = trackedPosition.getDeltaZ(vec3d);
+					long l = this.field_39019.getDeltaX(vec3d);
+					long m = this.field_39019.getDeltaY(vec3d);
+					long n = this.field_39019.getDeltaZ(vec3d);
 					boolean bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
 					if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
 						this.lastOnGround = this.entity.isOnGround();
@@ -157,7 +157,7 @@ public class EntityTrackerEntry {
 
 				this.syncEntityData();
 				if (bl3) {
-					trackedPosition.setPos(vec3d);
+					this.field_39019.setPos(vec3d);
 				}
 
 				if (bl4) {

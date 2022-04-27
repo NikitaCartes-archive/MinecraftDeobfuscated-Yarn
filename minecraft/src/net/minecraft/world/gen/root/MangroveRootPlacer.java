@@ -12,7 +12,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -38,28 +37,34 @@ public class MangroveRootPlacer extends RootPlacer {
 		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	) {
 		List<BlockPos> list = Lists.<BlockPos>newArrayList();
-		if (!this.canGrowThrough(world, trunkPos)) {
-			return false;
-		} else {
-			list.add(trunkPos.down());
+		BlockPos.Mutable mutable = pos.mutableCopy();
 
-			for (Direction direction : Direction.Type.HORIZONTAL) {
-				BlockPos blockPos = trunkPos.offset(direction);
-				List<BlockPos> list2 = Lists.<BlockPos>newArrayList();
-				if (!this.canGrow(world, random, blockPos, direction, trunkPos, list2, 0)) {
-					return false;
-				}
-
-				list.addAll(list2);
-				list.add(trunkPos.offset(direction));
+		while (mutable.getY() < trunkPos.getY()) {
+			if (!this.canGrowThrough(world, mutable)) {
+				return false;
 			}
 
-			for (BlockPos blockPos2 : list) {
-				this.placeRoots(world, replacer, random, blockPos2, config);
-			}
-
-			return true;
+			mutable.move(Direction.UP);
 		}
+
+		list.add(trunkPos.down());
+
+		for (Direction direction : Direction.Type.HORIZONTAL) {
+			BlockPos blockPos = trunkPos.offset(direction);
+			List<BlockPos> list2 = Lists.<BlockPos>newArrayList();
+			if (!this.canGrow(world, random, blockPos, direction, trunkPos, list2, 0)) {
+				return false;
+			}
+
+			list.addAll(list2);
+			list.add(trunkPos.offset(direction));
+		}
+
+		for (BlockPos blockPos2 : list) {
+			this.placeRoots(world, replacer, random, blockPos2, config);
+		}
+
+		return true;
 	}
 
 	private boolean canGrow(
@@ -99,8 +104,9 @@ public class MangroveRootPlacer extends RootPlacer {
 		}
 	}
 
+	@Override
 	protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
-		return TreeFeature.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.canGrowThrough()));
+		return super.canGrowThrough(world, pos) || world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.canGrowThrough()));
 	}
 
 	@Override

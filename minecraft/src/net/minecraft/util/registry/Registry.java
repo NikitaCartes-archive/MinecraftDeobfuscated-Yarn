@@ -241,12 +241,10 @@ public abstract class Registry<T> implements Keyable, IndexedIterable<T> {
 	public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = createRegistryKey("worldgen/processor_list");
 	public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = createRegistryKey("worldgen/template_pool");
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
-	public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = createRegistryKey("worldgen/noise");
+	public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_KEY = createRegistryKey("worldgen/noise");
 	public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION_KEY = createRegistryKey("worldgen/density_function");
-	public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_WORLDGEN = createRegistryKey("worldgen/world_preset");
-	public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN = createRegistryKey(
-		"worldgen/flat_level_generator_preset"
-	);
+	public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_KEY = createRegistryKey("worldgen/world_preset");
+	public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_KEY = createRegistryKey("worldgen/flat_level_generator_preset");
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, registry -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");

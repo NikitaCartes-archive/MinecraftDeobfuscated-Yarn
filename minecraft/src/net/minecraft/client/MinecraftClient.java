@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -153,6 +154,7 @@ import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.ClientSamplerSource;
 import net.minecraft.client.util.MacWindowUtil;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
@@ -370,6 +372,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final EntityModelLoader entityModelLoader;
 	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
 	private final UUID deviceSessionId = UUID.randomUUID();
+	private final ProfileKeys profileKeys;
 	@Nullable
 	public ClientPlayerInteractionManager interactionManager;
 	/**
@@ -628,6 +631,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.logOnGlError();
 		this.onResolutionChanged();
 		this.gameRenderer.preloadShaders(this.getResourcePackProvider().getPack().getFactory());
+		this.profileKeys = new ProfileKeys(this.userApiService, this.session.getProfile().getId(), this.runDirectory.toPath());
 		SplashOverlay.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
@@ -839,8 +843,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.versionType;
 	}
 
-	public void setCrashReportSupplier(Supplier<CrashReport> crashReportSupplier) {
-		this.crashReportSupplier = crashReportSupplier;
+	public void setCrashReportSupplierAndAddDetails(CrashReport crashReport) {
+		this.crashReportSupplier = () -> this.addDetailsToCrashReport(crashReport);
+	}
+
+	public void setCrashReportSupplier(CrashReport crashReport) {
+		this.crashReportSupplier = () -> crashReport;
 	}
 
 	public static void printCrashReport(CrashReport report) {
@@ -1966,6 +1974,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.gpuUtilizationPercentage;
 	}
 
+	public ProfileKeys getProfileKeys() {
+		return this.profileKeys;
+	}
+
 	public IntegratedServerLoader createIntegratedServerLoader() {
 		return new IntegratedServerLoader(this, this.levelStorage);
 	}
@@ -2030,7 +2042,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
+		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.profileKeys.getPublicKey())));
 		this.integratedServerConnection = clientConnection;
 	}
 

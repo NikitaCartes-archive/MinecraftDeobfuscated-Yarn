@@ -5,7 +5,6 @@ import net.minecraft.command.argument.MessageArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 public class SayCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -17,9 +16,9 @@ public class SayCommand {
 					Text text2 = Text.translatable("chat.type.announcement", context.getSource().getDisplayName(), text);
 					Entity entity = context.getSource().getEntity();
 					if (entity != null) {
-						context.getSource().getServer().getPlayerManager().broadcast(text2, MessageType.CHAT, entity.getUuid());
+						context.getSource().getServer().getPlayerManager().broadcast(text2, MessageType.SYSTEM, entity.getUuid());
 					} else {
-						context.getSource().getServer().getPlayerManager().broadcast(text2, MessageType.SYSTEM, Util.NIL_UUID);
+						context.getSource().getServer().getPlayerManager().broadcast(text2, serverPlayerEntity -> text2, MessageType.SYSTEM);
 					}
 
 					return 1;

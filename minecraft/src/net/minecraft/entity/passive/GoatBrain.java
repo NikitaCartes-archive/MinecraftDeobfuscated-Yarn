@@ -133,12 +133,13 @@ public class GoatBrain {
 			ImmutableList.of(
 				Pair.of(
 					0,
-					new RamImpactTask<>(
+					new RamImpactTask(
 						goat -> goat.isScreaming() ? SCREAMING_RAM_COOLDOWN_RANGE : RAM_COOLDOWN_RANGE,
 						RAM_TARGET_PREDICATE,
 						3.0F,
 						goat -> goat.isBaby() ? 1.0 : 2.5,
-						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT
+						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_RAM_IMPACT : SoundEvents.ENTITY_GOAT_RAM_IMPACT,
+						goat -> goat.isScreaming() ? SoundEvents.ENTITY_GOAT_SCREAMING_HORN_BREAK : SoundEvents.ENTITY_GOAT_HORN_BREAK
 					)
 				),
 				Pair.of(

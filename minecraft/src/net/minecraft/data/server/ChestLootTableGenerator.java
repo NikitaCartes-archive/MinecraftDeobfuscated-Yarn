@@ -17,6 +17,7 @@ import net.minecraft.loot.function.EnchantWithLevelsLootFunction;
 import net.minecraft.loot.function.ExplorationMapLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.function.SetDamageLootFunction;
+import net.minecraft.loot.function.SetGoatHornSoundLootFunction;
 import net.minecraft.loot.function.SetNameLootFunction;
 import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.function.SetStewEffectLootFunction;
@@ -636,6 +637,12 @@ public class ChestLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(ItemEntry.builder(Items.TRIPWIRE_HOOK).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(ItemEntry.builder(Items.IRON_INGOT).weight(3).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F))))
 						.with(ItemEntry.builder(Items.BOOK).weight(1).apply(EnchantRandomlyLootFunction.builder()))
+				)
+				.pool(
+					LootPool.builder()
+						.rolls(UniformLootNumberProvider.create(0.0F, 1.0F))
+						.with(ItemEntry.builder(Items.GOAT_HORN))
+						.apply(SetGoatHornSoundLootFunction.builder())
 				)
 		);
 		biConsumer.accept(

@@ -15,6 +15,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
@@ -44,13 +45,19 @@ public abstract class RootPlacer {
 		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config
 	);
 
+	protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
+		return TreeFeature.canReplace(world, pos);
+	}
+
 	protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
-		replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
-		if (this.aboveRootPlacement.isPresent()) {
-			AboveRootPlacement aboveRootPlacement = (AboveRootPlacement)this.aboveRootPlacement.get();
-			BlockPos blockPos = pos.up();
-			if (random.nextFloat() < aboveRootPlacement.aboveRootPlacementChance() && world.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir)) {
-				replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().getBlockState(random, blockPos)));
+		if (this.canGrowThrough(world, pos)) {
+			replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
+			if (this.aboveRootPlacement.isPresent()) {
+				AboveRootPlacement aboveRootPlacement = (AboveRootPlacement)this.aboveRootPlacement.get();
+				BlockPos blockPos = pos.up();
+				if (random.nextFloat() < aboveRootPlacement.aboveRootPlacementChance() && world.testBlockState(blockPos, AbstractBlock.AbstractBlockState::isAir)) {
+					replacer.accept(blockPos, this.applyWaterlogging(world, blockPos, aboveRootPlacement.aboveRootProvider().getBlockState(random, blockPos)));
+				}
 			}
 		}
 	}

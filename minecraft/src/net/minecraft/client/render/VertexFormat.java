@@ -18,7 +18,7 @@ public class VertexFormat {
 	private final ImmutableList<VertexFormatElement> elements;
 	private final ImmutableMap<String, VertexFormatElement> elementMap;
 	private final IntList offsets = new IntArrayList();
-	private final int size;
+	private final int vertexSizeByte;
 	@Nullable
 	private VertexBuffer buffer;
 
@@ -32,7 +32,7 @@ public class VertexFormat {
 			i += vertexFormatElement.getByteLength();
 		}
 
-		this.size = i;
+		this.vertexSizeByte = i;
 	}
 
 	public String toString() {
@@ -43,18 +43,18 @@ public class VertexFormat {
 	}
 
 	public int getVertexSizeInteger() {
-		return this.getVertexSize() / 4;
+		return this.getVertexSizeByte() / 4;
 	}
 
-	public int getVertexSize() {
-		return this.size;
+	public int getVertexSizeByte() {
+		return this.vertexSizeByte;
 	}
 
 	public ImmutableList<VertexFormatElement> getElements() {
 		return this.elements;
 	}
 
-	public ImmutableList<String> getShaderAttributes() {
+	public ImmutableList<String> getAttributeNames() {
 		return this.elementMap.keySet().asList();
 	}
 
@@ -63,7 +63,7 @@ public class VertexFormat {
 			return true;
 		} else if (o != null && this.getClass() == o.getClass()) {
 			VertexFormat vertexFormat = (VertexFormat)o;
-			return this.size != vertexFormat.size ? false : this.elementMap.equals(vertexFormat.elementMap);
+			return this.vertexSizeByte != vertexFormat.vertexSizeByte ? false : this.elementMap.equals(vertexFormat.elementMap);
 		} else {
 			return false;
 		}
@@ -73,37 +73,40 @@ public class VertexFormat {
 		return this.elementMap.hashCode();
 	}
 
-	public void startDrawing() {
+	/**
+	 * Specifies for OpenGL how the vertex data should be interpreted.
+	 */
+	public void setupState() {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::innerStartDrawing);
+			RenderSystem.recordRenderCall(this::setupStateInternal);
 		} else {
-			this.innerStartDrawing();
+			this.setupStateInternal();
 		}
 	}
 
-	private void innerStartDrawing() {
-		int i = this.getVertexSize();
+	private void setupStateInternal() {
+		int i = this.getVertexSizeByte();
 		List<VertexFormatElement> list = this.getElements();
 
 		for (int j = 0; j < list.size(); j++) {
-			((VertexFormatElement)list.get(j)).startDrawing(j, (long)this.offsets.getInt(j), i);
+			((VertexFormatElement)list.get(j)).setupState(j, (long)this.offsets.getInt(j), i);
 		}
 	}
 
-	public void endDrawing() {
+	public void clearState() {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(this::innerEndDrawing);
+			RenderSystem.recordRenderCall(this::clearStateInternal);
 		} else {
-			this.innerEndDrawing();
+			this.clearStateInternal();
 		}
 	}
 
-	private void innerEndDrawing() {
+	private void clearStateInternal() {
 		ImmutableList<VertexFormatElement> immutableList = this.getElements();
 
 		for (int i = 0; i < immutableList.size(); i++) {
 			VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(i);
-			vertexFormatElement.endDrawing(i);
+			vertexFormatElement.clearState(i);
 		}
 	}
 
@@ -127,19 +130,30 @@ public class VertexFormat {
 		TRIANGLE_FAN(6, 3, 1, true),
 		QUADS(4, 4, 4, false);
 
-		public final int mode;
-		public final int vertexCount;
-		public final int size;
+		public final int glMode;
+		/**
+		 * The number of vertices needed to form a first shape.
+		 */
+		public final int firstVertexCount;
+		/**
+		 * The number of vertices needed to form an additional shape. In other
+		 * words, it's {@code firstVertexCount - s} where {@code s} is the number
+		 * of vertices shared with the previous shape.
+		 */
+		public final int additionalVertexCount;
+		/**
+		 * Whether there are shared vertices in consecutive shapes.
+		 */
 		public final boolean shareVertices;
 
-		private DrawMode(int mode, int vertexCount, int size, boolean shareVertices) {
-			this.mode = mode;
-			this.vertexCount = vertexCount;
-			this.size = size;
+		private DrawMode(int glMode, int firstVertexCount, int additionalVertexCount, boolean shareVertices) {
+			this.glMode = glMode;
+			this.firstVertexCount = firstVertexCount;
+			this.additionalVertexCount = additionalVertexCount;
 			this.shareVertices = shareVertices;
 		}
 
-		public int getSize(int vertexCount) {
+		public int getIndexCount(int vertexCount) {
 			return switch (this) {
 				case LINE_STRIP, DEBUG_LINES, DEBUG_LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN -> vertexCount;
 				case LINES, QUADS -> vertexCount / 4 * 6;
@@ -149,31 +163,27 @@ public class VertexFormat {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum IntType {
+	public static enum IndexType {
 		BYTE(GlConst.GL_UNSIGNED_BYTE, 1),
 		SHORT(GlConst.GL_UNSIGNED_SHORT, 2),
 		INT(GlConst.GL_UNSIGNED_INT, 4);
 
-		public final int type;
+		public final int glType;
 		public final int size;
 
-		private IntType(int type, int size) {
-			this.type = type;
+		private IndexType(int glType, int size) {
+			this.glType = glType;
 			this.size = size;
 		}
 
 		/**
-		 * Gets the smallest type in which the given number fits.
-		 * 
-		 * @return the smallest type
-		 * 
-		 * @param number a number from 8 to 32 bits of memory
+		 * {@return the smallest type in which {@code indexCount} fits}
 		 */
-		public static VertexFormat.IntType getSmallestTypeFor(int number) {
-			if ((number & -65536) != 0) {
+		public static VertexFormat.IndexType smallestFor(int indexCount) {
+			if ((indexCount & -65536) != 0) {
 				return INT;
 			} else {
-				return (number & 0xFF00) != 0 ? SHORT : BYTE;
+				return (indexCount & 0xFF00) != 0 ? SHORT : BYTE;
 			}
 		}
 	}

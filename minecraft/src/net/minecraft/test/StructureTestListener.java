@@ -159,7 +159,7 @@ class StructureTestListener implements TestListener {
 	}
 
 	protected static void sendMessageToAllPlayers(ServerWorld world, Formatting formatting, String message) {
-		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(Text.literal(message).formatted(formatting), Util.NIL_UUID));
+		world.getPlayers(player -> true).forEach(player -> player.sendMessage(Text.literal(message).formatted(formatting)));
 	}
 
 	private static void addGameTestMarker(ServerWorld world, BlockPos pos, String message) {

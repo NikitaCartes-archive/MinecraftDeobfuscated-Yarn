@@ -170,7 +170,7 @@ public class Shader implements GlShader, AutoCloseable {
 				if (this.attributeNames != null) {
 					int k = 0;
 
-					for (String string3 : format.getShaderAttributes()) {
+					for (String string3 : format.getAttributeNames()) {
 						GlUniform.bindAttribLocation(this.programId, k, string3);
 						this.loadedAttributeIds.add(k);
 						k++;

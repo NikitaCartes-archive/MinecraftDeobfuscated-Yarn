@@ -1,10 +1,13 @@
 package net.minecraft.client.network;
 
 import com.google.common.collect.Lists;
+import com.mojang.logging.LogUtils;
+import java.security.GeneralSecurityException;
+import java.security.Signature;
+import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -53,6 +56,7 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.ElytraItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
@@ -83,12 +87,15 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 
 /**
  * Represents the client's own player entity.
  */
 @Environment(EnvType.CLIENT)
 public class ClientPlayerEntity extends AbstractClientPlayerEntity {
+	public static final Logger field_39078 = LogUtils.getLogger();
 	private static final int field_32671 = 20;
 	private static final int field_32672 = 600;
 	private static final int field_32673 = 100;
@@ -310,7 +317,28 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	 * @param message the message to send
 	 */
 	public void sendChatMessage(String message) {
-		this.networkHandler.sendPacket(new ChatMessageC2SPacket(message));
+		Instant instant = Instant.now();
+		message = StringUtils.normalizeSpace(message);
+		this.networkHandler.sendPacket(new ChatMessageC2SPacket(instant, message, this.signChatMessage(instant, message)));
+	}
+
+	/**
+	 * Signs the chat message. If the chat message cannot be signed, this will return
+	 * {@link NetworkEncryptionUtils.SignatureData#NONE}.
+	 */
+	private NetworkEncryptionUtils.SignatureData signChatMessage(Instant time, String message) {
+		try {
+			Signature signature = this.client.getProfileKeys().createSignatureInstance();
+			if (signature != null) {
+				long l = NetworkEncryptionUtils.SecureRandomUtil.nextLong();
+				NetworkEncryptionUtils.updateSignature(signature, l, this.uuid, time, message);
+				return new NetworkEncryptionUtils.SignatureData(l, signature.sign());
+			}
+		} catch (GeneralSecurityException var6) {
+			field_39078.error("Failed to sign chat message {}", time, var6);
+		}
+
+		return NetworkEncryptionUtils.SignatureData.NONE;
 	}
 
 	@Override
@@ -487,7 +515,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendMessage(Text message) {
 		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 

@@ -76,6 +76,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -198,7 +199,6 @@ public enum NetworkState {
 					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
-					.register(GameMessageS2CPacket.class, GameMessageS2CPacket::new)
 					.register(ClearTitleS2CPacket.class, ClearTitleS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
@@ -234,6 +234,7 @@ public enum NetworkState {
 					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
+					.register(ChatMessageS2CPacket.class, ChatMessageS2CPacket::new)
 					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
 					.register(EnterCombatS2CPacket.class, EnterCombatS2CPacket::new)
 					.register(DeathMessageS2CPacket.class, DeathMessageS2CPacket::new)
@@ -278,6 +279,7 @@ public enum NetworkState {
 					.register(PlaySoundFromEntityS2CPacket.class, PlaySoundFromEntityS2CPacket::new)
 					.register(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
 					.register(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
+					.register(GameMessageS2CPacket.class, GameMessageS2CPacket::new)
 					.register(PlayerListHeaderS2CPacket.class, PlayerListHeaderS2CPacket::new)
 					.register(NbtQueryResponseS2CPacket.class, NbtQueryResponseS2CPacket::new)
 					.register(ItemPickupAnimationS2CPacket.class, ItemPickupAnimationS2CPacket::new)

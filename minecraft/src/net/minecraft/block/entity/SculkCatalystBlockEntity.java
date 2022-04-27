@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
@@ -39,7 +40,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 	public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
 		if (event == GameEvent.ENTITY_DIE && emitter.sourceEntity() instanceof LivingEntity livingEntity) {
 			if (!livingEntity.isExperienceDroppingDisabled()) {
-				this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
+				this.spreadManager.spread(new BlockPos(pos.withBias(Direction.UP, 0.5)), livingEntity.getXpToDrop());
 				livingEntity.disableExperienceDropping();
 				if (livingEntity.getAttacker() instanceof ServerPlayerEntity serverPlayerEntity) {
 					DamageSource damageSource = livingEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : livingEntity.getRecentDamageSource();

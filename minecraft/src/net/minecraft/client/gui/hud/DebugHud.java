@@ -535,8 +535,7 @@ public class DebugHud extends DrawableHelper {
 			l++;
 		}
 
-		bufferBuilder.end();
-		BufferRenderer.drawWithShader(bufferBuilder);
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (showFps) {

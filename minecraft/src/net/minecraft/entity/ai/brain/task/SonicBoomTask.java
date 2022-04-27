@@ -21,7 +21,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	private static final int VERTICAL_RANGE = 20;
 	private static final double field_38852 = 0.5;
 	private static final double field_38853 = 2.5;
-	public static final int COOLDOWN = 100;
+	public static final int COOLDOWN = 40;
 	private static final int SOUND_DELAY = 34;
 	private static final int RUN_TIME = MathHelper.ceil(60.0F);
 
@@ -71,7 +71,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 				}
 
 				wardenEntity.playSound(SoundEvents.ENTITY_WARDEN_SONIC_BOOM, 3.0F, 1.0F);
-				target.damage(DamageSource.mob(wardenEntity), (float)wardenEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+				target.damage(DamageSource.SONIC_BOOM, 10.0F);
 				double d = 0.5 * (1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 				double e = 2.5 * (1.0 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
 				target.addVelocity(vec3d3.getX() * e, vec3d3.getY() * d, vec3d3.getZ() * e);
@@ -80,7 +80,7 @@ public class SonicBoomTask extends Task<WardenEntity> {
 	}
 
 	protected void finishRunning(ServerWorld serverWorld, WardenEntity wardenEntity, long l) {
-		cooldown(wardenEntity, 100);
+		cooldown(wardenEntity, 40);
 	}
 
 	public static void cooldown(LivingEntity warden, int cooldown) {

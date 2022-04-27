@@ -20,7 +20,7 @@ public class WorldPreset {
 				)
 				.apply(instance, WorldPreset::new)
 	);
-	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_KEY, CODEC);
 	private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
 	public WorldPreset(Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions) {

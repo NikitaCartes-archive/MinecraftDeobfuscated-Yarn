@@ -52,8 +52,17 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 
 	@Override
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-		if (world instanceof ServerWorld serverWorld && (entity instanceof PlayerEntity || entity.getPrimaryPassenger() instanceof PlayerEntity)) {
-			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld));
+		Entity entity2;
+		if (entity instanceof PlayerEntity) {
+			entity2 = entity;
+		} else if (entity.getPrimaryPassenger() instanceof PlayerEntity) {
+			entity2 = entity.getPrimaryPassenger();
+		} else {
+			entity2 = null;
+		}
+
+		if (world instanceof ServerWorld serverWorld && entity2 != null) {
+			serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld, entity2));
 		}
 
 		super.onSteppedOn(world, pos, state, entity);
@@ -125,9 +134,11 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+		super.onStacksDropped(state, world, pos, stack, dropExperience);
+		if (dropExperience) {
+			this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+		}
 	}
 
 	@Nullable

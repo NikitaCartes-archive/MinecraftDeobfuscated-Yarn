@@ -23,6 +23,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.InteractionObserver;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -808,23 +809,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected void loot(ItemEntity item) {
-		ItemStack itemStack = item.getStack();
-		if (this.canGather(itemStack)) {
-			SimpleInventory simpleInventory = this.getInventory();
-			boolean bl = simpleInventory.canInsert(itemStack);
-			if (!bl) {
-				return;
-			}
-
-			this.triggerItemPickedUpByEntityCriteria(item);
-			this.sendPickup(item, itemStack.getCount());
-			ItemStack itemStack2 = simpleInventory.addStack(itemStack);
-			if (itemStack2.isEmpty()) {
-				item.discard();
-			} else {
-				itemStack.setCount(itemStack2.getCount());
-			}
-		}
+		InventoryOwner.pickUpItem(this, this, item);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -46,11 +47,14 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -584,7 +588,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
-				this.server.getPlayerManager().broadcast(text, MessageType.SYSTEM, Util.NIL_UUID);
+				this.server.getPlayerManager().broadcast(text, MessageType.SYSTEM);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OTHER_TEAMS) {
 				this.server.getPlayerManager().sendToTeam(this, text);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDE_FOR_OWN_TEAM) {
@@ -1131,7 +1135,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void sendMessage(Text message, boolean actionBar) {
-		this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.NIL_UUID);
+		this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT);
 	}
 
 	@Override
@@ -1280,38 +1284,68 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
-		this.sendMessage(message, MessageType.SYSTEM, sender);
+	public void sendMessage(Text message) {
+		this.sendMessage(message, MessageType.SYSTEM);
 	}
 
 	/**
-	 * Sends a message to the client corresponding to this player.
+	 * Sends a message to the player.
 	 * 
-	 * @see net.minecraft.server.PlayerManager#broadcast(Text, MessageType, UUID)
-	 * 
-	 * @param message the message to send
-	 * @param type the message type
-	 * @param sender {@linkplain Entity#getUuid the UUID of the entity} that sends a message
-	 * or {@link net.minecraft.util.Util#NIL_UUID} to indicate that the message
-	 * is not sent by an entity
+	 * @see #sendMessage(Text)
+	 * @see #sendChatMessage(Text, MessageType, ChatMessageSender, Instant, NetworkEncryptionUtils.SignatureData)
 	 */
-	public void sendMessage(Text message, MessageType type, UUID sender) {
+	public void sendMessage(Text message, MessageType type) {
 		if (this.acceptsMessage(type)) {
+			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type), future -> {
+				if (!future.isSuccess()) {
+					this.sendMessageDeliverError(message, type);
+				}
+			});
+		}
+	}
+
+	@Deprecated
+	public void sendMessage(Text message, UUID uuid) {
+		this.sendMessage(message, MessageType.SYSTEM, uuid);
+	}
+
+	@Deprecated
+	public void sendMessage(Text message, MessageType type, UUID uuid) {
+		if (this.acceptsMessage(type)) {
+			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type), future -> {
+				if (!future.isSuccess()) {
+					this.sendMessageDeliverError(message, type);
+				}
+			});
+		}
+	}
+
+	private void sendMessageDeliverError(Text message, MessageType type) {
+		if ((type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
+			int i = 256;
+			String string = message.asTruncatedString(256);
+			Text text = Text.literal(string).formatted(Formatting.YELLOW);
 			this.networkHandler
-				.sendPacket(
-					new GameMessageS2CPacket(message, type, sender),
-					future -> {
-						if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
-							int i = 256;
-							String string = message.asTruncatedString(256);
-							Text text2 = Text.literal(string).formatted(Formatting.YELLOW);
-							this.networkHandler
-								.sendPacket(
-									new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text2).formatted(Formatting.RED), MessageType.SYSTEM, sender)
-								);
-						}
-					}
-				);
+				.sendPacket(new GameMessageS2CPacket(Text.translatable("multiplayer.message_not_delivered", text).formatted(Formatting.RED), MessageType.SYSTEM));
+		}
+	}
+
+	/**
+	 * Sends a chat message to the player.
+	 * 
+	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
+	 * {@link NetworkEncryptionUtils.SignatureData#NONE} - to send a chat message; however
+	 * if the signature is invalid (e.g. because the text's content differs from the one
+	 * sent by the client, or because the passed signature is invalid) the client will
+	 * log a warning. See {@link NetworkEncryptionUtils#updateSignature} for how the message
+	 * is signed.
+	 * 
+	 * @see #sendMessage(Text)
+	 * @see #sendMessage(Text, MessageType)
+	 */
+	public void sendChatMessage(Text message, MessageType type, ChatMessageSender sender, Instant instant, NetworkEncryptionUtils.SignatureData signature) {
+		if (this.acceptsMessage(type)) {
+			this.networkHandler.sendPacket(new ChatMessageS2CPacket(message, type, sender, instant, signature));
 		}
 	}
 
@@ -1501,7 +1535,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (pos != null) {
 			boolean bl = pos.equals(this.spawnPointPosition) && dimension.equals(this.spawnPointDimension);
 			if (sendMessage && !bl) {
-				this.sendSystemMessage(Text.translatable("block.minecraft.set_spawn"), Util.NIL_UUID);
+				this.sendMessage(Text.translatable("block.minecraft.set_spawn"));
 			}
 
 			this.spawnPointPosition = pos;

@@ -581,9 +581,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.darkSkyBuffer = new VertexBuffer();
-		renderSky(bufferBuilder, -16.0F);
+		BufferBuilder.class_7433 lv = renderSky(bufferBuilder, -16.0F);
 		this.darkSkyBuffer.bind();
-		this.darkSkyBuffer.upload(bufferBuilder);
+		this.darkSkyBuffer.upload(lv);
 		VertexBuffer.unbind();
 	}
 
@@ -595,13 +595,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.lightSkyBuffer = new VertexBuffer();
-		renderSky(bufferBuilder, 16.0F);
+		BufferBuilder.class_7433 lv = renderSky(bufferBuilder, 16.0F);
 		this.lightSkyBuffer.bind();
-		this.lightSkyBuffer.upload(bufferBuilder);
+		this.lightSkyBuffer.upload(lv);
 		VertexBuffer.unbind();
 	}
 
-	private static void renderSky(BufferBuilder builder, float f) {
+	private static BufferBuilder.class_7433 renderSky(BufferBuilder builder, float f) {
 		float g = Math.signum(f) * 512.0F;
 		float h = 512.0F;
 		RenderSystem.setShader(GameRenderer::getPositionShader);
@@ -615,7 +615,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				.next();
 		}
 
-		builder.end();
+		return builder.end();
 	}
 
 	private void renderStars() {
@@ -627,14 +627,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		this.starsBuffer = new VertexBuffer();
-		this.renderStars(bufferBuilder);
-		bufferBuilder.end();
+		BufferBuilder.class_7433 lv = this.renderStars(bufferBuilder);
 		this.starsBuffer.bind();
-		this.starsBuffer.upload(bufferBuilder);
+		this.starsBuffer.upload(lv);
 		VertexBuffer.unbind();
 	}
 
-	private void renderStars(BufferBuilder buffer) {
+	private BufferBuilder.class_7433 renderStars(BufferBuilder buffer) {
 		AbstractRandom abstractRandom = AbstractRandom.createAtomic(10842L);
 		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
 
@@ -677,6 +676,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 			}
 		}
+
+		return buffer.end();
 	}
 
 	public void setWorld(@Nullable ClientWorld world) {
@@ -1885,8 +1886,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							bufferBuilder.vertex(matrix4f, p * 120.0F, q * 120.0F, -q * 40.0F * fs[3]).color(fs[0], fs[1], fs[2], 0.0F).next();
 						}
 
-						bufferBuilder.end();
-						BufferRenderer.drawWithShader(bufferBuilder);
+						BufferRenderer.drawWithShader(bufferBuilder.end());
 						matrices.pop();
 					}
 
@@ -1908,8 +1908,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f2, k, 100.0F, -k).texture(1.0F, 0.0F).next();
 					bufferBuilder.vertex(matrix4f2, k, 100.0F, k).texture(1.0F, 1.0F).next();
 					bufferBuilder.vertex(matrix4f2, -k, 100.0F, k).texture(0.0F, 1.0F).next();
-					bufferBuilder.end();
-					BufferRenderer.drawWithShader(bufferBuilder);
+					BufferRenderer.drawWithShader(bufferBuilder.end());
 					k = 20.0F;
 					RenderSystem.setShaderTexture(0, MOON_PHASES);
 					int r = this.world.getMoonPhase();
@@ -1924,8 +1923,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f2, k, -100.0F, k).texture(t, q).next();
 					bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(t, o).next();
 					bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(p, o).next();
-					bufferBuilder.end();
-					BufferRenderer.drawWithShader(bufferBuilder);
+					BufferRenderer.drawWithShader(bufferBuilder.end());
 					RenderSystem.disableTexture();
 					float u = this.world.method_23787(tickDelta) * i;
 					if (u > 0.0F) {
@@ -2015,10 +2013,9 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 
 				this.cloudsBuffer = new VertexBuffer();
-				this.renderClouds(bufferBuilder, l, m, n, vec3d);
-				bufferBuilder.end();
+				BufferBuilder.class_7433 lv = this.renderClouds(bufferBuilder, l, m, n, vec3d);
 				this.cloudsBuffer.bind();
-				this.cloudsBuffer.upload(bufferBuilder);
+				this.cloudsBuffer.upload(lv);
 				VertexBuffer.unbind();
 			}
 
@@ -2053,7 +2050,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 	}
 
-	private void renderClouds(BufferBuilder builder, double x, double y, double z, Vec3d color) {
+	private BufferBuilder.class_7433 renderClouds(BufferBuilder builder, double x, double y, double z, Vec3d color) {
 		float f = 4.0F;
 		float g = 0.00390625F;
 		int i = 8;
@@ -2257,6 +2254,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 			}
 		}
+
+		return builder.end();
 	}
 
 	private void updateChunks(Camera camera) {
@@ -2396,8 +2395,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 			}
 
-			bufferBuilder.end();
-			BufferRenderer.drawWithShader(bufferBuilder);
+			BufferRenderer.drawWithShader(bufferBuilder.end());
 			RenderSystem.enableCull();
 			RenderSystem.polygonOffset(0.0F, 0.0F);
 			RenderSystem.disablePolygonOffset();

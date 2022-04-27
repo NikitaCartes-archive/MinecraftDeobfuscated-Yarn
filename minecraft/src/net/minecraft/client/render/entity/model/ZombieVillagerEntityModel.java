@@ -41,7 +41,7 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 				.uv(16, 20)
 				.cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 12.0F, 6.0F)
 				.uv(0, 38)
-				.cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 18.0F, 6.0F, new Dilation(0.05F)),
+				.cuboid(-4.0F, 0.0F, -3.0F, 8.0F, 20.0F, 6.0F, new Dilation(0.05F)),
 			ModelTransform.NONE
 		);
 		modelPartData.addChild(

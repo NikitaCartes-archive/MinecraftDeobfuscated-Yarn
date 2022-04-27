@@ -244,8 +244,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			bufferBuilder.end();
-			BufferRenderer.drawWithShader(bufferBuilder);
+			BufferRenderer.drawWithShader(bufferBuilder.end());
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());

@@ -11,6 +11,7 @@ import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,10 +30,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -76,7 +79,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.DynamicSerializableUuid;
 import net.minecraft.util.math.BlockPos;
@@ -204,7 +206,7 @@ public abstract class PlayerManager {
 			mutableText = Text.translatable("multiplayer.player.joined.renamed", player.getDisplayName(), string);
 		}
 
-		this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
+		this.broadcast(mutableText.formatted(Formatting.YELLOW), MessageType.SYSTEM);
 		serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
 		this.players.add(player);
 		this.playerMap.put(player.getUuid(), player);
@@ -555,7 +557,7 @@ public abstract class PlayerManager {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
 				if (serverPlayerEntity != null && serverPlayerEntity != source) {
-					serverPlayerEntity.sendSystemMessage(message, source.getUuid());
+					serverPlayerEntity.sendMessage(message, source.getUuid());
 				}
 			}
 		}
@@ -569,7 +571,7 @@ public abstract class PlayerManager {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
-					serverPlayerEntity.sendSystemMessage(message, source.getUuid());
+					serverPlayerEntity.sendMessage(message, source.getUuid());
 				}
 			}
 		}
@@ -763,55 +765,89 @@ public abstract class PlayerManager {
 		}
 	}
 
+	@Deprecated
+	public void broadcast(Text message, MessageType type, UUID uuid) {
+		this.server.sendMessage(message);
+
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
+			serverPlayerEntity.sendMessage(message, type, uuid);
+		}
+	}
+
 	/**
 	 * Broadcasts a message to all players and the server console.
 	 * 
-	 * @apiNote This method is used to send general messages such as a death
-	 * message or a join/leave message.
+	 * @apiNote This is used to send general messages such as a death
+	 * message or a join/leave message. This is also used to send messages from
+	 * non-player-executed commands, such as ones from a command block or the server console.
 	 * 
-	 * @see #broadcast(Text, Function, MessageType, UUID)
-	 * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
-	 * 
-	 * @param message the message to broadcast
-	 * @param type the message type
-	 * @param sender {@linkplain net.minecraft.entity.Entity#getUuid the UUID of the entity}
-	 * that sends a message or {@link net.minecraft.util.Util#NIL_UUID} to
-	 * indicate that the message is not sent by an entity
+	 * @see #broadcast(Text, Function, MessageType)
+	 * @see #broadcast(Text, Function, MessageType, ChatMessageSender, Instant, NetworkEncryptionUtils.SignatureData)
 	 */
-	public void broadcast(Text message, MessageType type, UUID sender) {
-		this.server.sendSystemMessage(message, sender);
-
-		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			serverPlayerEntity.sendMessage(message, type, sender);
-		}
+	public void broadcast(Text message, MessageType type) {
+		this.broadcast(message, player -> message, type);
 	}
 
 	/**
 	 * Broadcasts a message to all players and the server console. A different
 	 * message can be sent to a different player.
 	 * 
-	 * @apiNote This method is used to broadcast a message sent by a player
-	 * through {@linkplain net.minecraft.client.gui.screen.ChatScreen the chat
-	 * screen}.
+	 * @apiNote This is used by {@link net.minecraft.server.command.MeCommand}
+	 * and {@link net.minecraft.server.command.SayCommand}.
 	 * 
-	 * @see #broadcast(Text, MessageType, UUID)
-	 * @see ServerPlayerEntity#sendMessage(Text, MessageType, UUID)
+	 * @see #broadcast(Text, MessageType)
+	 * @see #broadcast(Text, Function, MessageType, ChatMessageSender, Instant, NetworkEncryptionUtils.SignatureData)
 	 * 
-	 * @param serverMessage the message to send to the server console
-	 * @param playerMessageFactory the factory that provides a message for a player; if {@code null} is
-	 * returned, no message will be sent for that player
-	 * @param type the message type
-	 * @param sender {@linkplain net.minecraft.entity.Entity#getUuid the UUID of the entity}
-	 * that sends a message or {@link net.minecraft.util.Util#NIL_UUID} to
-	 * indicate that the message is not sent by an entity
+	 * @param playerMessageFactory a function that takes the player to send the message to
+	 * and returns either the text to send to them or {@code null}
+	 * to indicate the message should not be sent to them
 	 */
-	public void broadcast(Text serverMessage, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType type, UUID sender) {
-		this.server.sendSystemMessage(serverMessage, sender);
+	public void broadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, MessageType type) {
+		this.server.sendMessage(message);
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			Text text = (Text)playerMessageFactory.apply(serverPlayerEntity);
 			if (text != null) {
-				serverPlayerEntity.sendMessage(text, type, sender);
+				serverPlayerEntity.sendMessage(text, type);
+			}
+		}
+	}
+
+	/**
+	 * Broadcasts a chat message to all players and the server console. A different
+	 * message can be sent to a different player.
+	 * 
+	 * <p>Chat messages have signatures. It is possible to use a bogus signature - such as
+	 * {@link NetworkEncryptionUtils.SignatureData#NONE} - to send a chat message; however
+	 * if the signature is invalid (e.g. because the text's content differs from the one
+	 * sent by the client, or because the passed signature is invalid) the client will
+	 * log a warning. See {@link NetworkEncryptionUtils#updateSignature} for how the message
+	 * is signed.
+	 * 
+	 * @apiNote This method is used to broadcast a message sent by a player
+	 * through {@linkplain net.minecraft.client.gui.screen.ChatScreen the chat screen}.
+	 * 
+	 * @see #broadcast(Text, MessageType)
+	 * @see #broadcast(Text, Function, MessageType)
+	 * 
+	 * @param playerMessageFactory a function that takes the player to send the message to
+	 * and returns either the text to send to them or {@code null}
+	 * to indicate the message should not be sent to them
+	 */
+	public void broadcast(
+		Text message,
+		Function<ServerPlayerEntity, Text> playerMessageFactory,
+		MessageType type,
+		ChatMessageSender sender,
+		Instant instant,
+		NetworkEncryptionUtils.SignatureData signature
+	) {
+		this.server.logChatMessage(sender, message);
+
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
+			Text text = (Text)playerMessageFactory.apply(serverPlayerEntity);
+			if (text != null) {
+				serverPlayerEntity.sendChatMessage(text, type, sender, instant, signature);
 			}
 		}
 	}

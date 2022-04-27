@@ -209,5 +209,10 @@ public class ModelPredicateProviderRegistry {
 
 			return 1.0F;
 		});
+		register(
+			Items.GOAT_HORN,
+			new Identifier("tooting"),
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+		);
 	}
 }

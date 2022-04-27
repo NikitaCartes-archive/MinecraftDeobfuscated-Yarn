@@ -93,7 +93,7 @@ public interface VertexConsumer {
 		int j = js.length / 8;
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL.getVertexSize());
+			ByteBuffer byteBuffer = memoryStack.malloc(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL.getVertexSizeByte());
 			IntBuffer intBuffer = byteBuffer.asIntBuffer();
 
 			for (int k = 0; k < j; k++) {

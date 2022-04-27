@@ -16,12 +16,12 @@ import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldSlotButton extends ButtonWidget {
 	public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
 	public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
+	public static final Identifier CHECKMARK = new Identifier("realms", "textures/gui/realms/checkmark.png");
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
 	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
 	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
@@ -31,7 +31,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	private final Supplier<RealmsServer> serverDataProvider;
 	private final Consumer<Text> tooltipSetter;
 	private final int slotIndex;
-	private int animTick;
 	@Nullable
 	private RealmsWorldSlotButton.State state;
 
@@ -50,7 +49,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	}
 
 	public void tick() {
-		this.animTick++;
 		RealmsServer realmsServer = (RealmsServer)this.serverDataProvider.get();
 		if (realmsServer != null) {
 			RealmsWorldOptions realmsWorldOptions = (RealmsWorldOptions)realmsServer.slots.get(this.slotIndex);
@@ -185,10 +183,9 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		if (active) {
-			float f = 0.85F + 0.15F * MathHelper.cos((float)this.animTick * 0.2F);
-			RenderSystem.setShaderColor(f, f, f, 1.0F);
-		} else {
 			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+		} else {
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		drawTexture(matrices, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
@@ -203,7 +200,20 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		if (active) {
+			this.drawCheckmark(matrices, x, y);
+		}
+
 		drawCenteredText(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
+	}
+
+	private void drawCheckmark(MatrixStack matrices, int x, int y) {
+		RenderSystem.setShaderTexture(0, CHECKMARK);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.enableBlend();
+		RenderSystem.defaultBlendFunc();
+		drawTexture(matrices, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);
+		RenderSystem.disableBlend();
 	}
 
 	@Environment(EnvType.CLIENT)

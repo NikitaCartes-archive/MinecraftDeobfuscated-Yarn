@@ -9,6 +9,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +54,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -149,7 +151,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
@@ -487,9 +488,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(Text.translatable("advMode.notEnabled"), Util.NIL_UUID);
+			this.player.sendMessage(Text.translatable("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(Text.translatable("advMode.notAllowed"), Util.NIL_UUID);
+			this.player.sendMessage(Text.translatable("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
@@ -531,7 +532,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				commandBlockExecutor.markDirty();
 				if (!StringHelper.isEmpty(string)) {
-					this.player.sendSystemMessage(Text.translatable("advMode.setCommand.success", string), Util.NIL_UUID);
+					this.player.sendMessage(Text.translatable("advMode.setCommand.success", string));
 				}
 			}
 		}
@@ -541,9 +542,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
-			this.player.sendSystemMessage(Text.translatable("advMode.notEnabled"), Util.NIL_UUID);
+			this.player.sendMessage(Text.translatable("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
-			this.player.sendSystemMessage(Text.translatable("advMode.notAllowed"), Util.NIL_UUID);
+			this.player.sendMessage(Text.translatable("advMode.notAllowed"));
 		} else {
 			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
 			if (commandBlockExecutor != null) {
@@ -554,7 +555,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				}
 
 				commandBlockExecutor.markDirty();
-				this.player.sendSystemMessage(Text.translatable("advMode.setCommand.success", packet.getCommand()), Util.NIL_UUID);
+				this.player.sendMessage(Text.translatable("advMode.setCommand.success", packet.getCommand()));
 			}
 		}
 	}
@@ -1024,14 +1025,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 						ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 						if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 							Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-							this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
+							this.player.sendMessage(text, MessageType.GAME_INFO);
 						} else if (actionResult.shouldSwingHand()) {
 							this.player.swingHand(hand, true);
 						}
 					}
 				} else {
 					Text text2 = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-					this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
+					this.player.sendMessage(text2, MessageType.GAME_INFO);
 				}
 
 				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
@@ -1100,7 +1101,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.server.forcePlayerSampleUpdate();
 		this.server
 			.getPlayerManager()
-			.broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
+			.broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
 		this.player.getTextStream().onDisconnect();
@@ -1151,38 +1152,59 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onChatMessage(ChatMessageC2SPacket packet) {
-		String string = StringUtils.normalizeSpace(packet.getChatMessage());
-
-		for (int i = 0; i < string.length(); i++) {
-			if (!SharedConstants.isValidChar(string.charAt(i))) {
-				this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
-				return;
-			}
-		}
-
-		if (string.startsWith("/")) {
-			NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-			this.handleMessage(TextStream.Message.permitted(string));
+		if (packet.isExpired(Instant.now())) {
+			LOGGER.warn("{} tried to send expired message", this.player.getName().getString());
+		} else if (hasIllegalCharacter(packet.getChatMessage())) {
+			this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
 		} else {
-			this.filterText(string, this::handleMessage);
+			String string = packet.getNormalizedChatMessage();
+			if (string.startsWith("/")) {
+				NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+				this.handleMessage(packet, TextStream.Message.permitted(string));
+			} else {
+				this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, message));
+			}
 		}
 	}
 
-	private void handleMessage(TextStream.Message message) {
+	/**
+	 * {@return whether {@code message} contains an illegal character}
+	 * 
+	 * @see net.minecraft.SharedConstants#isValidChar(char)
+	 */
+	private static boolean hasIllegalCharacter(String message) {
+		for (int i = 0; i < message.length(); i++) {
+			if (!SharedConstants.isValidChar(message.charAt(i))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
+			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM));
 		} else {
 			this.player.updateLastActionTime();
-			String string = message.getRaw();
+			String string = packet.getNormalizedChatMessage();
 			if (string.startsWith("/")) {
 				this.executeCommand(string);
 			} else {
 				String string2 = message.getFiltered();
-				Text text = string2.isEmpty() ? null : Text.translatable("chat.type.text", this.player.getDisplayName(), string2);
-				Text text2 = Text.translatable("chat.type.text", this.player.getDisplayName(), string);
+				Text text = string2.isEmpty() ? null : Text.literal(string2);
+				Text text2 = Text.literal(packet.getChatMessage());
+				ChatMessageSender chatMessageSender = this.player.asChatMessageSender();
 				this.server
 					.getPlayerManager()
-					.broadcast(text2, player -> this.player.shouldFilterMessagesSentTo(player) ? text : text2, MessageType.CHAT, this.player.getUuid());
+					.broadcast(
+						text2,
+						player -> this.player.shouldFilterMessagesSentTo(player) ? text : text2,
+						MessageType.CHAT,
+						chatMessageSender,
+						packet.getTime(),
+						packet.getSignature()
+					);
 			}
 
 			this.messageCooldown += 20;

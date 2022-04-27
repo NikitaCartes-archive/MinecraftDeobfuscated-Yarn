@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -23,6 +24,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -37,6 +39,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -74,7 +77,10 @@ public class GoatEntity extends AnimalEntity {
 	);
 	public static final int FALL_DAMAGE_SUBTRACTOR = 10;
 	public static final double SCREAMING_CHANCE = 0.02;
+	public static final double field_39046 = 0.1F;
 	private static final TrackedData<Boolean> SCREAMING = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> LEFT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> RIGHT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private boolean preparingRam;
 	private int field_33488;
 
@@ -106,8 +112,10 @@ public class GoatEntity extends AnimalEntity {
 	protected void onGrowUp() {
 		if (this.isBaby()) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.0);
+			this.removeHorns();
 		} else {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0);
+			this.addHorns();
 		}
 	}
 
@@ -210,6 +218,12 @@ public class GoatEntity extends AnimalEntity {
 		AbstractRandom abstractRandom = world.getRandom();
 		GoatBrain.resetLongJumpCooldown(this, abstractRandom);
 		this.setScreaming(abstractRandom.nextDouble() < 0.02);
+		this.onGrowUp();
+		if (!this.isBaby() && (double)abstractRandom.nextFloat() < 0.1F) {
+			TrackedData<Boolean> trackedData = abstractRandom.nextBoolean() ? LEFT_HORN : RIGHT_HORN;
+			this.dataTracker.set(trackedData, false);
+		}
+
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
@@ -228,12 +242,16 @@ public class GoatEntity extends AnimalEntity {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		nbt.putBoolean("IsScreamingGoat", this.isScreaming());
+		nbt.putBoolean("HasLeftHorn", this.hasLeftHorn());
+		nbt.putBoolean("HasRightHorn", this.hasRightHorn());
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setScreaming(nbt.getBoolean("IsScreamingGoat"));
+		this.dataTracker.set(LEFT_HORN, nbt.getBoolean("HasLeftHorn"));
+		this.dataTracker.set(RIGHT_HORN, nbt.getBoolean("HasRightHorn"));
 	}
 
 	@Override
@@ -263,6 +281,53 @@ public class GoatEntity extends AnimalEntity {
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(SCREAMING, false);
+		this.dataTracker.startTracking(LEFT_HORN, true);
+		this.dataTracker.startTracking(RIGHT_HORN, true);
+	}
+
+	public boolean hasLeftHorn() {
+		return this.dataTracker.get(LEFT_HORN);
+	}
+
+	public boolean hasRightHorn() {
+		return this.dataTracker.get(RIGHT_HORN);
+	}
+
+	public boolean dropHorn() {
+		boolean bl = this.hasLeftHorn();
+		boolean bl2 = this.hasRightHorn();
+		if (!bl && !bl2) {
+			return false;
+		} else {
+			TrackedData<Boolean> trackedData;
+			if (!bl) {
+				trackedData = RIGHT_HORN;
+			} else if (!bl2) {
+				trackedData = LEFT_HORN;
+			} else {
+				trackedData = this.random.nextBoolean() ? LEFT_HORN : RIGHT_HORN;
+			}
+
+			this.dataTracker.set(trackedData, false);
+			Vec3d vec3d = this.getPos();
+			ItemStack itemStack = GoatHornItem.getStackForGoat(this);
+			double d = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);
+			double e = (double)MathHelper.nextBetween(this.random, 0.3F, 0.7F);
+			double f = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);
+			ItemEntity itemEntity = new ItemEntity(this.world, vec3d.getX(), vec3d.getY(), vec3d.getZ(), itemStack, d, e, f);
+			this.world.spawnEntity(itemEntity);
+			return true;
+		}
+	}
+
+	public void addHorns() {
+		this.dataTracker.set(LEFT_HORN, true);
+		this.dataTracker.set(RIGHT_HORN, true);
+	}
+
+	public void removeHorns() {
+		this.dataTracker.set(LEFT_HORN, false);
+		this.dataTracker.set(RIGHT_HORN, false);
 	}
 
 	public boolean isScreaming() {

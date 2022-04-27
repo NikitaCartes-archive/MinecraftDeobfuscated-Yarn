@@ -13,17 +13,17 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3092;
+	public static final int WORLD_VERSION = 3093;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "22w16b";
+	public static final String VERSION_NAME = "22w17a";
 	@Deprecated
 	public static final String RELEASE_TARGET = "1.19";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 759;
 	@Deprecated
-	public static final int field_29736 = 81;
+	public static final int field_29736 = 82;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3075;
 	private static final int field_29708 = 30;
 	public static final boolean field_36325 = true;
@@ -135,7 +135,7 @@ public class SharedConstants {
 	 * @apiNote This method is used to determine if the server should
 	 * accept a chat message sent from client.
 	 * 
-	 * @see net.minecraft.server.network.ServerPlayNetworkHandler#onChatMessage
+	 * @see net.minecraft.server.network.ServerPlayNetworkHandler#hasIllegalCharacter
 	 */
 	public static boolean isValidChar(char chr) {
 		return chr != 167 && chr >= ' ' && chr != 127;
@@ -176,7 +176,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741905;
+		return 1073741906;
 	}
 
 	public static boolean method_37896(ChunkPos chunkPos) {

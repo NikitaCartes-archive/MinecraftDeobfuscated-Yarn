@@ -302,8 +302,10 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+		super.onStacksDropped(state, world, pos, stack, dropExperience);
+		if (dropExperience) {
+			this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+		}
 	}
 }

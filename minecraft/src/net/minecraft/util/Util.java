@@ -37,12 +37,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -50,6 +53,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -774,6 +778,54 @@ public class Util {
 			int k = random.nextInt(j);
 			list.set(j - 1, list.set(k, list.get(j - 1)));
 		}
+	}
+
+	/**
+	 * Runs tasks using the prepare-apply model, such as creation of a {@link
+	 * net.minecraft.server.SaveLoader}.
+	 * 
+	 * @apiNote This method takes a function that supplies an executor to use in the
+	 * apply stage. Inside the function, callers should run the preparation,
+	 * and use the passed executor for applying.
+	 * 
+	 * @param resultFactory a function that takes the apply-stage executor and returns the future
+	 */
+	public static <T> CompletableFuture<T> waitAndApply(Function<Executor, CompletableFuture<T>> resultFactory) {
+		return waitAndApply(resultFactory, CompletableFuture::isDone);
+	}
+
+	/**
+	 * Runs tasks using the prepare-apply model.
+	 * 
+	 * @apiNote This method takes a function that supplies an executor to use in the
+	 * apply stage. Inside the function, callers should run the preparation,
+	 * and use the passed executor for applying.
+	 * 
+	 * @param resultFactory a function that takes the apply-stage executor and returns the preliminary result
+	 * @param donePredicate a predicate that, given the result, checks whether applying has finished
+	 */
+	public static <T> T waitAndApply(Function<Executor, T> resultFactory, Predicate<T> donePredicate) {
+		BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue();
+		T object = (T)resultFactory.apply(blockingQueue::add);
+
+		while (!donePredicate.test(object)) {
+			try {
+				Runnable runnable = (Runnable)blockingQueue.poll(100L, TimeUnit.MILLISECONDS);
+				if (runnable != null) {
+					runnable.run();
+				}
+			} catch (InterruptedException var5) {
+				LOGGER.warn("Interrupted wait");
+				break;
+			}
+		}
+
+		int i = blockingQueue.size();
+		if (i > 0) {
+			LOGGER.warn("Tasks left in queue: {}", i);
+		}
+
+		return object;
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

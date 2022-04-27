@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -56,6 +55,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -673,41 +673,41 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	protected void runServer() {
 		try {
-			if (this.setupServer()) {
-				this.timeReference = Util.getMeasuringTimeMs();
-				this.metadata.setDescription(Text.literal(this.motd));
-				this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
-				this.setFavicon(this.metadata);
+			if (!this.setupServer()) {
+				throw new IllegalStateException("Failed to initialize server");
+			}
 
-				while (this.running) {
-					long l = Util.getMeasuringTimeMs() - this.timeReference;
-					if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
-						long m = l / 50L;
-						LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
-						this.timeReference += m * 50L;
-						this.lastTimeReference = this.timeReference;
-					}
+			this.timeReference = Util.getMeasuringTimeMs();
+			this.metadata.setDescription(Text.literal(this.motd));
+			this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
+			this.setFavicon(this.metadata);
 
-					if (this.needsDebugSetup) {
-						this.needsDebugSetup = false;
-						this.debugStart = new MinecraftServer.DebugStart(Util.getMeasuringTimeNano(), this.ticks);
-					}
-
-					this.timeReference += 50L;
-					this.startTickMetrics();
-					this.profiler.push("tick");
-					this.tick(this::shouldKeepTicking);
-					this.profiler.swap("nextTickWait");
-					this.waitingForNextTick = true;
-					this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
-					this.runTasksTillTickEnd();
-					this.profiler.pop();
-					this.endTickMetrics();
-					this.loading = true;
-					FlightProfiler.INSTANCE.onTick(this.tickTime);
+			while (this.running) {
+				long l = Util.getMeasuringTimeMs() - this.timeReference;
+				if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
+					long m = l / 50L;
+					LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", l, m);
+					this.timeReference += m * 50L;
+					this.lastTimeReference = this.timeReference;
 				}
-			} else {
-				this.setCrashReport(null);
+
+				if (this.needsDebugSetup) {
+					this.needsDebugSetup = false;
+					this.debugStart = new MinecraftServer.DebugStart(Util.getMeasuringTimeNano(), this.ticks);
+				}
+
+				this.timeReference += 50L;
+				this.startTickMetrics();
+				this.profiler.push("tick");
+				this.tick(this::shouldKeepTicking);
+				this.profiler.swap("nextTickWait");
+				this.waitingForNextTick = true;
+				this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
+				this.runTasksTillTickEnd();
+				this.profiler.pop();
+				this.endTickMetrics();
+				this.loading = true;
+				FlightProfiler.INSTANCE.onTick(this.tickTime);
 			}
 		} catch (Throwable var44) {
 			LOGGER.error("Encountered an unexpected exception", var44);
@@ -836,9 +836,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	protected void setCrashReport(CrashReport report) {
+		LOGGER.error("Game test server crashed\n{}", report.asString());
 	}
 
 	public void exit() {
+		LOGGER.info("Game test server shutting down");
 	}
 
 	public void tick(BooleanSupplier shouldKeepTicking) {
@@ -1035,7 +1037,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendMessage(Text message) {
 		LOGGER.info(message.getString());
 	}
 
@@ -1372,6 +1374,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public int getNetworkCompressionThreshold() {
 		return 256;
+	}
+
+	public boolean shouldEnforceSecureProfile() {
+		return false;
 	}
 
 	public long getTimeReference() {
@@ -1927,6 +1933,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public int getMaxChainedNeighborUpdates() {
 		return 1000000;
+	}
+
+	public void logChatMessage(ChatMessageSender sender, Text message) {
+		LOGGER.info(Text.translatable("chat.type.text", sender.name(), message).getString());
 	}
 
 	static class DebugStart {
