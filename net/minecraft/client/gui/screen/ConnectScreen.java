@@ -23,6 +23,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
@@ -89,10 +90,12 @@ extends Screen {
                         return;
                     }
                     inetSocketAddress = optional.get();
+                    String string = client.getSession().getUsername();
+                    PlayerPublicKey playerPublicKey = client.getProfileKeys().getPublicKey();
                     ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
                     ConnectScreen.this.connection.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
                     ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getProfile()));
+                    ConnectScreen.this.connection.send(new LoginHelloC2SPacket(string, Optional.ofNullable(playerPublicKey)));
                 } catch (Exception exception) {
                     Exception exception2;
                     if (ConnectScreen.this.connectingCancelled) {
@@ -101,8 +104,8 @@ extends Screen {
                     Throwable throwable = exception.getCause();
                     Exception exception3 = throwable instanceof Exception ? (exception2 = (Exception)throwable) : exception;
                     LOGGER.error("Couldn't connect to server", exception);
-                    String string = inetSocketAddress == null ? exception3.getMessage() : exception3.getMessage().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "").replaceAll(inetSocketAddress.toString(), "");
-                    client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string))));
+                    String string2 = inetSocketAddress == null ? exception3.getMessage() : exception3.getMessage().replaceAll(inetSocketAddress.getHostName() + ":" + inetSocketAddress.getPort(), "").replaceAll(inetSocketAddress.toString(), "");
+                    client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string2))));
                 }
             }
         };

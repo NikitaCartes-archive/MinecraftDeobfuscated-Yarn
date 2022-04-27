@@ -370,9 +370,9 @@ extends RenderPhase {
         if (this.translucent) {
             buffer.sortFrom(cameraX, cameraY, cameraZ);
         }
-        buffer.end();
+        BufferBuilder.class_7433 lv = buffer.end();
         this.startDrawing();
-        BufferRenderer.drawWithShader(buffer);
+        BufferRenderer.drawWithShader(lv);
         this.endDrawing();
     }
 

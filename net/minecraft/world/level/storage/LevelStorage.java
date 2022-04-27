@@ -162,7 +162,7 @@ public class LevelStorage {
                 return null;
             }, Util.getMainWorkerExecutor()));
         }
-        return Util.combineCancellable(list).thenApply(summaries -> summaries.stream().filter(Objects::nonNull).toList());
+        return Util.combineCancellable(list).thenApply(summaries -> summaries.stream().filter(Objects::nonNull).sorted().toList());
     }
 
     private int getCurrentVersion() {

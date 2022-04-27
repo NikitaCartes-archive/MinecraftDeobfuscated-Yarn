@@ -3,8 +3,6 @@
  */
 package net.minecraft.block.entity;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import net.minecraft.block.BlockState;
@@ -16,21 +14,25 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
-import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.structure.pool.SinglePoolElement;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructurePiecesCollector;
+import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.text.Text;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.random.AbstractRandom;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.structure.StructureType;
 
 public class JigsawBlockEntity
 extends BlockEntity {
@@ -123,15 +125,20 @@ extends BlockEntity {
         StructureManager structureManager = world.getStructureManager();
         StructureAccessor structureAccessor = world.getStructureAccessor();
         AbstractRandom abstractRandom = world.getRandom();
-        BlockPos blockPos = this.getPos();
-        ArrayList<PoolStructurePiece> list = Lists.newArrayList();
-        Structure structure = new Structure();
-        structure.saveFromWorld(world, blockPos, new Vec3i(1, 1, 1), false, null);
-        SinglePoolElement structurePoolElement = new SinglePoolElement(structure);
-        PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos));
-        StructurePoolBasedGenerator.generate(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, abstractRandom, world, world.getChunkManager().getNoiseConfig());
-        for (PoolStructurePiece poolStructurePiece2 : list) {
-            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), blockPos, keepJigsaws);
+        Registry<StructurePool> registry = world.getRegistryManager().get(Registry.STRUCTURE_POOL_KEY);
+        RegistryKey<StructurePool> registryKey = RegistryKey.of(Registry.STRUCTURE_POOL_KEY, this.pool);
+        RegistryEntry<StructurePool> registryEntry2 = registry.entryOf(registryKey);
+        BlockPos blockPos = this.getPos().offset(this.getCachedState().get(JigsawBlock.ORIENTATION).getFacing());
+        StructureType.Context context = new StructureType.Context(world.getRegistryManager(), chunkGenerator, chunkGenerator.getBiomeSource(), world.getChunkManager().getNoiseConfig(), structureManager, world.getSeed(), new ChunkPos(blockPos), world, registryEntry -> true);
+        Optional<StructureType.StructurePosition> optional = StructurePoolBasedGenerator.generate(context, registryEntry2, Optional.of(this.target), maxDepth, blockPos, false, Optional.empty(), 128);
+        if (optional.isPresent()) {
+            StructurePiecesCollector structurePiecesCollector = new StructurePiecesCollector();
+            optional.get().generator().accept(structurePiecesCollector);
+            for (StructurePiece structurePiece : structurePiecesCollector.toList().pieces()) {
+                if (!(structurePiece instanceof PoolStructurePiece)) continue;
+                PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
+                poolStructurePiece.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, abstractRandom, BlockBox.infinite(), blockPos, keepJigsaws);
+            }
         }
     }
 

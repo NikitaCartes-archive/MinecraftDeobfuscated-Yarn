@@ -61,13 +61,12 @@ implements SynchronousResourceReloader {
         this.blockModelRenderer.render(world, bakedModel, state, pos, matrices, vertexConsumer, true, this.random, l, OverlayTexture.DEFAULT_UV);
     }
 
-    public boolean renderBlock(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random) {
+    public void renderBlock(BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random) {
         try {
             BlockRenderType blockRenderType = state.getRenderType();
-            if (blockRenderType != BlockRenderType.MODEL) {
-                return false;
+            if (blockRenderType == BlockRenderType.MODEL) {
+                this.blockModelRenderer.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
             }
-            return this.blockModelRenderer.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating block in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -76,9 +75,9 @@ implements SynchronousResourceReloader {
         }
     }
 
-    public boolean renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
+    public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
         try {
-            return this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState);
+            this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating liquid in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");

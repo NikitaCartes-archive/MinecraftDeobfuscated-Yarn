@@ -19,20 +19,20 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.event.listener.VibrationListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class SculkSensorBlockEntity
 extends BlockEntity
-implements SculkSensorListener.Callback {
+implements VibrationListener.Callback {
     private static final Logger field_38236 = LogUtils.getLogger();
-    private SculkSensorListener listener;
+    private VibrationListener listener;
     private int lastVibrationFrequency;
 
     public SculkSensorBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.SCULK_SENSOR, pos, state);
-        this.listener = new SculkSensorListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this, null, 0, 0);
+        this.listener = new VibrationListener(new BlockPositionSource(this.pos), ((SculkSensorBlock)state.getBlock()).getRange(), this, null, 0, 0);
     }
 
     @Override
@@ -40,7 +40,7 @@ implements SculkSensorListener.Callback {
         super.readNbt(nbt);
         this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
         if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38236::error).ifPresent(listener -> {
+            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38236::error).ifPresent(listener -> {
                 this.listener = listener;
             });
         }
@@ -50,10 +50,10 @@ implements SculkSensorListener.Callback {
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
-        SculkSensorListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(field_38236::error).ifPresent(listenerNbt -> nbt.put("listener", (NbtElement)listenerNbt));
+        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.listener).resultOrPartial(field_38236::error).ifPresent(listenerNbt -> nbt.put("listener", (NbtElement)listenerNbt));
     }
 
-    public SculkSensorListener getEventListener() {
+    public VibrationListener getEventListener() {
         return this.listener;
     }
 

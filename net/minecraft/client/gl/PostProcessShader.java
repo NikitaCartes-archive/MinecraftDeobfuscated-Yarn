@@ -85,8 +85,7 @@ implements AutoCloseable {
         bufferBuilder.vertex(f, 0.0, 500.0).next();
         bufferBuilder.vertex(f, g, 500.0).next();
         bufferBuilder.vertex(0.0, g, 500.0).next();
-        bufferBuilder.end();
-        BufferRenderer.drawWithoutShader(bufferBuilder);
+        BufferRenderer.drawWithoutShader(bufferBuilder.end());
         RenderSystem.depthFunc(515);
         this.program.disable();
         this.output.endWrite();

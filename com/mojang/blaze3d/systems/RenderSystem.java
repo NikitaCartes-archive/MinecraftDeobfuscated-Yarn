@@ -1183,7 +1183,7 @@ public class RenderSystem {
         private final int increment;
         private final IndexMapper indexMapper;
         private int id;
-        private VertexFormat.IntType elementFormat = VertexFormat.IntType.BYTE;
+        private VertexFormat.IndexType indexType = VertexFormat.IndexType.BYTE;
         private int size;
 
         IndexBuffer(int sizeMultiplier, int increment, IndexMapper indexMapper) {
@@ -1210,14 +1210,14 @@ public class RenderSystem {
             }
             newSize = MathHelper.roundUpToMultiple(newSize * 2, this.increment);
             LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", (Object)this.size, (Object)newSize);
-            VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
-            int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
+            VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(newSize);
+            int i = MathHelper.roundUpToMultiple(newSize * indexType.size, 4);
             GlStateManager._glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, i, GlConst.GL_DYNAMIC_DRAW);
             ByteBuffer byteBuffer = GlStateManager.mapBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, GlConst.GL_WRITE_ONLY);
             if (byteBuffer == null) {
                 throw new RuntimeException("Failed to map GL buffer");
             }
-            this.elementFormat = intType;
+            this.indexType = indexType;
             IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
             for (int j = 0; j < newSize; j += this.increment) {
                 this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
@@ -1227,7 +1227,7 @@ public class RenderSystem {
         }
 
         private IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
-            switch (this.elementFormat) {
+            switch (this.indexType) {
                 case BYTE: {
                     return index -> indicesBuffer.put((byte)index);
                 }
@@ -1238,8 +1238,8 @@ public class RenderSystem {
             return indicesBuffer::putInt;
         }
 
-        public VertexFormat.IntType getElementFormat() {
-            return this.elementFormat;
+        public VertexFormat.IndexType getIndexType() {
+            return this.indexType;
         }
 
         @Environment(value=EnvType.CLIENT)

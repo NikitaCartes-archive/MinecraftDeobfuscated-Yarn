@@ -24,6 +24,7 @@ public final class ItemTags {
     public static final TagKey<Item> DOORS = ItemTags.of("doors");
     public static final TagKey<Item> SAPLINGS = ItemTags.of("saplings");
     public static final TagKey<Item> LOGS_THAT_BURN = ItemTags.of("logs_that_burn");
+    public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = ItemTags.of("overworld_natural_logs");
     public static final TagKey<Item> LOGS = ItemTags.of("logs");
     public static final TagKey<Item> DARK_OAK_LOGS = ItemTags.of("dark_oak_logs");
     public static final TagKey<Item> OAK_LOGS = ItemTags.of("oak_logs");

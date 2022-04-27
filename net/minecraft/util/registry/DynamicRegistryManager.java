@@ -76,10 +76,10 @@ public interface DynamicRegistryManager {
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_PROCESSOR_LIST_KEY, StructureProcessorType.PROCESSORS_CODEC);
         DynamicRegistryManager.register(builder, Registry.STRUCTURE_POOL_KEY, StructurePool.CODEC);
         DynamicRegistryManager.register(builder, Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings.CODEC);
-        DynamicRegistryManager.register(builder, Registry.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.CODEC);
+        DynamicRegistryManager.register(builder, Registry.NOISE_KEY, DoublePerlinNoiseSampler.NoiseParameters.CODEC);
         DynamicRegistryManager.register(builder, Registry.DENSITY_FUNCTION_KEY, DensityFunction.CODEC);
-        DynamicRegistryManager.register(builder, Registry.WORLD_PRESET_WORLDGEN, WorldPreset.CODEC);
-        DynamicRegistryManager.register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPreset.CODEC);
+        DynamicRegistryManager.register(builder, Registry.WORLD_PRESET_KEY, WorldPreset.CODEC);
+        DynamicRegistryManager.register(builder, Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPreset.CODEC);
         return builder.build();
     });
     public static final Codec<DynamicRegistryManager> CODEC = DynamicRegistryManager.createCodec();

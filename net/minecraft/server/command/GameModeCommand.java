@@ -14,7 +14,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
@@ -35,7 +34,7 @@ public class GameModeCommand {
             source.sendFeedback(Text.translatable("commands.gamemode.success.self", text), true);
         } else {
             if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendSystemMessage(Text.translatable("gameMode.changed", text), Util.NIL_UUID);
+                player.sendMessage(Text.translatable("gameMode.changed", text));
             }
             source.sendFeedback(Text.translatable("commands.gamemode.success.other", player.getDisplayName(), text), true);
         }

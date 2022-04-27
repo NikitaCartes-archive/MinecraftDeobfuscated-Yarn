@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LichenGrower;
+import net.minecraft.block.Material;
 import net.minecraft.block.SculkSpreadable;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.SculkSpreadManager;
@@ -187,7 +188,11 @@ Waterloggable {
             if (!fluidState.isEmpty() && !fluidState.isOf(Fluids.WATER)) {
                 return false;
             }
-            return state.getMaterial().isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
+            Material material = state.getMaterial();
+            if (material == Material.FIRE) {
+                return false;
+            }
+            return material.isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
         }
 
         @Override

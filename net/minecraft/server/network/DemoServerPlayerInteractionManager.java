@@ -11,7 +11,6 @@ import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -49,7 +48,7 @@ extends ServerPlayerInteractionManager {
                 if (m == 6L) {
                     this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, GameStateChangeS2CPacket.DEMO_EXPIRY_NOTICE));
                 } else {
-                    this.player.sendSystemMessage(Text.translatable("demo.day." + m), Util.NIL_UUID);
+                    this.player.sendMessage(Text.translatable("demo.day." + m));
                 }
             }
         } else if (m == 1L) {
@@ -61,13 +60,13 @@ extends ServerPlayerInteractionManager {
                 this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN, GameStateChangeS2CPacket.DEMO_INVENTORY_HELP));
             }
         } else if (m == 5L && l % 24000L == 22000L) {
-            this.player.sendSystemMessage(Text.translatable("demo.day.warning"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("demo.day.warning"));
         }
     }
 
     private void sendDemoReminder() {
         if (this.reminderTicks > 100) {
-            this.player.sendSystemMessage(Text.translatable("demo.reminder"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("demo.reminder"));
             this.reminderTicks = 0;
         }
     }

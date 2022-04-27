@@ -5,6 +5,7 @@ package net.minecraft.client.realms;
 
 import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,7 @@ import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
@@ -64,7 +66,9 @@ public class RealmsConnection {
                     if (RealmsConnection.this.aborted) {
                         return;
                     }
-                    RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
+                    String string4 = minecraftClient.getSession().getUsername();
+                    PlayerPublicKey playerPublicKey = minecraftClient.getProfileKeys().getPublicKey();
+                    RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string4, Optional.ofNullable(playerPublicKey)));
                     minecraftClient.setCurrentServerEntry(server.createServerInfo(string));
                 } catch (Exception exception) {
                     minecraftClient.getResourcePackProvider().clear();
@@ -72,12 +76,12 @@ public class RealmsConnection {
                         return;
                     }
                     LOGGER.error("Couldn't connect to world", exception);
-                    String string3 = exception.toString();
+                    String string2 = exception.toString();
                     if (inetSocketAddress != null) {
-                        String string2 = inetSocketAddress + ":" + i;
-                        string3 = string3.replaceAll(string2, "");
+                        String string3 = inetSocketAddress + ":" + i;
+                        string2 = string2.replaceAll(string3, "");
                     }
-                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string3));
+                    DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string2));
                     minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
                 }
             }

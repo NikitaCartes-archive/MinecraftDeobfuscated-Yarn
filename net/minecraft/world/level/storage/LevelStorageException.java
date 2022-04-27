@@ -7,15 +7,15 @@ import net.minecraft.text.Text;
 
 public class LevelStorageException
 extends RuntimeException {
-    private final Text message;
+    private final Text messageText;
 
-    public LevelStorageException(Text message) {
-        super(message.getString());
-        this.message = message;
+    public LevelStorageException(Text messageText) {
+        super(messageText.getString());
+        this.messageText = messageText;
     }
 
-    public Text getMessage() {
-        return this.message;
+    public Text getMessageText() {
+        return this.messageText;
     }
 }
 

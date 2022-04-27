@@ -30,8 +30,7 @@ public class Tessellator {
     }
 
     public void draw() {
-        this.buffer.end();
-        BufferRenderer.drawWithShader(this.buffer);
+        BufferRenderer.drawWithShader(this.buffer.end());
     }
 
     public BufferBuilder getBuffer() {

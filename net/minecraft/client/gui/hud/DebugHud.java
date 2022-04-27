@@ -416,8 +416,7 @@ extends DrawableHelper {
             ++l;
             k = metricsData.wrapIndex(k + 1);
         }
-        bufferBuilder.end();
-        BufferRenderer.drawWithShader(bufferBuilder);
+        BufferRenderer.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
         if (showFps) {

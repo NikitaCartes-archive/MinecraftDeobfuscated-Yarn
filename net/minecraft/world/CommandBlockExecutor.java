@@ -5,7 +5,6 @@ package net.minecraft.world;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -147,7 +146,7 @@ implements CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendMessage(Text message) {
         if (this.trackOutput) {
             this.lastOutput = Text.literal("[" + DATE_FORMAT.format(new Date()) + "] ").append(message);
             this.markDirty();

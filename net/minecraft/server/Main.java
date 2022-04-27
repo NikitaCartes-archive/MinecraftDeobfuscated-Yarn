@@ -141,10 +141,10 @@ public class Main {
             }
             ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(session.getDirectory(WorldSavePath.DATAPACKS).toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
-                DataPackSettings dataPackSettings2 = Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
-                SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings2, bl);
+                DataPackSettings dataPackSettings = Objects.requireNonNullElse(session.getDataPackSettings(), DataPackSettings.SAFE_MODE);
+                SaveLoading.DataPacks dataPacks = new SaveLoading.DataPacks(resourcePackManager, dataPackSettings, bl);
                 SaveLoading.ServerConfig serverConfig = new SaveLoading.ServerConfig(dataPacks, CommandManager.RegistrationEnvironment.DEDICATED, serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel);
-                saveLoader = SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
+                saveLoader = (SaveLoader)Util.waitAndApply(executor -> SaveLoader.load(serverConfig, (resourceManager, dataPackSettings) -> {
                     GeneratorOptions generatorOptions;
                     LevelInfo levelInfo;
                     DynamicRegistryManager.Mutable mutable = DynamicRegistryManager.createAndLoad();
@@ -163,7 +163,7 @@ public class Main {
                     }
                     LevelProperties levelProperties = new LevelProperties(levelInfo, generatorOptions, Lifecycle.stable());
                     return Pair.of(levelProperties, mutable.toImmutable());
-                }, Util.getMainWorkerExecutor(), Runnable::run).get();
+                }, Util.getMainWorkerExecutor(), executor)).get();
             } catch (Exception exception) {
                 LOGGER.warn("Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", exception);
                 return;

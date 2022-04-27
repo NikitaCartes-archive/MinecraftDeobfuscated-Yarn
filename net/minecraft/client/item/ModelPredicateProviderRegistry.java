@@ -177,6 +177,7 @@ public class ModelPredicateProviderRegistry {
             }
             return 1.0f;
         });
+        ModelPredicateProviderRegistry.register(Items.GOAT_HORN, new Identifier("tooting"), (itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0f : 0.0f);
     }
 }
 

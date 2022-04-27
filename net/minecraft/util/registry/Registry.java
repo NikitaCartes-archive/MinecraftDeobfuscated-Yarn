@@ -248,10 +248,10 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<StructureProcessorList>> STRUCTURE_PROCESSOR_LIST_KEY = Registry.createRegistryKey("worldgen/processor_list");
     public static final RegistryKey<Registry<StructurePool>> STRUCTURE_POOL_KEY = Registry.createRegistryKey("worldgen/template_pool");
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
-    public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_WORLDGEN = Registry.createRegistryKey("worldgen/noise");
+    public static final RegistryKey<Registry<DoublePerlinNoiseSampler.NoiseParameters>> NOISE_KEY = Registry.createRegistryKey("worldgen/noise");
     public static final RegistryKey<Registry<DensityFunction>> DENSITY_FUNCTION_KEY = Registry.createRegistryKey("worldgen/density_function");
-    public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_WORLDGEN = Registry.createRegistryKey("worldgen/world_preset");
-    public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN = Registry.createRegistryKey("worldgen/flat_level_generator_preset");
+    public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET_KEY = Registry.createRegistryKey("worldgen/world_preset");
+    public static final RegistryKey<Registry<FlatLevelGeneratorPreset>> FLAT_LEVEL_GENERATOR_PRESET_KEY = Registry.createRegistryKey("worldgen/flat_level_generator_preset");
     public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = Registry.createRegistryKey("worldgen/carver");
     public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, registry -> Carver.CAVE);
     public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = Registry.createRegistryKey("worldgen/feature");

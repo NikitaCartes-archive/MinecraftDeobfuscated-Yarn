@@ -117,7 +117,7 @@ extends Entity {
 
     @Override
     protected Entity.MoveEffect getMoveEffect() {
-        return Entity.MoveEffect.NONE;
+        return Entity.MoveEffect.EVENTS;
     }
 
     @Override
@@ -200,8 +200,8 @@ extends Entity {
         this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)this.random.nextFloat(), this.getY() + 0.7, this.getZ() + (double)this.random.nextFloat(), 0.0, 0.0, 0.0);
         if (this.random.nextInt(20) == 0) {
             this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat(), false);
+            this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
         }
-        this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
     }
 
     @Override
@@ -305,7 +305,6 @@ extends Entity {
                     double d = i == 1 ? -vec3d.z : vec3d.z;
                     double e = i == 1 ? vec3d.x : -vec3d.x;
                     this.world.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat());
-                    this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new Vec3d(this.getX() + d, this.getY(), this.getZ() + e));
                 }
                 int n = i;
                 this.paddlePhases[n] = this.paddlePhases[n] + 0.3926991f;

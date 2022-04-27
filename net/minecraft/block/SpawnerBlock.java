@@ -36,10 +36,12 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-        super.onStacksDropped(state, world, pos, stack);
-        int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
-        this.dropExperience(world, pos, i);
+    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+        super.onStacksDropped(state, world, pos, stack, dropExperience);
+        if (dropExperience) {
+            int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
+            this.dropExperience(world, pos, i);
+        }
     }
 
     @Override

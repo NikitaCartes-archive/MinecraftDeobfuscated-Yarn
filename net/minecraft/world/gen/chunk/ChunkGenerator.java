@@ -109,7 +109,7 @@ public abstract class ChunkGenerator {
     private final Map<ConcentricRingsStructurePlacement, CompletableFuture<List<ChunkPos>>> concentricRingPositions = new Object2ObjectArrayMap<ConcentricRingsStructurePlacement, CompletableFuture<List<ChunkPos>>>();
     private boolean hasComputedStructurePlacements;
 
-    protected static final <T extends ChunkGenerator> Products.P1<RecordCodecBuilder.Mu<T>, Registry<StructureSet>> createStructureSetRegistryGetter(RecordCodecBuilder.Instance<T> instance) {
+    protected static <T extends ChunkGenerator> Products.P1<RecordCodecBuilder.Mu<T>, Registry<StructureSet>> createStructureSetRegistryGetter(RecordCodecBuilder.Instance<T> instance) {
         return instance.group(RegistryOps.createRegistryCodec(Registry.STRUCTURE_SET_KEY).forGetter(chunkGenerator -> chunkGenerator.structureSetRegistry));
     }
 
@@ -134,16 +134,18 @@ public abstract class ChunkGenerator {
     private void computeStructurePlacements(NoiseConfig noiseConfig) {
         Set<RegistryEntry<Biome>> set = this.biomeSource.getBiomes();
         this.streamStructureSets().forEach(structureSet -> {
+            StructurePlacement structurePlacement;
             StructureSet structureSet2 = (StructureSet)structureSet.value();
+            boolean bl = false;
             for (StructureSet.WeightedEntry weightedEntry : structureSet2.structures()) {
-                this.structurePlacements.computeIfAbsent(weightedEntry.structure().value(), structureType -> new ArrayList()).add(structureSet2.placement());
+                StructureType structureType2 = weightedEntry.structure().value();
+                if (!structureType2.getValidBiomes().stream().anyMatch(set::contains)) continue;
+                this.structurePlacements.computeIfAbsent(structureType2, structureType -> new ArrayList()).add(structureSet2.placement());
+                bl = true;
             }
-            StructurePlacement structurePlacement = structureSet2.placement();
-            if (structurePlacement instanceof ConcentricRingsStructurePlacement) {
+            if (bl && (structurePlacement = structureSet2.placement()) instanceof ConcentricRingsStructurePlacement) {
                 ConcentricRingsStructurePlacement concentricRingsStructurePlacement = (ConcentricRingsStructurePlacement)structurePlacement;
-                if (set.stream().anyMatch(concentricRingsStructurePlacement.getPreferredBiomes()::contains)) {
-                    this.concentricRingPositions.put(concentricRingsStructurePlacement, this.generateConcentricRingPositions((RegistryEntry<StructureSet>)structureSet, noiseConfig, concentricRingsStructurePlacement));
-                }
+                this.concentricRingPositions.put(concentricRingsStructurePlacement, this.generateConcentricRingPositions((RegistryEntry<StructureSet>)structureSet, noiseConfig, concentricRingsStructurePlacement));
             }
         });
     }
@@ -220,25 +222,19 @@ public abstract class ChunkGenerator {
      */
     @Nullable
     public Pair<BlockPos, RegistryEntry<StructureType>> locateStructure(ServerWorld world, RegistryEntryList<StructureType> structures, BlockPos center, int radius, boolean skipExistingChunks) {
-        Set set = structures.stream().flatMap(registryEntry -> ((StructureType)registryEntry.value()).getValidBiomes().stream()).collect(Collectors.toSet());
-        if (set.isEmpty()) {
-            return null;
+        Object2ObjectArrayMap<StructurePlacement, Set> map = new Object2ObjectArrayMap<StructurePlacement, Set>();
+        for (RegistryEntry registryEntry : structures) {
+            for (StructurePlacement structurePlacement2 : this.method_41055(registryEntry, world.getChunkManager().getNoiseConfig())) {
+                map.computeIfAbsent(structurePlacement2, structurePlacement -> new ObjectArraySet()).add(registryEntry);
+            }
         }
-        Set<RegistryEntry<Biome>> set2 = this.biomeSource.getBiomes();
-        if (Collections.disjoint(set2, set)) {
+        if (map.isEmpty()) {
             return null;
         }
         Pair<BlockPos, RegistryEntry<StructureType>> pair = null;
         double d = Double.MAX_VALUE;
-        Object2ObjectArrayMap<StructurePlacement, Set> map = new Object2ObjectArrayMap<StructurePlacement, Set>();
-        for (RegistryEntry registryEntry2 : structures) {
-            if (set2.stream().noneMatch(((StructureType)registryEntry2.value()).getValidBiomes()::contains)) continue;
-            for (StructurePlacement structurePlacement2 : this.method_41055(registryEntry2, world.getChunkManager().getNoiseConfig())) {
-                map.computeIfAbsent(structurePlacement2, structurePlacement -> new ObjectArraySet()).add(registryEntry2);
-            }
-        }
         StructureAccessor structureAccessor = world.getStructureAccessor();
-        ArrayList arrayList = new ArrayList(map.size());
+        ArrayList list = new ArrayList(map.size());
         for (Map.Entry entry : map.entrySet()) {
             StructurePlacement structurePlacement2 = (StructurePlacement)entry.getKey();
             if (structurePlacement2 instanceof ConcentricRingsStructurePlacement) {
@@ -252,14 +248,14 @@ public abstract class ChunkGenerator {
                 continue;
             }
             if (!(structurePlacement2 instanceof RandomSpreadStructurePlacement)) continue;
-            arrayList.add(entry);
+            list.add(entry);
         }
-        if (!arrayList.isEmpty()) {
+        if (!list.isEmpty()) {
             int i = ChunkSectionPos.getSectionCoord(center.getX());
             int j = ChunkSectionPos.getSectionCoord(center.getZ());
             for (int k = 0; k <= radius; ++k) {
                 boolean bl = false;
-                for (Map.Entry entry : arrayList) {
+                for (Map.Entry entry : list) {
                     RandomSpreadStructurePlacement randomSpreadStructurePlacement = (RandomSpreadStructurePlacement)entry.getKey();
                     Pair<BlockPos, RegistryEntry<StructureType>> pair3 = ChunkGenerator.method_40146((Set)entry.getValue(), world, structureAccessor, i, j, k, skipExistingChunks, world.getSeed(), randomSpreadStructurePlacement);
                     if (pair3 == null) continue;

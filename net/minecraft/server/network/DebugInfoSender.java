@@ -39,7 +39,7 @@ import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -136,8 +136,8 @@ public class DebugInfoSender {
         Brain<Path> brain = entity.getBrain();
         long l = entity.world.getTime();
         if (entity instanceof InventoryOwner) {
-            Inventory inventory = ((InventoryOwner)((Object)entity)).getInventory();
-            buf2.writeString(inventory.isEmpty() ? "" : inventory.toString());
+            SimpleInventory inventory = ((InventoryOwner)((Object)entity)).getInventory();
+            buf2.writeString(inventory.isEmpty() ? "" : ((Object)inventory).toString());
         } else {
             buf2.writeString("");
         }

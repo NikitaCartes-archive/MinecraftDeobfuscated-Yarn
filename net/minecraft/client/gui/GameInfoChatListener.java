@@ -3,13 +3,14 @@
  */
 package net.minecraft.client.gui;
 
-import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ClientChatListener;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.MessageType;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GameInfoChatListener
@@ -21,7 +22,7 @@ implements ClientChatListener {
     }
 
     @Override
-    public void onChatMessage(MessageType type, Text message, UUID sender) {
+    public void onChatMessage(MessageType type, Text message, @Nullable ChatMessageSender sender) {
         this.client.inGameHud.setOverlayMessage(message, false);
     }
 }

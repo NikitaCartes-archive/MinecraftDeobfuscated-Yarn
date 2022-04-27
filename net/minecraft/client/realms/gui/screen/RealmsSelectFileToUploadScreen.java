@@ -57,15 +57,7 @@ extends RealmsScreen {
 
     private void loadLevelList() throws Exception {
         LevelStorage.LevelList levelList = this.client.getLevelStorage().getLevelList();
-        this.levelList = this.client.getLevelStorage().loadSummaries(levelList).join().stream().filter(a -> !a.requiresConversion() && !a.isLocked()).sorted((a, b) -> {
-            if (a.getLastPlayed() < b.getLastPlayed()) {
-                return 1;
-            }
-            if (a.getLastPlayed() > b.getLastPlayed()) {
-                return -1;
-            }
-            return a.getName().compareTo(b.getName());
-        }).collect(Collectors.toList());
+        this.levelList = this.client.getLevelStorage().loadSummaries(levelList).join().stream().filter(a -> !a.requiresConversion() && !a.isLocked()).collect(Collectors.toList());
         for (LevelSummary levelSummary : this.levelList) {
             this.worldSelectionList.addEntry(levelSummary);
         }

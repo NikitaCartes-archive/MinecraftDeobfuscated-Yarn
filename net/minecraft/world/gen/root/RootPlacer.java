@@ -18,6 +18,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.TestableWorld;
+import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.root.AboveRootPlacement;
 import net.minecraft.world.gen.root.RootPlacerType;
@@ -43,7 +44,14 @@ public abstract class RootPlacer {
 
     public abstract boolean generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, AbstractRandom var3, BlockPos var4, BlockPos var5, TreeFeatureConfig var6);
 
+    protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
+        return TreeFeature.canReplace(world, pos);
+    }
+
     protected void placeRoots(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, TreeFeatureConfig config) {
+        if (!this.canGrowThrough(world, pos)) {
+            return;
+        }
         replacer.accept(pos, this.applyWaterlogging(world, pos, this.rootProvider.getBlockState(random, pos)));
         if (this.aboveRootPlacement.isPresent()) {
             AboveRootPlacement aboveRootPlacement = this.aboveRootPlacement.get();

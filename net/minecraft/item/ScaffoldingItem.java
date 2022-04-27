@@ -14,7 +14,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -42,7 +41,7 @@ extends BlockItem {
                     PlayerEntity playerEntity = context.getPlayer();
                     int j = world.getTopY();
                     if (!(playerEntity instanceof ServerPlayerEntity) || mutable.getY() < j) break;
-                    ((ServerPlayerEntity)playerEntity).sendMessage(Text.translatable("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO, Util.NIL_UUID);
+                    ((ServerPlayerEntity)playerEntity).sendMessage((Text)Text.translatable("build.tooHigh", j - 1).formatted(Formatting.RED), MessageType.GAME_INFO);
                     break;
                 }
                 blockState = world.getBlockState(mutable);

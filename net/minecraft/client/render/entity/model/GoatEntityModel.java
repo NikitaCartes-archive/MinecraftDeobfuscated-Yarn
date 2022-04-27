@@ -14,7 +14,6 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.entity.passive.GoatEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 
 /**
  * Represents the model of a {@linkplain GoatEntity}.
@@ -79,8 +78,8 @@ extends QuadrupedEntityModel<T> {
 
     @Override
     public void setAngles(T goatEntity, float f, float g, float h, float i, float j) {
-        this.head.getChild((String)EntityModelPartNames.LEFT_HORN).visible = !((PassiveEntity)goatEntity).isBaby();
-        this.head.getChild((String)EntityModelPartNames.RIGHT_HORN).visible = !((PassiveEntity)goatEntity).isBaby();
+        this.head.getChild((String)EntityModelPartNames.LEFT_HORN).visible = ((GoatEntity)goatEntity).hasLeftHorn();
+        this.head.getChild((String)EntityModelPartNames.RIGHT_HORN).visible = ((GoatEntity)goatEntity).hasRightHorn();
         super.setAngles(goatEntity, f, g, h, i, j);
         float k = ((GoatEntity)goatEntity).getHeadPitch();
         if (k != 0.0f) {

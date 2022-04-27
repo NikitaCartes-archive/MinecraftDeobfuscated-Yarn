@@ -6,8 +6,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.network.Packet;
@@ -88,42 +86,20 @@ implements Packet<ClientPlayPacketListener> {
         ADD_PLAYER{
 
             @Override
-            protected Entry read(PacketByteBuf buf2) {
-                GameProfile gameProfile = new GameProfile(buf2.readUuid(), buf2.readString(16));
-                PropertyMap propertyMap = gameProfile.getProperties();
-                buf2.forEachInCollection(buf -> {
-                    String string = buf.readString();
-                    String string2 = buf.readString();
-                    if (buf.readBoolean()) {
-                        String string3 = buf.readString();
-                        propertyMap.put(string, new Property(string, string2, string3));
-                    } else {
-                        propertyMap.put(string, new Property(string, string2));
-                    }
-                });
-                GameMode gameMode = GameMode.byId(buf2.readVarInt());
-                int i = buf2.readVarInt();
-                Text text = PlayerListS2CPacket.readOptionalText(buf2);
+            protected Entry read(PacketByteBuf buf) {
+                GameProfile gameProfile = buf.readGameProfile();
+                GameMode gameMode = GameMode.byId(buf.readVarInt());
+                int i = buf.readVarInt();
+                Text text = PlayerListS2CPacket.readOptionalText(buf);
                 return new Entry(gameProfile, i, gameMode, text);
             }
 
             @Override
-            protected void write(PacketByteBuf buf2, Entry entry) {
-                buf2.writeUuid(entry.getProfile().getId());
-                buf2.writeString(entry.getProfile().getName());
-                buf2.writeCollection(entry.getProfile().getProperties().values(), (buf, property) -> {
-                    buf.writeString(property.getName());
-                    buf.writeString(property.getValue());
-                    if (property.hasSignature()) {
-                        buf.writeBoolean(true);
-                        buf.writeString(property.getSignature());
-                    } else {
-                        buf.writeBoolean(false);
-                    }
-                });
-                buf2.writeVarInt(entry.getGameMode().getId());
-                buf2.writeVarInt(entry.getLatency());
-                PlayerListS2CPacket.writeOptionalText(buf2, entry.getDisplayName());
+            protected void write(PacketByteBuf buf, Entry entry) {
+                buf.writeGameProfile(entry.getProfile());
+                buf.writeVarInt(entry.getGameMode().getId());
+                buf.writeVarInt(entry.getLatency());
+                PlayerListS2CPacket.writeOptionalText(buf, entry.getDisplayName());
             }
         }
         ,

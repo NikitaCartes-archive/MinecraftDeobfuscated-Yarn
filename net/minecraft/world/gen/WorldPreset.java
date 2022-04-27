@@ -20,7 +20,7 @@ import net.minecraft.world.gen.GeneratorOptions;
 
 public class WorldPreset {
     public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.unboundedMap(RegistryKey.createCodec(Registry.DIMENSION_KEY), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(preset -> preset.dimensions)).apply((Applicative<WorldPreset, ?>)instance, WorldPreset::new));
-    public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_WORLDGEN, CODEC);
+    public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(Registry.WORLD_PRESET_KEY, CODEC);
     private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
     public WorldPreset(Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions) {

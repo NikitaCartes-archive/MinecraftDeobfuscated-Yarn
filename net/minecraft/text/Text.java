@@ -186,8 +186,8 @@ StringVisitable {
         return MutableText.of(new KeybindTextContent(string));
     }
 
-    public static MutableText nbt(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource nbtDataSource) {
-        return MutableText.of(new NbtTextContent(rawPath, interpret, separator, nbtDataSource));
+    public static MutableText nbt(String rawPath, boolean interpret, Optional<Text> separator, NbtDataSource dataSource) {
+        return MutableText.of(new NbtTextContent(rawPath, interpret, separator, dataSource));
     }
 
     public static MutableText score(String name, String objective) {

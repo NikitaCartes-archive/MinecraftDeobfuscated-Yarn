@@ -21,7 +21,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
@@ -263,11 +262,6 @@ Merchant {
     @Override
     public boolean isClient() {
         return this.world.isClient;
-    }
-
-    @Override
-    public /* synthetic */ Inventory getInventory() {
-        return this.getInventory();
     }
 }
 

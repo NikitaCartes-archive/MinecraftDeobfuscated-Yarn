@@ -16,7 +16,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 public class MeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -24,21 +23,17 @@ public class MeCommand {
             String string = StringArgumentType.getString(context, "action");
             Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
             MinecraftServer minecraftServer = ((ServerCommandSource)context.getSource()).getServer();
-            if (entity != null) {
-                if (entity instanceof ServerPlayerEntity) {
-                    ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-                    serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(message -> {
-                        String string = message.getFiltered();
-                        Text text = string.isEmpty() ? null : MeCommand.getEmoteText(context, string);
-                        Text text2 = MeCommand.getEmoteText(context, message.getRaw());
-                        minecraftServer.getPlayerManager().broadcast(text2, player -> serverPlayerEntity.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.CHAT, entity.getUuid());
-                    }, (Executor)minecraftServer);
-                    return 1;
-                }
-                minecraftServer.getPlayerManager().broadcast(MeCommand.getEmoteText(context, string), MessageType.CHAT, entity.getUuid());
-            } else {
-                minecraftServer.getPlayerManager().broadcast(MeCommand.getEmoteText(context, string), MessageType.SYSTEM, Util.NIL_UUID);
+            if (entity instanceof ServerPlayerEntity) {
+                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+                serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(message -> {
+                    String string = message.getFiltered();
+                    Text text = string.isEmpty() ? null : MeCommand.getEmoteText(context, string);
+                    Text text2 = MeCommand.getEmoteText(context, message.getRaw());
+                    minecraftServer.getPlayerManager().broadcast(text2, player -> serverPlayerEntity.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.SYSTEM);
+                }, (Executor)minecraftServer);
+                return 1;
             }
+            minecraftServer.getPlayerManager().broadcast(MeCommand.getEmoteText(context, string), MessageType.SYSTEM);
             return 1;
         })));
     }

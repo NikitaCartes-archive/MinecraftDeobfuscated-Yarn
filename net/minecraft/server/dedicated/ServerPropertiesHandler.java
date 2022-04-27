@@ -91,6 +91,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     public final String textFilteringConfig = this.getString("text-filtering-config", "");
     public final AbstractPropertiesHandler.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
     public final AbstractPropertiesHandler.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
+    public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", false);
     private final WorldGenProperties worldGenProperties = new WorldGenProperties(this.getString("level-seed", ""), this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.parseBoolean("generate-structures", true), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
     @Nullable
     private GeneratorOptions generatorOptions;
@@ -127,9 +128,9 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
 
         public GeneratorOptions createGeneratorOptions(DynamicRegistryManager dynamicRegistryManager) {
             long l = GeneratorOptions.parseSeed(this.levelSeed()).orElse(AbstractRandom.createAtomic().nextLong());
-            Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_WORLDGEN);
+            Registry<WorldPreset> registry = dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY);
             RegistryEntry<WorldPreset> registryEntry = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
-            RegistryEntry registryEntry2 = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_WORLDGEN, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
+            RegistryEntry registryEntry2 = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(Registry.WORLD_PRESET_KEY, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
                 field_37276.warn("Failed to parse level-type {}, defaulting to {}", (Object)this.levelType, (Object)registryEntry.getKey().map(key -> key.getValue().toString()).orElse("[unnamed]"));
                 return registryEntry;
             });

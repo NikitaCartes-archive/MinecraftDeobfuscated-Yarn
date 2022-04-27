@@ -45,13 +45,15 @@ extends PathNodeMaker {
     }
 
     @Override
+    @Nullable
     public PathNode getStart() {
         return super.getNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
     }
 
     @Override
+    @Nullable
     public TargetPathNode getNode(double x, double y, double z) {
-        return new TargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+        return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
     }
 
     @Override
@@ -87,8 +89,7 @@ extends PathNodeMaker {
         float f;
         PathNode pathNode = null;
         PathNodeType pathNodeType = this.addPathNodePos(x, y, z);
-        if ((this.canJumpOutOfWater && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) && (f = this.entity.getPathfindingPenalty(pathNodeType)) >= 0.0f) {
-            pathNode = super.getNode(x, y, z);
+        if ((this.canJumpOutOfWater && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) && (f = this.entity.getPathfindingPenalty(pathNodeType)) >= 0.0f && (pathNode = super.getNode(x, y, z)) != null) {
             pathNode.type = pathNodeType;
             pathNode.penalty = Math.max(pathNode.penalty, f);
             if (this.cachedWorld.getFluidState(new BlockPos(x, y, z)).isEmpty()) {

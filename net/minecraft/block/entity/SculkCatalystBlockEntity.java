@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.BlockPositionSource;
@@ -52,7 +53,7 @@ implements GameEventListener {
         if (event == GameEvent.ENTITY_DIE && (entity = emitter.sourceEntity()) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             if (!livingEntity.isExperienceDroppingDisabled()) {
-                this.spreadManager.spread(new BlockPos(pos), livingEntity.getXpToDrop());
+                this.spreadManager.spread(new BlockPos(pos.withBias(Direction.UP, 0.5)), livingEntity.getXpToDrop());
                 livingEntity.disableExperienceDropping();
                 LivingEntity livingEntity2 = livingEntity.getAttacker();
                 if (livingEntity2 instanceof ServerPlayerEntity) {

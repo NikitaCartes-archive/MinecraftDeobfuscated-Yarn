@@ -4,6 +4,7 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,39 +35,46 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AllayBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.GameEventTags;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.VibrationListener;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 public class AllayEntity
 extends PathAwareEntity
 implements InventoryOwner,
-GameEventListener {
+VibrationListener.Callback {
+    private static final Logger field_39045 = LogUtils.getLogger();
     private static final int field_38405 = 16;
     private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
     private static final int field_38934 = 5;
     protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.NEAREST_ITEMS);
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.PATH, MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM, MemoryModuleType.LIKED_PLAYER, MemoryModuleType.LIKED_NOTEBLOCK, MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS, MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS);
     public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(Float.valueOf(0.5625f), Float.valueOf(0.625f), Float.valueOf(0.75f), Float.valueOf(0.9375f), Float.valueOf(1.0f), Float.valueOf(1.0f), Float.valueOf(1.125f), Float.valueOf(1.25f), Float.valueOf(1.5f), Float.valueOf(1.875f), Float.valueOf(2.0f), Float.valueOf(2.25f), new Float[]{Float.valueOf(2.5f), Float.valueOf(3.0f), Float.valueOf(3.75f), Float.valueOf(4.0f)});
-    private final EntityPositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
-    private final EntityGameEventHandler<AllayEntity> gameEventHandler;
+    private final EntityGameEventHandler<VibrationListener> gameEventHandler;
     private final SimpleInventory inventory = new SimpleInventory(1);
     private float field_38935;
     private float field_38936;
@@ -75,7 +83,7 @@ GameEventListener {
         super((EntityType<? extends PathAwareEntity>)entityType, world);
         this.moveControl = new FlightMoveControl(this, 20, true);
         this.setCanPickUpLoot(this.canPickUpLoot());
-        this.gameEventHandler = new EntityGameEventHandler<AllayEntity>(this);
+        this.gameEventHandler = new EntityGameEventHandler<VibrationListener>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this, null, 0, 0));
     }
 
     protected Brain.Profile<AllayEntity> createBrainProfile() {
@@ -200,6 +208,8 @@ GameEventListener {
         if (this.world.isClient) {
             this.field_38936 = this.field_38935;
             this.field_38935 = this.isHoldingItem() ? MathHelper.clamp(this.field_38935 + 1.0f, 0.0f, 5.0f) : MathHelper.clamp(this.field_38935 - 1.0f, 0.0f, 5.0f);
+        } else {
+            this.gameEventHandler.getListener().tick(this.world);
         }
     }
 
@@ -210,6 +220,11 @@ GameEventListener {
 
     public boolean isHoldingItem() {
         return !this.getStackInHand(Hand.MAIN_HAND).isEmpty();
+    }
+
+    @Override
+    public boolean canEquip(ItemStack stack) {
+        return false;
     }
 
     private boolean isItemPickupCoolingDown() {
@@ -263,22 +278,7 @@ GameEventListener {
 
     @Override
     protected void loot(ItemEntity item) {
-        ItemStack itemStack = item.getStack();
-        if (this.canGather(itemStack)) {
-            SimpleInventory simpleInventory = this.getInventory();
-            boolean bl = simpleInventory.canInsert(itemStack);
-            if (!bl) {
-                return;
-            }
-            this.triggerItemPickedUpByEntityCriteria(item);
-            this.sendPickup(item, itemStack.getCount());
-            ItemStack itemStack2 = simpleInventory.addStack(itemStack);
-            if (itemStack2.isEmpty()) {
-                item.discard();
-            } else {
-                itemStack.setCount(itemStack2.getCount());
-            }
-        }
+        InventoryOwner.pickUpItem(this, this, item);
     }
 
     @Override
@@ -293,31 +293,12 @@ GameEventListener {
     }
 
     @Override
-    public PositionSource getPositionSource() {
-        return this.positionSource;
-    }
-
-    @Override
-    public int getRange() {
-        return 16;
-    }
-
-    @Override
     public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
         World world = this.world;
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
             callback.accept(this.gameEventHandler, serverWorld);
         }
-    }
-
-    @Override
-    public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d pos) {
-        if (event != GameEvent.NOTE_BLOCK_PLAY) {
-            return false;
-        }
-        AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
-        return true;
     }
 
     public boolean method_43395() {
@@ -345,8 +326,41 @@ GameEventListener {
     }
 
     @Override
-    public /* synthetic */ Inventory getInventory() {
-        return this.getInventory();
+    public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+        if (this.isAiDisabled()) {
+            return false;
+        }
+        if (!this.brain.hasMemoryModule(MemoryModuleType.LIKED_NOTEBLOCK)) {
+            return true;
+        }
+        Optional<GlobalPos> optional = this.brain.getOptionalMemory(MemoryModuleType.LIKED_NOTEBLOCK);
+        return optional.isPresent() && optional.get().getDimension() == world.getRegistryKey() && optional.get().getPos().equals(pos);
+    }
+
+    @Override
+    public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
+        if (event == GameEvent.NOTE_BLOCK_PLAY) {
+            AllayBrain.rememberNoteBlock(this, new BlockPos(pos));
+        }
+    }
+
+    @Override
+    public TagKey<GameEvent> getTag() {
+        return GameEventTags.ALLAY_CAN_LISTEN;
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener()).resultOrPartial(field_39045::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
+            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_39045::error).ifPresent(vibrationListener -> this.gameEventHandler.setListener((VibrationListener)vibrationListener, this.world));
+        }
     }
 }
 

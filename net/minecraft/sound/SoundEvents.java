@@ -3,6 +3,8 @@
  */
 package net.minecraft.sound;
 
+import com.google.common.collect.ImmutableList;
+import java.util.stream.IntStream;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -478,6 +480,8 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_GOAT_MILK = SoundEvents.register("entity.goat.milk");
     public static final SoundEvent ENTITY_GOAT_PREPARE_RAM = SoundEvents.register("entity.goat.prepare_ram");
     public static final SoundEvent ENTITY_GOAT_RAM_IMPACT = SoundEvents.register("entity.goat.ram_impact");
+    public static final SoundEvent ENTITY_GOAT_HORN_BREAK = SoundEvents.register("entity.goat.horn_break");
+    public static final SoundEvent ITEM_GOAT_HORN_PLAY = SoundEvents.register("item.goat_horn.play");
     public static final SoundEvent ENTITY_GOAT_SCREAMING_AMBIENT = SoundEvents.register("entity.goat.screaming.ambient");
     public static final SoundEvent ENTITY_GOAT_SCREAMING_DEATH = SoundEvents.register("entity.goat.screaming.death");
     public static final SoundEvent ENTITY_GOAT_SCREAMING_EAT = SoundEvents.register("entity.goat.screaming.eat");
@@ -486,6 +490,7 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_GOAT_SCREAMING_MILK = SoundEvents.register("entity.goat.screaming.milk");
     public static final SoundEvent ENTITY_GOAT_SCREAMING_PREPARE_RAM = SoundEvents.register("entity.goat.screaming.prepare_ram");
     public static final SoundEvent ENTITY_GOAT_SCREAMING_RAM_IMPACT = SoundEvents.register("entity.goat.screaming.ram_impact");
+    public static final SoundEvent ENTITY_GOAT_SCREAMING_HORN_BREAK = SoundEvents.register("entity.goat.screaming.horn_break");
     public static final SoundEvent ENTITY_GOAT_STEP = SoundEvents.register("entity.goat.step");
     public static final SoundEvent BLOCK_GRASS_BREAK = SoundEvents.register("block.grass.break");
     public static final SoundEvent BLOCK_GRASS_FALL = SoundEvents.register("block.grass.fall");
@@ -529,6 +534,8 @@ public class SoundEvents {
     public static final SoundEvent BLOCK_HONEY_BLOCK_STEP = SoundEvents.register("block.honey_block.step");
     public static final SoundEvent ITEM_HONEYCOMB_WAX_ON = SoundEvents.register("item.honeycomb.wax_on");
     public static final SoundEvent ITEM_HONEY_BOTTLE_DRINK = SoundEvents.register("item.honey_bottle.drink");
+    public static final int GOAT_HORN_SOUND_COUNT = 8;
+    public static final ImmutableList<SoundEvent> GOAT_HORN_SOUNDS = SoundEvents.registerGoatHornSounds();
     public static final SoundEvent ENTITY_HORSE_AMBIENT = SoundEvents.register("entity.horse.ambient");
     public static final SoundEvent ENTITY_HORSE_ANGRY = SoundEvents.register("entity.horse.angry");
     public static final SoundEvent ENTITY_HORSE_ARMOR = SoundEvents.register("entity.horse.armor");
@@ -1325,6 +1332,10 @@ public class SoundEvents {
 
     private static SoundEvent register(String id) {
         return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));
+    }
+
+    private static ImmutableList<SoundEvent> registerGoatHornSounds() {
+        return IntStream.range(0, 8).mapToObj(variant -> SoundEvents.register("item.goat_horn.sound." + variant)).collect(ImmutableList.toImmutableList());
     }
 }
 

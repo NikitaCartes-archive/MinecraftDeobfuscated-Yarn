@@ -197,8 +197,7 @@ extends Screen {
             bufferBuilder.vertex(matrix4f, v, l + this.client.textRenderer.fontHeight, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, v, l, 0.0f).color(0, 0, 255, 255).next();
             bufferBuilder.vertex(matrix4f, u, l, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.end();
-            BufferRenderer.drawWithShader(bufferBuilder);
+            BufferRenderer.drawWithShader(bufferBuilder.end());
             RenderSystem.disableColorLogicOp();
             RenderSystem.enableTexture();
         }

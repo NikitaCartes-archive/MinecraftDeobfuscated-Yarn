@@ -39,7 +39,7 @@ public final class NoiseConfig {
     private final Map<Identifier, RandomDeriver> randomDerivers;
 
     public static NoiseConfig create(DynamicRegistryManager dynamicRegistryManager, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed) {
-        return NoiseConfig.create(dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(chunkGeneratorSettingsKey), dynamicRegistryManager.get(Registry.NOISE_WORLDGEN), legacyWorldSeed);
+        return NoiseConfig.create(dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY).getOrThrow(chunkGeneratorSettingsKey), dynamicRegistryManager.get(Registry.NOISE_KEY), legacyWorldSeed);
     }
 
     public static NoiseConfig create(ChunkGeneratorSettings chunkGeneratorSettings, Registry<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersRegistry, long legacyWorldSeed) {

@@ -235,7 +235,7 @@ extends Screen {
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager) {
             super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
-            for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN).iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
+            for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY).iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
                 this.addEntry(new SuperflatPresetEntry(registryEntry));
             }
         }

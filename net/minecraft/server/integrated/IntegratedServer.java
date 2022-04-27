@@ -141,7 +141,7 @@ extends MinecraftServer {
 
     @Override
     public void setCrashReport(CrashReport report) {
-        this.client.setCrashReportSupplier(() -> report);
+        this.client.setCrashReportSupplier(report);
     }
 
     @Override

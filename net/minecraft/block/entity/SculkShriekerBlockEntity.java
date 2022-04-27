@@ -39,13 +39,13 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.event.listener.VibrationListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class SculkShriekerBlockEntity
 extends BlockEntity
-implements SculkSensorListener.Callback {
+implements VibrationListener.Callback {
     private static final Logger field_38237 = LogUtils.getLogger();
     private static final int RANGE = 8;
     private static final int field_38750 = 10;
@@ -60,14 +60,14 @@ implements SculkSensorListener.Callback {
     });
     private static final int field_38756 = 90;
     private int warningLevel;
-    private SculkSensorListener vibrationListener;
+    private VibrationListener vibrationListener;
 
     public SculkShriekerBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.SCULK_SHRIEKER, pos, state);
-        this.vibrationListener = new SculkSensorListener(new BlockPositionSource(this.pos), 8, this, null, 0, 0);
+        this.vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0, 0);
     }
 
-    public SculkSensorListener getVibrationListener() {
+    public VibrationListener getVibrationListener() {
         return this.vibrationListener;
     }
 
@@ -78,7 +78,7 @@ implements SculkSensorListener.Callback {
             this.warningLevel = nbt.getInt("warning_level");
         }
         if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-            SculkSensorListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38237::error).ifPresent(vibrationListener -> {
+            VibrationListener.createCodec(this).parse(new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt.getCompound("listener"))).resultOrPartial(field_38237::error).ifPresent(vibrationListener -> {
                 this.vibrationListener = vibrationListener;
             });
         }
@@ -88,7 +88,7 @@ implements SculkSensorListener.Callback {
     protected void writeNbt(NbtCompound nbt) {
         super.writeNbt(nbt);
         nbt.putInt("warning_level", this.warningLevel);
-        SculkSensorListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.vibrationListener).resultOrPartial(field_38237::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
+        VibrationListener.createCodec(this).encodeStart(NbtOps.INSTANCE, this.vibrationListener).resultOrPartial(field_38237::error).ifPresent(nbtElement -> nbt.put("listener", (NbtElement)nbtElement));
     }
 
     @Override
@@ -103,7 +103,7 @@ implements SculkSensorListener.Callback {
 
     @Override
     public void accept(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay) {
-        this.shriek(world);
+        this.shriek(world, sourceEntity != null ? sourceEntity : entity);
     }
 
     private boolean canWarn(ServerWorld world) {
@@ -118,13 +118,14 @@ implements SculkSensorListener.Callback {
         return SculkShriekerBlockEntity.getClosestPlayerWarningManager(world, blockPos).map(warningManager -> warningManager.canIncreaseWarningLevel(world, blockPos)).orElse(false);
     }
 
-    public void shriek(ServerWorld world) {
+    public void shriek(ServerWorld world, @Nullable Entity entity) {
         BlockState blockState = this.getCachedState();
         if (this.canWarn(world) && this.trySyncWarningLevel(world, blockState)) {
             BlockPos blockPos = this.getPos();
             world.setBlockState(blockPos, (BlockState)blockState.with(SculkShriekerBlock.SHRIEKING, true), Block.NOTIFY_LISTENERS);
             world.createAndScheduleBlockTick(blockPos, blockState.getBlock(), 90);
             world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, blockPos, 0);
+            world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
         }
     }
 

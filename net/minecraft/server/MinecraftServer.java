@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Executor;
@@ -62,6 +61,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.function.LootFunctionManager;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -623,62 +623,64 @@ AutoCloseable {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     protected void runServer() {
-        try {
-            if (this.setupServer()) {
-                this.timeReference = Util.getMeasuringTimeMs();
-                this.metadata.setDescription(Text.literal(this.motd));
-                this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
-                this.setFavicon(this.metadata);
-                while (this.running) {
-                    long l = Util.getMeasuringTimeMs() - this.timeReference;
-                    if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
-                        long m = l / 50L;
-                        LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", (Object)l, (Object)m);
-                        this.timeReference += m * 50L;
-                        this.lastTimeReference = this.timeReference;
-                    }
-                    if (this.needsDebugSetup) {
-                        this.needsDebugSetup = false;
-                        this.debugStart = new DebugStart(Util.getMeasuringTimeNano(), this.ticks);
-                    }
-                    this.timeReference += 50L;
-                    this.startTickMetrics();
-                    this.profiler.push("tick");
-                    this.tick(this::shouldKeepTicking);
-                    this.profiler.swap("nextTickWait");
-                    this.waitingForNextTick = true;
-                    this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
-                    this.runTasksTillTickEnd();
-                    this.profiler.pop();
-                    this.endTickMetrics();
-                    this.loading = true;
-                    FlightProfiler.INSTANCE.onTick(this.tickTime);
-                }
-            } else {
-                this.setCrashReport(null);
-            }
-        } catch (Throwable throwable) {
-            LOGGER.error("Encountered an unexpected exception", throwable);
-            CrashReport crashReport = MinecraftServer.createCrashReport(throwable);
-            this.addSystemDetails(crashReport.getSystemDetailsSection());
-            File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
-            if (crashReport.writeToFile(file)) {
-                LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());
-            } else {
-                LOGGER.error("We were unable to save this crash report to disk.");
-            }
-            this.setCrashReport(crashReport);
-        } finally {
+        block25: {
             try {
-                this.stopped = true;
-                this.shutdown();
-            } catch (Throwable throwable) {
-                LOGGER.error("Exception stopping the server", throwable);
-            } finally {
-                if (this.userCache != null) {
-                    this.userCache.clearExecutor();
+                if (this.setupServer()) {
+                    this.timeReference = Util.getMeasuringTimeMs();
+                    this.metadata.setDescription(Text.literal(this.motd));
+                    this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
+                    this.setFavicon(this.metadata);
+                    while (this.running) {
+                        long l = Util.getMeasuringTimeMs() - this.timeReference;
+                        if (l > 2000L && this.timeReference - this.lastTimeReference >= 15000L) {
+                            long m = l / 50L;
+                            LOGGER.warn("Can't keep up! Is the server overloaded? Running {}ms or {} ticks behind", (Object)l, (Object)m);
+                            this.timeReference += m * 50L;
+                            this.lastTimeReference = this.timeReference;
+                        }
+                        if (this.needsDebugSetup) {
+                            this.needsDebugSetup = false;
+                            this.debugStart = new DebugStart(Util.getMeasuringTimeNano(), this.ticks);
+                        }
+                        this.timeReference += 50L;
+                        this.startTickMetrics();
+                        this.profiler.push("tick");
+                        this.tick(this::shouldKeepTicking);
+                        this.profiler.swap("nextTickWait");
+                        this.waitingForNextTick = true;
+                        this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
+                        this.runTasksTillTickEnd();
+                        this.profiler.pop();
+                        this.endTickMetrics();
+                        this.loading = true;
+                        FlightProfiler.INSTANCE.onTick(this.tickTime);
+                    }
+                    break block25;
                 }
-                this.exit();
+                throw new IllegalStateException("Failed to initialize server");
+            } catch (Throwable throwable) {
+                LOGGER.error("Encountered an unexpected exception", throwable);
+                CrashReport crashReport = MinecraftServer.createCrashReport(throwable);
+                this.addSystemDetails(crashReport.getSystemDetailsSection());
+                File file = new File(new File(this.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
+                if (crashReport.writeToFile(file)) {
+                    LOGGER.error("This crash report has been saved to: {}", (Object)file.getAbsolutePath());
+                } else {
+                    LOGGER.error("We were unable to save this crash report to disk.");
+                }
+                this.setCrashReport(crashReport);
+            } finally {
+                try {
+                    this.stopped = true;
+                    this.shutdown();
+                } catch (Throwable throwable) {
+                    LOGGER.error("Exception stopping the server", throwable);
+                } finally {
+                    if (this.userCache != null) {
+                        this.userCache.clearExecutor();
+                    }
+                    this.exit();
+                }
             }
         }
     }
@@ -776,9 +778,11 @@ AutoCloseable {
     }
 
     protected void setCrashReport(CrashReport report) {
+        LOGGER.error("Game test server crashed\n{}", (Object)report.asString());
     }
 
     public void exit() {
+        LOGGER.info("Game test server shutting down");
     }
 
     public void tick(BooleanSupplier shouldKeepTicking) {
@@ -944,7 +948,7 @@ AutoCloseable {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID sender) {
+    public void sendMessage(Text message) {
         LOGGER.info(message.getString());
     }
 
@@ -1280,6 +1284,10 @@ AutoCloseable {
 
     public int getNetworkCompressionThreshold() {
         return 256;
+    }
+
+    public boolean shouldEnforceSecureProfile() {
+        return false;
     }
 
     public long getTimeReference() {
@@ -1711,6 +1719,10 @@ AutoCloseable {
 
     public int getMaxChainedNeighborUpdates() {
         return 1000000;
+    }
+
+    public void logChatMessage(ChatMessageSender sender, Text message) {
+        LOGGER.info(Text.translatable("chat.type.text", sender.name(), message).getString());
     }
 
     @Override

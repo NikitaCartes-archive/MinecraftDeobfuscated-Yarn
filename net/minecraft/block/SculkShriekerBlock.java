@@ -58,10 +58,11 @@ implements Waterloggable {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        Entity entity2 = entity instanceof PlayerEntity ? entity : (entity.getPrimaryPassenger() instanceof PlayerEntity ? entity.getPrimaryPassenger() : null);
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            if (entity instanceof PlayerEntity || entity.getPrimaryPassenger() instanceof PlayerEntity) {
-                serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld));
+            if (entity2 != null) {
+                serverWorld.getBlockEntity(pos, BlockEntityType.SCULK_SHRIEKER).ifPresent(blockEntity -> blockEntity.shriek(serverWorld, entity2));
             }
         }
         super.onSteppedOn(world, pos, state, entity);
@@ -135,9 +136,11 @@ implements Waterloggable {
     }
 
     @Override
-    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-        super.onStacksDropped(state, world, pos, stack);
-        this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+        super.onStacksDropped(state, world, pos, stack, dropExperience);
+        if (dropExperience) {
+            this.dropExperienceWhenMined(world, pos, stack, ConstantIntProvider.create(5));
+        }
     }
 
     @Override

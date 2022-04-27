@@ -45,7 +45,7 @@ public class WorldPresets {
     }
 
     private static RegistryKey<WorldPreset> of(String id) {
-        return RegistryKey.of(Registry.WORLD_PRESET_WORLDGEN, new Identifier(id));
+        return RegistryKey.of(Registry.WORLD_PRESET_KEY, new Identifier(id));
     }
 
     public static Optional<RegistryKey<WorldPreset>> getWorldPreset(GeneratorOptions generatorOptions) {
@@ -60,7 +60,7 @@ public class WorldPresets {
     }
 
     public static GeneratorOptions createDefaultOptions(DynamicRegistryManager dynamicRegistryManager, long seed, boolean generateStructures, boolean bonusChest) {
-        return dynamicRegistryManager.get(Registry.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().createGeneratorOptions(seed, generateStructures, bonusChest);
+        return dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY).entryOf(DEFAULT).value().createGeneratorOptions(seed, generateStructures, bonusChest);
     }
 
     public static GeneratorOptions createDefaultOptions(DynamicRegistryManager dynamicRegistryManager, long seed) {
@@ -76,7 +76,7 @@ public class WorldPresets {
     }
 
     public static DimensionOptions getDefaultOverworldOptions(DynamicRegistryManager dynamicRegistryManager) {
-        return dynamicRegistryManager.get(Registry.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().getOverworldOrElseThrow();
+        return dynamicRegistryManager.get(Registry.WORLD_PRESET_KEY).entryOf(DEFAULT).value().getOverworldOrElseThrow();
     }
 
     static class Registrar {

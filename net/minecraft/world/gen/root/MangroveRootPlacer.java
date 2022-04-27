@@ -18,7 +18,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.TestableWorld;
-import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.root.AboveRootPlacement;
 import net.minecraft.world.gen.root.MangroveRootPlacement;
@@ -41,8 +40,12 @@ extends RootPlacer {
     @Override
     public boolean generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, AbstractRandom random, BlockPos pos, BlockPos trunkPos, TreeFeatureConfig config) {
         ArrayList<BlockPos> list = Lists.newArrayList();
-        if (!this.canGrowThrough(world, trunkPos)) {
-            return false;
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        while (mutable.getY() < trunkPos.getY()) {
+            if (!this.canGrowThrough(world, mutable)) {
+                return false;
+            }
+            mutable.move(Direction.UP);
         }
         list.add(trunkPos.down());
         for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -93,8 +96,9 @@ extends RootPlacer {
         return random.nextBoolean() ? List.of(blockPos2) : List.of(blockPos);
     }
 
+    @Override
     protected boolean canGrowThrough(TestableWorld world, BlockPos pos) {
-        return TreeFeature.canReplace(world, pos) || world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.canGrowThrough()));
+        return super.canGrowThrough(world, pos) || world.testBlockState(pos, state -> state.isIn(this.mangroveRootPlacement.canGrowThrough()));
     }
 
     @Override

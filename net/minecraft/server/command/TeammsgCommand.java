@@ -41,11 +41,11 @@ public class TeamMsgCommand {
         List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayerList();
         for (ServerPlayerEntity serverPlayerEntity : list) {
             if (serverPlayerEntity == entity) {
-                serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
+                serverPlayerEntity.sendMessage((Text)Text.translatable("chat.type.team.sent", text, source.getDisplayName(), message), entity.getUuid());
                 continue;
             }
             if (serverPlayerEntity.getScoreboardTeam() != team) continue;
-            serverPlayerEntity.sendSystemMessage(Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
+            serverPlayerEntity.sendMessage((Text)Text.translatable("chat.type.team.text", text, source.getDisplayName(), message), entity.getUuid());
         }
         return list.size();
     }

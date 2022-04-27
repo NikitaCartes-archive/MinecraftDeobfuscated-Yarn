@@ -221,19 +221,23 @@ public class Explosion {
         }
         if (bl) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
+            boolean bl22 = this.getCausingEntity() instanceof PlayerEntity;
             Util.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {
+                World world;
                 BlockState blockState = this.world.getBlockState(blockPos);
                 Block block = blockState.getBlock();
                 if (blockState.isAir()) continue;
                 BlockPos blockPos2 = blockPos.toImmutable();
                 this.world.getProfiler().push("explosion_blocks");
-                if (block.shouldDropItemsOnExplosion(this) && this.world instanceof ServerWorld) {
+                if (block.shouldDropItemsOnExplosion(this) && (world = this.world) instanceof ServerWorld) {
+                    ServerWorld serverWorld = (ServerWorld)world;
                     BlockEntity blockEntity = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
-                    LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world).random(this.world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos)).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
+                    LootContext.Builder builder = new LootContext.Builder(serverWorld).random(this.world.random).parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos)).parameter(LootContextParameters.TOOL, ItemStack.EMPTY).optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity).optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
                     if (this.destructionType == DestructionType.DESTROY) {
                         builder.parameter(LootContextParameters.EXPLOSION_RADIUS, Float.valueOf(this.power));
                     }
+                    blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, bl22);
                     blockState.getDroppedStacks(builder).forEach(stack -> Explosion.tryMergeStack(objectArrayList, stack, blockPos2));
                 }
                 this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);

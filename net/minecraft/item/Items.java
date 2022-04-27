@@ -59,6 +59,7 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.FlintAndSteelItem;
 import net.minecraft.item.FoodComponents;
 import net.minecraft.item.GlassBottleItem;
+import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.HoneyBottleItem;
 import net.minecraft.item.HoneycombItem;
@@ -1195,6 +1196,7 @@ public class Items {
     public static final Item MOJANG_BANNER_PATTERN = Items.register("mojang_banner_pattern", (Item)new BannerPatternItem(BannerPattern.MOJANG, new Item.Settings().maxCount(1).group(ItemGroup.MISC).rarity(Rarity.EPIC)));
     public static final Item GLOBE_BANNER_PATTERN = Items.register("globe_banner_pattern", (Item)new BannerPatternItem(BannerPattern.GLOBE, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item PIGLIN_BANNER_PATTERN = Items.register("piglin_banner_pattern", (Item)new BannerPatternItem(BannerPattern.PIGLIN, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
+    public static final Item GOAT_HORN = Items.register("goat_horn", (Item)new GoatHornItem(new Item.Settings().group(ItemGroup.MISC).maxCount(1)));
     public static final Item COMPOSTER = Items.register(Blocks.COMPOSTER, ItemGroup.DECORATIONS);
     public static final Item BARREL = Items.register(Blocks.BARREL, ItemGroup.DECORATIONS);
     public static final Item SMOKER = Items.register(Blocks.SMOKER, ItemGroup.DECORATIONS);

@@ -357,27 +357,27 @@ implements ItemConvertible {
         ServerWorld serverWorld = lootContext.getWorld();
         BlockPos blockPos = new BlockPos(lootContext.get(LootContextParameters.ORIGIN));
         state.getDroppedStacks(lootContext).forEach(stack -> Block.dropStack((World)serverWorld, blockPos, stack));
-        state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY);
+        state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, true);
     }
 
     public static void dropStacks(BlockState state, World world, BlockPos pos) {
         if (world instanceof ServerWorld) {
             Block.getDroppedStacks(state, (ServerWorld)world, pos, null).forEach(stack -> Block.dropStack(world, pos, stack));
-            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
+            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY, true);
         }
     }
 
     public static void dropStacks(BlockState state, WorldAccess world, BlockPos pos, @Nullable BlockEntity blockEntity) {
         if (world instanceof ServerWorld) {
             Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity).forEach(stack -> Block.dropStack((World)((ServerWorld)world), pos, stack));
-            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY);
+            state.onStacksDropped((ServerWorld)world, pos, ItemStack.EMPTY, true);
         }
     }
 
     public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack2) {
         if (world instanceof ServerWorld) {
             Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack2).forEach(stack -> Block.dropStack(world, pos, stack));
-            state.onStacksDropped((ServerWorld)world, pos, stack2);
+            state.onStacksDropped((ServerWorld)world, pos, stack2, true);
         }
     }
 

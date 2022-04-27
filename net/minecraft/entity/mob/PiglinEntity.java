@@ -40,7 +40,6 @@ import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -112,7 +111,7 @@ InventoryOwner {
 
     @Override
     @Debug
-    public Inventory getInventory() {
+    public SimpleInventory getInventory() {
         return this.inventory;
     }
 

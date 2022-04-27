@@ -3,12 +3,13 @@
  */
 package net.minecraft.datafixer.schema;
 
+import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
-import net.minecraft.datafixer.schema.Schema100;
 
 public class Schema3083
 extends IdentifierNormalizingSchema {
@@ -17,7 +18,7 @@ extends IdentifierNormalizingSchema {
     }
 
     protected static void method_42645(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema100.targetItems(schema));
+        schema.register(map, string, () -> DSL.optionalFields("ArmorItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "HandItems", DSL.list(TypeReferences.ITEM_STACK.in(schema)), "listener", DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema)))));
     }
 
     @Override

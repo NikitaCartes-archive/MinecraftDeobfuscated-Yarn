@@ -509,7 +509,7 @@ implements StructureWorldAccess {
         int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
         MutableText text = this.sleepManager.canSkipNight(i) ? Text.translatable("sleep.skipping_night") : Text.translatable("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            serverPlayerEntity.sendMessage(text, true);
+            serverPlayerEntity.sendMessage((Text)text, true);
         }
     }
 

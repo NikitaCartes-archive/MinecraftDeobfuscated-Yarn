@@ -39,6 +39,7 @@ extends LandPathNodeMaker {
     }
 
     @Override
+    @Nullable
     public PathNode getStart() {
         BlockPos blockPos;
         PathNodeType pathNodeType;
@@ -67,7 +68,7 @@ extends LandPathNodeMaker {
 
     @Override
     public TargetPathNode getNode(double x, double y, double z) {
-        return new TargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+        return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
     }
 
     @Override
@@ -194,8 +195,7 @@ extends LandPathNodeMaker {
         PathNode pathNode = null;
         PathNodeType pathNodeType = this.getNodeType(x, y, z);
         float f = this.entity.getPathfindingPenalty(pathNodeType);
-        if (f >= 0.0f) {
-            pathNode = super.getNode(x, y, z);
+        if (f >= 0.0f && (pathNode = super.getNode(x, y, z)) != null) {
             pathNode.type = pathNodeType;
             pathNode.penalty = Math.max(pathNode.penalty, f);
             if (pathNodeType == PathNodeType.WALKABLE) {

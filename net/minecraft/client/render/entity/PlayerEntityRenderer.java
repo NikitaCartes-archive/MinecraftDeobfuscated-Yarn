@@ -126,6 +126,9 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (useAction == UseAction.SPYGLASS) {
                 return BipedEntityModel.ArmPose.SPYGLASS;
             }
+            if (useAction == UseAction.TOOT_HORN) {
+                return BipedEntityModel.ArmPose.TOOT_HORN;
+            }
         } else if (!player.handSwinging && itemStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(itemStack)) {
             return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
         }

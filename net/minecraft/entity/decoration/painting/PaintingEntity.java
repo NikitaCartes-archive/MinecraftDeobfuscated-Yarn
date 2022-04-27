@@ -53,7 +53,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void onTrackedDataSet(TrackedData<?> data) {
-        if (data == VARIANT) {
+        if (VARIANT.equals(data)) {
             this.updateAttachmentPosition();
         }
     }

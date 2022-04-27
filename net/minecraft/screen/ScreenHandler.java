@@ -304,9 +304,7 @@ public abstract class ScreenHandler {
         return this.slots.get(index);
     }
 
-    public ItemStack transferSlot(PlayerEntity player, int index) {
-        return this.slots.get(index).getStack();
-    }
+    public abstract ItemStack transferSlot(PlayerEntity var1, int var2);
 
     /**
      * Performs a slot click. This can behave in many different ways depending mainly on the action type.

@@ -70,6 +70,8 @@ ModelWithHead {
     private static final float SPYGLASS_ARM_YAW_OFFSET = 0.2617994f;
     private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622f;
     private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = 0.2617994f;
+    public static final float field_39069 = 1.4835298f;
+    public static final float field_39070 = 0.5235988f;
     public final ModelPart head;
     public final ModelPart hat;
     public final ModelPart body;
@@ -297,6 +299,11 @@ ModelWithHead {
             case SPYGLASS: {
                 this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (((Entity)entity).isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
                 this.rightArm.yaw = this.head.yaw - 0.2617994f;
+                break;
+            }
+            case TOOT_HORN: {
+                this.rightArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
+                this.rightArm.yaw = this.head.yaw - 0.5235988f;
             }
         }
     }
@@ -340,6 +347,11 @@ ModelWithHead {
             case SPYGLASS: {
                 this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (((Entity)entity).isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
                 this.leftArm.yaw = this.head.yaw + 0.2617994f;
+                break;
+            }
+            case TOOT_HORN: {
+                this.leftArm.pitch = MathHelper.clamp(this.head.pitch, -1.2f, 1.2f) - 1.4835298f;
+                this.leftArm.yaw = this.head.yaw + 0.5235988f;
             }
         }
     }
@@ -443,7 +455,8 @@ ModelWithHead {
         THROW_SPEAR(false),
         CROSSBOW_CHARGE(true),
         CROSSBOW_HOLD(true),
-        SPYGLASS(false);
+        SPYGLASS(false),
+        TOOT_HORN(false);
 
         private final boolean twoHanded;
 

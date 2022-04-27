@@ -166,7 +166,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         this.chunkGenerator = chunkGenerator;
         if (chunkGenerator instanceof NoiseChunkGenerator) {
             NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)chunkGenerator;
-            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.method_41541().value(), world.getRegistryManager().get(Registry.NOISE_WORLDGEN), world.getSeed());
+            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.method_41541().value(), world.getRegistryManager().get(Registry.NOISE_KEY), world.getSeed());
         } else {
             this.noiseConfig = NoiseConfig.create(world.getRegistryManager(), ChunkGeneratorSettings.OVERWORLD, world.getSeed());
         }

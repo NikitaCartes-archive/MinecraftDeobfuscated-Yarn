@@ -6,9 +6,7 @@ package net.minecraft.client.gl;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Pair;
 import java.nio.ByteBuffer;
-import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,7 +28,7 @@ implements AutoCloseable {
     private VertexFormat vertexFormat;
     @Nullable
     private RenderSystem.IndexBuffer indexBuffer;
-    private VertexFormat.IntType elementFormat;
+    private VertexFormat.IndexType indexType;
     private int vertexCount;
     private VertexFormat.DrawMode drawMode;
 
@@ -41,74 +39,52 @@ implements AutoCloseable {
         this.vertexArrayId = GlStateManager._glGenVertexArrays();
     }
 
-    public CompletableFuture<Void> submitUpload(BufferBuilder buffer) {
-        if (!RenderSystem.isOnRenderThread()) {
-            return CompletableFuture.runAsync(() -> this.uploadInternal(buffer), action -> RenderSystem.recordRenderCall(action::run));
-        }
-        this.uploadInternal(buffer);
-        return CompletableFuture.completedFuture(null);
-    }
-
-    private void uploadInternal(BufferBuilder builder) {
-        if (!this.isClosed()) {
-            this.bind();
-            this.upload(builder);
-            VertexBuffer.unbind();
-        }
-    }
-
-    public void upload(BufferBuilder buffer) {
-        RenderSystem.assertOnRenderThread();
-        Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = buffer.popData();
-        this.setFromParameters(pair.getFirst(), pair.getSecond());
-    }
-
-    public void setFromParameters(BufferBuilder.DrawArrayParameters parameters, ByteBuffer data) {
+    public void upload(BufferBuilder.class_7433 arg) {
         if (this.isClosed()) {
             return;
         }
-        this.vertexFormat = this.configureVertexFormat(parameters, data);
-        this.indexBuffer = this.configureIndexBuffer(parameters, data);
-        data.limit(parameters.getIndexBufferEnd());
-        data.position(0);
-        this.vertexCount = parameters.getVertexCount();
-        this.elementFormat = parameters.getElementFormat();
-        this.drawMode = parameters.getMode();
+        RenderSystem.assertOnRenderThread();
+        try {
+            BufferBuilder.DrawArrayParameters drawArrayParameters = arg.method_43583();
+            this.vertexFormat = this.configureVertexFormat(drawArrayParameters, arg.method_43581());
+            this.indexBuffer = this.configureIndexBuffer(drawArrayParameters, arg.method_43582());
+            this.vertexCount = drawArrayParameters.indexCount();
+            this.indexType = drawArrayParameters.indexType();
+            this.drawMode = drawArrayParameters.mode();
+        } finally {
+            arg.method_43585();
+        }
     }
 
     private VertexFormat configureVertexFormat(BufferBuilder.DrawArrayParameters parameters, ByteBuffer data) {
         boolean bl = false;
-        if (!parameters.getVertexFormat().equals(this.vertexFormat)) {
+        if (!parameters.format().equals(this.vertexFormat)) {
             if (this.vertexFormat != null) {
-                this.vertexFormat.endDrawing();
+                this.vertexFormat.clearState();
             }
             GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
-            parameters.getVertexFormat().startDrawing();
+            parameters.format().setupState();
             bl = true;
         }
-        if (!parameters.hasNoVertexBuffer()) {
+        if (!parameters.indexOnly()) {
             if (!bl) {
                 GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
             }
-            data.position(parameters.getVertexBufferPosition());
-            data.limit(parameters.getVertexBufferLimit());
             RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, data, GlConst.GL_STATIC_DRAW);
         }
-        return parameters.getVertexFormat();
+        return parameters.format();
     }
 
     @Nullable
     private RenderSystem.IndexBuffer configureIndexBuffer(BufferBuilder.DrawArrayParameters parameters, ByteBuffer data) {
-        if (parameters.hasNoIndexBuffer()) {
-            RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(parameters.getMode());
-            if (indexBuffer != this.indexBuffer || !indexBuffer.isSizeLessThanOrEqual(parameters.getVertexCount())) {
-                indexBuffer.bindAndGrow(parameters.getVertexCount());
+        if (parameters.sequentialIndex()) {
+            RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(parameters.mode());
+            if (indexBuffer != this.indexBuffer || !indexBuffer.isSizeLessThanOrEqual(parameters.indexCount())) {
+                indexBuffer.bindAndGrow(parameters.indexCount());
             }
             return indexBuffer;
         }
         GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-        data.position(parameters.getIndexBufferPosition());
-        data.limit(parameters.getIndexBufferLimit());
         RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, data, GlConst.GL_STATIC_DRAW);
         return null;
     }
@@ -124,12 +100,12 @@ implements AutoCloseable {
     }
 
     public void drawElements() {
-        RenderSystem.drawElements(this.drawMode.mode, this.vertexCount, this.getElementFormat().type);
+        RenderSystem.drawElements(this.drawMode.glMode, this.vertexCount, this.getIndexType().glType);
     }
 
-    private VertexFormat.IntType getElementFormat() {
+    private VertexFormat.IndexType getIndexType() {
         RenderSystem.IndexBuffer indexBuffer = this.indexBuffer;
-        return indexBuffer != null ? indexBuffer.getElementFormat() : this.elementFormat;
+        return indexBuffer != null ? indexBuffer.getIndexType() : this.indexType;
     }
 
     public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix, Shader shader) {

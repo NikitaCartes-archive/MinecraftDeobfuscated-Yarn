@@ -363,8 +363,7 @@ implements SynchronousResourceReloader {
         buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + 0, 0.0).color(red, green, blue, alpha).next();
-        buffer.end();
-        BufferRenderer.drawWithShader(buffer);
+        BufferRenderer.drawWithShader(buffer.end());
     }
 
     @Override

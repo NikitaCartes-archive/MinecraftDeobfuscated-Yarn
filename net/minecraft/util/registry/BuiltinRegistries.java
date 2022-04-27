@@ -69,11 +69,11 @@ public class BuiltinRegistries {
     public static final Registry<StructureProcessorList> STRUCTURE_PROCESSOR_LIST = BuiltinRegistries.addRegistry(Registry.STRUCTURE_PROCESSOR_LIST_KEY, () -> StructureProcessorLists.ZOMBIE_PLAINS);
     public static final Registry<StructurePool> STRUCTURE_POOL = BuiltinRegistries.addRegistry(Registry.STRUCTURE_POOL_KEY, StructurePools::initDefaultPools);
     public static final Registry<Biome> BIOME = BuiltinRegistries.addRegistry(Registry.BIOME_KEY, BuiltinBiomes::getDefaultBiome);
-    public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = BuiltinRegistries.addRegistry(Registry.NOISE_WORLDGEN, BuiltinNoiseParameters::init);
+    public static final Registry<DoublePerlinNoiseSampler.NoiseParameters> NOISE_PARAMETERS = BuiltinRegistries.addRegistry(Registry.NOISE_KEY, BuiltinNoiseParameters::init);
     public static final Registry<DensityFunction> DENSITY_FUNCTION = BuiltinRegistries.addRegistry(Registry.DENSITY_FUNCTION_KEY, DensityFunctions::init);
     public static final Registry<ChunkGeneratorSettings> CHUNK_GENERATOR_SETTINGS = BuiltinRegistries.addRegistry(Registry.CHUNK_GENERATOR_SETTINGS_KEY, ChunkGeneratorSettings::getInstance);
-    public static final Registry<WorldPreset> WORLD_PRESET = BuiltinRegistries.addRegistry(Registry.WORLD_PRESET_WORLDGEN, WorldPresets::initAndGetDefault);
-    public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = BuiltinRegistries.addRegistry(Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPresets::initAndGetDefault);
+    public static final Registry<WorldPreset> WORLD_PRESET = BuiltinRegistries.addRegistry(Registry.WORLD_PRESET_KEY, WorldPresets::initAndGetDefault);
+    public static final Registry<FlatLevelGeneratorPreset> FLAT_LEVEL_GENERATOR_PRESET = BuiltinRegistries.addRegistry(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, FlatLevelGeneratorPresets::initAndGetDefault);
     public static final DynamicRegistryManager DYNAMIC_REGISTRY_MANAGER;
 
     private static <T> Registry<T> addRegistry(RegistryKey<? extends Registry<T>> registryRef, Supplier<? extends RegistryEntry<? extends T>> defaultValueSupplier) {

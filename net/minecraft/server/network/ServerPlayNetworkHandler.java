@@ -13,6 +13,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +59,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.network.ChatMessageSender;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -156,7 +158,6 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -477,11 +478,11 @@ ServerPlayPacketListener {
     public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (!this.server.areCommandBlocksEnabled()) {
-            this.player.sendSystemMessage(Text.translatable("advMode.notEnabled"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("advMode.notEnabled"));
             return;
         }
         if (!this.player.isCreativeLevelTwoOp()) {
-            this.player.sendSystemMessage(Text.translatable("advMode.notAllowed"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("advMode.notAllowed"));
             return;
         }
         CommandBlockExecutor commandBlockExecutor = null;
@@ -519,7 +520,7 @@ ServerPlayPacketListener {
             }
             commandBlockExecutor.markDirty();
             if (!StringHelper.isEmpty(string)) {
-                this.player.sendSystemMessage(Text.translatable("advMode.setCommand.success", string), Util.NIL_UUID);
+                this.player.sendMessage(Text.translatable("advMode.setCommand.success", string));
             }
         }
     }
@@ -528,11 +529,11 @@ ServerPlayPacketListener {
     public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
         if (!this.server.areCommandBlocksEnabled()) {
-            this.player.sendSystemMessage(Text.translatable("advMode.notEnabled"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("advMode.notEnabled"));
             return;
         }
         if (!this.player.isCreativeLevelTwoOp()) {
-            this.player.sendSystemMessage(Text.translatable("advMode.notAllowed"), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("advMode.notAllowed"));
             return;
         }
         CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
@@ -543,7 +544,7 @@ ServerPlayPacketListener {
                 commandBlockExecutor.setLastOutput(null);
             }
             commandBlockExecutor.markDirty();
-            this.player.sendSystemMessage(Text.translatable("advMode.setCommand.success", packet.getCommand()), Util.NIL_UUID);
+            this.player.sendMessage(Text.translatable("advMode.setCommand.success", packet.getCommand()));
         }
     }
 
@@ -603,27 +604,27 @@ ServerPlayPacketListener {
                 String string = structureBlockBlockEntity.getStructureName();
                 if (packet.getAction() == StructureBlockBlockEntity.Action.SAVE_AREA) {
                     if (structureBlockBlockEntity.saveStructure()) {
-                        this.player.sendMessage(Text.translatable("structure_block.save_success", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.save_success", string), false);
                     } else {
-                        this.player.sendMessage(Text.translatable("structure_block.save_failure", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.save_failure", string), false);
                     }
                 } else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
                     if (!structureBlockBlockEntity.isStructureAvailable()) {
-                        this.player.sendMessage(Text.translatable("structure_block.load_not_found", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.load_not_found", string), false);
                     } else if (structureBlockBlockEntity.loadStructure(this.player.getWorld())) {
-                        this.player.sendMessage(Text.translatable("structure_block.load_success", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.load_success", string), false);
                     } else {
-                        this.player.sendMessage(Text.translatable("structure_block.load_prepare", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.load_prepare", string), false);
                     }
                 } else if (packet.getAction() == StructureBlockBlockEntity.Action.SCAN_AREA) {
                     if (structureBlockBlockEntity.detectStructureSize()) {
-                        this.player.sendMessage(Text.translatable("structure_block.size_success", string), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.size_success", string), false);
                     } else {
-                        this.player.sendMessage(Text.translatable("structure_block.size_failure"), false);
+                        this.player.sendMessage((Text)Text.translatable("structure_block.size_failure"), false);
                     }
                 }
             } else {
-                this.player.sendMessage(Text.translatable("structure_block.invalid_structure_name", packet.getStructureName()), false);
+                this.player.sendMessage((Text)Text.translatable("structure_block.invalid_structure_name", packet.getStructureName()), false);
             }
             structureBlockBlockEntity.markDirty();
             this.player.world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
@@ -990,14 +991,14 @@ ServerPlayPacketListener {
                 ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
                 if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && ServerPlayNetworkHandler.canPlace(this.player, itemStack)) {
                     MutableText text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-                    this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
+                    this.player.sendMessage((Text)text, MessageType.GAME_INFO);
                 } else if (actionResult.shouldSwingHand()) {
                     this.player.swingHand(hand, true);
                 }
             }
         } else {
             MutableText text2 = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
-            this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
+            this.player.sendMessage((Text)text2, MessageType.GAME_INFO);
         }
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
         this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos.offset(direction)));
@@ -1059,7 +1060,7 @@ ServerPlayPacketListener {
     public void onDisconnected(Text reason) {
         LOGGER.info("{} lost connection: {}", (Object)this.player.getName().getString(), (Object)reason.getString());
         this.server.forcePlayerSampleUpdate();
-        this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM, Util.NIL_UUID);
+        this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), MessageType.SYSTEM);
         this.player.onDisconnect();
         this.server.getPlayerManager().remove(this.player);
         this.player.getTextStream().onDisconnect();
@@ -1108,34 +1109,51 @@ ServerPlayPacketListener {
 
     @Override
     public void onChatMessage(ChatMessageC2SPacket packet) {
-        String string = StringUtils.normalizeSpace(packet.getChatMessage());
-        for (int i = 0; i < string.length(); ++i) {
-            if (SharedConstants.isValidChar(string.charAt(i))) continue;
+        if (packet.isExpired(Instant.now())) {
+            LOGGER.warn("{} tried to send expired message", (Object)this.player.getName().getString());
+            return;
+        }
+        if (ServerPlayNetworkHandler.hasIllegalCharacter(packet.getChatMessage())) {
             this.disconnect(Text.translatable("multiplayer.disconnect.illegal_characters"));
             return;
         }
+        String string = packet.getNormalizedChatMessage();
         if (string.startsWith("/")) {
             NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-            this.handleMessage(TextStream.Message.permitted(string));
+            this.handleMessage(packet, TextStream.Message.permitted(string));
         } else {
-            this.filterText(string, this::handleMessage);
+            this.filterText(packet.getChatMessage(), message -> this.handleMessage(packet, (TextStream.Message)message));
         }
     }
 
-    private void handleMessage(TextStream.Message message) {
+    /**
+     * {@return whether {@code message} contains an illegal character}
+     * 
+     * @see net.minecraft.SharedConstants#isValidChar(char)
+     */
+    private static boolean hasIllegalCharacter(String message) {
+        for (int i = 0; i < message.length(); ++i) {
+            if (SharedConstants.isValidChar(message.charAt(i))) continue;
+            return true;
+        }
+        return false;
+    }
+
+    private void handleMessage(ChatMessageC2SPacket packet, TextStream.Message message) {
         if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-            this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
+            this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM));
             return;
         }
         this.player.updateLastActionTime();
-        String string = message.getRaw();
+        String string = packet.getNormalizedChatMessage();
         if (string.startsWith("/")) {
             this.executeCommand(string);
         } else {
             String string2 = message.getFiltered();
-            MutableText text = string2.isEmpty() ? null : Text.translatable("chat.type.text", this.player.getDisplayName(), string2);
-            MutableText text2 = Text.translatable("chat.type.text", this.player.getDisplayName(), string);
-            this.server.getPlayerManager().broadcast(text2, player -> this.player.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.CHAT, this.player.getUuid());
+            MutableText text = string2.isEmpty() ? null : Text.literal(string2);
+            MutableText text2 = Text.literal(packet.getChatMessage());
+            ChatMessageSender chatMessageSender = this.player.asChatMessageSender();
+            this.server.getPlayerManager().broadcast(text2, player -> this.player.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.CHAT, chatMessageSender, packet.getTime(), packet.getSignature());
         }
         this.messageCooldown += 20;
         if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {

@@ -169,7 +169,7 @@ public class IntegratedServerLoader {
                 this.client.getResourcePackProvider().clear().thenRunAsync(() -> this.client.setScreen(parent), this.client);
             }
         }, (Executor)this.client)).exceptionally(throwable -> {
-            this.client.setCrashReportSupplier(() -> CrashReport.create(throwable, "Load world"));
+            this.client.setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Load world"));
             return null;
         });
     }

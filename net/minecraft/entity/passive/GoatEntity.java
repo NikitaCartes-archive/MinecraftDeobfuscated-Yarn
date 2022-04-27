@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -28,6 +29,7 @@ import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.GoatBrain;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.GoatHornItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
@@ -42,6 +44,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.AbstractRandom;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -58,7 +61,10 @@ extends AnimalEntity {
     protected static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.LOOK_TARGET, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATE_RECENTLY, MemoryModuleType.BREED_TARGET, MemoryModuleType.LONG_JUMP_COOLING_DOWN, MemoryModuleType.LONG_JUMP_MID_JUMP, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, new MemoryModuleType[]{MemoryModuleType.IS_TEMPTED, MemoryModuleType.RAM_COOLDOWN_TICKS, MemoryModuleType.RAM_TARGET});
     public static final int FALL_DAMAGE_SUBTRACTOR = 10;
     public static final double SCREAMING_CHANCE = 0.02;
+    public static final double field_39046 = (double)0.1f;
     private static final TrackedData<Boolean> SCREAMING = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> LEFT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> RIGHT_HORN = DataTracker.registerData(GoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private boolean preparingRam;
     private int field_33488;
 
@@ -86,8 +92,10 @@ extends AnimalEntity {
     protected void onGrowUp() {
         if (this.isBaby()) {
             this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.0);
+            this.removeHorns();
         } else {
             this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(2.0);
+            this.addHorns();
         }
     }
 
@@ -197,6 +205,11 @@ extends AnimalEntity {
         AbstractRandom abstractRandom = world.getRandom();
         GoatBrain.resetLongJumpCooldown(this, abstractRandom);
         this.setScreaming(abstractRandom.nextDouble() < 0.02);
+        this.onGrowUp();
+        if (!this.isBaby() && (double)abstractRandom.nextFloat() < (double)0.1f) {
+            TrackedData<Boolean> trackedData = abstractRandom.nextBoolean() ? LEFT_HORN : RIGHT_HORN;
+            this.dataTracker.set(trackedData, false);
+        }
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
@@ -215,12 +228,16 @@ extends AnimalEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("IsScreamingGoat", this.isScreaming());
+        nbt.putBoolean("HasLeftHorn", this.hasLeftHorn());
+        nbt.putBoolean("HasRightHorn", this.hasRightHorn());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.setScreaming(nbt.getBoolean("IsScreamingGoat"));
+        this.dataTracker.set(LEFT_HORN, nbt.getBoolean("HasLeftHorn"));
+        this.dataTracker.set(RIGHT_HORN, nbt.getBoolean("HasRightHorn"));
     }
 
     @Override
@@ -245,6 +262,44 @@ extends AnimalEntity {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(SCREAMING, false);
+        this.dataTracker.startTracking(LEFT_HORN, true);
+        this.dataTracker.startTracking(RIGHT_HORN, true);
+    }
+
+    public boolean hasLeftHorn() {
+        return this.dataTracker.get(LEFT_HORN);
+    }
+
+    public boolean hasRightHorn() {
+        return this.dataTracker.get(RIGHT_HORN);
+    }
+
+    public boolean dropHorn() {
+        boolean bl = this.hasLeftHorn();
+        boolean bl2 = this.hasRightHorn();
+        if (!bl && !bl2) {
+            return false;
+        }
+        TrackedData<Boolean> trackedData = !bl ? RIGHT_HORN : (!bl2 ? LEFT_HORN : (this.random.nextBoolean() ? LEFT_HORN : RIGHT_HORN));
+        this.dataTracker.set(trackedData, false);
+        Vec3d vec3d = this.getPos();
+        ItemStack itemStack = GoatHornItem.getStackForGoat(this);
+        double d = MathHelper.nextBetween(this.random, -0.2f, 0.2f);
+        double e = MathHelper.nextBetween(this.random, 0.3f, 0.7f);
+        double f = MathHelper.nextBetween(this.random, -0.2f, 0.2f);
+        ItemEntity itemEntity = new ItemEntity(this.world, vec3d.getX(), vec3d.getY(), vec3d.getZ(), itemStack, d, e, f);
+        this.world.spawnEntity(itemEntity);
+        return true;
+    }
+
+    public void addHorns() {
+        this.dataTracker.set(LEFT_HORN, true);
+        this.dataTracker.set(RIGHT_HORN, true);
+    }
+
+    public void removeHorns() {
+        this.dataTracker.set(LEFT_HORN, false);
+        this.dataTracker.set(RIGHT_HORN, false);
     }
 
     public boolean isScreaming() {

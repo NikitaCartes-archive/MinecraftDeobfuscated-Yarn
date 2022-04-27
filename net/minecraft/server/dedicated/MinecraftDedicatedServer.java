@@ -447,6 +447,11 @@ implements DedicatedServer {
         return this.getProperties().networkCompressionThreshold;
     }
 
+    @Override
+    public boolean shouldEnforceSecureProfile() {
+        return this.getProperties().enforceSecureProfile;
+    }
+
     protected boolean convertData() {
         int i;
         boolean bl = false;

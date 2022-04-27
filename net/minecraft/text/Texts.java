@@ -145,14 +145,5 @@ public class Texts {
         }
         return true;
     }
-
-    @Deprecated(forRemoval=true)
-    public static Text brokenReplaceTranslationKey(Text text, String oldKey, String updatedKey) {
-        TranslatableTextContent translatableTextContent;
-        if (text instanceof TranslatableTextContent && oldKey.equals((translatableTextContent = (TranslatableTextContent)((Object)text)).getKey())) {
-            return Text.translatable(updatedKey, translatableTextContent.getArgs());
-        }
-        return text;
-    }
 }
 

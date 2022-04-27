@@ -3,7 +3,6 @@
  */
 package net.minecraft.server.command;
 
-import java.util.UUID;
 import net.minecraft.text.Text;
 
 /**
@@ -13,7 +12,7 @@ public interface CommandOutput {
     public static final CommandOutput DUMMY = new CommandOutput(){
 
         @Override
-        public void sendSystemMessage(Text message, UUID sender) {
+        public void sendMessage(Text message) {
         }
 
         @Override
@@ -32,7 +31,13 @@ public interface CommandOutput {
         }
     };
 
-    public void sendSystemMessage(Text var1, UUID var2);
+    /**
+     * Sends a system message.
+     * 
+     * @implNote The output location depends on the implementation; players will
+     * use the in-game chat, and others will output to the log.
+     */
+    public void sendMessage(Text var1);
 
     public boolean shouldReceiveFeedback();
 

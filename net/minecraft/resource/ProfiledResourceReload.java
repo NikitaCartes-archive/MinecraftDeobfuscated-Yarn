@@ -49,10 +49,10 @@ extends SimpleResourceReload<Summary> {
             }, applyExecutor);
         }, initialStage);
         this.reloadTimer.start();
-        this.applyStageFuture.thenAcceptAsync(this::finish, applyExecutor);
+        this.applyStageFuture = this.applyStageFuture.thenApplyAsync(this::finish, applyExecutor);
     }
 
-    private void finish(List<Summary> summaries) {
+    private List<Summary> finish(List<Summary> summaries) {
         this.reloadTimer.stop();
         int i = 0;
         LOGGER.info("Resource reload finished after {} ms", (Object)this.reloadTimer.elapsed(TimeUnit.MILLISECONDS));
@@ -67,6 +67,7 @@ extends SimpleResourceReload<Summary> {
             i += k;
         }
         LOGGER.info("Total blocking time: {} ms", (Object)i);
+        return summaries;
     }
 
     public static class Summary {

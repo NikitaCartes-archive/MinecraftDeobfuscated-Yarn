@@ -12,6 +12,7 @@ import com.mojang.logging.LogUtils;
 import io.netty.buffer.Unpooled;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
@@ -123,6 +124,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -138,6 +140,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -710,7 +713,33 @@ implements ClientPlayPacketListener {
     @Override
     public void onGameMessage(GameMessageS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.inGameHud.addChatMessage(packet.getType(), packet.getMessage(), packet.getSender());
+        this.client.inGameHud.onGameMessage(packet.type(), packet.content());
+    }
+
+    @Override
+    public void onChatMessage(ChatMessageS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.client);
+        if (packet.isExpired(Instant.now())) {
+            LOGGER.warn("Received expired player chat packet from {}", (Object)packet.sender().name().getString());
+        }
+        if (!this.isSignatureValid(packet)) {
+            LOGGER.warn("Received unsigned player chat packet from {}", (Object)packet.sender().name().getString());
+        }
+        this.client.inGameHud.onChatMessage(packet.type(), packet.content(), packet.sender());
+    }
+
+    /**
+     * {@return whether the chat message packet has a valid signature}
+     * 
+     * <p>This returns {@code false} when the chat sender is unknown.
+     */
+    private boolean isSignatureValid(ChatMessageS2CPacket packet) {
+        PlayerListEntry playerListEntry = this.getPlayerListEntry(packet.sender().uuid());
+        if (playerListEntry == null) {
+            return false;
+        }
+        PlayerPublicKey.PublicKeyData publicKeyData = playerListEntry.getPublicKeyData();
+        return publicKeyData != null && packet.isSignatureValid(publicKeyData);
     }
 
     @Override
@@ -1390,7 +1419,7 @@ implements ClientPlayPacketListener {
             }
             PlayerListEntry playerListEntry = this.playerListEntries.get(entry.getProfile().getId());
             if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
-                playerListEntry = new PlayerListEntry(entry);
+                playerListEntry = new PlayerListEntry(entry, this.client.getSessionService());
                 this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
                 this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
             }

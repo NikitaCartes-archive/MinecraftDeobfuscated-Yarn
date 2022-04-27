@@ -79,6 +79,11 @@ extends ScreenHandler {
     }
 
     @Override
+    public ItemStack transferSlot(PlayerEntity player, int index) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
     public void setProperty(int id, int value) {
         super.setProperty(id, value);
         this.sendContentUpdates();

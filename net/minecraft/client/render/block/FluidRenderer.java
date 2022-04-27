@@ -69,7 +69,7 @@ public class FluidRenderer {
         return !FluidRenderer.isOppositeSideCovered(world, pos, blockState, direction) && !FluidRenderer.isSameFluid(fluidState, neighborFluidState);
     }
 
-    public boolean render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
+    public void render(BlockRenderView world, BlockPos pos, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
         float ap;
         float ao;
         float ag;
@@ -109,9 +109,8 @@ public class FluidRenderer {
         boolean bl6 = FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.WEST, fluidState6);
         boolean bl7 = FluidRenderer.shouldRenderSide(world, pos, fluidState, blockState, Direction.EAST, fluidState7);
         if (!(bl2 || bl3 || bl7 || bl6 || bl4 || bl5)) {
-            return false;
+            return;
         }
-        boolean bl8 = false;
         float j = world.getBrightness(Direction.DOWN, true);
         float k = world.getBrightness(Direction.UP, true);
         float l = world.getBrightness(Direction.NORTH, true);
@@ -144,7 +143,6 @@ public class FluidRenderer {
             float ai;
             float ah;
             float aa;
-            bl8 = true;
             p -= 0.001f;
             r -= 0.001f;
             q -= 0.001f;
@@ -216,7 +214,6 @@ public class FluidRenderer {
             this.vertex(vertexConsumer, d, e + (double)y, w, ac, ae, ag, z, ad, aq);
             this.vertex(vertexConsumer, d + 1.0, e + (double)y, w, ac, ae, ag, ab, ad, aq);
             this.vertex(vertexConsumer, d + 1.0, e + (double)y, w + 1.0, ac, ae, ag, ab, af, aq);
-            bl8 = true;
         }
         int ar = this.getLight(world, pos);
         for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -264,7 +261,6 @@ public class FluidRenderer {
                     yield bl7;
                 }
             }) || FluidRenderer.isSideCovered((BlockView)world, pos, direction, Math.max(af, aa), world.getBlockState(pos.offset(direction)))) continue;
-            bl8 = true;
             BlockPos blockPos = pos.offset(direction);
             Sprite sprite2 = sprites[1];
             if (!bl && ((block = world.getBlockState(blockPos).getBlock()) instanceof TransparentBlock || block instanceof LeavesBlock)) {
@@ -289,7 +285,6 @@ public class FluidRenderer {
             this.vertex(vertexConsumer, at, e + (double)aa, av, ba, bb, bc, ap, ax, ar);
             this.vertex(vertexConsumer, as, e + (double)af, au, ba, bb, bc, ao, aw, ar);
         }
-        return bl8;
     }
 
     private float calculateFluidHeight(BlockRenderView world, Fluid fluid, float originHeight, float northSouthHeight, float eastWestHeight, BlockPos pos) {

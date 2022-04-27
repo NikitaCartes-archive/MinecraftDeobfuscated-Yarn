@@ -97,7 +97,7 @@ extends Entity {
             return false;
         }
         if (!this.isRemoved() && !this.world.isClient) {
-            super.kill();
+            this.remove(Entity.RemovalReason.KILLED);
             if (!source.isExplosive()) {
                 this.world.createExplosion(null, this.getX(), this.getY(), this.getZ(), 6.0f, Explosion.DestructionType.DESTROY);
             }

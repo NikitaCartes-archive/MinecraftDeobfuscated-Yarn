@@ -305,7 +305,7 @@ extends LivingEntity {
         EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         if (itemStack.isEmpty()) {
             EquipmentSlot equipmentSlot3;
-            EquipmentSlot equipmentSlot2 = this.slotFromPosition(hitPos);
+            EquipmentSlot equipmentSlot2 = this.getSlotFromPosition(hitPos);
             EquipmentSlot equipmentSlot4 = equipmentSlot3 = this.isSlotDisabled(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
             if (this.hasStackEquipped(equipmentSlot3) && this.equip(player, equipmentSlot3, itemStack, hand)) {
                 return ActionResult.SUCCESS;
@@ -328,7 +328,7 @@ extends LivingEntity {
      * Enabled force condition propagation
      * Lifted jumps to return sites
      */
-    private EquipmentSlot slotFromPosition(Vec3d hitPos) {
+    private EquipmentSlot getSlotFromPosition(Vec3d hitPos) {
         EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
         boolean bl = this.isSmall();
         double d = bl ? hitPos.y * 2.0 : hitPos.y;

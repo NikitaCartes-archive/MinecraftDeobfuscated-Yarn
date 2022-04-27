@@ -4,15 +4,12 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferVertexConsumer;
@@ -25,7 +22,9 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3f;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
@@ -35,11 +34,9 @@ implements BufferVertexConsumer {
     private static final int MAX_BUFFER_SIZE = 0x200000;
     private static final Logger LOGGER = LogUtils.getLogger();
     private ByteBuffer buffer;
-    private final List<DrawArrayParameters> parameters = Lists.newArrayList();
-    private int lastParameterIndex;
-    private int buildStart;
+    private int field_39061;
+    private int field_39062;
     private int elementOffset;
-    private int nextDrawStart;
     private int vertexCount;
     @Nullable
     private VertexFormatElement currentElement;
@@ -61,7 +58,7 @@ implements BufferVertexConsumer {
     }
 
     private void grow() {
-        this.grow(this.format.getVertexSize());
+        this.grow(this.format.getVertexSizeByte());
     }
 
     private void grow(int size) {
@@ -110,10 +107,10 @@ implements BufferVertexConsumer {
     }
 
     public void restoreState(State state) {
-        this.buffer.clear();
+        this.buffer.rewind();
         this.drawMode = state.drawMode;
         this.vertexCount = state.vertexCount;
-        this.elementOffset = this.buildStart;
+        this.elementOffset = this.field_39062;
         this.sortingPrimitiveCenters = state.sortingPrimitiveCenters;
         this.sortingCameraX = state.sortingCameraX;
         this.sortingCameraY = state.sortingCameraY;
@@ -130,7 +127,7 @@ implements BufferVertexConsumer {
         this.setFormat(format);
         this.currentElement = (VertexFormatElement)format.getElements().get(0);
         this.currentElementId = 0;
-        this.buffer.clear();
+        this.buffer.rewind();
     }
 
     private void setFormat(VertexFormat format) {
@@ -144,24 +141,22 @@ implements BufferVertexConsumer {
         this.hasOverlay = bl;
     }
 
-    private IntConsumer createIndexWriter(VertexFormat.IntType elementFormat) {
-        switch (elementFormat) {
-            case BYTE: {
-                return value -> this.buffer.put((byte)value);
-            }
-            case SHORT: {
-                return value -> this.buffer.putShort((short)value);
-            }
-        }
-        return value -> this.buffer.putInt(value);
+    private IntConsumer createIndexWriter(int i2, VertexFormat.IndexType indexType) {
+        MutableInt mutableInt = new MutableInt(i2);
+        return switch (indexType) {
+            default -> throw new IncompatibleClassChangeError();
+            case VertexFormat.IndexType.BYTE -> i -> this.buffer.put(mutableInt.getAndIncrement(), (byte)i);
+            case VertexFormat.IndexType.SHORT -> i -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)i);
+            case VertexFormat.IndexType.INT -> i -> this.buffer.putInt(mutableInt.getAndAdd(4), i);
+        };
     }
 
     private Vec3f[] buildPrimitiveCenters() {
         FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
-        int i = this.buildStart / 4;
+        int i = this.field_39062 / 4;
         int j = this.format.getVertexSizeInteger();
-        int k = j * this.drawMode.size;
-        int l = this.vertexCount / this.drawMode.size;
+        int k = j * this.drawMode.additionalVertexCount;
+        int l = this.vertexCount / this.drawMode.additionalVertexCount;
         Vec3f[] vec3fs = new Vec3f[l];
         for (int m = 0; m < l; ++m) {
             float f = floatBuffer.get(i + m * k + 0);
@@ -178,7 +173,7 @@ implements BufferVertexConsumer {
         return vec3fs;
     }
 
-    private void writeSortedIndices(VertexFormat.IntType elementFormat) {
+    private void writeSortedIndices(VertexFormat.IndexType indexType) {
         float[] fs = new float[this.sortingPrimitiveCenters.length];
         int[] is = new int[this.sortingPrimitiveCenters.length];
         for (int i = 0; i < this.sortingPrimitiveCenters.length; ++i) {
@@ -189,39 +184,73 @@ implements BufferVertexConsumer {
             is[i] = i;
         }
         IntArrays.mergeSort(is, (a, b) -> Floats.compare(fs[b], fs[a]));
-        IntConsumer intConsumer = this.createIndexWriter(elementFormat);
-        this.buffer.position(this.elementOffset);
+        IntConsumer intConsumer = this.createIndexWriter(this.elementOffset, indexType);
         for (int j : is) {
-            intConsumer.accept(j * this.drawMode.size + 0);
-            intConsumer.accept(j * this.drawMode.size + 1);
-            intConsumer.accept(j * this.drawMode.size + 2);
-            intConsumer.accept(j * this.drawMode.size + 2);
-            intConsumer.accept(j * this.drawMode.size + 3);
-            intConsumer.accept(j * this.drawMode.size + 0);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 0);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 1);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 2);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 2);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 3);
+            intConsumer.accept(j * this.drawMode.additionalVertexCount + 0);
         }
     }
 
-    public void end() {
-        boolean bl;
+    public boolean method_43574() {
+        return this.vertexCount == 0;
+    }
+
+    @Nullable
+    public class_7433 method_43575() {
+        this.method_43577();
+        if (this.method_43574()) {
+            this.method_43579();
+            return null;
+        }
+        class_7433 lv = this.method_43578();
+        this.method_43579();
+        return lv;
+    }
+
+    public class_7433 end() {
+        this.method_43577();
+        class_7433 lv = this.method_43578();
+        this.method_43579();
+        return lv;
+    }
+
+    private void method_43577() {
         if (!this.building) {
             throw new IllegalStateException("Not building!");
         }
-        int i = this.drawMode.getSize(this.vertexCount);
-        int j = !this.hasNoVertexBuffer ? this.vertexCount * this.format.getVertexSize() : 0;
-        VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
+    }
+
+    private class_7433 method_43578() {
+        int l;
+        boolean bl;
+        int k;
+        int i = this.drawMode.getIndexCount(this.vertexCount);
+        int j = !this.hasNoVertexBuffer ? this.vertexCount * this.format.getVertexSizeByte() : 0;
+        VertexFormat.IndexType indexType = VertexFormat.IndexType.smallestFor(i);
         if (this.sortingPrimitiveCenters != null) {
-            int k = MathHelper.roundUpToMultiple(i * intType.size, 4);
+            k = MathHelper.roundUpToMultiple(i * indexType.size, 4);
             this.grow(k);
-            this.writeSortedIndices(intType);
+            this.writeSortedIndices(indexType);
             bl = false;
             this.elementOffset += k;
-            this.buildStart += j + k;
+            l = j + k;
         } else {
             bl = true;
-            this.buildStart += j;
+            l = j;
         }
+        k = this.field_39062;
+        this.field_39062 += l;
+        ++this.field_39061;
+        DrawArrayParameters drawArrayParameters = new DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, indexType, this.hasNoVertexBuffer, bl);
+        return new class_7433(k, drawArrayParameters);
+    }
+
+    private void method_43579() {
         this.building = false;
-        this.parameters.add(new DrawArrayParameters(this.format, this.vertexCount, i, this.drawMode, intType, this.hasNoVertexBuffer, bl));
         this.vertexCount = 0;
         this.currentElement = null;
         this.currentElementId = 0;
@@ -255,11 +284,8 @@ implements BufferVertexConsumer {
         ++this.vertexCount;
         this.grow();
         if (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP) {
-            int i = this.format.getVertexSize();
-            this.buffer.position(this.elementOffset);
-            ByteBuffer byteBuffer = this.buffer.duplicate();
-            byteBuffer.position(this.elementOffset - i).limit(this.elementOffset);
-            this.buffer.put(byteBuffer);
+            int i = this.format.getVertexSizeByte();
+            this.buffer.put(this.elementOffset, this.buffer, this.elementOffset - i, i);
             this.elementOffset += i;
             ++this.vertexCount;
             this.grow();
@@ -324,32 +350,23 @@ implements BufferVertexConsumer {
         super.vertex(x, y, z, red, green, blue, alpha, u, v, overlay, light, normalX, normalY, normalZ);
     }
 
-    public Pair<DrawArrayParameters, ByteBuffer> popData() {
-        DrawArrayParameters drawArrayParameters = this.parameters.get(this.lastParameterIndex++);
-        this.buffer.position(this.nextDrawStart);
-        this.nextDrawStart += MathHelper.roundUpToMultiple(drawArrayParameters.getIndexBufferEnd(), 4);
-        this.buffer.limit(this.nextDrawStart);
-        if (this.lastParameterIndex == this.parameters.size() && this.vertexCount == 0) {
+    void method_43580() {
+        if (this.field_39061 > 0 && --this.field_39061 == 0) {
             this.clear();
         }
-        ByteBuffer byteBuffer = this.buffer.slice();
-        this.buffer.clear();
-        return Pair.of(drawArrayParameters, byteBuffer);
     }
 
     public void clear() {
-        if (this.buildStart != this.nextDrawStart) {
-            LOGGER.warn("Bytes mismatch {} {}", (Object)this.buildStart, (Object)this.nextDrawStart);
+        if (this.field_39061 > 0) {
+            LOGGER.warn("Clearing BufferBuilder with unused batches");
         }
         this.reset();
     }
 
     public void reset() {
-        this.buildStart = 0;
-        this.nextDrawStart = 0;
+        this.field_39061 = 0;
+        this.field_39062 = 0;
         this.elementOffset = 0;
-        this.parameters.clear();
-        this.lastParameterIndex = 0;
     }
 
     @Override
@@ -362,6 +379,10 @@ implements BufferVertexConsumer {
 
     public boolean isBuilding() {
         return this.building;
+    }
+
+    ByteBuffer method_43576(int i, int j) {
+        return MemoryUtil.memSlice(this.buffer, i, j - i);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -385,47 +406,49 @@ implements BufferVertexConsumer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class DrawArrayParameters {
-        private final VertexFormat vertexFormat;
-        private final int count;
-        private final int vertexCount;
-        private final VertexFormat.DrawMode mode;
-        private final VertexFormat.IntType elementFormat;
-        private final boolean hasNoVertexBuffer;
-        private final boolean hasNoIndexBuffer;
+    public class class_7433 {
+        private final int field_39064;
+        private final DrawArrayParameters field_39065;
+        private boolean field_39066;
 
-        DrawArrayParameters(VertexFormat vertexFormat, int count, int vertexCount, VertexFormat.DrawMode mode, VertexFormat.IntType elementFormat, boolean hasNoVertexBuffer, boolean hasNoIndexBuffer) {
-            this.vertexFormat = vertexFormat;
-            this.count = count;
-            this.vertexCount = vertexCount;
-            this.mode = mode;
-            this.elementFormat = elementFormat;
-            this.hasNoVertexBuffer = hasNoVertexBuffer;
-            this.hasNoIndexBuffer = hasNoIndexBuffer;
+        class_7433(int i, DrawArrayParameters drawArrayParameters) {
+            this.field_39064 = i;
+            this.field_39065 = drawArrayParameters;
         }
 
-        public VertexFormat getVertexFormat() {
-            return this.vertexFormat;
+        public ByteBuffer method_43581() {
+            int i = this.field_39064 + this.field_39065.getVertexBufferPosition();
+            int j = this.field_39064 + this.field_39065.getVertexBufferLimit();
+            return BufferBuilder.this.method_43576(i, j);
         }
 
-        public int getCount() {
-            return this.count;
+        public ByteBuffer method_43582() {
+            int i = this.field_39064 + this.field_39065.getIndexBufferPosition();
+            int j = this.field_39064 + this.field_39065.getIndexBufferLimit();
+            return BufferBuilder.this.method_43576(i, j);
         }
 
-        public int getVertexCount() {
-            return this.vertexCount;
+        public DrawArrayParameters method_43583() {
+            return this.field_39065;
         }
 
-        public VertexFormat.DrawMode getMode() {
-            return this.mode;
+        public boolean method_43584() {
+            return this.field_39065.vertexCount == 0;
         }
 
-        public VertexFormat.IntType getElementFormat() {
-            return this.elementFormat;
+        public void method_43585() {
+            if (this.field_39066) {
+                throw new IllegalStateException("Buffer has already been released!");
+            }
+            BufferBuilder.this.method_43580();
+            this.field_39066 = true;
         }
+    }
 
+    @Environment(value=EnvType.CLIENT)
+    public record DrawArrayParameters(VertexFormat format, int vertexCount, int indexCount, VertexFormat.DrawMode mode, VertexFormat.IndexType indexType, boolean indexOnly, boolean sequentialIndex) {
         public int getIndexBufferStart() {
-            return this.count * this.vertexFormat.getVertexSize();
+            return this.vertexCount * this.format.getVertexSizeByte();
         }
 
         public int getVertexBufferPosition() {
@@ -437,7 +460,7 @@ implements BufferVertexConsumer {
         }
 
         public int getIndexBufferPosition() {
-            return this.hasNoVertexBuffer ? 0 : this.getVertexBufferLimit();
+            return this.indexOnly ? 0 : this.getVertexBufferLimit();
         }
 
         public int getIndexBufferLimit() {
@@ -445,19 +468,11 @@ implements BufferVertexConsumer {
         }
 
         private int getIndexBufferLength() {
-            return this.hasNoIndexBuffer ? 0 : this.vertexCount * this.elementFormat.size;
+            return this.sequentialIndex ? 0 : this.indexCount * this.indexType.size;
         }
 
         public int getIndexBufferEnd() {
             return this.getIndexBufferLimit();
-        }
-
-        public boolean hasNoVertexBuffer() {
-            return this.hasNoVertexBuffer;
-        }
-
-        public boolean hasNoIndexBuffer() {
-            return this.hasNoIndexBuffer;
         }
     }
 }
