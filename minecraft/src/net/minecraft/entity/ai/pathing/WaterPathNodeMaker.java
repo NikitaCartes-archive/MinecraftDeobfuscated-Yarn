@@ -36,6 +36,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		this.nodePosToType.clear();
 	}
 
+	@Nullable
 	@Override
 	public PathNode getStart() {
 		return super.getNode(
@@ -45,9 +46,10 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		);
 	}
 
+	@Nullable
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return new TargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+		return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
 	}
 
 	@Override
@@ -93,10 +95,12 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 			float f = this.entity.getPathfindingPenalty(pathNodeType);
 			if (f >= 0.0F) {
 				pathNode = super.getNode(x, y, z);
-				pathNode.type = pathNodeType;
-				pathNode.penalty = Math.max(pathNode.penalty, f);
-				if (this.cachedWorld.getFluidState(new BlockPos(x, y, z)).isEmpty()) {
-					pathNode.penalty += 8.0F;
+				if (pathNode != null) {
+					pathNode.type = pathNodeType;
+					pathNode.penalty = Math.max(pathNode.penalty, f);
+					if (this.cachedWorld.getFluidState(new BlockPos(x, y, z)).isEmpty()) {
+						pathNode.penalty += 8.0F;
+					}
 				}
 			}
 		}

@@ -14,6 +14,8 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.Codec.ResultFunction;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +53,7 @@ public class Codecs {
 			return DataResult.error("Invalid regex pattern '" + pattern + "': " + var2.getMessage());
 		}
 	}, Pattern::pattern);
+	public static final Codec<Instant> INSTANT = method_43532(DateTimeFormatter.ISO_INSTANT);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -280,6 +283,16 @@ public class Codecs {
 				}
 			}
 		});
+	}
+
+	public static Codec<Instant> method_43532(DateTimeFormatter dateTimeFormatter) {
+		return Codec.STRING.comapFlatMap(string -> {
+			try {
+				return DataResult.success(Instant.from(dateTimeFormatter.parse(string)));
+			} catch (Exception var3) {
+				return DataResult.error(var3.getMessage());
+			}
+		}, dateTimeFormatter::format);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

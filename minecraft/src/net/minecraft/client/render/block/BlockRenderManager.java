@@ -53,15 +53,15 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		}
 	}
 
-	public boolean renderBlock(
+	public void renderBlock(
 		BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull, AbstractRandom random
 	) {
 		try {
 			BlockRenderType blockRenderType = state.getRenderType();
-			return blockRenderType != BlockRenderType.MODEL
-				? false
-				: this.blockModelRenderer
+			if (blockRenderType == BlockRenderType.MODEL) {
+				this.blockModelRenderer
 					.render(world, this.getModel(state), state, pos, matrices, vertexConsumer, cull, random, state.getRenderingSeed(pos), OverlayTexture.DEFAULT_UV);
+			}
 		} catch (Throwable var11) {
 			CrashReport crashReport = CrashReport.create(var11, "Tesselating block in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -70,9 +70,9 @@ public class BlockRenderManager implements SynchronousResourceReloader {
 		}
 	}
 
-	public boolean renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
+	public void renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, BlockState blockState, FluidState fluidState) {
 		try {
-			return this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState);
+			this.fluidRenderer.render(world, pos, vertexConsumer, blockState, fluidState);
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Tesselating liquid in world");
 			CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");

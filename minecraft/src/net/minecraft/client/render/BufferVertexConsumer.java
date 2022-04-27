@@ -20,7 +20,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 	default VertexConsumer vertex(double x, double y, double z) {
 		if (this.getCurrentElement().getType() != VertexFormatElement.Type.POSITION) {
 			return this;
-		} else if (this.getCurrentElement().getDataType() == VertexFormatElement.DataType.FLOAT && this.getCurrentElement().getLength() == 3) {
+		} else if (this.getCurrentElement().getComponentType() == VertexFormatElement.ComponentType.FLOAT && this.getCurrentElement().getComponentCount() == 3) {
 			this.putFloat(0, (float)x);
 			this.putFloat(4, (float)y);
 			this.putFloat(8, (float)z);
@@ -36,7 +36,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
 		if (vertexFormatElement.getType() != VertexFormatElement.Type.COLOR) {
 			return this;
-		} else if (vertexFormatElement.getDataType() == VertexFormatElement.DataType.UBYTE && vertexFormatElement.getLength() == 4) {
+		} else if (vertexFormatElement.getComponentType() == VertexFormatElement.ComponentType.UBYTE && vertexFormatElement.getComponentCount() == 4) {
 			this.putByte(0, (byte)red);
 			this.putByte(1, (byte)green);
 			this.putByte(2, (byte)blue);
@@ -51,8 +51,8 @@ public interface BufferVertexConsumer extends VertexConsumer {
 	@Override
 	default VertexConsumer texture(float u, float v) {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
-		if (vertexFormatElement.getType() == VertexFormatElement.Type.UV && vertexFormatElement.getTextureIndex() == 0) {
-			if (vertexFormatElement.getDataType() == VertexFormatElement.DataType.FLOAT && vertexFormatElement.getLength() == 2) {
+		if (vertexFormatElement.getType() == VertexFormatElement.Type.UV && vertexFormatElement.getUvIndex() == 0) {
+			if (vertexFormatElement.getComponentType() == VertexFormatElement.ComponentType.FLOAT && vertexFormatElement.getComponentCount() == 2) {
 				this.putFloat(0, u);
 				this.putFloat(4, v);
 				this.nextElement();
@@ -77,9 +77,9 @@ public interface BufferVertexConsumer extends VertexConsumer {
 
 	default VertexConsumer texture(short u, short v, int index) {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
-		if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getTextureIndex() != index) {
+		if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getUvIndex() != index) {
 			return this;
-		} else if (vertexFormatElement.getDataType() == VertexFormatElement.DataType.SHORT && vertexFormatElement.getLength() == 2) {
+		} else if (vertexFormatElement.getComponentType() == VertexFormatElement.ComponentType.SHORT && vertexFormatElement.getComponentCount() == 2) {
 			this.putShort(0, u);
 			this.putShort(2, v);
 			this.nextElement();
@@ -94,7 +94,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
 		if (vertexFormatElement.getType() != VertexFormatElement.Type.NORMAL) {
 			return this;
-		} else if (vertexFormatElement.getDataType() == VertexFormatElement.DataType.BYTE && vertexFormatElement.getLength() == 3) {
+		} else if (vertexFormatElement.getComponentType() == VertexFormatElement.ComponentType.BYTE && vertexFormatElement.getComponentCount() == 3) {
 			this.putByte(0, packByte(x));
 			this.putByte(1, packByte(y));
 			this.putByte(2, packByte(z));

@@ -313,7 +313,7 @@ public class ArmorStandEntity extends LivingEntity {
 		} else {
 			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
-				EquipmentSlot equipmentSlot2 = this.slotFromPosition(hitPos);
+				EquipmentSlot equipmentSlot2 = this.getSlotFromPosition(hitPos);
 				EquipmentSlot equipmentSlot3 = this.isSlotDisabled(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
 				if (this.hasStackEquipped(equipmentSlot3) && this.equip(player, equipmentSlot3, itemStack, hand)) {
 					return ActionResult.SUCCESS;
@@ -336,7 +336,7 @@ public class ArmorStandEntity extends LivingEntity {
 		}
 	}
 
-	private EquipmentSlot slotFromPosition(Vec3d hitPos) {
+	private EquipmentSlot getSlotFromPosition(Vec3d hitPos) {
 		EquipmentSlot equipmentSlot = EquipmentSlot.MAINHAND;
 		boolean bl = this.isSmall();
 		double d = bl ? hitPos.y * 2.0 : hitPos.y;

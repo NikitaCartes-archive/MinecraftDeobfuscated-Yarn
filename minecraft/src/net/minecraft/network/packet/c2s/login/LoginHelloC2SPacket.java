@@ -1,31 +1,23 @@
 package net.minecraft.network.packet.c2s.login;
 
-import com.mojang.authlib.GameProfile;
+import java.util.Optional;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 
-public class LoginHelloC2SPacket implements Packet<ServerLoginPacketListener> {
-	private final GameProfile profile;
-
-	public LoginHelloC2SPacket(GameProfile profile) {
-		this.profile = profile;
-	}
-
+public record LoginHelloC2SPacket(String name, Optional<PlayerPublicKey> publicKey) implements Packet<ServerLoginPacketListener> {
 	public LoginHelloC2SPacket(PacketByteBuf buf) {
-		this.profile = new GameProfile(null, buf.readString(16));
+		this(buf.readString(16), buf.readOptional(packetByteBuf -> packetByteBuf.decode(PlayerPublicKey.CODEC)));
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeString(this.profile.getName());
+		buf.writeString(this.name, 16);
+		buf.writeOptional(this.publicKey, (packetByteBuf, playerPublicKey) -> packetByteBuf.encode(PlayerPublicKey.CODEC, playerPublicKey));
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.onHello(this);
-	}
-
-	public GameProfile getProfile() {
-		return this.profile;
 	}
 }

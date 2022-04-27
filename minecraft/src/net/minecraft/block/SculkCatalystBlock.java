@@ -73,8 +73,10 @@ public class SculkCatalystBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
-		super.onStacksDropped(state, world, pos, stack);
-		this.dropExperienceWhenMined(world, pos, stack, this.experience);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+		super.onStacksDropped(state, world, pos, stack, dropExperience);
+		if (dropExperience) {
+			this.dropExperienceWhenMined(world, pos, stack, this.experience);
+		}
 	}
 }

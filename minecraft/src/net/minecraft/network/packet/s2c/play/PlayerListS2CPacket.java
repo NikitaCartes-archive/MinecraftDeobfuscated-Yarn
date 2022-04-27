@@ -3,8 +3,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -98,18 +96,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		ADD_PLAYER {
 			@Override
 			protected PlayerListS2CPacket.Entry read(PacketByteBuf buf) {
-				GameProfile gameProfile = new GameProfile(buf.readUuid(), buf.readString(16));
-				PropertyMap propertyMap = gameProfile.getProperties();
-				buf.forEachInCollection(bufx -> {
-					String string = bufx.readString();
-					String string2 = bufx.readString();
-					if (bufx.readBoolean()) {
-						String string3 = bufx.readString();
-						propertyMap.put(string, new Property(string, string2, string3));
-					} else {
-						propertyMap.put(string, new Property(string, string2));
-					}
-				});
+				GameProfile gameProfile = buf.readGameProfile();
 				GameMode gameMode = GameMode.byId(buf.readVarInt());
 				int i = buf.readVarInt();
 				Text text = PlayerListS2CPacket.readOptionalText(buf);
@@ -118,18 +105,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 			@Override
 			protected void write(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
-				buf.writeUuid(entry.getProfile().getId());
-				buf.writeString(entry.getProfile().getName());
-				buf.writeCollection(entry.getProfile().getProperties().values(), (bufx, property) -> {
-					bufx.writeString(property.getName());
-					bufx.writeString(property.getValue());
-					if (property.hasSignature()) {
-						bufx.writeBoolean(true);
-						bufx.writeString(property.getSignature());
-					} else {
-						bufx.writeBoolean(false);
-					}
-				});
+				buf.writeGameProfile(entry.getProfile());
 				buf.writeVarInt(entry.getGameMode().getId());
 				buf.writeVarInt(entry.getLatency());
 				PlayerListS2CPacket.writeOptionalText(buf, entry.getDisplayName());

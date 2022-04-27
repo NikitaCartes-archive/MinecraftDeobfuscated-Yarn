@@ -33,7 +33,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -146,7 +145,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Debug
 	@Override
-	public Inventory getInventory() {
+	public SimpleInventory getInventory() {
 		return this.inventory;
 	}
 

@@ -728,7 +728,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 
 							if (moveEffect.emitsGameEvents() && (this.onGround || movement.y == 0.0 || this.inPowderSnow || bl3)) {
-								this.emitGameEvent(GameEvent.STEP);
+								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 							}
 						}
 					} else if (blockState.isAir()) {
@@ -1117,7 +1117,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
 				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
-				this.emitGameEvent(GameEvent.HIT_GROUND);
+				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 			}
 
 			this.onLanding();
@@ -2776,7 +2776,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID sender) {
+	public void sendMessage(Text message) {
 	}
 
 	public World getEntityWorld() {

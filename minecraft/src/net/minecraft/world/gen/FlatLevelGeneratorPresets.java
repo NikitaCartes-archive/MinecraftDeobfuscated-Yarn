@@ -36,7 +36,7 @@ public class FlatLevelGeneratorPresets {
 	}
 
 	private static RegistryKey<FlatLevelGeneratorPreset> of(String id) {
-		return RegistryKey.of(Registry.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(Registry.FLAT_LEVEL_GENERATOR_PRESET_KEY, new Identifier(id));
 	}
 
 	static class Registrar {

@@ -289,6 +289,7 @@ public class StructureTypes {
 				StructureTerrainAdaptation.BEARD_BOX
 			),
 			AncientCityGenerator.CITY_CENTER,
+			Optional.empty(),
 			7,
 			ConstantHeightProvider.create(YOffset.fixed(-51)),
 			false,

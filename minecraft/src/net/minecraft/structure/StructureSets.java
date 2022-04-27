@@ -53,7 +53,7 @@ public interface StructureSets {
 			SpreadType.LINEAR
 		)
 	);
-	RegistryEntry<StructureSet> field_38475 = register(
+	RegistryEntry<StructureSet> ANCIENT_CITIES = register(
 		StructureSetKeys.ANCIENT_CITIES, StructureTypes.ANCIENT_CITY, new RandomSpreadStructurePlacement(24, 8, SpreadType.LINEAR, 20083232)
 	);
 	RegistryEntry<StructureSet> OCEAN_MONUMENTS = register(

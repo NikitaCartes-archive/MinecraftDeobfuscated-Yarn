@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.pathing;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import javax.annotation.Nullable;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -34,17 +35,26 @@ public abstract class PathNodeMaker {
 		this.entity = null;
 	}
 
+	@Nullable
 	protected PathNode getNode(BlockPos pos) {
 		return this.getNode(pos.getX(), pos.getY(), pos.getZ());
 	}
 
+	@Nullable
 	protected PathNode getNode(int x, int y, int z) {
 		return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), (Int2ObjectFunction<? extends PathNode>)(l -> new PathNode(x, y, z)));
 	}
 
+	@Nullable
 	public abstract PathNode getStart();
 
+	@Nullable
 	public abstract TargetPathNode getNode(double x, double y, double z);
+
+	@Nullable
+	protected TargetPathNode asTargetPathNode(@Nullable PathNode node) {
+		return node != null ? new TargetPathNode(node) : null;
+	}
 
 	public abstract int getSuccessors(PathNode[] successors, PathNode node);
 

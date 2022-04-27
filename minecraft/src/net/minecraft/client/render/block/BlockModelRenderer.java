@@ -40,7 +40,7 @@ public class BlockModelRenderer {
 		this.colors = colors;
 	}
 
-	public boolean render(
+	public void render(
 		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
@@ -57,9 +57,11 @@ public class BlockModelRenderer {
 		matrices.translate(vec3d.x, vec3d.y, vec3d.z);
 
 		try {
-			return bl
-				? this.renderSmooth(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay)
-				: this.renderFlat(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
+			if (bl) {
+				this.renderSmooth(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
+			} else {
+				this.renderFlat(world, model, state, pos, matrices, vertexConsumer, cull, random, seed, overlay);
+			}
 		} catch (Throwable var17) {
 			CrashReport crashReport = CrashReport.create(var17, "Tesselating block model");
 			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
@@ -69,7 +71,7 @@ public class BlockModelRenderer {
 		}
 	}
 
-	public boolean renderSmooth(
+	public void renderSmooth(
 		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
@@ -81,7 +83,6 @@ public class BlockModelRenderer {
 		long seed,
 		int overlay
 	) {
-		boolean bl = false;
 		float[] fs = new float[DIRECTIONS.length * 2];
 		BitSet bitSet = new BitSet(3);
 		BlockModelRenderer.AmbientOcclusionCalculator ambientOcclusionCalculator = new BlockModelRenderer.AmbientOcclusionCalculator();
@@ -94,7 +95,6 @@ public class BlockModelRenderer {
 				mutable.set(pos, direction);
 				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
 					this.renderQuadsSmooth(world, state, pos, matrices, vertexConsumer, list, fs, bitSet, ambientOcclusionCalculator, overlay);
-					bl = true;
 				}
 			}
 		}
@@ -103,13 +103,10 @@ public class BlockModelRenderer {
 		List<BakedQuad> list2 = model.getQuads(state, null, random);
 		if (!list2.isEmpty()) {
 			this.renderQuadsSmooth(world, state, pos, matrices, vertexConsumer, list2, fs, bitSet, ambientOcclusionCalculator, overlay);
-			bl = true;
 		}
-
-		return bl;
 	}
 
-	public boolean renderFlat(
+	public void renderFlat(
 		BlockRenderView world,
 		BakedModel model,
 		BlockState state,
@@ -121,7 +118,6 @@ public class BlockModelRenderer {
 		long seed,
 		int overlay
 	) {
-		boolean bl = false;
 		BitSet bitSet = new BitSet(3);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
@@ -133,7 +129,6 @@ public class BlockModelRenderer {
 				if (!cull || Block.shouldDrawSide(state, world, pos, direction, mutable)) {
 					int i = WorldRenderer.getLightmapCoordinates(world, state, mutable);
 					this.renderQuadsFlat(world, state, pos, i, overlay, false, matrices, vertexConsumer, list, bitSet);
-					bl = true;
 				}
 			}
 		}
@@ -142,10 +137,7 @@ public class BlockModelRenderer {
 		List<BakedQuad> list2 = model.getQuads(state, null, random);
 		if (!list2.isEmpty()) {
 			this.renderQuadsFlat(world, state, pos, -1, overlay, true, matrices, vertexConsumer, list2, bitSet);
-			bl = true;
 		}
-
-		return bl;
 	}
 
 	private void renderQuadsSmooth(
@@ -365,7 +357,7 @@ public class BlockModelRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class AmbientOcclusionCalculator {
+	static class AmbientOcclusionCalculator {
 		final float[] brightness = new float[4];
 		final int[] light = new int[4];
 

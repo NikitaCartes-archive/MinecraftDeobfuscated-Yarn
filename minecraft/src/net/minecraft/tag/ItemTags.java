@@ -20,6 +20,7 @@ public final class ItemTags {
 	public static final TagKey<Item> DOORS = of("doors");
 	public static final TagKey<Item> SAPLINGS = of("saplings");
 	public static final TagKey<Item> LOGS_THAT_BURN = of("logs_that_burn");
+	public static final TagKey<Item> OVERWORLD_NATURAL_LOGS = of("overworld_natural_logs");
 	public static final TagKey<Item> LOGS = of("logs");
 	public static final TagKey<Item> DARK_OAK_LOGS = of("dark_oak_logs");
 	public static final TagKey<Item> OAK_LOGS = of("oak_logs");

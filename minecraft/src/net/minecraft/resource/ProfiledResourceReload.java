@@ -53,10 +53,10 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 			initialStage
 		);
 		this.reloadTimer.start();
-		this.applyStageFuture.thenAcceptAsync(this::finish, applyExecutor);
+		this.applyStageFuture = this.applyStageFuture.thenApplyAsync(this::finish, applyExecutor);
 	}
 
-	private void finish(List<ProfiledResourceReload.Summary> summaries) {
+	private List<ProfiledResourceReload.Summary> finish(List<ProfiledResourceReload.Summary> summaries) {
 		this.reloadTimer.stop();
 		int i = 0;
 		LOGGER.info("Resource reload finished after {} ms", this.reloadTimer.elapsed(TimeUnit.MILLISECONDS));
@@ -73,6 +73,7 @@ public class ProfiledResourceReload extends SimpleResourceReload<ProfiledResourc
 		}
 
 		LOGGER.info("Total blocking time: {} ms", i);
+		return summaries;
 	}
 
 	/**

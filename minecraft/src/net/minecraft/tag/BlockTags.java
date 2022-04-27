@@ -22,6 +22,7 @@ public final class BlockTags {
 	public static final TagKey<Block> DOORS = of("doors");
 	public static final TagKey<Block> SAPLINGS = of("saplings");
 	public static final TagKey<Block> LOGS_THAT_BURN = of("logs_that_burn");
+	public static final TagKey<Block> OVERWORLD_NATURAL_LOGS = of("overworld_natural_logs");
 	public static final TagKey<Block> LOGS = of("logs");
 	public static final TagKey<Block> DARK_OAK_LOGS = of("dark_oak_logs");
 	public static final TagKey<Block> OAK_LOGS = of("oak_logs");
@@ -153,6 +154,7 @@ public final class BlockTags {
 	public static final TagKey<Block> MANGROVE_LOGS_CAN_GROW_THROUGH = of("mangrove_logs_can_grow_through");
 	public static final TagKey<Block> MANGROVE_ROOTS_CAN_GROW_THROUGH = of("mangrove_roots_can_grow_through");
 	public static final TagKey<Block> DEAD_BUSH_MAY_PLACE_ON = of("dead_bush_may_place_on");
+	public static final TagKey<Block> SNAPS_GOAT_HORN = of("snaps_goat_horn");
 
 	private BlockTags() {
 	}

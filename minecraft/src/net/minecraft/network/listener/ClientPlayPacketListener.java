@@ -6,6 +6,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -132,6 +133,8 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onBlockUpdate(BlockUpdateS2CPacket packet);
 
 	void onGameMessage(GameMessageS2CPacket packet);
+
+	void onChatMessage(ChatMessageS2CPacket packet);
 
 	void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet);
 

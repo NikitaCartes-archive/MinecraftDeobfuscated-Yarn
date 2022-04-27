@@ -30,8 +30,11 @@ public class SaveVersion {
 	 * 
 	 * <p>This is stored in the {@code Series} field within {@code level.dat}.
 	 * 
-	 * <p>Known values include {@code main} for the main series and
-	 * {@code ccpreview} for the caves and cliffs experimental snapshots.
+	 * <p>Known values include:<ul>
+	 * <li>{@code main} for versions that are not experimental snapshots</li>
+	 * <li>{@code ccpreview} for the 1.18 Caves and Cliffs experimental snapshots</li>
+	 * <li>{@code deep_dark_preview} for 1.19 Deep Dark experimental snapshots</li>
+	 * </ul>
 	 */
 	public String getSeries() {
 		return this.series;

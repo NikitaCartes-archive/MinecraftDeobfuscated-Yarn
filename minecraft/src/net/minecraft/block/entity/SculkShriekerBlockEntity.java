@@ -34,10 +34,10 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.event.listener.VibrationListener;
 import org.slf4j.Logger;
 
-public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensorListener.Callback {
+public class SculkShriekerBlockEntity extends BlockEntity implements VibrationListener.Callback {
 	private static final Logger field_38237 = LogUtils.getLogger();
 	private static final int RANGE = 8;
 	private static final int field_38750 = 10;
@@ -52,13 +52,13 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	});
 	private static final int field_38756 = 90;
 	private int warningLevel;
-	private SculkSensorListener vibrationListener = new SculkSensorListener(new BlockPositionSource(this.pos), 8, this, null, 0, 0);
+	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this, null, 0, 0);
 
 	public SculkShriekerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SHRIEKER, pos, state);
 	}
 
-	public SculkSensorListener getVibrationListener() {
+	public VibrationListener getVibrationListener() {
 		return this.vibrationListener;
 	}
 
@@ -70,7 +70,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 		}
 
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-			SculkSensorListener.createCodec(this)
+			VibrationListener.createCodec(this)
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(field_38237::error)
 				.ifPresent(vibrationListener -> this.vibrationListener = vibrationListener);
@@ -81,7 +81,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putInt("warning_level", this.warningLevel);
-		SculkSensorListener.createCodec(this)
+		VibrationListener.createCodec(this)
 			.encodeStart(NbtOps.INSTANCE, this.vibrationListener)
 			.resultOrPartial(field_38237::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
@@ -101,7 +101,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 	public void accept(
 		ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, int delay
 	) {
-		this.shriek(world);
+		this.shriek(world, sourceEntity != null ? sourceEntity : entity);
 	}
 
 	private boolean canWarn(ServerWorld world) {
@@ -116,13 +116,14 @@ public class SculkShriekerBlockEntity extends BlockEntity implements SculkSensor
 		}
 	}
 
-	public void shriek(ServerWorld world) {
+	public void shriek(ServerWorld world, @Nullable Entity entity) {
 		BlockState blockState = this.getCachedState();
 		if (this.canWarn(world) && this.trySyncWarningLevel(world, blockState)) {
 			BlockPos blockPos = this.getPos();
 			world.setBlockState(blockPos, blockState.with(SculkShriekerBlock.SHRIEKING, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 			world.createAndScheduleBlockTick(blockPos, blockState.getBlock(), 90);
 			world.syncWorldEvent(WorldEvents.SCULK_SHRIEKS, blockPos, 0);
+			world.emitGameEvent(GameEvent.SHRIEK, blockPos, GameEvent.Emitter.of(entity));
 		}
 	}
 

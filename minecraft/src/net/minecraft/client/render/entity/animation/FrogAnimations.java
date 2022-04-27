@@ -241,6 +241,16 @@ public class FrogAnimations {
 			)
 		)
 		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.SCALE,
+				new Keyframe(0.0F, AnimationHelper.method_41829(1.0F, 1.0F, 1.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.0833F, AnimationHelper.method_41829(0.998F, 1.0F, 1.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.4167F, AnimationHelper.method_41829(0.998F, 1.0F, 1.0F), Transformation.Interpolations.field_37884),
+				new Keyframe(0.5F, AnimationHelper.method_41829(1.0F, 1.0F, 1.0F), Transformation.Interpolations.field_37884)
+			)
+		)
+		.addBoneAnimation(
 			"tongue",
 			new Transformation(
 				Transformation.Targets.ROTATE,

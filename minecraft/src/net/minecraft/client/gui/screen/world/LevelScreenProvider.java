@@ -63,7 +63,7 @@ public interface LevelScreenProvider {
 		return (dynamicRegistryManager, generatorOptions) -> {
 			Registry<StructureSet> registry = dynamicRegistryManager.get(Registry.STRUCTURE_SET_KEY);
 			Registry<ChunkGeneratorSettings> registry2 = dynamicRegistryManager.get(Registry.CHUNK_GENERATOR_SETTINGS_KEY);
-			Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = dynamicRegistryManager.get(Registry.NOISE_WORLDGEN);
+			Registry<DoublePerlinNoiseSampler.NoiseParameters> registry3 = dynamicRegistryManager.get(Registry.NOISE_KEY);
 			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry2.getOrCreateEntry(ChunkGeneratorSettings.OVERWORLD);
 			BiomeSource biomeSource = new FixedBiomeSource(biomeEntry);
 			ChunkGenerator chunkGenerator = new NoiseChunkGenerator(registry, registry3, biomeSource, registryEntry2);

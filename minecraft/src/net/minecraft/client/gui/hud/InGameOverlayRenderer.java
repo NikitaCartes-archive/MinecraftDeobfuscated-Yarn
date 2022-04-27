@@ -87,8 +87,7 @@ public class InGameOverlayRenderer {
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, o).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(l, n).next();
 		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).color(0.1F, 0.1F, 0.1F, 1.0F).texture(m, n).next();
-		bufferBuilder.end();
-		BufferRenderer.drawWithShader(bufferBuilder);
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 	}
 
 	private static void renderUnderwaterOverlay(MinecraftClient client, MatrixStack matrices) {
@@ -115,8 +114,7 @@ public class InGameOverlayRenderer {
 		bufferBuilder.vertex(matrix4f, 1.0F, -1.0F, -0.5F).texture(0.0F + m, 4.0F + n).next();
 		bufferBuilder.vertex(matrix4f, 1.0F, 1.0F, -0.5F).texture(0.0F + m, 0.0F + n).next();
 		bufferBuilder.vertex(matrix4f, -1.0F, 1.0F, -0.5F).texture(4.0F + m, 0.0F + n).next();
-		bufferBuilder.end();
-		BufferRenderer.drawWithShader(bufferBuilder);
+		BufferRenderer.drawWithShader(bufferBuilder.end());
 		RenderSystem.disableBlend();
 	}
 
@@ -158,8 +156,7 @@ public class InGameOverlayRenderer {
 			bufferBuilder.vertex(matrix4f, 0.5F, -0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(m, p).next();
 			bufferBuilder.vertex(matrix4f, 0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(m, o).next();
 			bufferBuilder.vertex(matrix4f, -0.5F, 0.5F, -0.5F).color(1.0F, 1.0F, 1.0F, 0.9F).texture(n, o).next();
-			bufferBuilder.end();
-			BufferRenderer.drawWithShader(bufferBuilder);
+			BufferRenderer.drawWithShader(bufferBuilder.end());
 			matrices.pop();
 		}
 

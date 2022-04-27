@@ -931,9 +931,9 @@ public abstract class RenderLayer extends RenderPhase {
 				buffer.sortFrom((float)cameraX, (float)cameraY, (float)cameraZ);
 			}
 
-			buffer.end();
+			BufferBuilder.class_7433 lv = buffer.end();
 			this.startDrawing();
-			BufferRenderer.drawWithShader(buffer);
+			BufferRenderer.drawWithShader(lv);
 			this.endDrawing();
 		}
 	}

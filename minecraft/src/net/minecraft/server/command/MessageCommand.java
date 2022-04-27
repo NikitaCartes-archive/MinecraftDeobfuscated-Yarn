@@ -37,7 +37,7 @@ public class MessageCommand {
 		Entity entity = source.getEntity();
 		Consumer<Text> consumer;
 		if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-			consumer = playerName -> serverPlayerEntity.sendSystemMessage(
+			consumer = playerName -> serverPlayerEntity.sendMessage(
 					Text.translatable("commands.message.display.outgoing", playerName, message).formatted(Formatting.GRAY, Formatting.ITALIC), serverPlayerEntity.getUuid()
 				);
 		} else {
@@ -48,7 +48,7 @@ public class MessageCommand {
 
 		for(ServerPlayerEntity serverPlayerEntity2 : targets) {
 			consumer.accept(serverPlayerEntity2.getDisplayName());
-			serverPlayerEntity2.sendSystemMessage(
+			serverPlayerEntity2.sendMessage(
 				Text.translatable("commands.message.display.incoming", source.getDisplayName(), message).formatted(Formatting.GRAY, Formatting.ITALIC), uUID
 			);
 		}
